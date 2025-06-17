@@ -1,0 +1,123 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Field F Simulator</title>
+    <style>
+        body { font-family: sans-serif; background: #111; color: #eee; text-align: center; }
+        canvas { background: #000; border: 1px solid #444; }
+        .controls { margin: 15px; }
+        label { margin: 0 10px; }
+        #totalPotential { font-family: monospace; font-weight: bold; color: #4CAF50; }
+    </style>
+</head>
+<body>
+    <h1>Field F Simulator</h1>
+    <p>Visualizing a 2D slice of the 3D field. Waiting for patterns to emerge...</p>
+    
+    <div class="controls">
+        <label for="zSlider">Z-Slice:</label>
+        <input type="range" id="zSlider" min="0" max="31" value="16">
+        <span id="zSliceValue">16</span>
+    </div>
+
+    <div class="controls">
+        <span>Total Field Potential (Conservation Check):</span>
+        <span id="totalPotential">...</span>
+    </div>
+
+    <canvas id="simCanvas" width="512" height="512"></canvas>
+    
+    <script src="wasm_exec.js"></script>
+
+    <script>
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        const zSlider = document.getElementById('zSlider');
+        const zSliceValueSpan = document.getElementById('zSliceValue');
+        const totalPotentialSpan = document.getElementById('totalPotential');
+
+        const GRID_WIDTH = 256;
+        const GRID_HEIGHT = 256;
+        const GRID_DEPTH = 256;
+
+        let zSliceToView = Math.floor(GRID_DEPTH / 2);
+
+        // Update slider settings based on grid constants
+        zSlider.max = GRID_DEPTH - 1;
+        zSlider.value = zSliceToView;
+        zSliceValueSpan.textContent = zSliceToView;
+
+        // Add event listener for the slider
+        zSlider.addEventListener('input', (event) => {
+            zSliceToView = parseInt(event.target.value, 10);
+            zSliceValueSpan.textContent = zSliceToView;
+        });
+
+        // Load and run the WebAssembly module
+        const go = new Go();
+        WebAssembly.instantiateStreaming(fetch('simulation.wasm'), go.importObject).then((result) => {
+            go.run(result.instance);
+            console.log("Wasm module loaded and running.");
+
+            initField(GRID_WIDTH, GRID_HEIGHT, GRID_DEPTH);
+            console.log("Field initialized.");
+            
+            // Start the main animation loop
+            animate();
+            
+            // Start the separate loop for checking conservation
+            setInterval(updateConservationCheck, 250); // Check 4 times per second
+        });
+
+        function updateConservationCheck() {
+            // Call the Go function to get the total potential
+            const total = getTotalPotential();
+            // Display it, formatted to a few decimal places
+            totalPotentialSpan.textContent = total.toExponential(6);
+        }
+
+        function animate() {
+            // Run one step of the simulation in Go
+            runStep();
+
+            // Get the 2D slice data from Go based on the slider's value
+            const potentialData = getPotentialSlice(zSliceToView);
+
+            // Render the slice to the canvas
+            if (potentialData) {
+                const imageData = ctx.createImageData(GRID_WIDTH, GRID_HEIGHT);
+                const pixels = imageData.data;
+
+                for (let i = 0; i < potentialData.length; i++) {
+                    const val = potentialData[i];
+                    const idx = i * 4;
+                    
+                    // Color mapping: Blue for negative, Red for positive
+                    if (val < 128) { // Negative potential
+                        pixels[idx] = 0; // R
+                        pixels[idx + 1] = 0; // G
+                        pixels[idx + 2] = 255 - (val * 2); // B
+                    } else { // Positive potential
+                        pixels[idx] = (val - 128) * 2; // R
+                        pixels[idx + 1] = 0; // G
+                        pixels[idx + 2] = 0; // B
+                    }
+                    pixels[idx + 3] = 255; // Alpha
+                }
+
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = GRID_WIDTH;
+                tempCanvas.height = GRID_HEIGHT;
+                tempCanvas.getContext('2d').putImageData(imageData, 0, 0);
+
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(tempCanvas, 0, 0, 512, 512);
+            }
+
+            requestAnimationFrame(animate);
+        }
+    </script>
+</body>
+</html>
