@@ -1,0 +1,138 @@
+# viz.py (Updated 2D Slice Viewer)
+import pygame
+import struct
+import numpy as np
+
+WINDOW_SIZE = 800  # Variable for window width/height
+
+# Pygame setup
+pygame.init()
+screen = pygame.display.set_mode((WINDOW_SIZE, WINDOW_SIZE))
+pygame.display.set_caption('Field Viz - Slice XYZT')
+clock = pygame.time.Clock()
+
+file_path = 'field.scpv'
+with open(file_path, 'rb') as f:
+    magic = f.read(8)  # SCPV\x00\x00\x00\x00
+    if magic != b'SCPV\x00\x00\x00\x00':
+        raise ValueError("Invalid file")
+
+    dims = {'height': 0, 'width': 0, 'length': 0}
+    fields = {}  # timestep: np.array
+
+    while True:
+        data = f.read(8 + 2)  # type + name_len
+        if not data:
+            break
+        type_id, name_len = struct.unpack('>q h', data)
+        name = f.read(name_len).decode('utf-8')
+        val_len = struct.unpack('>q', f.read(8))[0]
+        val_bytes = f.read(val_len)
+
+        if type_id == 0:
+            dims['height'] = struct.unpack('>i', val_bytes)[0]
+        elif type_id == 1:
+            dims['width'] = struct.unpack('>i', val_bytes)[0]
+        elif type_id == 2:
+            dims['length'] = struct.unpack('>i', val_bytes)[0]
+        elif type_id == 4:  # Field data
+            if name.startswith('t'):
+                t = int(name[1:])
+                fields[t] = np.frombuffer(val_bytes, dtype=np.float64).reshape((dims['height'], dims['width'], dims['length']))
+
+NH = dims['height']
+NW = dims['height']
+NL = dims['height']
+NS = [NH,NW,NL]
+N = NH
+max_t = max(fields.keys()) if fields else 0
+
+# Slice controls
+slice_dim = 0  # 0=X, 1=Y, 2=Z, 3=T
+slice_pos = [NH//2, NW//2, NL//2, max_t//2]  # Pos for each dim
+hold_left = False
+hold_right = False
+ctl_pressed = False
+shift_pressed = False
+running = True
+
+def get_slice(field_4d, dim, pos):
+    # field_4d is dict of 3D arrays; stack to 4D
+    times = sorted(fields.keys())
+    data_4d = np.stack([fields[t] for t in times], axis=-1)  # Shape (N,N,N,T)
+    if dim == 0: return data_4d[pos, :, :, slice_pos[3]]  # Slice X at pos, fixed T
+    elif dim == 1: return data_4d[:, pos, :, slice_pos[3]]
+    elif dim == 2: return data_4d[:, :, pos, slice_pos[3]]
+    elif dim == 3: return data_4d[:, :, slice_pos[2], pos]  # Slice T at pos, fixed Z
+
+dim_names = ['X', 'Y', 'Z', 'T']
+
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_1: slice_dim = 0
+            if event.key == pygame.K_2: slice_dim = 1
+            if event.key == pygame.K_3: slice_dim = 2
+            if event.key == pygame.K_4: slice_dim = 3
+            if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
+                shift_pressed = True
+            if event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
+                ctl_pressed = True
+            if event.key == pygame.K_LEFT:
+                hold_left = True
+            if event.key == pygame.K_RIGHT:
+                hold_right = True
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
+                shift_pressed = False
+            if event.key == pygame.K_LCTRL or event.key == pygame.K_RCTRL:
+                ctl_pressed = False
+            if event.key == pygame.K_LEFT:
+                hold_left = False
+            if event.key == pygame.K_RIGHT:
+                hold_right = False
+
+    # Step advance logic
+    step_size = 1
+    if ctl_pressed:
+        step_size = 10
+
+    if hold_left:
+        slice_pos[slice_dim] = max(0, slice_pos[slice_dim] - step_size)
+        if not shift_pressed:
+            hold_left = False
+    if hold_right:
+        slice_pos[slice_dim] = min(NS[slice_dim]-1 if slice_dim < 3 else max_t, slice_pos[slice_dim] + step_size)
+        if not shift_pressed:
+            hold_right = False
+
+    screen.fill((0, 0, 0))
+    
+    # Get current slice (2D array)
+    slice_2d = get_slice(fields, slice_dim, slice_pos[slice_dim])
+    
+    # Render as pixels (color by value, e.g., blue low, red high)
+    minv, maxv = slice_2d.min(), slice_2d.max()
+    for y in range(N):
+        for x in range(N):
+            val = (slice_2d[y, x] - minv) / (maxv - minv + 1e-10) if maxv > minv else 0.5
+            color = (int(255 * val), 0, int(255 * (1 - val)))
+            pygame.draw.rect(screen, color, (x * (WINDOW_SIZE//N), y * (WINDOW_SIZE//N), WINDOW_SIZE//N, WINDOW_SIZE//N))
+    
+    # Display coords and slice info
+    font = pygame.font.SysFont(None, 24)
+    advance_dim = dim_names[slice_dim]
+    const_dims = [dim_names[i] for i in range(4) if i != slice_dim]
+    screen_xy = f"{dim_names[(slice_dim+1)%3]}{dim_names[(slice_dim+2)%3]}" if slice_dim < 3 else f"{dim_names[0]}{dim_names[1]}"  # Example adjustment
+    const_info = f"Const: {const_dims[0]}={slice_pos[(slice_dim+3)%4]}, {const_dims[1]}={slice_pos[(slice_dim+1)%4]}, {const_dims[2]}={slice_pos[(slice_dim+2)%4]}"
+    text1 = font.render(f'Screen XY: {screen_xy} | {const_info}', True, (255,255,255))
+    text2 = font.render(f'Advance changes: {advance_dim} | Pos: {slice_pos[slice_dim]} | XYZT: {slice_pos}', True, (255,255,255))
+    screen.blit(text1, (10, 10))
+    screen.blit(text2, (10, 35))
+    
+    pygame.display.flip()
+    clock.tick(60)
+
+pygame.quit()

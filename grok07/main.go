@@ -7,9 +7,11 @@ import (
 	"math/rand"
 	"os"
 
+	sfft "github.com/davidkleiven/gosfft/sfft"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"gonum.org/v1/gonum/cmplxs"
 )
 
 // --- SIMULATION CORE ---
@@ -45,6 +47,7 @@ type Field struct {
 	By, ByNext                                                                            []float64
 	Bz, BzNext                                                                            []float64
 	Dt, DiffusionRate, AdvectionRate, PressureForce, Viscosity, EmfCoupling, EmfWaveSpeed float64
+	fft3                                                                                  *sfft.FFT3
 }
 
 // NewField creates and initializes a new field.
@@ -64,6 +67,7 @@ func NewField(w, h, d int) *Field {
 		Bz: make([]float64, size), BzNext: make([]float64, size),
 		Dt: 0.1, DiffusionRate: 0.005, AdvectionRate: 0.9, PressureForce: 0.6,
 		Viscosity: 0.001, EmfCoupling: 0.4, EmfWaveSpeed: 1.0,
+		fft3: sfft.NewFFT3(w, h, d),
 	}
 	f.randomize()
 	return f
@@ -86,9 +90,153 @@ func (f *Field) randomize() {
 	}
 }
 
+// fftSmooth applies 3D FFT low-pass filter to a 1D field slice to remove artifacts.
+func (f *Field) fftSmooth(data []float64) []float64 {
+	cdata := make([]complex128, len(data))
+	for i, v := range data {
+		cdata[i] = complex(v, 0)
+	}
+	coeff := f.fft3.FFT(cdata)
+
+	// Low-pass: Zero high frequencies (e.g., keep lowest 1/2 in each dim)
+	cutoff_kx := f.Width / 2
+	cutoff_ky := f.Height / 2
+	cutoff_kz := f.Depth / 2
+	for z := 0; z < f.Depth; z++ {
+		kz := z
+		if kz > f.Depth/2 {
+			kz -= f.Depth
+		}
+		if math.Abs(float64(kz)) > float64(cutoff_kz) {
+			for y := 0; y < f.Height; y++ {
+				for x := 0; x < f.Width; x++ {
+					idx := (z*f.Height+y)*f.Width + x
+					coeff[idx] = 0
+				}
+			}
+			continue
+		}
+		for y := 0; y < f.Height; y++ {
+			ky := y
+			if ky > f.Height/2 {
+				ky -= f.Height
+			}
+			if math.Abs(float64(ky)) > float64(cutoff_ky) {
+				for x := 0; x < f.Width; x++ {
+					idx := (z*f.Height+y)*f.Width + x
+					coeff[idx] = 0
+				}
+				continue
+			}
+			for x := 0; x < f.Width; x++ {
+				kx := x
+				if kx > f.Width/2 {
+					kx -= f.Width
+				}
+				if math.Abs(float64(kx)) > float64(cutoff_kx) {
+					idx := (z*f.Height+y)*f.Width + x
+					coeff[idx] = 0
+				}
+			}
+		}
+	}
+
+	smoothed := f.fft3.IFFT(coeff)
+	cmplxs.Scale(complex(1.0/float64(f.Width*f.Height*f.Depth), 0), smoothed)
+	result := make([]float64, len(data))
+	for i := range result {
+		result[i] = real(smoothed[i])
+	}
+	return result
+}
+
 // Step advances the simulation by one time tick.
+func (f *Field) Step() {
+	size := f.Width * f.Height * f.Depth
+
+	for z := 0; z < f.Depth; z++ {
+		for y := 0; y < f.Height; y++ {
+			for x := 0; x < f.Width; x++ {
+				idx := f.getIndex(x, y, z)
+
+				p_c := f.Potential[idx]
+				i_xp := f.getIndex(x+1, y, z)
+				i_xn := f.getIndex(x-1, y, z)
+				i_yp := f.getIndex(x, y+1, z)
+				i_yn := f.getIndex(x, y-1, z)
+				i_zp := f.getIndex(x, y, z+1)
+				i_zn := f.getIndex(x, y, z-1)
+				p_xp := f.Potential[i_xp]
+				p_xn := f.Potential[i_xn]
+				p_yp := f.Potential[i_yp]
+				p_yn := f.Potential[i_yn]
+				p_zp := f.Potential[i_zp]
+				p_zn := f.Potential[i_zn]
+
+				// 1. Update Flow vector
+				gradP_x := (p_xp - p_xn) / 2.0
+				gradP_y := (p_yp - p_yn) / 2.0
+				gradP_z := (p_zp - p_zn) / 2.0
+
+				laplacianFlowX := f.FlowX[i_xp] + f.FlowX[i_xn] + f.FlowX[i_yp] + f.FlowX[i_yn] + f.FlowX[i_zp] + f.FlowX[i_zn] - 6*f.FlowX[idx]
+				laplacianFlowY := f.FlowY[i_xp] + f.FlowY[i_xn] + f.FlowY[i_yp] + f.FlowY[i_yn] + f.FlowY[i_zp] + f.FlowY[i_zn] - 6*f.FlowY[idx]
+				laplacianFlowZ := f.FlowZ[i_xp] + f.FlowZ[i_xn] + f.FlowZ[i_yp] + f.FlowZ[i_yn] + f.FlowZ[i_zp] + f.FlowZ[i_zn] - 6*f.FlowZ[idx]
+
+				f.FlowXNext[idx] = f.FlowX[idx] - f.PressureForce*gradP_x + f.Viscosity*laplacianFlowX
+				f.FlowYNext[idx] = f.FlowY[idx] - f.PressureForce*gradP_y + f.Viscosity*laplacianFlowY
+				f.FlowZNext[idx] = f.FlowZ[idx] - f.PressureForce*gradP_z + f.Viscosity*laplacianFlowZ
+
+				// 2. Update Potential
+				laplacianPotential := (p_xp + p_xn + p_yp + p_yn + p_zp + p_zn) - 6*p_c
+
+				adv_x := (p_xp*f.FlowX[i_xp] - p_xn*f.FlowX[i_xn]) / 2.0
+				adv_y := (p_yp*f.FlowY[i_yp] - p_yn*f.FlowY[i_yn]) / 2.0
+				adv_z := (p_zp*f.FlowZ[i_zp] - p_zn*f.FlowZ[i_zn]) / 2.0
+				advection := adv_x + adv_y + adv_z
+
+				next := p_c + f.Dt*(f.DiffusionRate*laplacianPotential-f.AdvectionRate*advection)
+
+				if next > 1.0 {
+					next = 1.0
+				}
+				if next < -1.0 {
+					next = -1.0
+				}
+				f.PotentialNext[idx] = next
+			}
+		}
+	}
+
+	var totalPotential float64
+	for i := 0; i < size; i++ {
+		totalPotential += f.Potential[i]
+	}
+	var nextTotalPotential float64
+	for i := 0; i < size; i++ {
+		nextTotalPotential += f.PotentialNext[i]
+	}
+
+	if nextTotalPotential != 0 {
+		correctionFactor := totalPotential / nextTotalPotential
+		for i := 0; i < size; i++ {
+			f.PotentialNext[i] *= correctionFactor
+		}
+	}
+
+	f.Potential, f.PotentialNext = f.PotentialNext, f.Potential
+	f.FlowX, f.FlowXNext = f.FlowXNext, f.FlowX
+	f.FlowY, f.FlowYNext = f.FlowYNext, f.FlowY
+	f.FlowZ, f.FlowZNext = f.FlowZNext, f.FlowZ
+
+	// Apply FFT smoothing to remove voxel artifacts
+	f.Potential = f.fftSmooth(f.Potential)
+	f.FlowX = f.fftSmooth(f.FlowX)
+	f.FlowY = f.fftSmooth(f.FlowY)
+	f.FlowZ = f.fftSmooth(f.FlowZ)
+}
+
+// Step2 advances the simulation by one time tick with full EM.
 func (f *Field) Step2() {
-	// ... (The entire Step function logic is unchanged)
 	c2 := f.EmfWaveSpeed * f.EmfWaveSpeed
 	for z := 0; z < f.Depth; z++ {
 		for y := 0; y < f.Height; y++ {
@@ -188,84 +336,18 @@ func (f *Field) Step2() {
 	f.Bx, f.BxNext = f.BxNext, f.Bx
 	f.By, f.ByNext = f.ByNext, f.By
 	f.Bz, f.BzNext = f.BzNext, f.Bz
-}
 
-func (f *Field) Step() {
-	size := f.Width * f.Height * f.Depth
-
-	for z := 0; z < f.Depth; z++ {
-		for y := 0; y < f.Height; y++ {
-			for x := 0; x < f.Width; x++ {
-				idx := f.getIndex(x, y, z)
-
-				p_c := f.Potential[idx]
-				i_xp := f.getIndex(x+1, y, z)
-				i_xn := f.getIndex(x-1, y, z)
-				i_yp := f.getIndex(x, y+1, z)
-				i_yn := f.getIndex(x, y-1, z)
-				i_zp := f.getIndex(x, y, z+1)
-				i_zn := f.getIndex(x, y, z-1)
-				p_xp := f.Potential[i_xp]
-				p_xn := f.Potential[i_xn]
-				p_yp := f.Potential[i_yp]
-				p_yn := f.Potential[i_yn]
-				p_zp := f.Potential[i_zp]
-				p_zn := f.Potential[i_zn]
-
-				// 1. Update Flow vector
-				gradP_x := (p_xp - p_xn) / 2.0
-				gradP_y := (p_yp - p_yn) / 2.0
-				gradP_z := (p_zp - p_zn) / 2.0
-
-				laplacianFlowX := f.FlowX[i_xp] + f.FlowX[i_xn] + f.FlowX[i_yp] + f.FlowX[i_yn] + f.FlowX[i_zp] + f.FlowX[i_zn] - 6*f.FlowX[idx]
-				laplacianFlowY := f.FlowY[i_xp] + f.FlowY[i_xn] + f.FlowY[i_yp] + f.FlowY[i_yn] + f.FlowY[i_zp] + f.FlowY[i_zn] - 6*f.FlowY[idx]
-				laplacianFlowZ := f.FlowZ[i_xp] + f.FlowZ[i_xn] + f.FlowZ[i_yp] + f.FlowZ[i_yn] + f.FlowZ[i_zp] + f.FlowZ[i_zn] - 6*f.FlowZ[idx]
-
-				f.FlowXNext[idx] = f.FlowX[idx] - f.PressureForce*gradP_x + f.Viscosity*laplacianFlowX
-				f.FlowYNext[idx] = f.FlowY[idx] - f.PressureForce*gradP_y + f.Viscosity*laplacianFlowY
-				f.FlowZNext[idx] = f.FlowZ[idx] - f.PressureForce*gradP_z + f.Viscosity*laplacianFlowZ
-
-				// 2. Update Potential
-				laplacianPotential := (p_xp + p_xn + p_yp + p_yn + p_zp + p_zn) - 6*p_c
-
-				adv_x := (p_xp*f.FlowX[i_xp] - p_xn*f.FlowX[i_xn]) / 2.0
-				adv_y := (p_yp*f.FlowY[i_yp] - p_yn*f.FlowY[i_yn]) / 2.0
-				adv_z := (p_zp*f.FlowZ[i_zp] - p_zn*f.FlowZ[i_zn]) / 2.0
-				advection := adv_x + adv_y + adv_z
-
-				next := p_c + f.Dt*(f.DiffusionRate*laplacianPotential-f.AdvectionRate*advection)
-
-				if next > 1.0 {
-					next = 1.0
-				}
-				if next < -1.0 {
-					next = -1.0
-				}
-				f.PotentialNext[idx] = next
-			}
-		}
-	}
-
-	var totalPotential float64
-	for i := 0; i < size; i++ {
-		totalPotential += f.Potential[i]
-	}
-	var nextTotalPotential float64
-	for i := 0; i < size; i++ {
-		nextTotalPotential += f.PotentialNext[i]
-	}
-
-	if nextTotalPotential != 0 {
-		correctionFactor := totalPotential / nextTotalPotential
-		for i := 0; i < size; i++ {
-			f.PotentialNext[i] *= correctionFactor
-		}
-	}
-
-	f.Potential, f.PotentialNext = f.PotentialNext, f.Potential
-	f.FlowX, f.FlowXNext = f.FlowXNext, f.FlowX
-	f.FlowY, f.FlowYNext = f.FlowYNext, f.FlowY
-	f.FlowZ, f.FlowZNext = f.FlowZNext, f.FlowZ
+	// Apply FFT smoothing to remove voxel artifacts
+	f.Potential = f.fftSmooth(f.Potential)
+	f.FlowX = f.fftSmooth(f.FlowX)
+	f.FlowY = f.fftSmooth(f.FlowY)
+	f.FlowZ = f.fftSmooth(f.FlowZ)
+	f.Ex = f.fftSmooth(f.Ex)
+	f.Ey = f.fftSmooth(f.Ey)
+	f.Ez = f.fftSmooth(f.Ez)
+	f.Bx = f.fftSmooth(f.Bx)
+	f.By = f.fftSmooth(f.By)
+	f.Bz = f.fftSmooth(f.Bz)
 }
 
 // AnalyzeField performs a full scan of the potential field for key metrics.

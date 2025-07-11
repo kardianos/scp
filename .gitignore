@@ -1,2 +1,8 @@
-simdow/simdow
+# Ignore files and folders without a dot
+[^.]*
+# Negate for files with an extension
+!*.* 
+# Ensure directories containing files with extensions are not ignored
+!*/
 *.wasm
+*.scpv
