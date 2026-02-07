@@ -1,7 +1,7 @@
 # 15 — Open Problems and Critical Assessment
 
 This chapter provides an accounting of the current limitation of CHPT.
-**Last Updated: Phase 2 Completion**
+**Last Updated: Phase 4 — B5 Resolution**
 
 ---
 
@@ -14,13 +14,11 @@ This chapter provides an accounting of the current limitation of CHPT.
 
 ### A2. No Field Equation
 *   **Original Problem**: Theory had no equation of motion.
-*   **Status**: **PROPOSED — Critical issues remain**.
-*   **Resolution**: Lagrangian and EOM proposed in `spec/math/03_dynamics.md`:
-    $$ \nabla^2 \Psi + \lambda \Psi (|\Psi|^2 - \rho_0^2) = 0 $$
-*   **Remaining Issues**:
-    1.  **Time evolution (A7)**: The geometric derivative $\nabla$ in Cl(3,0,1) is spatial-only. The equation as written is elliptic (Laplace), not hyperbolic (wave). Must be fixed before dynamics can be trusted.
-    2.  **Soliton stability (A8)**: Derrick's theorem forbids stable static solitons for this Lagrangian structure in 3D without a higher-order (Skyrme) term. The Lagrangian likely needs a 4th-order derivative term.
-    3.  **Goldstone modes (B5)**: The pseudoscalar perturbation P may be a massless Goldstone boson, which would be experimentally observable and is tightly constrained.
+*   **Status**: **RESOLVED — Equation established**.
+*   **Resolution**: Full Lagrangian and hyperbolic EOM established in `spec/math/03_dynamics.md`:
+    $$ \frac{1}{c^2}\partial_t^2 \Psi - \nabla^2 \Psi + \frac{\delta \mathcal{L}_4}{\delta \Psi} + \lambda\Psi(\langle\Psi\tilde{\Psi}\rangle_0 - \rho_0^2) = 0 $$
+    Four-term Lagrangian with kinetic ($\mathcal{L}_2$), Skyrme ($\mathcal{L}_4$), bulk potential ($V$), and degenerate mass ($V_D$) terms. Five parameters: $(\rho_0, \lambda, e, \mu, c)$.
+*   **Sub-issues resolved**: A7 (time evolution), A8 (Derrick stability), B5 (pseudoscalar Goldstone) — see below.
 
 ### A3. Gravitational Wave Polarization
 *   **Original Problem**: Scalar field predicts wrong polarization (0 modes vs 2 observed).
@@ -45,15 +43,16 @@ This chapter provides an accounting of the current limitation of CHPT.
     *   Neutrino: $Q=0$ (Neutral), $\chi \neq 0$ (Chiral).
     *   This allows it to participate in chiral (weak) interactions without having electric charge.
 
-### A7. Time Evolution in PGA (NEW)
-*   **Problem**: The geometric derivative $\nabla = \sum e_i \partial_i$ in Cl(3,0,1) has no time component. The degenerate basis vector $e_0$ ($e_0^2 = 0$) is projective, not timelike. Therefore $\nabla^2$ is the Laplacian (elliptic), not the d'Alembertian (hyperbolic). Elliptic equations have no propagating solutions — no waves, no null-rotors.
-*   **Status**: **OPEN / CRITICAL**.
-*   **Fix options**: (1) Switch to Cl(1,3) spacetime algebra. (2) Introduce $\partial_t$ separately from the geometric derivative. (3) Embed into a larger algebra.
+### A7. Time Evolution in PGA
+*   **Problem**: The geometric derivative $\nabla = \sum e_i \partial_i$ in Cl(3,0,1) has no time component. $\nabla^2$ is the Laplacian (elliptic), not the d'Alembertian (hyperbolic).
+*   **Status**: **RESOLVED**.
+*   **Resolution**: Time derivative $\partial_t$ introduced as an explicit external parameter, separate from the spatial PGA derivative $\nabla$. The EOM is now hyperbolic: $\frac{1}{c^2}\partial_t^2\Psi - \nabla^2\Psi + \cdots = 0$. This is consistent with Process Ontology (time is evolution, not geometry) and follows the precedent of the Skyrme and Faddeev-Niemi models. See `spec/math/03_dynamics.md`, Section 1.
 
-### A8. Soliton Stability — Derrick's Theorem (NEW)
-*   **Problem**: Derrick's theorem proves that for a field with quadratic kinetic term and polynomial potential in $D \geq 3$, no stable static finite-energy solitons exist. The proposed CHPT Lagrangian has exactly this structure. The Skyrme model and Faddeev-Niemi model evade this by adding a 4th-order derivative term (the "Skyrme term").
-*   **Status**: **OPEN / CRITICAL**.
-*   **Fix**: Add a Skyrme-like term $\frac{1}{e^2}\langle[\nabla\Psi, \nabla\Psi]^2\rangle_0$ to the Lagrangian. Must verify this permits stable Hopfion solutions.
+### A8. Soliton Stability — Derrick's Theorem
+*   **Problem**: Derrick's theorem forbids stable static solitons in 3D for fields with only quadratic kinetic + polynomial potential.
+*   **Status**: **RESOLVED**.
+*   **Resolution**: Skyrme term $\mathcal{L}_4 = \frac{1}{4e^2}\sum_{\mu<\nu}\langle[R_\mu, R_\nu]^2\rangle_0$ added to the Lagrangian. Under spatial rescaling $x \to \alpha x$: $E_2 \to \alpha E_2$, $E_4 \to \alpha^{-1}E_4$, $E_V \to \alpha^3 E_V$. Equilibrium: $E_2 - E_4 + 3E_V = 0$. Stability: $d^2E/d\alpha^2 = 2E_4 + 6E_V > 0$ (automatic). See `spec/math/03_dynamics.md`, Section 4, and `spec/math/05_mass_mechanism.md`, Section 2.
+*   **Remaining**: Must numerically verify that stable Hopfion solutions actually exist for this specific Lagrangian.
 
 ---
 
@@ -69,8 +68,8 @@ This chapter provides an accounting of the current limitation of CHPT.
 *   **Implication**: Either Quarks are not fundamental knots, or the topology is more complex (e.g., knots on a non-simply connected manifold).
 
 ### B3. The Weak Force
-*   **Status**: **OPEN**.
-*   **Update**: Defined as "Parity Violation" in `spec/05_chirality.md`, but the Lagrangian in `spec/math/03_dynamics.md` appears Parity-invariant. Needs an explicit chiral symmetry breaking term.
+*   **Status**: **OPEN — New direction from B5 resolution**.
+*   **Update**: Defined as "Parity Violation" in `spec/05_chirality.md`. The bulk Lagrangian is parity-invariant, but the newly-identified massive degenerate sector (B5 resolution) provides a candidate: the pseudoscalar $P$ is parity-odd and massive, and the 3-component flux $\vec{J}$ is also massive. Together, these 4 massive modes with parity-odd coupling are structurally suggestive of weak bosons. **Investigation needed**: does the degenerate sector couple asymmetrically to left-handed vs right-handed solitons?
 
 ### B4. Derivation of Maxwell's Equations
 *   **Original Problem**: Need to prove null-rotors = Maxwell.
@@ -78,17 +77,22 @@ This chapter provides an accounting of the current limitation of CHPT.
 *   **Resolution**: `spec/math/04_electromagnetism.md` shows the linear limit gives $\nabla^2 \mathbf{F} = 0$ (free electromagnetic wave equation). Null condition $\mathbf{F}^2 = 0$ gives $|\vec{E}| = |\vec{B}|$, $\vec{E} \perp \vec{B}$.
 *   **Remaining**: The **sourced** Maxwell equation $\nabla \mathbf{F} = J$ (how knots produce EM fields) is not derived. The source current $J$ must be extracted from the nonlinear knot solution. This is where the real charge-field coupling lives.
 
-### B5. Scalar and Pseudoscalar Modes (NEW)
-*   **Problem**: The linearized perturbation $\psi = S + \mathbf{F} + IP$ has scalar ($S$) and pseudoscalar ($P$) components in addition to the EM bivector $\mathbf{F}$. The potential gives mass to $S$ ($m_S = \sqrt{2\lambda}\rho_0$), but $P$ may be a massless Goldstone boson. A massless pseudoscalar would be experimentally observable and is tightly constrained.
-*   **Status**: **OPEN**.
-*   **Action**: Determine masses and couplings of S and P. If P is massless, either add a term to the potential that breaks the pseudoscalar symmetry, or show P decouples from observable physics.
+### B5. Pseudoscalar Goldstone Mode
+*   **Problem**: $I^2 = 0$ in Cl(3,0,1) makes the bulk potential $V$ flat in the pseudoscalar and flux directions. Both $P$ and $\vec{J}$ were massless.
+*   **Status**: **RESOLVED**.
+*   **Resolution**: The **degenerate mass term** $V_D = (\mu^2/2)(|\vec{J}|^2 + \tau^2)$ uses the dual quaternion weight norm $|p|^2$ to give mass $\mu$ to both the pseudoscalar $P$ and flux $\vec{J}$ modes. This exploits the $Cl^+(3,0,1) \cong \mathbb{H} + \varepsilon\mathbb{H}$ structure: the bulk potential $V$ constrains $|q|^2$, while $V_D$ constrains $|p|^2$. See `spec/math/03_dynamics.md`, Section 5.
+*   **New parameter**: $\mu$ (degenerate mass scale). Theory now has 5 parameters: $(\rho_0, \lambda, e, \mu, c)$.
+*   **Speculative direction**: The massive degenerate sector (parity-odd $P$ + 3-component $\vec{J}$) has suggestive parallels with the weak interaction (parity violation, short-range, 4 massive modes). This is speculative and requires investigation.
 
 ---
 
 ## Category C — Simulation Requirements
 
-To resolve the remaining Open Problems (A3, B1, B2), we cannot just write more math. We must simulate:
-1.  **Scalar Vortex (2D)**: Prove stability of the nonlinear potential.
-2.  **Hopfion (3D)**: Prove existence of $Q=1$ knots.
-3.  **Scattering**: Observe if they repel/attract.
+With the Lagrangian now complete (A2, A7, A8, B5 all resolved), the remaining open problems (A3, A4, B1, B2, B3) require **numerical simulation**. The equation of motion is well-defined and can be discretized:
+
+1.  **2D soliton stability**: Reduce to 2+1D (cylindrical symmetry). Verify that the Skyrme + potential terms produce stable localized solutions. This is the simplest non-trivial test.
+2.  **3D Hopfion ($Q=1$)**: Find the lowest-energy $Q=1$ topological soliton of the full 3+1D equation. Compute its mass, size, and profile. This would be CHPT's first concrete particle prediction.
+3.  **Mass spectrum**: Compute $Q=2$, $Q=3$ soliton masses. Compare ratios. Do any match known particle mass ratios?
+4.  **Scattering**: Collide two solitons. Observe if they repel, attract, scatter elastically, or produce new solitons.
+5.  **Degenerate sector dynamics**: Study how the massive $P$ and $\vec{J}$ modes interact with solitons. Do they mediate parity-violating interactions (weak force connection)?
 

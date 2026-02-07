@@ -199,8 +199,8 @@ For CHPT to be falsifiable (and therefore scientific), it must make predictions 
 | Proton stability | Baryon number conservation (accidental symmetry in SM) | Topological invariant | Plausible |
 | Antimatter | CPT theorem | Mirror chirality | Natural |
 | Neutrino mass | Unknown mechanism | Unknown mechanism | No answer |
-| Specific mass values | 19 free parameters | Derived from field equation? | No equation yet |
+| Specific mass values | 19 free parameters | Derived from field equation? | 5 parameters; no values computed |
 
 ### Honest Bottom Line
 
-CHPT's particle sector is entirely promissory. The conceptual framework is suggestive — knots as particles, topology as charge, harmonics as the spectrum — but zero quantitative results exist. A field equation has been proposed ([math/03_dynamics.md](math/03_dynamics.md)), but critical issues remain (time evolution, soliton stability — see [15_open_problems.md](15_open_problems.md), A7-A8). The gap between concept and calculation is enormous. Closing it requires resolving these issues and finding stable soliton solutions. This is a well-defined mathematical research program whose foundations are now laid but whose results are pending.
+CHPT's particle sector is entirely promissory. The conceptual framework is suggestive — knots as particles, topology as charge, harmonics as the spectrum — but zero quantitative results exist. A field equation is now established ([math/03_dynamics.md](math/03_dynamics.md)) with proper time evolution, Skyrme stabilization, and a well-defined mass mechanism (A7/A8 resolved). The theory has five free parameters $(\rho_0, \lambda, e, \mu, c)$ and a concrete mass formula $Mc^2 = 2E_4 - 2E_V - 2E_D$. The gap between equation and numbers is now the primary challenge: finding stable soliton solutions numerically. This is a well-defined mathematical research program whose foundations are laid and whose next step is numerical simulation.

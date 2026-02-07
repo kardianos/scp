@@ -58,7 +58,7 @@ Whether these quantum numbers emerge naturally from the CHPT field equation is o
 
 ### Unknowns
 
-- **What equation governs the internal knot dynamics?** A Lagrangian and EOM are proposed in [math/03_dynamics.md](math/03_dynamics.md), but soliton solutions have not yet been found (see [15_open_problems.md](15_open_problems.md), A8).
+- **What equation governs the internal knot dynamics?** A Lagrangian and hyperbolic EOM are established in [math/03_dynamics.md](math/03_dynamics.md), with Skyrme stabilization ensuring Derrick's theorem is evaded (A7/A8 resolved). Soliton solutions have not yet been found numerically.
 - **Do the modes reproduce the known particle spectrum?** Specifically: spin-1/2 fermions, spin-1 bosons, the specific mass ratios, three generations of quarks and leptons.
 - **What sets the fundamental scale?** Particle masses span many orders of magnitude. What parameter in the field equation determines the overall mass scale?
 

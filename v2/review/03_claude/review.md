@@ -1,6 +1,6 @@
 # CHPT Specification Review — Claude (Round 3)
 
-Review of the CHPT specification as of 2026-02-07 (updated after applying fixes), covering all files in `spec/` including `spec/math/`.
+Review of the CHPT specification as of 2026-02-07 (updated after B5 resolution), covering all files in `spec/` including `spec/math/`.
 
 This review focuses on three axes:
 1. **Conceptual coherence** — Do the ideas fit together?
@@ -75,9 +75,9 @@ The `spec/math/` directory contains five files that collectively propose a speci
 |------|------------|
 | `01_algebra.md` | Field Ψ is valued in Cl⁺(3,0,1) (even subalgebra). Decomposes as Ψ = ρ + J e₀ + F + Iτ (scalar + degenerate bivectors + spatial bivectors + pseudoscalar). |
 | `02_topology.md` | Vacuum manifold is S³. Hopf invariant π₃(S³) = Z gives integer topological charge Q = electric charge. Chirality χ defined independently via pseudoscalar projection. |
-| `03_dynamics.md` | Lagrangian: L = ½⟨∇Ψ ∇̃Ψ⟩₀ - (λ/4)(|Ψ|² - ρ₀²)². EOM: ∇²Ψ + λΨ(|Ψ|² - ρ₀²) = 0. Mass = ∫T₀₀ d³x. |
-| `04_electromagnetism.md` | Linear limit gives ∇²ψ = 0. Bivector component F satisfies the EM wave equation. Null condition F² = 0 gives |E|=|B|, E⊥B. |
-| `05_mass_mechanism.md` | Derrick's theorem gives virial condition E_K = 3E_V. Mass spectrum M ∝ √λ ρ₀ × (topological factor). Mass is an eigenvalue, not a free parameter. |
+| `03_dynamics.md` | **REWRITTEN (A7/A8/B5 fix).** Four-term Lagrangian: L₂ (kinetic) + L₄ (Skyrme) - V (bulk pot.) - V_D (degenerate mass). Explicit time. Hyperbolic EOM. 5 parameters (ρ₀, λ, e, μ, c). Derrick evasion proved. Pseudoscalar and flux modes massive at μ via dual quaternion weight norm. |
+| `04_electromagnetism.md` | **UPDATED.** Linearization now references proper □ = (1/c²)∂_t² - ∇². Full 4-component perturbation ψ = S + Je₀ + F + IP with mass spectrum table. Cl(3,0,1)/Cl(1,3) conflation fixed. |
+| `05_mass_mechanism.md` | **UPDATED.** Four-term Hamiltonian (E₂ + E₄ + E_V + E_D). Virial: E₂ - E₄ + 3E_pot = 0 (E_pot = E_V + E_D). Mass formula Mc² = 2E₄ - 2E_pot. Five parameters (ρ₀, λ, e, μ, c). |
 
 ### What This Gets Right
 
@@ -97,35 +97,25 @@ The `spec/math/` directory contains five files that collectively propose a speci
 
 ### Critical Issues in the Math Spec
 
-**Issue M1 — Time Evolution Is Ill-Defined (SEVERE)**
+**Issue M1 — Time Evolution — RESOLVED**
 
-The geometric derivative is defined as ∇ = Σ eᵢ∂ᵢ (spatial only, 03_dynamics.md line 37 from 01_algebra.md). Time enters as ∂_t in the d'Alembertian □ = ∂_t² - ∇². But:
+The geometric derivative ∇ = Σ eᵢ∂ᵢ in Cl(3,0,1) is spatial-only, and e₀² = 0 is degenerate (not timelike). This was the most serious mathematical issue in the formalization.
 
-- In Cl(3,0,1), the degenerate basis vector e₀ has e₀² = 0. This is NOT a timelike direction — it's null/degenerate. PGA uses e₀ to model projective structure (points at infinity), not time.
-- The document acknowledges this ambiguity: "Time evolution is implicit in the d'Alembertian □ or explicitly separated depending on metric signature. In Cl(3,0,1) with degenerate time, this is formally ∇² but interpreted as evolution along the process parameter."
-- But you cannot just "interpret" a spatial operator as a spacetime operator. If ∇ has no time component, then ∇²Ψ = 0 is an ELLIPTIC equation (Laplace equation), not a HYPERBOLIC equation (wave equation). Elliptic equations don't have propagating solutions. No waves, no null-rotors, no EM radiation.
+**Resolution**: Time derivative ∂_t is now introduced as an explicit external parameter, separate from the PGA spatial derivative ∇. The EOM is hyperbolic: (1/c²)∂_t²Ψ - ∇²Ψ + ... = 0. This follows the precedent of the Skyrme model and Faddeev-Niemi model (both use spatial target-space algebras with explicit time). It is also consistent with Process Ontology: time is the evolution parameter, not a geometric dimension. The Cl(3,0,1)/Cl(1,3) conflation in `04_electromagnetism.md` has been fixed — the d'Alembertian □ = (1/c²)∂_t² - ∇² is now explicitly constructed from separate time and space operators.
 
-This is the most serious mathematical issue in the formalization. The fix is one of:
-1. Use Cl(1,3) (spacetime algebra) instead of Cl(3,0,1), where there IS a proper timelike basis vector. But this loses the projective structure.
-2. Use Cl(3,0,1) for the spatial algebra and introduce time evolution separately via a first-order equation (Dirac-style) or second-order equation (Klein-Gordon-style) that is not derived from the geometric derivative ∇.
-3. Embed Cl(3,0,1) into a larger algebra that includes time properly.
+See `spec/math/03_dynamics.md`, Section 1.
 
-The spec's current treatment (04_electromagnetism.md line 9: "In Cl(3,0,1) (or spacetime algebra Cl(1,3)), the operator ∇² is the d'Alembertian") casually conflates two different algebras. Cl(3,0,1) and Cl(1,3) are NOT the same algebra, and ∇² means different things in each.
+**Issue M2 — Derrick's Theorem / Soliton Stability — RESOLVED**
 
-**Issue M2 — Derrick's Theorem May Forbid the Proposed Solitons (SEVERE)**
+Derrick's theorem forbids stable static solitons in 3D for fields with only quadratic kinetic + polynomial potential. The original CHPT Lagrangian had exactly this structure.
 
-The mass mechanism file (05_mass_mechanism.md) invokes Derrick's theorem to establish a virial condition for stable solitons. But the standard result of Derrick's theorem is actually **negative**: it proves that for a scalar field with a standard kinetic term and polynomial potential in D ≥ 3 spatial dimensions, NO static finite-energy soliton solutions exist.
+**Resolution**: A Skyrme term $\mathcal{L}_4 = \frac{1}{4e^2}\sum_{\mu<\nu}\langle[R_\mu, R_\nu]^2\rangle_0$ (where $R_\mu = \tilde{\Psi}\partial_\mu\Psi$) has been added to the Lagrangian. Under spatial rescaling $x \to \alpha x$: $E_2 \to \alpha E_2$, $E_4 \to \alpha^{-1}E_4$, $E_V \to \alpha^3 E_V$. Equilibrium: $E_2 - E_4 + 3E_V = 0$ (nontrivial). Stability: $d^2E/d\alpha^2 = 2E_4 + 6E_V > 0$ (automatic). Mass formula: $Mc^2 = 2E_4 - 2E_V$.
 
-The proposed Lagrangian L = ½⟨∇Ψ∇̃Ψ⟩₀ - (λ/4)(|Ψ|² - ρ₀²)² has exactly this structure: a quadratic kinetic term and a quartic potential. For a scalar field, Derrick's theorem would say: no solitons in 3D.
+This follows the standard approach of the Skyrme model (1961) and Faddeev-Niemi model. The theory now has four parameters: $(\rho_0, \lambda, e, c)$.
 
-CHPT's escape routes:
-1. **The field is not scalar** — it is multivector-valued. Derrick's theorem in its standard form applies to scalar fields. For higher-rank fields, the analysis changes. The multivector structure of Cl⁺(3,0,1) may provide enough additional structure to evade the theorem.
-2. **Topological protection** — Derrick's theorem addresses scaling instability of localized solutions. Topologically non-trivial configurations (with nonzero Hopf invariant) cannot continuously deform to the vacuum and may be stable against rescaling for different reasons. This is why Skyrmions exist despite Derrick's theorem — the Skyrme term (a 4th-order derivative term) stabilizes them.
-3. **The Skyrme term is missing** — The most studied topological soliton models (Skyrme, Faddeev-Niemi) require a higher-order term in the Lagrangian to stabilize solitons in 3D. The proposed CHPT Lagrangian has NO such term. This is likely fatal for the specific Lagrangian as written.
+**Remaining**: Must numerically verify that stable Hopfion solutions actually exist for this specific Lagrangian. The Derrick analysis proves scaling stability but not existence.
 
-**Recommendation**: The Lagrangian almost certainly needs a Skyrme-like 4th-order term:
-$$ \mathcal{L} = \frac{1}{2}\langle\nabla\Psi\widetilde{\nabla\Psi}\rangle_0 + \frac{1}{e^2}\langle[\nabla\Psi, \nabla\Psi]^2\rangle_0 - V(\Psi) $$
-This should be investigated explicitly.
+See `spec/math/03_dynamics.md`, Section 4, and `spec/math/05_mass_mechanism.md`, Section 2.
 
 **Issue M3 — Maxwell's Equations Are Not Fully Derived**
 
@@ -137,28 +127,26 @@ The spec acknowledges this (04_electromagnetism.md, §4): "Maxwell's first-order
 
 But this is where the real physics lives. The relationship between knots (sources) and null-rotors (fields) — i.e., how a charged particle produces an electric field — is encoded in the source term J. Without deriving J from the nonlinear knot solution, the EM sector is incomplete. The free wave equation tells you how radiation propagates, but not how it is produced.
 
-**Issue M4 — Only Two Free Parameters**
+**Issue M4 — Four Free Parameters (Updated)**
 
-The proposed Lagrangian has exactly two parameters: λ (self-coupling) and ρ₀ (vacuum density). Together with c (propagation speed, set by the kinetic term), this gives three dimensionful parameters.
+The Lagrangian now has five parameters: $\rho_0$ (vacuum density), $\lambda$ (self-coupling), $e$ (Skyrme coupling), $\mu$ (degenerate mass), and $c$ (propagation speed). This is up from the original two (λ, ρ₀) due to the Skyrme term and degenerate mass term.
 
-The Standard Model has ~19 free parameters (particle masses, coupling constants, mixing angles). CHPT claims these all emerge from (λ, ρ₀, c). This would be an extraordinary reduction in fundamental parameters — if it works.
+The Standard Model has ~19 free parameters. CHPT claims these all emerge from $(\rho_0, \lambda, e, \mu, c)$. The mass formula $Mc^2 = 2E_4 - 2E_V$ means the mass hierarchy must come from the geometry of different soliton solutions (different topological charges, internal modes). The scaling law $M \propto (\rho_0/e) \times f(Q, \lambda e^2)$ separates the overall mass scale from the dimensionless function $f$ that encodes knot geometry. Whether $f$ can produce mass ratios spanning 12 orders of magnitude is an open mathematical question that requires numerical computation.
 
-The virial relation M ∝ √λ ρ₀ × (topological factor) means that the mass hierarchy between particles must come ENTIRELY from the "topological factor" — the geometry of different knot solutions. Whether knot geometry in Cl⁺(3,0,1) can produce mass ratios spanning 12 orders of magnitude (from neutrinos to top quarks) is an open mathematical question. There is no reason to assume it can or cannot until specific solutions are found.
+**Issue M5 — The Scalar and Pseudoscalar Perturbations — RESOLVED**
 
-**Issue M5 — The Scalar and Pseudoscalar Perturbations**
+The linearized perturbation $\psi = S + \vec{J}e_0 + \mathbf{F} + IP$ has four components. The mass spectrum is now fully determined:
 
-The linearized perturbation ψ = S + F + IP has three components: scalar S, bivector F, and pseudoscalar P. The bivector F is identified with the EM field. What are S and P?
+| Mode | Mass | Status |
+|:---|:---|:---|
+| $\mathbf{F}$ (spatial bivector) | $m_F = 0$ | Identified with EM field |
+| $S$ (scalar) | $m_S = \sqrt{2\lambda}\rho_0$ | Massive — from bulk potential $V$ |
+| $P$ (pseudoscalar) | $m_P = \mu$ | **Massive — from degenerate mass $V_D$** |
+| $\vec{J}e_0$ (degenerate bivector) | $m_J = \mu$ | **Massive — from degenerate mass $V_D$** (3 components) |
 
-The math spec (04_electromagnetism.md) tentatively suggests:
-- S: "Higgs-like? Dilaton? Gravity?"
-- P: "Axion?"
+**Resolution**: The pseudoscalar $P$ and flux $\vec{J}$ were massless because $I^2 = 0$ makes the standard Clifford norm blind to the degenerate sector. The fix uses the **dual quaternion decomposition** $\Psi = q + e_0 p$: the bulk potential $V$ constrains $|q|^2 = \rho^2 + |\mathbf{F}|^2$, while the new degenerate mass term $V_D = (\mu^2/2)|p|^2 = (\mu^2/2)(|\vec{J}|^2 + \tau^2)$ constrains the weight norm. This is algebraically natural — it completes the dual quaternion norm structure — and physically analogous to the pion mass term in the Skyrme model. See `spec/math/03_dynamics.md`, Section 5.
 
-These are significant physical degrees of freedom. If S is a massless scalar propagating at c, it would mediate a scalar long-range force (in addition to gravity and EM). No such force is observed. If P is a pseudoscalar, it would violate parity at the linearized level. These modes must either:
-1. Be massive (and thus short-range), requiring the potential V to give them mass.
-2. Be decoupled from ordinary matter, making them unobservable.
-3. Be identified with known particles.
-
-The potential V = (λ/4)(|Ψ|² - ρ₀²)² DOES give a mass to the scalar fluctuation S (this is just the Higgs mechanism in disguise: S fluctuations around ρ₀ have mass m_S = √(2λ)ρ₀). But the pseudoscalar P is massless in this potential (it's a Goldstone mode if the potential doesn't break the pseudoscalar symmetry). A massless pseudoscalar would be observable and is tightly constrained experimentally.
+**Speculative direction**: The 4 massive degenerate modes (1 parity-odd pseudoscalar + 3-component flux) have suggestive parallels with weak interaction bosons. This requires investigation.
 
 **Issue M6 — Relationship Between Math Spec and Narrative Spec — SUBSTANTIALLY RESOLVED**
 
@@ -230,7 +218,7 @@ The math spec and narrative spec evolved somewhat independently, creating tensio
 - **Null-rotor description** — **FLAGGED**: 06_null_rotors.md now includes a "Math spec status" note acknowledging that the dual-state oscillation has no counterpart in the math (which describes standard bivector waves with F² = 0). Whether this is a qualitative interpretation or requires additional mathematical structure is explicitly marked as unresolved.
 - **Gravity mechanism** — **PARTIALLY RESOLVED**: 07_gravity.md now correctly states the field is Cl⁺(3,0,1) (removing stale "if the field is scalar" conditional), but notes that the gravitational mechanism couples to the scalar component ρ, keeping the polarization question open. The depletion zone picture remains qualitative pending soliton solutions.
 - **Conservation of "total density"** — **RESOLVED**: 01_field_axioms.md Axiom 3 now includes a "Tension with Multivector Field" section that explicitly distinguishes ∫ρ d³x (density) from ∫T₀₀ d³x (energy), explains they are not the same quantity, and identifies the open question of whether scalar density is independently conserved.
-- **Energy functional** — **RESOLVED**: 02_energy_and_density.md now contains the proposed Hamiltonian density from math/03_dynamics.md (replacing speculative "functional TBD"), with remaining questions about time kinetic energy (A7) and Skyrme term (A8).
+- **Energy functional** — **RESOLVED**: 02_energy_and_density.md now contains the full three-term Hamiltonian density from math/03_dynamics.md (E₂ + E₄ + E_V), with time kinetic energy (A7 resolved) and Skyrme term (A8 resolved). Remaining: pseudoscalar Goldstone (B5).
 - **EM derivation status** — **RESOLVED**: 08_electromagnetism.md now references the partial derivation from math/04_electromagnetism.md (free-field Maxwell equation derived) and identifies the remaining gap (sourced equation ∇F = J).
 - **Propagation modes** — **RESOLVED**: 03_propagation.md now describes linear perturbations as full multivector ψ = S + F + IP (not just "density waves"), referencing math/04_electromagnetism.md and noting the scalar/pseudoscalar mode open problem (B5).
 - **00_index.md** — **RESOLVED**: Now includes the math spec in the document map (done by user).
@@ -266,7 +254,7 @@ CHPT's strongest claim is also its most vulnerable: a single density field produ
 
 **Quantum Mechanics**: Coherent at the interpretive level. The topological non-locality resolution for Bell's theorem is well-argued. The Bohmian/de Broglie-Bohm analogy is appropriate. But no quantitative predictions exist (no Born rule derivation, no interference pattern calculation, no uncertainty relation derivation).
 
-**Particle Spectrum**: Now partially formalized. The math spec establishes a mass mechanism (M = ∫T₀₀ d³x) and a scaling relation (M ∝ √λ ρ₀ × topological factor) from Derrick's theorem. But zero specific knot solutions have been found, zero masses computed, and zero quantum numbers derived. The gap between "the mass formula exists" and "the electron mass is 0.511 MeV" remains enormous.
+**Particle Spectrum**: Now formally grounded. The math spec establishes a three-term Hamiltonian, a virial theorem ($E_2 = E_4 - 3E_V$), a mass formula ($Mc^2 = 2E_4 - 2E_V$), and a scaling law ($M \propto \rho_0/e \times f(Q, \lambda e^2)$). But zero specific soliton solutions have been found, zero masses computed, and zero quantum numbers derived. The gap between "the mass formula exists" and "the electron mass is 0.511 MeV" remains enormous — but the equation is now ready to be solved numerically.
 
 ### 3.2. The Process Ontology: How Far Does It Carry?
 
@@ -363,19 +351,28 @@ If CHPT uses Option A (field dilution, decreasing ρ₀), this is genuinely nove
 
 ## Part V — What Is Missing From the Spec
 
-### 5.1. The Lagrangian — Now Proposed, But Likely Incomplete
+### 5.1. The Lagrangian — Now Complete (A7/A8/B5 Resolved)
 
-The math spec (`math/03_dynamics.md`) proposes a specific Lagrangian:
-$$ \mathcal{L} = \frac{1}{2}\langle\nabla\Psi\widetilde{\nabla\Psi}\rangle_0 - \frac{\lambda}{4}(|\Psi|^2 - \rho_0^2)^2 $$
+The math spec (`math/03_dynamics.md`) now has a **four-term Lagrangian** with explicit time evolution:
+$$ \mathcal{L} = \underbrace{\frac{1}{2c^2}\langle\partial_t\Psi\,\widetilde{\partial_t\Psi}\rangle_0 - \frac{1}{2}\langle\nabla\Psi\,\widetilde{\nabla\Psi}\rangle_0}_{\mathcal{L}_2} + \underbrace{\frac{1}{4e^2}\sum_{\mu<\nu}\langle[R_\mu, R_\nu]^2\rangle_0}_{\mathcal{L}_4} - \underbrace{\frac{\lambda}{4}(\langle\Psi\tilde{\Psi}\rangle_0 - \rho_0^2)^2}_{V} $$
 
-This is a major step forward — the theory now has an equation. However, as analyzed in Part I-B (Issue M2), this Lagrangian likely cannot support stable 3D solitons without a higher-order (Skyrme-like) term. The 15_open_problems.md entry A2 has been updated to "PROPOSED — Critical issues remain," with explicit cross-references to A7 (time evolution), A8 (Derrick's theorem / soliton stability), and B5 (Goldstone modes).
+This resolves three critical issues M1, M2, and M5:
+- **Time evolution (M1/A7)**: Explicit $\partial_t$ gives hyperbolic EOM with wave propagation at speed $c$.
+- **Soliton stability (M2/A8)**: Skyrme term $\mathcal{L}_4$ provides the higher-order stabilization needed for 3D solitons.
+- **Pseudoscalar Goldstone (M5/B5)**: Degenerate mass term $V_D = (\mu^2/2)(|\vec{J}|^2 + \tau^2)$ uses the dual quaternion weight norm to give mass $\mu$ to the pseudoscalar and flux modes. These were massless because $e_0^2 = 0$ makes the standard Clifford norm blind to the degenerate sector.
 
-The spec should compare the proposed Lagrangian against established topological soliton models:
-- **Skyrme model**: Similar structure but with a crucial 4th-order term that stabilizes solitons. CHPT's Lagrangian is the Skyrme model WITHOUT the Skyrme term.
-- **Faddeev-Niemi model**: Uses a different field (S²-valued) but supports Hopf solitons — exactly the topological structures CHPT needs. Its Lagrangian includes L = (∂μn)² + (∂μn × ∂νn)², where the second term is the stabilizing higher-order term.
-- **Ginzburg-Landau model**: The CHPT potential V = (λ/4)(|Ψ|² - ρ₀²)² is exactly the Ginzburg-Landau potential. This model supports vortex solutions in 2D (with gauge coupling) but NOT in 3D without additional terms.
+The Lagrangian is now structurally analogous to established topological soliton models:
 
-The most productive next step is to determine whether adding a Skyrme term to the CHPT Lagrangian permits stable Hopfion solutions in the Cl⁺(3,0,1) field.
+| Feature | Skyrme Model | Faddeev-Niemi | **CHPT** |
+|:---|:---|:---|:---|
+| Field | SU(2)-valued | S²-valued (CP¹) | Cl⁺(3,0,1)-valued |
+| Target space | S³ | S² | S³ (vacuum manifold) |
+| Topological charge | π₃(SU(2))=Z (baryon) | π₃(S²)=Z (Hopf) | π₃(S³)=Z (Hopf) |
+| Kinetic term | Yes (L₂) | Yes | Yes (L₂) |
+| Stabilizing term | Skyrme (L₄) | Faddeev (L₄) | **Skyrme (L₄)** |
+| Potential | Optional (pion mass) | None | **Mexican-hat** |
+
+The most productive next step is **numerical simulation**: find the lowest-energy Q=1 Hopfion solution and compute its mass, size, and profile.
 
 ### 5.2. The Higgs Mechanism
 
@@ -413,12 +410,13 @@ All eight fixes from the original review have been applied:
 
 ### 6.2. Mathematical Priorities (Most Urgent)
 
-These address the math spec's critical issues and should come before further conceptual development:
-
-1. **Fix time evolution**: Resolve the PGA time problem (Issue M1). Either switch to Cl(1,3) for the full spacetime algebra, or introduce time evolution via a separate mechanism. This blocks everything else.
-2. **Add a Skyrme term**: Investigate whether L + (1/e²)⟨[∇Ψ, ∇Ψ]²⟩₀ permits stable Hopfion solutions. Compare with Faddeev-Niemi model results.
-3. **Find one soliton**: Numerically solve the (corrected) field equation for the simplest topologically non-trivial solution (Q=1 Hopfion). Compute its mass, size, and profile. This is the single most important computational task — if it succeeds, CHPT has a particle.
-4. **Analyze the scalar and pseudoscalar modes**: Determine the masses and couplings of the S and P perturbations. If P is a massless Goldstone boson, the theory has a problem.
+~~1. **Fix time evolution** — **DONE.** Explicit ∂_t introduced. EOM is hyperbolic.~~
+~~2. **Add a Skyrme term** — **DONE.** L₄ added. Derrick evasion proved.~~
+~~3. **Address the pseudoscalar Goldstone (B5)** — **DONE.** Degenerate mass term V_D added using dual quaternion weight norm. P and J now massive at μ.~~
+4. **Find one soliton**: Numerically solve the field equation for the simplest topologically non-trivial solution (Q=1 Hopfion). Compute its mass, size, and profile. **This is now the single most important next step** — the equation is complete and ready to be solved.
+5. **Derive sourced Maxwell equations**: Extract the source current J from the nonlinear knot solution to obtain ∇F = J.
+6. **Compute mass spectrum**: After finding the Q=1 soliton, find Q=2, Q=3 solutions and compare mass ratios with known particles.
+7. **Investigate weak force connection**: Study whether the massive degenerate sector (P + J) couples asymmetrically to left/right-handed solitons.
 
 ### 6.3. Conceptual Priorities
 
@@ -429,13 +427,13 @@ These address the math spec's critical issues and should come before further con
 
 ### 6.4. Research Program Adjustments
 
-The open problems chapter (15_open_problems.md) now has a clear, updated structure:
+The open problems chapter (15_open_problems.md) has been updated to reflect A7/A8/B5 resolution:
 
-- **Category A (Fatal Issues)**: A1 (Bell's) addressed; A2 (field equation) proposed with issues; A3 (GW polarization) partially addressed; A4 (SU(3)) and A5 (gauge symmetry) open; A6 (neutrino) solved; **A7 (time evolution) and A8 (soliton stability) are NEW critical issues** that must be resolved before simulation.
-- **Category B (Major Gaps)**: B1-B3 unchanged; B4 (Maxwell) partially solved; **B5 (Goldstone modes) is a NEW gap**.
-- **Category C (Simulation Requirements)**: Three concrete simulation targets identified.
+- **Category A (Fatal Issues)**: A1 (Bell's) addressed; **A2 (field equation) RESOLVED** (complete Lagrangian with 5 parameters); A3 (GW polarization) partially addressed; A4 (SU(3)) and A5 (gauge symmetry) still open and critical; A6 (neutrino) solved; **A7 (time evolution) RESOLVED; A8 (soliton stability) RESOLVED.**
+- **Category B (Major Gaps)**: B1-B2 unchanged; **B3 (weak force) has a new direction** from the massive degenerate sector; B4 (Maxwell) partially solved; **B5 (Goldstone) RESOLVED** via degenerate mass term $V_D$.
+- **Category C (Simulation Requirements)**: Five concrete simulation targets identified, now executable with the complete Lagrangian.
 
-The priority order is clear: **A7 → A8 → simulation (Category C) → B4 → everything else**. Fixing time evolution and soliton stability unblocks the entire computational program.
+The priority order is: **simulation (find Q=1 Hopfion) → B4 (sourced Maxwell) → weak force investigation → A4/A5 (gauge symmetry)**. The computational program is fully unblocked.
 
 ---
 
@@ -453,18 +451,18 @@ The priority order is clear: **A7 → A8 → simulation (Category C) → B4 → 
 | Free EM wave equation | Derived from linearized dynamics. Correct speed, polarization, perpendicular structure. |
 | Null-rotor ↔ EM tensor | Strong mathematical fit (6 PGA bivectors = 6 EM field components). |
 | Topological non-locality | Well-argued resolution of Bell's theorem. Physically motivated. |
-| Mass as eigenvalue | Concrete formula M = ∫T₀₀ d³x with virial relation from Derrick's theorem. |
+| Mass as eigenvalue | Concrete formula Mc² = 2E₄ - 2E_V - 2E_D with four-term virial relation. Five parameters (ρ₀, λ, e, μ, c). |
 | Antimatter symmetry | Clean (opposite winding number Q, conjugate chirality χ). |
 
 ### What Needs Work
 
 | Aspect | Severity | Notes |
 |--------|----------|-------|
-| Time evolution in PGA | Fatal gap (math) | ∇ is spatial-only; ∇² is Laplacian, not d'Alembertian. No wave equation without fixing this. |
-| Soliton stability (Derrick) | Fatal gap (math) | Proposed Lagrangian likely needs a Skyrme term to support 3D solitons. |
+| ~~Time evolution in PGA~~ | ~~Fatal gap~~ → **RESOLVED** | Explicit ∂_t gives hyperbolic EOM. See `math/03_dynamics.md` §1. |
+| ~~Soliton stability (Derrick)~~ | ~~Fatal gap~~ → **RESOLVED** | Skyrme term added. Derrick evasion proved. See `math/03_dynamics.md` §4. |
 | Gauge symmetry (U(1)×SU(2)×SU(3)) | Fatal gap | No mechanism, no candidate, deepest structural problem. |
 | Sourced Maxwell equations | Major gap (math) | Free wave equation derived; source term J from knots not derived. |
-| Scalar/pseudoscalar modes | Major gap (math) | S and P perturbations unidentified; P may be massless Goldstone (problematic). |
+| ~~Pseudoscalar Goldstone (B5)~~ | ~~Major gap~~ → **RESOLVED** | Degenerate mass term $V_D = (\mu^2/2)|p|^2$ gives mass $\mu$ to $P$ and $\vec{J}$. |
 | Color charge / SU(3) | Fatal gap | Topological linking helps but SU(3) structure not reproduced. |
 | Internal consistency across files | Largely resolved | Q/χ propagated, references fixed, math/narrative synchronized. Minor residual in 10_conservation_laws.md body text. |
 | Math-narrative disconnect | Reduced (flagged) | Remaining disconnects (dual-state oscillation, depletion zones) now explicitly flagged in narrative files. Qualitative narratives await derivation from Lagrangian. |
@@ -480,15 +478,18 @@ The priority order is clear: **A7 → A8 → simulation (Category C) → B4 → 
 
 ### Honest Bottom Line
 
-CHPT has evolved from a loose collection of analogies into a conceptual framework with a nascent mathematical formalization. The process ontology, the Q/χ separation, the topological non-locality resolution, and the PGA null-rotor formalism are all worth developing further. The math spec adds genuine substance: a specific field type, a proposed Lagrangian, a topological classification, and a partial EM derivation. The spec is now internally consistent — the narrative chapters reference and align with the mathematical formalization, and the key conceptual advances (Q/χ, non-locality, process ontology) are propagated throughout.
+CHPT has evolved from a loose collection of analogies into a conceptual framework with a genuine mathematical formalization. The process ontology, the Q/χ separation, the topological non-locality resolution, and the PGA null-rotor formalism are all worth developing further. The math spec adds substantial structure: a specific field type, a complete Lagrangian with Skyrme stabilization, a topological classification, a partial EM derivation, and a concrete mass mechanism. The spec is internally consistent — the narrative chapters reference and align with the mathematical formalization, and the key conceptual advances are propagated throughout.
 
-But the transition from narrative to physics is only beginning, and the math spec itself has critical issues. The two most urgent:
+The two formerly fatal mathematical issues have been resolved:
+1. ~~**Time evolution**~~: **RESOLVED.** Explicit ∂_t gives a proper hyperbolic EOM with wave propagation.
+2. ~~**Soliton stability**~~: **RESOLVED.** Skyrme term added; Derrick evasion proved analytically.
 
-1. **Time evolution**: The formalism as written has no proper time derivative. The claimed wave equation is actually a Laplace equation. This must be fixed before ANY dynamics can be trusted.
-2. **Soliton existence**: The proposed Lagrangian almost certainly cannot support stable 3D solitons without a higher-order (Skyrme) term. If knots can't exist in this equation, the entire theory collapses.
+The remaining critical challenges are:
 
-Beyond these technical issues, the gauge symmetry problem remains the deepest structural challenge. Even a perfect Lagrangian supporting perfect Hopfion solitons would not produce the Standard Model's SU(3)×SU(2)×U(1) interaction structure without additional mechanism.
+1. **Numerical soliton existence**: The Lagrangian is complete and ready to solve. Finding a stable Q=1 Hopfion would be CHPT's first concrete particle. This is the single most important next step.
+2. **Gauge symmetry (A4/A5)**: Even a perfect Lagrangian supporting perfect solitons would not produce the Standard Model's SU(3)×SU(2)×U(1) interaction structure without additional mechanism. This remains the deepest structural challenge.
+3. **Weak force mechanism**: The massive degenerate sector (parity-odd P + 3-component J) is a suggestive candidate for weak interaction physics, but this connection is entirely speculative and must be investigated.
 
-The productive path forward is clear: **fix the time evolution issue, add a Skyrme term, and attempt to find a single stable Hopfion solution numerically.** If this succeeds, CHPT has a particle. If it fails, the Lagrangian must be revised. Either way, the question becomes answerable — and that is the transition from philosophy to physics.
+The productive path forward is clear: **find a single stable Hopfion solution numerically.** If this succeeds, CHPT has a particle. If it fails, the Lagrangian must be revised. Either way, the question is now answerable — and that is the transition from philosophy to physics.
 
 The spec's greatest virtue remains its honesty about what is and isn't known. The math spec's greatest virtue is that it makes things concrete enough to be wrong — which is exactly what a physical theory must be.

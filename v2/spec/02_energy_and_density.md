@@ -43,26 +43,31 @@ Energy exists whenever the field is non-uniform. Specifically:
 
 ### The Energy Functional (Proposed)
 
-The proposed Lagrangian ([math/03_dynamics.md](math/03_dynamics.md)) gives the Hamiltonian density:
+The Lagrangian ([math/03_dynamics.md](math/03_dynamics.md)) gives the static Hamiltonian density with three terms:
 
-$$ \mathcal{H} = \frac{1}{2} |\nabla \Psi|^2 + \frac{\lambda}{4}(|\Psi|^2 - \rho_0^2)^2 $$
+$$ \mathcal{H} = \frac{1}{2}\langle\nabla\Psi\,\widetilde{\nabla\Psi}\rangle_0 + \frac{1}{4e^2}\sum_{i<j}\langle[R_i,R_j]^2\rangle_0 + \frac{\lambda}{4}(\langle\Psi\tilde{\Psi}\rangle_0 - \rho_0^2)^2 $$
 
-The total energy is:
+The total static energy is:
 
-$$ E = \int \mathcal{H} \, d^3x = \int \left[ \frac{1}{2} |\nabla \Psi|^2 + V(\Psi) \right] d^3x $$
+$$ E = \int \mathcal{H} \, d^3x = E_2 + E_4 + E_V $$
 
 This satisfies the required properties:
 
 1. $E[\Psi = \rho_0] = 0$ (uniform field has zero dynamical energy).
-2. $E \geq 0$ for all configurations (both terms are non-negative).
+2. $E \geq 0$ for all configurations (all three terms are non-negative).
 3. $E$ is conserved via Noether's theorem (time-translation symmetry of the Lagrangian).
 
-The kinetic term $|\nabla \Psi|^2$ encodes gradient energy (twisting, winding of the field). The potential $V(\Psi)$ penalizes deviation of $|\Psi|$ from $\rho_0$.
+The gradient term ($E_2$) encodes twist/winding energy. The Skyrme term ($E_4$) provides soliton stability. The potential ($E_V$) penalizes deviation of $\langle\Psi\tilde{\Psi}\rangle_0$ from $\rho_0^2$.
 
-### Remaining Questions
+### Update — Full Hamiltonian (A7/A8 Resolved)
 
-- **Time kinetic energy**: The spatial-only derivative $\nabla$ in Cl(3,0,1) means $|\nabla\Psi|^2$ captures only spatial gradients. The time-derivative contribution $|\partial_t \Psi|^2$ must be added separately until the time evolution issue (see [15_open_problems.md](15_open_problems.md), A7) is resolved.
-- **Sufficiency of the potential**: The Mexican-hat potential $V = (\lambda/4)(|\Psi|^2 - \rho_0^2)^2$ may need additional terms (Skyrme term for soliton stability, chiral symmetry breaking for the weak force). See [15_open_problems.md](15_open_problems.md), A8.
+The issues noted above have been resolved. The full Hamiltonian density ([math/03_dynamics.md](math/03_dynamics.md)) now includes **three terms**:
+
+$$ \mathcal{H} = \underbrace{\frac{1}{2c^2}\langle\partial_t\Psi\,\widetilde{\partial_t\Psi}\rangle_0 + \frac{1}{2}\langle\nabla\Psi\,\widetilde{\nabla\Psi}\rangle_0}_{E_2} + \underbrace{\frac{1}{4e^2}\sum_{i<j}\langle[R_i,R_j]^2\rangle_0}_{E_4} + \underbrace{\frac{\lambda}{4}(\langle\Psi\tilde{\Psi}\rangle_0 - \rho_0^2)^2}_{E_V} $$
+
+- **Time kinetic energy**: Now included via the explicit $\partial_t\Psi$ term (A7 resolved).
+- **Skyrme term** ($E_4$): Provides soliton stability against collapse in 3D (A8 resolved). See [math/05_mass_mechanism.md](math/05_mass_mechanism.md) for the Derrick analysis.
+- **Degenerate mass term** ($E_D$): Gives mass $\mu$ to the pseudoscalar and flux modes (B5 resolved). See [math/03_dynamics.md](math/03_dynamics.md), §5.
 
 ---
 
@@ -72,9 +77,12 @@ In CHPT, mass is **Energy**. Specifically, the inertial mass of a particle is th
 
 $$ m = \frac{1}{c^2} \int T_{00} \, d^3x $$
 
-This energy comes from two sources (as seen in the Lagrangian):
-1.  **Topological/Kinetic Energy**: The energy stored in the twisting and winding of the field lines (gradients).
-2.  **Potential Energy**: The energy cost of displacing the field magnitude from the vacuum state $\rho_0$.
+This energy comes from three sources (as seen in the Lagrangian):
+1.  **Gradient Energy** ($E_2$): The energy stored in the twisting and winding of the field (spatial gradients).
+2.  **Skyrme Energy** ($E_4$): Higher-order stabilization energy from interacting field currents. Essential for preventing soliton collapse.
+3.  **Potential Energy** ($E_V$): The energy cost of displacing the field norm from the vacuum value $\rho_0$.
+
+The virial theorem constrains these: $E_2 = E_4 - 3E_V$, giving the mass formula $Mc^2 = 2E_4 - 2E_V$ (see [math/05_mass_mechanism.md](math/05_mass_mechanism.md)).
 
 Heavier particles (like protons) correspond to more complex knot topologies (higher winding numbers, more twist) which require more total field energy to sustain.
 

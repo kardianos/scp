@@ -22,7 +22,7 @@ with scalar (mass density), degenerate bivector (flux), spatial bivector (field 
 
 - **Topology of the field domain**: Is the spatial domain R^3 (infinite flat space), a compact manifold (e.g., 3-torus), or something else? This matters for boundary conditions and total energy accounting.
 - **Whether spacetime is fundamental or emergent**: The axiom as stated assumes a pre-existing 3+1D spacetime backdrop. An alternative (more ambitious) formulation would have spacetime itself emerge from the field. The current proposal assumes the former, which means Lorentz structure must either be imposed or derived.
-- **Time evolution**: The degenerate basis $e_0$ ($e_0^2 = 0$) is projective, not timelike. Time must enter either via a separate parameter $\partial_t$ or by embedding in a larger algebra. See [15_open_problems.md](15_open_problems.md), A7.
+- **Time evolution (Resolved)**: The degenerate basis $e_0$ ($e_0^2 = 0$) is projective, not timelike. Time enters as an explicit external parameter $\partial_t$, separate from the spatial PGA derivative $\nabla$. The EOM is hyperbolic: $\frac{1}{c^2}\partial_t^2\Psi - \nabla^2\Psi + \cdots = 0$. See [math/03_dynamics.md](math/03_dynamics.md), Section 1.
 
 ---
 

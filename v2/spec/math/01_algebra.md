@@ -33,20 +33,25 @@ Unlike standard relativity which treats time as a spatial dimension ($t \to x_4$
 
 ## 3. The Derivative Operator
 
-The geometric derivative $\nabla$ in this space is:
-$$ \nabla = \sum_{i=1}^3 e_i \partial_i $$
-(Note: The derivative with respect to the degenerate direction usually does not appear in the spatial $\nabla$, but time evolution $\partial_t$ enters via the equation of motion).
+The geometric derivative $\nabla$ in Cl(3,0,1) is **purely spatial**:
+$$ \nabla = \sum_{i=1}^{3} e_i \partial_i $$
+
+**Critical**: Because $e_0^2 = 0$ (degenerate), the degenerate direction does not contribute a time derivative. Therefore $\nabla^2 = \partial_1^2 + \partial_2^2 + \partial_3^2$ is the **Laplacian** (elliptic), not the d'Alembertian (hyperbolic).
+
+**Time enters separately**: The time derivative $\partial_t$ is an **external parameter**, not part of the geometric derivative. The full equation of motion (see `spec/math/03_dynamics.md`) has the form:
+$$ \frac{1}{c^2}\partial_t^2 \Psi - \nabla^2 \Psi + \cdots = 0 $$
+where the hyperbolic (wave) structure comes from the explicit $\partial_t^2$ term combined with the spatial $\nabla^2$. This is consistent with Process Ontology: time is the evolution parameter, not a geometric dimension on equal footing with space.
 
 ## 4. Why This Algebra?
 
 1.  **Natural Projectivity**: It handles "points at infinity" naturally, which is crucial for defining the boundary conditions of knots (finite energy $\to$ vacuum at infinity).
-2.  **Dual Quaternions**: The even subalgebra is isomorphic to the **Dual Quaternions**, which are the natural language of 3D rigid body mechanics (rotation + translation). A "particle" (knot) is essentially a localized rigid body of field; its dynamics (spin + momentum) map perfectly to dual quaternions.
+2.  **Dual Quaternions**: The even subalgebra is isomorphic to the **Dual Quaternions** $\mathbb{H} + \varepsilon\mathbb{H}$ ($\varepsilon = e_0$, $\varepsilon^2 = 0$). Every field value decomposes as $\Psi = q + e_0 p$ where $q = \rho + \mathbf{F}$ is the **bulk** (rotational quaternion) and $p = \vec{J} + \tau I_3$ is the **weight** (translational part). This structure provides two independent norms: $|q|^2 = \rho^2 + |\mathbf{F}|^2$ and $|p|^2 = |\vec{J}|^2 + \tau^2$, both essential for the Lagrangian (see `spec/math/03_dynamics.md`, §5).
 3.  **Hopf Fibration**: The mapping $S^3 \to S^2$ (Hopf fibration) which defines the simplest knot is naturally expressed in the spinor representation of this algebra.
 
 ## 5. Next Step: The Lagrangian
 
-The dynamics of $\Psi$ are governed by an action principle. The simplest plausible Lagrangian density is:
+The dynamics of $\Psi$ are governed by an action principle. The full Lagrangian density (derived in `spec/math/03_dynamics.md`) has **four terms**:
 
-$$ \mathcal{L} = \langle \nabla \Psi \widetilde{\nabla \Psi} \rangle_0 - V(\Psi) $$
+$$ \mathcal{L} = \underbrace{\frac{1}{2c^2}\langle \partial_t \Psi\, \widetilde{\partial_t \Psi}\rangle_0 - \frac{1}{2}\langle \nabla \Psi\, \widetilde{\nabla \Psi}\rangle_0}_{\mathcal{L}_2\text{ (kinetic)}} + \underbrace{\frac{1}{4e^2}\sum_{\mu<\nu}\langle [R_\mu, R_\nu]^2 \rangle_0}_{\mathcal{L}_4\text{ (Skyrme)}} - \underbrace{\frac{\lambda}{4}(\langle \Psi\tilde{\Psi}\rangle_0 - \rho_0^2)^2}_{V\text{ (bulk potential)}} - \underbrace{\frac{\mu^2}{2}(|\vec{J}|^2 + \tau^2)}_{V_D\text{ (degenerate mass)}} $$
 
-This will be derived in `spec/math/03_dynamics.md`.
+where $R_\mu = \tilde{\Psi}\partial_\mu\Psi$ are the right-currents. The Skyrme term $\mathcal{L}_4$ stabilizes solitons (Derrick evasion). The degenerate mass term $V_D$ uses the dual quaternion weight norm $|p|^2$ to give mass to the pseudoscalar and flux modes (which are invisible to the standard Clifford norm because $e_0^2 = 0$). The theory has five parameters: $(\rho_0, \lambda, e, \mu, c)$.
