@@ -1,0 +1,84 @@
+
+>>> CASE 1: CLASSICAL MECHANICS (NEWTONIAN GRAVITY) <<<
+--- Initializing CHPT System with grid shape (200,) ---
+Potential parameters (a, b, c_p): (0.1, 1.0, 1.5)
+Stable Vacuum Density rho_0: 1.8377
+Stable Particle Density rho_p: 8.1623
+--------------------
+Checking for 1/r^2 law far from the source:
+At r1 = 8.0, |a|*r^2 = 9.14e+16
+At r2 = 9.0, |a|*r^2 = 8.05e+16
+
+--- VERIFICATION ---
+FAILURE: The acceleration does not follow a 1/r^2 law.
+-------------------------
+
+>>> CASE 2: RELATIVISTIC MECHANICS (REST MASS) <<<
+--- Initializing CHPT System with grid shape (500,) ---
+Potential parameters (a, b, c_p): (0.1, 1.0, 1.5)
+Stable Vacuum Density rho_0: 1.8377
+Stable Particle Density rho_p: 8.1623
+--------------------
+Calculated Rest Energy of Soliton: 2.3906e+02 Joules
+Equivalent Rest Mass: 2.6599e-15 kg
+
+--- VERIFICATION ---
+SUCCESS: A non-zero rest mass/energy has been calculated for a stable, localized field configuration.
+PREDICTIVE STEP: Boosting this soliton to velocity v would require a more complex simulation,
+which would show its total energy increasing according to the Lorentz factor E = gamma * E_rest.
+-------------------------
+
+>>> CASE 3: COSMOLOGICAL MECHANICS (GALAXY ROTATION) <<<
+--- Initializing CHPT System with grid shape (2000,) ---
+Potential parameters (a, b, c_p): (0.1, 1.0, 1.5)
+Stable Vacuum Density rho_0: 1.8377
+Stable Particle Density rho_p: 8.1623
+--------------------
+Orbital velocity at inner radius r=2000 pc: 190167.2 km/s
+Orbital velocity at outer radius r=150000 pc: 0.0 km/s
+
+--- VERIFICATION ---
+FAILURE: The rotation curve is not flat.
+-------------------------
+
+>>> CASE 4: EMF PROPAGATION (DOUBLE-SLIT INTERFERENCE) <<<
+--- Initializing CHPT System with grid shape (100, 100) ---
+Potential parameters (a, b, c_p): (0.1, 1.0, 1.5)
+Stable Vacuum Density rho_0: 1.8377
+Stable Particle Density rho_p: 8.1623
+--------------------
+Intensity at center of screen: 0.0005
+Intensity in expected trough: 0.0015
+
+--- VERIFICATION ---
+FAILURE: No clear interference pattern was observed.
+-------------------------
+
+>>> CASE 5: ATOMIC FORCES <<<
+--- Initializing CHPT System with grid shape (500,) ---
+Potential parameters (a, b, c_p): (0.1, 1.0, 1.5)
+Stable Vacuum Density rho_0: 1.8377
+Stable Particle Density rho_p: 8.1623
+--------------------
+Force at large separation (d~0.50): 2.36e+02 (Negative is attractive)
+Force at small separation (d~0.10): 3.67e+04 (Positive is repulsive)
+
+--- VERIFICATION ---
+FAILURE: The force profile does not match the nuclear force.
+-------------------------
+
+>>> CASE 6: 'QUANTUM' TUNNELING <<<
+--- Initializing CHPT System with grid shape (1000,) ---
+Potential parameters (a, b, c_p): (0.1, 1.0, 1.5)
+Stable Vacuum Density rho_0: 1.8377
+Stable Particle Density rho_p: 8.1623
+--------------------
+Initial Wave Intensity: 4.1716
+Intensity Reflected from Barrier: 4.1705
+Intensity Transmitted (Tunneled) through Barrier: 0.0000
+
+--- VERIFICATION ---
+SUCCESS: A non-zero portion of the wave's intensity has tunneled through the potential barrier,
+even though its 'classical' energy might be insufficient. CHPT explains this as a resonant
+harmonic phenomenon, not a probabilistic one.
+-------------------------

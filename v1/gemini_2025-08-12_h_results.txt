@@ -1,0 +1,34 @@
+
+>>> CASE 1 (FINAL): CLASSICAL MECHANICS (GRAVITY) <<<
+Relaxing soliton profile to find true ground state... (this may take a moment)
+Relaxation step 0, max residual: 1.50e+00
+Relaxation step 500, max residual: nan
+Relaxation step 1000, max residual: nan
+Relaxation step 1500, max residual: nan
+Relaxation complete.
+Mean value of |a|*r^2: nan
+Standard deviation of |a|*r^2: nan%
+
+--- VERIFICATION ---
+FAILURE: The acceleration does not follow a stable 1/r^2 law.
+Saved plot to gemini_2025-08-12_h_case_1_gravity.png
+
+>>> CASE 5 (FINAL): ATOMIC FORCES <<<
+Force at large separation (d=1.50): 1.24e+00
+Force at small separation (d=0.10): -1.27e+01
+Minimum energy (binding) found at separation d = 0.100
+
+--- VERIFICATION ---
+FAILURE: The force profile is incorrect.
+Saved plot to gemini_2025-08-12_h_case_5_atomic_forces.png
+
+>>> CASE 6 (FINAL): 'QUANTUM' TUNNELING VIA FDTD <<<
+Particle kinetic energy: 0.0079. Barrier height: 0.0500
+Saved plot to gemini_2025-08-12_h_case_6_tunneling.png
+Reflected Intensity: 14.76%
+Tunneled Intensity: 36.05%
+
+--- VERIFICATION ---
+SUCCESS: A small but non-zero portion of the wavepacket has tunneled through the barrier.
+
+Total execution time: 22.71 seconds.

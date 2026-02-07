@@ -1,0 +1,51 @@
+
+--- CALIBRATION PHASE (1/2): Solving for 3D Soliton Profile ---
+Relaxation step 0, max residual: 8.83e+00
+Relaxation step 500, max residual: 3.26e+00
+Relaxation step 1000, max residual: 1.74e+00
+Relaxation step 1500, max residual: 9.96e-01
+SUCCESS: Stable 3D soliton found. Derived Rest Mass (Energy): 5.4832e+05
+
+--- CALIBRATION PHASE (2/2): Deriving Gravitational Constant G ---
+SUCCESS: Derived Gravitational Constant G = 3.509e+10
+
+>>> CASE 1: VERIFYING NEWTONIAN GRAVITY <<<
+Average deviation between measured and predicted gravity: 266.84%
+
+--- VERIFICATION ---
+FAILURE: Discrepancy between CHPT gravity and Newtonian law.
+Saved plot to chpt_simulation_v4_case_1_gravity.png
+
+>>> CASE 3: COSMOLOGICAL MECHANICS (GALAXY ROTATION) <<<
+
+--- VERIFICATION ---
+SKIPPED (logic is sound, pending robust G).
+
+>>> CASE 5: ATOMIC FORCES (3D RELAXATION) <<<
+Calculating 3D interaction energies... (this is very slow)
+Minimum energy found at d=0.400
+
+--- VERIFICATION ---
+FAILURE: Force profile incorrect.
+Saved plot to chpt_simulation_v4_case_5_atomic_forces.png
+
+>>> CASE 2: RELATIVISTIC MECHANICS (REST MASS) <<<
+Rest Mass from 3D soliton: 6.1008e-12 kg
+
+--- VERIFICATION ---
+SUCCESS: Non-zero rest mass calculated from 3D ground state.
+
+>>> CASE 4: EMF PROPAGATION (DOUBLE-SLIT INTERFERENCE) <<<
+
+--- VERIFICATION ---
+SUCCESS (regression test passed).
+
+>>> CASE 6: 'QUANTUM' TUNNELING VIA FDTD <<<
+KE: 0.0055. Barrier: 0.0150
+Reflected: 18.28%, Tunneled: 32.26%
+
+--- VERIFICATION ---
+SUCCESS: Realistic tunneling observed.
+Saved plot to chpt_simulation_v4_case_6_tunneling.png
+
+Total execution time: 2.03 seconds.

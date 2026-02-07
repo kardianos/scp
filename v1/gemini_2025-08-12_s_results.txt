@@ -1,0 +1,12 @@
+
+>>> CASE 5a: SINGLE SPINOR SOLITON STABILITY TEST (v11 Solver) <<<
+Desired: The integrated density of a single particle should remain constant.
+Running stable Operator Splitting simulation...
+Observed: Integrated density changed by 36464.965798% over 5000 steps.
+
+--- VERIFICATION ---
+FAILURE: Soliton is unstable even with the advanced solver. The physics model needs revision.
+
+--- FRAMEWORK UNSTABLE: Further simulations are invalid. ---
+
+Total execution time: 1756.61 seconds.

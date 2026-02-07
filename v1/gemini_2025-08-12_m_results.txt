@@ -1,0 +1,63 @@
+
+>>> CASE 1: VERIFICATION OF LONG-RANGE GRAVITY FIELD <<<
+Desired: Deviation < 1%. Observed: 0.0383%
+--- VERIFICATION --- 
+SUCCESS: CHPT gravity model is self-consistent.
+Saved plot to chpt_simulation_v6.0_case_1_gravity.png
+
+>>> CASE 2: RELATIVISTIC MECHANICS (REST MASS) <<<
+Desired: Positive energy. Observed: 2.1919e+01
+--- VERIFICATION ---
+SUCCESS.
+
+>>> CASE 4: EMF PROPAGATION (DOUBLE-SLIT INTERFERENCE) <<<
+Desired: Clear interference pattern.
+Observed: 572 peaks.
+--- VERIFICATION ---
+SUCCESS.
+Saved plot to chpt_simulation_v6.0_case_4_interference.png
+
+>>> CASE 5: ATOMIC FORCES (4D FDTD with Stability Term) <<<
+
+--- Simulating for initial separation d = 3.0 (Short Range) ---
+Desired: Repulsion for small d, Attraction for medium d.
+Step 0, Separation: 7.848
+Step 100, Separation: 7.305
+Step 200, Separation: 7.473
+Step 300, Separation: 7.998
+Step 400, Separation: 7.910
+Step 500, Separation: 7.497
+Step 600, Separation: 8.003
+Step 700, Separation: 7.848
+Step 800, Separation: 7.913
+Step 900, Separation: 7.945
+Step 999, Separation: 7.826
+Observed: Initial separation = 3.000, Final separation = 7.826
+
+--- Simulating for initial separation d = 8.0 (Medium Range) ---
+Desired: Repulsion for small d, Attraction for medium d.
+Step 0, Separation: 8.000
+Step 200, Separation: 7.998
+Step 400, Separation: 7.999
+Step 600, Separation: 7.960
+Step 800, Separation: 8.038
+Step 1000, Separation: 8.065
+Step 1200, Separation: 7.943
+Step 1400, Separation: 8.070
+Step 1600, Separation: 8.040
+Step 1800, Separation: 7.912
+Step 1999, Separation: 8.050
+Observed: Initial separation = 8.000, Final separation = 8.050
+
+--- VERIFICATION ---
+FAILURE: Repulsion test=True, Attraction test=False. Profile is incorrect.
+
+>>> CASE 6: 'QUANTUM' TUNNELING VIA FDTD <<<
+Desired: Non-zero transmitted intensity.
+KE:0.0055. Barrier:0.0150
+Observed: Reflected=18.29%, Tunneled=32.27%
+--- VERIFICATION ---
+SUCCESS.
+Saved plot to chpt_simulation_v6.0_case_6_tunneling.png
+
+Total execution time: 3.56 seconds.

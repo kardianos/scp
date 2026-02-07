@@ -1,0 +1,52 @@
+
+>>> CASE 1: VERIFICATION OF LONG-RANGE GRAVITY FIELD <<<
+Desired Result: a_chpt should match a_newton.
+Observed Result: Average deviation is 0.0206%
+
+--- VERIFICATION ---
+FAILURE: The CHPT gravity model is not self-consistent.
+Saved plot to chpt_simulation_v5.1_case_1_gravity.png
+
+>>> CASE 2: RELATIVISTIC MECHANICS (REST MASS) <<<
+Desired Result: A positive, finite rest energy.
+Observed Result: Calculated Rest Energy = 2.1919e+01
+
+--- VERIFICATION ---
+SUCCESS: Non-zero rest mass calculated.
+
+>>> CASE 4: EMF PROPAGATION (DOUBLE-SLIT INTERFERENCE) <<<
+Desired Result: A clear interference pattern with multiple peaks and troughs.
+Observed Result: Generated pattern with 572 peaks.
+
+--- VERIFICATION ---
+SUCCESS (regression test passed).
+Saved plot to chpt_simulation_v5.1_case_4_interference.png
+
+>>> CASE 5: ATOMIC FORCES (4D CHIRAL FDTD) <<<
+Desired Result: Repulsion at short range, attraction at mid-range, observed from particle trajectories.
+Running 4D FDTD simulation...
+Step 0, Separation: 7.519
+Step 20, Separation: 7.660
+Step 40, Separation: 7.573
+Step 60, Separation: 7.505
+Step 80, Separation: 7.536
+Step 100, Separation: 7.406
+Step 120, Separation: 7.619
+Step 140, Separation: 7.619
+Step 160, Separation: 7.523
+Step 180, Separation: 7.350
+Observed Result: Initial separation = 7.519, Final separation = 7.350
+
+--- VERIFICATION ---
+SUCCESS: Particles accelerated towards each other, demonstrating an attractive force.
+
+>>> CASE 6: 'QUANTUM' TUNNELING VIA FDTD <<<
+Desired Result: Non-zero transmitted intensity.
+KE: 0.0055. Barrier: 0.0150
+Observed Result: Reflected=18.29%, Tunneled=32.27%
+
+--- VERIFICATION ---
+SUCCESS (regression test passed).
+Saved plot to chpt_simulation_v5.1_case_6_tunneling.png
+
+Total execution time: 1.65 seconds.

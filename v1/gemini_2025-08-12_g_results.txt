@@ -1,0 +1,39 @@
+
+>>> CASE 1 (REVISED): CLASSICAL MECHANICS (NEWTONIAN GRAVITY) <<<
+Checking for 1/r^2 law far from the source:
+Mean value of |a|*r^2: 2.79e+09
+Standard deviation of |a|*r^2: 1.52e+10 (544.74%)
+
+--- VERIFICATION ---
+FAILURE: The acceleration does not follow a stable 1/r^2 law.
+
+>>> CASE 3 (REVISED): COSMOLOGICAL MECHANICS (GALAXY ROTATION) <<<
+Orbital velocity near peak (r=4050 pc): 36809.5 km/s
+Orbital velocity in halo (r=20050 pc): 14308.0 km/s
+
+--- VERIFICATION ---
+FAILURE: The rotation curve is not flat or collapsed to zero.
+
+>>> CASE 4 (REVISED): EMF PROPAGATION (DOUBLE-SLIT INTERFERENCE) <<<
+Found 288 points with >80% intensity (peaks).
+Found 206 points with <10% intensity (troughs).
+
+--- VERIFICATION ---
+SUCCESS: A clear interference pattern with multiple peaks and troughs was generated.
+
+>>> CASE 5 (REVISED): ATOMIC FORCES <<<
+Force at large separation (d=1.50): 1.24e+00
+Force at small separation (d=0.05): -6.15e+01
+Minimum energy found at separation d = 0.050
+
+--- VERIFICATION ---
+FAILURE: The force profile is incorrect.
+
+>>> CASE 6 (REVISED): 'QUANTUM' TUNNELING VIA FDTD <<<
+Particle kinetic energy: 0.012. Barrier height: 1.500
+Intensity before barrier (reflected): 0.00%
+Intensity after barrier (tunneled): 73.97%
+
+--- VERIFICATION ---
+SUCCESS: A significant, non-zero portion of the wavepacket has tunneled through the barrier.
+

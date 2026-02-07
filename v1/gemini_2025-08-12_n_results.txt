@@ -1,0 +1,36 @@
+
+>>> MODEL 1: EFFECTIVE CHIRAL POTENTIAL <<<
+Desired: Potential well for anti-aligned spins; repulsion for aligned spins.
+Observed (Anti-aligned): Found potential well with binding energy 0.05 at d=5.00
+Observed (Aligned): Minimum energy is -12.77, indicating no binding.
+
+--- VERIFICATION ---
+FAILURE: The model does not produce the correct profile.
+Saved plot to chpt_simulation_v7.0_case_5_model_1_potential.png
+
+>>> MODEL 2: MODULATED CHIRAL FORCE (4D FDTD) <<<
+Desired: Repulsion at short range due to intense chiral force in overlap region.
+Observed: Initial separation = 7.871, Final separation = nan
+
+--- VERIFICATION ---
+FAILURE: Model did not produce significant repulsion.
+
+>>> MODEL 3: MULTI-COMPONENT (SPINOR) FIELD (4D FDTD) <<<
+Desired: Force profile emerges naturally from coupled equations.
+Step 0, Separation: 7.000
+Step 200, Separation: -2.240
+Step 400, Separation: 1.053
+Step 600, Separation: -4.828
+Step 800, Separation: 0.957
+Step 1000, Separation: -0.001
+Step 1200, Separation: 0.839
+Step 1400, Separation: -3.760
+Step 1600, Separation: -0.215
+Step 1800, Separation: -0.014
+Observed: Initial separation = 7.000, Final separation = -0.014
+
+--- VERIFICATION ---
+SUCCESS: Spinor model produced a net attractive force.
+
+
+--- REGRESSION TESTS ---

@@ -1,0 +1,26 @@
+
+--- CALIBRATION PHASE: Solving for 3D Soliton Profile ---
+Relaxation step 0, max residual: 8.83e+00
+ERROR: Relaxation solver has diverged. Check parameters.
+
+>>> CASE 2: RELATIVISTIC MECHANICS (REST MASS) <<<
+FAILURE: Mass was not calculated in calibration.
+
+>>> CASE 4: EMF PROPAGATION (DOUBLE-SLIT INTERFERENCE) <<<
+
+--- VERIFICATION ---
+SUCCESS: Clear interference pattern generated.
+Saved plot to chpt_simulation_v3_case_4_interference.png
+
+>>> CASE 5: ATOMIC FORCES (3D SUPERPOSITION) <<<
+FAILURE: Cannot run without a 3D soliton profile.
+
+>>> CASE 6: 'QUANTUM' TUNNELING VIA FDTD <<<
+KE: 0.0079. Barrier: 0.0500
+Reflected: 14.76%, Tunneled: 36.05%
+
+--- VERIFICATION ---
+SUCCESS: Realistic tunneling observed.
+Saved plot to chpt_simulation_v3_case_6_tunneling.png
+
+Total execution time: 0.73 seconds.

@@ -1,0 +1,25 @@
+
+>>> CASE 5a: SINGLE SPINOR SOLITON STABILITY TEST <<<
+Desired: The integrated energy of a single particle should remain constant.
+Running stability simulation...
+Observed: Integrated energy changed by nan% over 4000 steps.
+
+--- VERIFICATION ---
+FAILURE: Single soliton is unstable. Halting further tests.
+
+>>> CASE 4: EMF PROPAGATION (DOUBLE-SLIT INTERFERENCE) <<<
+Desired: Clear interference pattern.
+Observed: 572 peaks.
+--- VERIFICATION ---
+SUCCESS.
+Saved plot to chpt_simulation_v10.0_case_4_interference.png
+
+>>> CASE 6: 'QUANTUM' TUNNELING VIA FDTD <<<
+Desired: Non-zero transmitted intensity.
+KE:0.0055. Barrier:0.0150
+Observed: Reflected=18.29%, Tunneled=32.27%
+--- VERIFICATION ---
+SUCCESS.
+Saved plot to chpt_simulation_v10.0_case_6_tunneling.png
+
+Total execution time: 36.18 seconds.

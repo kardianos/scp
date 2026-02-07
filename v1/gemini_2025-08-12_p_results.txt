@@ -1,0 +1,34 @@
+
+>>> CASE 5a: SINGLE SPINOR SOLITON STABILITY TEST <<<
+Desired: The integrated density of a single particle should remain constant.
+Observed: Integrated density changed by 78.5681% over 2000 steps.
+
+--- VERIFICATION ---
+FAILURE: Single soliton is unstable. Interaction simulation is invalid.
+
+--- RUNNING REGRESSION TEST SUITE ---
+
+>>> CASE 1: VERIFICATION OF LONG-RANGE GRAVITY FIELD <<<
+Desired: Deviation < 1%. Observed: 0.0383%
+--- VERIFICATION --- 
+SUCCESS.
+
+>>> CASE 2: RELATIVISTIC MECHANICS (REST MASS) <<<
+Desired: Positive energy. Observed: 2.1919e+01
+--- VERIFICATION ---
+SUCCESS.
+
+>>> CASE 4: EMF PROPAGATION (DOUBLE-SLIT INTERFERENCE) <<<
+Desired: Clear interference pattern.
+Observed: 572 peaks.
+--- VERIFICATION ---
+SUCCESS.
+
+>>> CASE 6: 'QUANTUM' TUNNELING VIA FDTD <<<
+Desired: Non-zero transmitted intensity.
+KE:0.0055. Barrier:0.0150
+Observed: Reflected=18.29%, Tunneled=32.27%
+--- VERIFICATION ---
+SUCCESS.
+
+Total execution time: 7.26 seconds.

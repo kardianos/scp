@@ -1,0 +1,36 @@
+
+>>> CASE 5a: STABILITY TEST (v14.2 NON-LINEAR DIRAC SOLVER) <<<
+Desired: The integrated probability density (particle number) must be conserved.
+Running stability simulation with Non-Linear Dirac solver...
+Step 0/5000, Particle Number: 492.175311
+Step 200/5000, Particle Number: 492.175311
+Step 400/5000, Particle Number: 492.175311
+Step 600/5000, Particle Number: 492.175311
+Step 800/5000, Particle Number: 492.175310
+Step 1000/5000, Particle Number: 492.175310
+Step 1200/5000, Particle Number: 492.175310
+Step 1400/5000, Particle Number: 492.175310
+Step 1600/5000, Particle Number: 492.175310
+Step 1800/5000, Particle Number: 492.175310
+Step 2000/5000, Particle Number: 492.175310
+Step 2200/5000, Particle Number: 492.175310
+Step 2400/5000, Particle Number: 492.175310
+Step 2600/5000, Particle Number: 492.175310
+Step 2800/5000, Particle Number: 492.175309
+Step 3000/5000, Particle Number: 492.175309
+Step 3200/5000, Particle Number: 492.175309
+Step 3400/5000, Particle Number: 492.175309
+Step 3600/5000, Particle Number: 492.175309
+Step 3800/5000, Particle Number: 492.175309
+Step 4000/5000, Particle Number: 492.175309
+Step 4200/5000, Particle Number: 492.175309
+Step 4400/5000, Particle Number: 492.175309
+Step 4600/5000, Particle Number: 492.175309
+Step 4800/5000, Particle Number: 492.175309
+Observed: Particle number changed by 0.000000% over 5000 steps.
+
+--- VERIFICATION ---
+SUCCESS: Single Dirac soliton is STABLE. This physical model is valid.
+Saved plot to chpt_simulation_v14.2_case_5a_stability.png
+
+Total execution time: 2097.47 seconds.

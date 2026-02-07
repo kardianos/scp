@@ -1,0 +1,29 @@
+
+>>> CASE 5a: PREREQUISITE STABILITY TEST <<<
+Desired: Particle number must be conserved to machine precision.
+Observed: Particle number changed by 0.000000%
+--- VERIFICATION ---
+SUCCESS: Soliton is stable.
+
+>>> CASE 2: RELATIVISTIC REST MASS <<<
+Desired: A positive, finite rest mass/energy.
+Observed: Mass-energy proxy (particle number) = 492.18
+--- VERIFICATION ---
+SUCCESS: Stable soliton has non-zero mass.
+
+>>> CASE 1: VERIFICATION OF GRAVITY <<<
+Desired: Emergent gravity must match Newtonian 1/r^2 law.
+Observed: Deviation from Newton's law is 100.0000%
+--- VERIFICATION ---
+FAILURE.
+Saved plot to chpt_simulation_v15.0_case_1_gravity.png
+
+>>> CASE 3: GALAXY ROTATION CURVE <<<
+Desired: A flat rotation curve without dark matter.
+Observed: Inner velocity=0.0 km/s, Outer velocity=0.0 km/s
+--- VERIFICATION ---
+FAILURE: Rotation curve is not flat.
+Saved plot to chpt_simulation_v15.0_case_3_cosmology.png
+
+>>> CASE 5b: ATOMIC FORCE INTERACTION <<<
+Desired: Short-range repulsion, mid-range attraction.
