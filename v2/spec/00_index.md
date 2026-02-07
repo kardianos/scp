@@ -22,6 +22,18 @@ All physics is configurations of a single frictionless density field: particles 
 | [02_energy_and_density.md](02_energy_and_density.md) | Energy and Density | Energy as deviation from uniform density. Mass as integrated density excess. Vacuum as the uniform ground state. |
 | [03_propagation.md](03_propagation.md) | Propagation | Wave and knot propagation, the speed limit, why CHPT is not an aether theory (no object-medium duality), and why Lorentz covariance is a natural consequence. |
 
+### Mathematical Formalization (Phase 2)
+
+Measurements and derivations based on the Cl(3,0,1) algebra.
+
+| File | Title | Summary |
+|------|-------|---------|
+| [Math 01](math/01_algebra.md) | Algebra | Definition of the Multivector Field $\Psi$ in Cl(3,0,1). |
+| [Math 02](math/02_topology.md) | Topology | Definition of Charge as Hopf Index ($Q$). |
+| [Math 03](math/03_dynamics.md) | Dynamics | The Lagrangian and Equation of Motion. |
+| [Math 04](math/04_electromagnetism.md) | Electromagnetism | Derivation of Maxwell's Equations (Linear Limit). |
+| [Math 05](math/05_mass_mechanism.md) | Mass Mechanism | Mass as Field Energy (Hamiltonian Eigenvalue). |
+
 ### Particle Structure
 
 | File | Title | Summary |
@@ -111,7 +123,8 @@ Throughout this spec:
 - **c**: maximum propagation speed (speed of light)
 - **Knot**: stable localized field configuration (= particle)
 - **Null-rotor**: propagating field oscillation (= photon/radiation)
-- **Chirality**: handedness of knot pattern (= electric charge sign)
+- **Charge ($Q$)**: The Topological Index (Hopf Invariant) of the knot. Quantized ($\mathbb{Z}$).
+- **Chirality ($\chi$)**: The geometric handedness (Left/Right) of the knot. Determines Particle Type.
 - **Depletion zone**: region of below-background density surrounding a knot (= gravitational field)
 - **PGA**: Projective Geometric Algebra, specifically Cl(3,0,1)
 - Units: unspecified until the field equation determines natural units.

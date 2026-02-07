@@ -88,23 +88,21 @@ The total angular momentum (orbital + spin) is conserved.
 
 ## Electric Charge Conservation
 
-### From Chirality Conservation
+### From Topological Index Conservation
 
-If chirality (the handedness of a knot) is a topological invariant — it cannot be changed by continuous deformation of the field — then chirality is exactly conserved.
+Electric Charge in CHPT is defined as the Topological Index ($Q$, Hopf Invariant) of the field configuration.
 
 In any process:
-- The number of left-chiral knots minus the number of right-chiral knots is constant.
+- The total winding number of the field is conserved under continuous deformation.
 - This is equivalent to: total electric charge is conserved.
 
 ### Topological vs. Dynamic Conservation
 
-If chirality is topologically conserved (knots cannot change handedness without being destroyed and recreated), then charge conservation is exact — as exact as the impossibility of untying a mathematical knot by continuous deformation.
+If $Q$ is a topological invariant (knots cannot change winding number without being destroyed and recreated), then charge conservation is exact — as exact as the impossibility of untying a mathematical knot by continuous deformation. Use of the Vacuum Manifold $S^3$ (as defined in `spec/math/02_topology.md`) ensures this.
 
-If chirality is only dynamically conserved (a conservation law from symmetry, which could in principle be violated by quantum tunneling or other processes), then charge conservation is approximate. In standard physics, charge conservation is believed to be exact (no proton decay to neutral particles has ever been observed, lifetime > 10^34 years). CHPT should aim for topological conservation.
+### Unknowns
 
-### Unknown
-
-- **Is chirality topological or dynamic?** This depends on the field type and equation. For scalar fields, there are no topological chiral invariants in 3D. For fields valued in suitable groups (SU(2), SO(3), etc.), chirality CAN be topological. This constrains the field type.
+- **Is topology absolute?** Quantum tunneling or "phase slip" events could theoretically alter topology. This would look like charge violation, but no such process has been observed.
 
 ---
 
@@ -137,11 +135,11 @@ In CHPT: if leptons (electron, muon, tau, neutrinos) have their own topological 
 The CPT theorem states that any Lorentz-invariant local quantum field theory is invariant under the combined operation of Charge conjugation (C), Parity (P), and Time reversal (T).
 
 In CHPT:
-- **C (charge conjugation)**: Swap left-chiral and right-chiral knots. If the field equation is chiral-symmetric, C is a symmetry.
-- **P (parity)**: Mirror reflection. If the field equation is parity-symmetric, P is a symmetry.
-- **T (time reversal)**: Run the dynamics backward. If the field equation is time-reversal symmetric (no dissipation — Axiom 4), T is a symmetry.
+- **C (charge conjugation)**: Inverse the field map $\Psi \to \Psi^{-1}$. This flips the Topological Index $Q \to -Q$ and Chirality $\chi \to -\chi$.
+- **P (parity)**: Mirror reflection $x \to -x$.
+- **T (time reversal)**: Time reversal $t \to -t$.
 
-Individual symmetries (C, P, T) may be broken (the weak force breaks P and CP), but the combination CPT should be preserved if the field equation is Lorentz-invariant (Option A from [03_propagation.md](03_propagation.md)).
+Individual symmetries (C, P, T) may be broken, but the combination CPT is preserved by the Lorentz-invariant structure of the field equation (derived in `spec/math/03_dynamics.md`).
 
 ### CP Violation
 

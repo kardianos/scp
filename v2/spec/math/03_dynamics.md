@@ -49,3 +49,25 @@ Mass is the energy of the field configuration.
 $$ E = \int T_{00} \, d^3x = \int \left( \frac{1}{2} |\nabla \Psi|^2 + V(\Psi) \right) d^3x $$
 *   **Radiation**: Has Kinetic energy but zero Potential energy (it stays near either vacuum or linear regime).
 *   **Knots**: Have both Kinetic (internal twist) and Potential (displacement from vacuum) energy. This total integrated energy behaves as inertial mass.
+
+---
+
+## 5. Critical Mathematical Issues & Failure Modes
+
+**Current Status**: The equation proposed above has two known mathematical failure modes that must be resolved before simulation.
+
+### M1. Time Evolution in Cl(3,0,1)
+*   **Problem**: Cl(3,0,1) has a degenerate basis vector $e_0$ ($e_0^2 = 0$). The geometric Laplacian $\nabla^2$ in this algebra is an **Elliptic Operator** (spatial only), not a **Hyperbolic Operator** (spacetime).
+*   **Implication**: The equation $\nabla^2 \Psi + V' = 0$ as written is a Poisson-type equation. It describes static configurations, not propagating waves. It cannot support radiation or dynamics.
+*   **Solution Paths**:
+    1.  **Metric Algebra**: Switch to Cl(1,3) (Spacetime Algebra) where $\nabla^2$ is the d'Alembertian $\square = \partial_t^2 - \nabla^2$.
+    2.  **Explicit Time**: Keep Cl(3,0,1) for spatial structure, but define the operator as $\square = \partial_\tau^2 - \nabla^2$ where $\tau$ is an external process parameter.
+
+### M2. Derrick's Theorem Instability
+*   **Problem**: For a scalar field in 3D with a standard kinetic term, Derrick's Theorem proves that no stable time-independent soliton solutions exist (they collapse or disperse to lower energy).
+*   **Implication**: A simple simulation of the Lagrangian above will likely fail to produce stable particles.
+*   **Solution Paths**:
+    1.  **Skyrme Term**: Add a higher-order derivative term to the Lagrangian, e.g., $\mathcal{L}_{Skyrme} \propto \langle [\nabla \Psi, \nabla \Psi]^2 \rangle$. This is the standard topological stabilization method (Skyrme Model, Faddeev-Niemi Model).
+    2.  **Multivector Geometric Stabilization**: Investigate if the non-scalar parts of $\Psi$ (Bivectors) provide stabilization not covered by the scalar Derrick theorem. (Speculative).
+
+**Recommendation for Simulation**: Use Option 1 (Explicit Time) and Option 1 (Skyrme Term) to ensure a working proof-of-concept.

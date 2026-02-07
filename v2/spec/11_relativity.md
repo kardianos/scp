@@ -26,9 +26,9 @@ All of these are confirmed experimentally to extraordinary precision (particle a
 
 ### CHPT Approach
 
-CHPT posits a field that fills space with a propagation speed limit c (Axiom 5). The question is whether the field dynamics automatically produce Lorentz-invariant physics.
+CHPT posits a field that fills space with a propagation speed limit c (Axiom 5). The field dynamics are fundamentally **Process-Based**, not Object-Based (see [03_propagation.md](03_propagation.md)).
 
-As discussed in [03_propagation.md](03_propagation.md), three options were identified: Lorentz-invariant field equation (Option A), emergent Lorentz invariance (Option B), and physical contraction conspiracy (Option C). Option A was recommended.
+Because particles (knots) are self-sustaining patterns *of* the field rather than objects *in* the field, they have no "rest frame" relative to a medium. Their internal dynamics scale exactly with their translational motion through the field's process-time structure. Lorentz Invariance is therefore a **mathematical consequence** of the field equation, not an imposed constraint or an emergent approximation.
 
 ### Time Dilation from Knot Dynamics
 
@@ -64,18 +64,7 @@ Again, automatic for Lorentz-invariant systems.
 
 ### Assessment
 
-If CHPT adopts a Lorentz-invariant field equation (Option A), all of special relativity is automatically reproduced. There is nothing to derive — it's built into the mathematical framework. This is both good (guaranteed correctness) and boring (no new predictions).
-
-New predictions would arise only from Options B or C, which would predict tiny violations of Lorentz invariance. Current experimental bounds on such violations are:
-
-| Test | Bound |
-|------|-------|
-| Photon speed isotropy | < 10^-18 |
-| Electron mass anisotropy | < 10^-25 |
-| Neutron spin precession | < 10^-31 GeV |
-| Time dilation (atomic clocks) | < 10^-7 deviation |
-
-CHPT should adopt Option A unless it has specific physical reasons to predict violations at a detectable level. Predicting violations that don't exist is worse than making no prediction.
+CHPT adopts a Lorentz-invariant field equation (as derived in `spec/math/03_dynamics.md`). All of special relativity is automatically reproduced. There is nothing to derive — it's built into the mathematical framework. This guarantees correctness but means CHPT makes no new predictions in the SR sector (no Lorentz violations).
 
 ---
 
@@ -182,7 +171,7 @@ This requires that the gravitational binding energy of a composite knot also gra
 
 | Relativistic Phenomenon | CHPT Status | Risk Level |
 |------------------------|-------------|------------|
-| Lorentz invariance | Guaranteed if Option A adopted | None |
+| Lorentz invariance | Built-in (Process Ontology) | None |
 | Time dilation | Automatic from Lorentz-invariant knots | None |
 | Length contraction | Automatic from Lorentz-invariant knots | None |
 | E = mc^2 | Automatic | None |

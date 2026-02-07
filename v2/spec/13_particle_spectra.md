@@ -45,8 +45,9 @@ The Standard Model contains the following fundamental particles:
 
 1. Particles are stable knots (3D+time harmonics) of a single field.
 2. Mass = density excess of the knot.
-3. Charge = chirality of the knot.
-4. Spin = internal angular momentum of the oscillation pattern.
+3. Charge = topological index (winding number) of the knot.
+4. Chirality = geometric handedness (particle type) of the knot.
+5. Spin = internal angular momentum of the oscillation pattern.
 5. The discrete spectrum of stable knots maps to the discrete particle spectrum.
 
 ### What CHPT Must Derive
