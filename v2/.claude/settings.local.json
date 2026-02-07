@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gcc:*)",
+      "Bash(python3:*)",
+      "Bash(echo:*)",
+      "Bash(make:*)",
+      "Bash(./soliton_search:*)",
+      "Bash(./verify_gradient:*)",
+      "Bash(./radial_solver:*)"
+    ]
+  }
+}

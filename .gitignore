@@ -6,3 +6,5 @@
 !*/
 *.wasm
 *.scpv
+build/
+radial_solver
