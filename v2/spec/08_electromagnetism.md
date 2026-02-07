@@ -28,7 +28,7 @@ Two charged knots at rest, separated by distance r, experience a force:
 
     F = k * q1 * q2 / r^2
 
-where q1, q2 are the charges (chiralities) and k is Coulomb's constant.
+where q1, q2 are the charges (topological indices $Q$) and k is Coulomb's constant.
 
 ### CHPT Mechanism
 
@@ -107,12 +107,9 @@ If CHPT is correct, the dynamics of null-rotor patterns must reduce to Maxwell's
 
 ### Critical Unknown
 
-**Can Maxwell's equations be rigorously derived from the CHPT field equation?** This is the litmus test for the electromagnetic sector of the theory. If the null-rotor dynamics do not reduce to Maxwell's equations in the linear (weak-field) limit, the theory fails at the most basic level.
+**Partial Progress**: The math spec ([math/04_electromagnetism.md](math/04_electromagnetism.md)) derives the **free-field** Maxwell equation. In the linear limit, the bivector perturbation $\mathbf{F} = \vec{E} + I\vec{B}$ satisfies $\nabla^2 \mathbf{F} = 0$, and the null condition $\mathbf{F}^2 = 0$ gives $|\vec{E}| = |\vec{B}|$, $\vec{E} \perp \vec{B}$. This is correct free EM wave dynamics.
 
-This derivation is one of the highest-priority tasks for mathematical formalization. A successful derivation would:
-1. Identify E and B with specific components of the null-rotor field.
-2. Derive the four Maxwell equations from the field dynamics.
-3. Extract epsilon_0 and mu_0 (and therefore c = 1/sqrt(epsilon_0 mu_0)) from the field parameters.
+**Still missing**: The **sourced** Maxwell equation $\nabla \mathbf{F} = J$, where the source current $J$ is extracted from the nonlinear knot solution. This is where charge-field coupling lives. Until $J$ is derived from knot topology, the EM sector remains incomplete. See [15_open_problems.md](15_open_problems.md), B4.
 
 ---
 
@@ -162,10 +159,10 @@ Circularly polarized light (where the E vector rotates as the wave propagates) m
 | Unlike-charge attraction | Destructive null-rotor interference | Conceptual only |
 | Biot-Savart / magnetism | Modified emission pattern from moving chiral | Conceptual only |
 | Lorentz force | Knot response to null-rotor field | Not derived |
-| Maxwell's equations | Null-rotor dynamics linearized | Not derived |
+| Maxwell's equations | Null-rotor dynamics linearized | Free field derived ([math/04](math/04_electromagnetism.md)); sourced TBD |
 | Atomic spectra | Orbital resonance transitions | No improvement over QM |
 | Polarization | Oscillation axis of null-rotor | Natural fit |
 
 ### Priority for Formalization
 
-The single most important derivation in all of CHPT is: **derive Maxwell's equations from the field dynamics.** If this succeeds, the electromagnetic sector is validated. If it fails, the theory must be fundamentally revised.
+The free-field Maxwell equation has been derived from the linearized dynamics ([math/04_electromagnetism.md](math/04_electromagnetism.md)). The next critical step is: **derive the sourced Maxwell equation** ($\nabla \mathbf{F} = J$) **from the nonlinear knot solution.** This would complete the electromagnetic sector by showing how topological charge generates EM fields.

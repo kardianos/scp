@@ -10,11 +10,19 @@ There exists a single, continuous field defined over three spatial dimensions an
 
 There is nothing else. No separate particles, no independent force carriers, no additional fields. One field, one substance.
 
-### Unknowns
+### Field Type (Resolved)
 
-- **Mathematical type of the field**: The proposal does not yet specify whether the field is scalar-valued (a single number at each point), vector-valued, tensor-valued, or spinor-valued. A scalar field is the simplest candidate, but may be insufficient to support chirality and the full rotational structure needed for particle physics. A field valued in a geometric algebra (specifically Cl(3,0,1) for 3D PGA) is the most natural candidate given the null-rotor machinery invoked later (see [06_null_rotors.md](06_null_rotors.md)), but this is not yet established.
+The field $\Psi$ is valued in the **even subalgebra** $Cl^+(3,0,1)$ of Projective Geometric Algebra (see [math/01_algebra.md](math/01_algebra.md)). This is isomorphic to the Dual Quaternions and decomposes as:
+
+$$ \Psi = \rho + \vec{J} e_0 + \mathbf{F} + I \tau $$
+
+with scalar (mass density), degenerate bivector (flux), spatial bivector (field strength), and pseudoscalar (helicity) components.
+
+### Remaining Unknowns
+
 - **Topology of the field domain**: Is the spatial domain R^3 (infinite flat space), a compact manifold (e.g., 3-torus), or something else? This matters for boundary conditions and total energy accounting.
 - **Whether spacetime is fundamental or emergent**: The axiom as stated assumes a pre-existing 3+1D spacetime backdrop. An alternative (more ambitious) formulation would have spacetime itself emerge from the field. The current proposal assumes the former, which means Lorentz structure must either be imposed or derived.
+- **Time evolution**: The degenerate basis $e_0$ ($e_0^2 = 0$) is projective, not timelike. Time must enter either via a separate parameter $\partial_t$ or by embedding in a larger algebra. See [15_open_problems.md](15_open_problems.md), A7.
 
 ---
 
@@ -32,7 +40,7 @@ All physical quantities — energy, mass, momentum, charge — ultimately reduce
 
 - **Units and scale**: What sets the absolute scale of density? Is there a natural unit, or is only relative density physically meaningful?
 - **Minimum and maximum**: Is density bounded? Can it reach zero (true vacuum) or infinity (singularity)? The knot mechanism suggests local density can be much higher than background, but whether there is a hard upper bound is unspecified.
-- **Relationship to field type**: If the field is not purely scalar, "density" may refer to the magnitude or norm of a multi-component field value. This needs to be made precise once the field type (Axiom 1) is resolved.
+- **Relationship to field type (Clarified)**: With the field valued in $Cl^+(3,0,1)$, "density" $\rho$ is the **scalar (grade-0) component** of $\Psi$. The full field norm $|\Psi|^2 = \Psi\widetilde{\Psi}$ includes contributions from all components (scalar, bivector, pseudoscalar). The Axiom 2 "density" maps to $\rho$; the potential $V = (\lambda/4)(|\Psi|^2 - \rho_0^2)^2$ constrains the full norm. See [math/01_algebra.md](math/01_algebra.md).
 
 ---
 
@@ -48,9 +56,18 @@ Formally: if rho(x,t) is the density at point x and time t, then the integral of
 - Any process that increases local density (knot formation) must decrease density elsewhere (field depletion).
 - There is no mechanism for energy input or output to/from the field. The field is a closed system.
 
+### Tension with Multivector Field
+
+With $\Psi \in Cl^+(3,0,1)$, the scalar component $\rho$ is only one part of the field. Two distinct conservation laws are in play:
+
+1. **Density conservation** (this axiom): $\int \rho \, d^3x = \text{const}$. This conserves the scalar "stuff."
+2. **Energy conservation** (from the Lagrangian): $\int T_{00} \, d^3x = \text{const}$, where $T_{00} = \frac{1}{2}|\nabla\Psi|^2 + V(\Psi)$ includes contributions from all field components.
+
+These are **not the same quantity**. A process that converts scalar density $\rho$ into bivector field strength $\mathbf{F}$ (e.g., a knot emitting radiation) conserves energy but changes the distribution of $\rho$. Whether total $\int \rho \, d^3x$ is separately conserved depends on whether the field equation admits a corresponding Noether current. This must be checked against the proposed Lagrangian in [math/03_dynamics.md](math/03_dynamics.md).
+
 ### Unknowns
 
-- **What enforces conservation**: Is conservation a consequence of the field's equation of motion (like a continuity equation), or is it a separate constraint imposed on top? A continuity equation (drho/dt + div(J) = 0 for some current J) is the standard mathematical mechanism and would be the natural choice, but the form of J depends on the field dynamics, which are not yet specified.
+- **What enforces conservation**: The proposed Lagrangian ([math/03_dynamics.md](math/03_dynamics.md)) provides energy-momentum conservation via Noether's theorem. Whether $\int \rho \, d^3x$ is independently conserved (as this axiom claims) is an open question — it requires an internal symmetry of the Lagrangian that rotates the scalar into other components.
 
 ---
 
@@ -105,9 +122,9 @@ The stability of these processes is primarily **Topological**. The field configu
 
 | # | Axiom | Status |
 |---|-------|--------|
-| 1 | Single continuous 3+1D field | Postulated; field type TBD |
-| 2 | Well-defined local density | Postulated; units/bounds TBD |
-| 3 | Total density conserved | Postulated; enforcement mechanism TBD |
+| 1 | Single continuous 3+1D field | Postulated; field type adopted: $Cl^+(3,0,1)$ (see [math/01_algebra.md](math/01_algebra.md)) |
+| 2 | Well-defined local density | $\rho$ = scalar component of $\Psi$; units/bounds TBD |
+| 3 | Total density conserved | Tension: $\int\rho$ vs $\int T_{00}$ — separate conservation TBD |
 | 4 | No intrinsic dissipation | Postulated; emergent irreversibility TBD |
 | 5 | Finite max propagation speed c | Postulated; invariance group TBD |
 | 6 | Stable localized configurations (knots) | Postulated; existence proof TBD |

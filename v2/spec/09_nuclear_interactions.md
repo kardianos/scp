@@ -23,8 +23,6 @@ CHPT must account for all of these properties.
 
 ## CHPT Mechanism for Nuclear Binding
 
-## CHPT Mechanism for Nuclear Binding
-
 ### Topological Linking (The "Strong" Force)
 We propose that the Strong Force is not merely a density overlap, but a **Topological Linking** of knots.
 

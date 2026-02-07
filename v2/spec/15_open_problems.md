@@ -14,9 +14,13 @@ This chapter provides an accounting of the current limitation of CHPT.
 
 ### A2. No Field Equation
 *   **Original Problem**: Theory had no equation of motion.
-*   **Status**: **SOLVED**.
-*   **Resolution**: Derived in `spec/math/03_dynamics.md`:
+*   **Status**: **PROPOSED — Critical issues remain**.
+*   **Resolution**: Lagrangian and EOM proposed in `spec/math/03_dynamics.md`:
     $$ \nabla^2 \Psi + \lambda \Psi (|\Psi|^2 - \rho_0^2) = 0 $$
+*   **Remaining Issues**:
+    1.  **Time evolution (A7)**: The geometric derivative $\nabla$ in Cl(3,0,1) is spatial-only. The equation as written is elliptic (Laplace), not hyperbolic (wave). Must be fixed before dynamics can be trusted.
+    2.  **Soliton stability (A8)**: Derrick's theorem forbids stable static solitons for this Lagrangian structure in 3D without a higher-order (Skyrme) term. The Lagrangian likely needs a 4th-order derivative term.
+    3.  **Goldstone modes (B5)**: The pseudoscalar perturbation P may be a massless Goldstone boson, which would be experimentally observable and is tightly constrained.
 
 ### A3. Gravitational Wave Polarization
 *   **Original Problem**: Scalar field predicts wrong polarization (0 modes vs 2 observed).
@@ -41,6 +45,16 @@ This chapter provides an accounting of the current limitation of CHPT.
     *   Neutrino: $Q=0$ (Neutral), $\chi \neq 0$ (Chiral).
     *   This allows it to participate in chiral (weak) interactions without having electric charge.
 
+### A7. Time Evolution in PGA (NEW)
+*   **Problem**: The geometric derivative $\nabla = \sum e_i \partial_i$ in Cl(3,0,1) has no time component. The degenerate basis vector $e_0$ ($e_0^2 = 0$) is projective, not timelike. Therefore $\nabla^2$ is the Laplacian (elliptic), not the d'Alembertian (hyperbolic). Elliptic equations have no propagating solutions — no waves, no null-rotors.
+*   **Status**: **OPEN / CRITICAL**.
+*   **Fix options**: (1) Switch to Cl(1,3) spacetime algebra. (2) Introduce $\partial_t$ separately from the geometric derivative. (3) Embed into a larger algebra.
+
+### A8. Soliton Stability — Derrick's Theorem (NEW)
+*   **Problem**: Derrick's theorem proves that for a field with quadratic kinetic term and polynomial potential in $D \geq 3$, no stable static finite-energy solitons exist. The proposed CHPT Lagrangian has exactly this structure. The Skyrme model and Faddeev-Niemi model evade this by adding a 4th-order derivative term (the "Skyrme term").
+*   **Status**: **OPEN / CRITICAL**.
+*   **Fix**: Add a Skyrme-like term $\frac{1}{e^2}\langle[\nabla\Psi, \nabla\Psi]^2\rangle_0$ to the Lagrangian. Must verify this permits stable Hopfion solutions.
+
 ---
 
 ## Category B — Major Gaps
@@ -60,8 +74,14 @@ This chapter provides an accounting of the current limitation of CHPT.
 
 ### B4. Derivation of Maxwell's Equations
 *   **Original Problem**: Need to prove null-rotors = Maxwell.
-*   **Status**: **SOLVED**.
-*   **Resolution**: `spec/math/04_electromagnetism.md` shows the linear limit of the vector wave equation is $\nabla^2 \mathbf{F} = 0$, which is the free Maxwell equation.
+*   **Status**: **PARTIALLY SOLVED**.
+*   **Resolution**: `spec/math/04_electromagnetism.md` shows the linear limit gives $\nabla^2 \mathbf{F} = 0$ (free electromagnetic wave equation). Null condition $\mathbf{F}^2 = 0$ gives $|\vec{E}| = |\vec{B}|$, $\vec{E} \perp \vec{B}$.
+*   **Remaining**: The **sourced** Maxwell equation $\nabla \mathbf{F} = J$ (how knots produce EM fields) is not derived. The source current $J$ must be extracted from the nonlinear knot solution. This is where the real charge-field coupling lives.
+
+### B5. Scalar and Pseudoscalar Modes (NEW)
+*   **Problem**: The linearized perturbation $\psi = S + \mathbf{F} + IP$ has scalar ($S$) and pseudoscalar ($P$) components in addition to the EM bivector $\mathbf{F}$. The potential gives mass to $S$ ($m_S = \sqrt{2\lambda}\rho_0$), but $P$ may be a massless Goldstone boson. A massless pseudoscalar would be experimentally observable and is tightly constrained.
+*   **Status**: **OPEN**.
+*   **Action**: Determine masses and couplings of S and P. If P is massless, either add a term to the potential that breaks the pseudoscalar symmetry, or show P decouples from observable physics.
 
 ---
 

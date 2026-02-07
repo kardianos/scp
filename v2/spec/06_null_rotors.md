@@ -20,7 +20,7 @@ In CHPT, a null-rotor is not an abstract algebraic object but a physical pattern
 3. Oscillates between two dual states: a stable harmonic configuration and a dispersed density wave.
 4. Can be emitted and absorbed by knots.
 
-### The Dual-State Oscillation
+### The Dual-State Oscillation (Narrative — Not Yet Formalized)
 
 This is the most distinctive claim of the null-rotor concept. A null-rotor is NOT simply a propagating wave. It alternates between:
 
@@ -28,6 +28,8 @@ This is the most distinctive claim of the null-rotor concept. A null-rotor is NO
 - **Wave phase**: The energy is spread out as a density perturbation propagating through the field.
 
 The oscillation between these phases occurs at a definite frequency, which is the frequency of the radiation (and determines its energy via E = hf or its CHPT equivalent).
+
+**Math spec status**: The mathematical description ([math/04_electromagnetism.md](math/04_electromagnetism.md)) identifies null-rotors as **bivector perturbations** $\mathbf{F}$ satisfying $\nabla^2 \mathbf{F} = 0$ with the null condition $\mathbf{F}^2 = 0$ (giving $|\vec{E}| = |\vec{B}|$, $\vec{E} \perp \vec{B}$). This is a standard wave description — the dual-state oscillation picture has no counterpart in the current math. Whether the dual-state concept is a qualitative interpretation of the wave solution, or requires additional mathematical structure, is unresolved.
 
 ### Maps to Standard Physics
 

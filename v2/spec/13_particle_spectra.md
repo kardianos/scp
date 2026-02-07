@@ -48,7 +48,7 @@ The Standard Model contains the following fundamental particles:
 3. Charge = topological index (winding number) of the knot.
 4. Chirality = geometric handedness (particle type) of the knot.
 5. Spin = internal angular momentum of the oscillation pattern.
-5. The discrete spectrum of stable knots maps to the discrete particle spectrum.
+6. The discrete spectrum of stable knots maps to the discrete particle spectrum.
 
 ### What CHPT Must Derive
 
@@ -203,4 +203,4 @@ For CHPT to be falsifiable (and therefore scientific), it must make predictions 
 
 ### Honest Bottom Line
 
-CHPT's particle sector is entirely promissory. The conceptual framework is suggestive — knots as particles, chirality as charge, harmonics as the spectrum — but zero quantitative results exist. The gap between concept and calculation is enormous. Closing it requires writing down the field equation and solving for stable knot solutions. This is a well-defined mathematical research program, but it has not yet been started.
+CHPT's particle sector is entirely promissory. The conceptual framework is suggestive — knots as particles, topology as charge, harmonics as the spectrum — but zero quantitative results exist. A field equation has been proposed ([math/03_dynamics.md](math/03_dynamics.md)), but critical issues remain (time evolution, soliton stability — see [15_open_problems.md](15_open_problems.md), A7-A8). The gap between concept and calculation is enormous. Closing it requires resolving these issues and finding stable soliton solutions. This is a well-defined mathematical research program whose foundations are now laid but whose results are pending.

@@ -86,9 +86,7 @@ This is conceptually clean and matches the GR prediction qualitatively. Quantita
 
 If a massive knot (or pair of knots) accelerates, its depletion zone changes dynamically. This change propagates outward at speed c as a ripple in the density field — a gravitational wave. The wave carries energy and produces oscillating density gradients that squeeze and stretch test objects.
 
-**Critical question**: GR gravitational waves are tensor perturbations (spin-2). They have two polarization states (+ and x). CHPT density waves are scalar perturbations (if the field is scalar). A scalar gravitational wave would have one polarization state, not two. LIGO observations are consistent with two polarizations. This is a potential falsification point: if the field is scalar, CHPT predicts the wrong polarization count for gravitational waves.
-
-**Resolution**: If the field is valued in a geometric algebra (as suggested by the null-rotor concept), gravitational perturbations could be tensor-valued, supporting two polarizations. This again constrains the field type.
+**Critical question**: GR gravitational waves are tensor perturbations (spin-2). They have two polarization states (+ and x). With $\Psi \in Cl^+(3,0,1)$, the field has bivector components ($\mathbf{F}$) that support tensor-like perturbations, but the gravitational mechanism (density depletion) is driven by the **scalar** component $\rho$. If gravity couples only to $\rho$, gravitational waves would still have scalar character (one polarization, not two). The question is whether the full multivector structure of gravitational perturbations — including how $\rho$ distortions couple to the bivector geometry — can produce the correct two polarization states. See [15_open_problems.md](15_open_problems.md), A3.
 
 ### Frame-Dragging
 

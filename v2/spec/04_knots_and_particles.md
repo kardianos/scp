@@ -28,13 +28,13 @@ The primary mechanism for stability in CHPT is **Topological Stability** (Option
 ### Option A — Topological Stability (Primary)
 The knot is stable because its field configuration possesses a non-trivial topological invariant.
 *   **Modern Knot Theory**: We look to invariants like **Vassiliev invariants** or **Khovanov homology** to classify these states.
-*   **Mechanism**: The field is valued in a multivector algebra (Cl(3,0,1)). A "knot" is a region where the multivector orientation winds non-trivially (like a textue or a Hopf soliton). To destroy the knot, one must tear the field (singularity), which requires infinite energy density. Thus, the knot is stable.
+*   **Mechanism**: The field is valued in a multivector algebra (Cl(3,0,1)). A "knot" is a region where the multivector orientation winds non-trivially (like a texture or a Hopf soliton). To destroy the knot, one must tear the field (singularity), which requires infinite energy density. Thus, the knot is stable.
 
 ### Option B — Dynamic / Resonant Stability (Secondary)
 Some configurations (like heavy bosons or excited states) may be topologically trivial or meta-stable but persist for finite times due to energy barriers. These are **Resonances** rather than true Knots.
 
 ### Recommended Path
-Focus on defining the **Hopf Invariant** for the Cl(3,0,1) field as the fundamental quantum number (Charge?).
+Focus on defining the **Hopf Invariant** for the Cl(3,0,1) field as the fundamental charge quantum number $Q$. See [math/02_topology.md](math/02_topology.md) for the formal definition.
 
 ---
 
@@ -58,7 +58,7 @@ Whether these quantum numbers emerge naturally from the CHPT field equation is o
 
 ### Unknowns
 
-- **What equation governs the internal knot dynamics?** Without this, the mode structure is conjecture.
+- **What equation governs the internal knot dynamics?** A Lagrangian and EOM are proposed in [math/03_dynamics.md](math/03_dynamics.md), but soliton solutions have not yet been found (see [15_open_problems.md](15_open_problems.md), A8).
 - **Do the modes reproduce the known particle spectrum?** Specifically: spin-1/2 fermions, spin-1 bosons, the specific mass ratios, three generations of quarks and leptons.
 - **What sets the fundamental scale?** Particle masses span many orders of magnitude. What parameter in the field equation determines the overall mass scale?
 
@@ -101,7 +101,7 @@ The following mapping is proposed but unproven:
 | Proton | Composite of three sub-knots (quarks) | Conceptual |
 | Neutron | Composite (different quark arrangement) | Conceptual |
 | Photon | Null-rotor oscillation (not a knot) | See [06_null_rotors.md](06_null_rotors.md) |
-| Neutrino | Minimal or non-chiral knot | Highly speculative |
+| Neutrino | Knot with $Q=0$ (neutral) but $\chi \neq 0$ (chiral) | See [05_chirality.md](05_chirality.md) |
 | Quarks | Sub-knots that cannot exist in isolation | Requires confinement mechanism |
 | W/Z bosons | Unstable heavy knots | Conceptual |
 | Higgs boson | Unstable density resonance | Highly speculative |

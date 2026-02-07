@@ -12,7 +12,7 @@ CHPT proposes a deterministic, continuous field. Historically, this was thought 
 
 **CHPT rejects this assumption.**
 
-In a Process Ontology (see [01_field_axioms.md](01_field_axioms.md) and [05_process_ontology.md](../review/01_gemini/05_process_ontology.md)), a particle is not a dot; it is a knot.
+In a Process Ontology (see [01_field_axioms.md](01_field_axioms.md), Axiom 6), a particle is not a dot; it is a knot.
 *   **Entanglement** is a state where two knots are part of a single, extended topological structure (e.g., a flux tube with two ends).
 *   **Measurement** is a stress test on this structure. Tension applied to one end is instantly felt at the other, because they are the *same object*.
 

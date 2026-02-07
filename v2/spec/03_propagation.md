@@ -10,7 +10,7 @@ Depends on: [01_field_axioms.md](01_field_axioms.md), [02_energy_and_density.md]
 
 Any localized change in density will propagate outward. This is a direct consequence of the field being continuous and having dynamics — perturb it somewhere, and the perturbation spreads. The details of how it spreads depend on the (unspecified) field equation, but the general behavior is:
 
-1. **Linear waves**: Small perturbations around rho_0 propagate as waves with speed c. These are analogous to sound waves in a fluid, or electromagnetic waves in vacuum. In CHPT, these small-amplitude density waves are the candidates for photons (in their null-rotor form, see [06_null_rotors.md](06_null_rotors.md)).
+1. **Linear waves**: Small perturbations around the vacuum $\rho_0$ propagate as waves with speed c. The perturbation $\psi = S + \mathbf{F} + IP$ has scalar ($S$), bivector ($\mathbf{F}$), and pseudoscalar ($P$) components (see [math/04_electromagnetism.md](math/04_electromagnetism.md)). The bivector component $\mathbf{F}$ is identified with electromagnetic radiation (photons / null-rotors, see [06_null_rotors.md](06_null_rotors.md)). The scalar and pseudoscalar modes are additional propagating degrees of freedom whose observational status is an open problem (see [15_open_problems.md](15_open_problems.md), B5).
 
 2. **Nonlinear structures**: Large perturbations (knots) are localized and do not simply disperse. They propagate as coherent structures — solitons or topological defects — that maintain their shape. Their propagation speed can be anywhere from 0 to c (exclusive).
 

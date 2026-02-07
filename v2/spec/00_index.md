@@ -39,7 +39,7 @@ Measurements and derivations based on the Cl(3,0,1) algebra.
 | File | Title | Summary |
 |------|-------|---------|
 | [04_knots_and_particles.md](04_knots_and_particles.md) | Knots and Particles | Particles as stable localized field patterns. Stability mechanisms (topological vs. dynamic). Mode structure and the mapping to known particles. |
-| [05_chirality.md](05_chirality.md) | Chirality | Handedness of knots as the origin of electric charge. Interaction rules: same-chirality repulsion (Pauli exclusion), opposite-chirality nesting (binding), achiral transparency. |
+| [05_chirality.md](05_chirality.md) | Chirality | Chirality (χ) as handedness, distinct from charge (Q = topological index). Interaction rules: same-chirality repulsion (Pauli exclusion), opposite-chirality nesting (binding), achiral transparency. |
 | [06_null_rotors.md](06_null_rotors.md) | Null-Rotors | Massless propagating field patterns as photon analogs. Dual-state oscillation (harmonic/wave), emission scaling, PGA connection, force mediation. |
 
 ### Forces and Interactions
@@ -56,7 +56,7 @@ Measurements and derivations based on the Cl(3,0,1) algebra.
 |------|-------|---------|
 | [10_conservation_laws.md](10_conservation_laws.md) | Conservation Laws | How energy, momentum, angular momentum, and charge conservation emerge from field symmetries and topological invariants. |
 | [11_relativity.md](11_relativity.md) | Relativity | Special relativity automatic from Lorentz-invariant field equation. General relativity via effective metric from density gradients. Post-Newtonian tests. |
-| [12_quantum_phenomena.md](12_quantum_phenomena.md) | Quantum Phenomena | The Bell's theorem crisis. Nonlocal hidden variables as the recommended escape. Wave-particle duality, uncertainty, entanglement. |
+| [12_quantum_phenomena.md](12_quantum_phenomena.md) | Quantum Phenomena | Topological non-locality as Bell's theorem resolution. CHPT as a non-local realist theory. Wave-particle duality, uncertainty, entanglement. |
 
 ### Phenomenology
 
@@ -79,22 +79,23 @@ These are positions **recommended** (not yet confirmed) throughout the documents
 
 1. **Lorentz invariance**: The field equation must be Lorentz-covariant. This is not an imposed constraint but a physical consequence of CHPT's ontology: because knots ARE the field (not objects moving through a medium), there is no object-medium duality, no preferred frame, and no aether problem. The math must formalize this. (See [03_propagation.md](03_propagation.md))
 
-2. **Quantum mechanics**: CHPT must adopt nonlocal hidden variables to evade Bell's theorem. This is a **significant departure from the original proposal's deterministic local-realism claim**. Axiom 5 would need to distinguish signal locality (preserved) from ontological nonlocality (allowed). The implications of this change propagate through the entire theory and are not yet fully explored. (See [12_quantum_phenomena.md](12_quantum_phenomena.md))
+2. **Quantum mechanics**: CHPT resolves Bell's theorem via **topological non-locality**: entangled particles are two ends of a single extended topological structure, not separate objects. Axiom 5 now distinguishes signal locality (preserved, speed c) from topological non-locality (instantaneous global constraints on connected structures). This makes CHPT a **non-local realist theory**, alongside de Broglie-Bohm. (See [12_quantum_phenomena.md](12_quantum_phenomena.md), [01_field_axioms.md](01_field_axioms.md) Axiom 5)
 
 3. **Black holes**: The original proposal claims "no event horizons." This spec recommends **not committing** to that claim until the effective metric is computed. The density gradient mechanism may well produce horizons. If it does, CHPT's unique contribution would be horizons without singularities (finite maximum density replacing the infinite-density point). This depends on whether the field has a maximum density — an open question. (See [14_cosmology.md](14_cosmology.md))
 
 4. **Dark matter**: Modified gravity alone is insufficient (the Bullet Cluster and CMB power spectrum argue strongly for a particle dark matter component). CHPT should predict dark knots (achiral, non-luminous stable configurations) but **must acknowledge this is a reframing, not a solution**, until specific knot properties are derived. (See [07_gravity.md](07_gravity.md))
 
-5. **Field type**: Recommend geometric algebra Cl(3,0,1) to naturally support null-rotor structure, chirality, and tensor gravitational waves. **This is speculative** — the choice is motivated by post-hoc fit to desired features, not derived from first principles. Other algebras (Cl(4,1), Cl(1,3), etc.) have not been evaluated. (See [01_field_axioms.md](01_field_axioms.md), [06_null_rotors.md](06_null_rotors.md))
+5. **Field type**: Adopted as geometric algebra Cl(3,0,1), with the field Ψ valued in the even subalgebra Cl⁺(3,0,1). This is formalized in the math spec ([math/01_algebra.md](math/01_algebra.md)). The choice supports null-rotor structure, chirality, the Hopf fibration, and tensor gravitational waves. **Open issue**: the treatment of time evolution in PGA is not yet rigorous (see [math/03_dynamics.md](math/03_dynamics.md)).
 
 ### Warning: Unresolved Contradictions
 
 This spec identifies several internal tensions that cannot be resolved at the conceptual level:
 
-- **Determinism vs. Bell's theorem**: The original proposal is deterministic and local. Bell's theorem forbids this. The recommended nonlocal hidden variables approach is viable but fundamentally changes the theory's character.
+- **Topological non-locality formalization**: Axiom 5 now distinguishes signal locality from topological non-locality, resolving the Bell's theorem conflict in principle. But the mechanism for "instantaneous topological updates" needs rigorous mathematical formulation. Without it, the resolution is conceptual rather than proven.
 - **Topological conservation vs. baryogenesis**: If baryon number is topologically exact, the matter-antimatter asymmetry cannot be generated via Sakharov conditions. Either the initial conditions contained the asymmetry, or topological conservation is approximate.
 - **Gauge symmetry**: The Standard Model's gauge structure (U(1), SU(2), SU(3)) is completely absent from CHPT. How a single density field produces non-Abelian gauge symmetries is unknown and may be impossible.
-- **Neutrino interactions**: If neutrinos are achiral (neutral), they should not interact via the weak force. But they do. The achiral-equals-neutral mapping may be wrong or incomplete.
+- **Soliton stability**: The proposed Lagrangian ([math/03_dynamics.md](math/03_dynamics.md)) may not support stable 3D solitons without a higher-order (Skyrme-like) term. If knots cannot exist in this equation, the entire theory fails. See Derrick's theorem.
+- **Time evolution in PGA**: The geometric derivative ∇ in Cl(3,0,1) is spatial-only. The equation of motion as written is elliptic (Laplace), not hyperbolic (wave). This must be resolved before dynamics can be trusted.
 
 These are not aesthetic complaints. They are points where CHPT's concepts, as currently formulated, conflict with established physics. Resolution requires either modifying the concepts or demonstrating mathematically that the conflicts are only apparent.
 
@@ -104,14 +105,14 @@ These are not aesthetic complaints. They are points where CHPT's concepts, as cu
 
 The spec identifies a phased research program (detailed in [15_open_problems.md](15_open_problems.md)):
 
-1. **Write the field equation** — Choose field type, write Lagrangian, derive EOM.
-2. **Validate the linear sector** — Derive Maxwell's equations from linearized dynamics.
-3. **Find stable knots** — Solve for soliton/topological defect solutions, compute masses.
+1. **Write the field equation** — Field type chosen (Cl⁺(3,0,1)), Lagrangian proposed ([math/03_dynamics.md](math/03_dynamics.md)). **Critical open issues**: time evolution formulation, soliton stability (Derrick's theorem / Skyrme term).
+2. **Validate the linear sector** — Free EM wave equation derived ([math/04_electromagnetism.md](math/04_electromagnetism.md)). **Remaining**: sourced Maxwell equations, scalar/pseudoscalar mode analysis.
+3. **Find stable knots** — Solve for soliton/topological defect solutions, compute masses. **Not yet started** — blocked on resolving Step 1 issues.
 4. **Validate gravity** — Compute effective metric, PPN parameters.
 5. **Validate quantum sector** — Formulate nonlocal guidance, derive Born rule.
 6. **Address nuclear physics** — SU(3) color, weak force, nucleosynthesis.
 
-The theory lives or dies at Step 1. Without an equation, nothing can be computed or tested. With the right equation, everything follows.
+Steps 1-2 are partially complete. The theory now lives or dies at Step 1's open issues (time evolution, soliton stability) and Step 3 (finding a single knot solution).
 
 ---
 

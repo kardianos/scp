@@ -25,7 +25,7 @@ For CHPT to derive conservation laws via Noether's theorem, two things are neede
 
 ### Status in CHPT
 
-CHPT does not yet have a Lagrangian. It has axioms and qualitative dynamics. Translating these into a Lagrangian is a prerequisite for rigorous conservation law derivation. However, we can assess whether the axioms are COMPATIBLE with the required symmetries.
+A Lagrangian has been proposed in [math/03_dynamics.md](math/03_dynamics.md). Its symmetries (spatial translation, rotation, time translation) are consistent with the required conservation laws. The Lagrangian's internal symmetries (relevant to charge and color conservation) are under investigation.
 
 ---
 
@@ -158,12 +158,12 @@ The Standard Model violates CP symmetry (observed in kaon and B-meson systems). 
 | Energy | Total density conserved (Axiom 3) | Built in |
 | Momentum | Spatial translation invariance | Consistent with axioms |
 | Angular momentum | Rotational invariance | Consistent with axioms |
-| Electric charge | Chirality invariant (topological?) | Depends on field type |
+| Electric charge | Topological index Q (Hopf invariant) | Exact if vacuum manifold is S³ |
 | Baryon number | Topological winding number | Plausible if Skyrme-like |
 | Lepton number | Separate topological invariant? | Unknown |
-| CPT | Lorentz invariance | Consistent if Option A |
+| CPT | Lorentz invariance | Consistent (process ontology) |
 | CP violation | TBD (needed for baryogenesis) | Not addressed |
 
 ### Key Dependency
 
-Almost all conservation laws reduce to the question: **does CHPT have a Lagrangian formulation with the right symmetries?** Writing down this Lagrangian is the critical task. The axioms are COMPATIBLE with all required symmetries, but compatibility is not a derivation.
+A Lagrangian has been proposed ([math/03_dynamics.md](math/03_dynamics.md)). Its spacetime symmetries (translation, rotation) yield energy, momentum, and angular momentum conservation via Noether's theorem. Charge conservation follows from the topological structure of the vacuum manifold S³ ([math/02_topology.md](math/02_topology.md)). The remaining open question is whether the Lagrangian's internal structure supports the full set of conserved quantities needed for the Standard Model (color charge, lepton number, etc.).

@@ -41,24 +41,28 @@ Energy exists whenever the field is non-uniform. Specifically:
 - **Kinetic energy**: Energy associated with temporal changes in density (drho/dt != 0). Propagating disturbances carry kinetic energy.
 - **Topological energy**: Energy locked into the structure of knots, which cannot be released without destroying the knot. This is the mass-energy of particles.
 
-### The Energy Functional
+### The Energy Functional (Proposed)
 
-The total energy is some functional E[rho] of the density field. Its exact form depends on the field equation (not yet specified), but it must satisfy:
+The proposed Lagrangian ([math/03_dynamics.md](math/03_dynamics.md)) gives the Hamiltonian density:
 
-1. E[rho_0] = 0 (uniform field has zero dynamical energy)
-2. E[rho] >= 0 for all configurations (energy is non-negative)
-3. E is conserved in time (follows from Axioms 3 and 4)
+$$ \mathcal{H} = \frac{1}{2} |\nabla \Psi|^2 + \frac{\lambda}{4}(|\Psi|^2 - \rho_0^2)^2 $$
 
-A natural candidate structure (by analogy with known field theories):
+The total energy is:
 
-    E = integral of [ f(rho) + g(|grad rho|^2) + h(drho/dt)^2 ] d^3x
+$$ E = \int \mathcal{H} \, d^3x = \int \left[ \frac{1}{2} |\nabla \Psi|^2 + V(\Psi) \right] d^3x $$
 
-where f, g, h are functions to be determined. The f(rho) term penalizes deviation from rho_0; the g term penalizes gradients; the h term provides kinetic energy. But this is speculative until the field equation is written.
+This satisfies the required properties:
 
-### Unknowns
+1. $E[\Psi = \rho_0] = 0$ (uniform field has zero dynamical energy).
+2. $E \geq 0$ for all configurations (both terms are non-negative).
+3. $E$ is conserved via Noether's theorem (time-translation symmetry of the Lagrangian).
 
-- **Exact energy functional**: Cannot be specified without the field equation. The conceptual picture is clear (energy = non-uniformity), but the quantitative relationship between density gradients and energy is TBD.
-- **Whether gradient energy alone suffices**: The original proposal states "energy is defined as the density gradient of the field itself." Taken literally, this means only gradient energy exists — no separate potential or kinetic terms. This is a strong claim. It may be too restrictive; most field theories require both potential and kinetic terms for well-posed dynamics. However, some geometric theories (e.g., in terms of curvature of a connection) do express all energy through a single geometric quantity. Whether CHPT can achieve this depends on the field type.
+The kinetic term $|\nabla \Psi|^2$ encodes gradient energy (twisting, winding of the field). The potential $V(\Psi)$ penalizes deviation of $|\Psi|$ from $\rho_0$.
+
+### Remaining Questions
+
+- **Time kinetic energy**: The spatial-only derivative $\nabla$ in Cl(3,0,1) means $|\nabla\Psi|^2$ captures only spatial gradients. The time-derivative contribution $|\partial_t \Psi|^2$ must be added separately until the time evolution issue (see [15_open_problems.md](15_open_problems.md), A7) is resolved.
+- **Sufficiency of the potential**: The Mexican-hat potential $V = (\lambda/4)(|\Psi|^2 - \rho_0^2)^2$ may need additional terms (Skyrme term for soliton stability, chiral symmetry breaking for the weak force). See [15_open_problems.md](15_open_problems.md), A8.
 
 ---
 
@@ -75,15 +79,10 @@ This energy comes from two sources (as seen in the Lagrangian):
 Heavier particles (like protons) correspond to more complex knot topologies (higher winding numbers, more twist) which require more total field energy to sustain.
 
 ### Consequences
--   **$E=mc^2$**: This is definitional. The particle *is* a localized bundle of field energy.
+-   **$E=mc^2$**: This is definitional. The particle *is* a localized bundle of field energy. The conversion factor $c^2$ is set by the field's propagation speed.
 -   **Inertia**: The resistance to acceleration comes from the fact that moving the knot requires propagating its internal process. The "heavier" the knot (more internal energy), the more field activity must be updated to move it.
--   **Equivalence Principle**: Since gravity acts on the field density/energy gradients, and inertia *is* the field energy, they are naturally the same quantity. All field energy gravitates; all field energy resists acceleration.
-
-### Consequences
-
-- Mass-energy equivalence (E = mc^2) becomes natural: mass is energy localized as density excess, and c^2 is the conversion factor set by the field's propagation speed.
-- Gravitational mass equals inertial mass because both are density excess — the same quantity that creates the surrounding depletion zone (gravitational effect) also resists acceleration (inertial effect). This is the equivalence principle, arising here as an identity rather than a coincidence.
-- Negative mass is impossible (density is non-negative, and a knot below background would be a deficit, which corresponds to a depletion zone, not a particle).
+-   **Equivalence Principle**: Gravitational mass equals inertial mass because both are the same quantity — the total field energy of the knot. The density excess that creates the surrounding depletion zone (gravitational effect) is the same density excess that resists acceleration (inertial effect). This is the equivalence principle, arising as an identity rather than a coincidence.
+-   **No negative mass**: Density is non-negative, and a knot below background would be a deficit (depletion zone), not a particle.
 
 ### Unknowns
 
@@ -135,8 +134,8 @@ This works conceptually, but it raises the question: is rho_0 observable? If two
 
 | Concept | CHPT Definition | Status |
 |---------|----------------|--------|
-| Energy | Deviation from uniform density | Conceptual; functional TBD |
-| Mass | Integrated density excess of a knot | Conceptual; spectrum TBD |
+| Energy | Deviation from uniform density | Functional proposed ([math/03_dynamics.md](math/03_dynamics.md)) |
+| Mass | $Mc^2 = \int \mathcal{H} \, d^3x$ | Proposed ([math/05_mass_mechanism.md](math/05_mass_mechanism.md)); spectrum TBD |
 | Vacuum | Uniform density rho_0 | Defined; observability TBD |
 | Force | Density gradient acting on density structure | Conceptual; quantitative derivation TBD |
 | Vacuum energy problem | Dissolved (rho_0 not dynamical energy) | Elegant if consistent |
