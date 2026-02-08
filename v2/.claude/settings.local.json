@@ -9,7 +9,15 @@
       "Bash(./verify_gradient:*)",
       "Bash(./radial_solver:*)",
       "Bash(find:*)",
-      "Bash(./finite_lambda_solver:*)"
+      "Bash(./finite_lambda_solver:*)",
+      "Bash(for N in 64 96 128 160 192)",
+      "Bash(do echo \"=== N=$N ===\")",
+      "Bash(./verify3d:*)",
+      "Bash(done)",
+      "Bash(for L in 4 6 8 10)",
+      "Bash(do echo \"=== L=$L ===\")",
+      "Bash(kill:*)",
+      "Bash(chmod:*)"
     ]
   }
 }

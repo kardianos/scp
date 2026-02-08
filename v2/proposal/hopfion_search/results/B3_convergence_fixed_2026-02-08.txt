@@ -1,0 +1,315 @@
+=========================================
+ B=3 Convergence Study
+ Sun Feb  8 08:14:46 AM CST 2026
+ Threads: 16
+ RAM: 93 GB available
+=========================================
+
+make: 'verify3d' is up to date.
+
+=========================================
+ Part 1: B=3 Convergence at L=6
+=========================================
+
+>>> B=3 N=160 L=6 h=.075000 <<<
+=== 3D Verification of Radial Skyrmion Profile ===
+Grid: N=160, L=6.00, h=0.075000
+Parameters: rho0=1.000, e=4.000, B=3
+Profile: profile_B3.dat
+Threads: 16
+
+Loaded profile: 20001 points, r=[0, 30.000], dr=0.001500
+Memory: field=262.1 MB (init+energy only)
+
+Initializing 3D grid from profile...
+--- Initial 3D Energy ---
+E_total =    74.08280719
+E2      =    37.14093869
+E4      =    36.94186850
+EV      =     0.00000000
+ED      =     0.00000000
+Q       =     2.99013470  (expected: 3)
+E2/E4   =     1.00538874  (expected: 1.0 for sigma model)
+E/E_FB  =     3.53843668
+c4      = 0.125000
+E_FB    = 20.936593
+
+--- Comparison with 1D ---
+E_1D    =    74.38561984  (reference)
+E_3D    =    74.08280719  (this computation)
+Error   =    -0.30281265  (-0.4071%)
+Q error =    -0.00986530
+
+
+>>> B=3 N=192 L=6 h=.062500 <<<
+=== 3D Verification of Radial Skyrmion Profile ===
+Grid: N=192, L=6.00, h=0.062500
+Parameters: rho0=1.000, e=4.000, B=3
+Profile: profile_B3.dat
+Threads: 16
+
+Loaded profile: 20001 points, r=[0, 30.000], dr=0.001500
+Memory: field=453.0 MB (init+energy only)
+
+Initializing 3D grid from profile...
+--- Initial 3D Energy ---
+E_total =    74.24464156
+E2      =    37.17677040
+E4      =    37.06787116
+EV      =     0.00000000
+ED      =     0.00000000
+Q       =     2.99515138  (expected: 3)
+E2/E4   =     1.00293783  (expected: 1.0 for sigma model)
+E/E_FB  =     3.54616642
+c4      = 0.125000
+E_FB    = 20.936593
+
+--- Comparison with 1D ---
+E_1D    =    74.38561984  (reference)
+E_3D    =    74.24464156  (this computation)
+Error   =    -0.14097828  (-0.1895%)
+Q error =    -0.00484862
+
+
+>>> B=3 N=256 L=6 h=.046875 <<<
+=== 3D Verification of Radial Skyrmion Profile ===
+Grid: N=256, L=6.00, h=0.046875
+Parameters: rho0=1.000, e=4.000, B=3
+Profile: profile_B3.dat
+Threads: 16
+
+Loaded profile: 20001 points, r=[0, 30.000], dr=0.001500
+Memory: field=1073.7 MB (init+energy only)
+
+Initializing 3D grid from profile...
+--- Initial 3D Energy ---
+E_total =    74.35812058
+E2      =    37.20506413
+E4      =    37.15305645
+EV      =     0.00000000
+ED      =     0.00000000
+Q       =     2.99843930  (expected: 3)
+E2/E4   =     1.00139982  (expected: 1.0 for sigma model)
+E/E_FB  =     3.55158655
+c4      = 0.125000
+E_FB    = 20.936593
+
+--- Comparison with 1D ---
+E_1D    =    74.38561984  (reference)
+E_3D    =    74.35812058  (this computation)
+Error   =    -0.02749926  (-0.0370%)
+Q error =    -0.00156070
+
+
+>>> B=3 N=320 L=6 h=.037500 <<<
+=== 3D Verification of Radial Skyrmion Profile ===
+Grid: N=320, L=6.00, h=0.037500
+Parameters: rho0=1.000, e=4.000, B=3
+Profile: profile_B3.dat
+Threads: 16
+
+Loaded profile: 20001 points, r=[0, 30.000], dr=0.001500
+Memory: field=2097.2 MB (init+energy only)
+
+Initializing 3D grid from profile...
+--- Initial 3D Energy ---
+E_total =    74.39471587
+E2      =    37.21722402
+E4      =    37.17749185
+EV      =     0.00000000
+ED      =     0.00000000
+Q       =     2.99935630  (expected: 3)
+E2/E4   =     1.00106872  (expected: 1.0 for sigma model)
+E/E_FB  =     3.55333446
+c4      = 0.125000
+E_FB    = 20.936593
+
+--- Comparison with 1D ---
+E_1D    =    74.38561984  (reference)
+E_3D    =    74.39471587  (this computation)
+Error   =     0.00909602  (0.0122%)
+Q error =    -0.00064370
+
+
+>>> B=3 N=384 L=6 h=.031250 <<<
+=== 3D Verification of Radial Skyrmion Profile ===
+Grid: N=384, L=6.00, h=0.031250
+Parameters: rho0=1.000, e=4.000, B=3
+Profile: profile_B3.dat
+Threads: 16
+
+Loaded profile: 20001 points, r=[0, 30.000], dr=0.001500
+Memory: field=3623.9 MB (init+energy only)
+
+Initializing 3D grid from profile...
+--- Initial 3D Energy ---
+E_total =    74.41165137
+E2      =    37.22516586
+E4      =    37.18648551
+EV      =     0.00000000
+ED      =     0.00000000
+Q       =     2.99968855  (expected: 3)
+E2/E4   =     1.00104017  (expected: 1.0 for sigma model)
+E/E_FB  =     3.55414335
+c4      = 0.125000
+E_FB    = 20.936593
+
+--- Comparison with 1D ---
+E_1D    =    74.38561984  (reference)
+E_3D    =    74.41165137  (this computation)
+Error   =     0.02603153  (0.0350%)
+Q error =    -0.00031145
+
+
+>>> B=3 N=512 L=6 h=.023437 <<<
+=== 3D Verification of Radial Skyrmion Profile ===
+Grid: N=512, L=6.00, h=0.023438
+Parameters: rho0=1.000, e=4.000, B=3
+Profile: profile_B3.dat
+Threads: 16
+
+Loaded profile: 20001 points, r=[0, 30.000], dr=0.001500
+Memory: field=8589.9 MB (init+energy only)
+
+Initializing 3D grid from profile...
+--- Initial 3D Energy ---
+E_total =    74.42994740
+E2      =    37.23763672
+E4      =    37.19231069
+EV      =     0.00000000
+ED      =     0.00000000
+Q       =     2.99990119  (expected: 3)
+E2/E4   =     1.00121869  (expected: 1.0 for sigma model)
+E/E_FB  =     3.55501723
+c4      = 0.125000
+E_FB    = 20.936593
+
+--- Comparison with 1D ---
+E_1D    =    74.38561984  (reference)
+E_3D    =    74.42994740  (this computation)
+Error   =     0.04432756  (0.0596%)
+Q error =    -0.00009881
+
+
+=========================================
+ Part 2: B=3 at L=8
+=========================================
+
+>>> B=3 N=256 L=8 h=.062500 <<<
+=== 3D Verification of Radial Skyrmion Profile ===
+Grid: N=256, L=8.00, h=0.062500
+Parameters: rho0=1.000, e=4.000, B=3
+Profile: profile_B3.dat
+Threads: 16
+
+Loaded profile: 20001 points, r=[0, 30.000], dr=0.001500
+Memory: field=1073.7 MB (init+energy only)
+
+Initializing 3D grid from profile...
+--- Initial 3D Energy ---
+E_total =    74.23336105
+E2      =    37.16548989
+E4      =    37.06787116
+EV      =     0.00000000
+ED      =     0.00000000
+Q       =     2.99515137  (expected: 3)
+E2/E4   =     1.00263351  (expected: 1.0 for sigma model)
+E/E_FB  =     3.54562762
+c4      = 0.125000
+E_FB    = 20.936593
+
+--- Comparison with 1D ---
+E_1D    =    74.38561984  (reference)
+E_3D    =    74.23336105  (this computation)
+Error   =    -0.15225880  (-0.2047%)
+Q error =    -0.00484863
+
+
+>>> B=3 N=384 L=8 h=.041666 <<<
+=== 3D Verification of Radial Skyrmion Profile ===
+Grid: N=384, L=8.00, h=0.041667
+Parameters: rho0=1.000, e=4.000, B=3
+Profile: profile_B3.dat
+Threads: 16
+
+Loaded profile: 20001 points, r=[0, 30.000], dr=0.001500
+Memory: field=3623.9 MB (init+energy only)
+
+Initializing 3D grid from profile...
+--- Initial 3D Energy ---
+E_total =    74.36372288
+E2      =    37.19520513
+E4      =    37.16851776
+EV      =     0.00000000
+ED      =     0.00000000
+Q       =     2.99902161  (expected: 3)
+E2/E4   =     1.00071801  (expected: 1.0 for sigma model)
+E/E_FB  =     3.55185413
+c4      = 0.125000
+E_FB    = 20.936593
+
+--- Comparison with 1D ---
+E_1D    =    74.38561984  (reference)
+E_3D    =    74.36372288  (this computation)
+Error   =    -0.02189696  (-0.0294%)
+Q error =    -0.00097839
+
+
+>>> B=3 N=512 L=8 h=.031250 <<<
+=== 3D Verification of Radial Skyrmion Profile ===
+Grid: N=512, L=8.00, h=0.031250
+Parameters: rho0=1.000, e=4.000, B=3
+Profile: profile_B3.dat
+Threads: 16
+
+Loaded profile: 20001 points, r=[0, 30.000], dr=0.001500
+Memory: field=8589.9 MB (init+energy only)
+
+Initializing 3D grid from profile...
+--- Initial 3D Energy ---
+E_total =    74.38929480
+E2      =    37.20280929
+E4      =    37.18648551
+EV      =     0.00000000
+ED      =     0.00000000
+Q       =     2.99968855  (expected: 3)
+E2/E4   =     1.00043897  (expected: 1.0 for sigma model)
+E/E_FB  =     3.55307553
+c4      = 0.125000
+E_FB    = 20.936593
+
+--- Comparison with 1D ---
+E_1D    =    74.38561984  (reference)
+E_3D    =    74.38929480  (this computation)
+Error   =     0.00367495  (0.0049%)
+Q error =    -0.00031145
+
+
+=========================================
+ Part 3: B=1,2,4 comparison at N=256 L=6
+=========================================
+
+>>> B=1 N=256 L=6 <<<
+E_total =    25.98772119
+Q       =     0.99943609  (expected: 1)
+E2/E4   =     1.01787199  (expected: 1.0 for sigma model)
+Error   =     0.18965179  (0.7351%)
+Q error =    -0.00056391
+
+>>> B=2 N=256 L=6 <<<
+E_total =    50.58528968
+Q       =     1.99889049  (expected: 2)
+E2/E4   =     1.00226680  (expected: 1.0 for sigma model)
+Error   =    -0.01007999  (-0.0199%)
+Q error =    -0.00110951
+
+>>> B=4 N=256 L=6 <<<
+E_total =    95.13910940
+Q       =     3.99854134  (expected: 4)
+E2/E4   =     1.00045867  (expected: 1.0 for sigma model)
+Error   =    -0.08051374  (-0.0846%)
+Q error =    -0.00145866
+
+=========================================
+ DONE — Sun Feb  8 08:15:06 AM CST 2026
+=========================================
