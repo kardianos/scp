@@ -294,6 +294,8 @@ The pseudoscalar $P$ and flux $\vec{J}$ modes were massless because $e_0^2 = 0$ 
 
 ### Remaining Issues
 
-*   **Skyrme term EOM**: The Euler-Lagrange contribution from $\mathcal{L}_4$ is algebraically complex. The explicit form must be derived for simulation.
+*   **Skyrme term EOM**: **RESOLVED**. The Euler-Lagrange contribution from $\mathcal{L}_4$ has been derived analytically. It involves right-currents $A_d = \tilde{q}\,\partial_d q$, commutators $C_{d,d'} = [A_d, A_{d'}]$, and the Skyrme G-tensor $G_d = \sum_{d' \neq d}[A_{d'}, C_{d,d'}]$. The force on bulk component $a$ is:
+    $$ F_{4,a}(x) = \frac{1}{2e^2}\sum_d\left[\sigma_a\langle\epsilon_a\,\partial_d q,\, G_d\rangle_0 - D_d\langle\tilde{q}\,\epsilon_a,\, G_d\rangle_0\right] $$
+    where $\epsilon_a$ are the quaternion basis elements and $\sigma_a$ are reversion signs. This has been verified against finite differences for all 8 field components to $\sim 10^{-8}$ relative error. Implementation: `proposal/hopfion_search/src/field.c`.
 *   **Sourced Maxwell equations**: The free EM wave equation $\square\mathbf{F} = 0$ follows from the linear limit. The sourced equation $\nabla\mathbf{F} = J$ must be derived from the nonlinear knot solution. See [../15_open_problems.md](../15_open_problems.md), B4.
 *   **Weak force connection**: The massive degenerate sector (parity-odd $P$ + 3-component $\vec{J}$) has suggestive parallels with the weak interaction. This must be investigated but is currently speculative.

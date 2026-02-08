@@ -96,8 +96,61 @@ The field momentum density $\vec{\mathcal{P}}_{\text{field}}$ is proportional to
 Thus, the resistance to change in motion (inertia) is exactly the resistance of the field energy density to redistribution.
 **$M_{\text{inertial}} \equiv M_{\text{field}}$**.
 
+## 5. Sigma Model Limit and the Faddeev-Bogomolny Bound
+
+### The Sigma Model ($\lambda \to \infty$)
+
+In the strong-coupling limit $\lambda \to \infty$, the potential $E_V$ enforces $|q| = \rho_0$ exactly. The degenerate sector decouples and relaxes to zero ($E_D = 0$). Only $E_2$ and $E_4$ survive, and the virial theorem simplifies to:
+$$ E_2 = E_4, \qquad Mc^2 = E_2 + E_4 = 2E_4 = E_{\text{total}} $$
+
+### The Faddeev-Bogomolny Bound
+
+For the CHPT Lagrangian in the sigma model limit, the Faddeev-Bogomolny (FB) topological energy bound is:
+$$ E \geq E_{FB} = \frac{6\sqrt{2}\,\pi^2\,\rho_0^3}{e}\,|B| $$
+
+where $B$ is the baryon number (topological charge). The $\sqrt{2}$ factor arises from the specific ratio of $E_2$ and $E_4$ prefactors in the CHPT normalization. Under the rescaling $r = R\sqrt{c_4}$ with $c_4 = 2\rho_0^2/e^2$, the hedgehog ODE maps to the standard Skyrmion ODE, giving $E = (\sqrt{2}\rho_0^3)/(2e) \times E_{\text{std}}$ where $E_{\text{std},FB} = 12\pi^2$.
+
+### Numerical Result ($B=1$)
+
+The $B=1$ hedgehog soliton has been computed numerically via a shooting method (RK4 integration + bisection). The hedgehog ansatz $q = \rho_0(\cos f(r) + \sin f(r)\,\hat{r}\cdot\boldsymbol{\sigma})$ reduces the 3D problem to the radial ODE:
+$$ f''(r^2 + 2c_4\sin^2 f) + 2rf' + c_4 f'^2\sin 2f - \sin 2f - c_4\frac{\sin 2f\,\sin^2 f}{r^2} = 0 $$
+with $f(0) = \pi$, $f(\infty) = 0$. Results for $\rho_0 = 1$, $e = 4$:
+
+| Quantity | Value |
+|----------|-------|
+| $E_{\text{total}}$ | $25.782$ |
+| $E_2$ | $12.891$ |
+| $E_4$ | $12.891$ |
+| $E_2/E_4$ | $0.99999$ |
+| $Q$ | $1.000000$ |
+| $E/E_{FB}$ | **$1.2314$** |
+| $-f'(0)$ | $5.678$ |
+
+The ratio $E/E_{FB} = 1.232$ matches the standard result from the Skyrme model literature (the $B=1$ Skyrmion is 23.2% above the Bogomolny bound), confirming that the CHPT bulk sector is numerically equivalent to the classical Skyrme model.
+
+The energy scales as $M \propto \rho_0^3/e$, with the precise coefficient:
+$$ Mc^2 = 1.232 \times \frac{6\sqrt{2}\,\pi^2\,\rho_0^3}{e} $$
+
+## 6. Static Decoupling Theorem
+
+A key structural result confirmed numerically: **the static energy functional decouples**.
+
+The 8-component field $\Psi = (s, f_1, f_2, f_3, j_1, j_2, j_3, p)$ decomposes into bulk quaternion $q = (s, f_1, f_2, f_3)$ and degenerate part $(j_1, j_2, j_3, p)$. The energy terms depend on these sectors as:
+
+| Term | Depends on |
+|------|-----------|
+| $E_2 = \frac{1}{2}\int\|\nabla q\|^2 d^3x$ | Bulk only |
+| $E_4 = \frac{1}{4e^2}\int\sum_{i<j}\|[A_i, A_j]\|^2 d^3x$ | Bulk only (via $A_i = \tilde{q}\,\partial_i q$) |
+| $E_V = \frac{\lambda}{4}\int(\|q\|^2 - \rho_0^2)^2 d^3x$ | Bulk only |
+| $E_D = \frac{\mu^2}{2}\int(\|\vec{J}\|^2 + \tau^2) d^3x$ | Degenerate only |
+
+The scalar extraction $\langle M \rangle_0$ in $Cl^+(3,0,1)$ kills all terms containing $e_0$, so $E_2$, $E_4$, and $E_V$ depend only on the quaternion part. The degenerate sector sees only $E_D$ (a simple quadratic potential), which has its unique minimum at $\vec{J} = 0$, $\tau = 0$.
+
+**Consequence**: For static solitons, the bulk sector evolves under $E_2 + E_4 + E_V$ — which is exactly the **standard Skyrme model** on $S^3$. The degenerate sector trivially relaxes to zero. This was verified numerically: with all 8 components active, the degenerate components remain $< 10^{-10}$ while the bulk converges to the Skyrmion profile.
+
 ## Conclusion
 CHPT mass is **not** an arbitrary parameter. It is a **calculated eigenvalue** of the field equation.
 *   **Input**: Five parameters $(\rho_0, \lambda, e, \mu, c)$.
 *   **Output**: Discrete mass spectrum $M_1, M_2, \dots$ corresponding to stable topological soliton solutions.
 *   **Mechanism**: Mass arises from the balance of gradient energy ($E_2$), Skyrme stabilization energy ($E_4$), bulk potential ($E_V$), and degenerate potential ($E_D$), with the constraint $E_2 = E_4 - 3(E_V + E_D)$.
+*   **First numerical result**: The $B=1$ soliton mass is $Mc^2 = 1.232 \times 6\sqrt{2}\pi^2\rho_0^3/e$, confirming equivalence with the standard Skyrme model in the sigma model limit.
