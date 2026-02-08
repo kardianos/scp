@@ -104,13 +104,12 @@ The Skyrme term is $O(\psi^4)$ and negligible. The potential linearizes to a mas
 |-----------|----------|------|-------------------|
 | $\mathbf{F}$ (spatial bivector) | $\square \mathbf{F} = 0$ | $0$ | **Electromagnetic waves** ([04_electromagnetism.md](04_electromagnetism.md)) |
 | $S$ (scalar) | $\square S + m_S^2 S = 0$ | $m_S = \sqrt{2\lambda}\,\rho_0$ | Massive scalar (Higgs-like?) |
-| $P$ (pseudoscalar) | $\square P + \mu^2 P = 0$ | $m_P = \mu$ | **Massive pseudoscalar** (see §5) |
-| $\vec{J}e_0$ (degenerate bivector) | $\square \vec{J} + \mu^2 \vec{J} = 0$ | $m_J = \mu$ | **Massive flux** (3 components; see §5) |
+| $P$ (pseudoscalar) | $\mu^2 P = 0$ | — | **Non-dynamical** (see §5.6) |
+| $\vec{J}e_0$ (degenerate bivector) | $\mu^2 \vec{J} = 0$ | — | **Non-dynamical** (see §5.6) |
 
 *   $\mathbf{F}$ is massless — this IS electromagnetism.
 *   $S$ is massive from the bulk potential $V$ — standard Mexican-hat result.
-*   $P$ and $\vec{J}$ are massive from the degenerate mass term $V_D$ — their mass $\mu$ is an independent parameter (not determined by $\lambda$ or $\rho_0$).
-*   The degenerate sector ($P + \vec{J}$) has **4 massive degrees of freedom** at the same mass $\mu$.
+*   **$P$ and $\vec{J}$ are non-dynamical**: The kinetic term $\langle\partial_\mu\Psi\,\widetilde{\partial_\mu\Psi}\rangle_0 = |\partial_\mu q|^2$ does not include the degenerate sector at all (because $e_0^2 = 0$ kills all weight terms in the scalar extraction). Their only contribution to the Lagrangian is $-V_D = -(\mu^2/2)(|\vec{J}|^2 + P^2)$, which is algebraic — no derivatives. The Euler-Lagrange equations give $\mu^2 J_i = 0$, $\mu^2 P = 0$: they are forced to zero. They are **not** propagating Klein-Gordon fields. See §5.6 for the full analysis and implications.
 
 ### Nonlinear Regime (The Knot)
 
@@ -229,6 +228,46 @@ The degenerate mass term is not ad hoc — it follows from the internal structur
 2. **Geometric motivation**: In PGA, the bulk $q$ encodes **rotational** structure (orientation, spin), while the weight $p$ encodes **translational** structure (displacement, momentum). A theory that constrains only rotations but leaves translations unconstrained is geometrically incomplete.
 
 3. **Precedent**: In the Skyrme model, the "pion mass term" $V_\pi = (f_\pi^2 m_\pi^2/4)\text{Tr}(U - 1)$ explicitly breaks the chiral symmetry that would otherwise produce massless Goldstone bosons (pions). The CHPT degenerate mass term $V_D$ plays an analogous role.
+
+### 5.6 Critical Issue: The Degenerate Sector Is Non-Dynamical
+
+**Problem**: The kinetic term $\mathcal{L}_2 = \frac{1}{2}\eta^{\mu\nu}\langle\partial_\mu\Psi\,\widetilde{\partial_\nu\Psi}\rangle_0$ does not include the degenerate sector. This is a direct algebraic consequence of $e_0^2 = 0$:
+
+**Proof**: For $\Psi = q + e_0 p$ with $q \in Cl^+(3,0)$ and $p \in Cl^-(3,0)$:
+
+$$\partial_\mu\Psi = \partial_\mu q + e_0\,\partial_\mu p$$
+$$\widetilde{\partial_\mu\Psi} = \widetilde{\partial_\mu q} + \widetilde{(e_0\,\partial_\mu p)}$$
+
+The product $(\partial_\mu\Psi)(\widetilde{\partial_\mu\Psi})$ has four terms:
+1. $(\partial_\mu q)(\widetilde{\partial_\mu q})$ — pure bulk, scalar part = $|\partial_\mu q|^2$
+2. $(\partial_\mu q)\widetilde{(e_0\,\partial_\mu p)}$ — contains $e_0$, scalar part = 0
+3. $(e_0\,\partial_\mu p)(\widetilde{\partial_\mu q})$ — contains $e_0$, scalar part = 0
+4. $(e_0\,\partial_\mu p)\widetilde{(e_0\,\partial_\mu p)}$ — contains $e_0^2 = 0$
+
+Therefore: $\langle(\partial_\mu\Psi)(\widetilde{\partial_\mu\Psi})\rangle_0 = |\partial_\mu q|^2$
+
+The same argument applies to the Skyrme term: the right-current $R_\mu = \widetilde{\Psi}\,\partial_\mu\Psi$ has quaternion part $\tilde{q}\,\partial_\mu q$ (all $e_0$-containing terms drop out of $\langle[R_\mu, R_\nu]^2\rangle_0$). And $E_V$ depends only on $|q|^2$.
+
+**Consequence**: The only term in the Lagrangian that involves $P$ or $\vec{J}$ is $V_D = (\mu^2/2)(|\vec{J}|^2 + P^2)$. This is algebraic (no derivatives). The Euler-Lagrange equations give:
+
+$$\frac{\partial V_D}{\partial J_i} = \mu^2 J_i = 0, \qquad \frac{\partial V_D}{\partial P} = \mu^2 P = 0$$
+
+The degenerate sector is **forced to zero** — it has no dynamics, no propagation, and no coupling to solitons. This is verified numerically: the 3D gradient flow code confirms $|J|_{\max} < 10^{-10}$, $|P|_{\max} < 10^{-10}$ (see `proposal/hopfion_search/src/main.c`).
+
+**Resolution options**: To make the degenerate sector dynamical, the Lagrangian must be extended:
+
+1. **Degenerate kinetic term** (minimal fix):
+$$\mathcal{L}_{2,D} = \frac{1}{2c^2}|\dot{p}|^2 - \frac{1}{2}|\nabla p|^2$$
+where $|p|^2 = |\vec{J}|^2 + \tau^2$. This gives $P$ and $\vec{J}$ proper Klein-Gordon dynamics ($\square P + \mu^2 P = 0$), but they remain **decoupled** from solitons (free massive fields in the soliton background).
+
+2. **Bulk-degenerate coupling** (needed for interactions):
+An explicit coupling term is required, e.g.:
+$$\mathcal{L}_{\text{int}} = \frac{g^2}{2}|q|^2|\nabla p|^2$$
+This creates a position-dependent effective mass for the degenerate modes near the soliton core (where $|q| \neq \rho_0$), enabling soliton-dependent scattering. The coupling constant $g$ becomes a sixth parameter.
+
+3. **Component-wise Skyrme term**: Replace $\langle[R_\mu, R_\nu]^2\rangle_0$ with a norm that sees all 8 components. This would create nonlinear coupling between bulk and degenerate sectors through the topological stabilization mechanism.
+
+**Status**: This issue is **open**. The choice of coupling mechanism has physical implications (parity violation, interaction range, coupling strength) that should be guided by the target phenomenology (weak force properties). See `15_open_problems.md`, B3.
 
 ---
 

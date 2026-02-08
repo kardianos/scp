@@ -72,8 +72,10 @@ This chapter provides an accounting of the current limitation of CHPT.
 *   **Implication**: Either Quarks are not fundamental knots, or the topology is more complex (e.g., knots on a non-simply connected manifold).
 
 ### B3. The Weak Force
-*   **Status**: **OPEN — New direction from B5 resolution**.
-*   **Update**: Defined as "Parity Violation" in `spec/05_chirality.md`. The bulk Lagrangian is parity-invariant, but the newly-identified massive degenerate sector (B5 resolution) provides a candidate: the pseudoscalar $P$ is parity-odd and massive, and the 3-component flux $\vec{J}$ is also massive. Together, these 4 massive modes with parity-odd coupling are structurally suggestive of weak bosons. **Investigation needed**: does the degenerate sector couple asymmetrically to left-handed vs right-handed solitons?
+*   **Status**: **OPEN — Blocked by degenerate sector decoupling (see B6)**.
+*   **Update**: Defined as "Parity Violation" in `spec/05_chirality.md`. The massive degenerate sector (B5 resolution) was a candidate: 4 massive modes (parity-odd $P$ + 3-component $\vec{J}$) suggestive of weak bosons.
+*   **Critical Problem (Phase 7)**: The degenerate sector is **completely decoupled** from solitons in the current Lagrangian. The scalar extraction $\langle\cdot\rangle_0$ in Cl(3,0,1) kills all $e_0$ terms, so $\mathcal{L}_2$, $\mathcal{L}_4$, and $V$ depend only on the bulk quaternion $q$. Worse, the degenerate sector has **no kinetic energy at all** — it is non-dynamical and algebraically forced to zero. See B6 and `spec/math/03_dynamics.md`, §5.6.
+*   **Path forward**: The Lagrangian must be extended with (a) a degenerate kinetic term $\mathcal{L}_{2,D} = (1/2c^2)|\dot{p}|^2 - (1/2)|\nabla p|^2$ and (b) an explicit bulk-degenerate coupling term. Only then can weak-force-like interactions be investigated.
 
 ### B4. Derivation of Maxwell's Equations
 *   **Original Problem**: Need to prove null-rotors = Maxwell.
@@ -86,7 +88,14 @@ This chapter provides an accounting of the current limitation of CHPT.
 *   **Status**: **RESOLVED**.
 *   **Resolution**: The **degenerate mass term** $V_D = (\mu^2/2)(|\vec{J}|^2 + \tau^2)$ uses the dual quaternion weight norm $|p|^2$ to give mass $\mu$ to both the pseudoscalar $P$ and flux $\vec{J}$ modes. This exploits the $Cl^+(3,0,1) \cong \mathbb{H} + \varepsilon\mathbb{H}$ structure: the bulk potential $V$ constrains $|q|^2$, while $V_D$ constrains $|p|^2$. See `spec/math/03_dynamics.md`, Section 5.
 *   **New parameter**: $\mu$ (degenerate mass scale). Theory now has 5 parameters: $(\rho_0, \lambda, e, \mu, c)$.
-*   **Speculative direction**: The massive degenerate sector (parity-odd $P$ + 3-component $\vec{J}$) has suggestive parallels with the weak interaction (parity violation, short-range, 4 massive modes). This is speculative and requires investigation.
+*   **Speculative direction**: Superseded by B6; the degenerate sector must first be made dynamical before its phenomenological role can be assessed.
+
+### B6. Degenerate Sector Decoupling — Non-Dynamical Weight Modes
+*   **Status**: **NEW CRITICAL GAP (Phase 7)**.
+*   **Problem**: The kinetic term $\mathcal{L}_2 = \frac{1}{2}\eta^{\mu\nu}\langle\partial_\mu\Psi\,\widetilde{\partial_\nu\Psi}\rangle_0$ evaluates to $\frac{1}{2}|\partial_\mu q|^2$ — it does not include the degenerate sector ($\vec{J}$, $P$) at all. This is because $e_0^2 = 0$ in Cl(3,0,1), so the scalar extraction $\langle\cdot\rangle_0$ is blind to the weight part $e_0 p$. The same holds for $\mathcal{L}_4$ and $V$. The only term involving $P$ and $\vec{J}$ is $V_D = (\mu^2/2)(|\vec{J}|^2 + P^2)$, which is algebraic (no derivatives). The EOM is $\mu^2 J_i = 0$, $\mu^2 P = 0$ — the degenerate sector is forced to zero. It has no dynamics, no propagation, and no coupling to solitons.
+*   **Verified**: Numerically confirmed — 3D gradient flow gives $|J|_{\max} < 10^{-10}$, $|P|_{\max} < 10^{-10}$.
+*   **Implication**: The linear-limit table in `spec/math/03_dynamics.md` §3 previously claimed $\square P + \mu^2 P = 0$ (Klein-Gordon). This was **incorrect** — corrected to $\mu^2 P = 0$ (algebraic).
+*   **Resolution direction**: Add an explicit degenerate kinetic term $\mathcal{L}_{2,D} = (1/2c^2)|\dot{p}|^2 - (1/2)|\nabla p|^2$ to give $P$ and $\vec{J}$ proper propagation. For coupling to solitons, an interaction term (e.g., $g^2|q|^2|\nabla p|^2$) is also needed. See `spec/math/03_dynamics.md`, §5.6.
 
 ---
 
@@ -117,5 +126,12 @@ With the Lagrangian now complete (A2, A7, A8, B5 all resolved), the remaining op
 6.  **Mass spectrum**: The $B$-dependence is now known: $E/E_{FB}$ decreases from 1.231 ($B=1$) to 1.137 ($B=4$). Mapping to actual particle mass ratios remains open.
 7.  **Scattering**: Collide two solitons. Observe if they repel, attract, scatter elastically, or produce new solitons.
 8.  **Degenerate sector dynamics**: Study how the massive $P$ and $\vec{J}$ modes interact with solitons. Do they mediate parity-violating interactions (weak force connection)?
-9.  **Finite $\lambda$ effects**: Move beyond the sigma model limit. Solve with finite $\lambda$ and study how $E_V$ modifies the soliton profile and mass formula ($Mc^2 = 2E_4 - 2E_V - 2E_D$).
+9.  **Finite $\lambda$ effects** ✓: Solved via coupled f-shooting + $\rho$-BVP Newton iteration with under-relaxation (`proposal/hopfion_search/src/finite_lambda.c`). Self-consistent solutions (virial $\approx 0$, $Q = 1.000$) obtained for $\lambda$ from $10^8$ down to $8000$. Key results:
+    - $\rho(0)$ decreases from $\rho_0$ as $\lambda$ decreases, with $\delta\rho(0) \sim -\text{source}/(2\lambda)$ for large $\lambda$.
+    - Finite-$\lambda$ effects **lower** the soliton mass: $E/E_{FB}$ decreases from 1.232 ($\lambda=\infty$) to 0.891 ($\lambda=8000$).
+    - The Faddeev-Bogomolny bound is violated ($E/E_{FB} < 1$) at $\lambda \approx 9000$, because the FB bound assumes $\rho \equiv \rho_0$.
+    - The virial theorem $E_2 - E_4 + 3E_V = 0$ holds for all converged solutions. Mass formula: $Mc^2 = 2E_4 - 2E_V$.
+    - Below $\lambda \approx 7000$–$8000$, the solver collapses — the soliton core hollows out ($\rho \to 0$). The $\sigma$-model soliton ($\rho \equiv \rho_0$) is a **local** energy minimum; the **global** minimum has $\rho \to 0$ (topological collapse). The constraint $\rho \equiv \rho_0$ provides topological protection.
+    - The $\rho$ BVP is exponentially stiff (growth rate $\sim e^{\sqrt{2\lambda}\,R}$), requiring BVP methods rather than shooting.
+    - See `spec/math/05_mass_mechanism.md`, §7 for the full numerical table.
 
