@@ -8,7 +8,8 @@
       "Bash(./soliton_search:*)",
       "Bash(./verify_gradient:*)",
       "Bash(./radial_solver:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(./finite_lambda_solver:*)"
     ]
   }
 }
