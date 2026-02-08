@@ -63,7 +63,8 @@ This chapter provides an accounting of the current limitation of CHPT.
 *   **Update**: `spec/math/05_mass_mechanism.md` defines Mass as the Hamiltonian eigenvalue. The $B=1$ soliton mass has been computed in the sigma model limit:
     $$ Mc^2 = E_{\text{total}} = 1.232 \times \frac{6\sqrt{2}\,\pi^2\,\rho_0^3}{e} $$
     For $\rho_0=1$, $e=4$: $Mc^2 = 25.78$ (dimensionless units). The mass depends on $\rho_0$ and $e$ as $M \propto \rho_0^3/e$.
-*   **Remaining**: Higher-charge ($B=2,3,\ldots$) soliton masses, and the mapping to actual particles (proton, electron), have not been computed. We do not yet know if $M_{proton}/M_{electron} \approx 1836$.
+*   **Update (Phase 6)**: Higher-charge solitons ($B=1$–$4$) have been computed via the rational map ansatz. Binding energies: $E(B)/(B\cdot E_1)$ = 0.981 ($B=2$), 0.962 ($B=3$), 0.923 ($B=4$). Multi-Skyrmions are bound. See `spec/math/05_mass_mechanism.md`, §5.
+*   **Remaining**: The mapping to actual particles (proton, electron) has not been established. We do not yet know if $M_{proton}/M_{electron} \approx 1836$.
 
 ### B2. fractional Charge (The Quark Problem)
 *   **Status**: **NEW CRITICAL GAP**.
@@ -112,8 +113,8 @@ With the Lagrangian now complete (A2, A7, A8, B5 all resolved), the remaining op
 ### Remaining
 
 4.  **Full 3D soliton relaxation**: The 3D gradient flow driver is implemented but encounters topology loss: the soliton shrinks below grid resolution during energy minimization (equilibrium size $\sim \sqrt{c_4} \ll h$ for typical parameters). Solutions: (a) use the 1D radial profile to initialize a well-resolved 3D grid, (b) implement rational map ansatz for higher-$B$ sectors, (c) use adaptive mesh refinement.
-5.  **Higher-charge solitons ($B=2, 3, \ldots$)**: Compute masses and shapes. The $B=2$ Skyrmion is known to be toroidal in the standard Skyrme model; verify this carries over.
-6.  **Mass spectrum**: Compare $B$-dependence of soliton masses with known particle mass ratios. The standard Skyrme model gives $E(B) \approx 1.232 \times B \times E_{FB}$ for small $B$ (near the Bogomolny bound).
+5.  **Higher-charge solitons ($B=2, 3, 4$)** ✓: Solved via rational map ansatz (`src/rational_map.c`). Angular integrals $I$ match literature. Binding energies: 1.9% ($B=2$), 3.8% ($B=3$), 7.7% ($B=4$) per baryon. Shapes: toroidal ($B=2$), tetrahedral ($B=3$), cubic ($B=4$).
+6.  **Mass spectrum**: The $B$-dependence is now known: $E/E_{FB}$ decreases from 1.231 ($B=1$) to 1.137 ($B=4$). Mapping to actual particle mass ratios remains open.
 7.  **Scattering**: Collide two solitons. Observe if they repel, attract, scatter elastically, or produce new solitons.
 8.  **Degenerate sector dynamics**: Study how the massive $P$ and $\vec{J}$ modes interact with solitons. Do they mediate parity-violating interactions (weak force connection)?
 9.  **Finite $\lambda$ effects**: Move beyond the sigma model limit. Solve with finite $\lambda$ and study how $E_V$ modifies the soliton profile and mass formula ($Mc^2 = 2E_4 - 2E_V - 2E_D$).

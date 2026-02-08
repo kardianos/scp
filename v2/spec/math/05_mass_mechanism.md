@@ -131,6 +131,25 @@ The ratio $E/E_{FB} = 1.232$ matches the standard result from the Skyrme model l
 The energy scales as $M \propto \rho_0^3/e$, with the precise coefficient:
 $$ Mc^2 = 1.232 \times \frac{6\sqrt{2}\,\pi^2\,\rho_0^3}{e} $$
 
+### Higher-B Results (Rational Map Ansatz)
+
+For $B \geq 2$, the hedgehog ansatz generalizes via the rational map approximation (Houghton, Manton, Sutcliffe 1998): $\hat{q} = \cos f(r) + \sin f(r)\,\hat{n}(\theta,\phi)\cdot\boldsymbol{\sigma}$ where $\hat{n}$ is determined by a degree-$B$ rational map $R: S^2 \to S^2$. The energy factorizes into:
+$$ E_2 = 2\pi\rho_0^2 \int_0^\infty \left(f'^2 r^2 + 2B\sin^2 f\right) dr, \qquad E_4 = \frac{4\pi\rho_0^4}{e^2} \int_0^\infty \left(2Bf'^2\sin^2 f + I\frac{\sin^4 f}{r^2}\right) dr $$
+where $I = (4\pi)^{-1}\int_{S^2} b^2\,d\Omega$ is the quartic angular integral of the map (with $b$ the local baryon density). The generalized ODE is:
+$$ f'' = \frac{\sin 2f\left(B + Ic_4\sin^2 f/r^2\right) - 2rf' - Bc_4 f'^2\sin 2f}{r^2 + 2Bc_4\sin^2 f} $$
+with $f(0)=\pi$, $f(\infty)=0$. Near $r=0$, $f(r) \sim \pi - ar^\alpha$ where $\alpha = (-1+\sqrt{1+8B})/2$.
+
+Results for $\rho_0 = 1$, $e = 4$ (sigma model limit):
+
+| $B$ | $I$ | $\alpha$ | $E/E_{FB}$ | $E_2/E_4$ | $E(B)/(B\cdot E_1)$ | Shape |
+|-----|-----|----------|------------|-----------|---------------------|-------|
+| 1 | 1.000 | 1.000 | 1.231 | 1.000 | 1.000 | Spherical |
+| 2 | 5.808 | 1.562 | 1.208 | 1.000 | 0.981 | Toroidal |
+| 3 | 13.577 | 2.000 | 1.184 | 1.000 | 0.962 | Tetrahedral |
+| 4 | 20.650 | 2.372 | 1.137 | 1.000 | 0.923 | Cubic |
+
+The binding energy per baryon $E(B)/(B\cdot E_1) < 1$ for all $B > 1$, confirming that multi-Skyrmions are bound. The binding fraction increases with $B$: 1.9% for $B=2$, 3.8% for $B=3$, 7.7% for $B=4$. These values are consistent with the standard Skyrme model literature.
+
 ## 6. Static Decoupling Theorem
 
 A key structural result confirmed numerically: **the static energy functional decouples**.
