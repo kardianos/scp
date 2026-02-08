@@ -7,7 +7,8 @@
       "Bash(make:*)",
       "Bash(./soliton_search:*)",
       "Bash(./verify_gradient:*)",
-      "Bash(./radial_solver:*)"
+      "Bash(./radial_solver:*)",
+      "Bash(find:*)"
     ]
   }
 }

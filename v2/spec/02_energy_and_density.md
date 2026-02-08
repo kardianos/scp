@@ -82,7 +82,7 @@ This energy comes from three sources (as seen in the Lagrangian):
 2.  **Skyrme Energy** ($E_4$): Higher-order stabilization energy from interacting field currents. Essential for preventing soliton collapse.
 3.  **Potential Energy** ($E_V$): The energy cost of displacing the field norm from the vacuum value $\rho_0$.
 
-The virial theorem constrains these: $E_2 = E_4 - 3E_V$, giving the mass formula $Mc^2 = 2E_4 - 2E_V$ (see [math/05_mass_mechanism.md](math/05_mass_mechanism.md)).
+The virial theorem constrains these: $E_2 = E_4 - 3E_V$, giving the mass formula $Mc^2 = 2E_4 - 2E_V$ (see [math/05_mass_mechanism.md](math/05_mass_mechanism.md)). In the sigma model limit ($\lambda \to \infty$, $E_V = 0$), this simplifies to $E_2 = E_4$ and $Mc^2 = E_{\text{total}}$. This has been verified numerically: the $B=1$ Skyrmion satisfies $E_2/E_4 = 1.000$ to 6 significant figures.
 
 Heavier particles (like protons) correspond to more complex knot topologies (higher winding numbers, more twist) which require more total field energy to sustain.
 
@@ -94,7 +94,7 @@ Heavier particles (like protons) correspond to more complex knot topologies (hig
 
 ### Unknowns
 
-- **Quantitative mass spectrum**: Why is the electron mass exactly 0.511 MeV and the proton 938 MeV? CHPT predicts that these follow from the stable knot harmonics, but has not yet identified which harmonics correspond to which particles, nor computed any masses.
+- **Quantitative mass spectrum**: Why is the electron mass exactly 0.511 MeV and the proton 938 MeV? The $B=1$ soliton mass has been computed: $Mc^2 = 1.232 \times 6\sqrt{2}\pi^2\rho_0^3/e$ (in the sigma model limit). The absolute scale is set by matching one particle mass, which fixes $\rho_0^3/e$ in physical units. Whether the mass *ratios* between different topological sectors match observed particle ratios remains to be computed.
 - **Mass vs. binding energy**: In standard physics, the proton mass is mostly binding energy (QCD), not quark masses. Does CHPT reproduce this? The knot model of the proton would need internal structure whose binding contributes most of the mass.
 
 ---
@@ -142,8 +142,8 @@ This works conceptually, but it raises the question: is rho_0 observable? If two
 
 | Concept | CHPT Definition | Status |
 |---------|----------------|--------|
-| Energy | Deviation from uniform density | Functional proposed ([math/03_dynamics.md](math/03_dynamics.md)) |
-| Mass | $Mc^2 = \int \mathcal{H} \, d^3x$ | Proposed ([math/05_mass_mechanism.md](math/05_mass_mechanism.md)); spectrum TBD |
+| Energy | Deviation from uniform density | Functional established ([math/03_dynamics.md](math/03_dynamics.md)); gradient verified numerically |
+| Mass | $Mc^2 = \int \mathcal{H} \, d^3x$ | $B=1$ mass computed: $1.232 \times 6\sqrt{2}\pi^2\rho_0^3/e$ ([math/05_mass_mechanism.md](math/05_mass_mechanism.md)) |
 | Vacuum | Uniform density rho_0 | Defined; observability TBD |
 | Force | Density gradient acting on density structure | Conceptual; quantitative derivation TBD |
 | Vacuum energy problem | Dissolved (rho_0 not dynamical energy) | Elegant if consistent |

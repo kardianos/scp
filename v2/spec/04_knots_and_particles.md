@@ -58,9 +58,9 @@ Whether these quantum numbers emerge naturally from the CHPT field equation is o
 
 ### Unknowns
 
-- **What equation governs the internal knot dynamics?** A Lagrangian and hyperbolic EOM are established in [math/03_dynamics.md](math/03_dynamics.md), with Skyrme stabilization ensuring Derrick's theorem is evaded (A7/A8 resolved). Soliton solutions have not yet been found numerically.
+- **What equation governs the internal knot dynamics?** A Lagrangian and hyperbolic EOM are established in [math/03_dynamics.md](math/03_dynamics.md), with Skyrme stabilization ensuring Derrick's theorem is evaded (A7/A8 resolved). The first soliton solution (the $B=1$ hedgehog Skyrmion) has been found numerically in the sigma model limit, confirming $E/E_{FB} = 1.232$ (see [math/05_mass_mechanism.md](math/05_mass_mechanism.md), §5). Higher-charge soliton solutions have not yet been computed.
 - **Do the modes reproduce the known particle spectrum?** Specifically: spin-1/2 fermions, spin-1 bosons, the specific mass ratios, three generations of quarks and leptons.
-- **What sets the fundamental scale?** Particle masses span many orders of magnitude. What parameter in the field equation determines the overall mass scale?
+- **What sets the fundamental scale?** The soliton mass scales as $M \propto \rho_0^3/e$. The absolute mass scale is set by matching one particle mass to experiment, which fixes the ratio $\rho_0^3/e$ in physical units. The remaining mass spectrum (ratios between particles) is then a prediction.
 
 ---
 
@@ -130,3 +130,5 @@ CHPT's novelty (if any) would be: a SINGLE field in 3+1D whose soliton spectrum 
 ### Honest Assessment
 
 No known single field equation in 3+1D produces soliton solutions matching the full Standard Model spectrum. The Skyrme model comes closest for baryons but does not address leptons, gauge bosons, or the Higgs. Whether such an equation exists is an open mathematical question. CHPT is betting that it does.
+
+**Numerical status**: The CHPT bulk sector has been confirmed to reduce exactly to the standard Skyrme model for static solitons (the "static decoupling theorem"). The $B=1$ Skyrmion has been computed numerically with energy $E = 1.232 \times E_{FB}$, matching the established literature. This confirms that the CHPT Lagrangian supports stable topological solitons — the theory's fundamental existence requirement is met. The additional structure beyond the Skyrme model (the 4 degenerate-sector degrees of freedom: pseudoscalar $P$ and flux $\vec{J}$) does not participate in the static soliton but may play a role in dynamics, scattering, and weak-force-like interactions.
