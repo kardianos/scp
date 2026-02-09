@@ -111,20 +111,46 @@ See `results/extended_lagrangian_analysis.md` for derivation and numerical V_eff
   - Key: e=1 σ-model profile, ≥13 grid pts across core, no damping
   - Attractive channel: needs more resolution (crashes at t≈1.7)
 
+## Phase 9 — Proposed Next Steps (Priority Order)
+
+### 9.1 B+B̄ Annihilation Simulation (HIGH IMPACT, LOW EFFORT)
+Soliton-antisoliton scattering using the working infrastructure (e=1, N=192, σ-model profile, v=0.5c). The code already supports `-anti` mode. Should show charge annihilation (Q=1+(-1)→0) with energy conversion to radiation. Most compelling physical demonstration — particle-antiparticle annihilation from topology.
+
+### 9.2 Observe the Bounce (MEDIUM IMPACT, LOW EFFORT)
+The repulsive collision showed 18× deceleration but lattice time ran out before the bounce. Options:
+- N=256, L=12, e=1 (~4.3 GB): h=0.094, 15 pts across core → ~3.5t stability window
+- e=0.7: core radius 2.02, 19 pts at N=192 → ~5t window (changes physics slightly)
+
+### 9.3 Implement Degenerate Sector Dynamics (HIGH IMPACT, HIGH EFFORT)
+Implement the hybrid extended Lagrangian (L₂,D + g²|q|²|∇p|² + full Skyrme norm) in the 3D time evolution code. Requires adding 4 more field components (j1,j2,j3,p) and computing bound states numerically. Addresses the biggest theoretical gap (B6/B3).
+
+### 9.4 Visualization (MEDIUM IMPACT, LOW EFFORT)
+Publication-quality plots: scattering trajectories, energy density isosurfaces during collision, radial profile comparisons, V_eff potential well for degenerate modes.
+
+### 9.5 Spec Chapter Drafting (for proposal)
+Turn numerical results into proposal narrative, particularly the soliton dynamics/scattering chapter.
+
 ## Code Inventory
 
-`proposal/hopfion_search/` — C (gcc + OpenMP) + Python visualization
+`proposal/hopfion_search/` — C (gcc + OpenMP) + Python visualization. `make` builds all into `bin/`.
 
-| File | Purpose |
-|------|---------|
-| `src/radial.c` | B=1 shooting method solver |
-| `src/rational_map.c` | B=1–4 rational map ansatz solver |
-| `src/field.c` | 3D energy functional & gradient (4th-order) |
-| `src/verify.c` | Gradient verification |
-| `src/verify3d.c` | 3D initialization from 1D profiles |
-| `src/finite_lambda.c` | Coupled f-shooting + ρ-BVP Newton |
-| `src/maxwell.c` | Sourced Maxwell equations |
-| `src/veff.c` | Effective potential for degenerate modes |
-| `src/scatter.c` | Soliton-soliton scattering simulator |
-| `src/main.c` | 3D gradient flow (topology loss) |
-| `viz_profile.py` | Profile visualization |
+| Directory | Contents |
+|-----------|----------|
+| `src/` | C source files and headers |
+| `bin/` | Compiled executables |
+| `data/` | Generated profiles, Maxwell fields, scatter output |
+| `scripts/` | Shell batch scripts, Python visualization |
+| `results/` | Analysis documents, archived run logs, figures |
+
+| Source | Binary | Purpose |
+|--------|--------|---------|
+| `src/radial.c` | `bin/radial_solver` | B=1 shooting method solver |
+| `src/rational_map.c` | `bin/rational_map_solver` | B=1–4 rational map ansatz solver |
+| `src/finite_lambda.c` | `bin/finite_lambda_solver` | Coupled f-shooting + ρ-BVP Newton |
+| `src/scatter.c` | `bin/scatter` | Soliton-soliton scattering simulator |
+| `src/verify3d.c` | `bin/verify3d` | 3D initialization from 1D profiles |
+| `src/maxwell.c` | `bin/maxwell` | Sourced Maxwell equations |
+| `src/veff.c` | `bin/veff` | Effective potential for degenerate modes |
+| `src/field.c` | (library) | 3D energy functional & gradient (4th-order) |
+| `src/verify.c` | `bin/verify_gradient` | Gradient verification |
+| `src/main.c` | `bin/soliton_search` | 3D gradient flow (historical) |
