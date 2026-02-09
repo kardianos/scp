@@ -1,7 +1,7 @@
 # 15 — Open Problems and Critical Assessment
 
 This chapter provides an accounting of the current limitation of CHPT.
-**Last Updated: Phase 5 — Numerical Soliton Verification**
+**Last Updated: Phase 8 — Soliton Dynamics and Extended Lagrangian Analysis**
 
 ---
 
@@ -75,7 +75,7 @@ This chapter provides an accounting of the current limitation of CHPT.
 *   **Status**: **OPEN — Blocked by degenerate sector decoupling (see B6)**.
 *   **Update**: Defined as "Parity Violation" in `spec/05_chirality.md`. The massive degenerate sector (B5 resolution) was a candidate: 4 massive modes (parity-odd $P$ + 3-component $\vec{J}$) suggestive of weak bosons.
 *   **Critical Problem (Phase 7)**: The degenerate sector is **completely decoupled** from solitons in the current Lagrangian. The scalar extraction $\langle\cdot\rangle_0$ in Cl(3,0,1) kills all $e_0$ terms, so $\mathcal{L}_2$, $\mathcal{L}_4$, and $V$ depend only on the bulk quaternion $q$. Worse, the degenerate sector has **no kinetic energy at all** — it is non-dynamical and algebraically forced to zero. See B6 and `spec/math/03_dynamics.md`, §5.6.
-*   **Path forward**: The Lagrangian must be extended with (a) a degenerate kinetic term $\mathcal{L}_{2,D} = (1/2c^2)|\dot{p}|^2 - (1/2)|\nabla p|^2$ and (b) an explicit bulk-degenerate coupling term. Only then can weak-force-like interactions be investigated.
+*   **Path forward (Phase 8 analysis)**: Three coupling mechanisms analyzed numerically. The most promising combination: (a) degenerate kinetic term $\mathcal{L}_{2,D}$ for propagation, (b) bulk-degenerate coupling $g^2|q|^2|\nabla p|^2$ for attractive binding at finite $\lambda$, (c) full 8-component Skyrme norm $|[R,R]|_8^2$ for short-range topological repulsion. This creates a Lennard-Jones-like potential that could trap degenerate modes near solitons. See `proposal/hopfion_search/results/extended_lagrangian_analysis.md`.
 
 ### B4. Derivation of Maxwell's Equations
 *   **Original Problem**: Need to prove null-rotors = Maxwell.
@@ -95,7 +95,11 @@ This chapter provides an accounting of the current limitation of CHPT.
 *   **Problem**: The kinetic term $\mathcal{L}_2 = \frac{1}{2}\eta^{\mu\nu}\langle\partial_\mu\Psi\,\widetilde{\partial_\nu\Psi}\rangle_0$ evaluates to $\frac{1}{2}|\partial_\mu q|^2$ — it does not include the degenerate sector ($\vec{J}$, $P$) at all. This is because $e_0^2 = 0$ in Cl(3,0,1), so the scalar extraction $\langle\cdot\rangle_0$ is blind to the weight part $e_0 p$. The same holds for $\mathcal{L}_4$ and $V$. The only term involving $P$ and $\vec{J}$ is $V_D = (\mu^2/2)(|\vec{J}|^2 + P^2)$, which is algebraic (no derivatives). The EOM is $\mu^2 J_i = 0$, $\mu^2 P = 0$ — the degenerate sector is forced to zero. It has no dynamics, no propagation, and no coupling to solitons.
 *   **Verified**: Numerically confirmed — 3D gradient flow gives $|J|_{\max} < 10^{-10}$, $|P|_{\max} < 10^{-10}$.
 *   **Implication**: The linear-limit table in `spec/math/03_dynamics.md` §3 previously claimed $\square P + \mu^2 P = 0$ (Klein-Gordon). This was **incorrect** — corrected to $\mu^2 P = 0$ (algebraic).
-*   **Resolution direction**: Add an explicit degenerate kinetic term $\mathcal{L}_{2,D} = (1/2c^2)|\dot{p}|^2 - (1/2)|\nabla p|^2$ to give $P$ and $\vec{J}$ proper propagation. For coupling to solitons, an interaction term (e.g., $g^2|q|^2|\nabla p|^2$) is also needed. See `spec/math/03_dynamics.md`, §5.6.
+*   **Resolution direction (Phase 8)**: Three coupling options analyzed numerically (`proposal/hopfion_search/results/extended_lagrangian_analysis.md`):
+    1. Add $\mathcal{L}_{2,D} = (1/2c^2)|\dot{p}|^2 - (1/2)|\nabla p|^2$ for propagation.
+    2. Add $g^2|q|^2|\nabla p|^2$ for attractive coupling at finite $\lambda$ (where $\rho(r) < \rho_0$ near soliton core).
+    3. Replace $\langle[R,R]^2\rangle_0$ with $|[R,R]|_8^2$ (full 8-component norm) for topological repulsion.
+    Numerical computation of the effective potential $V_\text{eff}(r)$ via `src/veff.c` confirms: Option 3 alone is **repulsive** (positive-definite $V_\text{eff}$); Option 2 gives an **attractive** well from the $\rho(r)$ variation. The combination creates bound-state candidates. See `spec/math/03_dynamics.md`, §5.6.
 
 ---
 
@@ -121,11 +125,15 @@ With the Lagrangian now complete (A2, A7, A8, B5 all resolved), the remaining op
 
 ### Remaining
 
-4.  **Full 3D soliton relaxation** (IN PROGRESS): 3D initialization from 1D profiles implemented (`src/verify3d.c`). The 3D energy matches the 1D value to 0.1% at $N=160$, $L=6$ ($h=0.075$). However, **topology loss** during gradient flow remains the critical obstacle: at $N=96$ ($h=0.125$, 2.8 grid points across the soliton core $\sqrt{c_4} \approx 0.354$), the soliton unwinds in $\sim$10 steps. Batch runs at $N=128$, $160$, $192$ are testing topology preservation. Key fix: set $\lambda=0$ in the gradient force for sigma-model flow (the EV force is irrelevant after $|q|=\rho_0$ projection but dominates the force norm). If topology loss persists at all tested $N$, alternatives include: rescaling parameters to make the soliton larger ($e \to$ smaller, increasing $\sqrt{c_4}$), or using constrained optimization that explicitly preserves the winding number.
+4.  **Full 3D soliton verification** ✓: 3D initialization from 1D profiles works to $<0.1\%$ for all $B=1$–$4$ (`src/verify3d.c`). Gradient flow **always** loses topology at every tested resolution ($N=128$–$192$). The sigma-model Skyrmion is a **lattice saddle point** — the discrete topology cannot prevent unwinding once the core shrinks below grid resolution. Resolution: abandon gradient flow; use **time evolution** with finite $\lambda$ instead. See item 7 below.
 5.  **Higher-charge solitons ($B=2, 3, 4$)** ✓: Solved via rational map ansatz (`src/rational_map.c`). Angular integrals $I$ match literature. Binding energies: 1.9% ($B=2$), 3.8% ($B=3$), 7.7% ($B=4$) per baryon. Shapes: toroidal ($B=2$), tetrahedral ($B=3$), cubic ($B=4$).
 6.  **Mass spectrum**: The $B$-dependence is now known: $E/E_{FB}$ decreases from 1.231 ($B=1$) to 1.137 ($B=4$). Mapping to actual particle mass ratios remains open.
-7.  **Scattering**: Collide two solitons. Observe if they repel, attract, scatter elastically, or produce new solitons.
-8.  **Degenerate sector dynamics**: **Blocked by B6** (degenerate sector decoupling). In the current Lagrangian, $P$ and $\vec{J}$ are non-dynamical and cannot interact with solitons. Requires extended Lagrangian (see ROADMAP item 7) before any coupling can be studied.
+7.  **Soliton scattering** ✓ (COLLISION OBSERVED): Full 3D time-dependent code implemented (`src/scatter.c`). Uses leapfrog (Störmer-Verlet) integration with product ansatz initialization and 3D charge-weighted centroid tracking. **Key result**: Head-on collision of two $B=1$ Skyrmions in the repulsive channel (π-isorotation) at $v = 0.5c$ with **perfect topology preservation** ($Q = 1.9999$) for $2.35$ time units — through the entire approach phase and deep core interpenetration. The solitons decelerate continuously ($18\times$ slowdown) under the repulsive interaction, reaching closest approach at $r \approx 1.23$ ($0.87$ core radii). Lattice topology loss at $t \approx 2.4$ prevents observing the bounce. **Critical parameter**: grid points across soliton core — using $e=1$ (core radius $\sqrt{2}$) at $N=192$, $L=10$ gives $13.6$ grid points and $\sim 2.4t$ stability. The $\sigma$-model profile with product ansatz eliminates the breathing mode ($|q_1 \cdot q_2/\rho_0| = \rho_0$ exactly). See `results/README.md` for full numerical data.
+8.  **Degenerate sector dynamics** (ANALYSIS COMPLETE): Three coupling options analyzed in detail (`results/extended_lagrangian_analysis.md`):
+    - **Option 1** (kinetic $\mathcal{L}_{2,D}$): gives propagation but no coupling.
+    - **Option 2** ($g^2|q|^2|\nabla p|^2$): **attractive** potential well at finite $\lambda$ where $\rho(r) < \rho_0$. Can trap degenerate modes. Requires one new parameter $g$.
+    - **Option 3** (full 8-component Skyrme norm $|[R,R]|_8^2$): **repulsive** potential (numerically verified via `src/veff.c`). No bound states, but scattering. No new parameters.
+    - **Recommendation**: combine all three. Options 2+3 create a Lennard-Jones-like potential (short-range repulsion from topology + long-range attraction from $\rho$ variation). Bound state computation is future work.
 9.  **Finite $\lambda$ effects** ✓: Solved via coupled f-shooting + $\rho$-BVP Newton iteration with under-relaxation (`proposal/hopfion_search/src/finite_lambda.c`). Self-consistent solutions (virial $\approx 0$, $Q = 1.000$) obtained for $\lambda$ from $10^8$ down to $8000$. Key results:
     - $\rho(0)$ decreases from $\rho_0$ as $\lambda$ decreases, with $\delta\rho(0) \sim -\text{source}/(2\lambda)$ for large $\lambda$.
     - Finite-$\lambda$ effects **lower** the soliton mass: $E/E_{FB}$ decreases from 1.232 ($\lambda=\infty$) to 0.891 ($\lambda=8000$).
