@@ -32,7 +32,12 @@
       "Bash(./radial:*)",
       "Bash(bin/scatter:*)",
       "Bash(bin/*:*)",
-      "Bash(bin/:*)"
+      "Bash(bin/:*)",
+      "Bash(./bin/verify_coupling:*)",
+      "Bash(./bin/verify_gradient:*)",
+      "Bash(./bin/scatter:*)",
+      "Bash(tee:*)",
+      "Bash(./bin/finite_lambda_solver:*)"
     ]
   }
 }

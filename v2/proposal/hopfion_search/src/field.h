@@ -16,6 +16,7 @@ typedef struct {
     double lambda;  /* bulk self-coupling */
     double e_skyrme;/* Skyrme coupling */
     double mu;      /* degenerate mass */
+    double g_coupling; /* bulk-degenerate gradient coupling strength */
     double c;       /* speed of light (set to 1) */
 } Params;
 

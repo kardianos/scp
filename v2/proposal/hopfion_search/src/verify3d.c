@@ -313,6 +313,7 @@ int main(int argc, char **argv)
     params.lambda = 100.0;  /* irrelevant for sigma model */
     params.e_skyrme = 4.0;
     params.mu = 1.0;
+    params.g_coupling = 0.0;
     params.c = 1.0;
 
     /* Parse command line */

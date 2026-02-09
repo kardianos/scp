@@ -106,6 +106,7 @@ int main(int argc, char **argv)
     params.lambda = 100.0;    /* Strong potential keeps |q| ~ rho0, protects topology */
     params.e_skyrme = 4.0;    /* Standard Skyrme value ~4 */
     params.mu = 1.0;
+    params.g_coupling = 0.0;
     params.c = 1.0;
 
     /* Parse command line */

@@ -39,6 +39,7 @@
 #include <string.h>
 #include <omp.h>
 #include "field.h"
+#include "coupling.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -318,6 +319,11 @@ int main(int argc, char *argv[])
     double settle_time = 0;   /* settling phase duration (damping on) */
     double rdamp = 0;         /* selective radial damping rate: damps v·q̂ component only */
     int bc_clamp = 3;         /* boundary layers clamped to vacuum (0=periodic, >0=Dirichlet) */
+    int degenerate = 0;       /* enable degenerate sector dynamics */
+    double g_coupling = 0.0;  /* bulk-degenerate gradient coupling strength */
+    double mu_d = 0.0;        /* degenerate sector mass */
+    double degen_amp = 0.01;  /* amplitude of initial degenerate perturbation */
+    double degen_sigma = 1.5; /* width of initial degenerate Gaussian */
 
     /* Parse command line */
     for (int i = 1; i < argc; i++) {
@@ -342,10 +348,16 @@ int main(int argc, char *argv[])
         else if (strcmp(argv[i], "-single") == 0) single_soliton = 1;
         else if (strcmp(argv[i], "-rdamp") == 0 && i+1 < argc) rdamp = atof(argv[++i]);
         else if (strcmp(argv[i], "-bc_clamp") == 0 && i+1 < argc) bc_clamp = atoi(argv[++i]);
+        else if (strcmp(argv[i], "-degenerate") == 0) degenerate = 1;
+        else if (strcmp(argv[i], "-g") == 0 && i+1 < argc) g_coupling = atof(argv[++i]);
+        else if (strcmp(argv[i], "-mu_d") == 0 && i+1 < argc) mu_d = atof(argv[++i]);
+        else if (strcmp(argv[i], "-degen_amp") == 0 && i+1 < argc) degen_amp = atof(argv[++i]);
+        else if (strcmp(argv[i], "-degen_sigma") == 0 && i+1 < argc) degen_sigma = atof(argv[++i]);
         else {
             fprintf(stderr, "Usage: %s [-v speed] [-z sep/2] [-N grid] [-L box] "
                     "[-T time] [-dt step] [-lambda lam] [-sigma] [-anti] [-out interval] "
-                    "[-profile file] [-damp gamma] [-settle time]\n", argv[0]);
+                    "[-profile file] [-damp gamma] [-settle time] "
+                    "[-degenerate] [-g coupling] [-mu_d mass]\n", argv[0]);
             return 1;
         }
     }
@@ -383,6 +395,9 @@ int main(int argc, char *argv[])
     if (rdamp > 0)
         printf("Radial damping: γ=%.1f (kills breathing mode, preserves topology)\n", rdamp);
     printf("Boundary: %s\n", bc_clamp > 0 ? "Dirichlet (clamped)" : "periodic");
+    if (degenerate)
+        printf("Degenerate: ON, g=%.3f, mu_d=%.3f, amp=%.4f, sigma=%.2f\n",
+               g_coupling, mu_d, degen_amp, degen_sigma);
     printf("Threads: %d\n", omp_get_max_threads());
 
     size_t N3 = (size_t)N * N * N;
@@ -412,7 +427,7 @@ int main(int argc, char *argv[])
            prof->rho ? ", has ρ(r)" : ", σ-model");
 
     /* Allocate field and velocity */
-    Params params = {rho0, lambda, e_skyrme, 0.0, c_light};
+    Params params = {rho0, lambda, e_skyrme, mu_d, g_coupling, c_light};
     Field *field = field_alloc(N, L);
     Multivector *vel = (Multivector *)calloc(N3, sizeof(Multivector));
     Multivector *force = (Multivector *)calloc(N3, sizeof(Multivector));
@@ -457,10 +472,21 @@ int main(int argc, char *argv[])
         field->psi[ix].f1 = qp.f1;
         field->psi[ix].f2 = qp.f2;
         field->psi[ix].f3 = qp.f3;
-        field->psi[ix].j1 = 0;
-        field->psi[ix].j2 = 0;
-        field->psi[ix].j3 = 0;
-        field->psi[ix].p  = 0;
+        /* Degenerate sector initialization */
+        if (degenerate && degen_amp > 0) {
+            /* Gaussian perturbation centered at origin */
+            double r2 = x*x + y*y + z*z;
+            double env = degen_amp * exp(-r2 / (2.0 * degen_sigma * degen_sigma));
+            field->psi[ix].j1 = env;
+            field->psi[ix].j2 = 0;
+            field->psi[ix].j3 = 0;
+            field->psi[ix].p  = 0;
+        } else {
+            field->psi[ix].j1 = 0;
+            field->psi[ix].j2 = 0;
+            field->psi[ix].j3 = 0;
+            field->psi[ix].p  = 0;
+        }
 
         /* Initial velocity: v = ∂q/∂t|_{t=0}
          * If settling phase is enabled, start at rest (boost after settling).
@@ -521,7 +547,12 @@ int main(int argc, char *argv[])
                 field->psi[ix].f1 = 0;
                 field->psi[ix].f2 = 0;
                 field->psi[ix].f3 = 0;
+                field->psi[ix].j1 = 0;
+                field->psi[ix].j2 = 0;
+                field->psi[ix].j3 = 0;
+                field->psi[ix].p  = 0;
                 vel[ix].s = vel[ix].f1 = vel[ix].f2 = vel[ix].f3 = 0;
+                vel[ix].j1 = vel[ix].j2 = vel[ix].j3 = vel[ix].p = 0;
             }
         }
     }
@@ -541,11 +572,18 @@ int main(int argc, char *argv[])
     double z1 = find_soliton_z(field, rho0, 1);
     double z2 = find_soliton_z(field, rho0, -1);
 
+    CouplingEnergy CE0 = {0, 0, 0, 0};
+    if (degenerate)
+        CE0 = coupling_energy(field, &params, g_coupling);
+
     printf("\n--- Initial state ---\n");
     printf("E_pot    = %.6f  (E2=%.4f, E4=%.4f, EV=%.4f)\n",
-           E0.Etotal, E0.E2, E0.E4, E0.EV);
+           E0.Etotal + CE0.Etotal, E0.E2, E0.E4, E0.EV);
+    if (degenerate)
+        printf("E_coupl  = %.6f  (E2D=%.4e, E4C=%.4e, Eint=%.4e)\n",
+               CE0.Etotal, CE0.E2D, CE0.E4C, CE0.Eint);
     printf("E_kin    = %.6f\n", T_kin);
-    printf("E_total  = %.6f\n", E0.Etotal + T_kin);
+    printf("E_total  = %.6f\n", E0.Etotal + CE0.Etotal + T_kin);
     printf("Q        = %.6f  (expected: %d)\n", Q0, single_soliton ? 1 : (antisoliton ? 0 : 2));
     printf("z1       = %+.3f  (soliton 1)\n", z1);
     printf("z2       = %+.3f  (soliton 2)\n", z2);
@@ -558,10 +596,10 @@ int main(int argc, char *argv[])
     FILE *fout = fopen(outname, "w");
     fprintf(fout, "# Soliton scattering: %s, v=%.3f, N=%d, L=%.1f, lambda=%.0f\n",
             antisoliton ? "B+B̄" : "B+B", v0, N, L, lambda);
-    fprintf(fout, "# Columns: t  E_pot  E_kin  E_tot  Q  z1  z2  sep  E2  E4  EV\n");
-    fprintf(fout, "%.6f  %.6f  %.6f  %.6f  %.6f  %+.4f  %+.4f  %.4f  %.4f  %.4f  %.4f\n",
-            0.0, E0.Etotal, T_kin, E0.Etotal+T_kin, Q0, z1, z2, z1-z2,
-            E0.E2, E0.E4, E0.EV);
+    fprintf(fout, "# Columns: t  E_pot  E_kin  E_tot  Q  z1  z2  sep  E2  E4  EV  E2D  E4C  Eint\n");
+    fprintf(fout, "%.6f  %.6f  %.6f  %.6f  %.6f  %+.4f  %+.4f  %.4f  %.4f  %.4f  %.4f  %.4e  %.4e  %.4e\n",
+            0.0, E0.Etotal+CE0.Etotal, T_kin, E0.Etotal+CE0.Etotal+T_kin, Q0, z1, z2, z1-z2,
+            E0.E2, E0.E4, E0.EV, CE0.E2D, CE0.E4C, CE0.Eint);
 
     /* ========== Time evolution: Leapfrog ========== */
     printf("\n--- Time evolution ---\n");
@@ -569,6 +607,8 @@ int main(int argc, char *argv[])
 
     /* First half-step for velocity (to stagger v at t+dt/2) */
     field_gradient(field, &params, force);
+    if (degenerate)
+        coupling_gradient(field, &params, g_coupling, force);
 
     /* Project force tangentially for σ-model */
     if (sigma_model) {
@@ -614,12 +654,17 @@ int main(int argc, char *argv[])
         vel[ix].f1 += fac * force[ix].f1;
         vel[ix].f2 += fac * force[ix].f2;
         vel[ix].f3 += fac * force[ix].f3;
-        /* Leave degenerate sector at zero */
+        if (degenerate) {
+            vel[ix].j1 += fac * force[ix].j1;
+            vel[ix].j2 += fac * force[ix].j2;
+            vel[ix].j3 += fac * force[ix].j3;
+            vel[ix].p  += fac * force[ix].p;
+        }
     }
 
     int n_steps = (int)(T_max / dt);
     double t = 0;
-    double E_total_0 = E0.Etotal + T_kin;
+    double E_total_0 = E0.Etotal + CE0.Etotal + T_kin;
     int settled = (settle_time <= 0);  /* 1 once settling is done */
     int boost_applied = (v0 == 0 || settle_time <= 0);  /* 1 once boost given */
 
@@ -633,12 +678,15 @@ int main(int argc, char *argv[])
 
             /* Recalibrate energy reference after settling */
             Energy E_settled = field_energy(field, &params);
+            CouplingEnergy CE_settled = {0, 0, 0, 0};
+            if (degenerate)
+                CE_settled = coupling_energy(field, &params, g_coupling);
             double T_settled = 0;
             #pragma omp parallel for reduction(+:T_settled)
             for (int ix = 0; ix < (int)N3; ix++)
                 T_settled += 0.5 * mv_dot(vel[ix], vel[ix]);
             T_settled *= h*h*h / (c_light*c_light);
-            E_total_0 = E_settled.Etotal + T_settled;
+            E_total_0 = E_settled.Etotal + CE_settled.Etotal + T_settled;
             double Q_settled = field_topological_charge(field, &params);
             printf("E_pot=%.4f, E_kin=%.4f, Q=%.4f\n",
                    E_settled.Etotal, T_settled, Q_settled);
@@ -681,7 +729,7 @@ int main(int argc, char *argv[])
                 for (int ix = 0; ix < (int)N3; ix++)
                     T_settled += 0.5 * mv_dot(vel[ix], vel[ix]);
                 T_settled *= h*h*h / (c_light*c_light);
-                E_total_0 = E_settled.Etotal + T_settled;
+                E_total_0 = E_settled.Etotal + CE_settled.Etotal + T_settled;
                 printf("After boost: E_kin=%.4f, E_total=%.4f\n", T_settled, E_total_0);
             }
         }
@@ -693,6 +741,12 @@ int main(int argc, char *argv[])
             field->psi[ix].f1 += dt * vel[ix].f1;
             field->psi[ix].f2 += dt * vel[ix].f2;
             field->psi[ix].f3 += dt * vel[ix].f3;
+            if (degenerate) {
+                field->psi[ix].j1 += dt * vel[ix].j1;
+                field->psi[ix].j2 += dt * vel[ix].j2;
+                field->psi[ix].j3 += dt * vel[ix].j3;
+                field->psi[ix].p  += dt * vel[ix].p;
+            }
         }
 
         /* σ-model: project |q| → ρ₀ and velocity perpendicular to q */
@@ -722,7 +776,7 @@ int main(int argc, char *argv[])
             }
         }
 
-        /* Boundary clamping: set outer cells to vacuum q=(ρ₀,0,0,0), v=0
+        /* Boundary clamping: set outer cells to vacuum q=(ρ₀,0,0,0), w=0, v=0
          * This gives effective Dirichlet BCs, eliminating the gradient
          * discontinuity from periodic wrapping of the hedgehog tail. */
         if (bc_clamp > 0) {
@@ -738,13 +792,20 @@ int main(int argc, char *argv[])
                     field->psi[ix].f1 = 0;
                     field->psi[ix].f2 = 0;
                     field->psi[ix].f3 = 0;
+                    field->psi[ix].j1 = 0;
+                    field->psi[ix].j2 = 0;
+                    field->psi[ix].j3 = 0;
+                    field->psi[ix].p  = 0;
                     vel[ix].s = vel[ix].f1 = vel[ix].f2 = vel[ix].f3 = 0;
+                    vel[ix].j1 = vel[ix].j2 = vel[ix].j3 = vel[ix].p = 0;
                 }
             }
         }
 
         /* Compute force F(q(t+dt)) */
         field_gradient(field, &params, force);
+        if (degenerate)
+            coupling_gradient(field, &params, g_coupling, force);
 
         /* σ-model: project force tangential to constraint |q|=ρ₀ */
         if (sigma_model) {
@@ -773,6 +834,12 @@ int main(int argc, char *argv[])
             vel[ix].f1 += fac * force[ix].f1;
             vel[ix].f2 += fac * force[ix].f2;
             vel[ix].f3 += fac * force[ix].f3;
+            if (degenerate) {
+                vel[ix].j1 += fac * force[ix].j1;
+                vel[ix].j2 += fac * force[ix].j2;
+                vel[ix].j3 += fac * force[ix].j3;
+                vel[ix].p  += fac * force[ix].p;
+            }
         }
 
         /* Selective radial damping: damp v·q̂ (breathing mode) only.
@@ -814,6 +881,9 @@ int main(int argc, char *argv[])
         /* Diagnostics */
         if (step % output_interval == 0 || step == n_steps) {
             Energy E = field_energy(field, &params);
+            CouplingEnergy CE = {0, 0, 0, 0};
+            if (degenerate)
+                CE = coupling_energy(field, &params, g_coupling);
             double Q = field_topological_charge(field, &params);
 
             /* Kinetic energy */
@@ -835,19 +905,22 @@ int main(int argc, char *argv[])
             double dx = x1_3d - x2_3d, dy = y1_3d - y2_3d, dz = z1_3d - z2_3d;
             double sep3d = sqrt(dx*dx + dy*dy + dz*dz);
 
-            double E_tot = E.Etotal + T;
+            double E_pot_total = E.Etotal + CE.Etotal;
+            double E_tot = E_pot_total + T;
             double dE = (E_tot - E_total_0) / E_total_0;
 
             printf("%5d  %7.3f  %9.4f  %9.4f  %9.4f  %7.4f  %7.3f  %+6.3f  %+6.3f",
-                   step, t, E.Etotal, T, E_tot, Q, sep, z1, z2);
+                   step, t, E_pot_total, T, E_tot, Q, sep, z1, z2);
             printf("  3d:(%.2f,%.2f,%.2f)|(%.2f,%.2f,%.2f) r=%.3f",
                    x1_3d, y1_3d, z1_3d, x2_3d, y2_3d, z2_3d, sep3d);
+            if (degenerate)
+                printf("  w:%.2e", CE.Etotal);
             if (fabs(dE) > 0.01) printf("  ΔE=%.2e!", dE);
             printf("\n");
 
-            fprintf(fout, "%.6f  %.6f  %.6f  %.6f  %.6f  %+.4f  %+.4f  %.4f  %.4f  %.4f  %.4f\n",
-                    t, E.Etotal, T, E_tot, Q, z1, z2, sep,
-                    E.E2, E.E4, E.EV);
+            fprintf(fout, "%.6f  %.6f  %.6f  %.6f  %.6f  %+.4f  %+.4f  %.4f  %.4f  %.4f  %.4f  %.4e  %.4e  %.4e\n",
+                    t, E_pot_total, T, E_tot, Q, z1, z2, sep,
+                    E.E2, E.E4, E.EV, CE.E2D, CE.E4C, CE.Eint);
             fflush(fout);
 
             /* Early termination if energy conservation is badly violated */
@@ -868,6 +941,9 @@ int main(int argc, char *argv[])
 
     /* Final state */
     Energy Ef = field_energy(field, &params);
+    CouplingEnergy CEf = {0, 0, 0, 0};
+    if (degenerate)
+        CEf = coupling_energy(field, &params, g_coupling);
     double Qf = field_topological_charge(field, &params);
     double Tf = 0;
     #pragma omp parallel for reduction(+:Tf)
@@ -876,11 +952,15 @@ int main(int argc, char *argv[])
     }
     Tf *= h*h*h / (c_light*c_light);
 
+    double Ef_pot = Ef.Etotal + CEf.Etotal;
     printf("\n--- Final state (t=%.2f) ---\n", t);
-    printf("E_pot    = %.6f\n", Ef.Etotal);
+    printf("E_pot    = %.6f\n", Ef_pot);
+    if (degenerate)
+        printf("E_coupl  = %.6f  (E2D=%.4e, E4C=%.4e, Eint=%.4e)\n",
+               CEf.Etotal, CEf.E2D, CEf.E4C, CEf.Eint);
     printf("E_kin    = %.6f\n", Tf);
     printf("E_total  = %.6f  (initial: %.6f, ΔE/E=%.2e)\n",
-           Ef.Etotal+Tf, E_total_0, (Ef.Etotal+Tf-E_total_0)/E_total_0);
+           Ef_pot+Tf, E_total_0, (Ef_pot+Tf-E_total_0)/E_total_0);
     printf("Q        = %.6f  (initial: %.6f)\n", Qf, Q0);
 
     /* Cleanup */
