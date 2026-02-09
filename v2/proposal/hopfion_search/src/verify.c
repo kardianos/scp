@@ -24,7 +24,7 @@ int main(void)
     double L = 4.0;
     /* Test 1: without Skyrme (e very large) to verify E2+EV+ED gradient */
     printf("=== Test 1: No Skyrme (e=1e6) ===\n");
-    Params params = {1.0, 10.0, 1e6, 1.0, 1.0};  /* rho0, lambda, e, mu, c */
+    Params params = {1.0, 10.0, 1e6, 1.0, 0.0, 1.0};  /* rho0, lambda, e, mu, g_coupling, c */
 
     Field *f = field_alloc(N, L);
     init_hedgehog(f, &params, 1.5);
@@ -115,7 +115,7 @@ int main(void)
 
     /* ===== Test 2: with Skyrme (e=2) to verify E4 gradient ===== */
     printf("\n=== Test 2: With Skyrme (e=2.0) ===\n");
-    Params params2 = {1.0, 10.0, 2.0, 1.0, 1.0};
+    Params params2 = {1.0, 10.0, 2.0, 1.0, 0.0, 1.0};
 
     Field *f2 = field_alloc(N, L);
     init_hedgehog(f2, &params2, 1.5);

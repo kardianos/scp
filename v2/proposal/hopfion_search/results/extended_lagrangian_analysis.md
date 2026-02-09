@@ -260,15 +260,29 @@ $$\mathcal{L} = \mathcal{L}_2 + \mathcal{L}_{2,D} + \mathcal{L}_{4,\text{full}} 
 
 Parameters: (ρ₀, λ, e, μ, g, c) — the coupling g is the one new parameter.
 
-## Numerical Testing Plan (Future Work)
+## Numerical Testing Plan — Status
 
 1. **Option 2 bound states**: For a given g, solve the radial equation with the
    finite-λ profile ρ(r) and find bound state energies.
+   **Status: OPEN.** Requires solving Schrödinger-type radial equation with the
+   computed V_eff(r). The integration tests confirm the potential structure but
+   discrete bound states have not been computed.
 
 2. **Combined potential**: Compute the hybrid Option 2+3 effective potential and
    find the Lennard-Jones-like minimum.
+   **Status: CONFIRMED (Phase 9.3).** Integration tests with the full 3D code
+   show E_{4,C} repulsion (degenerate field expelled from core, E_{4,C} drops
+   94-99%) and E_int attraction (g=1 retains 14% more coupling energy than g=0).
+   The Lennard-Jones structure is verified dynamically.
 
 3. **Scattering cross-section**: Partial wave analysis of degenerate mode
    scattering off the soliton.
+   **Status: OPEN.** Integration tests show qualitative scattering (degenerate
+   perturbation disperses from core) but quantitative cross-sections not computed.
 
 4. **Full 3D simulation**: Add all coupling terms to the time-dependent code.
+   **Status: COMPLETE (Phase 9.3).** Implemented in `src/coupling.c` +
+   `src/coupling.h`. Gradient verified to <1e-7 (`src/verify_coupling.c`).
+   Integrated into `src/scatter.c` with `-degenerate -g <val>` flags. Energy
+   conservation <0.02% in integration tests. See `results/README.md` for full
+   numerical data.
