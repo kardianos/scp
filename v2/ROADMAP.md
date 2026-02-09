@@ -113,13 +113,11 @@ See `results/extended_lagrangian_analysis.md` for derivation and numerical V_eff
 
 ## Phase 9 — Proposed Next Steps (Priority Order)
 
-### 9.1 B+B̄ Annihilation Simulation (HIGH IMPACT, LOW EFFORT)
-Soliton-antisoliton scattering using the working infrastructure (e=1, N=192, σ-model profile, v=0.5c). The code already supports `-anti` mode. Should show charge annihilation (Q=1+(-1)→0) with energy conversion to radiation. Most compelling physical demonstration — particle-antiparticle annihilation from topology.
+### 9.1 ~~B+B̄ Annihilation Simulation~~ ✓ DONE — INELASTIC PASS-THROUGH
+At v=0.5c, B+B̄ does NOT annihilate — the pair passes through each other. Attractive interaction accelerates approach (E_kin: 9.5→153, 16× increase), 66% of E_pot converted to E_kin at closest approach (r≈1.45), then pair separates. 48% of rest mass energy permanently radiated (E_pot: 217→113). Late-time equipartition E_pot≈E_kin≈113. Q=0.0000 maintained for full 5.0 time units. Complete annihilation would require lower velocity. See `results/README.md` and `data/scatter_anti_v0.50.dat`.
 
-### 9.2 Observe the Bounce (MEDIUM IMPACT, LOW EFFORT)
-The repulsive collision showed 18× deceleration but lattice time ran out before the bounce. Options:
-- N=256, L=12, e=1 (~4.3 GB): h=0.094, 15 pts across core → ~3.5t stability window
-- e=0.7: core radius 2.02, 19 pts at N=192 → ~5t window (changes physics slightly)
+### 9.2 ~~Observe the Bounce~~ ✓ DONE — BOUNCE CONFIRMED
+N=256, L=10, e=1 (h=0.078, 18.1 pts across core). Bounce turning point at **r=1.222** (t≈2.70) when Q=1.92 (96% preserved). Consistent with N=192 extrapolation. Post-bounce separation visible (r: 1.222→1.248) but polluted by lattice topology crash (Q→1.2 by t=2.9). The bounce is physical — the repulsive interaction genuinely reverses the approach at r≈0.86 core radii. See `results/README.md`.
 
 ### 9.3 Implement Degenerate Sector Dynamics (HIGH IMPACT, HIGH EFFORT)
 Implement the hybrid extended Lagrangian (L₂,D + g²|q|²|∇p|² + full Skyrme norm) in the 3D time evolution code. Requires adding 4 more field components (j1,j2,j3,p) and computing bound states numerically. Addresses the biggest theoretical gap (B6/B3).

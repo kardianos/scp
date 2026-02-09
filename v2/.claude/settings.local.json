@@ -29,7 +29,10 @@
       "Bash(ps:*)",
       "Bash(./veff:*)",
       "Bash(export:*)",
-      "Bash(./radial:*)"
+      "Bash(./radial:*)",
+      "Bash(bin/scatter:*)",
+      "Bash(bin/*:*)",
+      "Bash(bin/:*)"
     ]
   }
 }
