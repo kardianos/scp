@@ -203,14 +203,16 @@ int main(int argc, char **argv)
     double R_max = 30.0;
     double e_skyrme = 4.0;
     double rho0 = 1.0;
+    const char *outfile = "profile.dat";
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-Nr") == 0 && i+1 < argc) Nr = atoi(argv[++i]);
         else if (strcmp(argv[i], "-Rmax") == 0 && i+1 < argc) R_max = atof(argv[++i]);
         else if (strcmp(argv[i], "-e") == 0 && i+1 < argc) e_skyrme = atof(argv[++i]);
         else if (strcmp(argv[i], "-rho0") == 0 && i+1 < argc) rho0 = atof(argv[++i]);
+        else if (strcmp(argv[i], "-o") == 0 && i+1 < argc) outfile = argv[++i];
         else {
-            fprintf(stderr, "Usage: %s [-Nr N] [-Rmax R] [-e E] [-rho0 R]\n", argv[0]);
+            fprintf(stderr, "Usage: %s [-Nr N] [-Rmax R] [-e E] [-rho0 R] [-o outfile]\n", argv[0]);
             return 1;
         }
     }
@@ -315,7 +317,7 @@ int main(int argc, char **argv)
     printf("  (With Derrick virial E2=E4, so Mc^2 = 2*E4 = E_total)\n");
 
     /* Profile output */
-    FILE *fp = fopen("profile.dat", "w");
+    FILE *fp = fopen(outfile, "w");
     if (fp) {
         fprintf(fp, "# r  f(r)  f'(r)  baryon_density  energy_density_E2  energy_density_E4\n");
         for (int i = 0; i <= p->N; i++) {
@@ -332,7 +334,7 @@ int main(int argc, char **argv)
                     r, fi, fpi, bdens, ed2, ed4);
         }
         fclose(fp);
-        printf("\nProfile written to profile.dat\n");
+        printf("\nProfile written to %s\n", outfile);
     }
 
     profile_free(p);

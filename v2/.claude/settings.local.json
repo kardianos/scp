@@ -1,4 +1,7 @@
 {
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
   "permissions": {
     "allow": [
       "Bash(gcc:*)",
@@ -17,7 +20,16 @@
       "Bash(for L in 4 6 8 10)",
       "Bash(do echo \"=== L=$L ===\")",
       "Bash(kill:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(./maxwell:*)",
+      "Bash(ls:*)",
+      "Bash(./maxwell_dbg:*)",
+      "Bash(./scatter:*)",
+      "Bash(/tmp/claude-1000/-home-d-code-scp-v2/b69d2cf1-cf32-4de7-9794-44651fbfba1e/scratchpad/test_force:*)",
+      "Bash(ps:*)",
+      "Bash(./veff:*)",
+      "Bash(export:*)",
+      "Bash(./radial:*)"
     ]
   }
 }

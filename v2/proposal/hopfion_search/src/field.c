@@ -497,9 +497,10 @@ double field_topological_charge(const Field *f, const Params *p)
     for (int j = 0; j < N; j++)
     for (int k = 0; k < N; k++) {
         int ix = idx(N, i, j, k);
-        Quat qr = q_rev(q_from_mv(f->psi[ix]));
+        Quat q = q_from_mv(f->psi[ix]);
+        Quat qr = q_rev(q);
 
-        /* Right-currents */
+        /* Right-currents: A_d = q̃ × ∂_d q */
         Quat dq[3];
         for (int d = 0; d < 3; d++)
             dq[d] = q_deriv(f, i, j, k, d);
@@ -508,14 +509,16 @@ double field_topological_charge(const Field *f, const Params *p)
         for (int d = 0; d < 3; d++)
             A[d] = q_mul(qr, dq[d]);
 
-        /* Topological charge density: (1/(2 pi^2)) <A_0 A_1 A_2>_0 / rho0^4
-         * The baryon number / degree of map. */
+        /* Topological charge density: -(1/(2π²)) <A₀A₁A₂>₀ / |q|⁶
+         * Normalized by local |q|⁶ for correct Q when |q| ≠ ρ₀ (finite-λ). */
         Quat A01 = q_mul(A[0], A[1]);
         Quat A012 = q_mul(A01, A[2]);
-        sum += A012.s;
+        double norm2 = q.s*q.s + q.f1*q.f1 + q.f2*q.f2 + q.f3*q.f3;
+        double norm6 = norm2 * norm2 * norm2;
+        if (norm6 > 1e-30)
+            sum += A012.s / norm6;
     }
 
-    /* B = -(1/(2 pi^2 rho0^4)) * sum * h^3 */
-    double rho04 = p->rho0 * p->rho0 * p->rho0 * p->rho0;
-    return -sum * h3 / (2.0 * M_PI * M_PI * rho04);
+    /* B = -(1/(2 pi^2)) * sum * h^3 */
+    return -sum * h3 / (2.0 * M_PI * M_PI);
 }
