@@ -83,7 +83,12 @@
       "WebFetch(domain:inspirehep.net)",
       "WebFetch(domain:en.wikipedia.org)",
       "WebFetch(domain:www.actaphys.uj.edu.pl)",
-      "WebFetch(domain:saalburg.aei.mpg.de)"
+      "WebFetch(domain:saalburg.aei.mpg.de)",
+      "Bash(pgrep:*)",
+      "Bash(./bin/skyrmion_equil:*)",
+      "Bash(for lam6 in 0 0.5 1 2 5 10 20 50 100)",
+      "Bash(for lam6 in 5 20 50)",
+      "Bash(./bin/degenerate:*)"
     ]
   }
 }

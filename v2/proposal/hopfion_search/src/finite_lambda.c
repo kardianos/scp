@@ -7,7 +7,11 @@
  * Energy:
  *   E₂ = 2π ∫ [ρ'²r² + ρ²(f'²r² + 2sin²f)] dr
  *   E₄ = (4π/e²) ∫ ρ⁸[2f'²sin²f + sin⁴f/r²] dr
+ *   E₆ = (λ₆/π³) ∫ f'²sin⁴f/r² dr       (ρ-independent!)
  *   E_V = πλ ∫ (ρ²-1)²r² dr
+ *
+ * L₆ = λ₆(B⁰)² where B⁰ = -f'sin²f/(2π²r²). B⁰ is ρ-independent for
+ * hedgehog, so L₆ only modifies the f ODE, not the ρ BVP.
  *
  * Method: under-relaxed alternating iteration.
  *   - f: RK4 shooting with bisection (variable ρ), blended with old f
@@ -19,6 +23,8 @@
  * self-consistent solution has ρ(0) < 1, with the deviation controlled
  * by 1/λ. The virial theorem E₂ - E₄ + 3E_V = 0 must hold at
  * the true equilibrium.
+ *
+ * Derrick virial: E₂ - E₄ - 3E₆ + 3E_V = 0
  */
 
 #define _USE_MATH_DEFINES
@@ -43,11 +49,11 @@ typedef struct {
 } Grid;
 
 typedef struct {
-    double e, inv_e2, c4, lambda;
+    double e, inv_e2, c4, lambda, lambda6, c6;
 } Params;
 
 typedef struct {
-    double E2, E4, EV, Etot, Q;
+    double E2, E4, E6, EV, Etot, Q;
 } Energy;
 
 static Grid *grid_alloc(int N, double R_max) {
@@ -88,7 +94,8 @@ static void compute_S0_T0(const Grid *g, double *S0, double *T0) {
 static Energy compute_energy(const Grid *g, const Params *p) {
     int N = g->N;
     double h = g->h;
-    double e2 = 0, e4 = 0, ev = 0, qc = 0;
+    double pi3 = M_PI*M_PI*M_PI;
+    double e2 = 0, e4 = 0, e6 = 0, ev = 0, qc = 0;
 
     for (int i = 0; i <= N; i++) {
         double r = g->r[i], f = g->f[i], fpi = g->fp[i];
@@ -97,8 +104,10 @@ static Energy compute_energy(const Grid *g, const Params *p) {
         double w = h * ((i == 0 || i == N) ? 0.5 : 1.0);
 
         e2 += w * rho2 * (fpi*fpi*r*r + 2.0*sf2);
-        if (r > 1e-14)
+        if (r > 1e-14) {
             e4 += w * rho8 * (2.0*fpi*fpi*sf2 + sf2*sf2/(r*r));
+            e6 += w * fpi*fpi * sf2*sf2 / (r*r);  /* ρ-independent */
+        }
         ev += w * (rho2 - 1.0)*(rho2 - 1.0) * r*r;
         qc += w * (-fpi) * sf2;
     }
@@ -111,22 +120,30 @@ static Energy compute_energy(const Grid *g, const Params *p) {
 
     Energy en;
     en.E2 = 2.0*M_PI*e2;  en.E4 = 4.0*M_PI*p->inv_e2*e4;
-    en.EV = M_PI*p->lambda*ev;  en.Etot = en.E2 + en.E4 + en.EV;
+    en.E6 = (p->lambda6 / pi3) * e6;
+    en.EV = M_PI*p->lambda*ev;  en.Etot = en.E2 + en.E4 + en.E6 + en.EV;
     en.Q  = (2.0/M_PI)*qc;
     return en;
 }
 
 /* ========== σ-model f shooting (ρ≡1) ========== */
 
-static double sigma_frhs(double r, double f, double v, double c4) {
-    double sf = sin(f), sf2 = sf*sf, s2f = sin(2.0*f);
+static double sigma_frhs(double r, double f, double v, double c4, double c6) {
+    double sf = sin(f), sf2 = sf*sf, sf4 = sf2*sf2, s2f = sin(2.0*f);
     double r2 = r*r, den = r2 + 2.0*c4*sf2;
+    if (r > 1e-14) den += c6*sf4/r2;
     if (den < 1e-30) return 0.0;
-    return (s2f*(1.0 + c4*sf2/r2) - 2.0*r*v - c4*v*v*s2f) / den;
+    double num = s2f*(1.0 + c4*sf2/r2) - 2.0*r*v - c4*v*v*s2f;
+    /* L₆ contributions (ρ-independent) */
+    if (c6 > 0 && r > 1e-14) {
+        num -= c6 * v * v * sf2 * s2f / r2;
+        num += 2.0 * c6 * v * sf4 / (r2 * r);
+    }
+    return num / den;
 }
 
 static void sigma_init(Grid *g, const Params *p) {
-    int N = g->N;  double h = g->h, c4 = p->c4;
+    int N = g->N;  double h = g->h, c4 = p->c4, c6 = p->c6;
     for (int i = 0; i <= N; i++) g->rho[i] = 1.0;
 
     /* Scale bisection bounds by 1/√c4 (a_correct ≈ 2.15/√c4) */
@@ -141,10 +158,10 @@ static void sigma_init(Grid *g, const Params *p) {
         ft[0] = fv; vt[0] = vv;
         for (int i = 0; i < N; i++) {
             double ri = i*h;
-            double k1f = vv, k1v = sigma_frhs(ri, fv, vv, c4);
-            double k2f = vv+0.5*h*k1v, k2v = sigma_frhs(ri+0.5*h, fv+0.5*h*k1f, k2f, c4);
-            double k3f = vv+0.5*h*k2v, k3v = sigma_frhs(ri+0.5*h, fv+0.5*h*k2f, k3f, c4);
-            double k4f = vv+h*k3v, k4v = sigma_frhs(ri+h, fv+h*k3f, k4f, c4);
+            double k1f = vv, k1v = sigma_frhs(ri, fv, vv, c4, c6);
+            double k2f = vv+0.5*h*k1v, k2v = sigma_frhs(ri+0.5*h, fv+0.5*h*k1f, k2f, c4, c6);
+            double k3f = vv+0.5*h*k2v, k3v = sigma_frhs(ri+0.5*h, fv+0.5*h*k2f, k3f, c4, c6);
+            double k4f = vv+h*k3v, k4v = sigma_frhs(ri+h, fv+h*k3f, k4f, c4, c6);
             fv += (h/6.0)*(k1f+2*k2f+2*k3f+k4f);
             vv += (h/6.0)*(k1v+2*k2v+2*k3v+k4v);
             ft[i+1] = fv; vt[i+1] = vv;
@@ -280,21 +297,27 @@ static void solve_rho_linear(Grid *g, const Params *p) {
 /* ========== f shooting with variable ρ ========== */
 
 static double f_rhs_varrho(double r, double f, double v,
-                           double rho, double rhop, double c4) {
-    double sf = sin(f), sf2 = sf*sf, s2f = sin(2.0*f);
+                           double rho, double rhop, double c4, double c6) {
+    double sf = sin(f), sf2 = sf*sf, sf4 = sf2*sf2, s2f = sin(2.0*f);
     double r2 = r*r;
     double rho2 = rho*rho, rho7 = rho2*rho2*rho2*rho, rho8 = rho7*rho;
     double den = rho2*r2 + 2.0*c4*rho8*sf2;
+    if (r > 1e-14) den += c6*sf4/r2;  /* L₆ (ρ-independent) */
     if (fabs(den) < 1e-30) return 0.0;
     double num = rho2*s2f + c4*rho8*s2f*sf2/r2
                - 2.0*rho2*r*v - 2.0*rho*rhop*v*r2
                - 16.0*c4*rho7*rhop*v*sf2 - c4*rho8*v*v*s2f;
+    /* L₆ contributions (ρ-independent) */
+    if (c6 > 0 && r > 1e-14) {
+        num -= c6 * v * v * sf2 * s2f / r2;
+        num += 2.0 * c6 * v * sf4 / (r2 * r);
+    }
     return num / den;
 }
 
 static void solve_f_shooting(Grid *g, const Params *p,
                              double *f_new, double *fp_new) {
-    int N = g->N;  double h = g->h, c4 = p->c4;
+    int N = g->N;  double h = g->h, c4 = p->c4, c6 = p->c6;
 
     double *rhop = calloc((size_t)(N+1), sizeof(double));
     rhop[0] = 0.0;
@@ -312,16 +335,16 @@ static void solve_f_shooting(Grid *g, const Params *p,
         int overshoot = 0;
         for (int i = 0; i < N; i++) {
             double ri = i*h;
-            double k1f = vv, k1v = f_rhs_varrho(ri, fv, vv, g->rho[i], rhop[i], c4);
+            double k1f = vv, k1v = f_rhs_varrho(ri, fv, vv, g->rho[i], rhop[i], c4, c6);
             double r2=ri+0.5*h, rho2=INTERP(g->rho,r2), rhop2=INTERP(rhop,r2);
             double k2f = vv+0.5*h*k1v;
-            double k2v = f_rhs_varrho(r2, fv+0.5*h*k1f, k2f, rho2, rhop2, c4);
+            double k2v = f_rhs_varrho(r2, fv+0.5*h*k1f, k2f, rho2, rhop2, c4, c6);
             double k3f = vv+0.5*h*k2v;
-            double k3v = f_rhs_varrho(r2, fv+0.5*h*k2f, k3f, rho2, rhop2, c4);
+            double k3v = f_rhs_varrho(r2, fv+0.5*h*k2f, k3f, rho2, rhop2, c4, c6);
             double r4=ri+h;
             double rho4=(i+1<=N)?g->rho[i+1]:1.0, rhop4=(i+1<=N)?rhop[i+1]:0.0;
             double k4f = vv+h*k3v;
-            double k4v = f_rhs_varrho(r4, fv+h*k3f, k4f, rho4, rhop4, c4);
+            double k4v = f_rhs_varrho(r4, fv+h*k3f, k4f, rho4, rhop4, c4, c6);
             fv += (h/6.0)*(k1f+2*k2f+2*k3f+k4f);
             vv += (h/6.0)*(k1v+2*k2v+2*k3v+k4v);
             if (bi == 79) { f_new[i+1] = fv; fp_new[i+1] = vv; }
@@ -343,6 +366,7 @@ int main(int argc, char **argv) {
     int Nr = 2000;
     double R_max = 20.0;
     double e_skyrme = 4.0;
+    double lambda6 = 0.0;   /* sextic (BPS) coupling */
     int n_outer = 300;
     double relax = 0.15;  /* under-relaxation parameter */
     double save_lambda = 0;  /* if >0, solve at this λ and save profile */
@@ -352,21 +376,28 @@ int main(int argc, char **argv) {
         if (!strcmp(argv[i], "-Nr") && i+1<argc) Nr = atoi(argv[++i]);
         else if (!strcmp(argv[i], "-Rmax") && i+1<argc) R_max = atof(argv[++i]);
         else if (!strcmp(argv[i], "-e") && i+1<argc) e_skyrme = atof(argv[++i]);
+        else if (!strcmp(argv[i], "-lam6") && i+1<argc) lambda6 = atof(argv[++i]);
         else if (!strcmp(argv[i], "-niter") && i+1<argc) n_outer = atoi(argv[++i]);
         else if (!strcmp(argv[i], "-relax") && i+1<argc) relax = atof(argv[++i]);
         else if (!strcmp(argv[i], "-save") && i+1<argc) save_lambda = atof(argv[++i]);
         else if (!strcmp(argv[i], "-o") && i+1<argc) save_file = argv[++i];
-        else { fprintf(stderr, "Usage: %s [-Nr N] [-Rmax R] [-e E] [-niter N] [-relax A] [-save lambda] [-o file]\n", argv[0]); return 1; }
+        else { fprintf(stderr, "Usage: %s [-Nr N] [-Rmax R] [-e E] [-lam6 L] [-niter N] [-relax A] [-save lambda] [-o file]\n", argv[0]); return 1; }
     }
 
     double c4 = 2.0/(e_skyrme*e_skyrme);
-    Params p = { .e=e_skyrme, .inv_e2=1.0/(e_skyrme*e_skyrme), .c4=c4, .lambda=0 };
+    double pi4 = M_PI*M_PI*M_PI*M_PI;
+    double c6 = lambda6 / (2.0 * pi4);  /* ρ₀=1 in this code */
+    Params p = { .e=e_skyrme, .inv_e2=1.0/(e_skyrme*e_skyrme), .c4=c4,
+                 .lambda=0, .lambda6=lambda6, .c6=c6 };
 
     printf("============================================================\n");
     printf("  Finite-lambda Hedgehog Skyrmion (Under-relaxed Iteration)\n");
     printf("============================================================\n");
     printf("Grid: Nr=%d, h=%.6f, R_max=%.1f\n", Nr, R_max/(double)Nr, R_max);
-    printf("Parameters: e=%.4f, c4=%.6f, relax=%.2f\n\n", e_skyrme, c4, relax);
+    printf("Parameters: e=%.4f, c4=%.6f, relax=%.2f\n", e_skyrme, c4, relax);
+    if (lambda6 > 0)
+        printf("Sextic: lambda6=%.4f, c6=%.6f\n", lambda6, c6);
+    printf("\n");
 
     Grid *g = grid_alloc(Nr, R_max);
     double *f_new  = calloc((size_t)(Nr+1), sizeof(double));
@@ -379,9 +410,11 @@ int main(int argc, char **argv) {
     double E_FB = 6.0*sqrt(2.0)*M_PI*M_PI/e_skyrme;
     double a_sigma = -g->fp[0];
     printf("  sigma-model: a=%.8f\n", a_sigma);
-    printf("  E=%.6f, E2=%.6f, E4=%.6f, E2/E4=%.6f, Q=%.6f\n",
-           en0.Etot, en0.E2, en0.E4, en0.E2/en0.E4, en0.Q);
-    printf("  E/E_FB = %.4f\n\n", en0.Etot/E_FB);
+    printf("  E=%.6f, E2=%.6f, E4=%.6f", en0.Etot, en0.E2, en0.E4);
+    if (lambda6 > 0) printf(", E6=%.6f", en0.E6);
+    printf(", Q=%.6f\n", en0.Q);
+    printf("  E2/(E4+3*E6)=%.6f, E/E_FB = %.4f\n\n",
+           en0.E2/(en0.E4 + 3.0*en0.E6), en0.Etot/E_FB);
 
     /* λ scan */
     double lambdas[] = {
@@ -441,14 +474,14 @@ int main(int argc, char **argv) {
 
             /* Virial convergence check */
             Energy en = compute_energy(g, &p);
-            double vir = en.E2 - en.E4 + 3.0*en.EV;
+            double vir = en.E2 - en.E4 - 3.0*en.E6 + 3.0*en.EV;
             if (fabs(vir) < 0.005 * en.Etot) { converged = 1; break; }
             prev_vir = vir;
             (void)prev_vir;
         }
 
         Energy en = compute_energy(g, &p);
-        double virial = en.E2 - en.E4 + 3.0*en.EV;
+        double virial = en.E2 - en.E4 - 3.0*en.E6 + 3.0*en.EV;
 
         if (en.Q < 0.95) {
             printf("%-12.4g  ** COLLAPSED: rho(0)=%.4f Q=%.4f **\n",
@@ -465,9 +498,9 @@ int main(int argc, char **argv) {
                en.Q, en.Etot/E_FB, virial, outer+1, converged?'*':' ');
     }
 
-    printf("\n* = virial converged (|E2-E4+3EV| < 0.01)\n");
-    printf("Virial: E2 - E4 + 3*E_V = 0\n");
-    printf("Mass: Mc^2 = 2*E4 - 2*E_V\n");
+    printf("\n* = virial converged (|E2-E4-3E6+3EV| < 0.005*E)\n");
+    printf("Virial: E2 - E4 - 3*E6 + 3*E_V = 0\n");
+    printf("Mass: Mc^2 = 2*E4 + 4*E6 - 2*E_V\n");
     printf("E_FB = %.6f\n", E_FB);
 
     /* Save profile at specific λ */
@@ -497,7 +530,7 @@ int main(int argc, char **argv) {
                     g->fp[i] = (1.0-relax)*g->fp[i] + relax*fp_new[i];
                 }
                 Energy enb = compute_energy(g, &p);
-                double vir = enb.E2 - enb.E4 + 3.0*enb.EV;
+                double vir = enb.E2 - enb.E4 - 3.0*enb.E6 + 3.0*enb.EV;
                 if (fabs(vir) < 0.005 * enb.Etot) break;
             }
         }
@@ -516,7 +549,7 @@ int main(int argc, char **argv) {
                 g->fp[i] = (1.0-relax)*g->fp[i] + relax*fp_new[i];
             }
             Energy enb = compute_energy(g, &p);
-            double vir = enb.E2 - enb.E4 + 3.0*enb.EV;
+            double vir = enb.E2 - enb.E4 - 3.0*enb.E6 + 3.0*enb.EV;
             if (fabs(vir) < 0.005 * enb.Etot) { conv = 1; break; }
         }
 
@@ -528,8 +561,8 @@ int main(int argc, char **argv) {
         if (en_save.Q > 0.95) {
             const char *fname = save_file ? save_file : "profile_finlam.dat";
             FILE *fp = fopen(fname, "w");
-            fprintf(fp, "# Finite-lambda profile: lambda=%.0f, e=%.4f, rho0=1.0\n", save_lambda, e_skyrme);
-            fprintf(fp, "# rho(0)=%.6f, E=%.6f, E/E_FB=%.4f\n", g->rho[0], en_save.Etot, en_save.Etot/E_FB);
+            fprintf(fp, "# Finite-lambda profile: lambda=%.0f, e=%.4f, lambda6=%.4f, rho0=1.0\n", save_lambda, e_skyrme, lambda6);
+            fprintf(fp, "# rho(0)=%.6f, E=%.6f, E6=%.6f, E/E_FB=%.4f\n", g->rho[0], en_save.Etot, en_save.E6, en_save.Etot/E_FB);
             fprintf(fp, "# Columns: r  f(r)  f'(r)  rho(r)\n");
             for (int i = 0; i <= Nr; i++)
                 fprintf(fp, "%.8f %.12f %.12f %.12f\n", g->r[i], g->f[i], g->fp[i], g->rho[i]);

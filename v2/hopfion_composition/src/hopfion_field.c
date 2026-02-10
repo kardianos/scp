@@ -823,10 +823,13 @@ EffectiveMetric *hf_effective_metric(const SphericalGrid *g, const HopfionParams
     double *sum_g00_l4 = (double *)calloc(n_bins, sizeof(double));
     double *sum_grr_l2 = (double *)calloc(n_bins, sizeof(double));
     double *sum_grr_l4 = (double *)calloc(n_bins, sizeof(double));
+    /* L₆ accumulator: β₆ = (2λ₆/π³) sin⁴f / r², adds equally to P and m */
+    double *sum_beta6 = (double *)calloc(n_bins, sizeof(double));
 
-    if (!count || !sum_g00_l2 || !sum_g00_l4 || !sum_grr_l2 || !sum_grr_l4) {
+    if (!count || !sum_g00_l2 || !sum_g00_l4 || !sum_grr_l2 || !sum_grr_l4
+        || !sum_beta6) {
         free(count); free(sum_g00_l2); free(sum_g00_l4);
-        free(sum_grr_l2); free(sum_grr_l4);
+        free(sum_grr_l2); free(sum_grr_l4); free(sum_beta6);
         hf_metric_free(em);
         return NULL;
     }
@@ -932,6 +935,17 @@ EffectiveMetric *hf_effective_metric(const SphericalGrid *g, const HopfionParams
          */
         double perp_contrib = c4 * q4_inv * A_perp2;
 
+        /* L₆ contribution: β₆ = (2λ₆/π³) sin⁴f / r²
+         * sin²f = 4 sin²(f/2) cos²(f/2) = 4|f⃗|²s²/|q|⁴
+         * where s = q.s (scalar part), |f⃗|² = q.f1²+q.f2²+q.f3² */
+        if (p->lambda6 > 0) {
+            double fvec2 = q.f1*q.f1 + q.f2*q.f2 + q.f3*q.f3;
+            double sin2f = 4.0 * fvec2 * q.s * q.s / (q2 * q2);
+            double sin4f = sin2f * sin2f;
+            double beta6 = (2.0 * p->lambda6 / (M_PI * M_PI * M_PI)) * sin4f / (r * r);
+            sum_beta6[bin] += beta6;
+        }
+
         /* Accumulate raw metric components */
         sum_grr_l4[bin] += perp_contrib;
         count[bin] += 1.0;
@@ -954,22 +968,32 @@ EffectiveMetric *hf_effective_metric(const SphericalGrid *g, const HopfionParams
         double r = em->r[b];
         double r2 = r * r;
 
-        /* P(r) = 2r² + 4c₄×<|A_⊥|²/|q|⁴>  (radial stiffness) */
-        em->P[b] = 2.0 * r2 + 4.0 * grr_l4_avg;
+        /* Sturm-Liouville coefficients for hedgehog radial perturbations.
+         * Both P and m use PERPENDICULAR (angular) currents only, because for
+         * the hedgehog breathing mode, [A₀, A_r] = 0 (temporal perturbation
+         * is aligned with radial current in isospin space). */
 
-        /* m(r) = r² + 2c₄×<|A_total|²/|q|⁴>  (temporal inertia)
-         * Uses total current (not just perpendicular) for the temporal component,
-         * since time derivatives couple to all spatial currents equally. */
-        em->m[b] = r2 + 2.0 * g00_l4_avg;
+        /* L₆ contribution: β₆ adds equally to P and m (ratio 1:1, not 2:1)
+         * because L₆ = λ₆ B^μ B_μ is Lorentz-invariant with B^r ∝ ḟ sin²f/r²
+         * having the same structure as B⁰ ∝ f'sin²f/r². */
+        double beta6_avg = sum_beta6[b] * inv_n;
 
-        /* Store both in metric arrays */
-        em->g00[b] = em->m[b];
+        /* P(r) = 2r² + 4c₄×<|A_⊥|²/|q|⁴> + β₆  (radial stiffness) */
+        em->P[b] = 2.0 * r2 + 4.0 * grr_l4_avg + beta6_avg;
+
+        /* m(r) = r² + 2c₄×<|A_⊥|²/|q|⁴> + β₆  (temporal inertia) */
+        em->m[b] = r2 + 2.0 * grr_l4_avg + beta6_avg;
+
+        /* BLV metric: g^{00} uses total current (for general perturbations),
+         * g^{rr} uses perpendicular current */
+        em->g00[b] = r2 + 2.0 * g00_l4_avg;
         em->grr[b] = em->P[b];
     }
 
     free(count);
     free(sum_g00_l2); free(sum_g00_l4);
     free(sum_grr_l2); free(sum_grr_l4);
+    free(sum_beta6);
 
     return em;
 }
