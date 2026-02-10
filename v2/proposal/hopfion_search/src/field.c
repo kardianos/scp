@@ -258,9 +258,14 @@ Energy field_energy(const Field *f, const Params *p)
             e4_sum -= inv_4e2 * comm2.s;
         }
 
-        /* EV: (lambda/4)(|q|^2 - rho0^2)^2 */
-        double dev = q_norm2(q) - p->rho0 * p->rho0;
+        /* EV: (lambda/4)(|q|^2 - rho0^2)^2 + m_pi^2 * rho0^2 * (1 - q.s/|q|) */
+        double norm2_q = q_norm2(q);
+        double dev = norm2_q - p->rho0 * p->rho0;
         ev_sum += 0.25 * p->lambda * dev * dev;
+        if (p->m_pi_sq > 0 && norm2_q > 1e-30) {
+            double norm_q = sqrt(norm2_q);
+            ev_sum += p->m_pi_sq * p->rho0 * p->rho0 * (1.0 - q.s / norm_q);
+        }
 
         /* ED: (mu^2/2)(j1^2 + j2^2 + j3^2 + P^2) */
         ed_sum += 0.5 * p->mu * p->mu * mv_weight_norm2(f->psi[ix]);
@@ -419,11 +424,22 @@ void field_gradient(const Field *f, const Params *p, Multivector *force)
         force[ix].f3 = lap.f3;
 
         /* --- EV force: -lambda * (|q|^2 - rho0^2) * q --- */
-        double dev = q_norm2(q) - p->rho0 * p->rho0;
+        double norm2_q = q_norm2(q);
+        double dev = norm2_q - p->rho0 * p->rho0;
         force[ix].s  -= p->lambda * dev * q.s;
         force[ix].f1 -= p->lambda * dev * q.f1;
         force[ix].f2 -= p->lambda * dev * q.f2;
         force[ix].f3 -= p->lambda * dev * q.f3;
+
+        /* --- Pion mass force: -d/dq [m_pi^2 rho0^2 (1 - q.s/|q|)] --- */
+        if (p->m_pi_sq > 0 && norm2_q > 1e-30) {
+            double inv_norm3 = 1.0 / (norm2_q * sqrt(norm2_q));
+            double coeff = p->m_pi_sq * p->rho0 * p->rho0;
+            force[ix].s  += coeff * (norm2_q - q.s * q.s) * inv_norm3;
+            force[ix].f1 -= coeff * q.s * q.f1 * inv_norm3;
+            force[ix].f2 -= coeff * q.s * q.f2 * inv_norm3;
+            force[ix].f3 -= coeff * q.s * q.f3 * inv_norm3;
+        }
 
         /* --- ED force: -mu^2 * (J, P) --- */
         force[ix].j1 = -p->mu * p->mu * psi_here.j1;

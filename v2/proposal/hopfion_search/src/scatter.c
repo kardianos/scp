@@ -324,6 +324,7 @@ int main(int argc, char *argv[])
     double mu_d = 0.0;        /* degenerate sector mass */
     double degen_amp = 0.01;  /* amplitude of initial degenerate perturbation */
     double degen_sigma = 1.5; /* width of initial degenerate Gaussian */
+    double m_pi = 0.0;        /* pion mass (1/code_length units, 0=massless) */
 
     /* Parse command line */
     for (int i = 1; i < argc; i++) {
@@ -353,10 +354,11 @@ int main(int argc, char *argv[])
         else if (strcmp(argv[i], "-mu_d") == 0 && i+1 < argc) mu_d = atof(argv[++i]);
         else if (strcmp(argv[i], "-degen_amp") == 0 && i+1 < argc) degen_amp = atof(argv[++i]);
         else if (strcmp(argv[i], "-degen_sigma") == 0 && i+1 < argc) degen_sigma = atof(argv[++i]);
+        else if (strcmp(argv[i], "-mpi") == 0 && i+1 < argc) m_pi = atof(argv[++i]);
         else {
             fprintf(stderr, "Usage: %s [-v speed] [-z sep/2] [-N grid] [-L box] "
                     "[-T time] [-dt step] [-lambda lam] [-sigma] [-anti] [-out interval] "
-                    "[-profile file] [-damp gamma] [-settle time] "
+                    "[-profile file] [-damp gamma] [-settle time] [-mpi pion_mass] "
                     "[-degenerate] [-g coupling] [-mu_d mass]\n", argv[0]);
             return 1;
         }
@@ -388,7 +390,9 @@ int main(int argc, char *argv[])
                                            "B=+1 + B=+1 (attractive channel)";
     printf("Solitons: %s, separation=%.1f, v=%.3fc\n", channel_str, 2*z0, v0);
     printf("Model: %s\n", sigma_model ? "σ-model (project |q|→ρ₀ each step)" : "full model");
-    printf("Parameters: ρ₀=%.1f, e=%.1f, λ=%.0f, c=%.1f\n", rho0, e_skyrme, lambda, c_light);
+    printf("Parameters: ρ₀=%.1f, e=%.1f, λ=%.0f, c=%.1f", rho0, e_skyrme, lambda, c_light);
+    if (m_pi > 0) printf(", m_π=%.4f", m_pi);
+    printf("\n");
     printf("Time: T_max=%.1f, dt=%.6f (CFL=%.3f)\n", T_max, dt, dt*c_light/h);
     if (settle_time > 0)
         printf("Settling: damp=%.1f for t<%.2f, then conservative\n", damp_gamma, settle_time);
@@ -427,7 +431,7 @@ int main(int argc, char *argv[])
            prof->rho ? ", has ρ(r)" : ", σ-model");
 
     /* Allocate field and velocity */
-    Params params = {rho0, lambda, e_skyrme, mu_d, g_coupling, c_light};
+    Params params = {rho0, lambda, e_skyrme, mu_d, g_coupling, c_light, m_pi * m_pi};
     Field *field = field_alloc(N, L);
     Multivector *vel = (Multivector *)calloc(N3, sizeof(Multivector));
     Multivector *force = (Multivector *)calloc(N3, sizeof(Multivector));

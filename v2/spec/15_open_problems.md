@@ -1,7 +1,7 @@
 # 15 — Open Problems and Critical Assessment
 
 This chapter provides an accounting of the current limitation of CHPT.
-**Last Updated: Phase 9.3 — Degenerate Sector Coupling Implementation**
+**Last Updated: Phase 14 — K=1 Angular Modes (all bound-state searches complete)**
 
 ---
 
@@ -72,15 +72,27 @@ This chapter provides an accounting of the current limitation of CHPT.
 *   **Implication**: Either Quarks are not fundamental knots, or the topology is more complex (e.g., knots on a non-simply connected manifold).
 
 ### B3. The Weak Force
-*   **Status**: **OPEN — Coupling mechanism implemented, bound states not yet computed**.
+*   **Status**: **OPEN — All bound-state searches negative. Conceptual reframing needed.**
 *   **Update**: Defined as "Parity Violation" in `spec/05_chirality.md`. The massive degenerate sector (B5 resolution) was a candidate: 4 massive modes (parity-odd $P$ + 3-component $\vec{J}$) suggestive of weak bosons.
 *   **Critical Problem (Phase 7)**: The degenerate sector is **completely decoupled** from solitons in the original Lagrangian (scalar extraction $\langle\cdot\rangle_0$ kills all $e_0$ terms). See B6.
-*   **Resolution (Phase 8–9.3)**: Three coupling terms implemented and numerically verified:
+*   **Resolution attempt (Phase 8–9.3)**: Three coupling terms implemented and numerically verified:
     *   $\mathcal{L}_{2,D}$: degenerate kinetic energy (propagation)
     *   $E_{4,C} = (1/4e^2)\sum|F^w_{ij}|^2$: Skyrme cross-coupling (short-range repulsion)
     *   $E_{\text{int}} = (g^2/2)|q|^2|\nabla p|^2$: attractive binding at finite $\lambda$
     *   Gradient verified to $< 10^{-7}$ relative error. Integration tests confirm Lennard-Jones-like potential (repulsion + attraction). Energy conservation $\Delta E/E < 2 \times 10^{-4}$.
-*   **Remaining**: Whether this potential supports discrete bound states (trapped degenerate modes = weak bosons?) requires solving the radial Schrödinger equation with the computed effective potential. See `proposal/hopfion_search/results/README.md`.
+*   **Phase 10–11 result: NO degenerate bound states**.
+    *   Skyrme coupling ($E_{4,C}$): positive-definite squared norm creates massive repulsive kinetic barrier $K(r) \sim 200$ at soliton core. Effective Schrödinger potential $W_{\text{eff}}/K \sim -0.02$ far too shallow.
+    *   Geometric coupling (covariant derivative): cross-term $\langle \partial_i p, [A_i, p]\rangle = 0$ identically (Lie algebra orthogonality). No coupling at all.
+    *   Scanned 50 parameter combinations $(g_c, \mu)$ on two profiles — zero bound states everywhere.
+*   **Phase 12 result: NO breathing resonance** (K=0 normal modes).
+    *   Continuum spectrum only; spectral peaks are box modes, not soliton-specific resonances.
+    *   Massive pion profile: no bound modes below $m_\pi^2$ threshold. No instabilities.
+*   **Phase 14 result: NO angular bound states** (K=1 modes), but **near-binding in Channel C**.
+    *   Channel A (isorotational): zero mode at $\omega=0$. The physical pion IS this mode, via collective quantization.
+    *   Channel B (translational): no bound states; lowest eigenvalue 0.484 > threshold 0.243.
+    *   Channel C (mixed $L=1, I=1$): $W/m$ minimum = 0.252, only **4% above** threshold $m_\pi^2 = 0.243$.
+*   **Implications**: Weak bosons cannot be trapped degenerate modes under any tested coupling. The near-binding in K=1 Channel C suggests additional attractive coupling (beyond current terms) could create a bound pion-like state, but W/Z masses ($\sim 80$–$91$ GeV) are inaccessible at the energies probed. The theory currently has no mechanism for the weak force.
+*   **Conceptual reframing (Phase 12)**: Bosons may not be bound states at all, but **transient geometric deformations** during soliton-soliton interactions — patterns of energy transfer rather than persistent objects. This is consistent with their short lifetimes ($\sim 10^{-25}$ s for W/Z). However, this interpretation has not been made quantitative.
 
 ### B4. Derivation of Maxwell's Equations
 *   **Original Problem**: Need to prove null-rotors = Maxwell.
@@ -96,23 +108,26 @@ This chapter provides an accounting of the current limitation of CHPT.
 *   **Speculative direction**: Superseded by B6; the degenerate sector must first be made dynamical before its phenomenological role can be assessed.
 
 ### B6. Degenerate Sector Decoupling — Non-Dynamical Weight Modes
-*   **Status**: **PARTIALLY RESOLVED (Phase 9.3) — Coupling implemented and verified; bound states not yet computed**.
+*   **Status**: **RESOLVED (Phase 14) — Coupling implemented, all bound-state searches negative.**
 *   **Problem**: The kinetic term $\mathcal{L}_2 = \frac{1}{2}\eta^{\mu\nu}\langle\partial_\mu\Psi\,\widetilde{\partial_\nu\Psi}\rangle_0$ evaluates to $\frac{1}{2}|\partial_\mu q|^2$ — it does not include the degenerate sector ($\vec{J}$, $P$) at all. This is because $e_0^2 = 0$ in Cl(3,0,1), so the scalar extraction $\langle\cdot\rangle_0$ is blind to the weight part $e_0 p$. The same holds for $\mathcal{L}_4$ and $V$. The only term involving $P$ and $\vec{J}$ is $V_D = (\mu^2/2)(|\vec{J}|^2 + P^2)$, which is algebraic (no derivatives). The EOM is $\mu^2 J_i = 0$, $\mu^2 P = 0$ — the degenerate sector is forced to zero. It has no dynamics, no propagation, and no coupling to solitons.
 *   **Verified**: Numerically confirmed — 3D gradient flow gives $|J|_{\max} < 10^{-10}$, $|P|_{\max} < 10^{-10}$.
 *   **Implication**: The linear-limit table in `spec/math/03_dynamics.md` §3 previously claimed $\square P + \mu^2 P = 0$ (Klein-Gordon). This was **incorrect** — corrected to $\mu^2 P = 0$ (algebraic).
-*   **Resolution (Phase 8 analysis + Phase 9.3 implementation)**:
-    Three coupling terms derived from the Clifford product structure (cross-terms discarded by scalar extraction) and implemented in `src/coupling.c` + `src/coupling.h`:
+*   **Resolution (Phase 8–9.3 — coupling implementation)**:
+    Three coupling terms derived from the Clifford product structure and implemented in `src/coupling.c` + `src/coupling.h`:
     1. $\mathcal{L}_{2,D} = (1/2)|\nabla p|^2$ — degenerate kinetic energy (propagation).
     2. $E_{4,C} = (1/4e^2)\sum_{i<j}|F^w_{ij}|^2$ — weight-sector Skyrme cross-coupling (repulsive, no new parameters).
     3. $E_{\text{int}} = (g^2/2)|q|^2|\nabla p|^2$ — attractive coupling at finite $\lambda$ (one new parameter $g$).
-    **Gradient verification**: All 8 field components match finite differences to $< 10^{-7}$ relative error (`src/verify_coupling.c`).
-    **Integration tests** (e=1, λ=10000, N=128, leapfrog):
-    - Energy conservation $\Delta E/E < 2 \times 10^{-4}$ over 2–3 time units.
-    - $E_{4,C}$ repulsion confirmed: degenerate field expelled from soliton core ($E_{4,C}$ drops 94–99%).
-    - $E_{\text{int}}$ attraction ($g=1$): retains 14% more coupling energy than $g=0$ (weak trapping at $\lambda=10000$ where $\rho(0)=0.997$; deeper trapping expected at lower $\lambda$).
-    - Lennard-Jones-like potential structure confirmed dynamically: short-range repulsion from topology + long-range attraction from $\rho(r)$ variation.
     **Parameters**: Theory now has 6 parameters $(\rho_0, \lambda, e, \mu, g, c)$.
-*   **Remaining**: Bound state computation — solve the radial Schrödinger equation with the effective potential to determine if discrete trapped modes exist. See `proposal/hopfion_search/results/README.md` and `results/extended_lagrangian_analysis.md`.
+*   **Phase 10–11 — Bound state search: NO BOUND STATES**.
+    - Skyrme coupling: repulsive kinetic barrier $K(r) \sim 200$ makes $W_{\text{eff}}/K \sim -0.02$ (too shallow).
+    - Geometric coupling (covariant derivative): cross-term $\equiv 0$ by Lie algebra orthogonality.
+    - 50 parameter combinations scanned — zero bound states everywhere.
+*   **Phase 12 — Normal modes: NO breathing resonance**.
+    - K=0 continuum spectrum only; no soliton-specific resonances in massless or massive case.
+*   **Phase 14 — Angular modes: NO K=1 bound states**.
+    - Isorotational zero mode (Channel A) IS the pion via collective quantization.
+    - Near-binding in Channel C: $W/m$ minimum only 4% above $m_\pi^2$ threshold.
+*   **Assessment**: The degenerate sector has been made dynamical (coupling terms work correctly), but **does not support bound states** under any coupling mechanism tested. The sector's physical role remains unclear. The near-binding in K=1 Channel C is the most promising direction for further investigation.
 
 ---
 
@@ -142,12 +157,12 @@ With the Lagrangian now complete (A2, A7, A8, B5 all resolved), the remaining op
 5.  **Higher-charge solitons ($B=2, 3, 4$)** ✓: Solved via rational map ansatz (`src/rational_map.c`). Angular integrals $I$ match literature. Binding energies: 1.9% ($B=2$), 3.8% ($B=3$), 7.7% ($B=4$) per baryon. Shapes: toroidal ($B=2$), tetrahedral ($B=3$), cubic ($B=4$).
 6.  **Mass spectrum**: The $B$-dependence is now known: $E/E_{FB}$ decreases from 1.231 ($B=1$) to 1.137 ($B=4$). Mapping to actual particle mass ratios remains open.
 7.  **Soliton scattering** ✓ (COLLISION OBSERVED): Full 3D time-dependent code implemented (`src/scatter.c`). Uses leapfrog (Störmer-Verlet) integration with product ansatz initialization and 3D charge-weighted centroid tracking. **Key result**: Head-on collision of two $B=1$ Skyrmions in the repulsive channel (π-isorotation) at $v = 0.5c$ with **perfect topology preservation** ($Q = 1.9999$) for $2.35$ time units — through the entire approach phase and deep core interpenetration. The solitons decelerate continuously ($18\times$ slowdown) under the repulsive interaction, reaching closest approach at $r \approx 1.23$ ($0.87$ core radii). Lattice topology loss at $t \approx 2.4$ prevents observing the bounce. **Critical parameter**: grid points across soliton core — using $e=1$ (core radius $\sqrt{2}$) at $N=192$, $L=10$ gives $13.6$ grid points and $\sim 2.4t$ stability. The $\sigma$-model profile with product ansatz eliminates the breathing mode ($|q_1 \cdot q_2/\rho_0| = \rho_0$ exactly). See `results/README.md` for full numerical data.
-8.  **Degenerate sector dynamics** ✓ (IMPLEMENTED AND VERIFIED): All three coupling terms implemented in `src/coupling.c` + `src/coupling.h`, gradient verified to $< 10^{-7}$ relative error (`src/verify_coupling.c`), and integrated into the time-dependent code (`src/scatter.c` with `-degenerate -g <val>` flags):
+8.  **Degenerate sector dynamics** ✓ (COMPLETE — no bound states): All three coupling terms implemented in `src/coupling.c` + `src/coupling.h`, gradient verified to $< 10^{-7}$ relative error (`src/verify_coupling.c`), and integrated into the time-dependent code (`src/scatter.c` with `-degenerate -g <val>` flags):
     - **Option 1** (kinetic $\mathcal{L}_{2,D}$): degenerate gradient energy, gives propagation.
     - **Option 2** ($g^2|q|^2|\nabla p|^2$): **attractive** well at finite $\lambda$. Integration tests confirm: retains 14% more coupling energy with $g=1$ vs $g=0$.
     - **Option 3** (full 8-component Skyrme norm cross-terms $|F^w_{ij}|^2$): **repulsive** near soliton. Integration tests confirm: $E_{4,C}$ drops 94–99% as degenerate field is expelled from core.
     - Combined: Lennard-Jones-like potential confirmed dynamically. Energy conservation $\Delta E/E < 2 \times 10^{-4}$.
-    - **Remaining**: Bound state computation (solve radial Schrödinger equation with effective potential to find trapped modes).
+    - **Bound state search (Phase 10–11)**: NO bound states under Skyrme or geometric covariant derivative coupling. 50 parameter combinations scanned. Root cause: Skyrme coupling is positive-definite (always repulsive); geometric coupling has zero cross-term (Lie algebra orthogonality).
 9.  **Finite $\lambda$ effects** ✓: Solved via coupled f-shooting + $\rho$-BVP Newton iteration with under-relaxation (`proposal/hopfion_search/src/finite_lambda.c`). Self-consistent solutions (virial $\approx 0$, $Q = 1.000$) obtained for $\lambda$ from $10^8$ down to $8000$. Key results:
     - $\rho(0)$ decreases from $\rho_0$ as $\lambda$ decreases, with $\delta\rho(0) \sim -\text{source}/(2\lambda)$ for large $\lambda$.
     - Finite-$\lambda$ effects **lower** the soliton mass: $E/E_{FB}$ decreases from 1.232 ($\lambda=\infty$) to 0.891 ($\lambda=8000$).
@@ -156,4 +171,7 @@ With the Lagrangian now complete (A2, A7, A8, B5 all resolved), the remaining op
     - Below $\lambda \approx 7000$–$8000$, the solver collapses — the soliton core hollows out ($\rho \to 0$). The $\sigma$-model soliton ($\rho \equiv \rho_0$) is a **local** energy minimum; the **global** minimum has $\rho \to 0$ (topological collapse). The constraint $\rho \equiv \rho_0$ provides topological protection.
     - The $\rho$ BVP is exponentially stiff (growth rate $\sim e^{\sqrt{2\lambda}\,R}$), requiring BVP methods rather than shooting.
     - See `spec/math/05_mass_mechanism.md`, §7 for the full numerical table.
+10. **Normal modes** ✓ (Phase 12): K=0 breathing mode eigenvalue solver (`src/normal_modes.c`). NO breathing resonance in sigma model or massive case. Spectral peak at 19 MeV is a box mode, not a soliton-specific resonance. Moment of inertia: $\Lambda = 141.6$ (massless), $\Lambda = 79.18$ (massive). Delta-N splitting 0.17 MeV at $e=1$ (experiment: 293.7 MeV).
+11. **3D pion mass** ✓ (Phase 13): Pion mass term added to 3D field code (`src/field.c`). CFL discovery: Skyrme $E_4$ term imposes $dt \propto h^2$ (not $h$). Massive scattering ($v=0.5c$, $m_\pi=0.493$): qualitatively same as massless — B+B̄ preserves $Q=0$, B+B loses topology at close approach.
+12. **K=1 angular modes** ✓ (Phase 14): Three channels solved (`src/angular_modes.c`). NO bound states, but **near-binding** in Channel C ($L=1, I=1$): $W/m$ minimum = 0.252, only 4% above $m_\pi^2 = 0.243$ threshold. Channel A zero mode IS the pion (collective quantization). Pion mass term bug found and fixed: $\sin^2\!f \cos f \to \cos f$.
 

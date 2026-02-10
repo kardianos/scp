@@ -315,6 +315,7 @@ int main(int argc, char **argv)
     params.mu = 1.0;
     params.g_coupling = 0.0;
     params.c = 1.0;
+    params.m_pi_sq = 0.0;
 
     /* Parse command line */
     for (int i = 1; i < argc; i++) {

@@ -39,7 +39,7 @@ int main(void)
 
     /* === Test 1: E_{2,D} only (large e, g=0 suppresses E_{4,C} and E_int) === */
     printf("=== Test 1: E_{2,D} (degenerate gradient, e=1e6, g=0) ===\n");
-    Params params1 = {1.0, 10.0, 1e6, 1.0, 0.0, 1.0};  /* rho0, lambda, e, mu, g, c */
+    Params params1 = {1.0, 10.0, 1e6, 1.0, 0.0, 1.0, 0.0};  /* rho0, lambda, e, mu, g, c, m_pi_sq */
 
     Field *f1 = field_alloc(N, L);
     init_hedgehog(f1, &params1, 1.5);
@@ -100,7 +100,7 @@ int main(void)
 
     /* === Test 2: All coupling terms (e=2, g=1) === */
     printf("=== Test 2: Full coupling (e=2, g=1) ===\n");
-    Params params2 = {1.0, 10.0, 2.0, 1.0, 1.0, 1.0};
+    Params params2 = {1.0, 10.0, 2.0, 1.0, 1.0, 1.0, 0.0};
     double g2 = 1.0;
 
     Field *f2 = field_alloc(N, L);

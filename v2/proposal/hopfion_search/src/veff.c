@@ -339,7 +339,8 @@ int main(int argc, char *argv[])
             double p2 = ((2*j-1)*x*p1 - (j-1)*p0) / j;
             p0 = p1; p1 = p2;
         }
-        w_theta[i] = 2.0 / ((1 - x*x) * n_theta*n_theta * p0*p0);
+        /* w_i = 2(1-x_i²) / (n²[P_{n-1}(x_i)]²) */
+        w_theta[i] = 2.0 * (1 - x*x) / (n_theta*n_theta * p0*p0);
     }
 
     double dphi = 2*M_PI / n_phi;

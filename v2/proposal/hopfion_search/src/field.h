@@ -18,6 +18,7 @@ typedef struct {
     double mu;      /* degenerate mass */
     double g_coupling; /* bulk-degenerate gradient coupling strength */
     double c;       /* speed of light (set to 1) */
+    double m_pi_sq; /* pion mass squared (in 1/code_length^2 units) */
 } Params;
 
 /* 3D grid */
