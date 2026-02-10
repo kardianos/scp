@@ -59,4 +59,40 @@ double hf_baryon_charge(const SphericalGrid *g);
  * (only bulk quaternion; degenerate sector left unchanged) */
 void hf_sigma_project(SphericalGrid *g, double rho0);
 
+/* ========== Effective Metric ========== */
+
+/* Radial profile of the BLV effective metric.
+ *
+ * For L₂ + L₄ Skyrme theory, the effective acoustic metric governing
+ * small fluctuations around a background field φ₀ is:
+ *
+ *   g_eff^{μν} ∝ -∂²L/∂(∂_μφ^A)∂(∂_νφ^B)  evaluated on φ₀
+ *
+ * For a hedgehog soliton, this reduces to radial functions:
+ *   P(r) = 2r² + 4c₄ sin²f(r)   (spatial radial)
+ *   m(r) = r² + 2c₄ sin²f(r)    (temporal/inertia)
+ *
+ * Key result: For the sigma model (|q|=ρ₀), P(r)/m(r) = 2 identically,
+ * meaning NO radial time dilation. Emergent gravity requires finite-λ
+ * (varying ρ(r)) or L₆ to break this identity.
+ */
+typedef struct {
+    int n_bins;         /* number of radial bins */
+    double dr;          /* bin width */
+    double *r;          /* bin centers: r[i] = (i+0.5)*dr */
+    double *g00;        /* -g_00 effective metric (temporal) */
+    double *grr;        /* g_rr effective metric (radial spatial) */
+    double *P;          /* Sturm-Liouville P(r) = radial stiffness */
+    double *m;          /* mass/inertia m(r) */
+} EffectiveMetric;
+
+/* Compute spherically-averaged effective metric from a 3D field configuration.
+ * The metric is computed from L₂ + L₄ contributions.
+ * Returns allocated EffectiveMetric (caller must free with hf_metric_free). */
+EffectiveMetric *hf_effective_metric(const SphericalGrid *g, const HopfionParams *p,
+                                      int n_bins);
+
+/* Free effective metric */
+void hf_metric_free(EffectiveMetric *em);
+
 #endif /* HOPFION_FIELD_H */

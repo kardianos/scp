@@ -166,7 +166,10 @@ q(t+dt)   = q(t)      + dt × v(t+dt/2)
 ```
 
 CFL condition: dt < h/c for L₂, dt < h²/(some constant) for L₄.
-With L₆: need to check — may require dt < h³ scaling.
+With L₆: dt ~ h³ (the sextic term involves 3 spatial derivatives cubed).
+For h=0.1: dt ~ 0.001 (vs 0.01 for L₄ alone). Manageable for gradient flow;
+prohibitive for long-time dynamics. Mitigation: arrested Newton flow
+(evolve, freeze when E increases) or skip L₆ force every M timesteps.
 
 ## Diagnostics (per snapshot)
 
@@ -187,8 +190,13 @@ With L₆: need to check — may require dt < h³ scaling.
 - Field I/O (save/load snapshots)
 
 ### Phase 2: Physics (`src/hopfion_field.c`)
-- Energy functional: L₂ + L₄ + L₆ + V + V_π
-- Force computation: -δE/δq for each term
+- Energy functional: L₂ + L₄ + L₆ + V + V_π (COMPLETE)
+- Force computation: -δE/δq for each term (COMPLETE)
+  - L₂: consistent 9-point Laplacian {1,-16,64,16,-130,16,64,-16,1}/(144h²)
+  - L₄: analytical 3-pass Skyrme force (ported from field.c)
+  - L₆: numerical finite differences of (B⁰)² energy
+  - V, V_π, V_D: analytical forces
+- Effective metric computation (BLV acoustic metric)
 - Gradient verification (finite-difference check)
 
 ### Phase 3: Topology (`src/topology.c`)
@@ -264,4 +272,81 @@ For R=10, h=0.08 (N_eff ≈ 250):
 - Per cell: 8 doubles (field) + 8 doubles (velocity) + 8 doubles (force) = 192 bytes
 - Total: 8.2M × 192 = 1.57 GB
 - With L₆: need baryon current storage: +4 doubles/cell = +0.26 GB
-- **Total: ~1.8 GB** (fits in RAM)
+- With Skyrme force: SkyrmePre (7 doubles) + pi (12 doubles) per cell = ~312 MB temporary
+- **Total: ~2.1 GB** (fits in RAM)
+
+## Effective Metric and Emergent Gravity
+
+### BLV Acoustic Metric
+
+The Babichev-Langlois-Vernieri (BLV) effective metric for small fluctuations
+around a soliton background φ₀ is:
+
+```
+g_eff^{μν}(x) = -∂²L/∂(∂_μφ^A)∂(∂_νφ^B)
+```
+
+For L₂ + L₄ Skyrme theory, this gives:
+- **L₂ contribution**: g^{μν} = η^{μν} (flat Minkowski, always)
+- **L₄ contribution**: depends on background currents A_d = q̃∂_dq
+
+### Sturm-Liouville Coefficients
+
+For a hedgehog soliton f(r), the effective metric reduces to:
+```
+P(r) = 2r² + 4c₄ sin²f(r)   (radial stiffness)
+m(r) = r² + 2c₄ sin²f(r)    (temporal inertia)
+```
+where c₄ = 2ρ₀²/e².
+
+### P/m = 2 Identity (Sigma Model)
+
+**Critical result**: For the sigma model (|q| = ρ₀ = const), we have
+c₄ = 2ρ₀²/e² and therefore:
+
+```
+P(r)/m(r) = (2r² + 4c₄ sin²f) / (r² + 2c₄ sin²f) = 2
+```
+
+This ratio is **identically 2** at every radius. This means the effective
+line element is conformally flat — there is NO Schwarzschild-like time
+dilation in the sigma model. The soliton does not generate emergent gravity.
+
+### What Breaks P/m = 2
+
+1. **Finite-λ (varying ρ(r))**: When the Mexican hat potential has finite λ,
+   ρ(r) < ρ₀ near the soliton core. The effective c₄(r) = 2ρ(r)²/e² now
+   varies with r, and P(r)/m(r) ≠ 2.
+
+2. **L₆ term**: The sextic term adds additional metric contributions that
+   are not proportional to the L₄ ones.
+
+3. **Dynamic sector**: If the degenerate (J,P) sector becomes dynamical
+   (with explicit kinetic term L₂_D), its coupling to the bulk could
+   break the identity.
+
+### Gravity Implementation Approach
+
+To test "gravity as field density reduction":
+1. Compute equilibrium at finite-λ (ρ(r) varies)
+2. Compute effective metric g_00(r), g_rr(r)
+3. Compare to Schwarzschild: g_00 = -(1-r_s/r), g_rr = (1-r_s/r)⁻¹
+4. Extract effective r_s and compare to soliton mass
+
+This requires the finite-λ solver (already working in hopfion_search) to
+be ported, or loading a finite-λ profile from file.
+
+## Consistent Laplacian
+
+The energy E₂ = (1/2) Σ |D_d q|² uses 4th-order central differences D_d.
+The exact discrete gradient of E₂ is Σ_d D_d†(D_d q), where D_d† is the
+transpose of the derivative operator. This gives a 9-point stencil:
+
+```
+{1, -16, 64, 16, -130, 16, 64, -16, 1} / (144 h²)
+```
+
+This is NOT the same as the standard 5-point Laplacian {-1, 16, -30, 16, -1}/(12h²).
+Using the wrong Laplacian creates an energy-force inconsistency that prevents
+gradient flow from converging to the true minimum. The boundary skip must be
+increased from ±2 to ±4 grid points (4.5h from sphere edge).

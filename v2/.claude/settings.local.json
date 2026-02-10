@@ -79,7 +79,11 @@
       "WebFetch(domain:pmc.ncbi.nlm.nih.gov)",
       "WebFetch(domain:ar5iv.labs.arxiv.org)",
       "WebFetch(domain:www.arxiv-vanity.com)",
-      "WebFetch(domain:www.mdpi.com)"
+      "WebFetch(domain:www.mdpi.com)",
+      "WebFetch(domain:inspirehep.net)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "WebFetch(domain:www.actaphys.uj.edu.pl)",
+      "WebFetch(domain:saalburg.aei.mpg.de)"
     ]
   }
 }
