@@ -66,7 +66,20 @@
       "Bash(/home/d/code/scp/v2/proposal/hopfion_search/bin/normal_modes:*)",
       "Bash(/tmp/test_mpi_grad.c << 'EOF'\n/* Quick test: verify pion mass gradient by finite-difference */\n#include <stdio.h>\n#include <stdlib.h>\n#include <math.h>\n#include \"src/field.h\"\n\nint main\\(void\\) {\n    int N = 16;\n    double L = 4.0;\n    double eps = 1e-5;\n    \n    Params params = {1.0, 0.0, 1e6, 0.0, 0.0, 1.0, 0.5*0.5};  /* m_pi=0.5 */\n    \n    Field *f = field_alloc\\(N, L\\);\n    /* Initialize with random field near vacuum */\n    srand\\(42\\);\n    for \\(int i = 0; i < N*N*N; i++\\) {\n        f->psi[i].s = 1.0 + 0.05*\\(rand\\(\\)/\\(double\\)RAND_MAX - 0.5\\);\n        f->psi[i].f1 = 0.05*\\(rand\\(\\)/\\(double\\)RAND_MAX - 0.5\\);\n        f->psi[i].f2 = 0.05*\\(rand\\(\\)/\\(double\\)RAND_MAX - 0.5\\);\n        f->psi[i].f3 = 0.05*\\(rand\\(\\)/\\(double\\)RAND_MAX - 0.5\\);\n    }\n    \n    /* Compute analytical gradient */\n    Multivector *force = \\(Multivector*\\)calloc\\(N*N*N, sizeof\\(Multivector\\)\\);\n    field_gradient\\(f, &params, force\\);\n    \n    /* Test at a few points */\n    int test_pts[] = {idx\\(N,3,5,7\\), idx\\(N,8,2,11\\), idx\\(N,1,14,6\\)};\n    double max_err = 0;\n    \n    for \\(int t = 0; t < 3; t++\\) {\n        int ix = test_pts[t];\n        /* Numerical gradient for s component */\n        double orig = f->psi[ix].s;\n        f->psi[ix].s = orig + eps;\n        Energy ep = field_energy\\(f, &params\\);\n        f->psi[ix].s = orig - eps;\n        Energy em = field_energy\\(f, &params\\);\n        f->psi[ix].s = orig;\n        \n        double num_s = -\\(ep.Etotal - em.Etotal\\)/\\(2*eps*f->h*f->h*f->h\\);\n        double ana_s = force[ix].s;\n        double err_s = \\(ana_s != 0\\) ? fabs\\(num_s - ana_s\\)/fabs\\(ana_s\\) : fabs\\(num_s - ana_s\\);\n        \n        /* f1 component */\n        orig = f->psi[ix].f1;\n        f->psi[ix].f1 = orig + eps;\n        ep = field_energy\\(f, &params\\);\n        f->psi[ix].f1 = orig - eps;\n        em = field_energy\\(f, &params\\);\n        f->psi[ix].f1 = orig;\n        \n        double num_f1 = -\\(ep.Etotal - em.Etotal\\)/\\(2*eps*f->h*f->h*f->h\\);\n        double ana_f1 = force[ix].f1;\n        double err_f1 = \\(ana_f1 != 0\\) ? fabs\\(num_f1 - ana_f1\\)/fabs\\(ana_f1\\) : fabs\\(num_f1 - ana_f1\\);\n        \n        printf\\(\"Point %d: s: ana=%+.6e num=%+.6e err=%.1e | f1: ana=%+.6e num=%+.6e err=%.1e\\\\n\",\n               t, ana_s, num_s, err_s, ana_f1, num_f1, err_f1\\);\n        if \\(err_s > max_err\\) max_err = err_s;\n        if \\(err_f1 > max_err\\) max_err = err_f1;\n    }\n    \n    printf\\(\"\\\\nMax relative error: %.2e\\\\n\", max_err\\);\n    printf\\(\"%s\\\\n\", max_err < 1e-4 ? \"PION MASS GRADIENT: PASS\" : \"PION MASS GRADIENT: FAIL\"\\);\n    \n    free\\(force\\);\n    field_free\\(f\\);\n    return 0;\n}\nEOF)",
       "Bash(/tmp/test_mpi_grad)",
-      "Bash(./bin/angular_modes:*)"
+      "Bash(./bin/angular_modes:*)",
+      "WebSearch",
+      "WebFetch(domain:arxiv.org)",
+      "WebFetch(domain:link.springer.com)",
+      "WebFetch(domain:www.nature.com)",
+      "WebFetch(domain:hopfion.com)",
+      "WebFetch(domain:papers.ssrn.com)",
+      "WebFetch(domain:cpc.ihep.ac.cn)",
+      "Bash(./bin/hopfion_evolve:*)",
+      "WebFetch(domain:journals.aps.org)",
+      "WebFetch(domain:pmc.ncbi.nlm.nih.gov)",
+      "WebFetch(domain:ar5iv.labs.arxiv.org)",
+      "WebFetch(domain:www.arxiv-vanity.com)",
+      "WebFetch(domain:www.mdpi.com)"
     ]
   }
 }
