@@ -1,0 +1,32 @@
+============================================================
+ Field-Primary 3D Soliton Simulation
+============================================================
+
+Grid: N=256, L=10.0, h=0.078125
+Parameters: e=1.0, rho0=1.0, dt=0.0200
+Mediator: g_top=10.0, kappa2=1.0
+CFL: dt*sqrt(3)/h = 0.4434 (should be < 1)
+Threads: 16
+Memory: ~2.6 GB
+
+Profile: data/profiles/profile_sigma_e1.dat (10001 points, R_max=30.0)
+
+--- Self-tests ---
+  FFT roundtrip test (N=64): max error = 3.10e-15 OK
+  Poisson test (sin source): max error = 2.03e-03 (4 pts) OK
+
+=== VARIATION 3: + Massive mediator (mu=0.3980) ===
+Parameters: g_top=10.0, mu=0.3980, range=2.51
+
+--- Static U(D) with Yukawa mediator ---
+         D        U_skyrme      U_mediator  U_med*D*exp(mu*D)         U_total
+       3.0    4.241107e+01   -4.309688e+00   -4.266921e+01    3.810138e+01
+       4.0    2.903414e+01   -3.740419e+00   -7.351518e+01    2.529373e+01
+       5.0    2.457733e+01   -3.474838e+00   -1.271015e+02    2.110249e+01
+       7.0    2.369083e+01   -3.286807e+00   -3.730927e+02    2.040402e+01
+      10.0    2.845354e+01   -3.233987e+00   -1.730734e+03    2.521955e+01
+      15.0    7.759227e+01   -3.443454e+00   -2.022198e+04    7.414881e+01
+
+============================================================
+ All requested variations complete.
+============================================================

@@ -1,0 +1,30 @@
+============================================================
+ Field-Primary 3D Soliton Simulation
+============================================================
+
+Grid: N=256, L=10.0, h=0.078125
+Parameters: e=1.0, rho0=1.0, dt=0.0200
+Mediator: g_top=10.0, kappa2=1.0
+CFL: dt*sqrt(3)/h = 0.4434 (should be < 1)
+Threads: 16
+Memory: ~2.6 GB
+
+Profile: data/profiles/profile_sigma_e1.dat (10001 points, R_max=30.0)
+
+--- Self-tests ---
+  FFT roundtrip test (N=64): max error = 3.10e-15 OK
+  Poisson test (sin source): max error = 2.03e-03 (4 pts) OK
+
+=== VARIATION 5: L6 metric (lambda6=10.0, expect attractive lensing) ===
+
+step    time    wave_x_centroid   wave_y_centroid   Q       E       E6
+   50    1.000        0.000279        0.000000   1.0000     108.3532     0.4327
+  100    2.000        0.000217       -0.000000   1.0000     109.5145     0.4325
+  150    3.000        0.000319       -0.000000   0.2778      85.3330     0.3217
+CATASTROPHIC: stopping V5
+
+Expected: wave_y_centroid should deviate from 0 (attractive lensing)
+
+============================================================
+ All requested variations complete.
+============================================================

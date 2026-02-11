@@ -1,0 +1,15 @@
+# Binary snapshot directories (65MB-3.3GB each)
+data/proton_*/
+data/hopfion/
+data/hopfion_*/
+data/snap_*/
+data/snapshots/
+data/snapshots_*/
+
+# Binary files
+*.bin
+*.o
+
+# Build artifacts
+build/
+bin/
