@@ -177,11 +177,13 @@ double topo_hopf_charge(const SphericalGrid *g)
 
     /* Step 2: Solve ∇²A = -B via Jacobi relaxation.
      * Use 2nd-order Laplacian (6-point stencil) for speed. */
-    int max_iter = 200;  /* limited iterations for speed */
-    double omega = 1.5;  /* SOR over-relaxation factor */
+    int max_iter = 2000;  /* more iterations for better convergence */
+    (void)0;  /* Using pure Gauss-Seidel (ω=1.0, serial for convergence guarantee) */
 
     for (int iter = 0; iter < max_iter; iter++) {
-        #pragma omp parallel for schedule(static)
+        double max_change = 0;
+
+        /* Serial Gauss-Seidel sweep (no data race → guaranteed convergence) */
         for (int n = 0; n < g->n_active; n++) {
             int ix = g->active[n];
             int i, j, k;
@@ -207,10 +209,30 @@ double topo_hopf_charge(const SphericalGrid *g)
             double new_Ay = (Ay[ixm]+Ay[ixp]+Ay[iym]+Ay[iyp]+Ay[izm]+Ay[izp] + h*h*By[ix]) / 6.0;
             double new_Az = (Az[ixm]+Az[ixp]+Az[iym]+Az[iyp]+Az[izm]+Az[izp] + h*h*Bz[ix]) / 6.0;
 
-            Ax[ix] = (1-omega)*Ax[ix] + omega*new_Ax;
-            Ay[ix] = (1-omega)*Ay[ix] + omega*new_Ay;
-            Az[ix] = (1-omega)*Az[ix] + omega*new_Az;
+            double dx = new_Ax - Ax[ix], dy = new_Ay - Ay[ix], dz = new_Az - Az[ix];
+            double ch = dx*dx + dy*dy + dz*dz;
+            if (ch > max_change) max_change = ch;
+
+            Ax[ix] = new_Ax;
+            Ay[ix] = new_Ay;
+            Az[ix] = new_Az;
         }
+
+        /* Check convergence every 100 iterations */
+        if ((iter+1) % 100 == 0 || iter == max_iter-1) {
+            /* Compute intermediate H */
+            double H_check = 0;
+            for (int n = 0; n < g->n_active; n++) {
+                int ix = g->active[n];
+                H_check += (Ax[ix]*Bx[ix] + Ay[ix]*By[ix] + Az[ix]*Bz[ix]) * h3;
+            }
+            H_check /= (4.0 * M_PI * M_PI);
+            if (iter < 500 || (iter+1) % 500 == 0)
+                fprintf(stderr, "  Hopf SOR iter %d: H=%.6f, max_change=%.2e\n",
+                        iter+1, H_check, sqrt(max_change));
+        }
+
+        if (sqrt(max_change) < 1e-10) break;
     }
 
     /* Step 3: H = (1/4π²) ∫ A·B d³x */
