@@ -1,10 +1,17 @@
 # Ignore files and folders without a dot
 [^.]*
 # Negate for files with an extension
-!*.* 
+!*.*
+# Negate for Makefiles (caught by [^.]* but not executables)
+!Makefile
 # Ensure directories containing files with extensions are not ignored
 !*/
 *.wasm
 *.scpv
+*.bin
+*.dat
+*.o
+*.sqlite
 build/
+target/
 radial_solver
