@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gcc:*)",
+      "Bash(./v18/src/skyrme3d:*)",
+      "Bash(for d in v13 v14 v15 v16 v17 v18)",
+      "Bash(do echo \"=== $d ===\")",
+      "Read(//home/d/code/scp/**)",
+      "Bash(done)"
+    ]
+  }
+}

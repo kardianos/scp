@@ -1,0 +1,13 @@
+{
+  "algebraic_parameters": {
+    "A": 0.1,
+    "omega": 1.0,
+    "k": 1.0,
+    "t": 0.0
+  },
+  "maxwell_constraints": {
+    "div_B_core_0.1": -0.029797213009158566,
+    "div_E_core_0.1": 0.0,
+    "div_E_far_10.0": 0.0
+  }
+}
