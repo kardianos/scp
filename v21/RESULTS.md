@@ -334,6 +334,32 @@ draining the system.
 At α=0.1 with full ρ: ω=0.954, Φ_c ~ -0.25, Q ~ 85–93 (nearly constant).
 The 1/r Newtonian tail is preserved (static monopole = E_total).
 
+### Phase 3: Bootstrap m₀ → 0 (NEGATIVE)
+
+Can the backreaction m_eff² = m₀² - βΦ sustain a mass gap as m₀ → 0?
+
+| m₀ | α, β | E(300) | fc(300) | ω | ω/m | Status |
+|----|------|--------|---------|---|-----|--------|
+| 1.0 | 0.1, 0.1 | 89.1 | 0.988 | 0.954 | 0.954 | **Stable** |
+| 0.8 | 0.1, 0.1 | 19.2 | 0.74 | 0.821 | 1.026 | **Dying (ω > m)** |
+| 0.7 | 0.1, 0.1 | ~12 | 0.48 | — | — | Dead |
+| 0.6 | 0.1, 0.1 | ~10 | 0.31 | — | — | Dead |
+| 0.6 | 0.1, 0.5 | ~9 | 0.37 | — | — | Dead (strong β can't save it) |
+| 0.4 | 0.1, 0.1 | — | — | — | — | Runaway (below m_crit=0.62) |
+
+**Result: NEGATIVE.** The bootstrap fails because:
+1. The protective gap is m₀(vacuum), NOT m_eff(core). Backreaction deepens
+   the core mass but doesn't change the far-field gap.
+2. At m₀ = 0.8: ω = 0.821 > m = 0.800 → above the gap → radiates.
+3. Below m_crit ≈ 0.62: vacuum is unstable (false vacuum → runaway).
+4. Stronger β cannot compensate — it destabilizes the oscillon before
+   providing enough mass enhancement.
+
+**Implication**: Mass m₀ must be a fundamental parameter, not emergent from
+gravity. The oscillon needs a pre-existing mass gap to survive.
+
+---
+
 ### Open questions for v22+
 1. ~~Backreaction test~~ — **DONE**: oscillon survives at α,β ≤ 0.3; dies at 0.5.
 2. **Monopole radiation**: Scalar Φ emits monopole waves from breathing mode.

@@ -46,18 +46,18 @@ Q = 85.0, Φ(0) = -2.82 at α=1. r·Φ converges to const at r>15.
 
 Stability boundary at α≈0.4 (ω crosses mass gap). Physical α ~ 10⁻³⁸ is safe.
 
-### Phase 3: Self-consistent bootstrap (m₀ → 0)
+### Phase 3: Self-consistent bootstrap (m₀ → 0) — DONE ✗ (NEGATIVE)
 
-Only attempt after Phase 2 shows stability with m₀ > 0.
+Scanned m₀ from 1.0 down to 0.4 with α=0.1, β=0.1 (and β=0.5 for m₀=0.6).
 
-1. Gradually reduce m₀ while increasing β.
-2. If m_eff stays above 0 in the core (from βΦ correction), oscillon may survive.
-3. If m₀ = 0: vacuum is massless, oscillon self-generates its own gap.
-4. This is the "integrated" solution where gravity and mass gap are the same thing.
+**Result**: Bootstrap fails. The vacuum mass gap is m₀, not m_eff(core).
+Reducing m₀ closes the gap faster than backreaction can compensate.
+At m₀=0.8: ω=0.821 > m=0.800 → above gap → radiates → dies.
+At m₀<0.62: false vacuum → runaway instability.
+Stronger β destabilizes the oscillon before providing enough mass.
 
-Risk: vacuum outside oscillon is gapless → radiation escapes at all ω.
-Mitigation: if ω_osc < m_eff(core) but > 0 = m_eff(vacuum), the oscillon
-radiates into the gapless vacuum. This would be fatal. Need to check.
+**Conclusion**: m₀ must be a fundamental parameter. The mass gap cannot
+emerge purely from gravitational self-interaction in this model.
 
 ### Phase 4: Adjoint optimization
 
