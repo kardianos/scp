@@ -1,0 +1,31 @@
+id	version	phase	n_fields	field_type	mass_value	potential	mu	kappa	coupling	topology	phase_struct	ellipticity	bc	stable	fc	trans_l2	torsion	winding_ok	peak_P	force_type	force_sign	thermal_eq	radiation	notes
+v24_oscillon	V24	C	3	real	1.0	triple	-20	20	pairwise	gaussian	symmetric	0.0	absorb	1	0.80	0.001	0.0	1	0.5	none	none	0	constant	baseline oscillon
+v25_elastic	V25	C	3	real	1.0	triple	-20	20	elastic	gaussian	symmetric	0.0	absorb	1	0.70	0.26	0.0	1	0.3	none	none	0	constant	tidal resonance only
+v26_static	V26	C	3	real	1.0	triple	-20	20	none	helical	symmetric	0.0	periodic_z	1	0.92	0.42	0.0	0	0.01	none	none	0	constant	highest l2 but unwinds
+v26_dynA	V26	C	3	real	1.0	triple	-20	20	none	helical	symmetric	0.0	mixed	1	0.27	0.07	0.0	1	0.57	none	none	0	constant	propagating braid
+v27_m0	V27	C	3	real	0.0	triple	-50	50	none	helical	symmetric	0.0	mixed	1	0.10	0.03	0.0	1	1.74	none	attract	0	constant	massless breakthrough
+v28_pathA	V28	C	3	real	1.5	triple	-29.7	50	none	helical	bimodal	0.80	mixed	1	0.49	0.34	0.42	0	0.38	none	none	0	unknown	gravity-optimized
+v28_pathB	V28	C	3	real	1.5	triple	-43.4	50	none	helical	bimodal	0.25	mixed	1	0.87	0.13	2.21	0	0.48	none	none	0	unknown	EM-optimized
+v28_bimodal	V28	C	3	real	1.5	triple	-41.3	50	none	helical	bimodal	0.33	mixed	1	0.93	0.21	1.02	1	0.73	none	none	0	unknown	bimodal synergy
+v29_t1b_noise0	V29	C	3	real	1.5	triple	-41.3	50	none	helical	bimodal	0.33	periodic	1	0.82	0.0	0.0	0	0.39	none	none	1	slow_loss	thermal equilibrium
+v29_t2_m0_dyn0	V29	C	3	real	0.0	triple	-41.3	50	none	helical	bimodal	0.33	mixed	1	0.29	0.004	1.31	0	1.97	none	none	0	unknown	m=0 dynamics
+v29_t2_m0_dyn225	V29	C	3	real	1.5	triple	-41.3	50	none	helical	bimodal	0.33	mixed	1	0.54	0.24	0.10	1	0.004	none	none	0	unknown	m_init=0 dyn=2.25
+v29_t3_radiation	V29	C	3	real	1.5	triple	-41.3	50	none	helical	bimodal	0.33	absorb_far	1	0.93	0.0	0.0	0	0.43	none	none	0	constant	steady ~0.5/t
+v29_t4b_eps05	V29	C	3	real	1.5	triple	-41.3	50	none	helical	bimodal	0.33	mixed	1	0.96	0.0	0.0	1	0.32	none	none	0	unknown	survives 6x perturbation
+v29_t5_ag0	V29	C	3	real	1.5	triple	-41.3	50	metric_0.00	helical	bimodal	0.33	mixed	1	0.83	0.09	0.22	0	0.0	none	none	0	unknown	63% quad strain
+v29_t5_ag005	V29	C	3	real	1.5	triple	-41.3	50	metric_0.05	helical	bimodal	0.33	mixed	1	0.83	0.09	0.22	0	0.0	none	none	0	unknown	backreaction negligible
+v29_t6_best	V29	C	3	real	1.5	triple	-30	30	none	helical	bimodal	0.33	mixed	1	0.0	0.23	1.40	0	0.0	none	none	0	unknown	best synergy 1.71
+v29_t7_same	V29	C	3	real	1.5	triple	-41.3	50	none	helical_x2	bimodal	0.33	mixed	1	0.93	0.0	0.0	0	0.0	yukawa	repel	0	unknown	same twist repel D=30
+v29_t7_opp	V29	C	3	real	1.5	triple	-41.3	50	none	helical_x2	bimodal	0.33	mixed	1	0.93	0.0	0.0	0	0.0	yukawa	repel	0	unknown	opp twist repel D=30
+v29_t10b	V29	B	3	real	1.5	triple	-41.3	50	none	test_wave	bimodal	0.33	absorb	1	0.96	0.0	0.0	0	0.0	yukawa	mixed	0	unknown	Hessian: center attractive (n=1.04) but birefringent+sign-changing at r=4
+v29_t10a	V29	B	3	real	1.5	triple	-41.3	50	none	wave_packet	bimodal	0.33	absorb	1	0.0	0.0	0.0	0	0.0	none	none	0	unknown	No wave-wave scattering; P too weak for plane waves
+v29_t10c	V29	B	3	real	1.5	triple	-41.3	50	none	linear	bimodal	0.33	none	1	0.0	0.0	0.0	0	0.0	none	none	0	unknown	No tachyonic instability; M2_min=0.82 at v=0.3; kappa prevents it
+v29_t10e	V29	B	3	real	1.5	triple	-41.3	50	none	impulse	bimodal	0.33	absorb	1	0.96	0.0	0.0	0	0.0	none	none	0	unknown	3.7% channel mixing at braid center; mode conversion detected
+v29_t10f_m0zero	V29	B	3	real	0.0	triple	-41.3	50	none	helical	bimodal	0.33	absorb	1	0.39	0.0	0.0	1	0.005	none	none	0	unknown	massless phi0: braid loses localization, r^-2.5 far field
+v29_t10f_m0small	V29	B	3	real	0.1	triple	-41.3	50	none	helical	bimodal	0.33	absorb	1	0.25	0.0	0.0	1	0.002	none	none	0	unknown	m0=0.1: worse; mass essential for confinement
+v29_t10f_standard	V29	B	3	real	1.5	triple	-41.3	50	none	helical	bimodal	0.33	absorb	1	0.88	0.0	0.0	0	0.35	none	none	0	unknown	control: best localization with m=1.5
+v29_t10g_complex	V29	B	6	complex	1.5	triple_complex	-41.3	50	none	helical	bimodal	0.33	absorb	1	0.91	0.0	0.0	0	0.0	none	none	0	unknown	complex upgrade works! charge-carrying soliton Q~3-14
+v29_t10d_cool	V29	B	3	real	1.5	triple	-41.3	50	none	random	none	0.0	periodic	0	0.00	0.0	0.0	0	0.0	none	none	0	unknown	no Kibble-Zurek braids; mu<0 drives uniform state
+v29_t10h_same	V29	B	6	complex	1.5	triple_complex	-41.3	50	none	helical_x2	bimodal	0.33	absorb	1	0.0	0.0	0.0	0	0.0	yukawa	attract	0	unknown	same charge: attract D=-5.7; charges irrelevant
+v29_t10h_opp	V29	B	6	complex	1.5	triple_complex	-41.3	50	none	helical_x2	bimodal	0.33	absorb	1	0.0	0.0	0.0	0	0.0	yukawa	attract	0	unknown	opp charge: attract D=-6.4; same as same-charge
+v29_t10h_real	V29	B	6	complex	1.5	triple_complex	-41.3	50	none	helical_x2	bimodal	0.33	absorb	1	0.0	0.0	0.0	0	0.0	yukawa	attract	0	unknown	no charge: attract D=-5.2; Yukawa dominates

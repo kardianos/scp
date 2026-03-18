@@ -1,25 +1,145 @@
 # SCP Discoveries — Complete Record
 
-## V28: Bimodal Synergy — Complete Equations and Replication Guide (March 2026)
+---
 
-### 1. Lagrangian
+## Current Best Model: M7+c(ρ_B) (V30, March 2026)
 
-Three real scalar fields φ_a(x,t), a ∈ {0,1,2}, with NO mass term:
+Two-component field with density-dependent speed of light:
 
-    L = Σ_a [½(∂_t φ_a)² - ½(∂_i φ_a)²] - V(P)
+    S fields (braid/particle):
+    ∂²S_a/∂t² = c_eff²(ρ_B) × ∇²S_a - m²S_a - ∂V/∂S_a - g(ΣB²)S_a
 
-    V(P) = (μ/2) P² / (1 + κ P²)
+    B fields (background/medium):
+    ∂²B_a/∂t² = ∇²B_a - m²B_a - g(ΣS²)B_a
 
-    P = φ₀ φ₁ φ₂    (triple product)
+    c_eff²(x) = 1 - α_c × (1 - ρ_B(x)/ρ₀)
+    V(P) = (μ/2)P²/(1+κP²),  P = S₀S₁S₂
 
-Parameters at bimodal sweet spot (t=0.85):
-- μ = -41.3 (negative = attractive binding)
-- κ = 50.0  (regularization, prevents V → -∞)
-- NO mass term (m=0 in Lagrangian; effective mass from dynamics)
+    Parameters: m=1.50, μ=-41.3, κ=50, g=0.01, α_c=0.1-0.5
 
-Equations of motion:
+The braid (S) propagates through the medium (B). The braid depletes B
+locally, creating a c-well. Other braids propagate slower in the well →
+geodesic attraction → gravity. B accretes at the core (c>1) and depletes
+at the shell (c<1) = dark matter halo analog.
 
-    ∂²φ_a/∂t² = ∇²φ_a - ∂V/∂φ_a
+### Status: Stable at all α_c (0-0.5). Next: V31 gravity tests.
+
+---
+
+## V31: Planned — Gravity Verification (March 2026)
+
+Three tests of the M7+c(ρ_B) model:
+1. T1: Radial c_eff profile — is the depletion 1/r?
+2. T2: Two braids — does c-depletion create attraction?
+3. T3: Pinned boundaries — does accretion/depletion reach steady state?
+
+If T2 shows attraction: first gravitational force from field dynamics alone.
+
+---
+
+## V30: Field-Dependent c — Key Lessons (March 2026)
+
+**Rotating expansion** (FRW + vortex lines): Failed. Boundary artifacts,
+shell fragmentation, no bulk braids. Pin 7 (spontaneous braid formation)
+remains open.
+
+**Uniform c(ρ)**: Failed. c faster in dense → blowup. c slower in dense →
+core freezes, edges disperse. c(ρ) affecting ALL fields equally creates
+freezing or blowup, never attraction.
+
+**M7+c(ρ_B)**: WORKS. Braid stable at all α_c (0-0.5). The two-component
+separation is ESSENTIAL — S (source) and B (medium) must be decoupled.
+B-field shows simultaneous accretion (core c²=1.19) and depletion (shell
+c²=0.50). Dark matter halo analog. 2.4× speed ratio at α_c=0.5.
+
+---
+
+## V29: Validation + Field Study (March 2026)
+
+### Confirmed Findings
+
+| Finding | Test | Key number |
+|---------|------|-----------|
+| Bimodal synergy (trans+torsion) | V28 validated | trans=0.21, tor=1.02 |
+| Mass is parameter (m=1.50) | T2 | mass²=2.25 needed for quadrupole |
+| Thermal equilibrium | T1b | A_noise≈0.02, dE/dt→0 |
+| Evaporative self-concentration | T3 | fc: 0.80→0.93, constant radiation |
+| Robust to 6× perturbation | T4b | fc>0.58 at ε=5.0 |
+| 63% quadrupolar strain | T5 | Intrinsic geometry at R=10 |
+| Synergy in parameter band | T6 | μ∈[-41,-30], κ∈[20,50] |
+| Braids repel at D=30 (massive) | T7 | Yukawa range too short |
+| No wave-wave scattering | T10A | Triple product too weak for plane waves |
+| Broadband depletion (not resonant) | T12 spectral | Universal gravity |
+| Power-law 1/r^1.2 (not Yukawa) | T12 large-scale | Long-range, stable across L |
+
+### Field Study (T10 series — Phase B complete)
+
+The triple-product model alone CANNOT produce gravity or EM:
+- No 1/r: Yukawa-screened, birefringent, sign-changing Hessian
+- No gauge symmetry: real scalars, no conserved charge
+- No mass emergence: κ regularization prevents SSB
+
+BUT: complex field upgrade preserves braid + adds U(1) charge (T10G).
+Mode conversion at braid center: 3.7% channel mixing (T10E).
+
+### Field Depletion Discovery (T11-T12)
+
+The braid DEPLETES the background B-field. Depletion is:
+- Power-law ~1/r^1.2 (NOT Yukawa, despite m=1.5)
+- Broadband (all frequencies, good for universal gravity)
+- Self-limiting with M7 two-component model (fc=0.91)
+- α=1.2 exponent PINNED — 8 candidate fixes identified
+
+The harmonic absorption hypothesis (mass = resonant consumption rate)
+was REJECTED: depletion is broadband, not frequency-selective.
+
+### Open Issues (Pinned)
+
+1. α=1.2 not 1.0 for depletion exponent (8 fixes in OPEN_ALPHA_1.2.md)
+2. Mass emergence mechanism (consumption rate or structural energy?)
+3. EMF from complex fields (T10G viable, needs gauge promotion)
+4. Two-braid attraction (repulsion at D=30, untested at D<15)
+5. Topological protection (dynamical only, winding oscillates)
+6. Substrate (T9, untested)
+7. Spontaneous braid formation (V30 failed, mechanism unknown)
+
+---
+
+## V28: Bimodal Braid — Equations and Replication (March 2026)
+
+### Lagrangian
+
+    L = Σ_a [½(∂_t φ_a)² - ½(∂_i φ_a)² - ½m²φ_a²] - V(P)
+    V(P) = (μ/2) P² / (1 + κ P²),  P = φ₀φ₁φ₂
+    m=1.50, μ=-41.3, κ=50
+
+NOTE: m=1.50 is a Lagrangian parameter, not emergent. The bimodal sweet
+spot was discovered and validated WITH this mass. V29-T2 confirmed that
+mass²=2.25 is essential for the quadrupole (trans_l2: 0.004→0.24).
+
+### Bimodal Sweet Spot (t=0.85 interpolation of Path A and B)
+
+| Parameter | Value |
+|-----------|-------|
+| A₀=A₁=A₂ | 0.80 |
+| δ₁, δ₂ | 3.00, 4.43 |
+| R_tube | 3.00 |
+| ellipticity | 0.333 |
+| k_factor | 1.0 |
+
+Validated at N=128, T=500: trans_l2=0.207, torsion=1.021, fc=0.932,
+|P|=0.730, winding=-1.000.
+
+V29-T2 resolved mass roles: m² confines + enables quadrupole but
+suppresses torsion. m_init kick-starts torsion. Both needed for synergy.
+
+V29-T5: Strain h_ij is 63% quadrupolar at R=10 (intrinsic geometry).
+V29-T6: Synergy in band μ∈[-41,-30], κ∈[20,50]. Best at (μ=-30,κ=30).
+V29-T7: Two braids repel at D=30 (beyond Yukawa range ~0.67).
+
+### EOM (single-component V28 model)
+
+    ∂²φ_a/∂t² = ∇²φ_a - m²φ_a - ∂V/∂φ_a
 
     ∂V/∂φ_a = μ P (∂P/∂φ_a) / (1 + κP²)²
 
