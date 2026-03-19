@@ -1,0 +1,15 @@
+=== Starting E2 (two braids, N=512) ===
+=== V32 Single Run: Binding-Weighted Gradient Coupling ===
+acc = nabla^2 phi + w(P)*alpha*(grad_rho/rho).grad_phi - m^2 phi - V'(phi)
+w(P) = 1/(1+|P|/P_thresh)
+N=512 L=40.0 T=2000 alpha=0.50 braids=2 D=20.0 threads=16
+snap=200 diag=10.0 prof=100
+
+Allocating: 134217728 points x 14 arrays = 15.0 GB
+dx=0.1566 dt=0.039139 (0.25*dx, CFL=0.577*dx)  steps=51100
+P_max=0.433626, P_THRESH=0.043363 (10% of peak)
+
+Total steps: 51100, diag every 255, snap every 5110, prof every 2555
+
+  [SNAP] Saved data/E2/field_t0000.bin (5.4 GB)
+t=    0.0 [0.0%] E=8.555e+04 (1.00×E0) fc=0.235 D=20.0 w=0.639 max_rho=3.23e+00 [44s elapsed, ETA 0s]

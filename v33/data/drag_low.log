@@ -1,0 +1,43 @@
+=== V33 Drag Test: Kicked Braid in Uniform Background ===
+A_bg=0.050  v_kick=0.100  N=128  L=20  T=200
+ρ_bg ∝ A_bg² = 0.0025
+
+Allocating 0.15 GB (18874368 doubles, N=128)
+dx=0.3150 dt=0.03780
+
+Applying velocity kick: v_kick = 0.1000
+Kick energy injected: 3.8000e-02
+Steps=5291  diag_every=13 (dt_diag=0.49)
+
+t=    0.0  x=-0.0000  p_x=+1.205e+00  v_x=+0.0000e+00  E_drift=+0.00%  [0% 0s]
+t=    9.8  x=+0.0064  p_x=+1.412e+00  v_x=-3.4172e-02  E_drift=-0.02%  [5% 29s]
+t=   19.7  x=-0.0064  p_x=-2.974e-01  v_x=-2.3613e-02  E_drift=-0.05%  [10% 59s]
+t=   29.5  x=+0.0586  p_x=-3.442e-01  v_x=+3.9708e-02  E_drift=-0.05%  [15% 89s]
+t=   39.3  x=-0.0056  p_x=-4.559e-01  v_x=-4.4378e-02  E_drift=-0.06%  [20% 117s]
+t=   49.1  x=+0.0189  p_x=+7.374e-01  v_x=+6.2370e-02  E_drift=-0.08%  [25% 145s]
+t=   59.0  x=-0.0034  p_x=-5.107e-01  v_x=-1.0278e-01  E_drift=-0.08%  [29% 173s]
+t=   68.8  x=-0.0150  p_x=+3.763e-02  v_x=+3.5715e-02  E_drift=-0.09%  [34% 200s]
+t=   78.6  x=+0.0274  p_x=-7.532e-01  v_x=+4.2387e-02  E_drift=-0.11%  [39% 227s]
+t=   88.4  x=-0.0285  p_x=+6.475e-01  v_x=-2.7243e-02  E_drift=-0.11%  [44% 254s]
+t=   98.3  x=+0.0116  p_x=+3.134e-01  v_x=+2.4412e-02  E_drift=-0.11%  [49% 284s]
+t=  108.1  x=-0.0175  p_x=-6.831e-01  v_x=-4.4357e-02  E_drift=-0.13%  [54% 310s]
+t=  117.9  x=+0.0358  p_x=+2.527e-01  v_x=+1.0548e-01  E_drift=-0.15%  [59% 338s]
+t=  127.7  x=+0.0003  p_x=+2.481e-01  v_x=-1.3337e-02  E_drift=-0.14%  [64% 366s]
+t=  137.6  x=+0.0060  p_x=+5.482e-02  v_x=-1.5182e-03  E_drift=-0.16%  [69% 395s]
+t=  147.4  x=-0.0053  p_x=+3.677e-01  v_x=-6.9095e-02  E_drift=-0.17%  [74% 425s]
+t=  157.2  x=+0.0085  p_x=-1.122e-01  v_x=+2.3826e-02  E_drift=-0.17%  [79% 452s]
+t=  167.1  x=+0.0099  p_x=-5.857e-01  v_x=+5.9336e-03  E_drift=-0.19%  [84% 478s]
+t=  176.9  x=+0.0114  p_x=+3.125e-01  v_x=+3.0553e-02  E_drift=-0.20%  [88% 503s]
+t=  186.7  x=+0.0193  p_x=+7.031e-01  v_x=-3.1986e-03  E_drift=-0.20%  [93% 529s]
+t=  196.5  x=+0.0010  p_x=+2.507e-01  v_x=-3.2212e-02  E_drift=-0.22%  [98% 554s]
+
+=== RESULT ===
+A_bg=0.050  v_kick=0.100
+Final x_braid = 0.0293  (total displacement from ~0)
+Final p_x     = -1.6939e-02
+Run time: 563s
+
+Compare across A_bg values:
+  If displacement is LARGER at low A_bg → drag is LOWER in depleted field ✓
+  If displacement is SAME → drag is independent of ρ
+  If displacement is SMALLER at low A_bg → drag is HIGHER in depleted field

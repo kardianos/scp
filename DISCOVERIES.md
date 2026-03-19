@@ -12,28 +12,175 @@ Two-component field with density-dependent speed of light:
     B fields (background/medium):
     ∂²B_a/∂t² = ∇²B_a - m²B_a - g(ΣS²)B_a
 
-    c_eff²(x) = 1 - α_c × (1 - ρ_B(x)/ρ₀)
+    c_eff²(x) = 1 + α_c × (1 - ρ_B(x)/ρ₀)   ← INVERTED FORMULA
     V(P) = (μ/2)P²/(1+κP²),  P = S₀S₁S₂
 
-    Parameters: m=1.50, μ=-41.3, κ=50, g=0.01, α_c=0.1-0.5
+    Parameters: m=1.50, μ=-41.3, κ=50, g=0.01, α_c=0.2-0.5
 
-The braid (S) propagates through the medium (B). The braid depletes B
-locally, creating a c-well. Other braids propagate slower in the well →
-geodesic attraction → gravity. B accretes at the core (c>1) and depletes
-at the shell (c<1) = dark matter halo analog.
+The braid (S) propagates through the medium (B). The braid ACCRETES B
+at its core → c_eff < 1 at the core (slow pocket) → other braids
+propagate slower near it → geodesics curve inward → ATTRACTION.
 
-### Status: Stable at all α_c (0-0.5). Next: V31 gravity tests.
+V31 sign-fix confirmed: ΔD=-5.3 at α_c=0.2, ΔD=-10.8 at α_c=0.5.
+Both braids survive (fc=0.63-0.72). First gravitational attraction
+from field dynamics.
+
+### Status: ATTRACTION CONFIRMED (M7 inverted c). Braids attract via c-depletion.
 
 ---
 
-## V31: Planned — Gravity Verification (March 2026)
+## V32: SPH Field Theory — No Grid, No c(ρ) (March 2026)
 
-Three tests of the M7+c(ρ_B) model:
-1. T1: Radial c_eff profile — is the depletion 1/r?
-2. T2: Two braids — does c-depletion create attraction?
-3. T3: Pinned boundaries — does accretion/depletion reach steady state?
+Replaced the fixed grid with 200K moving SPH particles. Each particle
+carries φ_a and moves toward energy concentrations. The inter-particle
+spacing IS the metric. No c(ρ), no S/B split, no smoothing.
 
-If T2 shows attraction: first gravitational force from field dynamics alone.
+    Same equation: ∂²φ/∂t² = ∇²φ - m²φ - ∂V/∂φ
+    Computed via SPH kernel sums on moving particles.
+
+**Results**: Braid survives T=300. max|φ|² triples (1.6→4.9 = concentrating).
+Particles cluster 3× at core (metric contraction). Energy concentrates 40×.
+Energy drift +78% (SPH kernel error — main weakness).
+
+This is the first model where metric-like effects emerge PURELY from the
+geometry of the simulation, not from imposed formulas. The particles
+naturally create denser sampling where the field is active.
+
+**Two-braid SPH test**: INCONCLUSIVE. D decreases 20.02→19.84 (0.9%
+over T=182). Signal comparable to noise. One braid loses particles
+asymmetrically. No convincing evidence for attraction from geometry
+alone, but no repulsion either. The SPH resolution gradient may be
+too gentle (3× clustering) to produce measurable geodesic deflection.
+
+PINNED: SPH approach is viable (braid survives, particles cluster),
+but gravity from pure geometric metric contraction is not confirmed.
+
+## V32: Binding-Weighted Gradient Coupling — ATTRACTION IN SINGLE FIELD
+
+### The Insight
+The braid has internal geometry: tightly bound core (|P| large, w≈0.22),
+weakly bound interaction surface at r≈4-6 (|P| small, w≈0.5), and
+unbound fabric beyond. The braid interacts with the fabric ONLY at its
+weakly-bound surface — like a crystal interacting through surface bonds.
+
+### The Equation
+    acc_a = ∇²φ_a + w(P) × α × (∇ρ/ρ)·∇φ_a - m²φ_a - V'(φ_a)
+    w(P) = 1/(1 + |P|/P_threshold)
+
+The triple product P that DEFINES the braid also MASKS where it couples
+to the fabric. Core (w≈0.22): self-interaction suppressed. Surface
+(w≈0.5): interacts with fabric. Fabric (w≈1): full ambient dynamics.
+
+Single field. No split. No smoothing. No c(ρ).
+
+### Result: GRAVITATIONAL ATTRACTION at α=0.5
+
+| α | D(0) | D(300) | ΔD | Status |
+|---|------|--------|-----|--------|
+| 0.0 | 20.0 | 21.6 | +1.6 | Neutral (control) |
+| **0.5** | **20.0** | **16.8** | **-3.2** | **ATTRACTION — braids alive** |
+| 1.0 | 20.0 | 30.0 | +10.0 | Too strong — repulsion |
+| 2.0 | 20.0 | 30.5 | +10.5 | Too strong — blowup |
+
+### CORRECTION (overnight campaign with controls):
+
+The "attraction at α=0.5" was INTRINSIC braid-braid interaction, NOT from
+the gradient coupling. When α=0 controls are included:
+
+| D | α=0 (control) | α=0.1 | Gradient effect |
+|---|---------------|-------|-----------------|
+| 10 | -4.08 | -2.04 | +2.04 (REPULSION) |
+| 12 | -6.34 | -5.78 | +0.56 (repulsion) |
+| 15 | -4.11 | -4.05 | +0.06 (neutral) |
+| 20 | -1.00 | -0.82 | +0.18 (repulsion) |
+
+The gradient coupling is REPULSIVE at all α and all D. The INTRINSIC
+triple-product force provides attraction with a potential well at D≈5-6.
+This attraction is resolution-independent (ΔD=-0.80 ± 0.03 from N=64-160).
+
+The binding weight successfully prevents self-interaction blowup (the
+original problem), but the gradient coupling itself doesn't produce gravity.
+
+### What the overnight campaign DID confirm:
+
+1. **Intrinsic braid-braid attraction** from the standard equation (no modifications)
+   - CONFIRMED attraction at D=12-40 from triple-product overlap
+   - Force ~1/D^1.8 (power law, not Yukawa), peaks at D≈15 (ΔD=-9.1)
+   - Hard repulsive core at D<10
+   - Long-range tail to D≈40-80 (power law, not exponential cutoff)
+   - Energy conservation: -0.1% per T=100 (symplectic Verlet, small drift)
+   - Resolution-independent at dx<0.7 (converged at N=64-160)
+   - Mass dependence: lower m = longer range (m=0 gives massive attraction)
+   - C3 scattering: braids approach to D≈12, bounce, scatter (no bound orbit)
+
+### V33 characterization: clean code, single alloc, standard equation
+   Complete force law (C1), single braid profile (C2), two-braid scattering
+   (C3), mass scan (C4), five-braid (C5). All with correct energy tracking.
+   Bug fixed: earlier "1.0000×" was tautological (et/et=1 by definition).
+
+2. **Bound state dynamics** (E6): braids at D=8 bounce to D=12, oscillate
+   around equilibrium. No stable bound state (they scatter after bounce).
+
+3. **The braid anatomy**: core (w≈0.22), surface (w≈0.5), fabric (w≈1.0).
+   Intake at core, outtake at surface. The binding structure is real.
+
+---
+
+## V31: Gravity Verification (March 2026)
+
+### Original c formula (wrong sign):
+
+Three tests of M7+c(ρ_B):
+
+**T1 (radial profile)**: δρ_B ~ +4.7e-3/r^1.28 — POSITIVE sign.
+The braid creates B ACCRETION (c>1 near core), not depletion (c<1).
+The exponent 1.28 is consistent with V29's 1.21 (power-law, not Yukawa).
+
+**T2 (two-braid gravity)**: REPULSION, not attraction.
+- α_c=0.0: D stays at 20 (neutral)
+- α_c=0.2: D goes 20→44 (strong repulsion)
+- α_c=0.5: D oscillates 22-36 (chaotic)
+
+Root cause: symmetric M7 coupling creates NET B-accretion near the braid.
+At D=20, both braids enrich the gap (c>1) → faster propagation → repulsion.
+The depletion zone exists at r>16 (from T11) but is too far for D=20.
+
+**T3 (pinned boundaries)**: B energy steadily consumed (accretion rate ~6.4/t).
+Confirms the braid IS a B-sink, but consumed B accumulates at core (accretion).
+
+### What Would Fix the Sign
+
+1. Larger separation (D=50+) where depletion dominates over accretion
+2. Asymmetric coupling (g_absorb > g_radiate)
+3. Inverted c formula: c_eff² = 1 + α_c(1-ρ_B/ρ₀) (c LOWER where B enriched)
+4. Different coupling: c depends on δρ (depletion) not raw ρ_B
+
+### Sign-Fix Test: INVERTED c PRODUCES ATTRACTION
+
+Four fixes tested. The INVERTED c formula works:
+
+    c_eff² = 1 + α_c × (1 - ρ_B/ρ₀)
+
+c LOWER where B enriched (core) → slow pocket → attraction.
+
+| Fix | ΔD | fc | Result |
+|-----|-----|-----|--------|
+| control (α_c=0) | +0.3 | 0.35 | Neutral |
+| fix1 (D=60) | -9.9 | 0.01 | Approach but braids dead |
+| fix2 (asymmetric g) | +27.1 | 0.01 | Repulsion + death |
+| **fix3 (inverted, α_c=0.2)** | **-5.3** | **0.63** | **ATTRACTION, braids alive** |
+| **fix4 (inverted, α_c=0.5)** | **-10.8** | **0.72** | **STRONG ATTRACTION, alive** |
+
+FIRST GRAVITATIONAL ATTRACTION from field dynamics in the project.
+
+### Updated Best Model
+
+    S: ∂²S/∂t² = c_eff²(ρ_B)∇²S - m²S - ∂V/∂S - g(ΣB²)S
+    B: ∂²B/∂t² = ∇²B - m²B - g(ΣS²)B
+    c_eff² = 1 + α_c(1 - ρ_B/ρ₀)     ← INVERTED (key change)
+
+The braid accretes B at its core → c_eff < 1 at core → slow pocket →
+other braids curve inward → attraction. Stronger α_c = stronger gravity.
 
 ---
 

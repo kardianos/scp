@@ -1,0 +1,17 @@
+=== V32 Single Run: Binding-Weighted Gradient Coupling ===
+acc = nabla^2 phi + w(P)*alpha*(grad_rho/rho).grad_phi - m^2 phi - V'(phi)
+w(P) = 1/(1+|P|/P_thresh)
+N=256 L=30.0 T=2000 alpha=0.50 braids=2 D=20.0 threads=8
+snap=200 diag=10.0 prof=100
+
+Allocating: 16777216 points x 14 arrays = 1.9 GB
+dx=0.2353 dt=0.028235 (0.12*dx, CFL=0.577*dx)  steps=70833
+P_max=0.432695, P_THRESH=0.043270 (10% of peak)
+
+Total steps: 70833, diag every 354, snap every 7083, prof every 3541
+
+  [SNAP] Saved data/E2/field_t0000.bin (0.7 GB)
+t=    0.0 [0.0%] E=4.157e+04 (1.00×E0) fc=0.363 D=20.0 w=0.639 max_rho=3.24e+00 [2s elapsed, ETA 0s]
+t=  100.0 [5.0%] E=4.695e+04 (1.13×E0) fc=0.182 D=20.0 w=0.767 max_rho=1.89e+00 [3797s elapsed, ETA 72178s]
+t=  199.9 [10.0%] E=7.428e+04 (1.79×E0) fc=0.227 D=13.4 w=0.750 max_rho=5.01e+00 [6366s elapsed, ETA 57324s]
+  [SNAP] Saved data/E2/field_t0200.bin (0.7 GB)
