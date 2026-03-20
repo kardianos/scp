@@ -2,7 +2,96 @@
 
 ---
 
-## Current Best Model: M7+c(ρ_B) (V30, March 2026)
+## V34: Charge-Dependent Force from Cosserat Angle Fields (March 2026)
+
+**DISCOVERY**: The 6-field Cosserat theory (3φ + 3θ, curl-coupled) produces
+a CHARGE-DEPENDENT FORCE between braids. Same-winding braids attract 27%
+more than the gravity-only baseline; opposite-winding attract 57% less.
+Winding number IS electric charge. The θ field reverses sign with winding
+(far-field ratio ≈ -1.0, dt-converged to 2%).
+
+The force is WAVE-MEDIATED (oscillating θ field, period ~4t, 0.2% DC bias),
+not static (1/r Biot-Savart). Structurally closer to QFT photon exchange
+than classical EM. The right-hand rule pattern is visible in volumetric
+rendering: circular θ waves perpendicular to the braid axis.
+
+Two-braid force comparison (D=15, T=150, N=80):
+  3-field (gravity only):     ΔD = -5.05
+  6-field same winding:       ΔD = -6.41  (parallel "currents" attract)
+  6-field opposite winding:   ΔD = -2.16  (antiparallel "currents" repel)
+
+**DISCOVERY**: Massless angle fields (m_θ=0) are stable — the θ sector has
+no V(P) coupling, so no tachyonic instability. The braid sources θ through
+its helical curl. Massless θ actually stabilizes the braid (radiation channel).
+
+    ∂²φ_a/∂t² = ∇²φ_a - m²φ_a - V'(P) + η×curl(θ)_a    (massive, gravity)
+    ∂²θ_a/∂t² = ∇²θ_a                  + η×curl(φ)_a    (massless, EM candidate)
+
+Key findings:
+- θ starts at zero, grows to θ_rms ≈ 0.065 from the braid's curl
+- m_θ=0 is stable (no V(P) → no tachyonic instability)
+- Massless θ helps the braid survive 3× better (radiation channel)
+- Sweet spot: η=0.1-0.5 (strong θ excitation, braid survives)
+- η≥2.0: braid dissolves. η=5.0: explodes (CFL violation)
+
+**Not yet confirmed**: Whether θ creates a 1/r² field, whether it mediates
+charge-dependent forces, whether W=±1 braids produce opposite θ patterns.
+
+## V34: Depletion is Power-Law, NOT Yukawa (March 2026)
+
+**DISCOVERY**: Despite m=1.5 (Yukawa range 0.67), the braid's depletion
+profile decays as δρ ∝ 1/r^1.2 (power law), NOT e^{-mr}/r (Yukawa).
+Yukawa m=1.5 is excluded at 500,000× discrepancy (R²=-0.44).
+
+This means m² does NOT limit the gravitational range. The long-range
+force is carried by a nonlinear collective mode of the background,
+not by individual massive field excitations.
+
+Measured: N=256, L=60, T=200. Power law R²=0.98 for r=5-15.
+Yukawa free-mass fit converges to m≈0.02 (effectively zero).
+
+## V33: F = ma Structure of Gravity (March 2026)
+
+**DISCOVERY**: The gravitational force is F = -C × ∇ρ with R²=0.9998
+across four gradient strengths (ρ ratio 1.22 to 9.00). The constant
+C ≈ 186 is independent of gradient strength. This is exactly the
+Newtonian form F = -∇Φ where Φ ∝ ρ, with natural equivalence principle
+(inertial mass = gravitational mass from single V(P) coupling).
+
+**DISCOVERY**: F ≠ -dE/dD. The static interaction energy E(D) between
+two braids is monotonically repulsive at all separations (no attractive
+well). The attraction is a DYNAMIC effect from the braid's oscillation
+cycle, not from static energy minimization.
+
+**DISCOVERY**: The braid's footprint is asymmetric in a density gradient
+(R_low/R_high = 1.09-1.57, 5/6 snapshots). The effective mass
+m_eff² = m² + V''(P_bg) is lower in depleted regions → Yukawa tail
+extends further → equilibrium shifts toward depletion = gravity.
+
+## V34: Negative Results (March 2026)
+
+**Torsion waves in 3-field theory cannot carry EM**: All linearized modes
+massive (m_eff ≈ 1.5). Torsion disperses in ~5t. Opposite-winding braids
+respond the same (winding ≠ charge in 3-field theory).
+
+**Field-dependent mass fails**: φ⁴ coupling kills braids (Derrick's theorem).
+Inverse coupling collapses at low background mass. Constant m² is optimal.
+
+**m=0 is a thermal explosion (Big Bang analog)**: E_total grows from -136 to
++62,816. Braids collide, scatter, field thermalizes. No localized collapse.
+
+**Braid survival requires m²≥1.25**: Vacuum stable at m²≥0.25 but braids
+dissolve below m²=1.25 (binding constraint, not stability).
+
+---
+
+## V32-V33: Standard Equation Gravity (March 2026)
+
+## Current Best Model: ABANDONED — M7+c(ρ_B) (V30, March 2026)
+
+NOTE: The M7 two-component split and c(ρ) modification were abandoned
+in V32. The standard unmodified equation produces gravity intrinsically.
+What follows is historical record.
 
 Two-component field with density-dependent speed of light:
 

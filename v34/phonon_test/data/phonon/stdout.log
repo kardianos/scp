@@ -1,0 +1,22 @@
+=== V33-G: Metastability Scan ===
+∂²φ/∂t² = ∇²φ - m²φ - V'(φ)
+dt_factor=1.00
+
+N=256 L=60 T=200 braids=1 D=20 bg=0.10 m²=2.2500
+Allocating 1.21 GB (150994944 doubles, N=256)
+dx=0.4706 dt=0.05647 (factor=1.00)
+
+Steps=3541 diag=88 snap=1770 prof=885
+
+  [SNAP] data/phonon/field_t0000.bin (0.4 GB)
+t=    0.0 E=6.8314e+04 (drift +0.000%) D=0.0 [0% 1s]
+t=   49.7 E=6.8299e+04 (drift -0.022%) D=0.0 [25% 362s]
+t=   99.4 E=6.8293e+04 (drift -0.031%) D=0.0 [50% 714s]
+  [SNAP] data/phonon/field_t0100.bin (0.4 GB)
+t=  149.1 E=6.8283e+04 (drift -0.045%) D=0.0 [75% 1070s]
+t=  198.8 E=6.8273e+04 (drift -0.061%) D=0.0 [99% 1425s]
+  [SNAP] data/phonon/field_t0200.bin (0.4 GB)
+  [SNAP] data/phonon/field_t0200.bin (0.4 GB)
+
+=== Complete: 1436s (23.9 min) ===
+Avg: 0.4054 s/step

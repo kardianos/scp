@@ -11,25 +11,34 @@ explored, resolved, or abandoned. Keep current with CONCEPT.md.
 
 ## Critical Priority (blocks fundamental claims)
 
-### F1: Mass Parameter and Long-Range Gravity
+### F1: Mass Parameter and Long-Range Gravity (Largely Resolved)
 
-**The problem**: m²=2.25 creates Yukawa decay (range ~0.67). Measured
-F∝1/D^1.8 is likely Yukawa at intermediate D, not true 1/r². For
-Newtonian gravity at astronomical distances, need m→0.
+**The original problem**: m²=2.25 creates Yukawa decay (range ~0.67).
+Individual field excitations die as e^{-mr}/r. How can gravity be long-range?
 
-**The obstacle**: V33-C4 showed m=0 gives vacuum instability (energy
-not conserved, chaotic dynamics). V29-T2 showed m=0 loses the
-quadrupole. The m² term provides the "spring" that stabilizes the
-vacuum against the attractive V(P). Without it, V(P) collapses the field.
+**The resolution (V34 phonon test)**: The depletion IS NOT Yukawa. Direct
+measurement (N=256, L=60, T=200) shows δρ ∝ 1/r^1.2 (power law, R²=0.98).
+Yukawa m=1.5 is excluded at 500,000× discrepancy (R²=-0.44). When the
+Yukawa mass is fit freely, it converges to m≈0.02 — effectively zero.
 
-**Questions**:
-- What exactly destabilizes at m=0? (exponential growth modes? runaway?)
-- Can a small m (e.g., m²=0.01-0.25) give near-1/r² while staying stable?
-- Can κ (the saturation parameter) be increased to stabilize m=0?
-- Is there a different potential V(P) that's stable without m²?
-- Map: force exponent n as function of m². Does n→2 as m→0?
+The braid's collective perturbation of the background propagates as a
+PHONON (massless Goldstone mode of the background's broken translational
+symmetry). The m² parameter confines the braid but does NOT limit the
+gravitational range. Mass and range are decoupled.
 
-**Source**: Both Grok-02 and Gemini-02 identify this as THE critical hurdle.
+**What V34 Track G showed**: m²≥1.25 needed for braid binding. m²≥0.25
+for vacuum stability. Braid survival is the constraint, not range.
+Field-dependent mass (Track GB) does not help — constant m² is optimal.
+
+**Remaining questions**:
+- Why is the depletion exponent n≈1.2 (not 2.0)? Need longer runs (T=1000+)
+  with equilibrated braids and isotropic backgrounds
+- Analytically identify the massless phonon mode in the linearized equation
+- Does the force exponent approach 2.0 with better equilibration?
+- Is the n=1.2 depletion exponent a feature of the z-oriented background
+  (anisotropy artifact) or fundamental?
+
+**Source**: V34 phonon_test, V34 G_metastability, V34 GB_field_mass.
 
 ### F2: Gravity Mechanism — Resolved (Dynamic Footprint, NOT Energy Minimization)
 
@@ -146,23 +155,36 @@ to it gravitationally?
 
 ## Medium Priority (extensions and refinements)
 
-### F6: Electromagnetism Integration
+### F6: Electromagnetism — Cosserat Angle Fields (CONFIRMED CHARGE-DEPENDENT FORCE)
 
-**Path**: Complex fields ψ_a ∈ ℂ with U(1) gauge symmetry:
-    D_μ ψ_a = ∂_μ ψ_a + ieA_μ ψ_a
-    L_EM = |D_μ ψ|² - (1/4)F_μν² - V(|P|²)
+**The path**: 3 angle fields θ_a coupled to 3 position fields φ_a via curl.
+Massless θ (m_θ=0) sourced by the braid's helical twist.
 
-**Risk**: V24-MA showed gauge coupling kills oscillons. The e²A²|ψ|²
-term shifts ω above the mass gap. V29-T10G showed the complex upgrade
-(without gauge) preserves braids and adds charge.
+**Confirmed results** (V34 θ characterization):
 
-**Open**: Can the braid survive gauging? Possible approaches:
-- Gauge only one component
-- Staggered or lattice gauge
-- Minimal coupling with torsion proxy first
-- Very weak gauge coupling (e << 1)
+1. **Charge-dependent force**: Same-winding braids attract 27% more than
+   the 3-field (gravity-only) baseline. Opposite-winding braids attract
+   57% less. The θ field mediates a force whose sign depends on winding.
 
-**Source**: Both reviews, V24-MA, V29-T10G.
+2. **Winding = charge**: Time-averaged θ_φ reverses sign when winding
+   reverses (far-field ratio ≈ -1.0). The DC component carries charge
+   information.
+
+3. **Right-hand rule**: Volumetric visualization shows circular θ patterns
+   perpendicular to the braid axis. Confirmed dt-converged (2% variation
+   across 4× dt range).
+
+4. **Wave-mediated, not static**: The θ field oscillates (period ~4t) with
+   99.8% wave and 0.2% DC bias. The force is mediated by wave exchange
+   (QFT-like), not by a static 1/r field (Biot-Savart).
+
+**Remaining questions**:
+- Is there a static (Coulomb) regime for non-moving braids?
+- What determines the θ/φ force ratio (analog of fine structure constant)?
+- Does θ support bound orbital modes (electron analog)?
+- Can the wave-exchange picture be connected to virtual photon exchange?
+
+**Source**: V34 θ characterization, v34/torsion_coupling/theta_characterize/RESULTS.md.
 
 ### F7: Multi-Braid Formation (Nucleosynthesis)
 

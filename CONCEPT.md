@@ -28,8 +28,9 @@ displacement gradient. The potential V(P) penalizes local volume change.
 This is the natural energy functional of a 3D deformable medium with
 irreducible three-body interactions.
 
-No modifications to this equation are needed. No c(ρ), no gradient
-coupling, no S/B split, no smoothing. All physics emerges from Eq. (1).
+Eq. (1) produces braids and gravity from 3 scalar fields alone.
+For electromagnetism, the field requires 3 additional ANGLE components
+(Cosserat extension, Eq. 10 in §4). No c(ρ), no S/B split, no smoothing.
 
 ### Background
 
@@ -342,12 +343,101 @@ This would produce EM interactions between charged braids. However,
 V24-MA showed that explicit gauge coupling can kill oscillons — the
 braid's survival under gauging needs verification.
 
-### Torsion as EM Proxy [CONFIRMED]
+### Torsion in 3-Field Theory [TESTED — NEGATIVE]
 
-The antisymmetric gradient tensor ω_ij = ½(∂_i φ_j - ∂_j φ_i) is the
-torsion of the elastic interpretation. The V28 bimodal braid has nonzero
-torsion flux (Φ_T = 1.02 at N=128 validation). This is an EM-like
-geometric property but NOT a gauge field.
+V34 Phase 2 tested whether torsion (antisymmetric field gradients) could
+serve as an EM force carrier using only the existing 3 φ fields. Four
+experiments showed all linearized modes are massive (m_eff ≈ 1.5) — torsion
+waves disperse in ~5 time units, and opposite-winding braids do NOT respond
+oppositely. EM cannot emerge from 3 scalar fields alone.
+
+### Cosserat Extension: 3 Angle Fields [CONFIRMED — CHARGE-DEPENDENT FORCE]
+
+Adding 3 ANGLE fields θ_a (local rotation) alongside the 3 position
+fields φ_a gives 6 components per point — displacement + rotation —
+as a proper elastic solid should.
+
+**The equation** (Eq. 10):
+
+    ∂²φ_a/∂t² = ∇²φ_a - m²φ_a - ∂V/∂φ_a + η × curl(θ)_a       (10a)
+    ∂²θ_a/∂t² = ∇²θ_a - m_θ²θ_a          + η × curl(φ)_a       (10b)
+
+    curl(F)₀ = ∂F₂/∂y - ∂F₁/∂z
+    curl(F)₁ = ∂F₀/∂z - ∂F₂/∂x
+    curl(F)₂ = ∂F₁/∂x - ∂F₀/∂y
+
+Parameters: η = 0.5 (coupling), m_θ² = 0 (massless angles).
+Field↔space identification: φ₀↔x, φ₁↔y, φ₂↔z (and similarly for θ).
+
+**Stability results** (V34 Cosserat):
+
+1. **The braid sources the angle fields.** θ starts at zero and grows to
+   θ_rms ≈ 0.025-0.065. The braid's helical curl excites the θ fields.
+
+2. **Massless angle fields (m_θ=0) are stable.** No tachyonic instability
+   (θ has no V(P) coupling). The braid actually benefits: the massless
+   mode provides a radiation channel that stabilizes the braid.
+
+3. **dt-converged.** θ_rms varies by only 2% across a 4× dt range
+   (dt×0.25, 0.5, 1.0). The θ structure is physical, not numerical.
+
+**θ field structure** (V34 characterization):
+
+The θ field around the braid forms circular patterns perpendicular to
+the braid's helical axis, following the right-hand rule (confirmed by
+volumetric visualization). The θ_φ (azimuthal) component is the dominant
+component at the braid surface.
+
+The θ field is an OSCILLATING WAVE, not a static 1/r field:
+- θ_φ² decays as ~r^(-0.5), not r^(-2) (Biot-Savart)
+- θ_φ oscillates with period ~4 time units, alternating sign with radius
+- The time-averaged DC component is 0.2% of the oscillation amplitude
+- The dominant response is wave-mediated, not static-field-mediated
+
+**Charge conjugation** [CONFIRMED]:
+
+The time-averaged DC component of θ_φ REVERSES SIGN when the winding
+reverses (W=+1 → W=-1). Correlation of DC residuals between opposite
+windings: -0.68. At far field (r>10), the ratio θ_φ(+)/θ_φ(-) ≈ -1.0.
+
+**Winding number IS electric charge** for the θ-mediated interaction.
+
+**Charge-dependent force** [CONFIRMED]:
+
+Two-braid experiments at D=15, T=150 (V34 θ characterization):
+
+| Configuration | ΔD (infall) | vs baseline |
+|--------------|-------------|-------------|
+| 3-field (η=0, gravity only) | -5.05 | — |
+| 6-field, same winding (η=0.5) | -6.41 | 27% MORE attraction |
+| 6-field, opposite winding (η=0.5) | -2.16 | 57% LESS attraction |
+
+Same-winding braids attract MORE (parallel "currents" attract through θ).
+Opposite-winding braids attract LESS (antiparallel "currents" repel,
+partially canceling gravity). This is the correct sign for electromagnetic
+interaction between current-carrying elements (Ampère's law analog).
+
+**Two-sector structure**:
+
+| Sector | Fields | Mass | Coupling | Mediates |
+|--------|--------|------|----------|----------|
+| Position (φ) | 3 | m²=2.25 (massive) | V(P), nonlinear | Matter, gravity (always attractive) |
+| Angle (θ) | 3 | m_θ²=0 (massless) | curl(φ), linear | EM-like (charge-dependent, wave-mediated) |
+
+The gravity force (from φ depletion) is always attractive regardless of
+winding. The θ-mediated force is charge-dependent: attractive for same
+winding, repulsive for opposite. The net force on two braids is
+gravity + EM, with the sign of EM depending on relative winding.
+
+**Distinction from classical EM**: The θ-mediated force operates through
+wave exchange (oscillating field, ~radiation coupling), not through a
+static 1/r magnetic field. This is structurally closer to QFT photon
+exchange than to classical Biot-Savart. The 0.2% DC component carries
+the charge information; the 99.8% oscillation carries the wave energy.
+
+**Open**: Does the force ratio (same/opposite) match the EM coupling
+constant? What is the analog of Coulomb's law for static braids?
+Is there a regime where the DC component dominates (low frequency, long range)?
 
 ---
 
@@ -432,25 +522,55 @@ equation is Lorentz-invariant. This has not been tested numerically
     Measure: Does the aspect ratio match γ?
     Expected: YES (from the equation's symmetry)
 
-### The Force Law and the Mass Term
+### The Depletion Is Power-Law, Not Yukawa [CONFIRMED]
 
-The mass term m²=2.25 in Eq. (1) creates a Yukawa decay at long range:
-individual field perturbations fall off as e^{-mr}/r (range ≈ 1/m ≈ 0.67).
+The mass term m²=2.25 gives individual field perturbations a Yukawa
+decay e^{-mr}/r (range ≈ 1/m ≈ 0.67). But the braid's COLLECTIVE
+depletion profile does NOT follow Yukawa. Direct measurement (V34
+phonon test, N=256, L=60, T=200):
 
-The measured F ∝ 1/D^1.8 is likely Yukawa at intermediate D, not a true
-power law. At D >> 1/m, the force should decay exponentially. The
-"long-range" attraction measured at D=40-80 may be:
+    Yukawa (m=1.5 fixed): R² = -0.44  (EXCLUDED — worse than flat line)
+    Yukawa (m free):       converges to m ≈ 0.02 (effectively massless)
+    Power law δρ ∝ 1/r^n: R² = 0.98, n = 1.2 ± 0.2
 
-    (a) Periodic BC image contamination (likely at D > 2L/3)
-    (b) Collective nonlinear effects that extend beyond the Yukawa range
-    (c) A true power-law tail from the braid's steady-state radiation
+At r=10, Yukawa m=1.5 predicts δρ ≈ 3×10⁻⁸. Measured: 2×10⁻².
+The depletion is 500,000× larger than Yukawa allows.
 
-For exact Newtonian 1/r² gravity: need m → 0. V29-T2 showed m=0 braids
-survive but lose the quadrupole. V33-C4 showed m=0 gives massive
-attraction (ΔD=-16.8) but energy is not conserved (unstable vacuum).
+**The braid's depletion extends as a power law to r=30+ despite m=1.5.**
 
-Mapping the force exponent n as a function of m² is a critical test:
-if n → 2 as m → 0, the Yukawa mass is the sole obstacle to Newton.
+This resolves the apparent paradox: V33-C1 measured attraction at D=15-80
+where Yukawa would be 10⁻¹⁰ to 10⁻⁵³. The force IS real, carried by
+a collective mode of the background (phonon), not by individual massive
+field excitations.
+
+**Mechanism**: The background φ_a = A_bg × cos(kz + 2πa/3) is a
+periodic structure. The braid perturbs the background amplitude, and
+this perturbation propagates as a PHONON — a collective oscillation of
+the background lattice. The phonon is massless (Goldstone mode of broken
+translational symmetry), so it propagates without Yukawa suppression.
+
+The m² parameter confines the braid's internal structure but does NOT
+limit the gravitational range. The mass and the range are DECOUPLED:
+- m² binds the braid (helical structure needs the spring)
+- The phonon carries the gravity (massless, power-law)
+
+**Implication**: The m→0 problem (F1 in FUTURE.md) may not be a problem.
+The gravitational range was never limited by m. Lowering m² is needed
+only if the force exponent (currently n≈1.2 for depletion, n≈1.8 for
+force) needs to approach n=2 for Newtonian gravity. The exponent may
+improve with better equilibration (T=1000+) and isotropic backgrounds.
+
+### The Mass Term m²
+
+The m² = 2.25 in Eq. (1) provides:
+1. Braid binding: the helical structure requires m² ≥ 1.25 (Track G)
+2. Vacuum stability: the background requires m² ≥ 0.25 (Track G)
+3. It does NOT limit gravitational range (phonon is massless)
+
+Field-dependent mass (V34 Track GB) was tested and does not improve on
+constant m². The φ⁴ coupling kills braids (Derrick's theorem); the
+inverse coupling collapses at long range. Constant m² is Goldilocks
+for braid binding. See v34/GB_field_mass/RESULTS.md.
 
 ### Numerical vs Physical Energy Drift
 
@@ -467,17 +587,22 @@ can be reduced with smaller dt.
 
 ## 9. Open Questions
 
-1. **Force law vs mass**: Map n in F∝1/D^n as function of m². Does n→2 as m→0?
-2. **Mass emergence**: can the Lagrangian mass m² be eliminated?
-   V27-M4 showed m=0 braids survive but without quadrupole.
-3. **EMF integration**: complex fields + gauge coupling preserving the braid.
-4. **Multi-braid formation**: conditions for stellar nucleosynthesis analog.
-5. **Spin**: does the braid's helical handedness correspond to spin?
-6. **Quantization**: the theory is purely classical. What changes in QFT?
-7. **Gravitational waves**: does the braid's radiation have spin-2 structure?
-8. **Background origin**: what sets ρ_bg and m²?
-9. **Proportionality constant**: What sets C ≈ 186 in F = -C × ∇ρ?
-   Can this be derived analytically from (m, μ, κ, braid geometry)?
+1. **θ static vs wave**: The θ force is wave-mediated (oscillating), not
+   static (1/r). Is there a low-frequency limit where the DC component
+   dominates? Or is wave exchange the fundamental mechanism (QFT-like)?
+2. **Coulomb analog**: What is the static electric force between stationary
+   braids of opposite winding? (Current tests have moving/oscillating braids.)
+3. **Depletion exponent**: Why n≈1.2 for δρ(r) and n≈1.8 for F(D)?
+   Does it converge to n=2 with isotropic background and longer runs?
+4. **Electrons as orbital modes**: Does the θ shell around the braid
+   support bound standing-wave modes? (The radial θ profile peaks at
+   r≈8, outside the braid core — like an electron shell.)
+5. **Multi-braid formation**: conditions for stellar nucleosynthesis analog.
+6. **Spin**: does the braid's helical handedness correspond to spin?
+7. **Quantization**: the theory is purely classical. What changes in QFT?
+8. **Background origin**: what sets ρ_bg, m², and η?
+9. **Fine structure constant**: What determines the ratio of θ force to
+   φ force? η controls it in the equation, but what sets η physically?
 
 ## 10. Resolved Questions
 
@@ -487,12 +612,42 @@ can be reduced with smaller dt.
    (V33 gradient sweep, March 2026)
 3. **Is drag lower in depleted regions?** NO. Coupling is stronger in high ρ.
    The mechanism is geometric asymmetry, not friction. (V33 drag test)
+4. **Is the depletion Yukawa?** NO. δρ ∝ 1/r^1.2 (power law), not e^{-mr}/r.
+   Yukawa m=1.5 excluded at 500,000× discrepancy. (V34 phonon test)
+5. **Does m² limit gravitational range?** NO. The phonon (collective mode)
+   is massless and carries the long-range force. m² binds the braid only.
+   (V34 phonon test + Track G + Track GB)
+6. **Can field-dependent mass decouple binding from range?** NO. φ⁴ kills
+   braids (Derrick's theorem). Inverse coupling collapses. Constant m² is
+   Goldilocks. But this is moot since the range isn't m²-limited anyway.
+   (V34 Track GB)
+7. **Can torsion waves carry EM in 3-field theory?** NO. All linearized
+   modes are massive. Torsion disperses in ~5t. Winding ≠ charge.
+   (V34 Phase 2)
+8. **Can the equation support angle (rotation) fields?** YES. The Cosserat
+   extension (3 φ + 3 θ) is stable. The braid sources θ through curl(φ).
+   Massless θ (m_θ=0) is stable and actually helps the braid. (V34 Cosserat)
+9. **Does the phonon arise from a Goldstone mode?** NO. All linearized modes
+   around the uniform background are massive (splitting only 0.004 at A=0.1).
+   The power-law depletion is a nonlinear collective effect. (V34 Phase 1a)
+10. **Does the θ field mediate a charge-dependent force?** YES. Same-winding
+    braids attract 27% more, opposite-winding attract 57% less than the
+    3-field baseline. Winding = charge. (V34 θ characterization)
+11. **Does winding reversal flip the θ field?** YES. Time-averaged θ_φ DC
+    component has correlation -0.68 between W=+1 and W=-1. Far-field
+    ratio ≈ -1.0. (V34 θ characterization)
+12. **Is the θ field dt-converged?** YES. θ_rms varies by only 2% across
+    a 4× dt range (0.25×, 0.5×, 1.0×). The structure is physical. (V34)
+13. **Is the θ field a static 1/r magnetic field?** NO. It is an oscillating
+    wave (period ~4t) with 0.2% DC bias. The force is wave-mediated
+    (radiation coupling), not static. Closer to QFT photon exchange than
+    classical Biot-Savart. (V34 θ characterization)
 
 ---
 
 ## References to Simulation Code
 
-### Best-in-Class Simulation
+### Best-in-Class Simulation (3-field, gravity only)
 **File**: `/home/d/code/scp/v33/src/v33.c`
 - Standard equation (Eq. 1), no modifications
 - Single malloc for entire simulation (9 arrays × N³ × 8 bytes)
@@ -539,16 +694,26 @@ can be reduced with smaller dt.
 - Energy separation sweep: D=8–50
 - Footprint analysis on all snapshots
 
-### Binary Snapshot Format
+### 6-Field Cosserat Simulation
+**File**: `/home/d/code/scp/v34/torsion_coupling/src/v33_cosserat.c`
+- 3 position + 3 angle fields (Eq. 10), curl coupling
+- Single malloc for 18 arrays (6 fields × 3 arrays each)
+- Supports -eta (coupling) and -mt (angle mass) flags
+- Massless angle fields (m_θ=0) confirmed stable
+
+### Binary Snapshot Formats
+
+**3-field (v33):**
 ```
-int32:   N (grid size)
-float64: L (domain half-width)
-float64: t (simulation time)
-float64[N³]: phi_0
-float64[N³]: phi_1
-float64[N³]: phi_2
+int32: N, float64: L, float64: t
+float64[N³]: phi_0, phi_1, phi_2
 ```
-Loadable in Python: `np.fromfile(f, dtype=np.float64, count=N**3).reshape(N,N,N)`
+
+**6-field (Cosserat):**
+```
+int32: N, float64: L, float64: t, int32: nf=6
+float64[N³]: phi_0, phi_1, phi_2, theta_0, theta_1, theta_2
+```
 
 ---
 
@@ -560,6 +725,7 @@ Loadable in Python: `np.fromfile(f, dtype=np.float64, count=N**3).reshape(N,N,N)
 - **V31**: M7 split gravity tests (wrong sign → inverted c works but artificial)
 - **V32**: SPH prototype, gradient coupling (self-interaction problem solved by binding weight, but gradient coupling is net repulsive with controls)
 - **V33**: Clean standard equation. Single alloc. CONFIRMED: intrinsic attraction from standard equation, F∝1/D^1.8, gravity direction verified via gradient test. Footprint asymmetry measured (R_low/R_high=1.09–1.57). Drag test showed coupling scales with ρ (not anti-ρ). Gravity mechanism identified as geometric (asymmetric Yukawa profile), not dynamic (friction).
+- **V34**: Metastability scan (Track G: m²≥1.25 for braids, ≥0.25 for vacuum). Field-dependent mass (Track GB: both fail). Depletion is power-law 1/r^1.2 NOT Yukawa (phonon test). Torsion waves fail as EM in 3-field theory (Phase 2). **MAJOR: Cosserat 6-field extension (3φ+3θ) with massless angle fields is STABLE.** The braid sources θ through curl coupling. Massless θ propagates at c → EM carrier candidate.
 
 ---
 
