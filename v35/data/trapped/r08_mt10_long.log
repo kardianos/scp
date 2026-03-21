@@ -1,0 +1,52 @@
+=== V35 Trapped Theta Wave Packet ===
+Equations:
+  d^2 phi_a/dt^2 = lap(phi_a) - m^2 phi_a - V'(phi) + eta*curl(theta)_a
+  d^2 theta_a/dt^2 = lap(theta_a) - m_t^2 theta_a + eta*curl(phi)_a
+
+  V(P) = (mu/2) P^2/(1+kap P^2),  P = phi_0 phi_1 phi_2
+  NO theta self-interaction (trapping by phi-braid only)
+
+phi:   mu=-41.345  kap=50.0  m^2=2.2500
+theta: m_t^2=1.0000
+eta=0.500  bg=0.10
+theta packet: A=0.0500 sigma=2.00 at (8.0, 0.0)
+N=80 L=25 T=500 braids=1 D=20
+
+Allocating 0.07 GB (9216000 doubles, N=80, 6 fields)
+dx=0.6329 dt=0.06329 (factor=1.00) threads=4
+
+Initializing theta wave packet: A=0.0500 sigma=2.00 at (8.0, 0.0)
+  k_z = pi/L = 0.1257, omega = 1.0079
+Steps=7899 diag_every=15
+
+t=    0.0 E=8.3159e+03 (drift +0.000%) theta_rms=2.475e-03 pkt=(8.0,-0.0) r=8.00 E_pkt=2.71e+00 spread=2.00 [0% 0s]
+t=   19.0 E=8.3069e+03 (drift -0.109%) theta_rms=2.309e-02 pkt=(-0.2,0.2) r=0.27 E_pkt=1.36e+02 spread=8.76 [4% 5s]
+t=   38.0 E=8.3057e+03 (drift -0.123%) theta_rms=2.180e-02 pkt=(0.0,-0.4) r=0.36 E_pkt=1.28e+02 spread=12.74 [8% 9s]
+t=   57.0 E=8.3055e+03 (drift -0.125%) theta_rms=2.772e-02 pkt=(-0.4,-0.1) r=0.41 E_pkt=1.31e+02 spread=17.87 [11% 14s]
+t=   75.9 E=8.3005e+03 (drift -0.185%) theta_rms=2.674e-02 pkt=(0.3,0.2) r=0.35 E_pkt=1.25e+02 spread=16.36 [15% 18s]
+t=   94.9 E=8.2962e+03 (drift -0.237%) theta_rms=3.203e-02 pkt=(0.4,-0.5) r=0.66 E_pkt=1.38e+02 spread=17.82 [19% 23s]
+t=  113.9 E=8.2916e+03 (drift -0.292%) theta_rms=3.308e-02 pkt=(0.4,-0.5) r=0.60 E_pkt=1.23e+02 spread=17.57 [23% 28s]
+t=  132.9 E=8.2891e+03 (drift -0.322%) theta_rms=3.701e-02 pkt=(0.2,-0.0) r=0.20 E_pkt=1.52e+02 spread=18.93 [27% 32s]
+t=  151.9 E=8.2833e+03 (drift -0.393%) theta_rms=3.878e-02 pkt=(0.1,0.0) r=0.11 E_pkt=1.76e+02 spread=18.18 [30% 37s]
+t=  170.9 E=8.2825e+03 (drift -0.402%) theta_rms=4.076e-02 pkt=(0.1,0.2) r=0.18 E_pkt=1.26e+02 spread=18.85 [34% 41s]
+t=  189.9 E=8.2772e+03 (drift -0.466%) theta_rms=4.176e-02 pkt=(0.4,0.0) r=0.37 E_pkt=1.05e+02 spread=20.21 [38% 45s]
+t=  208.9 E=8.2732e+03 (drift -0.513%) theta_rms=4.412e-02 pkt=(0.2,0.1) r=0.23 E_pkt=1.22e+02 spread=20.15 [42% 50s]
+t=  227.8 E=8.2725e+03 (drift -0.522%) theta_rms=4.404e-02 pkt=(-0.3,0.1) r=0.30 E_pkt=1.23e+02 spread=20.26 [46% 54s]
+t=  246.8 E=8.2701e+03 (drift -0.550%) theta_rms=4.639e-02 pkt=(-0.3,0.1) r=0.28 E_pkt=1.11e+02 spread=20.01 [49% 58s]
+t=  265.8 E=8.2716e+03 (drift -0.532%) theta_rms=4.362e-02 pkt=(-0.2,-0.4) r=0.43 E_pkt=1.61e+02 spread=20.57 [53% 62s]
+t=  284.8 E=8.2686e+03 (drift -0.569%) theta_rms=4.765e-02 pkt=(-0.2,-0.2) r=0.31 E_pkt=1.47e+02 spread=20.67 [57% 67s]
+t=  303.8 E=8.2683e+03 (drift -0.573%) theta_rms=4.627e-02 pkt=(0.0,0.3) r=0.27 E_pkt=1.23e+02 spread=20.64 [61% 71s]
+t=  322.8 E=8.2680e+03 (drift -0.576%) theta_rms=4.723e-02 pkt=(-0.4,-0.1) r=0.37 E_pkt=1.10e+02 spread=20.40 [65% 75s]
+t=  341.8 E=8.2680e+03 (drift -0.576%) theta_rms=4.616e-02 pkt=(-0.5,0.1) r=0.48 E_pkt=1.03e+02 spread=19.97 [68% 80s]
+t=  360.8 E=8.2663e+03 (drift -0.596%) theta_rms=4.756e-02 pkt=(-0.1,-0.0) r=0.14 E_pkt=1.10e+02 spread=20.77 [72% 84s]
+t=  379.7 E=8.2655e+03 (drift -0.606%) theta_rms=4.729e-02 pkt=(0.1,0.2) r=0.26 E_pkt=1.27e+02 spread=20.22 [76% 89s]
+t=  398.7 E=8.2639e+03 (drift -0.625%) theta_rms=4.791e-02 pkt=(-0.0,0.5) r=0.48 E_pkt=1.31e+02 spread=20.13 [80% 93s]
+t=  417.7 E=8.2648e+03 (drift -0.614%) theta_rms=4.672e-02 pkt=(-0.0,0.2) r=0.22 E_pkt=1.43e+02 spread=19.52 [84% 98s]
+t=  436.7 E=8.2618e+03 (drift -0.650%) theta_rms=4.877e-02 pkt=(-0.4,-0.0) r=0.43 E_pkt=1.42e+02 spread=20.58 [87% 102s]
+t=  455.7 E=8.2636e+03 (drift -0.629%) theta_rms=4.723e-02 pkt=(-0.2,-0.0) r=0.24 E_pkt=9.69e+01 spread=20.51 [91% 107s]
+t=  474.7 E=8.2629e+03 (drift -0.637%) theta_rms=4.770e-02 pkt=(-0.2,-0.0) r=0.25 E_pkt=1.13e+02 spread=21.39 [95% 111s]
+t=  493.7 E=8.2606e+03 (drift -0.665%) theta_rms=4.917e-02 pkt=(-0.3,-0.1) r=0.29 E_pkt=1.15e+02 spread=21.24 [99% 116s]
+
+=== Complete: 117s (2.0 min) ===
+Output: data/trapped/r08_mt10_long/timeseries.tsv
+        data/trapped/r08_mt10_long/theta_track.tsv

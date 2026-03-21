@@ -17,3 +17,16 @@ target/
 radial_solver
 *.tsv
 *.txt
+*.sfa
+*.ppm
+*.png
+# Generated images and data
+*.ppm
+*.png
+*.sfa
+*.bin
+*.o
+
+# Go module cache
+go.sum
+key.txt

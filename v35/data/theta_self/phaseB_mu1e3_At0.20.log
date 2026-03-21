@@ -1,0 +1,33 @@
+=== V35 Cosserat + θ Self-Interaction ===
+Equations:
+  d²phi_a/dt² = lap(phi_a) - m²phi_a - V'(phi) + eta*curl(theta)_a
+  d²theta_a/dt² = lap(theta_a) - m_t²theta_a + eta*curl(phi)_a - V_t'(theta)
+
+  V(P) = (mu/2) P²/(1+kap P²),  P = phi_0 phi_1 phi_2
+  V_t(Q) = (mu_t/2) Q²/(1+kap_t Q²),  Q = theta_0 theta_1 theta_2
+
+phi:   mu=-41.345  kap=50.0  m²=2.2500
+theta: mu_t=-1000.0  kap_t=50000.0  m_t²=0.0000
+eta=0.500  bg=0.10
+N=64 L=20 T=200 braids=1 D=20
+
+Allocating 0.04 GB (4718592 doubles, N=64, 6 fields)
+dx=0.6349 dt=0.06349 (factor=1.00) threads=4
+
+Initializing theta-braid: A_theta=0.2000 at (10.0, 0.0)
+Steps=3150 diag_every=31
+
+t=    0.0 E=5.5044e+03 (drift +0.000%) theta_rms=1.750e-02 Q_max=3.832e-03 Ept=-6.43e-01 [0% 0s]
+t=   19.7 E=5.4711e+03 (drift -0.604%) theta_rms=2.561e-01 Q_max=1.176e-01 Ept=-4.50e+02 [10% 6s]
+t=   39.4 E=5.4380e+03 (drift -1.207%) theta_rms=2.701e-01 Q_max=7.160e-02 Ept=-4.95e+02 [20% 13s]
+t=   59.0 E=5.4142e+03 (drift -1.638%) theta_rms=2.867e-01 Q_max=7.562e-02 Ept=-5.24e+02 [30% 19s]
+t=   78.7 E=5.3969e+03 (drift -1.952%) theta_rms=3.044e-01 Q_max=1.104e-01 Ept=-5.56e+02 [39% 25s]
+t=   98.4 E=5.3773e+03 (drift -2.309%) theta_rms=3.222e-01 Q_max=9.127e-02 Ept=-5.80e+02 [49% 32s]
+t=  118.1 E=5.3565e+03 (drift -2.687%) theta_rms=3.278e-01 Q_max=9.559e-02 Ept=-5.81e+02 [59% 38s]
+t=  137.8 E=5.3345e+03 (drift -3.087%) theta_rms=3.284e-01 Q_max=1.165e-01 Ept=-5.81e+02 [69% 45s]
+t=  157.5 E=5.3187e+03 (drift -3.374%) theta_rms=3.217e-01 Q_max=1.122e-01 Ept=-5.77e+02 [79% 51s]
+t=  177.1 E=5.2945e+03 (drift -3.814%) theta_rms=3.102e-01 Q_max=7.433e-02 Ept=-5.72e+02 [89% 58s]
+t=  196.8 E=5.2702e+03 (drift -4.256%) theta_rms=2.982e-01 Q_max=7.875e-02 Ept=-5.61e+02 [98% 64s]
+
+=== Complete: 64s (1.1 min) ===
+Output: data/theta_self/phaseB_mu1e3_At0.20/timeseries.tsv

@@ -1,0 +1,36 @@
+=== V35 Trapped Theta Wave Packet ===
+Equations:
+  d^2 phi_a/dt^2 = lap(phi_a) - m^2 phi_a - V'(phi) + eta*curl(theta)_a
+  d^2 theta_a/dt^2 = lap(theta_a) - m_t^2 theta_a + eta*curl(phi)_a
+
+  V(P) = (mu/2) P^2/(1+kap P^2),  P = phi_0 phi_1 phi_2
+  NO theta self-interaction (trapping by phi-braid only)
+
+phi:   mu=-41.345  kap=50.0  m^2=2.2500
+theta: m_t^2=0.0000
+eta=0.500  bg=0.10
+theta packet: A=0.0500 sigma=2.00 at (8.0, 0.0)
+N=80 L=25 T=200 braids=1 D=20
+
+Allocating 0.07 GB (9216000 doubles, N=80, 6 fields)
+dx=0.6329 dt=0.06329 (factor=1.00) threads=4
+
+Initializing theta wave packet: A=0.0500 sigma=2.00 at (8.0, 0.0)
+  k_z = pi/L = 0.1257, omega = 0.1257
+Steps=3160 diag_every=15
+
+t=    0.0 E=8.3135e+03 (drift +0.000%) theta_rms=2.475e-03 pkt=(8.0,-0.0) r=8.00 E_pkt=3.21e-01 spread=2.00 [0% 0s]
+t=   19.0 E=8.3051e+03 (drift -0.102%) theta_rms=2.548e-02 pkt=(-0.6,0.6) r=0.82 E_pkt=3.46e+01 spread=17.89 [9% 9s]
+t=   38.0 E=8.2960e+03 (drift -0.210%) theta_rms=3.146e-02 pkt=(0.9,-0.9) r=1.29 E_pkt=3.17e+01 spread=20.56 [19% 20s]
+t=   57.0 E=8.2900e+03 (drift -0.283%) theta_rms=2.328e-02 pkt=(0.6,-0.2) r=0.61 E_pkt=2.76e+01 spread=19.88 [28% 36s]
+t=   75.9 E=8.2836e+03 (drift -0.360%) theta_rms=2.627e-02 pkt=(0.1,0.1) r=0.16 E_pkt=4.07e+01 spread=19.22 [38% 54s]
+t=   94.9 E=8.2764e+03 (drift -0.446%) theta_rms=3.248e-02 pkt=(0.0,0.0) r=0.02 E_pkt=3.94e+01 spread=20.07 [47% 80s]
+t=  113.9 E=8.2757e+03 (drift -0.455%) theta_rms=2.998e-02 pkt=(0.1,-0.1) r=0.15 E_pkt=2.80e+01 spread=20.18 [57% 111s]
+t=  132.9 E=8.2682e+03 (drift -0.545%) theta_rms=2.672e-02 pkt=(-0.0,-0.1) r=0.13 E_pkt=4.01e+01 spread=19.64 [66% 144s]
+t=  151.9 E=8.2656e+03 (drift -0.576%) theta_rms=3.418e-02 pkt=(-0.1,0.3) r=0.30 E_pkt=5.15e+01 spread=20.01 [76% 181s]
+t=  170.9 E=8.2628e+03 (drift -0.610%) theta_rms=3.515e-02 pkt=(0.4,0.0) r=0.41 E_pkt=4.61e+01 spread=20.09 [85% 221s]
+t=  189.9 E=8.2606e+03 (drift -0.637%) theta_rms=2.916e-02 pkt=(0.1,-0.2) r=0.27 E_pkt=4.83e+01 spread=20.23 [95% 259s]
+
+=== Complete: 280s (4.7 min) ===
+Output: data/trapped/r08/timeseries.tsv
+        data/trapped/r08/theta_track.tsv
