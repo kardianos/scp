@@ -1,0 +1,58 @@
+=== V37 Compact Braid: braid3 ===
+Equations: 6-field Cosserat (3 phi + 3 theta)
+m²=2.2500, m_theta²=0.0000, eta=0.500, mu=-41.345, kappa=50.0, A_bg=0.10
+N=128 L=15 T=300
+Allocating 0.30 GB (37748736 doubles, N=128, 6 fields)
+dx=0.2362 dt=0.02362 threads=8
+
+  Init: braid3 (R_helix=1.0, r_tube=2.0, sigma_z=3.0)
+SFA: data/braid3_ref.sfa
+
+Initial inertia eigenvalues: 68620.8  68620.8  67255.8  (aspect=1.02)
+Initial |P| integrated: 1.4213e+02
+
+Steps=12700 diag_every=127 snap_every=127
+
+t=    0.0 E=2.404e+03 (drift +0.000%) Ep=-74.3 P_int=1.421e+02 theta_rms=0.000e+00 aspect=1.02 [0% 0s]
+t=   30.0 E=2.402e+03 (drift -0.102%) Ep=-138.3 P_int=1.462e+02 theta_rms=2.550e-02 aspect=1.03 [10% 94s]
+t=   60.0 E=2.400e+03 (drift -0.172%) Ep=-61.2 P_int=6.624e+01 theta_rms=3.213e-02 aspect=1.43 [20% 191s]
+t=   90.0 E=2.399e+03 (drift -0.212%) Ep=-75.7 P_int=7.548e+01 theta_rms=3.705e-02 aspect=1.35 [30% 288s]
+t=  120.0 E=2.398e+03 (drift -0.246%) Ep=-8.9 P_int=1.977e+01 theta_rms=3.979e-02 aspect=1.11 [40% 385s]
+t=  150.0 E=2.398e+03 (drift -0.266%) Ep=-48.1 P_int=4.953e+01 theta_rms=4.156e-02 aspect=1.08 [50% 484s]
+t=  180.0 E=2.398e+03 (drift -0.279%) Ep=-69.7 P_int=7.031e+01 theta_rms=3.998e-02 aspect=1.08 [60% 580s]
+t=  210.0 E=2.397e+03 (drift -0.304%) Ep=-114.3 P_int=1.102e+02 theta_rms=4.008e-02 aspect=1.07 [70% 678s]
+t=  240.0 E=2.396e+03 (drift -0.322%) Ep=-39.4 P_int=4.498e+01 theta_rms=4.075e-02 aspect=1.16 [80% 776s]
+t=  270.0 E=2.396e+03 (drift -0.343%) Ep=-9.1 P_int=2.048e+01 theta_rms=4.284e-02 aspect=1.13 [90% 874s]
+t=  300.0 E=2.395e+03 (drift -0.366%) Ep=-35.4 P_int=4.091e+01 theta_rms=4.711e-02 aspect=1.40 [100% 971s]
+
+--- Spherical Shell Energy Profile (final state) ---
+  r=[0.0, 0.8]: E_shell=5.9519e-04
+  r=[0.8, 1.5]: E_shell=1.5818e-02
+  r=[1.5, 2.2]: E_shell=1.1422e-01
+  r=[2.2, 3.0]: E_shell=3.5084e-01
+  r=[3.0, 3.8]: E_shell=6.3551e-01
+  r=[3.8, 4.5]: E_shell=1.0653e+00
+  r=[4.5, 5.2]: E_shell=1.7233e+00
+  r=[5.2, 6.0]: E_shell=2.6521e+00
+  r=[6.0, 6.8]: E_shell=3.4185e+00
+  r=[6.8, 7.5]: E_shell=4.3964e+00
+  r=[7.5, 8.2]: E_shell=5.3356e+00
+  r=[8.2, 9.0]: E_shell=6.5238e+00
+  r=[9.0, 9.8]: E_shell=8.0001e+00
+  r=[9.8, 10.5]: E_shell=9.5528e+00
+  r=[10.5, 11.2]: E_shell=1.1792e+01
+  r=[11.2, 12.0]: E_shell=1.5184e+01
+  r=[12.0, 12.8]: E_shell=2.0765e+01
+  r=[12.8, 13.5]: E_shell=2.7693e+01
+  r=[13.5, 14.2]: E_shell=3.6068e+01
+  r=[14.2, 15.0]: E_shell=4.4696e+01
+
+=== FINAL SUMMARY: braid3 ===
+E_total=2.3954e+03 (drift -0.366%)
+E_pot=-3.5367e+01 (47.6% of initial)
+|P| integrated=4.0909e+01 (28.8% of initial)
+theta_rms=4.7109e-02
+Aspect ratio=1.403 (eigenvalues: 143667.1 138861.0 102416.7)
+Survival: YES
+
+=== Complete: 974s (16.2 min) ===

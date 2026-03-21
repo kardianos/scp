@@ -1,0 +1,61 @@
+=== V37 Knot: geom=figure8 ===
+Equations: 6-field Cosserat (3 phi + 3 theta)
+m^2=2.2500, m_theta^2=0.0000, eta=0.500, mu=-41.345, kappa=50.0, A_bg=0.10
+N=128 L=25 T=300
+Figure-eight: scale=1.5
+Knot curve: L_curve=64.448, crossings=4
+  bbox: x=[-4.50, 4.50] y=[-3.84, 3.84] z=[-1.50, 1.50]
+Allocating 0.30 GB (37748736 doubles, N=128, 6 fields)
+dx=0.3937 dt=0.03937 threads=8
+
+  Init: knot tube (geom=figure8)
+  tube_r=2.0, A=0.80, n_osc=4
+  k_knot=0.3900 (L_curve=64.448)
+  delta = {0.0000, 3.0005, 4.4325}
+  Background: per-axis directional, A_bg=0.10
+  Absorbing boundary: width=4.0 rate=0.0050
+SFA: data/figure8.sfa (f32 columns)
+
+Initial inertia eigenvalues: 830655.7  826213.7  796570.9  (aspect=1.04)
+Initial |P| integrated: 7.9841e+01
+
+Steps=7619 diag_every=126 snap_every=126 (snap_dt=5.0)
+
+t=    0.0 E=5.227e+03 (drift +0.000%) Ep=-51.2 Ep_avg=51.2 P_int=7.984e+01 trms=0.000e+00 asp=1.04 clust=1 [0% 0s]
+t=  248.0 E=1.310e+03 (drift -74.949%) Ep=-0.0 Ep_avg=1.9 P_int=2.416e+00 trms=2.948e-03 asp=1.31 clust=0 [83% 481s]
+
+SFA closed: data/figure8.sfa (62 frames)
+
+--- Spherical Shell Energy Profile (final state) ---
+  r=[0.0, 1.2]: E_shell=7.3374e-03
+  r=[1.2, 2.5]: E_shell=6.5565e-02
+  r=[2.5, 3.8]: E_shell=2.5183e-01
+  r=[3.8, 5.0]: E_shell=7.2305e-01
+  r=[5.0, 6.2]: E_shell=1.5839e+00
+  r=[6.2, 7.5]: E_shell=3.0866e+00
+  r=[7.5, 8.8]: E_shell=4.9834e+00
+  r=[8.8, 10.0]: E_shell=7.6325e+00
+  r=[10.0, 11.2]: E_shell=1.0354e+01
+  r=[11.2, 12.5]: E_shell=1.3689e+01
+  r=[12.5, 13.8]: E_shell=1.6722e+01
+  r=[13.8, 15.0]: E_shell=1.9183e+01
+  r=[15.0, 16.2]: E_shell=2.1044e+01
+  r=[16.2, 17.5]: E_shell=2.1760e+01
+  r=[17.5, 18.8]: E_shell=2.1540e+01
+  r=[18.8, 20.0]: E_shell=2.0163e+01
+  r=[20.0, 21.2]: E_shell=1.8206e+01
+  r=[21.2, 22.5]: E_shell=1.5220e+01
+  r=[22.5, 23.8]: E_shell=1.2441e+01
+  r=[23.8, 25.0]: E_shell=9.7746e+00
+
+=== FINAL SUMMARY: knot geom=figure8 ===
+E_total=1.1412e+03 (drift -78.169%)
+E_pot=-2.0338e-03 (0.0% of initial)
+|P| integrated=1.3187e+00 (1.7% of initial)
+theta_rms=2.0873e-03
+Aspect ratio=1.286 (eigenvalues: 103703.3 94862.4 80642.6)
+Clusters=0  Fragmented=NO
+Survival: NO (instantaneous)
+Survival (avg): NO (Ep_avg=1.591e+00 vs Ep0=-5.118e+01)
+
+=== Complete: 589s (9.8 min) ===
