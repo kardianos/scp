@@ -235,18 +235,26 @@ int main(int argc, char **argv) {
 
         double frame_time = sfa_frame_time(sfa, fi);
 
-        /* Extract phi_0, phi_1, phi_2 pointers.
-         * Each column c starts at offset c * N3 * sizeof(double). */
-        double *phi0 = (double *)((uint8_t *)frame_buf + 0 * N3 * sizeof(double));
-        double *phi1 = (double *)((uint8_t *)frame_buf + 1 * N3 * sizeof(double));
-        double *phi2 = (double *)((uint8_t *)frame_buf + 2 * N3 * sizeof(double));
+        /* Extract phi_0, phi_1, phi_2 from frame buffer.
+         * Column dtype determines element size (f32=4, f64=8). */
+        int elem_sz = sfa_dtype_size[sfa->columns[0].dtype];
+        int is_f32 = (sfa->columns[0].dtype == SFA_F32);
 
         /* Compute P = phi_0 * phi_1 * phi_2 and rho = sum(phi_a^2) */
         double max_absP = 0.0;
 
         #pragma omp parallel for reduction(max:max_absP) schedule(static)
         for (long n = 0; n < (long)N3; n++) {
-            double p0 = phi0[n], p1 = phi1[n], p2 = phi2[n];
+            double p0, p1, p2;
+            if (is_f32) {
+                p0 = ((float *)((uint8_t *)frame_buf + 0*N3*elem_sz))[n];
+                p1 = ((float *)((uint8_t *)frame_buf + 1*N3*elem_sz))[n];
+                p2 = ((float *)((uint8_t *)frame_buf + 2*N3*elem_sz))[n];
+            } else {
+                p0 = ((double *)((uint8_t *)frame_buf + 0*N3*elem_sz))[n];
+                p1 = ((double *)((uint8_t *)frame_buf + 1*N3*elem_sz))[n];
+                p2 = ((double *)((uint8_t *)frame_buf + 2*N3*elem_sz))[n];
+            }
             P_arr[n]   = p0 * p1 * p2;
             rho_arr[n] = p0 * p0 + p1 * p1 + p2 * p2;
             double ap  = fabs(P_arr[n]);

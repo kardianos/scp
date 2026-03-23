@@ -1,0 +1,54 @@
+=== V37 Compact Braid: truncated ===
+Equations: 6-field Cosserat (3 phi + 3 theta)
+m²=2.2500, m_theta²=0.0000, eta=0.500, mu=-41.345, kappa=50.0, A_bg=0.10
+N=128 L=15 T=300
+Allocating 0.30 GB (37748736 doubles, N=128, 6 fields)
+dx=0.2362 dt=0.02362 threads=8
+
+  Init: truncated helix (sigma_z=3.0)
+SFA: /home/d/code/scp/v39/data/braid_6field.sfa
+
+Initial inertia eigenvalues: 67118.4  66527.6  65112.8  (aspect=1.03)
+Initial |P| integrated: 2.2707e+01
+
+Steps=12700 diag_every=211 snap_every=127
+
+t=    0.0 E=1.424e+03 (drift +0.000%) Ep=-17.1 P_int=2.271e+01 theta_rms=0.000e+00 aspect=1.03 [0% 0s]
+t=   49.8 E=1.423e+03 (drift -0.049%) Ep=-3.6 P_int=1.035e+01 theta_rms=1.894e-02 aspect=1.06 [17% 169s]
+t=   99.7 E=1.423e+03 (drift -0.072%) Ep=-23.8 P_int=2.660e+01 theta_rms=2.404e-02 aspect=1.30 [33% 340s]
+t=  149.5 E=1.422e+03 (drift -0.113%) Ep=-1.4 P_int=8.303e+00 theta_rms=3.157e-02 aspect=1.08 [50% 519s]
+t=  199.4 E=1.422e+03 (drift -0.122%) Ep=-25.9 P_int=2.867e+01 theta_rms=3.210e-02 aspect=1.06 [66% 690s]
+t=  249.2 E=1.422e+03 (drift -0.146%) Ep=-13.6 P_int=1.904e+01 theta_rms=3.616e-02 aspect=1.23 [83% 861s]
+t=  299.1 E=1.422e+03 (drift -0.166%) Ep=-9.1 P_int=1.544e+01 theta_rms=3.282e-02 aspect=1.14 [100% 1031s]
+
+--- Spherical Shell Energy Profile (final state) ---
+  r=[0.0, 0.8]: E_shell=1.3698e-02
+  r=[0.8, 1.5]: E_shell=1.0415e-01
+  r=[1.5, 2.2]: E_shell=3.0873e-01
+  r=[2.2, 3.0]: E_shell=6.7402e-01
+  r=[3.0, 3.8]: E_shell=1.0961e+00
+  r=[3.8, 4.5]: E_shell=1.6323e+00
+  r=[4.5, 5.2]: E_shell=2.1172e+00
+  r=[5.2, 6.0]: E_shell=2.7909e+00
+  r=[6.0, 6.8]: E_shell=3.4102e+00
+  r=[6.8, 7.5]: E_shell=4.2315e+00
+  r=[7.5, 8.2]: E_shell=5.0366e+00
+  r=[8.2, 9.0]: E_shell=6.0554e+00
+  r=[9.0, 9.8]: E_shell=7.5579e+00
+  r=[9.8, 10.5]: E_shell=9.6252e+00
+  r=[10.5, 11.2]: E_shell=1.1905e+01
+  r=[11.2, 12.0]: E_shell=1.3764e+01
+  r=[12.0, 12.8]: E_shell=1.5214e+01
+  r=[12.8, 13.5]: E_shell=1.5666e+01
+  r=[13.5, 14.2]: E_shell=1.5762e+01
+  r=[14.2, 15.0]: E_shell=1.5676e+01
+
+=== FINAL SUMMARY: truncated ===
+E_total=1.4217e+03 (drift -0.169%)
+E_pot=-2.9884e+01 (174.6% of initial)
+|P| integrated=3.2964e+01 (145.2% of initial)
+theta_rms=3.2621e-02
+Aspect ratio=1.226 (eigenvalues: 115472.4 104298.6 94179.0)
+Survival: YES
+
+=== Complete: 1036s (17.3 min) ===

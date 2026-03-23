@@ -1,0 +1,70 @@
+=== V37 Seed Run ===
+Equations: 6-field Cosserat (3 phi + 3 theta)
+m^2=2.2500, m_theta^2=0.0000, eta=0.500, mu=-41.345, kappa=50.0
+Absorbing BC: damp_width=4.0 damp_rate=0.0050
+N=128 L=15.0 T=500
+Allocating 0.30 GB (37748736 doubles, N=128, 6 fields)
+dx=0.2362 dt=0.02362 threads=6
+
+Seed file: seed_best_T10.bin
+  N_seed=128, L_seed=15.00, t_seed=0.0000, nfields=12
+  phi_0: [-0.6466, 1.1228] rms=0.0634
+  phi_1: [-1.3872, 0.5829] rms=0.0620
+  phi_2: [-1.5486, 0.4037] rms=0.0772
+  vel_0: [-0.2503, 0.1302] rms=0.0118
+  vel_1: [-0.1443, 0.2111] rms=0.0107
+  vel_2: [-0.1475, 0.1836] rms=0.0098
+  theta_0 rms=0.000000
+  theta_1 rms=0.000000
+  theta_2 rms=0.000000
+SFA: results_c_sim/seed_test.sfa (f32 columns)
+
+Initial inertia eigenvalues: 3574.8  3367.6  2866.1  (aspect=1.25)
+Initial |P| integrated: 1.9435e+01
+Initial z-winding: 0.0000
+Initial connection ratio: 0.0120
+
+Steps=21166 diag_every=211 snap_every=211 (snap_dt=5.0)
+
+  *** FRAGMENTATION DETECTED at t=0.0 (conn_ratio=0.0120, clusters=1) ***
+t=    0.0 E=5.395e+02 (drift +0.000%) Ep=-20.0 Ep_avg=20.0 P_int=1.944e+01 trms=0.000e+00 asp=1.25 wind=0.000 conn=0.012 clust=1 [0% 0s]
+t=  249.2 E=4.027e+01 (drift -92.537%) Ep=-0.0 Ep_avg=5.1 P_int=2.144e-01 trms=1.726e-03 asp=1.06 wind=-0.000 conn=1.000 clust=0 [50% 1969s]
+t=  498.4 E=2.600e+00 (drift -99.518%) Ep=-0.0 Ep_avg=2.6 P_int=3.778e-03 trms=2.284e-04 asp=1.37 wind=0.000 conn=0.380 clust=0 [100% 3674s]
+
+SFA closed: results_c_sim/seed_test.sfa (102 frames)
+
+--- Spherical Shell Energy Profile (final state) ---
+  r=[0.0, 0.8]: E_shell=8.5430e-06
+  r=[0.8, 1.5]: E_shell=5.9115e-05
+  r=[1.5, 2.2]: E_shell=1.6329e-04
+  r=[2.2, 3.0]: E_shell=3.4730e-04
+  r=[3.0, 3.8]: E_shell=6.0631e-04
+  r=[3.8, 4.5]: E_shell=1.0343e-03
+  r=[4.5, 5.2]: E_shell=1.6024e-03
+  r=[5.2, 6.0]: E_shell=2.5282e-03
+  r=[6.0, 6.8]: E_shell=3.7063e-03
+  r=[6.8, 7.5]: E_shell=5.4846e-03
+  r=[7.5, 8.2]: E_shell=7.7203e-03
+  r=[8.2, 9.0]: E_shell=1.0334e-02
+  r=[9.0, 9.8]: E_shell=1.3294e-02
+  r=[9.8, 10.5]: E_shell=1.6128e-02
+  r=[10.5, 11.2]: E_shell=1.8729e-02
+  r=[11.2, 12.0]: E_shell=2.0517e-02
+  r=[12.0, 12.8]: E_shell=2.1746e-02
+  r=[12.8, 13.5]: E_shell=2.1305e-02
+  r=[13.5, 14.2]: E_shell=2.0427e-02
+  r=[14.2, 15.0]: E_shell=1.8796e-02
+
+=== FINAL SUMMARY: seed run ===
+Seed: seed_best_T10.bin
+E_total=2.5597e+00 (drift -99.526%)
+E_pot=-9.9803e-10 (0.0% of initial)
+|P| integrated=4.1691e-04 (0.0% of initial)
+theta_rms=1.5193e-04
+z_winding=0.0000
+Aspect ratio=1.368 (eigenvalues: 67.7 55.7 49.4)
+Connection ratio=0.2343  Clusters=0  Fragmented=YES
+Survival: NO (instantaneous)
+Survival (avg): YES (Ep_avg=2.586e+00 vs Ep0=-1.996e+01)
+
+=== Complete: 3686s (61.4 min) ===

@@ -1,0 +1,24 @@
+=== V33 Cosserat: 3 Position + 3 Angle Fields ===
+∂²φ_a/∂t² = ∇²φ_a - m²φ_a - V'(φ) + η×curl(θ)_a
+∂²θ_a/∂t² = ∇²θ_a - m_θ²θ_a       + η×curl(φ)_a
+
+m² = 2.2500, m_θ² = 0.0000, η = 0.500
+N=128 L=15 T=300 braids=1 D=20 bg=0.10
+Allocating 0.30 GB (37748736 doubles, N=128, 6 fields)
+dx=0.2362 dt=0.02362 (factor=1.00) threads=8
+
+SFA archive: /home/d/code/scp/v39/data/original_braid.sfa (6 columns, f64)
+
+Steps=12700 diag=211 (writing every diag frame to SFA)
+
+t=    0.0 E=3.3122e+03 (drift +0.000%) θ_rms=0.000e+00 Ep=-91.7 frames=1 [0% 1s]
+t=   49.8 E=3.3095e+03 (drift -0.082%) θ_rms=4.078e-02 Ep=-114.3 frames=11 [17% 148s]
+t=   99.7 E=3.3065e+03 (drift -0.172%) θ_rms=4.930e-02 Ep=-125.5 frames=21 [33% 296s]
+t=  149.5 E=3.3039e+03 (drift -0.251%) θ_rms=6.099e-02 Ep=-104.6 frames=31 [50% 444s]
+t=  199.4 E=3.3016e+03 (drift -0.320%) θ_rms=7.016e-02 Ep=-95.0 frames=41 [66% 592s]
+t=  249.2 E=3.3004e+03 (drift -0.358%) θ_rms=7.050e-02 Ep=-156.5 frames=51 [83% 740s]
+t=  299.1 E=3.3001e+03 (drift -0.365%) θ_rms=6.973e-02 Ep=-134.8 frames=61 [100% 888s]
+
+=== Complete: 891s (14.9 min) ===
+SFA: /home/d/code/scp/v39/data/original_braid.sfa (61 frames)
+Size: 4881.7 MB (raw would be 6140.5 MB, ratio 1.3×)

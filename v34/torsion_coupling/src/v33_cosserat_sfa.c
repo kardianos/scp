@@ -15,7 +15,7 @@
 #include <sys/stat.h>
 
 #define SFA_IMPLEMENTATION
-#include "../viewer/sfa.h"
+#include "sfa.h"
 
 #define NFIELDS 3
 #define PI 3.14159265358979323846

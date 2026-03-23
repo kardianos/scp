@@ -1,0 +1,20 @@
+=== V38 Seed Runner (CUDA) ===
+N=256 L=30.0 T=300 dx=0.2353 dt=0.02353
+m^2=2.2500 m_theta^2=0.0000 eta=0.500 mu=-41.345 kappa=50.0
+Absorbing BC: width=5.0 rate=0.0050
+Seed: torus_R15_n4.bin
+
+Seed: torus_R15_n4.bin (N=256 L=30.00 t=0.0000 nf=12)
+  phi_0: [-2.2679, 2.2659] rms=0.1834
+  phi_1: [-2.2670, 2.2679] rms=0.1834
+  phi_2: [-2.2683, 2.2684] rms=0.1834
+GPU: allocated 2.48 GB for 256^3 x 18 arrays + f32 buffer
+Steps=12750 diag=212 snap=212
+SFA: results_R15_n4/sim/sim.sfa (f32)
+
+t=    0.0 E_kin=8.532e+03 E_pot=-1949.3 theta_rms=0.000e+00 winding=-4.000 ep_avg=1949.3 [0%]
+t=  249.4 E_kin=4.924e+02 E_pot=-166.7 theta_rms=1.823e-02 winding=0.000 ep_avg=1779.4 [83%]
+
+=== Complete: 652.5 seconds (51.17 ms/step) ===
+Status: ALIVE
+SFA: results_R15_n4/sim/sim.sfa (61 frames)

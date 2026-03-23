@@ -1,0 +1,52 @@
+=== collapse_3d: 3D Oscillon with Configurable Mass ===
+Mode: 0 (constant)
+  mu=-41.345 kappa=50.0
+  m^2=2.2500 (m=1.5000)
+Absorbing BC: damp_width=0.0 damp_rate=0.0000
+N=128 L=15.0 T=300 dt_factor=0.1000
+Allocating 0.15 GB (18874368 doubles, N=128, 3 fields)
+dx=0.2362 dt=0.023622 threads=8
+
+Init: plain braid (R_tube=3.0, ellip=0.3325, A=0.8)
+  kw=0.2094 omega=1.5146 delta={0, 3.0005, 4.4325}
+SFA: data/plain_braid.sfa (f32 columns)
+
+Steps=12700 diag_every=211 snap_every=211
+Estimated time per step: dt=0.023622, total sim time: 300
+
+INITIAL: E_kin=1670.6039 E_grad=88.3953 E_mass=1644.8703 E_pot=-91.6608 E_total=3312.2087
+  phi_max=0.8983 P_max=3.3517e-01 P_int=9.1605e+01 m_eff_center=1.5000
+
+
+  >>> MILESTONE t=50: E_pot=-160.295485 (initial=-91.660790, ratio=1.7488) phi_max=0.7473 P_int=1.5207e+02 <<<
+
+
+  >>> MILESTONE t=100: E_pot=-156.901712 (initial=-91.660790, ratio=1.7118) phi_max=0.7603 P_int=1.4844e+02 <<<
+
+t=  124.6 E=3.3090e+03 (drift -0.098%) Ek=1570.924 Eg=195.977 Em=1700.307 Ep=-158.235 phi_max=0.7559 P_max=3.514e-01 m_c=1.5000 asp=1.12 [42% 148.6s 28.18ms/step]
+
+  >>> MILESTONE t=150: E_pot=-200.678320 (initial=-91.660790, ratio=2.1894) phi_max=0.8034 P_int=1.8553e+02 <<<
+
+
+  >>> MILESTONE t=200: E_pot=-193.330168 (initial=-91.660790, ratio=2.1092) phi_max=0.8656 P_int=1.7707e+02 <<<
+
+t=  249.2 E=3.3058e+03 (drift -0.192%) Ek=1934.442 Eg=182.720 Em=1276.640 Ep=-87.952 phi_max=0.7837 P_max=4.054e-01 m_c=1.5000 asp=1.27 [83% 292.2s 27.70ms/step]
+
+SFA closed: data/plain_braid.sfa (62 frames)
+
+=== FINAL SUMMARY ===
+Mode: 0 (constant)
+E_total=3.304044e+03 (drift -0.2465%)
+E_kin=1670.742263  E_grad=213.795585  E_mass=1580.982697  E_pot=-161.476120
+E_pot ratio (final/initial): 1.761671
+phi_max=0.721089 (initial=0.898261, ratio=0.8028)
+P_max=3.063399e-01  P_int=1.401296e+02 (initial=9.160474e+01, ratio=1.5297)
+m_eff_center=1.500000
+Aspect ratio=1.543 (eigenvalues: 186949.7 168486.3 121142.6)
+
+Collapse test: E_pot grew more negative? YES
+Amplitude grew? NO (phi_max ratio = 0.8028)
+Stayed as 1 cluster? LIKELY (aspect=1.543)
+
+Wall time: 348.0s (5.8 min)
+Performance: 27.40 ms/step (12700 steps)

@@ -30,3 +30,5 @@ radial_solver
 # Go module cache
 go.sum
 key.txt
+.claude/worktrees/*
+*.npz
