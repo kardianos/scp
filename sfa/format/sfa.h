@@ -56,6 +56,7 @@
 #define SFA_CHUNK_JTOP  0x504F544A  /* "JTOP" */
 #define SFA_CHUNK_JMPF  0x46504D4A  /* "JMPF" */
 #define SFA_CHUNK_FRMD  0x444D5246  /* "FRMD" */
+#define SFA_CHUNK_KVMD  0x444D564B  /* "KVMD" */
 
 /* dtype codes */
 enum {
@@ -124,7 +125,35 @@ typedef struct {
     /* Read state / mmap */
     void *mmap_ptr;
     uint64_t mmap_size;
+
+    /* KVMD metadata (optional, written between CDEF and JTOP) */
+    #define SFA_MAX_KVMD_SETS 16
+    int n_kvmd_sets;
+    struct { uint8_t *payload; uint64_t payload_len; } kvmd_sets[SFA_MAX_KVMD_SETS];
 } SFA;
+
+/* KVMD: key-value metadata associated with a range of frames.
+ * Multiple KVMD chunks support multi-resolution / multi-parameter runs.
+ *
+ * Binary layout per KVMD chunk (after standard 12-byte chunk header):
+ *   version:     u8   (1)
+ *   set_id:      u16  (0-based identifier)
+ *   n_pairs:     u16  (number of key-value pairs)
+ *   first_frame: u32  (0xFFFFFFFF = applies to all frames)
+ *   frame_count: u32  (0xFFFFFFFF = all frames from first_frame onward)
+ *   reserved:    u8[3]
+ *   --- 16-byte sub-header above ---
+ *   pairs:       [key\0 value\0]...  (n_pairs null-terminated string pairs)
+ */
+
+typedef struct {
+    uint16_t set_id;
+    uint32_t first_frame;   /* 0xFFFFFFFF = all */
+    uint32_t frame_count;   /* 0xFFFFFFFF = all */
+    int n_pairs;
+    char keys[128][64];
+    char values[128][256];
+} SFA_KVMDSet;
 
 /* ---- API ---- */
 
@@ -132,6 +161,8 @@ SFA *sfa_create(const char *path, uint32_t Nx, uint32_t Ny, uint32_t Nz,
                 double Lx, double Ly, double Lz, double dt);
 void sfa_add_column(SFA *s, const char *name, uint8_t dtype,
                     uint8_t semantic, uint8_t component);
+void sfa_add_kvmd(SFA *s, uint16_t set_id, uint32_t first_frame,
+                  uint32_t frame_count, const char **keys, const char **values, int n_pairs);
 int  sfa_finalize_header(SFA *s);
 int  sfa_write_frame(SFA *s, double time, void **column_data);
 void sfa_close(SFA *s);
@@ -166,6 +197,7 @@ int sfa_fixup_index(const char *path);
 SFA *sfa_open(const char *path);
 int  sfa_read_frame(SFA *s, uint32_t frame_idx, void *buf);
 double sfa_frame_time(SFA *s, uint32_t frame_idx);
+int  sfa_read_kvmd(SFA *s, SFA_KVMDSet *sets, int max_sets);
 
 const char *sfa_dtype_name(uint8_t dtype);
 
@@ -287,6 +319,36 @@ void sfa_add_column(SFA *s, const char *name, uint8_t dtype,
     c->scale = 1.0;
 }
 
+void sfa_add_kvmd(SFA *s, uint16_t set_id, uint32_t first_frame,
+                  uint32_t frame_count, const char **keys, const char **values, int n_pairs) {
+    if (s->n_kvmd_sets >= SFA_MAX_KVMD_SETS) return;
+    /* Compute payload size: 16-byte sub-header + pairs */
+    uint64_t pair_bytes = 0;
+    for (int i = 0; i < n_pairs; i++)
+        pair_bytes += strlen(keys[i]) + 1 + strlen(values[i]) + 1;
+    uint64_t payload_len = 16 + pair_bytes;
+
+    uint8_t *buf = (uint8_t*)malloc(payload_len);
+    uint64_t off = 0;
+    /* Sub-header: version(1) set_id(2) n_pairs(2) first_frame(4) frame_count(4) reserved(3) */
+    buf[off++] = 1;  /* version */
+    memcpy(buf + off, &set_id, 2); off += 2;
+    uint16_t np = (uint16_t)n_pairs;
+    memcpy(buf + off, &np, 2); off += 2;
+    memcpy(buf + off, &first_frame, 4); off += 4;
+    memcpy(buf + off, &frame_count, 4); off += 4;
+    buf[off++] = 0; buf[off++] = 0; buf[off++] = 0;  /* reserved */
+    /* Pairs */
+    for (int i = 0; i < n_pairs; i++) {
+        uint64_t kl = strlen(keys[i]) + 1, vl = strlen(values[i]) + 1;
+        memcpy(buf + off, keys[i], kl); off += kl;
+        memcpy(buf + off, values[i], vl); off += vl;
+    }
+    int idx = s->n_kvmd_sets++;
+    s->kvmd_sets[idx].payload = buf;
+    s->kvmd_sets[idx].payload_len = payload_len;
+}
+
 int sfa_finalize_header(SFA *s) {
     sfa_compute_frame_bytes(s);
     FILE *fp = s->fp;
@@ -330,6 +392,14 @@ int sfa_finalize_header(SFA *s) {
         fwrite(&s->columns[c].component, 1, 1, fp);
         fwrite(&s->columns[c].flags, 1, 1, fp);
         fwrite(&s->columns[c].scale, 8, 1, fp);
+    }
+
+    /* ---- KVMD (optional, between CDEF and JTOP) ---- */
+    for (int ki = 0; ki < s->n_kvmd_sets; ki++) {
+        sfa_write_chunk_header(fp, "KVMD", s->kvmd_sets[ki].payload_len);
+        fwrite(s->kvmd_sets[ki].payload, 1, s->kvmd_sets[ki].payload_len, fp);
+        free(s->kvmd_sets[ki].payload);
+        s->kvmd_sets[ki].payload = NULL;
     }
 
     /* ---- JTOP ---- */
@@ -650,6 +720,75 @@ double sfa_frame_time(SFA *s, uint32_t frame_idx) {
     SFA_L2Entry entry;
     if (sfa_find_frame(s, frame_idx, &entry) < 0) return -1.0;
     return entry.time;
+}
+
+int sfa_read_kvmd(SFA *s, SFA_KVMDSet *sets, int max_sets) {
+    if (!s || !s->fp) return 0;
+    /* KVMD chunks live between CDEF end and JTOP start.
+     * CDEF starts at s->cdef_offset. Its total size is 12 (chunk header) + payload.
+     * CDEF payload = n_columns * 24. */
+    uint64_t cdef_end = s->cdef_offset + 12 + (uint64_t)s->n_columns * 24;
+    uint64_t jtop_start = s->first_jtop_offset;
+    if (cdef_end >= jtop_start) return 0;  /* no room for KVMD */
+
+    FILE *fp = s->fp;
+    long saved_pos = ftell(fp);
+    fseek(fp, (long)cdef_end, SEEK_SET);
+
+    int n_found = 0;
+    while ((uint64_t)ftell(fp) + 12 <= jtop_start && n_found < max_sets) {
+        char type[4]; uint64_t size;
+        if (fread(type, 1, 4, fp) != 4) break;
+        if (fread(&size, 8, 1, fp) != 1) break;
+        if (memcmp(type, "KVMD", 4) != 0) {
+            fseek(fp, (long)size, SEEK_CUR);  /* skip unknown chunk */
+            continue;
+        }
+        if (size < 16) { fseek(fp, (long)size, SEEK_CUR); continue; }
+
+        /* Read sub-header */
+        uint8_t version; uint16_t set_id, n_pairs;
+        uint32_t first_frame, frame_count;
+        uint8_t reserved[3];
+        fread(&version, 1, 1, fp);
+        fread(&set_id, 2, 1, fp);
+        fread(&n_pairs, 2, 1, fp);
+        fread(&first_frame, 4, 1, fp);
+        fread(&frame_count, 4, 1, fp);
+        fread(reserved, 1, 3, fp);
+
+        SFA_KVMDSet *out = &sets[n_found];
+        memset(out, 0, sizeof(*out));
+        out->set_id = set_id;
+        out->first_frame = first_frame;
+        out->frame_count = frame_count;
+        out->n_pairs = 0;
+
+        /* Read pairs from remaining payload */
+        uint64_t pair_bytes = size - 16;
+        if (pair_bytes > 0 && pair_bytes < 1000000) {
+            char *buf = (char*)malloc(pair_bytes + 1);
+            fread(buf, 1, pair_bytes, fp);
+            buf[pair_bytes] = '\0';
+
+            uint64_t pos = 0;
+            for (int i = 0; i < (int)n_pairs && pos < pair_bytes && out->n_pairs < 128; i++) {
+                char *key = buf + pos;
+                uint64_t kl = strlen(key); pos += kl + 1;
+                if (pos >= pair_bytes) break;
+                char *val = buf + pos;
+                uint64_t vl = strlen(val); pos += vl + 1;
+                strncpy(out->keys[out->n_pairs], key, 63);
+                strncpy(out->values[out->n_pairs], val, 255);
+                out->n_pairs++;
+            }
+            free(buf);
+        }
+        n_found++;
+    }
+
+    fseek(fp, saved_pos, SEEK_SET);
+    return n_found;
 }
 
 const char *sfa_dtype_name(uint8_t dtype) {

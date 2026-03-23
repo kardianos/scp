@@ -20,7 +20,7 @@
 - **ALL remote simulations MUST run on the GPU, NOT the CPU**
 - If running on Vast.ai or any remote GPU server, use CUDA or JAX — never OpenMP C
 - Running C/OpenMP on a GPU server wastes money and time (same speed as local CPU)
-- The CUDA simulator (`v36/src/cosserat_cuda.cu`) runs 10x faster than CPU on V100
+- The CUDA simulator (`sfa/sim/scp_sim.cu`) runs 10-13x faster than CPU
 - If a CUDA version doesn't exist for a tool, BUILD ONE before deploying remotely
 - Monitor GPU utilization (`nvidia-smi`) every 10s to ensure GPU is actually being used
 
@@ -37,6 +37,22 @@
 - Default: m²=2.25, m_θ²=0 (massless theta), η=0.5, μ=-41.345, κ=50
 - Verify: 18 arrays (not 9), curl terms in forces, theta_rms grows from zero
 - Reference implementation: `v34/torsion_coupling/src/v33_cosserat.c`
+
+## Simulation Kernel Policy — CRITICAL
+- **The unified sim kernel (`sfa/sim/scp_sim.c` and `sfa/sim/scp_sim.cu`) MUST NOT be modified unless the user EXPLICITLY requests changes to the simulation code.**
+- "Explicitly" means the user says something like "modify scp_sim", "change the kernel", "update the simulator code", "add X to scp_sim". General requests like "run a simulation", "test this parameter", "try a new experiment" do NOT authorize modifying the kernel.
+- To run experiments: write a config file and/or a seed generator. The kernel reads config — never modify it for a specific experiment.
+- To add new initialization patterns: write a new seed generator in `sfa/seed/`, NOT by editing the kernel.
+- The same protection applies to `sfa/format/sfa.h` — do NOT modify the SFA format without explicit user authorization.
+- If a simulation requires physics not supported by the current kernel, ASK the user before modifying it. Describe what change is needed and why.
+
+## Simulation Kernel Location
+- CPU kernel: `sfa/sim/scp_sim.c` — build with `gcc -O3 -march=native -fopenmp -o scp_sim scp_sim.c -lzstd -lm`
+- GPU kernel: `sfa/sim/scp_sim.cu` — build with `nvcc -O3 -arch=sm_70 -o scp_sim_cuda scp_sim.cu -lzstd -lm`
+- Seed generators: `sfa/seed/gen_braid.c`, `sfa/seed/gen_oscillon.c`
+- Config files: `sfa/sim/*.cfg`
+- SFA header: `sfa/format/sfa.h` (single copy, include via relative path `../format/sfa.h`)
+- Reference implementation (historical): `v34/torsion_coupling/src/v33_cosserat.c`
 
 ## Diagnostics Requirements
 - Every simulation MUST include fragmentation detection (connected component analysis)
