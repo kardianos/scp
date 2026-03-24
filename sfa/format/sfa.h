@@ -57,6 +57,7 @@
 #define SFA_CHUNK_JMPF  0x46504D4A  /* "JMPF" */
 #define SFA_CHUNK_FRMD  0x444D5246  /* "FRMD" */
 #define SFA_CHUNK_KVMD  0x444D564B  /* "KVMD" */
+#define SFA_CHUNK_GDEF  0x46454447  /* "GDEF" */
 
 /* dtype codes */
 enum {
@@ -96,6 +97,19 @@ typedef struct {
     uint32_t reserved;
 } SFA_L2Entry;
 
+/* Multi-grid: per-grid definition (stored in GDEF chunk) */
+typedef struct {
+    uint16_t grid_id;
+    uint16_t parent_id;     /* 0xFFFF = root (no parent) */
+    uint32_t Nx, Ny, Nz;
+    double   Lx, Ly, Lz;   /* half-domain sizes */
+    double   cx, cy, cz;   /* center in world coordinates */
+    uint16_t ghost;         /* ghost zone width */
+    uint16_t kvmd_set;      /* which KVMD set has this grid's params */
+} SFA_GridDef;
+
+#define SFA_MAX_GRIDS 16
+
 typedef struct {
     FILE *fp;
     int mode;  /* 0=read, 1=write */
@@ -130,6 +144,10 @@ typedef struct {
     #define SFA_MAX_KVMD_SETS 16
     int n_kvmd_sets;
     struct { uint8_t *payload; uint64_t payload_len; } kvmd_sets[SFA_MAX_KVMD_SETS];
+
+    /* GDEF multi-grid (optional, written between CDEF and KVMD) */
+    int n_grids;
+    SFA_GridDef grids[SFA_MAX_GRIDS];
 } SFA;
 
 /* KVMD: key-value metadata associated with a range of frames.
@@ -163,8 +181,15 @@ void sfa_add_column(SFA *s, const char *name, uint8_t dtype,
                     uint8_t semantic, uint8_t component);
 void sfa_add_kvmd(SFA *s, uint16_t set_id, uint32_t first_frame,
                   uint32_t frame_count, const char **keys, const char **values, int n_pairs);
+void sfa_add_grid(SFA *s, uint16_t grid_id, uint16_t parent_id,
+                  uint32_t Nx, uint32_t Ny, uint32_t Nz,
+                  double Lx, double Ly, double Lz,
+                  double cx, double cy, double cz,
+                  uint16_t ghost, uint16_t kvmd_set);
 int  sfa_finalize_header(SFA *s);
 int  sfa_write_frame(SFA *s, double time, void **column_data);
+int  sfa_write_frame_ex(SFA *s, double time, void **column_data,
+                        uint32_t grid_id, uint64_t frame_bytes_override);
 void sfa_close(SFA *s);
 
 /* Streaming support:
@@ -198,6 +223,7 @@ SFA *sfa_open(const char *path);
 int  sfa_read_frame(SFA *s, uint32_t frame_idx, void *buf);
 double sfa_frame_time(SFA *s, uint32_t frame_idx);
 int  sfa_read_kvmd(SFA *s, SFA_KVMDSet *sets, int max_sets);
+int  sfa_read_grids(SFA *s, SFA_GridDef *grids, int max_grids);
 
 const char *sfa_dtype_name(uint8_t dtype);
 
@@ -319,6 +345,20 @@ void sfa_add_column(SFA *s, const char *name, uint8_t dtype,
     c->scale = 1.0;
 }
 
+void sfa_add_grid(SFA *s, uint16_t grid_id, uint16_t parent_id,
+                  uint32_t Nx, uint32_t Ny, uint32_t Nz,
+                  double Lx, double Ly, double Lz,
+                  double cx, double cy, double cz,
+                  uint16_t ghost, uint16_t kvmd_set) {
+    if (s->n_grids >= SFA_MAX_GRIDS) return;
+    SFA_GridDef *g = &s->grids[s->n_grids++];
+    g->grid_id = grid_id; g->parent_id = parent_id;
+    g->Nx = Nx; g->Ny = Ny; g->Nz = Nz;
+    g->Lx = Lx; g->Ly = Ly; g->Lz = Lz;
+    g->cx = cx; g->cy = cy; g->cz = cz;
+    g->ghost = ghost; g->kvmd_set = kvmd_set;
+}
+
 void sfa_add_kvmd(SFA *s, uint16_t set_id, uint32_t first_frame,
                   uint32_t frame_count, const char **keys, const char **values, int n_pairs) {
     if (s->n_kvmd_sets >= SFA_MAX_KVMD_SETS) return;
@@ -394,7 +434,34 @@ int sfa_finalize_header(SFA *s) {
         fwrite(&s->columns[c].scale, 8, 1, fp);
     }
 
-    /* ---- KVMD (optional, between CDEF and JTOP) ---- */
+    /* ---- GDEF (optional, between CDEF and KVMD/JTOP) ---- */
+    if (s->n_grids > 0) {
+        /* Sub-header: version(1) + n_grids(2) + reserved(5) = 8 bytes
+         * Per grid: grid_id(2) + parent_id(2) + Nx/Ny/Nz(12) + Lx/Ly/Lz(24) +
+         *           cx/cy/cz(24) + ghost(2) + kvmd_set(2) + reserved(4) = 72 bytes */
+        uint64_t gdef_size = 8 + (uint64_t)s->n_grids * 72;
+        sfa_write_chunk_header(fp, "GDEF", gdef_size);
+        uint8_t gdef_ver = 1;
+        uint16_t ng = (uint16_t)s->n_grids;
+        uint8_t gdef_reserved[5] = {0};
+        fwrite(&gdef_ver, 1, 1, fp);
+        fwrite(&ng, 2, 1, fp);
+        fwrite(gdef_reserved, 1, 5, fp);
+        for (int gi = 0; gi < s->n_grids; gi++) {
+            SFA_GridDef *gd = &s->grids[gi];
+            uint32_t gd_reserved = 0;
+            fwrite(&gd->grid_id, 2, 1, fp);
+            fwrite(&gd->parent_id, 2, 1, fp);
+            fwrite(&gd->Nx, 4, 1, fp); fwrite(&gd->Ny, 4, 1, fp); fwrite(&gd->Nz, 4, 1, fp);
+            fwrite(&gd->Lx, 8, 1, fp); fwrite(&gd->Ly, 8, 1, fp); fwrite(&gd->Lz, 8, 1, fp);
+            fwrite(&gd->cx, 8, 1, fp); fwrite(&gd->cy, 8, 1, fp); fwrite(&gd->cz, 8, 1, fp);
+            fwrite(&gd->ghost, 2, 1, fp);
+            fwrite(&gd->kvmd_set, 2, 1, fp);
+            fwrite(&gd_reserved, 4, 1, fp);
+        }
+    }
+
+    /* ---- KVMD (optional, between GDEF and JTOP) ---- */
     for (int ki = 0; ki < s->n_kvmd_sets; ki++) {
         sfa_write_chunk_header(fp, "KVMD", s->kvmd_sets[ki].payload_len);
         fwrite(s->kvmd_sets[ki].payload, 1, s->kvmd_sets[ki].payload_len, fp);
@@ -460,6 +527,23 @@ int sfa_finalize_header(SFA *s) {
 }
 
 int sfa_write_frame(SFA *s, double time, void **column_data) {
+    return sfa_write_frame_ex(s, time, column_data, 0, s->frame_bytes);
+}
+
+int sfa_write_frame_ex(SFA *s, double time, void **column_data,
+                       uint32_t grid_id, uint64_t frame_bytes_override) {
+    /* Temporarily swap N_total and frame_bytes for variable-size grids */
+    uint64_t saved_N_total = s->N_total;
+    uint64_t saved_frame_bytes = s->frame_bytes;
+    if (frame_bytes_override != s->frame_bytes) {
+        /* Compute N_total for this grid from frame_bytes and column dtypes */
+        uint64_t bytes_per_point = 0;
+        for (uint32_t c = 0; c < s->n_columns; c++)
+            bytes_per_point += sfa_dtype_size[s->columns[c].dtype];
+        s->N_total = frame_bytes_override / bytes_per_point;
+        s->frame_bytes = frame_bytes_override;
+    }
+
     /* Assemble uncompressed frame */
     uint8_t *raw = (uint8_t*)malloc(s->frame_bytes);
     uint64_t off = 0;
@@ -548,7 +632,7 @@ int sfa_write_frame(SFA *s, double time, void **column_data) {
     fwrite(&frmd_offset, 8, 1, s->fp);
     fwrite(&comp_size, 8, 1, s->fp);
     fwrite(&checksum, 4, 1, s->fp);
-    { uint32_t z = 0; fwrite(&z, 4, 1, s->fp); }
+    fwrite(&grid_id, 4, 1, s->fp);
 
     /* Update JMPF current_entries */
     s->cur_jmpf_entries++;
@@ -562,6 +646,10 @@ int sfa_write_frame(SFA *s, double time, void **column_data) {
 
     s->total_frames++;
     fseek(s->fp, 0, SEEK_END);
+
+    /* Restore original N_total and frame_bytes */
+    s->N_total = saved_N_total;
+    s->frame_bytes = saved_frame_bytes;
     return 0;
 }
 
@@ -785,6 +873,46 @@ int sfa_read_kvmd(SFA *s, SFA_KVMDSet *sets, int max_sets) {
             free(buf);
         }
         n_found++;
+    }
+
+    fseek(fp, saved_pos, SEEK_SET);
+    return n_found;
+}
+
+int sfa_read_grids(SFA *s, SFA_GridDef *grids, int max_grids) {
+    if (!s || !s->fp) return 0;
+    uint64_t cdef_end = s->cdef_offset + 12 + (uint64_t)s->n_columns * 24;
+    uint64_t jtop_start = s->first_jtop_offset;
+    if (cdef_end >= jtop_start) return 0;
+
+    FILE *fp = s->fp;
+    long saved_pos = ftell(fp);
+    fseek(fp, (long)cdef_end, SEEK_SET);
+
+    int n_found = 0;
+    while ((uint64_t)ftell(fp) + 12 <= jtop_start) {
+        char type[4]; uint64_t size;
+        if (fread(type, 1, 4, fp) != 4) break;
+        if (fread(&size, 8, 1, fp) != 1) break;
+        if (memcmp(type, "GDEF", 4) != 0) {
+            fseek(fp, (long)size, SEEK_CUR);
+            continue;
+        }
+        if (size < 8) { fseek(fp, (long)size, SEEK_CUR); continue; }
+        uint8_t ver; uint16_t ng; uint8_t res[5];
+        fread(&ver, 1, 1, fp); fread(&ng, 2, 1, fp); fread(res, 1, 5, fp);
+        for (int i = 0; i < (int)ng && n_found < max_grids; i++) {
+            SFA_GridDef *g = &grids[n_found];
+            uint32_t pad;
+            fread(&g->grid_id, 2, 1, fp); fread(&g->parent_id, 2, 1, fp);
+            fread(&g->Nx, 4, 1, fp); fread(&g->Ny, 4, 1, fp); fread(&g->Nz, 4, 1, fp);
+            fread(&g->Lx, 8, 1, fp); fread(&g->Ly, 8, 1, fp); fread(&g->Lz, 8, 1, fp);
+            fread(&g->cx, 8, 1, fp); fread(&g->cy, 8, 1, fp); fread(&g->cz, 8, 1, fp);
+            fread(&g->ghost, 2, 1, fp); fread(&g->kvmd_set, 2, 1, fp);
+            fread(&pad, 4, 1, fp);
+            n_found++;
+        }
+        break;  /* only one GDEF chunk expected */
     }
 
     fseek(fp, saved_pos, SEEK_SET);
