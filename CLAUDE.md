@@ -63,6 +63,45 @@
 - SFA header: `sfa/format/sfa.h` (single copy, include via relative path `../format/sfa.h`)
 - Reference implementation (historical): `v34/torsion_coupling/src/v33_cosserat.c`
 
+## Remote Simulation Data Transfer Policy
+- **Use rsync with `--append-verify` to incrementally download SFA files DURING simulation**
+  ```bash
+  rsync -avz --partial --append-verify \
+      -e 'ssh -o StrictHostKeyChecking=no -p PORT' \
+      root@HOST:/root/output.sfa ./local_results/
+  ```
+  This downloads new frames as they are written, with automatic resume on connection drop.
+  Run every 10 minutes via a monitor agent or background loop.
+
+- **NEVER destroy a GPU instance before verifying ALL downloads are complete**
+  Verification protocol:
+  1. Run analysis and f16 conversion ON THE REMOTE before downloading
+  2. Download all files (SFA, JSON, TSV)
+  3. For EACH file, compare local size to remote size:
+     ```bash
+     remote_size=$(ssh remote "stat -c%s /root/file")
+     local_size=$(stat -c%s ./file)
+     [ "$remote_size" = "$local_size" ] && echo "VERIFIED" || echo "MISMATCH"
+     ```
+  4. Run `sfa_info` on downloaded SFA to check for truncation warnings
+  5. ONLY after ALL files verified → destroy instance
+  6. If any download fails, RETRY up to 3 times. Do NOT destroy on failure.
+  See `sfa/sim/REMOTE_PROTOCOL.md` for the full protocol.
+
+## SFA Archival (rclone)
+- Completed SFA files can be archived to cloud storage via rclone:
+  ```bash
+  rclone copy local_file.sfa scpsfa:scpsfa/v42/
+  rclone ls scpsfa:scpsfa/           # list archived files
+  rclone copy scpsfa:scpsfa/v42/file.sfa ./  # retrieve when needed
+  ```
+- The `scpsfa` rclone remote is pre-configured locally for B2 cloud storage.
+- Archive SFA files after analysis is complete to free local disk space.
+- Keep diag.tsv, analysis.json, and freq.json locally (small files, always needed).
+- Large f32 output SFAs (10-30 GB) should be archived and deleted locally.
+  The f16 viewing copies (1-9 GB) can be kept locally or also archived.
+- To check if a file is already archived: `rclone ls scpsfa:scpsfa/`
+
 ## Diagnostics Requirements
 - Every simulation MUST include fragmentation detection (connected component analysis)
 - Track per-cluster mass, centroid, aspect ratio — not just global totals
