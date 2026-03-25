@@ -566,6 +566,15 @@ physical properties:
 **Mass** = total oscillation energy (E_kin + E_grad + E_mass + E_pot).
 A faster-breathing particle has more kinetic energy → heavier.
 
+This replicates QCD mass generation: in the Standard Model, the Higgs
+mechanism provides only ~1% of the proton's mass. The other 99% comes from
+the kinetic and binding energy of nearly-massless quarks and massless gluons
+continuously oscillating inside the confinement radius. In our theory, the
+braid amplitude A=0.3 sets a small "bare" field energy, but the breathing
+oscillation generates kinetic energy (E_kin >> E_pot at most times) that
+dominates the total mass. The particle's mass is overwhelmingly DYNAMICAL,
+not from the field amplitude itself.
+
 **Inertia** = resistance to rearranging the breathing pattern. More internal
 KE to rearrange → more inertia. Gives m_inertial = m_gravitational naturally.
 
