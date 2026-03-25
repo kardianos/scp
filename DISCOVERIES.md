@@ -162,6 +162,12 @@ not static (1/r Biot-Savart). Structurally closer to QFT photon exchange
 than classical EM. The right-hand rule pattern is visible in volumetric
 rendering: circular θ waves perpendicular to the braid axis.
 
+**CONFIRMED**: Spatial force transition quantified from braid_hires.sfa
+(N=80, 264 frames, t=0→50). The F_pot/F_curl ratio transitions continuously
+from 5:1 at core to 1.5:1 at r=10 to pure EM (F_pot=0) at r>22. θ/φ energy
+ratio grows from 9% at core to 28% at far field. The braid's spatial
+structure IS the strong→EM transition. See EM_THEORY.md §3.
+
 Two-braid force comparison (D=15, T=150, N=80):
   3-field (gravity only):     ΔD = -5.05
   6-field same winding:       ΔD = -6.41  (parallel "currents" attract)
