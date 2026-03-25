@@ -1,0 +1,104 @@
+{
+  "sfa": "/home/d/code/scp/v40/gen_004/CB15_output.sfa",
+  "N": 192, "L": 25.00,
+  "physics": {"mu": -41.345000, "kappa": 50.0, "m2": 2.2500, "eta": 0.500},
+  "early": {"frame": 0, "time": 0.00, "n_clusters": 5, "P_max": 1.61983461e+00},
+  "late": {"frame": 40, "time": 200.00, "n_clusters": 6, "P_max": 2.72019935e-01},
+  "matching": {
+    "n_matched": 4,
+    "n_stable": 3,
+    "n_unstable": 1,
+    "n_disappeared": 1,
+    "n_new": 2,
+    "match_radius": 10.0
+  },
+  "pairs": [
+    {
+      "early_centroid": [1.01, -0.00, -0.33],
+      "late_centroid": [1.19, 4.29, 0.24],
+      "distance": 4.3298,
+      "grew": true,
+      "early": {"n_voxels": 97530, "P_peak": 1.619835e+00, "P_int": 3.610842e+02, "E_pot": -2.977958e+02, "theta_rms": 0.000000e+00, "R_half": 1.3141, "v_disp": 1.343531e+00, "div_v": 2.460892e-02, "aspect": 4.0119},
+      "late": {"n_voxels": 110346, "P_peak": 2.239499e-01, "P_int": 5.712707e+01, "E_pot": -5.562994e+01, "theta_rms": 4.110970e-02, "R_half": 2.2964, "v_disp": 8.978598e-01, "div_v": -6.142743e-03, "aspect": 2.9270},
+      "delta": {"dP_peak": -1.395885e+00, "dP_int": -3.039572e+02, "dn_voxels": 12816}
+    },
+    {
+      "early_centroid": [1.01, 0.00, 16.31],
+      "late_centroid": [-0.68, 0.32, 17.88],
+      "distance": 2.3292,
+      "grew": false,
+      "early": {"n_voxels": 59344, "P_peak": 1.619828e+00, "P_int": 2.545680e+02, "E_pot": -1.939462e+02, "theta_rms": 0.000000e+00, "R_half": 42.1410, "v_disp": 8.896251e-01, "div_v": -9.925727e-02, "aspect": 33.3033},
+      "late": {"n_voxels": 26763, "P_peak": 2.720199e-01, "P_int": 2.400946e+01, "E_pot": -2.831618e+01, "theta_rms": 3.908944e-02, "R_half": 2.3953, "v_disp": 2.516580e-01, "div_v": 2.744758e-02, "aspect": 1.2171},
+      "delta": {"dP_peak": -1.347808e+00, "dP_int": -2.305585e+02, "dn_voxels": -32581}
+    },
+    {
+      "early_centroid": [1.01, -0.00, -18.11],
+      "late_centroid": [0.17, 0.88, -11.65],
+      "distance": 6.5697,
+      "grew": true,
+      "early": {"n_voxels": 39176, "P_peak": 9.157863e-01, "P_int": 1.116162e+02, "E_pot": -1.082722e+02, "theta_rms": 0.000000e+00, "R_half": 2.2246, "v_disp": 7.676364e-01, "div_v": 8.884654e-02, "aspect": 1.8021},
+      "late": {"n_voxels": 47529, "P_peak": 1.725449e-01, "P_int": 4.191356e+01, "E_pot": -4.974302e+01, "theta_rms": 4.007929e-02, "R_half": 3.3808, "v_disp": 3.272550e-01, "div_v": 3.217707e-03, "aspect": 1.5359},
+      "delta": {"dP_peak": -7.432414e-01, "dP_int": -6.970260e+01, "dn_voxels": 8353}
+    },
+    {
+      "early_centroid": [0.87, -0.00, 13.32],
+      "late_centroid": [-0.79, -7.04, 15.69],
+      "distance": 7.6172,
+      "grew": true,
+      "early": {"n_voxels": 734, "P_peak": 3.047144e-02, "P_int": 2.782666e-01, "E_pot": -1.222005e-01, "theta_rms": 0.000000e+00, "R_half": 3.2116, "v_disp": 2.130651e-01, "div_v": -2.487919e-01, "aspect": 5.0110},
+      "late": {"n_voxels": 1260, "P_peak": 8.308329e-03, "P_int": 9.704967e-02, "E_pot": -9.419485e-03, "theta_rms": 3.493741e-02, "R_half": 1.4892, "v_disp": 2.153083e-01, "div_v": -1.552250e-01, "aspect": 1.7710},
+      "delta": {"dP_peak": -2.216311e-02, "dP_int": -1.812170e-01, "dn_voxels": 526}
+    }
+  ],
+  "stable_stats": {
+      "n_voxels": {"mean": 4.581333e+04, "std": 4.873815e+04, "min": 7.340000e+02, "max": 9.753000e+04, "n": 3},
+      "P_peak": {"mean": 8.553641e-01, "std": 7.964025e-01, "min": 3.047144e-02, "max": 1.619835e+00, "n": 3},
+      "P_int": {"mean": 1.576596e+02, "std": 1.847572e+02, "min": 2.782666e-01, "max": 3.610842e+02, "n": 3},
+      "core_volume": {"mean": 5.128300e+01, "std": 3.438595e+01, "min": 1.316758e+01, "max": 7.997421e+01, "n": 3},
+      "E_pot": {"mean": -1.353967e+02, "std": 1.506791e+02, "min": -2.977958e+02, "max": -1.222005e-01, "n": 3},
+      "E_total": {"mean": 2.211907e+03, "std": 2.273856e+03, "min": 8.096335e+01, "max": 4.605810e+03, "n": 3},
+      "E_kin_phi": {"mean": 1.159139e+03, "std": 1.123648e+03, "min": 5.375270e+01, "max": 2.300198e+03, "n": 3},
+      "E_grad_phi": {"mean": 5.626636e+01, "std": 6.252106e+01, "min": 7.059921e-01, "max": 1.239673e+02, "n": 3},
+      "theta_rms": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 3},
+      "theta_rms_core": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 3},
+      "v_drift_mag": {"mean": 1.790722e+00, "std": 9.826188e-01, "min": 9.078907e-01, "max": 2.849387e+00, "n": 3},
+      "v_disp": {"mean": 7.747443e-01, "std": 5.652667e-01, "min": 2.130651e-01, "max": 1.343531e+00, "n": 3},
+      "div_v": {"mean": -4.511215e-02, "std": 1.792922e-01, "min": -2.487919e-01, "max": 8.884654e-02, "n": 3},
+      "aspect": {"mean": 3.608310e+00, "std": 1.642048e+00, "min": 1.802112e+00, "max": 5.010967e+00, "n": 3},
+      "rho_peak": {"mean": 3.649595e+00, "std": 1.215222e+00, "min": 2.265773e+00, "max": 4.542858e+00, "n": 3},
+      "R_half": {"mean": 2.250125e+00, "std": 9.489888e-01, "min": 1.314134e+00, "max": 3.211598e+00, "n": 3}
+  },
+  "unstable_stats": {
+      "n_voxels": {"mean": 5.934400e+04, "std": 0.000000e+00, "min": 5.934400e+04, "max": 5.934400e+04, "n": 1},
+      "P_peak": {"mean": 1.619828e+00, "std": 0.000000e+00, "min": 1.619828e+00, "max": 1.619828e+00, "n": 1},
+      "P_int": {"mean": 2.545680e+02, "std": 0.000000e+00, "min": 2.545680e+02, "max": 2.545680e+02, "n": 1},
+      "core_volume": {"mean": 7.602753e+01, "std": 0.000000e+00, "min": 7.602753e+01, "max": 7.602753e+01, "n": 1},
+      "E_pot": {"mean": -1.939462e+02, "std": 0.000000e+00, "min": -1.939462e+02, "max": -1.939462e+02, "n": 1},
+      "E_total": {"mean": 2.676941e+03, "std": 0.000000e+00, "min": 2.676941e+03, "max": 2.676941e+03, "n": 1},
+      "E_kin_phi": {"mean": 1.180224e+03, "std": 0.000000e+00, "min": 1.180224e+03, "max": 1.180224e+03, "n": 1},
+      "E_grad_phi": {"mean": 8.115409e+01, "std": 0.000000e+00, "min": 8.115409e+01, "max": 8.115409e+01, "n": 1},
+      "theta_rms": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 1},
+      "theta_rms_core": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 1},
+      "v_drift_mag": {"mean": 1.194061e+00, "std": 0.000000e+00, "min": 1.194061e+00, "max": 1.194061e+00, "n": 1},
+      "v_disp": {"mean": 8.896251e-01, "std": 0.000000e+00, "min": 8.896251e-01, "max": 8.896251e-01, "n": 1},
+      "div_v": {"mean": -9.925727e-02, "std": 0.000000e+00, "min": -9.925727e-02, "max": -9.925727e-02, "n": 1},
+      "aspect": {"mean": 3.330329e+01, "std": 0.000000e+00, "min": 3.330329e+01, "max": 3.330329e+01, "n": 1},
+      "rho_peak": {"mean": 4.542909e+00, "std": 0.000000e+00, "min": 4.542909e+00, "max": 4.542909e+00, "n": 1},
+      "R_half": {"mean": 4.214105e+01, "std": 0.000000e+00, "min": 4.214105e+01, "max": 4.214105e+01, "n": 1}
+  },
+  "early_clusters": [
+    {"id": 1, "n_voxels": 97530, "centroid": [1.01,-0.00,-0.33], "P_peak": 1.619835e+00, "P_int": 3.610842e+02, "E_pot": -2.977958e+02, "theta_rms": 0.000000e+00, "v_disp": 1.343531e+00, "div_v": 2.460892e-02, "aspect": 4.0119, "R_half": 1.3141, "rho_peak": 4.542858e+00, "matched": true, "grew": true},
+    {"id": 2, "n_voxels": 59344, "centroid": [1.01,0.00,16.31], "P_peak": 1.619828e+00, "P_int": 2.545680e+02, "E_pot": -1.939462e+02, "theta_rms": 0.000000e+00, "v_disp": 8.896251e-01, "div_v": -9.925727e-02, "aspect": 33.3033, "R_half": 42.1410, "rho_peak": 4.542909e+00, "matched": true, "grew": false},
+    {"id": 3, "n_voxels": 39176, "centroid": [1.01,-0.00,-18.11], "P_peak": 9.157863e-01, "P_int": 1.116162e+02, "E_pot": -1.082722e+02, "theta_rms": 0.000000e+00, "v_disp": 7.676364e-01, "div_v": 8.884654e-02, "aspect": 1.8021, "R_half": 2.2246, "rho_peak": 4.140153e+00, "matched": true, "grew": true},
+    {"id": 4, "n_voxels": 712, "centroid": [0.90,-0.00,-11.70], "P_peak": 3.043241e-02, "P_int": 2.724099e-01, "E_pot": -1.204844e-01, "theta_rms": 0.000000e+00, "v_disp": 2.153160e-01, "div_v": 2.512365e-01, "aspect": 5.3630, "R_half": 3.1924, "rho_peak": 2.247436e+00, "matched": false, "grew": null},
+    {"id": 5, "n_voxels": 734, "centroid": [0.87,-0.00,13.32], "P_peak": 3.047144e-02, "P_int": 2.782666e-01, "E_pot": -1.222005e-01, "theta_rms": 0.000000e+00, "v_disp": 2.130651e-01, "div_v": -2.487919e-01, "aspect": 5.0110, "R_half": 3.2116, "rho_peak": 2.265773e+00, "matched": true, "grew": true}
+  ],
+  "late_clusters": [
+    {"id": 1, "n_voxels": 47529, "centroid": [0.17,0.88,-11.65], "P_peak": 1.725449e-01, "P_int": 4.191356e+01, "E_pot": -4.974302e+01, "theta_rms": 4.007929e-02, "v_disp": 3.272550e-01, "div_v": 3.217707e-03, "aspect": 1.5359, "R_half": 3.3808, "rho_peak": 9.305009e-01, "matched": true},
+    {"id": 2, "n_voxels": 26763, "centroid": [-0.68,0.32,17.88], "P_peak": 2.720199e-01, "P_int": 2.400946e+01, "E_pot": -2.831618e+01, "theta_rms": 3.908944e-02, "v_disp": 2.516580e-01, "div_v": 2.744758e-02, "aspect": 1.2171, "R_half": 2.3953, "rho_peak": 1.259549e+00, "matched": true},
+    {"id": 3, "n_voxels": 110346, "centroid": [1.19,4.29,0.24], "P_peak": 2.239499e-01, "P_int": 5.712707e+01, "E_pot": -5.562994e+01, "theta_rms": 4.110970e-02, "v_disp": 8.978598e-01, "div_v": -6.142743e-03, "aspect": 2.9270, "R_half": 2.2964, "rho_peak": 1.107452e+00, "matched": true},
+    {"id": 4, "n_voxels": 5948, "centroid": [-0.79,-8.56,8.91], "P_peak": 1.170827e-02, "P_int": 4.780540e-01, "E_pot": -5.067648e-02, "theta_rms": 3.638122e-02, "v_disp": 2.626050e-01, "div_v": 2.295518e-01, "aspect": 2.8427, "R_half": 0.4806, "rho_peak": 1.573791e-01, "matched": false},
+    {"id": 5, "n_voxels": 1260, "centroid": [-0.79,-7.04,15.69], "P_peak": 8.308329e-03, "P_int": 9.704967e-02, "E_pot": -9.419485e-03, "theta_rms": 3.493741e-02, "v_disp": 2.153083e-01, "div_v": -1.552250e-01, "aspect": 1.7710, "R_half": 1.4892, "rho_peak": 1.239945e-01, "matched": true},
+    {"id": 6, "n_voxels": 880, "centroid": [-0.35,-15.01,11.93], "P_peak": 7.308908e-03, "P_int": 6.255442e-02, "E_pot": -5.470278e-03, "theta_rms": 3.832697e-02, "v_disp": 2.766900e-01, "div_v": -2.403358e-01, "aspect": 1.3348, "R_half": 0.0683, "rho_peak": 1.137340e-01, "matched": false}
+  ]
+}

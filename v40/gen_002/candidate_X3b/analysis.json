@@ -1,0 +1,18 @@
+{
+  "sfa": "gen_002/candidate_X3b/output.sfa",
+  "N": 128, "L": 15.0,
+  "S_final": 0.815651,
+  "S_mean": 0.718859,
+  "alive_frames": 6,
+  "total_frames": 6,
+  "E_pot_final": -81.729370,
+  "P_int_retention": 0.820706,
+  "frames": [
+    {"t":0.00,"E":2.8612e+03,"Ep":-79.7249,"Pint":94.2825,"phi_max":1.2970,"theta_rms":0.0000e+00,"aspect":1.251,"S":0.7785,"alive":1},
+    {"t":5.00,"E":1.9610e+03,"Ep":-60.2284,"Pint":64.0830,"phi_max":1.1311,"theta_rms":2.2641e-02,"aspect":1.177,"S":0.6806,"alive":1},
+    {"t":9.99,"E":1.8881e+03,"Ep":-35.9436,"Pint":40.1317,"phi_max":1.0641,"theta_rms":2.3515e-02,"aspect":1.399,"S":0.4729,"alive":1},
+    {"t":14.99,"E":1.8345e+03,"Ep":-72.4150,"Pint":70.7262,"phi_max":0.8966,"theta_rms":2.0808e-02,"aspect":1.190,"S":0.7544,"alive":1},
+    {"t":19.98,"E":1.7683e+03,"Ep":-81.1693,"Pint":76.6355,"phi_max":0.8842,"theta_rms":1.9310e-02,"aspect":1.189,"S":0.8111,"alive":1},
+    {"t":20.00,"E":1.7681e+03,"Ep":-81.7294,"Pint":77.3782,"phi_max":0.8865,"theta_rms":1.9339e-02,"aspect":1.199,"S":0.8157,"alive":1}
+  ]
+}

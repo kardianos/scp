@@ -1,0 +1,20 @@
+{
+  "sfa": "/home/d/code/scp/v41/results/phase/UDD_neutron_f16.sfa",
+  "N": 192, "L": 25.0,
+  "S_final": 0.720106,
+  "S_mean": 0.701345,
+  "alive_frames": 8,
+  "total_frames": 8,
+  "E_pot_final": -68.481739,
+  "P_int_retention": 0.896610,
+  "frames": [
+    {"t":0.00,"E":7.6407e+03,"Ep":-9.8594,"Pint":74.9576,"phi_max":0.4119,"theta_rms":1.4340e-03,"aspect":1.089,"S":0.4469,"alive":1},
+    {"t":30.00,"E":3.6211e+03,"Ep":-47.7107,"Pint":66.3874,"phi_max":0.6812,"theta_rms":9.2720e-03,"aspect":1.070,"S":0.6348,"alive":1},
+    {"t":60.00,"E":3.3292e+03,"Ep":-65.9401,"Pint":75.3744,"phi_max":0.7393,"theta_rms":1.0230e-02,"aspect":1.388,"S":0.7443,"alive":1},
+    {"t":90.00,"E":2.8467e+03,"Ep":-71.6081,"Pint":83.7054,"phi_max":0.7021,"theta_rms":7.6326e-03,"aspect":1.182,"S":0.8082,"alive":1},
+    {"t":120.00,"E":2.4610e+03,"Ep":-90.3321,"Pint":86.8120,"phi_max":0.7388,"theta_rms":8.1738e-03,"aspect":1.104,"S":0.9224,"alive":1},
+    {"t":150.00,"E":2.1624e+03,"Ep":-37.3118,"Pint":44.2698,"phi_max":0.6685,"theta_rms":7.0269e-03,"aspect":1.236,"S":0.4727,"alive":1},
+    {"t":180.00,"E":1.8847e+03,"Ep":-80.8124,"Pint":83.5486,"phi_max":0.7798,"theta_rms":7.2670e-03,"aspect":1.066,"S":0.8613,"alive":1},
+    {"t":200.00,"E":1.7036e+03,"Ep":-68.4817,"Pint":67.2078,"phi_max":0.7412,"theta_rms":6.4398e-03,"aspect":1.205,"S":0.7201,"alive":1}
+  ]
+}

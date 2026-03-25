@@ -23,6 +23,15 @@
 - The CUDA simulator (`sfa/sim/scp_sim.cu`) runs 10-13x faster than CPU
 - If a CUDA version doesn't exist for a tool, BUILD ONE before deploying remotely
 - Monitor GPU utilization (`nvidia-smi`) every 10s to ensure GPU is actually being used
+- **Vast.ai GPU search**: use `gpu_name=Tesla_V100` (NOT `V100`).
+  Two variants: Tesla_V100 16 GB and Tesla_V100 32 GB (SXM2). Both sm_70.
+  Multi-GPU: available as 4× and 8× for very large grids (N=512+).
+  Search: `vastai search offers 'gpu_name=Tesla_V100 num_gpus=1 rentable=true disk_space>=20' -o 'dph'`
+  Multi: `vastai search offers 'gpu_name=Tesla_V100 num_gpus>=4 rentable=true' -o 'dph'`
+  Pricing: $0.12-0.20/hr per GPU. 4×V100 ~$0.50-0.80/hr.
+  RTX 4090 ($0.30/hr, sm_89, 24 GB VRAM) is faster for single-GPU but no multi-GPU.
+  Compile for Tesla_V100: `nvcc -O3 -arch=sm_70 -o scp_sim_cuda scp_sim.cu -lzstd -lm`
+  Compile for RTX 4090: `nvcc -O3 -arch=sm_89 -o scp_sim_cuda scp_sim.cu -lzstd -lm`
 
 ## Build Convention
 - C with OpenMP: `gcc -O3 -march=native -fopenmp -o <binary> src/<file>.c -lzstd -lm`

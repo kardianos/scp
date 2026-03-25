@@ -1,0 +1,101 @@
+{
+  "current_generation": 1,
+  "T_probe": 20.0,
+  "baseline_ref": {
+    "S_final": 0.8069,
+    "S_mean": 0.6185,
+    "P_int_retention": 0.862
+  },
+  "candidates": [
+    {
+      "id": "004",
+      "name": "Double amplitude (scale 1.5)",
+      "S_final": 1.4751,
+      "S_mean": 1.0671,
+      "P_int_retention": 0.6328,
+      "E_pot_final": -232.52,
+      "sfa": "/home/d/code/scp/v40/gen_001/candidate_004/output.sfa",
+      "analysis": "/home/d/code/scp/v40/gen_001/candidate_004/analysis.json"
+    },
+    {
+      "id": "003",
+      "name": "Braid + counter-braid (flipped chirality)",
+      "S_final": 1.2404,
+      "S_mean": 0.9192,
+      "P_int_retention": 0.7631,
+      "E_pot_final": -178.51,
+      "sfa": "/home/d/code/scp/v40/gen_001/candidate_003/output.sfa",
+      "analysis": "/home/d/code/scp/v40/gen_001/candidate_003/analysis.json"
+    },
+    {
+      "id": "002",
+      "name": "Two braids perpendicular (90 deg)",
+      "S_final": 1.0822,
+      "S_mean": 0.7655,
+      "P_int_retention": 0.7701,
+      "E_pot_final": -141.22,
+      "sfa": "/home/d/code/scp/v40/gen_001/candidate_002/output.sfa",
+      "analysis": "/home/d/code/scp/v40/gen_001/candidate_002/analysis.json"
+    },
+    {
+      "id": "006",
+      "name": "Braid + oscillon",
+      "S_final": 0.758,
+      "S_mean": 0.5782,
+      "P_int_retention": 0.7289,
+      "E_pot_final": -86.04,
+      "sfa": "/home/d/code/scp/v40/gen_001/candidate_006/output.sfa",
+      "analysis": "/home/d/code/scp/v40/gen_001/candidate_006/analysis.json"
+    },
+    {
+      "id": "001",
+      "name": "Two braids parallel (sep=8)",
+      "S_final": 0.7321,
+      "S_mean": 1.0898,
+      "P_int_retention": 0.5436,
+      "E_pot_final": -82.18,
+      "sfa": "/home/d/code/scp/v40/gen_001/candidate_001/output.sfa",
+      "analysis": "/home/d/code/scp/v40/gen_001/candidate_001/analysis.json"
+    },
+    {
+      "id": "007",
+      "name": "High ellipticity (ellip=0.5)",
+      "S_final": 0.562,
+      "S_mean": 0.7082,
+      "P_int_retention": 0.6055,
+      "E_pot_final": -47.47,
+      "sfa": "/home/d/code/scp/v40/gen_001/candidate_007/output.sfa",
+      "analysis": "/home/d/code/scp/v40/gen_001/candidate_007/analysis.json"
+    },
+    {
+      "id": "008",
+      "name": "Low background (A_bg=0.03)",
+      "S_final": 0.5268,
+      "S_mean": 0.6729,
+      "P_int_retention": 0.6194,
+      "E_pot_final": -43.23,
+      "sfa": "/home/d/code/scp/v40/gen_001/candidate_008/output.sfa",
+      "analysis": "/home/d/code/scp/v40/gen_001/candidate_008/analysis.json"
+    },
+    {
+      "id": "005",
+      "name": "Reduced amplitude (scale 0.7)",
+      "S_final": 0.1425,
+      "S_mean": 0.2351,
+      "P_int_retention": 0.2237,
+      "E_pot_final": -3.07,
+      "sfa": "/home/d/code/scp/v40/gen_001/candidate_005/output.sfa",
+      "analysis": "/home/d/code/scp/v40/gen_001/candidate_005/analysis.json"
+    }
+  ],
+  "survivors": [
+    "004",
+    "003",
+    "002",
+    "006"
+  ],
+  "best_score": 1.475126,
+  "best_candidate": "gen_001/candidate_004",
+  "strategy": "structural_variations",
+  "notes": "Gen 1 complete. 4/8 beat baseline S_final. Top: 004 (1.5x amplitude), 003 (counter-braid), 002 (perp braids), 001 (parallel braids). Candidate 005 (0.7x scale) collapsed. Next: refine top 4 with amplitude tuning and combining winners."
+}

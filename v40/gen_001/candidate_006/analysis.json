@@ -1,0 +1,18 @@
+{
+  "sfa": "/home/d/code/scp/v40/gen_001/candidate_006/output.sfa",
+  "N": 128, "L": 15.0,
+  "S_final": 0.758026,
+  "S_mean": 0.578189,
+  "alive_frames": 6,
+  "total_frames": 6,
+  "E_pot_final": -86.041213,
+  "P_int_retention": 0.728928,
+  "frames": [
+    {"t":0.00,"E":1.7555e+03,"Ep":-106.7551,"Pint":103.9909,"phi_max":1.0243,"theta_rms":0.0000e+00,"aspect":2.028,"S":0.8831,"alive":1},
+    {"t":5.00,"E":1.1537e+03,"Ep":-28.0989,"Pint":29.1870,"phi_max":0.8914,"theta_rms":1.3439e-02,"aspect":3.145,"S":0.3102,"alive":1},
+    {"t":9.99,"E":1.1015e+03,"Ep":-2.2283,"Pint":7.1427,"phi_max":0.5834,"theta_rms":1.1662e-02,"aspect":2.315,"S":0.1216,"alive":1},
+    {"t":14.99,"E":1.0661e+03,"Ep":-71.7915,"Pint":65.1087,"phi_max":0.7002,"theta_rms":1.3735e-02,"aspect":3.153,"S":0.6334,"alive":1},
+    {"t":19.98,"E":1.0228e+03,"Ep":-86.7286,"Pint":76.4174,"phi_max":0.8689,"theta_rms":1.2760e-02,"aspect":1.736,"S":0.7627,"alive":1},
+    {"t":20.00,"E":1.0227e+03,"Ep":-86.0412,"Pint":75.8018,"phi_max":0.8699,"theta_rms":1.2751e-02,"aspect":1.720,"S":0.7580,"alive":1}
+  ]
+}

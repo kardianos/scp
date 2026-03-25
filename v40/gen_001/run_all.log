@@ -1,0 +1,356 @@
+=== Gen 1 Evolutionary Search (T=20 probe) ===
+Started: Mon Mar 23 09:02:22 PM CDT 2026
+--- Batch: candidate_001 + candidate_002 --- Mon Mar 23 09:02:22 PM CDT 2026
+=== scp_sim: Unified 6-field Cosserat Kernel ===
+d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ)
+d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ)
+
+Grid:    N=128 L=15.0 T=20 dt_factor=0.0250
+Physics: m²=2.2500 m_θ²=0.0000 η=0.500 μ=-41.345 κ=50.0
+Mode:    0
+BC:      absorbing sphere (width=3.0 rate=0.0100)
+Init:    sfa (/home/d/code/scp/v40/gen_001/candidate_002/seed.sfa frame=0)
+Output:  /home/d/code/scp/v40/gen_001/candidate_002/output.sfa (f32, snap=5.0 diag=2.0)
+
+Allocating 0.30 GB (37748736 doubles, N=128, 6 fields)
+dx=0.2362 dt=0.005906 threads=8
+
+Init: SFA file '/home/d/code/scp/v40/gen_001/candidate_002/seed.sfa' frame=0
+  Grid: 128x128x128, 12 columns, 1 frames, reading frame 0
+  Loaded col 0 'phi_x' (sem=0 comp=0 dtype=2) -> slot 0
+  Loaded col 1 'phi_y' (sem=0 comp=1 dtype=2) -> slot 1
+  Loaded col 2 'phi_z' (sem=0 comp=2 dtype=2) -> slot 2
+  Loaded col 3 'theta_x' (sem=1 comp=0 dtype=2) -> slot 3
+  Loaded col 4 'theta_y' (sem=1 comp=1 dtype=2) -> slot 4
+  Loaded col 5 'theta_z' (sem=1 comp=2 dtype=2) -> slot 5
+  Loaded col 6 'phi_vx' (sem=2 comp=0 dtype=2) -> slot 6
+  Loaded col 7 'phi_vy' (sem=2 comp=1 dtype=2) -> slot 7
+  Loaded col 8 'phi_vz' (sem=2 comp=2 dtype=2) -> slot 8
+  Loaded col 9 'theta_vx' (sem=2 comp=3 dtype=2) -> slot 9
+  Loaded col 10 'theta_vy' (sem=2 comp=4 dtype=2) -> slot 10
+  Loaded col 11 'theta_vz' (sem=2 comp=5 dtype=2) -> slot 11
+  Loaded: 6/6 field arrays, 6/6 velocity arrays
+SFA: /home/d/code/scp/v40/gen_001/candidate_002/output.sfa (12 cols, f32, BSS+zstd)
+
+INIT: E_total=2.3006e+03 E_pot=-150.6801 phi_max=1.2970 P_int=1.5474e+02 theta_rms=0.000e+00
+
+
+=== COMPLETE ===
+E_total=1.4561e+03 (drift -36.707%) E_pot=-141.2169
+phi_max=0.8403 P_int=1.1916e+02 theta_rms=1.664e-02
+SFA: /home/d/code/scp/v40/gen_001/candidate_002/output.sfa (6 frames)
+[OK] theta_rms grew: 0.00e+00 -> 1.66e-02
+Wall: 443.3s (7.4 min) 130.93ms/step
+=== scp_sim: Unified 6-field Cosserat Kernel ===
+d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ)
+d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ)
+
+Grid:    N=128 L=15.0 T=20 dt_factor=0.0250
+Physics: m²=2.2500 m_θ²=0.0000 η=0.500 μ=-41.345 κ=50.0
+Mode:    0
+BC:      absorbing sphere (width=3.0 rate=0.0100)
+Init:    sfa (/home/d/code/scp/v40/gen_001/candidate_001/seed.sfa frame=0)
+Output:  /home/d/code/scp/v40/gen_001/candidate_001/output.sfa (f32, snap=5.0 diag=2.0)
+
+Allocating 0.30 GB (37748736 doubles, N=128, 6 fields)
+dx=0.2362 dt=0.005906 threads=8
+
+Init: SFA file '/home/d/code/scp/v40/gen_001/candidate_001/seed.sfa' frame=0
+  Grid: 128x128x128, 12 columns, 1 frames, reading frame 0
+  Loaded col 0 'phi_x' (sem=0 comp=0 dtype=2) -> slot 0
+  Loaded col 1 'phi_y' (sem=0 comp=1 dtype=2) -> slot 1
+  Loaded col 2 'phi_z' (sem=0 comp=2 dtype=2) -> slot 2
+  Loaded col 3 'theta_x' (sem=1 comp=0 dtype=2) -> slot 3
+  Loaded col 4 'theta_y' (sem=1 comp=1 dtype=2) -> slot 4
+  Loaded col 5 'theta_z' (sem=1 comp=2 dtype=2) -> slot 5
+  Loaded col 6 'phi_vx' (sem=2 comp=0 dtype=2) -> slot 6
+  Loaded col 7 'phi_vy' (sem=2 comp=1 dtype=2) -> slot 7
+  Loaded col 8 'phi_vz' (sem=2 comp=2 dtype=2) -> slot 8
+  Loaded col 9 'theta_vx' (sem=2 comp=3 dtype=2) -> slot 9
+  Loaded col 10 'theta_vy' (sem=2 comp=4 dtype=2) -> slot 10
+  Loaded col 11 'theta_vz' (sem=2 comp=5 dtype=2) -> slot 11
+  Loaded: 6/6 field arrays, 6/6 velocity arrays
+SFA: /home/d/code/scp/v40/gen_001/candidate_001/output.sfa (12 cols, f32, BSS+zstd)
+
+INIT: E_total=4.6661e+03 E_pot=-156.1779 phi_max=0.9616 P_int=1.5051e+02 theta_rms=0.000e+00
+
+
+=== COMPLETE ===
+E_total=2.8887e+03 (drift -38.092%) E_pot=-82.1821
+phi_max=1.0638 P_int=8.1823e+01 theta_rms=2.384e-02
+SFA: /home/d/code/scp/v40/gen_001/candidate_001/output.sfa (6 frames)
+[OK] theta_rms grew: 0.00e+00 -> 2.38e-02
+Wall: 446.3s (7.4 min) 131.80ms/step
+Analyzing: output.sfa (N=128, L=15.0, 0 frames)
+Physics: mu=-41.345 kappa=50.0 m^2=2.2500 eta=0.500
+
+
+=== SUMMARY ===
+S_final = 0.0000
+S_mean  = -nan
+Alive frames: 0 / 0
+E_pot(final) = 0.0
+P_int retention = -nan%
+JSON written to analysis.json
+candidate_001 DONE
+Analyzing: output.sfa (N=128, L=15.0, 6 frames)
+Physics: mu=-41.345 kappa=50.0 m^2=2.2500 eta=0.500
+
+Frame  0 t=   0.0: E=2.30e+03 Ep= -150.7 Pint= 154.7 phi=1.297 θ=0.000e+00 asp=1.96 S=1.104 ALIVE
+Frame  1 t=   5.0: E=1.65e+03 Ep=  -54.4 Pint=  52.8 phi=1.135 θ=1.817e-02 asp=1.75 S=0.504 ALIVE
+Frame  2 t=  10.0: E=1.58e+03 Ep=   -5.1 Pint=  12.7 phi=0.656 θ=1.690e-02 asp=2.01 S=0.167 ALIVE
+Frame  3 t=  15.0: E=1.53e+03 Ep=  -79.5 Pint=  73.0 phi=0.841 θ=1.907e-02 asp=2.36 S=0.658 ALIVE
+Frame  4 t=  20.0: E=1.46e+03 Ep= -140.5 Pint= 118.5 phi=0.837 θ=1.665e-02 asp=1.28 S=1.077 ALIVE
+Frame  5 t=  20.0: E=1.46e+03 Ep= -141.2 Pint= 119.2 phi=0.840 θ=1.664e-02 asp=1.27 S=1.082 ALIVE
+
+=== SUMMARY ===
+S_final = 1.0822
+S_mean  = 0.7655
+Alive frames: 6 / 6
+E_pot(final) = -141.2
+P_int retention = 77.0%
+JSON written to analysis.json
+candidate_002 DONE
+--- Batch complete --- Mon Mar 23 09:09:55 PM CDT 2026
+--- Batch: candidate_003 + candidate_004 --- Mon Mar 23 09:09:55 PM CDT 2026
+=== scp_sim: Unified 6-field Cosserat Kernel ===
+d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ)
+d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ)
+
+Grid:    N=128 L=15.0 T=20 dt_factor=0.0250
+Physics: m²=2.2500 m_θ²=0.0000 η=0.500 μ=-41.345 κ=50.0
+Mode:    0
+BC:      absorbing sphere (width=3.0 rate=0.0100)
+Init:    sfa (/home/d/code/scp/v40/gen_001/candidate_003/seed.sfa frame=0)
+Output:  /home/d/code/scp/v40/gen_001/candidate_003/output.sfa (f32, snap=5.0 diag=2.0)
+
+Allocating 0.30 GB (37748736 doubles, N=128, 6 fields)
+dx=0.2362 dt=0.005906 threads=8
+
+Init: SFA file '/home/d/code/scp/v40/gen_001/candidate_003/seed.sfa' frame=0
+  Grid: 128x128x128, 12 columns, 1 frames, reading frame 0
+  Loaded col 0 'phi_x' (sem=0 comp=0 dtype=2) -> slot 0
+  Loaded col 1 'phi_y' (sem=0 comp=1 dtype=2) -> slot 1
+  Loaded col 2 'phi_z' (sem=0 comp=2 dtype=2) -> slot 2
+  Loaded col 3 'theta_x' (sem=1 comp=0 dtype=2) -> slot 3
+  Loaded col 4 'theta_y' (sem=1 comp=1 dtype=2) -> slot 4
+  Loaded col 5 'theta_z' (sem=1 comp=2 dtype=2) -> slot 5
+  Loaded col 6 'phi_vx' (sem=2 comp=0 dtype=2) -> slot 6
+  Loaded col 7 'phi_vy' (sem=2 comp=1 dtype=2) -> slot 7
+  Loaded col 8 'phi_vz' (sem=2 comp=2 dtype=2) -> slot 8
+  Loaded col 9 'theta_vx' (sem=2 comp=3 dtype=2) -> slot 9
+  Loaded col 10 'theta_vy' (sem=2 comp=4 dtype=2) -> slot 10
+  Loaded col 11 'theta_vz' (sem=2 comp=5 dtype=2) -> slot 11
+  Loaded: 6/6 field arrays, 6/6 velocity arrays
+SFA: /home/d/code/scp/v40/gen_001/candidate_003/output.sfa (12 cols, f32, BSS+zstd)
+
+INIT: E_total=2.7384e+03 E_pot=-207.4423 phi_max=1.1177 P_int=2.0066e+02 theta_rms=0.000e+00
+
+
+=== COMPLETE ===
+E_total=1.5990e+03 (drift -41.607%) E_pot=-178.5077
+phi_max=0.8417 P_int=1.5313e+02 theta_rms=1.774e-02
+SFA: /home/d/code/scp/v40/gen_001/candidate_003/output.sfa (6 frames)
+[OK] theta_rms grew: 0.00e+00 -> 1.77e-02
+Wall: 431.1s (7.2 min) 127.33ms/step
+=== scp_sim: Unified 6-field Cosserat Kernel ===
+d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ)
+d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ)
+
+Grid:    N=128 L=15.0 T=20 dt_factor=0.0250
+Physics: m²=2.2500 m_θ²=0.0000 η=0.500 μ=-41.345 κ=50.0
+Mode:    0
+BC:      absorbing sphere (width=3.0 rate=0.0100)
+Init:    sfa (/home/d/code/scp/v40/gen_001/candidate_004/seed.sfa frame=0)
+Output:  /home/d/code/scp/v40/gen_001/candidate_004/output.sfa (f32, snap=5.0 diag=2.0)
+
+Allocating 0.30 GB (37748736 doubles, N=128, 6 fields)
+dx=0.2362 dt=0.005906 threads=8
+
+Init: SFA file '/home/d/code/scp/v40/gen_001/candidate_004/seed.sfa' frame=0
+  Grid: 128x128x128, 12 columns, 1 frames, reading frame 0
+  Loaded col 0 'phi_x' (sem=0 comp=0 dtype=2) -> slot 0
+  Loaded col 1 'phi_y' (sem=0 comp=1 dtype=2) -> slot 1
+  Loaded col 2 'phi_z' (sem=0 comp=2 dtype=2) -> slot 2
+  Loaded col 3 'theta_x' (sem=1 comp=0 dtype=2) -> slot 3
+  Loaded col 4 'theta_y' (sem=1 comp=1 dtype=2) -> slot 4
+  Loaded col 5 'theta_z' (sem=1 comp=2 dtype=2) -> slot 5
+  Loaded col 6 'phi_vx' (sem=2 comp=0 dtype=2) -> slot 6
+  Loaded col 7 'phi_vy' (sem=2 comp=1 dtype=2) -> slot 7
+  Loaded col 8 'phi_vz' (sem=2 comp=2 dtype=2) -> slot 8
+  Loaded col 9 'theta_vx' (sem=2 comp=3 dtype=2) -> slot 9
+  Loaded col 10 'theta_vy' (sem=2 comp=4 dtype=2) -> slot 10
+  Loaded col 11 'theta_vz' (sem=2 comp=5 dtype=2) -> slot 11
+  Loaded: 6/6 field arrays, 6/6 velocity arrays
+SFA: /home/d/code/scp/v40/gen_001/candidate_004/output.sfa (12 cols, f32, BSS+zstd)
+
+INIT: E_total=3.6274e+03 E_pot=-272.4402 phi_max=1.3474 P_int=3.0917e+02 theta_rms=0.000e+00
+
+
+=== COMPLETE ===
+E_total=1.9587e+03 (drift -46.003%) E_pot=-232.5153
+phi_max=0.8339 P_int=1.9565e+02 theta_rms=1.748e-02
+SFA: /home/d/code/scp/v40/gen_001/candidate_004/output.sfa (6 frames)
+[OK] theta_rms grew: 0.00e+00 -> 1.75e-02
+Wall: 432.3s (7.2 min) 127.68ms/step
+Analyzing: output.sfa (N=128, L=15.0, 6 frames)
+Physics: mu=-41.345 kappa=50.0 m^2=2.2500 eta=0.500
+
+Frame  0 t=   0.0: E=2.74e+03 Ep= -207.4 Pint= 200.7 phi=1.118 θ=0.000e+00 asp=2.56 S=1.376 ALIVE
+Frame  1 t=   5.0: E=1.84e+03 Ep=  -86.6 Pint=  81.2 phi=0.834 θ=2.071e-02 asp=3.73 S=0.664 ALIVE
+Frame  2 t=  10.0: E=1.76e+03 Ep=  -12.3 Pint=  17.6 phi=0.652 θ=1.756e-02 asp=2.23 S=0.203 ALIVE
+Frame  3 t=  15.0: E=1.69e+03 Ep= -108.3 Pint=  98.2 phi=0.824 θ=1.878e-02 asp=3.45 S=0.792 ALIVE
+Frame  4 t=  20.0: E=1.60e+03 Ep= -178.3 Pint= 153.2 phi=0.840 θ=1.775e-02 asp=2.10 S=1.239 ALIVE
+Frame  5 t=  20.0: E=1.60e+03 Ep= -178.5 Pint= 153.1 phi=0.842 θ=1.774e-02 asp=2.08 S=1.240 ALIVE
+
+=== SUMMARY ===
+S_final = 1.2404
+S_mean  = 0.9192
+Alive frames: 6 / 6
+E_pot(final) = -178.5
+P_int retention = 76.3%
+JSON written to analysis.json
+candidate_003 DONE
+Analyzing: output.sfa (N=128, L=15.0, 6 frames)
+Physics: mu=-41.345 kappa=50.0 m^2=2.2500 eta=0.500
+
+Frame  0 t=   0.0: E=3.63e+03 Ep= -272.4 Pint= 309.2 phi=1.347 θ=0.000e+00 asp=2.06 S=1.711 ALIVE
+Frame  1 t=   5.0: E=2.28e+03 Ep=  -70.3 Pint=  69.3 phi=0.788 θ=1.935e-02 asp=3.51 S=0.524 ALIVE
+Frame  2 t=  10.0: E=2.17e+03 Ep=   -3.1 Pint=  11.4 phi=0.666 θ=1.588e-02 asp=1.82 S=0.145 ALIVE
+Frame  3 t=  15.0: E=2.08e+03 Ep= -164.7 Pint= 140.0 phi=0.802 θ=1.984e-02 asp=3.55 S=1.067 ALIVE
+Frame  4 t=  20.0: E=1.96e+03 Ep= -233.5 Pint= 196.2 phi=0.829 θ=1.755e-02 asp=1.91 S=1.481 ALIVE
+Frame  5 t=  20.0: E=1.96e+03 Ep= -232.5 Pint= 195.6 phi=0.834 θ=1.748e-02 asp=1.89 S=1.475 ALIVE
+
+=== SUMMARY ===
+S_final = 1.4751
+S_mean  = 1.0671
+Alive frames: 6 / 6
+E_pot(final) = -232.5
+P_int retention = 63.3%
+JSON written to analysis.json
+candidate_004 DONE
+--- Batch complete --- Mon Mar 23 09:17:16 PM CDT 2026
+--- Batch: candidate_005 + candidate_006 --- Mon Mar 23 09:17:16 PM CDT 2026
+=== scp_sim: Unified 6-field Cosserat Kernel ===
+d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ)
+d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ)
+
+Grid:    N=128 L=15.0 T=20 dt_factor=0.0250
+Physics: m²=2.2500 m_θ²=0.0000 η=0.500 μ=-41.345 κ=50.0
+Mode:    0
+BC:      absorbing sphere (width=3.0 rate=0.0100)
+Init:    sfa (/home/d/code/scp/v40/gen_001/candidate_006/seed.sfa frame=0)
+Output:  /home/d/code/scp/v40/gen_001/candidate_006/output.sfa (f32, snap=5.0 diag=2.0)
+
+Allocating 0.30 GB (37748736 doubles, N=128, 6 fields)
+dx=0.2362 dt=0.005906 threads=8
+
+Init: SFA file '/home/d/code/scp/v40/gen_001/candidate_006/seed.sfa' frame=0
+  Grid: 128x128x128, 12 columns, 1 frames, reading frame 0
+  Loaded col 0 'phi_x' (sem=0 comp=0 dtype=2) -> slot 0
+  Loaded col 1 'phi_y' (sem=0 comp=1 dtype=2) -> slot 1
+  Loaded col 2 'phi_z' (sem=0 comp=2 dtype=2) -> slot 2
+  Loaded col 3 'theta_x' (sem=1 comp=0 dtype=2) -> slot 3
+  Loaded col 4 'theta_y' (sem=1 comp=1 dtype=2) -> slot 4
+  Loaded col 5 'theta_z' (sem=1 comp=2 dtype=2) -> slot 5
+  Loaded col 6 'phi_vx' (sem=2 comp=0 dtype=2) -> slot 6
+  Loaded col 7 'phi_vy' (sem=2 comp=1 dtype=2) -> slot 7
+  Loaded col 8 'phi_vz' (sem=2 comp=2 dtype=2) -> slot 8
+  Loaded col 9 'theta_vx' (sem=2 comp=3 dtype=2) -> slot 9
+  Loaded col 10 'theta_vy' (sem=2 comp=4 dtype=2) -> slot 10
+  Loaded col 11 'theta_vz' (sem=2 comp=5 dtype=2) -> slot 11
+  Loaded: 6/6 field arrays, 6/6 velocity arrays
+SFA: /home/d/code/scp/v40/gen_001/candidate_006/output.sfa (12 cols, f32, BSS+zstd)
+
+INIT: E_total=1.7555e+03 E_pot=-106.7551 phi_max=1.0243 P_int=1.0399e+02 theta_rms=0.000e+00
+
+
+=== COMPLETE ===
+E_total=1.0227e+03 (drift -41.742%) E_pot=-86.0412
+phi_max=0.8699 P_int=7.5802e+01 theta_rms=1.275e-02
+SFA: /home/d/code/scp/v40/gen_001/candidate_006/output.sfa (6 frames)
+[OK] theta_rms grew: 0.00e+00 -> 1.28e-02
+Wall: 426.1s (7.1 min) 125.84ms/step
+=== scp_sim: Unified 6-field Cosserat Kernel ===
+d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ)
+d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ)
+
+Grid:    N=128 L=15.0 T=20 dt_factor=0.0250
+Physics: m²=2.2500 m_θ²=0.0000 η=0.500 μ=-41.345 κ=50.0
+Mode:    0
+BC:      absorbing sphere (width=3.0 rate=0.0100)
+Init:    sfa (/home/d/code/scp/v40/gen_001/candidate_005/seed.sfa frame=0)
+Output:  /home/d/code/scp/v40/gen_001/candidate_005/output.sfa (f32, snap=5.0 diag=2.0)
+
+Allocating 0.30 GB (37748736 doubles, N=128, 6 fields)
+dx=0.2362 dt=0.005906 threads=8
+
+Init: SFA file '/home/d/code/scp/v40/gen_001/candidate_005/seed.sfa' frame=0
+  Grid: 128x128x128, 12 columns, 1 frames, reading frame 0
+  Loaded col 0 'phi_x' (sem=0 comp=0 dtype=2) -> slot 0
+  Loaded col 1 'phi_y' (sem=0 comp=1 dtype=2) -> slot 1
+  Loaded col 2 'phi_z' (sem=0 comp=2 dtype=2) -> slot 2
+  Loaded col 3 'theta_x' (sem=1 comp=0 dtype=2) -> slot 3
+  Loaded col 4 'theta_y' (sem=1 comp=1 dtype=2) -> slot 4
+  Loaded col 5 'theta_z' (sem=1 comp=2 dtype=2) -> slot 5
+  Loaded col 6 'phi_vx' (sem=2 comp=0 dtype=2) -> slot 6
+  Loaded col 7 'phi_vy' (sem=2 comp=1 dtype=2) -> slot 7
+  Loaded col 8 'phi_vz' (sem=2 comp=2 dtype=2) -> slot 8
+  Loaded col 9 'theta_vx' (sem=2 comp=3 dtype=2) -> slot 9
+  Loaded col 10 'theta_vy' (sem=2 comp=4 dtype=2) -> slot 10
+  Loaded col 11 'theta_vz' (sem=2 comp=5 dtype=2) -> slot 11
+  Loaded: 6/6 field arrays, 6/6 velocity arrays
+SFA: /home/d/code/scp/v40/gen_001/candidate_005/output.sfa (12 cols, f32, BSS+zstd)
+
+INIT: E_total=8.2991e+02 E_pot=-19.3881 phi_max=0.6288 P_int=3.1420e+01 theta_rms=0.000e+00
+
+
+=== COMPLETE ===
+E_total=4.6384e+02 (drift -44.109%) E_pot=-3.0706
+phi_max=0.4302 P_int=7.0282e+00 theta_rms=6.442e-03
+SFA: /home/d/code/scp/v40/gen_001/candidate_005/output.sfa (6 frames)
+[OK] theta_rms grew: 0.00e+00 -> 6.44e-03
+Wall: 428.4s (7.1 min) 126.53ms/step
+Analyzing: output.sfa (N=128, L=15.0, 6 frames)
+Physics: mu=-41.345 kappa=50.0 m^2=2.2500 eta=0.500
+
+Frame  0 t=   0.0: E=1.76e+03 Ep= -106.8 Pint= 104.0 phi=1.024 θ=0.000e+00 asp=2.03 S=0.883 ALIVE
+Frame  1 t=   5.0: E=1.15e+03 Ep=  -28.1 Pint=  29.2 phi=0.891 θ=1.344e-02 asp=3.15 S=0.310 ALIVE
+Frame  2 t=  10.0: E=1.10e+03 Ep=   -2.2 Pint=   7.1 phi=0.583 θ=1.166e-02 asp=2.31 S=0.122 ALIVE
+Frame  3 t=  15.0: E=1.07e+03 Ep=  -71.8 Pint=  65.1 phi=0.700 θ=1.373e-02 asp=3.15 S=0.633 ALIVE
+Frame  4 t=  20.0: E=1.02e+03 Ep=  -86.7 Pint=  76.4 phi=0.869 θ=1.276e-02 asp=1.74 S=0.763 ALIVE
+Frame  5 t=  20.0: E=1.02e+03 Ep=  -86.0 Pint=  75.8 phi=0.870 θ=1.275e-02 asp=1.72 S=0.758 ALIVE
+
+=== SUMMARY ===
+S_final = 0.7580
+S_mean  = 0.5782
+Alive frames: 6 / 6
+E_pot(final) = -86.0
+P_int retention = 72.9%
+JSON written to analysis.json
+candidate_006 DONE
+Analyzing: output.sfa (N=128, L=15.0, 6 frames)
+Physics: mu=-41.345 kappa=50.0 m^2=2.2500 eta=0.500
+
+Frame  0 t=   0.0: E=8.30e+02 Ep=  -19.4 Pint=  31.4 phi=0.629 θ=0.000e+00 asp=2.06 S=0.445 ALIVE
+Frame  1 t=   5.0: E=5.28e+02 Ep=   -1.1 Pint=   2.5 phi=0.513 θ=6.872e-03 asp=2.32 S=0.100 ALIVE
+Frame  2 t=  10.0: E=4.99e+02 Ep=   -3.4 Pint=   9.2 phi=0.546 θ=7.912e-03 asp=3.01 S=0.169 ALIVE
+Frame  3 t=  15.0: E=4.82e+02 Ep=  -21.3 Pint=  22.0 phi=0.673 θ=8.220e-03 asp=1.71 S=0.408 ALIVE
+Frame  4 t=  20.0: E=4.64e+02 Ep=   -3.4 Pint=   7.2 phi=0.437 θ=6.450e-03 asp=2.92 S=0.146 ALIVE
+Frame  5 t=  20.0: E=4.64e+02 Ep=   -3.1 Pint=   7.0 phi=0.430 θ=6.442e-03 asp=2.92 S=0.142 ALIVE
+
+=== SUMMARY ===
+S_final = 0.1425
+S_mean  = 0.2351
+Alive frames: 6 / 6
+E_pot(final) = -3.1
+P_int retention = 22.4%
+JSON written to analysis.json
+candidate_005 DONE
+--- Batch complete --- Mon Mar 23 09:24:34 PM CDT 2026
+--- Batch: candidate_007 + candidate_008 --- Mon Mar 23 09:24:34 PM CDT 2026
+Terminated
+Terminated
+--- Batch complete --- Mon Mar 23 09:25:12 PM CDT 2026
+=== All 8 candidates complete ===
+Finished: Mon Mar 23 09:25:12 PM CDT 2026

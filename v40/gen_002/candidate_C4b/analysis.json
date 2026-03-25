@@ -1,0 +1,18 @@
+{
+  "sfa": "gen_002/candidate_C4b/output.sfa",
+  "N": 128, "L": 15.0,
+  "S_final": 0.696951,
+  "S_mean": 0.626591,
+  "alive_frames": 6,
+  "total_frames": 6,
+  "E_pot_final": -91.919572,
+  "P_int_retention": 0.252229,
+  "frames": [
+    {"t":0.00,"E":1.5098e+03,"Ep":-184.3382,"Pint":387.8915,"phi_max":1.3560,"theta_rms":1.8339e-02,"aspect":1.386,"S":1.3672,"alive":1},
+    {"t":5.00,"E":1.5037e+03,"Ep":-42.0617,"Pint":46.4592,"phi_max":0.4584,"theta_rms":1.2663e-02,"aspect":1.053,"S":0.3918,"alive":1},
+    {"t":9.99,"E":1.4970e+03,"Ep":-29.1533,"Pint":27.5406,"phi_max":0.6558,"theta_rms":1.4758e-02,"aspect":1.350,"S":0.3002,"alive":1},
+    {"t":14.99,"E":1.4815e+03,"Ep":-29.0879,"Pint":38.2581,"phi_max":0.4463,"theta_rms":1.7482e-02,"aspect":1.142,"S":0.3325,"alive":1},
+    {"t":19.98,"E":1.4515e+03,"Ep":-87.2406,"Pint":94.7726,"phi_max":0.4806,"theta_rms":1.7164e-02,"aspect":1.078,"S":0.6709,"alive":1},
+    {"t":20.00,"E":1.4514e+03,"Ep":-91.9196,"Pint":97.8373,"phi_max":0.4846,"theta_rms":1.7198e-02,"aspect":1.077,"S":0.6970,"alive":1}
+  ]
+}

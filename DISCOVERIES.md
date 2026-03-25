@@ -2,6 +2,99 @@
 
 ---
 
+## V42: Deuterium Nuclear Binding (March 2026)
+
+**DISCOVERY**: Two phase-confined baryons (UUD proton + UDD neutron) bind at
+N=512, T=500 via residual depletion interaction. Inter-baryon force is
+consistently attractive (F_x = -22K → -16K) and slowly settling.
+
+**DISCOVERY**: Strong/electromagnetic force equilibration. At t=0 the binding
+force (V(P)) is 259× stronger than the curl coupling (θ). By t=300 they
+self-tune to a **1:1 ratio**. This emergent equilibrium is not built into
+initial conditions.
+
+**DISCOVERY**: Theta radiation SUPPRESSED in deuterium vs single baryons. No
+theta-dominated breakaway structures detected. The two-baryon system is a better
+"container" for charge than its individual components.
+
+**DISCOVERY**: System compacting — R_rms decreased 43% from t=0 to t=500.
+
+**DISCOVERY**: A third phase group (φ≈0.7) emerged at T=500, intermediate
+between the two anti-phase groups (φ≈-0.79 and φ≈+2.40). Not present in
+single baryons. May be the inter-baryon mediator — the nuclear bond analog.
+
+**CONFIRMED**: Core force balance < 1% at ALL radii in deuterium. Four large
+forces (Laplacian ~0.06, mass ~0.44, potential ~0.03, curl ~0.03) nearly
+perfectly cancel everywhere. The entire structure is in dynamical equilibrium,
+not just the center.
+
+**CONFIRMED**: Deuterium is MORE stable than its individual components.
+Single baryons showed theta-dominated breakaway structures; the deuterium
+pair suppresses theta radiation through partial cancellation at large distance.
+The bound state is a better "container" for both binding energy and charge.
+
+## V41: Phase Confinement and Baryon Analogs (March 2026)
+
+**DISCOVERY**: Carrier phase offsets Δ={0, 2π/3, 4π/3} create CONFINEMENT.
+P→0 at triple overlap (cos(0)+cos(2π/3)+cos(4π/3)=0). Braids attracted at
+medium range by depletion, repelled at short range by destructive P-interference.
+Phase offset IS color charge — each braid carries 1/3 of the phase circle.
+
+**DISCOVERY**: UUD (proton analog) stable at T=500 with anti-phase breathing
+(period 90t). Three confined cores maintained throughout. P_int GROWING at
+T=200 (123% retention). Net θ≠0 synchronizes and stabilizes.
+
+**DISCOVERY**: UDD (neutron analog) less stable. Net θ=0 fails to synchronize
+breathing → phases converge → confinement weakens. Consistent with free neutron
+decay in real physics.
+
+**DISCOVERY**: Three stability signatures for composite particles:
+1. θ confinement (outer/inner < 0.7)
+2. Velocity structure (breathing vs contraction)
+3. |P| concentration (inner/outer > 10×)
+First-principles seed construction using these signatures achieved 95% P_int
+retention over T=200.
+
+## V40: Three Stability Signatures + Evolutionary Search (March 2026)
+
+**DISCOVERY**: Four-generation evolutionary search (Gen 0-4, ~100 candidates)
+identified UDD 3-braid composites as the first genuinely 3D particle structures.
+The UDD (neutron-like) configuration showed a novel CONTRACTION mechanism —
+velocity decreasing outward — distinct from the single braid's breathing mode.
+
+**DISCOVERY**: Per-cluster structural analysis of T=200 survivors revealed three
+quantitative stability signatures:
+1. θ confinement: θ_rms outer/inner < 0.7 (stable) vs > 1.0 (unstable)
+2. Velocity structure: |v| increasing outward = breathing (stable braids);
+   |v| decreasing outward = contraction (stable 3-braids); |v| flat (unstable)
+3. |P| concentration: inner/outer > 10× (stable) vs < 2× (unstable)
+Critical P value for maximum binding force: P_opt = 1/√(3κ) = 0.082.
+
+**DISCOVERY**: Clusters with LOWER peak |P| and LOWER velocity dispersion are
+the stable ones. High-|P| clusters are over-energized and blow apart. Stability
+comes from being near equilibrium, not from deep binding. div(v) < 0 (contracting)
+predicts survival; div(v) > 0 (expanding) predicts dispersal.
+
+## V39: Collapse Ruled Out, BLV Metric (March 2026)
+
+**NEGATIVE**: Density-dependent κ collapse fails with 6-field Cosserat. The θ
+curl coupling acts as an energy extraction channel — higher γ causes FASTER
+dispersal, not collapse. The 3-field "stable collapsed core" was an artifact
+of the missing θ radiation channel. No small-scale black holes possible.
+
+**DISCOVERY**: BLV effective metric for the Cosserat system is identically FLAT
+(dispersive lensing, not geometric). Quantitative results:
+- Level 1 (scalar): Φ_min/c² = -0.0215, potential depth = 20.2 MeV
+- Level 2 (coupled φ-θ): Φ_min/c² = -0.0198, depth = 18.6 MeV
+- Theta coupling makes the well 8.1% shallower (massless θ provides fast channel)
+- Ratio to GR Schwarzschild at proton surface: ~10³⁷
+- The "gravitational potential" is entirely frequency-dependent mass lensing
+- No absolute trapping horizon — at sufficiently high frequency, waves escape at c
+- This is consistent with real physics: nuclear potential ~50 MeV, nuclear/gravity
+  ratio ~10³⁸. The theory reproduces the correct scale separation.
+
+---
+
 ## V35: Hydrogen Spectrum + Quantization Studies (March 2026)
 
 **DISCOVERY**: The effective potential from V34 supports hydrogen-like

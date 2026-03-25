@@ -29,6 +29,10 @@
 static int volN;
 static float *vol_r, *vol_g, *vol_b;
 static SFA *archive;
+
+/* View modes: 0=field(default), 1=velocity, 2=acceleration */
+static int view_mode = 0;
+static const char *mode_names[] = {"field (P/φ/θ)", "velocity (|v|/v_r/v_t)", "acceleration (|a|/F_bind/F_curl)"};
 static int cur_frame = 0;
 static int playing = 0;
 
@@ -54,12 +58,13 @@ static void load_frame(int idx) {
         return;
     }
 
-    /* Read field values into f64 arrays, handling both f32 and f64 input */
-    double *fld[6] = {NULL};
-    for (int c = 0; c < 6; c++) fld[c] = (double*)calloc(N3, sizeof(double));
+    /* Read field values into f64 arrays — up to 12 columns (phi/theta/vel) */
+    int max_cols = (archive->n_columns < 12) ? archive->n_columns : 12;
+    double *fld[12] = {NULL};
+    for (int c = 0; c < max_cols; c++) fld[c] = (double*)calloc(N3, sizeof(double));
 
     uint64_t off = 0;
-    for (int c = 0; c < (int)archive->n_columns && c < 6; c++) {
+    for (int c = 0; c < (int)archive->n_columns && c < max_cols; c++) {
         int dtype = archive->columns[c].dtype;
         int es = sfa_dtype_size[dtype];
         uint8_t *src = (uint8_t*)buf + off;
@@ -68,45 +73,176 @@ static void load_frame(int idx) {
         } else if (dtype == SFA_F32) {
             float *fsrc = (float*)src;
             for (long i = 0; i < N3; i++) fld[c][i] = (double)fsrc[i];
+        } else if (dtype == SFA_F16) {
+            uint16_t *hsrc = (uint16_t*)src;
+            for (long i = 0; i < N3; i++) {
+                uint16_t h = hsrc[i];
+                uint16_t sign = h & 0x8000;
+                int exp = (h >> 10) & 0x1F;
+                uint16_t mant = h & 0x3FF;
+                if (exp == 0) { fld[c][i] = 0.0; }
+                else if (exp == 31) { fld[c][i] = sign ? -1e30 : 1e30; }
+                else {
+                    float fv;
+                    uint32_t x = ((uint32_t)sign << 16) | ((uint32_t)(exp - 15 + 127) << 23) | ((uint32_t)mant << 13);
+                    memcpy(&fv, &x, 4);
+                    fld[c][i] = (double)fv;
+                }
+            }
         } else {
             /* Unsupported dtype — leave as zero */
         }
         off += N3 * es;
     }
 
-    /* Compute channels */
-    float maxP = 0, maxPhi2 = 0, maxTheta2 = 0;
+    /* Compute centroid for radial calculations */
+    double cm[3] = {0}, cmw = 0;
     for (long i = 0; i < N3; i++) {
-        double p0 = fld[0][i], p1 = fld[1][i], p2 = fld[2][i];
-        float absP = (float)fabs(p0*p1*p2);
-        float phi2 = (float)(p0*p0 + p1*p1 + p2*p2);
-        float theta2 = 0;
-        if (archive->n_columns >= 6)
-            theta2 = (float)(fld[3][i]*fld[3][i] + fld[4][i]*fld[4][i] + fld[5][i]*fld[5][i]);
-        if (absP > maxP) maxP = absP;
-        if (phi2 > maxPhi2) maxPhi2 = phi2;
-        if (theta2 > maxTheta2) maxTheta2 = theta2;
+        double P = fabs(fld[0][i]*fld[1][i]*fld[2][i]);
+        int ix = (int)(i / (volN*volN)), iy = (int)((i/volN)%volN), iz = (int)(i%volN);
+        double ddx = 2.0*archive->Lx/(volN-1);
+        cm[0] += (-archive->Lx + ix*ddx)*P;
+        cm[1] += (-archive->Ly + iy*ddx)*P;
+        cm[2] += (-archive->Lz + iz*ddx)*P;
+        cmw += P;
+    }
+    if (cmw > 0) { cm[0]/=cmw; cm[1]/=cmw; cm[2]/=cmw; }
+
+    /* Compute channels based on view mode */
+    if (view_mode == 0) {
+        /* Mode 0: field view — R=|P| (binding), G=φ² (fabric), B=θ² (angle) */
+        float maxP = 0, maxPhi2 = 0, maxTheta2 = 0;
+        for (long i = 0; i < N3; i++) {
+            double p0 = fld[0][i], p1 = fld[1][i], p2 = fld[2][i];
+            float absP = (float)fabs(p0*p1*p2);
+            float phi2 = (float)(p0*p0 + p1*p1 + p2*p2);
+            float theta2 = 0;
+            if (max_cols >= 6)
+                theta2 = (float)(fld[3][i]*fld[3][i] + fld[4][i]*fld[4][i] + fld[5][i]*fld[5][i]);
+            if (absP > maxP) maxP = absP;
+            if (phi2 > maxPhi2) maxPhi2 = phi2;
+            if (theta2 > maxTheta2) maxTheta2 = theta2;
+        }
+        float normP = maxP * 0.3f; if (normP < 1e-20f) normP = 1;
+        float normPhi2 = maxPhi2 * 0.15f; if (normPhi2 < 1e-20f) normPhi2 = 1;
+        float normTheta2 = maxTheta2 * 0.3f; if (normTheta2 < 1e-20f) normTheta2 = 1;
+        for (long i = 0; i < N3; i++) {
+            double p0 = fld[0][i], p1 = fld[1][i], p2 = fld[2][i];
+            float absP = (float)fabs(p0*p1*p2);
+            float phi2 = (float)(p0*p0 + p1*p1 + p2*p2);
+            float pn = absP/normP; if (pn > 1) pn = 1;
+            vol_r[i] = pn;
+            float unbound = phi2 * (1.0f - sqrtf(pn));
+            vol_g[i] = unbound/normPhi2; if (vol_g[i] > 1) vol_g[i] = 1;
+            float theta2 = 0;
+            if (max_cols >= 6)
+                theta2 = (float)(fld[3][i]*fld[3][i] + fld[4][i]*fld[4][i] + fld[5][i]*fld[5][i]);
+            vol_b[i] = theta2/normTheta2; if (vol_b[i] > 1) vol_b[i] = 1;
+        }
+    } else if (view_mode == 1 && max_cols >= 9) {
+        /* Mode 1: velocity — R=|v| magnitude, G=radial v (inward=bright), B=tangential |v| */
+        float maxV = 0;
+        for (long i = 0; i < N3; i++) {
+            double vx = fld[6][i], vy = fld[7][i], vz = fld[8][i];
+            float vmag = (float)sqrt(vx*vx + vy*vy + vz*vz);
+            if (vmag > maxV) maxV = vmag;
+        }
+        float normV = maxV * 0.5f; if (normV < 1e-20f) normV = 1;
+        double ddx = 2.0*archive->Lx/(volN-1);
+        for (long i = 0; i < N3; i++) {
+            int ix = (int)(i / (volN*volN)), iy = (int)((i/volN)%volN), iz = (int)(i%volN);
+            double x = -archive->Lx + ix*ddx - cm[0];
+            double y = -archive->Ly + iy*ddx - cm[1];
+            double z = -archive->Lz + iz*ddx - cm[2];
+            double r = sqrt(x*x + y*y + z*z);
+            double vx = fld[6][i], vy = fld[7][i], vz = fld[8][i];
+            float vmag = (float)sqrt(vx*vx + vy*vy + vz*vz);
+            /* Radial velocity (positive = outward) */
+            float vr = (r > 0.1) ? (float)(vx*x/r + vy*y/r + vz*z/r) : 0;
+            float vt = (float)sqrt(fmax(0, vmag*vmag - vr*vr));
+            vol_r[i] = vmag / normV; if (vol_r[i] > 1) vol_r[i] = 1;
+            vol_g[i] = fmax(0, -vr) / normV; if (vol_g[i] > 1) vol_g[i] = 1; /* inward = green */
+            vol_b[i] = vt / normV; if (vol_b[i] > 1) vol_b[i] = 1; /* tangential = blue */
+        }
+    } else if (view_mode == 2 && max_cols >= 6) {
+        /* Mode 2: acceleration (from EOM) — R=|a| total, G=V(P) binding force, B=curl coupling */
+        float maxA = 0, maxFv = 0, maxFc = 0;
+        double ddx = 2.0*archive->Lx/(volN-1);
+        double idx2 = 1.0/(ddx*ddx), idx1 = 1.0/(2.0*ddx);
+        double MU = -41.345, KAPPA = 50.0, MASS2 = 2.25, ETA = 0.5;
+        int NN = volN*volN;
+        /* First pass: compute maxima */
+        for (long i = 0; i < N3; i++) {
+            int ix=(int)(i/NN), iy=(int)((i/volN)%volN), iz=(int)(i%volN);
+            if (ix<1||ix>=volN-1||iy<1||iy>=volN-1||iz<1||iz>=volN-1) continue;
+            double p0=fld[0][i],p1=fld[1][i],p2=fld[2][i];
+            double P=p0*p1*p2, P2=P*P;
+            double dVdP=MU*P/((1+KAPPA*P2)*(1+KAPPA*P2));
+            float fv_sum = 0, fc_sum = 0, fa_sum = 0;
+            for (int a=0;a<3;a++) {
+                long nip=(long)(ix+1)*NN+iy*volN+iz, nim=(long)(ix-1)*NN+iy*volN+iz;
+                long njp=(long)ix*NN+(iy+1)*volN+iz, njm=(long)ix*NN+(iy-1)*volN+iz;
+                long nkp=(long)ix*NN+iy*volN+(iz+1), nkm=(long)ix*NN+iy*volN+(iz-1);
+                double lap=(fld[a][nip]+fld[a][nim]+fld[a][njp]+fld[a][njm]+fld[a][nkp]+fld[a][nkm]-6*fld[a][i])*idx2;
+                double dPda=(a==0)?p1*p2:(a==1)?p0*p2:p0*p1;
+                double F_bind = dVdP*dPda;
+                double F_curl = 0;
+                if (max_cols>=6) {
+                    double ct;
+                    if(a==0) ct=(fld[5][njp]-fld[5][njm]-fld[4][nkp]+fld[4][nkm])*idx1;
+                    else if(a==1) ct=(fld[3][nkp]-fld[3][nkm]-fld[5][nip]+fld[5][nim])*idx1;
+                    else ct=(fld[4][nip]-fld[4][nim]-fld[3][njp]+fld[3][njm])*idx1;
+                    F_curl = ETA*ct;
+                }
+                double F_total = lap - MASS2*fld[a][i] - F_bind + F_curl;
+                fv_sum += (float)(F_bind*F_bind);
+                fc_sum += (float)(F_curl*F_curl);
+                fa_sum += (float)(F_total*F_total);
+            }
+            float amag=(float)sqrt(fa_sum), fvmag=(float)sqrt(fv_sum), fcmag=(float)sqrt(fc_sum);
+            if(amag>maxA)maxA=amag; if(fvmag>maxFv)maxFv=fvmag; if(fcmag>maxFc)maxFc=fcmag;
+        }
+        float normA=maxA*0.3f; if(normA<1e-20f)normA=1;
+        float normFv=maxFv*0.3f; if(normFv<1e-20f)normFv=1;
+        float normFc=maxFc*0.3f; if(normFc<1e-20f)normFc=1;
+        /* Second pass: fill volumes */
+        for (long i = 0; i < N3; i++) {
+            int ix=(int)(i/NN), iy=(int)((i/volN)%volN), iz=(int)(i%volN);
+            if (ix<1||ix>=volN-1||iy<1||iy>=volN-1||iz<1||iz>=volN-1) {
+                vol_r[i]=vol_g[i]=vol_b[i]=0; continue;
+            }
+            double p0=fld[0][i],p1=fld[1][i],p2=fld[2][i];
+            double P=p0*p1*p2, P2=P*P;
+            double dVdP=MU*P/((1+KAPPA*P2)*(1+KAPPA*P2));
+            float fv_sum=0, fc_sum=0, fa_sum=0;
+            for (int a=0;a<3;a++) {
+                long nip=(long)(ix+1)*NN+iy*volN+iz, nim=(long)(ix-1)*NN+iy*volN+iz;
+                long njp=(long)ix*NN+(iy+1)*volN+iz, njm=(long)ix*NN+(iy-1)*volN+iz;
+                long nkp=(long)ix*NN+iy*volN+(iz+1), nkm=(long)ix*NN+iy*volN+(iz-1);
+                double lap=(fld[a][nip]+fld[a][nim]+fld[a][njp]+fld[a][njm]+fld[a][nkp]+fld[a][nkm]-6*fld[a][i])*idx2;
+                double dPda=(a==0)?p1*p2:(a==1)?p0*p2:p0*p1;
+                double F_bind=dVdP*dPda;
+                double F_curl=0;
+                if(max_cols>=6){double ct;
+                    if(a==0)ct=(fld[5][njp]-fld[5][njm]-fld[4][nkp]+fld[4][nkm])*idx1;
+                    else if(a==1)ct=(fld[3][nkp]-fld[3][nkm]-fld[5][nip]+fld[5][nim])*idx1;
+                    else ct=(fld[4][nip]-fld[4][nim]-fld[3][njp]+fld[3][njm])*idx1;
+                    F_curl=ETA*ct;}
+                double F_total=lap-MASS2*fld[a][i]-F_bind+F_curl;
+                fv_sum+=(float)(F_bind*F_bind);
+                fc_sum+=(float)(F_curl*F_curl);
+                fa_sum+=(float)(F_total*F_total);
+            }
+            vol_r[i]=(float)sqrt(fa_sum)/normA; if(vol_r[i]>1)vol_r[i]=1;
+            vol_g[i]=(float)sqrt(fv_sum)/normFv; if(vol_g[i]>1)vol_g[i]=1;
+            vol_b[i]=(float)sqrt(fc_sum)/normFc; if(vol_b[i]>1)vol_b[i]=1;
+        }
+    } else {
+        /* Fallback: mode not available for this SFA */
+        for (long i = 0; i < N3; i++) vol_r[i] = vol_g[i] = vol_b[i] = 0;
     }
 
-    float normP = maxP * 0.3f; if (normP < 1e-20f) normP = 1;
-    float normPhi2 = maxPhi2 * 0.15f; if (normPhi2 < 1e-20f) normPhi2 = 1;
-    float normTheta2 = maxTheta2 * 0.3f; if (normTheta2 < 1e-20f) normTheta2 = 1;
-
-    for (long i = 0; i < N3; i++) {
-        double p0 = fld[0][i], p1 = fld[1][i], p2 = fld[2][i];
-        float absP = (float)fabs(p0*p1*p2);
-        float phi2 = (float)(p0*p0 + p1*p1 + p2*p2);
-        float pn = absP/normP; if (pn > 1) pn = 1;
-        vol_r[i] = pn;
-        float unbound = phi2 * (1.0f - sqrtf(pn));
-        vol_g[i] = unbound/normPhi2; if (vol_g[i] > 1) vol_g[i] = 1;
-        float theta2 = 0;
-        if (archive->n_columns >= 6)
-            theta2 = (float)(fld[3][i]*fld[3][i] + fld[4][i]*fld[4][i] + fld[5][i]*fld[5][i]);
-        vol_b[i] = theta2/normTheta2; if (vol_b[i] > 1) vol_b[i] = 1;
-    }
-
-    for (int c = 0; c < 6; c++) free(fld[c]);
+    for (int c = 0; c < max_cols; c++) if (fld[c]) free(fld[c]);
 
     free(buf);
     need_render = 1;
@@ -281,6 +417,9 @@ static void print_help(void) {
     printf("  Home / End     First/last frame\n");
     printf("  Space          Play/pause animation\n");
     printf("  1 / 2 / 3     Toggle Red/Green/Blue channel\n");
+    printf("  4              Field mode (R=|P|, G=φ², B=θ²)\n");
+    printf("  5              Velocity mode (R=|v|, G=v_inward, B=v_tangential)\n");
+    printf("  6              Acceleration mode (R=|a|, G=V(P) force, B=curl force)\n");
     printf("  + / -          Brightness up/down\n");
     printf("  O / P          Opacity down/up\n");
     printf("  W              Toggle wireframe bounding box\n");
@@ -351,6 +490,9 @@ int main(int argc, char **argv) {
                 case SDLK_1: show_r=!show_r; need_render=1; break;
                 case SDLK_2: show_g=!show_g; need_render=1; break;
                 case SDLK_3: show_b=!show_b; need_render=1; break;
+                case SDLK_4: view_mode=0; printf("Mode: %s\n",mode_names[0]); load_frame(cur_frame); break;
+                case SDLK_5: view_mode=1; printf("Mode: %s\n",mode_names[1]); load_frame(cur_frame); break;
+                case SDLK_6: view_mode=2; printf("Mode: %s\n",mode_names[2]); load_frame(cur_frame); break;
                 case SDLK_EQUALS: brightness*=1.3f; need_render=1; break;
                 case SDLK_MINUS: brightness/=1.3f; need_render=1; break;
                 case SDLK_UP: cam_dist*=0.9f; need_render=1; break;

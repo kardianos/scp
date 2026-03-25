@@ -11,6 +11,168 @@ explored, resolved, or abandoned. Keep current with CONCEPT.md.
 
 ## Critical Priority (blocks fundamental claims)
 
+### F17: Nuclear Binding Energy — ³He and ⁴He
+
+**Status**: ²H CONFIRMED (V42). Next: ³He and ⁴He.
+
+**The physics**: In real nuclei, binding energy per nucleon INCREASES from
+deuterium (1.1 MeV/nucleon) to ⁴He (7.1 MeV/nucleon). The alpha particle
+(⁴He) is exceptionally stable because all four nucleons (2p+2n) occupy the
+lowest energy states in the nuclear potential.
+
+**The test**: Simulate ³He (2 UUD + 1 UDD) and ⁴He (2 UUD + 2 UDD) at N=512+.
+Measure binding energy per baryon. If E_bind/baryon increases from ²H → ³He → ⁴He,
+this reproduces the nuclear stability curve.
+
+**Setup**:
+
+| Nucleus | Baryons | Grid | Estimated GPU time | Expected E_bind |
+|---------|---------|------|--------------------|-----------------|
+| ²H (**DONE** V42) | UUD + UDD | N=512, L=100 | 2.5 hr (V100-32) | -54 (confirmed) |
+| ³He | UUD + UUD + UDD | N=512, L=120 | ~4 hr | Higher than ²H |
+| ⁴He | UUD×2 + UDD×2 | N=768 or multi-GPU | ~10 hr | Much higher than ³He |
+
+**Requirements**:
+- N=512 fits V100-32GB (19.3 GB). N=768 needs A100-40GB or multi-V100.
+- Seed generator: place 3 or 4 baryons in tetrahedral/triangular arrangement
+- Each baryon: phase-confined 3-braid with {0, 2π/3, 4π/3} carrier phases
+- Separation: ~30-40 code units (from deuterium equilibrium)
+- T=500 minimum for stability confirmation
+
+**Prediction**: ⁴He should show the strongest binding because:
+1. Each baryon has 3 neighbors (vs 1 in deuterium) → more depletion overlap
+2. The tetrahedral arrangement is maximally symmetric → isotropic binding
+3. Two protons + two neutrons provide both φ and θ coupling channels
+4. The protons' net θ≠0 stabilizes the neutrons (which can't self-stabilize alone)
+
+**Success criteria**:
+- |E_bind(⁴He)| / 4 > |E_bind(²H)| / 2 (binding per nucleon increases)
+- All 4 baryons maintain distinct phase-confined structure at T=500
+- The nucleus is more spherical (lower aspect ratio) than deuterium
+
+### F18: Stabilize UDD (Neutron) Independently
+
+**Status**: Open. UDD decays when alone (phases converge, confinement fails).
+But in deuterium, UDD survives alongside UUD. Can UDD be independently
+stabilized, or does it fundamentally require a UUD partner?
+
+This is critical for multi-baryon nuclei — if neutrons are inherently
+unstable, they must be placed adjacent to protons from initialization.
+In real physics, the free neutron decays (t½=10 min) but bound neutrons
+are stable. Our UDD shows the same behavior.
+
+**Test**: Run UDD alone at T=1000 to confirm it eventually decays. Then
+test UDD with a distant UUD (separation > 80) — does the UUD's residual
+θ field stabilize the UDD even at long range?
+
+### F19: Force Equilibration Mechanism
+
+**Status**: Open. In deuterium (V42), the strong/EM force ratio self-tunes
+from 259:1 to 1:1 over T=300. This is an emergent property — not built
+into the initial conditions. Why does the system equilibrate?
+
+Hypothesis: the θ radiation channel drains EM energy until the curl force
+matches the binding force. When they're equal, the energy flow reaches
+steady state. This would be analogous to how stars reach hydrostatic
+equilibrium (radiation pressure = gravity).
+
+**Test**: Run deuterium with η=0.3 and η=0.7 (different EM coupling
+strength). Does the system still equilibrate to 1:1, or does it settle
+at a ratio proportional to η?
+
+### F20: Intermediate Phase Group in Deuterium
+
+**Status**: Open. At T=500, deuterium developed a third phase group at
+φ≈0.7, intermediate between the two anti-phase groups (-0.79 and +2.40).
+This was NOT seen in single baryons.
+
+This may be the inter-baryon mediator — a field structure that bridges the
+two baryons' phase configurations. In QCD, the nuclear force is mediated
+by pion exchange. The intermediate phase group could be the Cosserat analog.
+
+**Test**: Track the spatial location of φ≈0.7 regions. Are they concentrated
+between the two baryons (at the bond axis)? Do they oscillate or grow?
+
+### F24: Controlled Mass Defect Measurement
+
+**Status**: Open. The initial mass defect calculation (V42) was INCONCLUSIVE
+because the deuterium (N=512, L=100) and the individual baryons (N=192, L=25-30)
+were simulated at different grid sizes. The absorbing BC drains energy differently
+in different boxes, making direct E_total comparison invalid.
+
+**Preliminary E_pot comparison** (time-averaged, background-independent):
+- Deuterium <E_pot>: -94.7
+- UUD + UDD <E_pot>: -125.9
+- The deuterium is 31 code units SHALLOWER — but this comparison is unreliable
+  due to different simulation conditions.
+
+**The proper test**: Run isolated UUD and isolated UDD at the SAME grid
+(N=512, L=100, T=500, same absorbing BC) as the deuterium. Compare
+time-averaged E_pot (and ideally full energy decomposition).
+
+If E_bind = E_deut - (E_UUD_alone + E_UDD_alone) < 0, the deuterium is
+genuinely bound with measurable binding energy. This number would be the
+first data point on the SCP nuclear binding energy curve.
+
+**Cost**: 2 additional V100-32GB runs at ~2.5 hours each ≈ $0.90.
+
+### F21: Verify Group Velocity Remains Subluminal
+
+**Status**: Open. The breathing analysis (V42) found field velocities
+|∂φ/∂t| up to 2.2c at standing wave antinodes. The V39 BLV analysis
+showed group velocity < c for the linearized equation, but this has
+not been verified INSIDE the breathing oscillator where the field is
+far from linear.
+
+**Why it matters**: If the energy transport velocity exceeds c within
+the particle, the theory violates special relativity despite the equation
+being Lorentz-invariant. The phase velocity exceeding c is acceptable
+(de Broglie waves do this), but group velocity must remain subluminal.
+
+**Test**: Launch a localized perturbation (small δφ pulse) at the edge
+of a breathing proton. Track the leading edge of the response — does
+it propagate through the structure at v ≤ c? The arrival time at the
+far side gives the actual signal speed within the breathing oscillator.
+
+**Alternative**: Compute the energy flux vector S = φ̇·∇φ at each point
+and verify |S|/ρ_energy ≤ c everywhere. This is the local energy transport
+velocity and must be subluminal.
+
+### F22: Characterize Breathing Mode Spectrum
+
+**Status**: Open. The current breathing analysis detects only the dominant
+mode (150t for proton, 300t for deuterium). Higher harmonics likely exist
+but require higher temporal resolution (current snap_dt=10-100 is too coarse).
+
+**Why it matters**: The breathing mode spectrum IS the particle's internal
+structure. Different modes correspond to different excitations (rotational,
+vibrational, radial). In real nuclear physics, excited states have specific
+energies — the breathing spectrum should reproduce this.
+
+**Test**: Run UUD proton at T=500 with snap_dt=1.0 (500 frames). Apply FFT
+to the per-shell ρ(t) time series. This will reveal the full mode spectrum:
+fundamental + harmonics + cross-mode coupling frequencies.
+
+**Prediction**: The fundamental is ~150t. Expect harmonics at ~75t, ~50t
+(from the three individual braids' breathing periods). Cross-mode coupling
+between the 3 braids should produce sum/difference frequencies.
+
+### F23: Driven vs Free Breathing — Nuclear Excitation
+
+**Status**: Open. The deuterium shows DRIVEN breathing (E_kin/E_pot in-phase,
+r=+0.61) while the proton shows FREE breathing (uncorrelated, r=-0.15).
+The driver is the inter-baryon attraction.
+
+**Why it matters**: A driven oscillator can be excited to higher modes by
+external perturbation. If we kick the deuterium (add a velocity pulse), does
+it excite to a higher breathing mode that eventually decays? This would be
+the analog of nuclear excitation → gamma emission.
+
+**Test**: Take the T=500 deuterium, add a localized velocity perturbation
+(10% of v_rms), resume simulation. Track breathing amplitude over time.
+If it increases then decays (emitting a theta pulse), this is nuclear
+de-excitation.
+
 ### F1: Mass Parameter and Long-Range Gravity (Largely Resolved)
 
 **The original problem**: m²=2.25 creates Yukawa decay (range ~0.67).
@@ -155,7 +317,7 @@ to it gravitationally?
 
 ## Medium Priority (extensions and refinements)
 
-### F6: Electromagnetism — Cosserat Angle Fields (CONFIRMED CHARGE-DEPENDENT FORCE)
+### F6: Electromagnetism — Cosserat Angle Fields (LARGELY RESOLVED)
 
 **The path**: 3 angle fields θ_a coupled to 3 position fields φ_a via curl.
 Massless θ (m_θ=0) sourced by the braid's helical twist.
@@ -317,3 +479,40 @@ momentum retention is 0.30× in low-ρ vs 1.40× in high-ρ. Coupling
 (both force and drag) is stronger in high-ρ, not weaker. The gravity
 mechanism is geometric (asymmetric footprint), not dynamic (friction).
 Code: v33/src/v33_drag_test.c. Data: v33/data/drag_{high,mid,low}/.
+
+### X7: Density-Dependent κ Collapse / Black Holes (V39)
+Refuted at the SINGLE-PARTICLE scale. The hypothesis was: κ_eff = κ₀/(1+γΣ)
+raises the binding ceiling at high density, creating self-reinforcing collapse.
+Testing with full 6-field Cosserat showed theta coupling extracts energy faster
+than the deepened well can bind it. Higher γ → faster dispersal, not collapse.
+
+**However, this is a POSITIVE result**: The BLV metric analysis (V39) shows
+Φ/c² ≈ -0.02 per braid (nuclear-scale, ~20 MeV). A black hole requires
+Φ/c² → -0.5 (horizon formation). This would need ~25 braids concentrated
+within a Planck-length volume — but the N-braid scaling gives Φ_N ∝ N/r^1.2,
+so at macroscopic distances with N ~ 10¹⁹ braids (Planck mass worth), a
+horizon IS theoretically possible. This is consistent with real physics:
+black holes require macroscopic mass accumulation, not single-particle collapse.
+The theory correctly reproduces the separation of scales between nuclear physics
+(individual particles, Φ/c² ~ 10⁻²) and gravity (macroscopic accumulation,
+Φ/c² ~ 1 only at extreme mass). The theta radiation channel that prevents
+single-particle collapse is analogous to radiation pressure that prevents
+stellar collapse until the Chandrasekhar/TOV limits are reached.
+
+### X8: Random Parameter Sweep for Composites (V40 Gen 0-3)
+Not abandoned but SUPERSEDED by first-principles construction. The random
+exploration (4 generations, ~100 candidates) found good initial configurations
+but never tested long-term stability or used the evolutionary resume approach.
+The V41 first-principles method (stability signatures → seed construction)
+produced superior results (95% vs 75% P_int retention) with far fewer runs.
+
+### Resolved: Composite Particle Questions
+- **Can 3D composites form?** YES. UDD 3-braid at R=4 survived T=200 (V40 Gen 4).
+- **What makes composites stable?** Three signatures: θ confinement, velocity
+  structure, |P| concentration (V40 Gen 4 analysis).
+- **Can braids be confined without merging?** YES. Phase offsets {0,2π/3,4π/3}
+  create P=0 at triple overlap = confinement (V41).
+- **Is there a proton/neutron analog?** YES. UUD (proton) stable at T=500,
+  UDD (neutron) weaker (V41).
+- **Can two baryons bind?** YES. Deuterium (UUD+UDD) at N=512 T=500 shows
+  persistent attraction and force equilibration (V42).

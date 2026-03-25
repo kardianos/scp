@@ -1,0 +1,82 @@
+{
+  "sfa": "/home/d/code/scp/v40/gen_004/S20_output.sfa",
+  "N": 192, "L": 25.00,
+  "physics": {"mu": -41.345000, "kappa": 50.0, "m2": 2.2500, "eta": 0.500},
+  "early": {"frame": 10, "time": 50.00, "n_clusters": 13, "P_max": 6.43466734e-01},
+  "late": {"frame": 40, "time": 200.00, "n_clusters": 3, "P_max": 5.73460487e-01},
+  "matching": {
+    "n_matched": 1,
+    "n_stable": 1,
+    "n_unstable": 0,
+    "n_disappeared": 12,
+    "n_new": 2,
+    "match_radius": 10.0
+  },
+  "pairs": [
+    {
+      "early_centroid": [-8.65, -0.64, 14.87],
+      "late_centroid": [-0.03, 2.29, 14.49],
+      "distance": 9.1172,
+      "grew": true,
+      "early": {"n_voxels": 79, "P_peak": 7.220909e-03, "P_int": 9.555307e-03, "E_pot": -1.330104e-03, "theta_rms": 3.444544e-02, "R_half": 0.7350, "v_disp": 1.084034e-01, "div_v": 1.732020e-01, "aspect": 4.8572},
+      "late": {"n_voxels": 3684, "P_peak": 2.670931e-02, "P_int": 7.527091e-01, "E_pot": -2.061083e-01, "theta_rms": 4.663449e-02, "R_half": 1.6254, "v_disp": 3.650598e-01, "div_v": 3.893083e-01, "aspect": 1.5614},
+      "delta": {"dP_peak": 1.948840e-02, "dP_int": 7.431538e-01, "dn_voxels": 3605}
+    }
+  ],
+  "stable_stats": {
+      "n_voxels": {"mean": 7.900000e+01, "std": 0.000000e+00, "min": 7.900000e+01, "max": 7.900000e+01, "n": 1},
+      "P_peak": {"mean": 7.220909e-03, "std": 0.000000e+00, "min": 7.220909e-03, "max": 7.220909e-03, "n": 1},
+      "P_int": {"mean": 9.555307e-03, "std": 0.000000e+00, "min": 9.555307e-03, "max": 9.555307e-03, "n": 1},
+      "core_volume": {"mean": 1.417219e+00, "std": 0.000000e+00, "min": 1.417219e+00, "max": 1.417219e+00, "n": 1},
+      "E_pot": {"mean": -1.330104e-03, "std": 0.000000e+00, "min": -1.330104e-03, "max": -1.330104e-03, "n": 1},
+      "E_total": {"mean": 4.623104e-01, "std": 0.000000e+00, "min": 4.623104e-01, "max": 4.623104e-01, "n": 1},
+      "E_kin_phi": {"mean": 2.289560e-01, "std": 0.000000e+00, "min": 2.289560e-01, "max": 2.289560e-01, "n": 1},
+      "E_grad_phi": {"mean": 3.423596e-03, "std": 0.000000e+00, "min": 3.423596e-03, "max": 3.423596e-03, "n": 1},
+      "theta_rms": {"mean": 3.444544e-02, "std": 0.000000e+00, "min": 3.444544e-02, "max": 3.444544e-02, "n": 1},
+      "theta_rms_core": {"mean": 3.182580e-02, "std": 0.000000e+00, "min": 3.182580e-02, "max": 3.182580e-02, "n": 1},
+      "v_drift_mag": {"mean": 5.579917e-01, "std": 0.000000e+00, "min": 5.579917e-01, "max": 5.579917e-01, "n": 1},
+      "v_disp": {"mean": 1.084034e-01, "std": 0.000000e+00, "min": 1.084034e-01, "max": 1.084034e-01, "n": 1},
+      "div_v": {"mean": 1.732020e-01, "std": 0.000000e+00, "min": 1.732020e-01, "max": 1.732020e-01, "n": 1},
+      "aspect": {"mean": 4.857159e+00, "std": 0.000000e+00, "min": 4.857159e+00, "max": 4.857159e+00, "n": 1},
+      "rho_peak": {"mean": 1.474209e-01, "std": 0.000000e+00, "min": 1.474209e-01, "max": 1.474209e-01, "n": 1},
+      "R_half": {"mean": 7.350374e-01, "std": 0.000000e+00, "min": 7.350374e-01, "max": 7.350374e-01, "n": 1}
+  },
+  "unstable_stats": {
+      "n_voxels": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 0},
+      "P_peak": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 0},
+      "P_int": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 0},
+      "core_volume": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 0},
+      "E_pot": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 0},
+      "E_total": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 0},
+      "E_kin_phi": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 0},
+      "E_grad_phi": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 0},
+      "theta_rms": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 0},
+      "theta_rms_core": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 0},
+      "v_drift_mag": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 0},
+      "v_disp": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 0},
+      "div_v": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 0},
+      "aspect": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 0},
+      "rho_peak": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 0},
+      "R_half": {"mean": 0.000000e+00, "std": 0.000000e+00, "min": 0.000000e+00, "max": 0.000000e+00, "n": 0}
+  },
+  "early_clusters": [
+    {"id": 1, "n_voxels": 19339, "centroid": [-9.96,0.32,-2.73], "P_peak": 1.459776e-01, "P_int": 1.203666e+01, "E_pot": -1.154918e+01, "theta_rms": 3.669274e-02, "v_disp": 3.181067e-01, "div_v": -1.857751e-01, "aspect": 3.7903, "R_half": 1.5700, "rho_peak": 8.539160e-01, "matched": false, "grew": null},
+    {"id": 2, "n_voxels": 49, "centroid": [-11.70,-4.26,4.07], "P_peak": 7.125285e-03, "P_int": 5.914415e-03, "E_pot": -8.214742e-04, "theta_rms": 3.454169e-02, "v_disp": 5.976200e-02, "div_v": -1.303196e-01, "aspect": 3.0732, "R_half": 0.1150, "rho_peak": 1.128052e-01, "matched": false, "grew": null},
+    {"id": 3, "n_voxels": 486, "centroid": [-10.79,4.50,3.61], "P_peak": 8.596478e-03, "P_int": 6.243512e-02, "E_pot": -9.271351e-03, "theta_rms": 2.028020e-02, "v_disp": 8.989633e-02, "div_v": -1.023509e-01, "aspect": 5.6464, "R_half": 3.3361, "rho_peak": 1.275206e-01, "matched": false, "grew": null},
+    {"id": 4, "n_voxels": 7092, "centroid": [-6.51,-0.03,6.88], "P_peak": 3.296348e-02, "P_int": 1.830197e+00, "E_pot": -6.413491e-01, "theta_rms": 3.649431e-02, "v_disp": 2.266428e-01, "div_v": -1.837405e-01, "aspect": 2.1030, "R_half": 2.0066, "rho_peak": 3.125827e-01, "matched": false, "grew": null},
+    {"id": 5, "n_voxels": 539, "centroid": [-8.67,0.35,-9.35], "P_peak": 9.348659e-03, "P_int": 7.213376e-02, "E_pot": -1.119445e-02, "theta_rms": 4.446744e-02, "v_disp": 9.175299e-02, "div_v": 1.658237e-01, "aspect": 3.7567, "R_half": 2.4140, "rho_peak": 1.341050e-01, "matched": false, "grew": null},
+    {"id": 6, "n_voxels": 79, "centroid": [-8.65,-0.64,14.87], "P_peak": 7.220909e-03, "P_int": 9.555307e-03, "E_pot": -1.330104e-03, "theta_rms": 3.444544e-02, "v_disp": 1.084034e-01, "div_v": 1.732020e-01, "aspect": 4.8572, "R_half": 0.7350, "rho_peak": 1.474209e-01, "matched": true, "grew": true},
+    {"id": 7, "n_voxels": 217567, "centroid": [0.17,-0.09,11.11], "P_peak": 6.434667e-01, "P_int": 5.517554e+02, "E_pot": -6.051975e+02, "theta_rms": 5.740171e-02, "v_disp": 5.672961e-01, "div_v": 3.120659e-02, "aspect": 4.1728, "R_half": 1.2334, "rho_peak": 2.238268e+00, "matched": false, "grew": null},
+    {"id": 8, "n_voxels": 107297, "centroid": [0.27,-0.09,-7.85], "P_peak": 5.218753e-01, "P_int": 2.038458e+02, "E_pot": -2.338738e+02, "theta_rms": 6.127695e-02, "v_disp": 8.769614e-01, "div_v": -5.357791e-02, "aspect": 6.8405, "R_half": 14.5697, "rho_peak": 1.946141e+00, "matched": false, "grew": null},
+    {"id": 9, "n_voxels": 8566, "centroid": [-0.19,-0.02,3.77], "P_peak": 1.653498e-01, "P_int": 5.785224e+00, "E_pot": -5.591832e+00, "theta_rms": 5.347253e-02, "v_disp": 3.721636e-01, "div_v": -2.249401e-01, "aspect": 2.7102, "R_half": 1.3253, "rho_peak": 9.331478e-01, "matched": false, "grew": null},
+    {"id": 10, "n_voxels": 2205, "centroid": [-0.38,0.88,-0.16], "P_peak": 2.652131e-02, "P_int": 4.925801e-01, "E_pot": -1.445944e-01, "theta_rms": 4.821285e-02, "v_disp": 2.044009e-01, "div_v": -8.971843e-02, "aspect": 2.5282, "R_half": 0.1093, "rho_peak": 2.733935e-01, "matched": false, "grew": null},
+    {"id": 11, "n_voxels": 4135, "centroid": [6.59,-0.12,7.30], "P_peak": 2.372010e-02, "P_int": 8.396214e-01, "E_pot": -2.197359e-01, "theta_rms": 4.572477e-02, "v_disp": 1.978225e-01, "div_v": -1.392891e-01, "aspect": 1.8743, "R_half": 1.9119, "rho_peak": 2.519037e-01, "matched": false, "grew": null},
+    {"id": 12, "n_voxels": 19337, "centroid": [10.05,-0.74,-2.27], "P_peak": 1.230701e-01, "P_int": 9.059744e+00, "E_pot": -7.252700e+00, "theta_rms": 3.583490e-02, "v_disp": 2.986445e-01, "div_v": 7.694444e-03, "aspect": 2.5912, "R_half": 1.2842, "rho_peak": 7.635502e-01, "matched": false, "grew": null},
+    {"id": 13, "n_voxels": 367, "centroid": [8.53,0.36,15.26], "P_peak": 1.015123e-02, "P_int": 5.082388e-02, "E_pot": -8.205809e-03, "theta_rms": 5.577049e-02, "v_disp": 1.544025e-01, "div_v": 3.146307e-01, "aspect": 4.3624, "R_half": 0.0755, "rho_peak": 1.662560e-01, "matched": false, "grew": null}
+  ],
+  "late_clusters": [
+    {"id": 1, "n_voxels": 78837, "centroid": [-0.28,-9.83,8.85], "P_peak": 5.734605e-01, "P_int": 1.849490e+02, "E_pot": -2.076816e+02, "theta_rms": 4.891750e-02, "v_disp": 2.448563e-01, "div_v": 2.317299e-02, "aspect": 1.2544, "R_half": 3.7132, "rho_peak": 2.074417e+00, "matched": false},
+    {"id": 2, "n_voxels": 85388, "centroid": [0.30,11.27,8.17], "P_peak": 4.765152e-01, "P_int": 1.943562e+02, "E_pot": -2.225081e+02, "theta_rms": 4.678433e-02, "v_disp": 2.274899e-01, "div_v": -2.087956e-02, "aspect": 1.1322, "R_half": 4.3204, "rho_peak": 1.833106e+00, "matched": false},
+    {"id": 3, "n_voxels": 3684, "centroid": [-0.03,2.29,14.49], "P_peak": 2.670931e-02, "P_int": 7.527091e-01, "E_pot": -2.061083e-01, "theta_rms": 4.663449e-02, "v_disp": 3.650598e-01, "div_v": 3.893083e-01, "aspect": 1.5614, "R_half": 1.6254, "rho_peak": 2.723575e-01, "matched": true}
+  ]
+}
