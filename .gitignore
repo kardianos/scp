@@ -28,7 +28,9 @@ radial_solver
 *.o
 
 # Go module cache
-go.sum
 key.txt
 .claude/worktrees/*
 *.npz
+sfa/runner/scp-runner
+sfa/runner/runner
+bin/

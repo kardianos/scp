@@ -35,28 +35,60 @@
 - Default: m^2=2.25, mu=-41.345, kappa=50, eta=0.5, A_bg=0.1
 - Phase offsets: delta = {0, 3.0005, 4.4325} (from v28 optimization)
 
-## Remote GPU Policy
-- **ALL remote simulations MUST run on the GPU, NOT the CPU**
-- If running on Vast.ai or any remote GPU server, use CUDA or JAX — never OpenMP C
-- Running C/OpenMP on a GPU server wastes money and time (same speed as local CPU)
-- The CUDA simulator (`sfa/sim/scp_sim.cu`) runs 10-13x faster than CPU
-- If a CUDA version doesn't exist for a tool, BUILD ONE before deploying remotely
-- Monitor GPU utilization (`nvidia-smi`) every 10s to ensure GPU is actually being used
-- **Vast.ai GPU search**: use `gpu_name=Tesla_V100` (NOT `V100`).
-  Two variants: Tesla_V100 16 GB and Tesla_V100 32 GB (SXM2). Both sm_70.
-  Multi-GPU: available as 4× and 8× for very large grids (N=512+).
-  Search: `vastai search offers 'gpu_name=Tesla_V100 num_gpus=1 rentable=true disk_space>=20' -o 'dph'`
-  Multi: `vastai search offers 'gpu_name=Tesla_V100 num_gpus>=4 rentable=true' -o 'dph'`
-  Pricing: $0.12-0.20/hr per GPU. 4×V100 ~$0.50-0.80/hr.
-  RTX 4090 ($0.30/hr, sm_89, 24 GB VRAM) is faster for single-GPU but no multi-GPU.
-  Compile for Tesla_V100: `nvcc -O3 -arch=sm_70 -o scp_sim_cuda scp_sim.cu -lzstd -lm`
-  Compile for RTX 4090: `nvcc -O3 -arch=sm_89 -o scp_sim_cuda scp_sim.cu -lzstd -lm`
+## Running Simulations — Use the MCP Runner
+
+The `scp-runner` MCP server (source: `sfa/runner/`, binary: `bin/scp-runner`) manages ALL simulation
+execution, both local and remote. It exposes `sim_*` tools via MCP that handle
+instance management, building, running, monitoring, and downloading — with NO
+sleep polling required. Use these tools instead of manual SSH/SCP/rsync.
+
+**Local execution** (CPU, for quick tests):
+```
+sim_setup(executor="local")
+sim_build(sources=["sfa/sim/scp_sim.c"], cmd="gcc -O3 -march=native -fopenmp -o scp_sim scp_sim.c -lzstd -lm")
+sim_run(config="N=128\nL=25\nT=10\n...", id="test_001")
+sim_run_status(id="test_001")   ← instant, no polling
+```
+
+**Remote execution** (GPU, for production runs):
+```
+sim_setup(executor="remote")     ← auto-creates Vast.ai instance
+sim_build(sources=["sfa/sim/scp_sim.cu", "sfa/format/sfa.h"],
+          cmd="nvcc -O3 -arch=sm_70 -o scp_sim_cuda scp_sim.cu -lzstd -lm -lpthread")
+sim_run(config="N=384\nL=100\nT=200\n...", id="gradient_test")
+sim_run_status(id="gradient_test")
+sim_download(remote_path="output.sfa", local_path="/space/scp/results/")
+sim_teardown()                   ← verifies downloads, destroys instance
+```
+
+**DO NOT** use manual SSH, SCP, rsync, or `sleep N` polling for simulation work.
+The runner handles all of this internally with goroutines — every tool call
+returns instantly with cached state.
+
+**Key tools**: `sim_setup`, `sim_status`, `sim_build`, `sim_run`, `sim_run_status`,
+`sim_run_cancel`, `sim_upload`, `sim_download`, `sim_download_status`,
+`sim_list_files`, `sim_exec`, `sim_teardown`
+
+## GPU Notes
+- **V100-16GB**: Fits N=384 (10.3 GB). Use for standard proton/gradient tests.
+- **V100-32GB**: Fits N=512 (19.3 GB). Use for large-grid or high-resolution runs.
+- **RTX 4090**: 24 GB, sm_89, faster single-GPU but no multi-GPU.
+- The CUDA kernel (`sfa/sim/scp_sim.cu`) uses async hooks for I/O — snapshots
+  and diagnostics overlap with physics compute. GPU utilization should be ~100%.
+- The `init=template` mode loads a small proton template (5 MB) and generates
+  the background analytically — no large seed files needed.
+- For gradient tests, use `bc_type=1` with `gradient_A_high`/`gradient_A_low`.
 
 ## Build Convention
+- **`make -C sfa install`** builds everything and installs to `bin/` (18 binaries)
+- **`make -C sfa runner`** builds just the MCP runner
+- **`make -C sfa analysis`** builds just the analysis tools
+- **`make -C sfa cuda`** builds CUDA kernels (requires nvcc)
 - C with OpenMP: `gcc -O3 -march=native -fopenmp -o <binary> src/<file>.c -lzstd -lm`
+- CUDA: `nvcc -O3 -arch=sm_70 -o scp_sim_cuda scp_sim.cu -lzstd -lm -lpthread`
 - **ONE copy of sfa.h** at `/home/d/code/scp/sfa/format/sfa.h` — do NOT copy to other directories
 - Include via relative path: `#include "../../sfa/format/sfa.h"` (adjust depth as needed)
-- No external deps beyond zstd, OpenMP, math
+- All binaries go to `bin/` via `make install` — do NOT commit binaries
 
 ## Physics Requirements — CRITICAL
 - **ALL simulations MUST use the FULL 6-field Cosserat equation (3 phi + 3 theta)**
@@ -85,30 +117,13 @@
 - SFA header: `sfa/format/sfa.h` (single copy, include via relative path `../format/sfa.h`)
 - Reference implementation (historical): `v34/torsion_coupling/src/v33_cosserat.c`
 
-## Remote Simulation Data Transfer Policy
-- **Use rsync with `--append-verify` to incrementally download SFA files DURING simulation**
-  ```bash
-  rsync -avz --partial --append-verify \
-      -e 'ssh -o StrictHostKeyChecking=no -p PORT' \
-      root@HOST:/root/output.sfa ./local_results/
-  ```
-  This downloads new frames as they are written, with automatic resume on connection drop.
-  Run every 10 minutes via a monitor agent or background loop.
-
-- **NEVER destroy a GPU instance before verifying ALL downloads are complete**
-  Verification protocol:
-  1. Run analysis and f16 conversion ON THE REMOTE before downloading
-  2. Download all files (SFA, JSON, TSV)
-  3. For EACH file, compare local size to remote size:
-     ```bash
-     remote_size=$(ssh remote "stat -c%s /root/file")
-     local_size=$(stat -c%s ./file)
-     [ "$remote_size" = "$local_size" ] && echo "VERIFIED" || echo "MISMATCH"
-     ```
-  4. Run `sfa_info` on downloaded SFA to check for truncation warnings
-  5. ONLY after ALL files verified → destroy instance
-  6. If any download fails, RETRY up to 3 times. Do NOT destroy on failure.
-  See `sfa/sim/REMOTE_PROTOCOL.md` for the full protocol.
+## Data Transfer and Storage
+- The `scp-runner` handles all remote file transfers via `sim_download`.
+  It uses rsync with `--append-verify` internally — no manual rsync needed.
+- `sim_teardown` verifies downloads before destroying instances.
+- Large SFA files should go to `/space/scp/` (separate disk, 600+ GB free).
+- Local working disk (`/home/d/code/scp/`) has limited space — keep only
+  small files (diag.tsv, templates, analysis results) on the local disk.
 
 ## SFA Archival (rclone)
 - Completed SFA files can be archived to cloud storage via rclone:

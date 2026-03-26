@@ -3,7 +3,7 @@
  *  GPU version of scp_sim.c — same config, same SFA output, same physics.
  *  Config parsing, SFA I/O, and init run on CPU. Physics runs on GPU.
  *
- *  Build: nvcc -O3 -arch=sm_70 -o scp_sim_cuda scp_sim.cu -lzstd -lm
+ *  Build: nvcc -O3 -arch=sm_70 -o scp_sim_cuda scp_sim.cu -lzstd -lm -lpthread
  *  Run:   ./scp_sim_cuda config.cfg [-key value ...]
  */
 
@@ -16,6 +16,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #define NFIELDS 3
 #define PI 3.14159265358979323846
@@ -179,6 +180,86 @@ static inline double f16_to_f64(uint16_t h) {
     float f; uint32_t x = ((uint32_t)sign << 16) | ((uint32_t)(exp-15+127) << 23) | ((uint32_t)mant << 13);
     memcpy(&f, &x, 4); return (double)f;
 }
+
+/* ================================================================
+   Hook-based async pipeline — FieldState, hooks, contexts
+   ================================================================ */
+
+typedef struct {
+    double *phi[3], *vel_phi[3], *acc_phi[3];
+    double *theta[3], *vel_theta[3], *acc_theta[3];
+    long N3;
+    int N;
+    double L, dx, dt;
+} FieldState;
+
+#define MAX_HOOKS 4
+
+typedef void (*HookFn)(int step, double t, const FieldState *state, void *ctx);
+
+typedef struct {
+    HookFn fn;
+    void *ctx;
+} StepHook;
+
+static StepHook hooks[MAX_HOOKS];
+static int n_hooks = 0;
+
+static void register_hook(HookFn fn, void *ctx) {
+    if (n_hooks < MAX_HOOKS) {
+        hooks[n_hooks].fn = fn;
+        hooks[n_hooks].ctx = ctx;
+        n_hooks++;
+    }
+}
+
+/* Snapshot hook context — async f16 conversion + DMA + compress/write */
+typedef struct {
+    SFA *sfa;
+    int precision;        /* 0=f16, 1=f32, 2=f64 */
+    int snap_every;
+
+    /* GPU resources */
+    cudaStream_t stream;
+    uint16_t *d_f16_buf;  /* GPU-side f16 staging (12 * N3 * 2 bytes) */
+    float *d_f32_buf;     /* GPU-side f32 staging (12 * N3 * 4 bytes) — for precision=1 */
+
+    /* Host resources */
+    void *h_pin_buf;      /* PINNED host memory for DMA target */
+    long buf_bytes;       /* size of staging buffer */
+    long N3;
+
+    /* Async writer thread */
+    pthread_t writer_thread;
+    pthread_mutex_t mutex;
+    pthread_cond_t cond;
+    int writer_busy;
+    int writer_has_data;
+    int writer_shutdown;
+    double frame_time;
+} SnapHookCtx;
+
+/* Diagnostics hook context — GPU-side reduction */
+typedef struct {
+    FILE *fp;
+    int diag_every;
+    int major_every;      /* major print interval */
+    long N3;
+    double dV;            /* dx^3 */
+    double dx;
+    double E0;            /* initial energy for drift */
+    int n_steps;          /* total steps for % progress */
+    cudaEvent_t t_start;  /* for wall-clock timing */
+
+    /* GPU reduction output */
+    double *d_results;    /* 12 doubles on GPU */
+    double *h_results;    /* 12 doubles on host (pinned) */
+
+    /* Config params for potential energy */
+    double m2, mtheta2, eta, mu, kappa;
+    int mode;
+    double inv_alpha, inv_beta, kappa_gamma;
+} DiagHookCtx;
 
 /* ================================================================
    Host grid (for init, diagnostics, SFA I/O)
@@ -639,13 +720,170 @@ __global__ void downcast_f64_to_f32_kernel(const double *src, float *dst, long n
     dst[idx] = (float)src[idx];
 }
 
+__global__ void downcast_f64_to_f16_kernel(const double *src, uint16_t *dst, long n) {
+    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= n) return;
+    float f = (float)src[idx];
+    uint32_t x; memcpy(&x, &f, 4);
+    uint16_t sign = (x >> 16) & 0x8000;
+    int exp = ((x >> 23) & 0xFF) - 127 + 15;
+    uint16_t mant = (x >> 13) & 0x3FF;
+    if (exp <= 0) { dst[idx] = sign; return; }
+    if (exp >= 31) { dst[idx] = sign | 0x7C00; return; }
+    dst[idx] = sign | (exp << 10) | mant;
+}
+
+/* ================================================================
+   GPU diagnostics reduction kernel
+   Computes 12 values in a single pass via block-level reduction:
+   [0] E_phi_kin, [1] E_theta_kin, [2] E_grad, [3] E_mass,
+   [4] E_pot, [5] E_tgrad, [6] E_tmass, [7] E_coupling,
+   [8] phi_max, [9] P_max, [10] P_int, [11] theta_rms_sum
+   ================================================================ */
+#define DIAG_NVALS 12
+
+__global__ void reduce_diagnostics_kernel(
+    const double *p0, const double *p1, const double *p2,
+    const double *t0, const double *t1, const double *t2,
+    const double *vp0, const double *vp1, const double *vp2,
+    const double *vt0, const double *vt1, const double *vt2,
+    double dV, double idx1, double idx2_val,
+    double mass2, double mtheta2, double eta, double mu, double kappa,
+    int mode, double inv_alpha, double inv_beta, double kappa_gamma,
+    double *d_results)
+{
+    __shared__ double sdata[DIAG_NVALS * 256];  /* THREADS_PER_BLOCK * DIAG_NVALS */
+
+    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    int tid = threadIdx.x;
+
+    double local[DIAG_NVALS];
+    for (int v = 0; v < DIAG_NVALS; v++) local[v] = 0.0;
+
+    if (idx < d_N3) {
+        int N = d_N, NN = d_NN;
+        int i = (int)(idx / NN), j = (int)((idx / N) % N), k = (int)(idx % N);
+        int ip=(i+1)%N, im=(i-1+N)%N, jp=(j+1)%N, jm=(j-1+N)%N, kp=(k+1)%N, km=(k-1+N)%N;
+        long n_ip=(long)ip*NN+j*N+k, n_im=(long)im*NN+j*N+k;
+        long n_jp=(long)i*NN+jp*N+k, n_jm=(long)i*NN+jm*N+k;
+        long n_kp=(long)i*NN+j*N+kp, n_km=(long)i*NN+j*N+km;
+
+        double pp0=p0[idx], pp1=p1[idx], pp2=p2[idx];
+        double sig = pp0*pp0 + pp1*pp1 + pp2*pp2;
+        double me2 = (mode==1) ? inv_alpha/(1.0+inv_beta*sig) : mass2;
+        double keff = (mode==3) ? kappa/(1.0+kappa_gamma*sig) : kappa;
+
+        const double *phi[3] = {p0, p1, p2};
+        const double *th[3] = {t0, t1, t2};
+        const double *vphi[3] = {vp0, vp1, vp2};
+        const double *vth[3] = {vt0, vt1, vt2};
+
+        double s_epk=0, s_etk=0, s_eg=0, s_em=0, s_etg=0, s_etm=0, s_ec=0;
+        double s_pm=0, s_trms=0;
+
+        for (int a = 0; a < 3; a++) {
+            s_epk += 0.5*vphi[a][idx]*vphi[a][idx]*dV;
+            s_etk += 0.5*vth[a][idx]*vth[a][idx]*dV;
+            double gx=(phi[a][n_ip]-phi[a][n_im])*idx1;
+            double gy=(phi[a][n_jp]-phi[a][n_jm])*idx1;
+            double gz=(phi[a][n_kp]-phi[a][n_km])*idx1;
+            s_eg += 0.5*(gx*gx+gy*gy+gz*gz)*dV;
+            s_em += 0.5*me2*phi[a][idx]*phi[a][idx]*dV;
+            double tgx=(th[a][n_ip]-th[a][n_im])*idx1;
+            double tgy=(th[a][n_jp]-th[a][n_jm])*idx1;
+            double tgz=(th[a][n_kp]-th[a][n_km])*idx1;
+            s_etg += 0.5*(tgx*tgx+tgy*tgy+tgz*tgz)*dV;
+            s_etm += 0.5*mtheta2*th[a][idx]*th[a][idx]*dV;
+            double ap = fabs(phi[a][idx]); if (ap > s_pm) s_pm = ap;
+            s_trms += th[a][idx]*th[a][idx];
+        }
+
+        double P = pp0*pp1*pp2, P2 = P*P;
+        double s_ep;
+        if (mode==3) {
+            double D = 1.0+kappa_gamma*sig+kappa*P2;
+            s_ep = (mu/2.0)*P2*(1.0+kappa_gamma*sig)/D*dV;
+        } else {
+            s_ep = (mu/2.0)*P2/(1.0+keff*P2)*dV;
+        }
+
+        /* Curl coupling */
+        double curl_th[3];
+        curl_th[0]=(th[2][n_jp]-th[2][n_jm]-th[1][n_kp]+th[1][n_km])*idx1;
+        curl_th[1]=(th[0][n_kp]-th[0][n_km]-th[2][n_ip]+th[2][n_im])*idx1;
+        curl_th[2]=(th[1][n_ip]-th[1][n_im]-th[0][n_jp]+th[0][n_jm])*idx1;
+        for (int a=0;a<3;a++) s_ec -= eta * phi[a][idx] * curl_th[a] * dV;
+
+        local[0] = s_epk;
+        local[1] = s_etk;
+        local[2] = s_eg;
+        local[3] = s_em;
+        local[4] = s_ep;
+        local[5] = s_etg;
+        local[6] = s_etm;
+        local[7] = s_ec;
+        local[8] = s_pm;        /* phi_max — will use max reduction */
+        local[9] = fabs(P);     /* P_max — will use max reduction */
+        local[10] = fabs(P)*dV; /* P_int */
+        local[11] = s_trms;     /* theta_rms_sum (sum of squares) */
+    }
+
+    /* Store to shared memory */
+    for (int v = 0; v < DIAG_NVALS; v++)
+        sdata[v * blockDim.x + tid] = local[v];
+    __syncthreads();
+
+    /* Block-level reduction */
+    for (int s = blockDim.x/2; s > 0; s >>= 1) {
+        if (tid < s) {
+            for (int v = 0; v < DIAG_NVALS; v++) {
+                int si = v * blockDim.x;
+                if (v == 8 || v == 9) {
+                    /* max reduction for phi_max, P_max */
+                    double other = sdata[si + tid + s];
+                    if (other > sdata[si + tid]) sdata[si + tid] = other;
+                } else {
+                    sdata[si + tid] += sdata[si + tid + s];
+                }
+            }
+        }
+        __syncthreads();
+    }
+
+    /* Write block results to global memory via atomicAdd / atomicMax */
+    if (tid == 0) {
+        for (int v = 0; v < DIAG_NVALS; v++) {
+            if (v == 8 || v == 9) {
+                /* Atomic max for doubles — use unsigned long long CAS loop */
+                unsigned long long *addr = (unsigned long long *)&d_results[v];
+                unsigned long long old_val = *addr, assumed;
+                double new_val = sdata[v * blockDim.x];
+                do {
+                    assumed = old_val;
+                    double cur; memcpy(&cur, &assumed, 8);
+                    if (new_val <= cur) break;
+                    unsigned long long new_bits; memcpy(&new_bits, &new_val, 8);
+                    old_val = atomicCAS(addr, assumed, new_bits);
+                } while (assumed != old_val);
+            } else {
+                atomicAdd(&d_results[v], sdata[v * blockDim.x]);
+            }
+        }
+    }
+}
+
+/* Zero the diagnostics results buffer */
+__global__ void zero_diag_kernel(double *d_results, int n) {
+    int idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < n) d_results[idx] = 0.0;
+}
+
 /* ================================================================
    GPU memory management
    ================================================================ */
 
 static double *d_phi[3], *d_vel_phi[3], *d_acc_phi[3];
 static double *d_theta[3], *d_vel_theta[3], *d_acc_theta[3];
-static float *d_f32_buf;
 static int gpu_blocks;
 
 static void gpu_alloc(long N3) {
@@ -654,10 +892,9 @@ static void gpu_alloc(long N3) {
         cudaMalloc(&d_phi[a], bytes);       cudaMalloc(&d_vel_phi[a], bytes);   cudaMalloc(&d_acc_phi[a], bytes);
         cudaMalloc(&d_theta[a], bytes);     cudaMalloc(&d_vel_theta[a], bytes); cudaMalloc(&d_acc_theta[a], bytes);
     }
-    cudaMalloc(&d_f32_buf, N3 * sizeof(float));
     gpu_blocks = (int)((N3 + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK);
-    printf("GPU: allocated %.2f GB, %d blocks × %d threads\n",
-           (18.0*bytes + N3*sizeof(float))/1e9, gpu_blocks, THREADS_PER_BLOCK);
+    printf("GPU: allocated %.2f GB (physics), %d blocks × %d threads\n",
+           18.0*bytes/1e9, gpu_blocks, THREADS_PER_BLOCK);
 }
 
 static void gpu_upload(Grid *g) {
@@ -687,7 +924,6 @@ static void gpu_free(void) {
         cudaFree(d_phi[a]); cudaFree(d_vel_phi[a]); cudaFree(d_acc_phi[a]);
         cudaFree(d_theta[a]); cudaFree(d_vel_theta[a]); cudaFree(d_acc_theta[a]);
     }
-    cudaFree(d_f32_buf);
 }
 
 static void gpu_set_constants(const Config *c, double dx) {
@@ -826,7 +1062,265 @@ static void gpu_apply_gradient_bc(Grid *g, const Config *c) {
 }
 
 /* ================================================================
-   Diagnostics (host-side, same as CPU version)
+   Snapshot hook — async f16/f32 conversion + DMA + compress/write
+   ================================================================ */
+
+static void *snap_writer_thread(void *arg) {
+    SnapHookCtx *ctx = (SnapHookCtx *)arg;
+    while (1) {
+        pthread_mutex_lock(&ctx->mutex);
+        while (!ctx->writer_has_data && !ctx->writer_shutdown)
+            pthread_cond_wait(&ctx->cond, &ctx->mutex);
+        if (ctx->writer_shutdown) { pthread_mutex_unlock(&ctx->mutex); break; }
+        ctx->writer_has_data = 0;
+        ctx->writer_busy = 1;
+        pthread_mutex_unlock(&ctx->mutex);
+
+        /* Compress and write frame to SFA */
+        void *cols[12];
+        long N3 = ctx->N3;
+        if (ctx->precision == 0) {
+            /* f16: h_pin_buf is uint16_t[12*N3] */
+            uint16_t *base = (uint16_t *)ctx->h_pin_buf;
+            for (int c = 0; c < 12; c++)
+                cols[c] = base + c * N3;
+        } else if (ctx->precision == 1) {
+            /* f32: h_pin_buf is float[12*N3] */
+            float *base = (float *)ctx->h_pin_buf;
+            for (int c = 0; c < 12; c++)
+                cols[c] = base + c * N3;
+        } else {
+            /* f64: h_pin_buf is double[12*N3] */
+            double *base = (double *)ctx->h_pin_buf;
+            for (int c = 0; c < 12; c++)
+                cols[c] = base + c * N3;
+        }
+        sfa_write_frame(ctx->sfa, ctx->frame_time, cols);
+
+        pthread_mutex_lock(&ctx->mutex);
+        ctx->writer_busy = 0;
+        pthread_cond_signal(&ctx->cond);
+        pthread_mutex_unlock(&ctx->mutex);
+    }
+    return NULL;
+}
+
+static SnapHookCtx create_snap_hook(SFA *sfa, int precision, int snap_every, long N3) {
+    SnapHookCtx ctx;
+    memset(&ctx, 0, sizeof(ctx));
+    ctx.sfa = sfa;
+    ctx.precision = precision;
+    ctx.snap_every = snap_every;
+    ctx.N3 = N3;
+
+    cudaStreamCreate(&ctx.stream);
+
+    /* Allocate GPU staging buffer and pinned host buffer */
+    if (precision == 0) {
+        ctx.buf_bytes = 12L * N3 * sizeof(uint16_t);
+        cudaMalloc(&ctx.d_f16_buf, ctx.buf_bytes);
+        ctx.d_f32_buf = NULL;
+    } else if (precision == 1) {
+        ctx.buf_bytes = 12L * N3 * sizeof(float);
+        ctx.d_f16_buf = NULL;
+        cudaMalloc(&ctx.d_f32_buf, ctx.buf_bytes);
+    } else {
+        /* f64: DMA directly from physics arrays, staging = pinned host only */
+        ctx.buf_bytes = 12L * N3 * sizeof(double);
+        ctx.d_f16_buf = NULL;
+        ctx.d_f32_buf = NULL;
+    }
+    cudaMallocHost(&ctx.h_pin_buf, ctx.buf_bytes);
+
+    printf("Snap hook: %.2f GB GPU staging + %.2f GB pinned host\n",
+           (precision < 2 ? ctx.buf_bytes : 0) / 1e9, ctx.buf_bytes / 1e9);
+
+    pthread_mutex_init(&ctx.mutex, NULL);
+    pthread_cond_init(&ctx.cond, NULL);
+    ctx.writer_busy = 0;
+    ctx.writer_has_data = 0;
+    ctx.writer_shutdown = 0;
+
+    /* NOTE: writer thread is NOT started here — must call start_snap_writer()
+     * after the ctx is in its final memory location (returned by value). */
+    return ctx;
+}
+
+static void start_snap_writer(SnapHookCtx *ctx) {
+    pthread_create(&ctx->writer_thread, NULL, snap_writer_thread, ctx);
+}
+
+static void destroy_snap_hook(SnapHookCtx *ctx) {
+    /* Wait for any pending write */
+    pthread_mutex_lock(&ctx->mutex);
+    while (ctx->writer_busy)
+        pthread_cond_wait(&ctx->cond, &ctx->mutex);
+    ctx->writer_shutdown = 1;
+    pthread_cond_signal(&ctx->cond);
+    pthread_mutex_unlock(&ctx->mutex);
+    pthread_join(ctx->writer_thread, NULL);
+
+    pthread_mutex_destroy(&ctx->mutex);
+    pthread_cond_destroy(&ctx->cond);
+
+    cudaStreamDestroy(ctx->stream);
+    if (ctx->d_f16_buf) cudaFree(ctx->d_f16_buf);
+    if (ctx->d_f32_buf) cudaFree(ctx->d_f32_buf);
+    cudaFreeHost(ctx->h_pin_buf);
+}
+
+static void snap_hook(int step, double t, const FieldState *state, void *vctx) {
+    SnapHookCtx *ctx = (SnapHookCtx *)vctx;
+    if (step % ctx->snap_every != 0) return;
+
+    /* Wait for previous write to finish (the only possible stall) */
+    pthread_mutex_lock(&ctx->mutex);
+    while (ctx->writer_busy)
+        pthread_cond_wait(&ctx->cond, &ctx->mutex);
+    pthread_mutex_unlock(&ctx->mutex);
+
+    long N3 = state->N3;
+    int blocks = (int)((N3 + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK);
+
+    const double *src[12] = {
+        state->phi[0], state->phi[1], state->phi[2],
+        state->theta[0], state->theta[1], state->theta[2],
+        state->vel_phi[0], state->vel_phi[1], state->vel_phi[2],
+        state->vel_theta[0], state->vel_theta[1], state->vel_theta[2]
+    };
+
+    if (ctx->precision == 0) {
+        /* f16 path: convert on GPU, DMA f16 */
+        for (int c = 0; c < 12; c++) {
+            downcast_f64_to_f16_kernel<<<blocks, THREADS_PER_BLOCK, 0, ctx->stream>>>(
+                src[c], ctx->d_f16_buf + c * N3, N3);
+        }
+        cudaStreamSynchronize(ctx->stream);
+        cudaMemcpyAsync(ctx->h_pin_buf, ctx->d_f16_buf, ctx->buf_bytes,
+                        cudaMemcpyDeviceToHost, ctx->stream);
+    } else if (ctx->precision == 1) {
+        /* f32 path: convert on GPU, DMA f32 */
+        for (int c = 0; c < 12; c++) {
+            downcast_f64_to_f32_kernel<<<blocks, THREADS_PER_BLOCK, 0, ctx->stream>>>(
+                src[c], ctx->d_f32_buf + c * N3, N3);
+        }
+        cudaStreamSynchronize(ctx->stream);
+        cudaMemcpyAsync(ctx->h_pin_buf, ctx->d_f32_buf, ctx->buf_bytes,
+                        cudaMemcpyDeviceToHost, ctx->stream);
+    } else {
+        /* f64 path: DMA raw doubles (12 separate copies) */
+        double *dst = (double *)ctx->h_pin_buf;
+        for (int c = 0; c < 12; c++) {
+            cudaMemcpyAsync(dst + c * N3, src[c], N3 * sizeof(double),
+                            cudaMemcpyDeviceToHost, ctx->stream);
+        }
+    }
+
+    /* Wait for DMA to complete before signaling writer */
+    cudaStreamSynchronize(ctx->stream);
+
+    /* Signal the writer thread */
+    ctx->frame_time = t;
+    pthread_mutex_lock(&ctx->mutex);
+    ctx->writer_has_data = 1;
+    pthread_cond_signal(&ctx->cond);
+    pthread_mutex_unlock(&ctx->mutex);
+    /* Return immediately — physics continues on stream 0 */
+}
+
+/* ================================================================
+   Diagnostics hook — GPU-side reduction, no full download
+   ================================================================ */
+
+static DiagHookCtx create_diag_hook(FILE *fp, int diag_every, int major_every,
+                                     long N3, double dx, int n_steps,
+                                     cudaEvent_t t_start, const Config *c) {
+    DiagHookCtx ctx;
+    memset(&ctx, 0, sizeof(ctx));
+    ctx.fp = fp;
+    ctx.diag_every = diag_every;
+    ctx.major_every = major_every;
+    ctx.N3 = N3;
+    ctx.dV = dx * dx * dx;
+    ctx.dx = dx;
+    ctx.E0 = 0;
+    ctx.n_steps = n_steps;
+    ctx.t_start = t_start;
+    ctx.m2 = c->m2;
+    ctx.mtheta2 = c->mtheta2;
+    ctx.eta = c->eta;
+    ctx.mu = c->mu;
+    ctx.kappa = c->kappa;
+    ctx.mode = c->mode;
+    ctx.inv_alpha = c->inv_alpha;
+    ctx.inv_beta = c->inv_beta;
+    ctx.kappa_gamma = c->kappa_gamma;
+
+    cudaMalloc(&ctx.d_results, DIAG_NVALS * sizeof(double));
+    cudaMallocHost(&ctx.h_results, DIAG_NVALS * sizeof(double));
+    return ctx;
+}
+
+static void destroy_diag_hook(DiagHookCtx *ctx) {
+    cudaFree(ctx->d_results);
+    cudaFreeHost(ctx->h_results);
+}
+
+/* Run the GPU reduction and populate h_results. Used by diag_hook and for initial/final diag. */
+static void run_gpu_diagnostics(const FieldState *state, DiagHookCtx *ctx) {
+    /* Zero the results buffer */
+    zero_diag_kernel<<<1, DIAG_NVALS>>>(ctx->d_results, DIAG_NVALS);
+
+    double idx1 = 1.0 / (2.0 * ctx->dx);
+    double idx2_val = 1.0 / (ctx->dx * ctx->dx);
+
+    reduce_diagnostics_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+        state->phi[0], state->phi[1], state->phi[2],
+        state->theta[0], state->theta[1], state->theta[2],
+        state->vel_phi[0], state->vel_phi[1], state->vel_phi[2],
+        state->vel_theta[0], state->vel_theta[1], state->vel_theta[2],
+        ctx->dV, idx1, idx2_val,
+        ctx->m2, ctx->mtheta2, ctx->eta, ctx->mu, ctx->kappa,
+        ctx->mode, ctx->inv_alpha, ctx->inv_beta, ctx->kappa_gamma,
+        ctx->d_results);
+
+    cudaMemcpy(ctx->h_results, ctx->d_results, DIAG_NVALS * sizeof(double),
+               cudaMemcpyDeviceToHost);
+}
+
+static void diag_hook(int step, double t, const FieldState *state, void *vctx) {
+    DiagHookCtx *ctx = (DiagHookCtx *)vctx;
+    if (step % ctx->diag_every != 0) return;
+
+    run_gpu_diagnostics(state, ctx);
+
+    double *r = ctx->h_results;
+    /* r: [0]epk [1]etk [2]eg [3]em [4]ep [5]etg [6]etm [7]ec [8]pm [9]Pm [10]Pint [11]trms_sum */
+    double et = r[0]+r[1]+r[2]+r[3]+r[4]+r[5]+r[6]+r[7];
+    double trms = sqrt(r[11] / (3.0 * ctx->N3));
+
+    fprintf(ctx->fp, "%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n",
+            t, r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], et, r[8], r[9], r[10], trms);
+    fflush(ctx->fp);
+
+    if (step % ctx->major_every == 0) {
+        cudaEvent_t t_stop;
+        cudaEventCreate(&t_stop);
+        cudaEventRecord(t_stop);
+        cudaEventSynchronize(t_stop);
+        float ms; cudaEventElapsedTime(&ms, ctx->t_start, t_stop);
+        cudaEventDestroy(t_stop);
+        double drift = 100.0 * (et - ctx->E0) / (fabs(ctx->E0) + 1e-30);
+        printf("t=%7.1f E=%.3e (drift %+.3f%%) Ep=%.1f phi=%.3f θ_rms=%.2e "
+               "[%.0f%% %.1fs %.2fms/step]\n",
+               t, et, drift, r[4], r[8], trms,
+               100.0 * step / ctx->n_steps, ms / 1000, ms / step);
+        fflush(stdout);
+    }
+}
+
+/* ================================================================
+   Diagnostics (host-side, same as CPU version) — kept for reference/fallback
    ================================================================ */
 
 static void compute_energy(Grid *g, const Config *c,
@@ -1053,37 +1547,61 @@ int main(int argc, char **argv) {
     const char *pn[]={"f16","f32","f64"};
     printf("SFA: %s (12 cols, %s, BSS+zstd)\n\n", c.output, pn[c.precision]);
 
-    /* t=0 snapshot */
-    sfa_snap_gpu(sfa, g, 0.0, c.precision);
+    /* Timing, step counts */
+    int n_steps=(int)(c.T/g->dt);
+    int diag_every=(int)(c.diag_dt/g->dt); if(diag_every<1) diag_every=1;
+    int snap_every=(int)(c.snap_dt/g->dt); if(snap_every<1) snap_every=1;
+    int major = diag_every * 25; if(major<1) major=1;
 
-    /* Diagnostics */
+    /* Build FieldState from device pointers */
+    FieldState fstate;
+    for (int a = 0; a < 3; a++) {
+        fstate.phi[a] = d_phi[a]; fstate.vel_phi[a] = d_vel_phi[a]; fstate.acc_phi[a] = d_acc_phi[a];
+        fstate.theta[a] = d_theta[a]; fstate.vel_theta[a] = d_vel_theta[a]; fstate.acc_theta[a] = d_acc_theta[a];
+    }
+    fstate.N3 = g->N3; fstate.N = g->N;
+    fstate.L = g->L; fstate.dx = g->dx; fstate.dt = g->dt;
+
+    /* Create hooks */
+    SnapHookCtx snap_ctx = create_snap_hook(sfa, c.precision, snap_every, g->N3);
+    start_snap_writer(&snap_ctx);
+    register_hook(snap_hook, &snap_ctx);
+
+    /* Diagnostics file */
     FILE *fp = fopen(c.diag_file, "w");
     fprintf(fp, "t\tE_phi_kin\tE_theta_kin\tE_grad\tE_mass\tE_pot\tE_tgrad\tE_tmass\t"
                 "E_coupling\tE_total\tphi_max\tP_max\tP_int\ttheta_rms\n");
 
-    int n_steps=(int)(c.T/g->dt);
-    int diag_every=(int)(c.diag_dt/g->dt); if(diag_every<1) diag_every=1;
-    int snap_every=(int)(c.snap_dt/g->dt); if(snap_every<1) snap_every=1;
-
-    /* Download for initial diagnostics */
-    gpu_download(g);
-    double epk,etk,eg,em,ep,etg,etm,ec,et,pm,Pm;
-    compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
-    double Pint0=P_integrated(g), trms0=theta_rms(g), E0=et;
-    printf("INIT: E_total=%.4e E_pot=%.4f phi_max=%.4f theta_rms=%.3e\n\n", et,ep,pm,trms0);
-    fprintf(fp,"%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n",
-            0.0,epk,etk,eg,em,ep,etg,etm,ec,et,pm,Pm,Pint0,trms0);
-
-    cudaEvent_t t_start, t_stop;
-    cudaEventCreate(&t_start); cudaEventCreate(&t_stop);
+    cudaEvent_t t_start;
+    cudaEventCreate(&t_start);
     cudaEventRecord(t_start);
 
-    int major = diag_every * 25; if(major<1) major=1;
+    DiagHookCtx diag_ctx = create_diag_hook(fp, diag_every, major, g->N3, g->dx, n_steps, t_start, &c);
+    register_hook(diag_hook, &diag_ctx);
 
+    /* Initial diagnostics (GPU-side reduction, no full download) */
+    run_gpu_diagnostics(&fstate, &diag_ctx);
+    {
+        double *r = diag_ctx.h_results;
+        double et0 = r[0]+r[1]+r[2]+r[3]+r[4]+r[5]+r[6]+r[7];
+        double trms0 = sqrt(r[11] / (3.0 * g->N3));
+        diag_ctx.E0 = et0;
+        printf("INIT: E_total=%.4e E_pot=%.4f phi_max=%.4f theta_rms=%.3e\n\n", et0, r[4], r[8], trms0);
+        fprintf(fp, "%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n",
+                0.0, r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], et0, r[8], r[9], r[10], trms0);
+        fflush(fp);
+    }
+
+    /* t=0 snapshot via hook */
+    snap_hook(0, 0.0, &fstate, &snap_ctx);
+
+    printf("Async pipeline: snap every %d steps, diag every %d steps, %d total\n\n",
+           snap_every, diag_every, n_steps);
+
+    /* ===== Main loop ===== */
     for (int step = 1; step <= n_steps; step++) {
         gpu_verlet_step(g->dt);
 
-        /* Apply gradient BC if enabled (GPU kernel, analytical boundary values) */
         if (c.bc_type == 1) {
             gradient_bc_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
                 d_phi[0], d_phi[1], d_phi[2],
@@ -1094,56 +1612,55 @@ int main(int argc, char **argv) {
                 d_acc_theta[0], d_acc_theta[1], d_acc_theta[2]);
         }
 
-        int need_diag = (step % diag_every == 0);
-        int need_snap = (step % snap_every == 0);
+        /* Dispatch hooks */
+        double t = step * g->dt;
+        for (int h = 0; h < n_hooks; h++)
+            hooks[h].fn(step, t, &fstate, hooks[h].ctx);
+    }
 
-        if (need_snap) {
-            double t = step * g->dt;
-            sfa_snap_gpu(sfa, g, t, c.precision);
-        }
-
-        if (need_diag) {
-            double t = step * g->dt;
-            if (!need_snap) { cudaDeviceSynchronize(); gpu_download(g); }
-            compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
-            double Pint=P_integrated(g), trms=theta_rms(g);
-            fprintf(fp,"%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n",
-                    t,epk,etk,eg,em,ep,etg,etm,ec,et,pm,Pm,Pint,trms);
-            fflush(fp);
-
-            if (step % major == 0) {
-                cudaEventRecord(t_stop); cudaEventSynchronize(t_stop);
-                float ms; cudaEventElapsedTime(&ms, t_start, t_stop);
-                double drift=100*(et-E0)/(fabs(E0)+1e-30);
-                printf("t=%7.1f E=%.3e (drift %+.3f%%) Ep=%.1f phi=%.3f θ_rms=%.2e "
-                       "[%.0f%% %.1fs %.2fms/step]\n",
-                       t,et,drift,ep,pm,trms,100.0*step/n_steps,ms/1000,ms/step);
-                fflush(stdout);
-            }
+    /* Final frame via hook (use step=0 to force through snap_every check) */
+    {
+        /* Ensure last frame is written even if n_steps % snap_every != 0 */
+        int last_snapped = (n_steps / snap_every) * snap_every;
+        if (last_snapped != n_steps) {
+            /* Force a snapshot at the final step */
+            int saved_every = snap_ctx.snap_every;
+            snap_ctx.snap_every = 1;
+            snap_hook(1, n_steps * g->dt, &fstate, &snap_ctx);
+            snap_ctx.snap_every = saved_every;
         }
     }
 
-    /* Final frame */
-    sfa_snap_gpu(sfa, g, n_steps*g->dt, c.precision);
+    /* Wait for writer to finish, then destroy snap hook */
+    destroy_snap_hook(&snap_ctx);
     uint32_t nf = sfa->total_frames;
     sfa_close(sfa);
 
-    /* Final summary */
-    compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
-    double trms=theta_rms(g);
-    cudaEventRecord(t_stop); cudaEventSynchronize(t_stop);
-    float total_ms; cudaEventElapsedTime(&total_ms, t_start, t_stop);
+    /* Final diagnostics (GPU-side, no download) */
+    run_gpu_diagnostics(&fstate, &diag_ctx);
+    {
+        double *r = diag_ctx.h_results;
+        double et = r[0]+r[1]+r[2]+r[3]+r[4]+r[5]+r[6]+r[7];
+        double trms = sqrt(r[11] / (3.0 * g->N3));
 
-    printf("\n=== COMPLETE (GPU) ===\n");
-    printf("E_total=%.4e (drift %.3f%%) E_pot=%.4f\n", et, 100*(et-E0)/(fabs(E0)+1e-30), ep);
-    printf("phi_max=%.4f theta_rms=%.3e\n", pm, trms);
-    printf("SFA: %s (%u frames)\n", c.output, nf);
-    printf("[%s] theta_rms grew: %.2e -> %.2e\n", (trms>trms0+1e-10)?"OK":"WARN", trms0, trms);
-    printf("Wall: %.1fs (%.1f min) %.2fms/step\n", total_ms/1000, total_ms/60000, total_ms/n_steps);
+        cudaEvent_t t_stop;
+        cudaEventCreate(&t_stop);
+        cudaEventRecord(t_stop);
+        cudaEventSynchronize(t_stop);
+        float total_ms; cudaEventElapsedTime(&total_ms, t_start, t_stop);
+        cudaEventDestroy(t_stop);
 
+        printf("\n=== COMPLETE (GPU, async pipeline) ===\n");
+        printf("E_total=%.4e (drift %.3f%%) E_pot=%.4f\n", et, 100*(et-diag_ctx.E0)/(fabs(diag_ctx.E0)+1e-30), r[4]);
+        printf("phi_max=%.4f theta_rms=%.3e\n", r[8], trms);
+        printf("SFA: %s (%u frames)\n", c.output, nf);
+        printf("Wall: %.1fs (%.1f min) %.2fms/step\n", total_ms/1000, total_ms/60000, total_ms/n_steps);
+    }
+
+    destroy_diag_hook(&diag_ctx);
     fclose(fp);
     gpu_free();
     grid_free(g);
-    cudaEventDestroy(t_start); cudaEventDestroy(t_stop);
+    cudaEventDestroy(t_start);
     return 0;
 }
