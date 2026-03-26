@@ -627,6 +627,53 @@ existing tools. The refractive index is already measured (V43 OQ5).
 The depletion profile is already measured (V34). The connection between
 them is the speculative bridge.
 
+### Speculative: Temperature, Mass-Energy Equivalence, and Charge Invariance
+
+The breathing oscillator framework (CONCEPT.md §5) states that a
+particle's mass is its total oscillation energy, and that "hotter"
+particles (higher velocity dispersion) couple more strongly to external
+fields. This maps precisely to established physics — but with an
+important constraint on charge.
+
+**Mass-energy equivalence (E=mc²)**: In standard physics, 99% of the
+proton's mass comes from the kinetic energy of nearly-massless quarks
+and gluons oscillating inside it — not from the Higgs mechanism. A
+"hotter" proton (excited to a Δ⁺ resonance) is literally heavier. In
+this theory, higher breathing amplitude → more E_kin → more total
+energy → more depletion → stronger gravitational coupling. The theory
+reproduces relativistic mass-energy equivalence organically.
+
+**Interaction cross-section**: Hotter particles oscillate faster and
+interact more frequently — matching the observed decay widths in
+particle physics (the Δ⁺ baryon lives only 5×10⁻²⁴ s because its
+"hot" internal state interacts violently). The breathing amplitude
+directly controls the effective cross-section.
+
+**Charge invariance (CRITICAL constraint)**: Electric charge in real
+physics is strictly quantized and temperature-invariant. A proton at
+any temperature has charge exactly +1. In this theory, the "charge" is
+the topological winding number W=±1 (for braids) or the net chirality
+of the composite (UUD=+1, UDD=-1). This MUST remain invariant
+regardless of breathing amplitude. What changes with temperature is:
+- Radiation intensity (AC component of θ) — hotter → more radiation
+- Magnetic moment / polarizability — hotter → more θ fluctuation
+- Gravitational mass — hotter → stronger depletion
+- But NOT the DC Coulomb charge (time-averaged θ topology)
+
+If heating a proton in the simulation changes its far-field DC θ
+integral, the theory has a charge conservation problem.
+
+**Testable within the current framework**:
+1. "Hot proton" gravity test: kick a proton (inject kinetic energy to
+   double breathing amplitude), place in gradient, measure drift. Should
+   drift FASTER proportional to added energy (E=mc² confirmation).
+2. Charge invariance test: measure the far-field DC θ component of both
+   cold and hot protons. The AC radiation will be louder for the hot
+   proton, but the DC integral must be identical.
+3. Delta resonance analog: excite a proton until it becomes unstable
+   and decays. Measure the decay products — does it emit a "pion-like"
+   excitation (a θ pulse) while preserving the baryon number?
+
 ### Speculative: Scaling to Plasma, Ionosphere, and Heliosphere
 
 The Cosserat equation may scale directly from nuclear physics to
