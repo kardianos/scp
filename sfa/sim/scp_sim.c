@@ -942,6 +942,8 @@ int main(int argc, char **argv) {
 
     double wall0 = omp_get_wtime();
     int major = diag_every * 25; if (major<1) major=1;
+    /* Cap so we get ~10 progress lines even for short runs */
+    if (major > n_steps/10) { major = (n_steps/10/diag_every)*diag_every; if (major<diag_every) major=diag_every; }
 
     for (int step = 1; step <= n_steps; step++) {
         verlet_step(g, &c);

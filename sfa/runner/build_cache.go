@@ -8,8 +8,10 @@ import (
 	"sort"
 )
 
-// hashSources computes a deterministic hash of source file paths and contents.
-func hashSources(sources []string) (string, error) {
+// hashBuild computes a deterministic hash of source file contents and the build command.
+// Including the build command ensures that changing flags (e.g. -arch=sm_70 vs sm_89)
+// invalidates the cache even when sources are unchanged.
+func hashBuild(sources []string, cmd string) (string, error) {
 	h := sha256.New()
 	sorted := make([]string, len(sources))
 	copy(sorted, sources)
@@ -23,5 +25,6 @@ func hashSources(sources []string) (string, error) {
 		h.Write([]byte(s))
 		h.Write(data)
 	}
+	h.Write([]byte(cmd))
 	return hex.EncodeToString(h.Sum(nil))[:16], nil
 }

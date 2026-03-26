@@ -10,17 +10,21 @@ import (
 // --- Tool parameter and result structs ---
 
 type SimSetupParams struct {
-	Executor string `json:"executor" desc:"Execution type: local or remote" required:"true"`
-	Host     string `json:"host" desc:"SSH host for remote"`
-	Port     int    `json:"port" desc:"SSH port for remote"`
-	WorkDir  string `json:"work_dir" desc:"Working directory"`
+	Executor  string `json:"executor" desc:"Execution type: local or remote" required:"true"`
+	Host      string `json:"host" desc:"SSH host for existing remote instance"`
+	Port      int    `json:"port" desc:"SSH port for existing remote instance"`
+	GPUFilter string `json:"gpu_filter" desc:"Vast.ai GPU filter (default: V100 16GB). Examples: 'gpu_name=Tesla_V100', 'gpu_name=RTX_4090'"`
+	WorkDir   string `json:"work_dir" desc:"Working directory"`
 }
 
 type SimSetupResult struct {
-	Status  string `json:"status"`
-	Type    string `json:"type"`
-	WorkDir string `json:"work_dir,omitempty"`
-	Host    string `json:"host,omitempty"`
+	Status     string `json:"status"`
+	Type       string `json:"type"`
+	WorkDir    string `json:"work_dir,omitempty"`
+	Host       string `json:"host,omitempty"`
+	Port       int    `json:"port,omitempty"`
+	GPUName    string `json:"gpu_name,omitempty"`
+	InstanceID int    `json:"instance_id,omitempty"`
 }
 
 type SimStatusParams struct{}
@@ -36,14 +40,31 @@ type SimBuildParams struct {
 }
 
 type SimRunParams struct {
-	Config string `json:"config" desc:"Simulation config content (inline)" required:"true"`
-	ID     string `json:"id" desc:"Run identifier" required:"true"`
+	Config         string  `json:"config" desc:"Simulation config content (inline)" required:"true"`
+	ID             string  `json:"id" desc:"Run identifier" required:"true"`
+	NotifyInterval float64 `json:"notify_interval" desc:"Send progress notifications every N seconds (0=disabled)"`
+	Wait           bool    `json:"wait" desc:"Block until run completes and return final status (default: false)"`
 }
 
 type SimRunResult struct {
 	RunID    string `json:"run_id"`
 	Status   string `json:"status"`
 	Executor string `json:"executor"`
+	Init     string `json:"init,omitempty"`
+	InitSFA  string `json:"init_sfa,omitempty"`
+}
+
+type SimListTemplatesParams struct{}
+
+type SimListTemplatesResult struct {
+	Templates []TemplateInfo `json:"templates"`
+}
+
+type TemplateInfo struct {
+	Path    string `json:"path"`
+	Name    string `json:"name"`
+	Size    int64  `json:"size"`
+	ModTime string `json:"mod_time"`
 }
 
 type SimRunStatusParams struct {

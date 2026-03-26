@@ -724,7 +724,7 @@ __global__ void downcast_f64_to_f16_kernel(const double *src, uint16_t *dst, lon
     long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= n) return;
     float f = (float)src[idx];
-    uint32_t x; memcpy(&x, &f, 4);
+    uint32_t x = __float_as_uint(f);
     uint16_t sign = (x >> 16) & 0x8000;
     int exp = ((x >> 23) & 0xFF) - 127 + 15;
     uint16_t mant = (x >> 13) & 0x3FF;
@@ -860,9 +860,9 @@ __global__ void reduce_diagnostics_kernel(
                 double new_val = sdata[v * blockDim.x];
                 do {
                     assumed = old_val;
-                    double cur; memcpy(&cur, &assumed, 8);
+                    double cur = __longlong_as_double(assumed);
                     if (new_val <= cur) break;
-                    unsigned long long new_bits; memcpy(&new_bits, &new_val, 8);
+                    unsigned long long new_bits = __double_as_longlong(new_val);
                     old_val = atomicCAS(addr, assumed, new_bits);
                 } while (assumed != old_val);
             } else {
@@ -1552,6 +1552,8 @@ int main(int argc, char **argv) {
     int diag_every=(int)(c.diag_dt/g->dt); if(diag_every<1) diag_every=1;
     int snap_every=(int)(c.snap_dt/g->dt); if(snap_every<1) snap_every=1;
     int major = diag_every * 25; if(major<1) major=1;
+    /* Cap so we get ~10 progress lines even for short runs */
+    if(major > n_steps/10) { major = (n_steps/10/diag_every)*diag_every; if(major<diag_every) major=diag_every; }
 
     /* Build FieldState from device pointers */
     FieldState fstate;

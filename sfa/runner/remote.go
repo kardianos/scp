@@ -27,6 +27,8 @@ type RemoteExecutor struct {
 	sshClient  *ssh.Client
 	startTime  time.Time
 	workDir    string // local work dir for downloads
+	lastBinary string // set after successful Build
+	OnRunDone  func() // called when any run reaches terminal state
 
 	runs      sync.Map // map[string]*remoteRun
 	downloads sync.Map // map[string]*DownloadInfo
@@ -34,9 +36,10 @@ type RemoteExecutor struct {
 }
 
 type remoteRun struct {
-	info   RunInfo
-	cancel context.CancelFunc
-	mu     sync.Mutex
+	info           RunInfo
+	cancel         context.CancelFunc
+	notifyInterval time.Duration
+	mu             sync.Mutex
 }
 
 // RemoteConfig holds parameters for creating a remote executor.
@@ -47,6 +50,13 @@ type RemoteConfig struct {
 	Onstart   string // startup script
 	WorkDir   string // local directory for downloaded results
 }
+
+const (
+	defaultGPUFilter = "gpu_name=Tesla_V100 num_gpus=1 rentable=true disk_space>=20"
+	defaultImage     = "nvidia/cuda:12.2.0-devel-ubuntu22.04"
+	defaultDiskGB    = 30
+	defaultOnstart   = "apt-get update && apt-get install -y libzstd-dev rsync && ldconfig"
+)
 
 func NewRemoteExecutor(cfg RemoteConfig) *RemoteExecutor {
 	return &RemoteExecutor{
@@ -70,8 +80,102 @@ func (r *RemoteExecutor) Setup(ctx context.Context) error {
 	return nil
 }
 
+// Provision searches for a GPU offer, creates an instance, waits for it to be ready, and connects.
+func (r *RemoteExecutor) Provision(ctx context.Context, gpuFilter string) error {
+	if r.vast == nil {
+		return fmt.Errorf("vast client not initialized — call Setup first")
+	}
+	if gpuFilter == "" {
+		gpuFilter = defaultGPUFilter
+	}
+
+	// Check for existing running instances first.
+	instances, err := r.vast.ShowInstances(ctx)
+	if err == nil && len(instances) > 0 {
+		for _, inst := range instances {
+			if inst.Status == "running" && inst.SSHHost != "" && inst.SSHPort > 0 {
+				fmt.Fprintf(os.Stderr, "scp-runner: reusing existing instance %d (%s:%d)\n", inst.ID, inst.SSHHost, inst.SSHPort)
+				r.instanceID = inst.ID
+				r.gpuName = inst.GPUName
+				return r.Connect(ctx, inst.SSHHost, inst.SSHPort)
+			}
+		}
+	}
+
+	// Search for offers.
+	offers, err := r.vast.SearchOffers(ctx, gpuFilter)
+	if err != nil {
+		return fmt.Errorf("search offers: %w", err)
+	}
+	if len(offers) == 0 {
+		return fmt.Errorf("no GPU offers found for filter: %s", gpuFilter)
+	}
+
+	// Pick cheapest offer (already sorted by dph_total).
+	offer := offers[0]
+	fmt.Fprintf(os.Stderr, "scp-runner: creating instance on %s ($%.3f/hr, %d MB VRAM)\n",
+		offer.GPUName, offer.DPHTot, offer.GPUMemMB)
+
+	instanceID, err := r.vast.CreateInstance(ctx, offer.ID, defaultImage, defaultDiskGB, defaultOnstart)
+	if err != nil {
+		return fmt.Errorf("create instance: %w", err)
+	}
+	r.instanceID = instanceID
+	r.gpuName = offer.GPUName
+
+	// Wait for instance to become ready with SSH info.
+	fmt.Fprintf(os.Stderr, "scp-runner: waiting for instance %d to start...\n", instanceID)
+	deadline := time.Now().Add(5 * time.Minute)
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		default:
+		}
+		if time.Now().After(deadline) {
+			return fmt.Errorf("instance %d did not become ready within 5 minutes", instanceID)
+		}
+
+		instances, err := r.vast.ShowInstances(ctx)
+		if err != nil {
+			time.Sleep(5 * time.Second)
+			continue
+		}
+		for _, i := range instances {
+			if i.ID == instanceID && i.Status == "running" && i.SSHHost != "" && i.SSHPort > 0 {
+				fmt.Fprintf(os.Stderr, "scp-runner: instance ready at %s:%d\n", i.SSHHost, i.SSHPort)
+				if err := r.Connect(ctx, i.SSHHost, i.SSHPort); err != nil {
+					return err
+				}
+				return r.waitOnstart(ctx)
+			}
+		}
+		time.Sleep(5 * time.Second)
+	}
+}
+
+// waitOnstart polls until the onstart script has finished by checking for libzstd and nvcc.
+func (r *RemoteExecutor) waitOnstart(_ context.Context) error {
+	fmt.Fprintf(os.Stderr, "scp-runner: waiting for onstart script to finish...\n")
+	deadline := time.Now().Add(3 * time.Minute)
+	for {
+		// Check if libzstd and nvcc are available (installed by onstart).
+		out, err := r.sshRun(context.Background(), "ldconfig -p | grep -q libzstd && which nvcc && echo READY")
+		if err == nil && strings.Contains(out, "READY") {
+			fmt.Fprintf(os.Stderr, "scp-runner: onstart complete, build tools ready\n")
+			return nil
+		}
+		if time.Now().After(deadline) {
+			return fmt.Errorf("onstart did not complete within 3 minutes (last: %s)", strings.TrimSpace(out))
+		}
+		time.Sleep(5 * time.Second)
+	}
+}
+
 // Connect establishes SSH to an existing instance.
-func (r *RemoteExecutor) Connect(ctx context.Context, host string, port int) error {
+// Uses its own 3-minute timeout independent of the caller's context,
+// since MCP tool calls may have short deadlines but SSH needs time.
+func (r *RemoteExecutor) Connect(_ context.Context, host string, port int) error {
 	r.sshHost = host
 	r.sshPort = port
 
@@ -89,22 +193,18 @@ func (r *RemoteExecutor) Connect(ctx context.Context, host string, port int) err
 
 	addr := net.JoinHostPort(host, strconv.Itoa(port))
 
-	// Retry connection with context awareness.
+	// Retry SSH connection with a fixed 3-minute deadline.
+	deadline := time.Now().Add(3 * time.Minute)
 	var client *ssh.Client
-	for attempt := 0; attempt < 30; attempt++ {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-		}
+	for attempt := 0; ; attempt++ {
 		client, err = ssh.Dial("tcp", addr, config)
 		if err == nil {
 			break
 		}
+		if time.Now().After(deadline) {
+			return fmt.Errorf("ssh dial %s after %d attempts: %w", addr, attempt+1, err)
+		}
 		time.Sleep(5 * time.Second)
-	}
-	if err != nil {
-		return fmt.Errorf("ssh dial %s: %w", addr, err)
 	}
 
 	r.sshClient = client
@@ -199,7 +299,7 @@ func (r *RemoteExecutor) Status(ctx context.Context) (*ExecutorStatus, error) {
 }
 
 func (r *RemoteExecutor) Build(ctx context.Context, sources []string, cmd string) (*BuildResult, error) {
-	hash, err := hashSources(sources)
+	hash, err := hashBuild(sources, cmd)
 	if err != nil {
 		return nil, fmt.Errorf("hash sources: %w", err)
 	}
@@ -210,25 +310,38 @@ func (r *RemoteExecutor) Build(ctx context.Context, sources []string, cmd string
 	// Check remote cache.
 	_, err = r.sshRun(ctx, fmt.Sprintf("test -f %s", remoteBin))
 	if err == nil {
+		r.mu.Lock()
+		r.lastBinary = remoteBin
+		r.mu.Unlock()
 		return &BuildResult{Status: "cached", Binary: remoteBin, Cached: true}, nil
 	}
 
-	// Upload sources.
+	// Upload sources preserving directory structure under /root/src/.
+	// This allows relative includes (e.g. "../format/sfa.h") to work.
+	var cuFiles []string
 	for _, src := range sources {
-		remotePath := "/root/" + filepath.Base(src)
+		remotePath := "/root/src/" + src
+		remoteDir := "/root/src/" + filepath.Dir(src)
+		r.sshRun(ctx, fmt.Sprintf("mkdir -p %s", remoteDir))
 		if err := r.Upload(ctx, src, remotePath); err != nil {
 			return nil, fmt.Errorf("upload %s: %w", src, err)
+		}
+		ext := filepath.Ext(src)
+		if ext == ".cu" || ext == ".c" {
+			cuFiles = append(cuFiles, remotePath)
 		}
 	}
 
 	// Build.
 	if cmd == "" {
-		remoteNames := make([]string, len(sources))
-		for i, s := range sources {
-			remoteNames[i] = "/root/" + filepath.Base(s)
+		// Auto-detect: use nvcc for .cu, gcc for .c
+		if len(cuFiles) > 0 && filepath.Ext(cuFiles[0]) == ".cu" {
+			cmd = fmt.Sprintf("nvcc -O3 -arch=sm_70 -o %s %s -lzstd -lm -lpthread",
+				remoteBin, strings.Join(cuFiles, " "))
+		} else {
+			cmd = fmt.Sprintf("gcc -O3 -march=native -fopenmp -o %s %s -lzstd -lm",
+				remoteBin, strings.Join(cuFiles, " "))
 		}
-		cmd = fmt.Sprintf("nvcc -O3 -arch=sm_70 -o %s %s -lzstd -lm",
-			remoteBin, strings.Join(remoteNames, " "))
 	} else {
 		cmd = strings.ReplaceAll(cmd, "${OUTPUT}", remoteBin)
 	}
@@ -238,10 +351,13 @@ func (r *RemoteExecutor) Build(ctx context.Context, sources []string, cmd string
 		return &BuildResult{Status: "failed", Error: fmt.Sprintf("%v: %s", err, out)}, nil
 	}
 
+	r.mu.Lock()
+	r.lastBinary = remoteBin
+	r.mu.Unlock()
 	return &BuildResult{Status: "built", Binary: remoteBin}, nil
 }
 
-func (r *RemoteExecutor) Run(ctx context.Context, config string, id string) error {
+func (r *RemoteExecutor) Run(ctx context.Context, config string, id string, notifyInterval time.Duration) error {
 	if _, loaded := r.runs.Load(id); loaded {
 		return fmt.Errorf("run %s already exists", id)
 	}
@@ -252,7 +368,8 @@ func (r *RemoteExecutor) Run(ctx context.Context, config string, id string) erro
 			ID:     id,
 			Status: RunStarting,
 		},
-		cancel: cancel,
+		cancel:         cancel,
+		notifyInterval: notifyInterval,
 	}
 	r.runs.Store(id, rr)
 
@@ -262,11 +379,62 @@ func (r *RemoteExecutor) Run(ctx context.Context, config string, id string) erro
 
 func (r *RemoteExecutor) executeRemoteRun(ctx context.Context, rr *remoteRun, config string) {
 	defer rr.cancel()
+	defer func() {
+		if r.OnRunDone != nil {
+			r.OnRunDone()
+		}
+	}()
 	startWall := time.Now()
 
+	// If config looks like file content (key=value), write it remotely and use lastBinary.
+	runCmd := config
+	if isConfigContent(config) {
+		r.mu.Lock()
+		binPath := r.lastBinary
+		r.mu.Unlock()
+		if binPath == "" {
+			rr.mu.Lock()
+			rr.info.Status = RunFailed
+			rr.info.Error = "no binary built yet — call sim_build first"
+			rr.mu.Unlock()
+			return
+		}
+
+		cfgPath := fmt.Sprintf("/root/run_%s.cfg", rr.info.ID)
+		// Write config file to remote.
+		escaped := strings.ReplaceAll(config, "'", "'\\''")
+		_, err := r.sshRun(ctx, fmt.Sprintf("cat > %s << 'CFGEOF'\n%s\nCFGEOF", cfgPath, escaped))
+		if err != nil {
+			rr.mu.Lock()
+			rr.info.Status = RunFailed
+			rr.info.Error = fmt.Sprintf("write config: %v", err)
+			rr.mu.Unlock()
+			return
+		}
+
+		// Parse TotalTime from config.
+		for _, line := range strings.Split(config, "\n") {
+			line = strings.TrimSpace(line)
+			if strings.HasPrefix(line, "T") {
+				parts := strings.SplitN(line, "=", 2)
+				if len(parts) == 2 && strings.TrimSpace(parts[0]) == "T" {
+					if t, err := strconv.ParseFloat(strings.TrimSpace(parts[1]), 64); err == nil {
+						rr.mu.Lock()
+						rr.info.TotalTime = t
+						rr.mu.Unlock()
+					}
+				}
+			}
+		}
+
+		runCmd = fmt.Sprintf("%s %s", binPath, cfgPath)
+	}
+
 	// Start simulation with nohup so it survives SSH drops.
+	// Write exit code to a .exit file so we can check it from another session.
 	logFile := fmt.Sprintf("/root/run_%s.log", rr.info.ID)
-	cmd := fmt.Sprintf("nohup bash -c '%s' > %s 2>&1 & echo $!", config, logFile)
+	exitFile := fmt.Sprintf("/root/run_%s.exit", rr.info.ID)
+	cmd := fmt.Sprintf("nohup bash -c '%s; echo $? > %s' > %s 2>&1 & echo $!", runCmd, exitFile, logFile)
 
 	out, err := r.sshRun(ctx, cmd)
 	if err != nil {
@@ -303,31 +471,56 @@ func (r *RemoteExecutor) executeRemoteRun(ctx context.Context, rr *remoteRun, co
 		_, err := r.sshRun(ctx, fmt.Sprintf("kill -0 %s 2>/dev/null", pid))
 		alive := err == nil
 
-		// Read last diag line.
-		diagOut, _ := r.sshRun(ctx, fmt.Sprintf("tail -1 %s 2>/dev/null", logFile))
-		diagLine := strings.TrimSpace(diagOut)
+		// Read recent log lines: last line for LastDiag, last "t=" line for SimTime.
+		diagOut, _ := r.sshRun(ctx, fmt.Sprintf("tail -20 %s 2>/dev/null", logFile))
+		lines := strings.Split(strings.TrimSpace(diagOut), "\n")
 
 		rr.mu.Lock()
 		rr.info.WallSecs = time.Since(startWall).Seconds()
-		if diagLine != "" {
-			rr.info.LastDiag = diagLine
-			if fields := strings.Fields(diagLine); len(fields) > 0 {
-				if t, err := strconv.ParseFloat(fields[0], 64); err == nil {
-					rr.info.SimTime = t
+		if len(lines) > 0 && lines[len(lines)-1] != "" {
+			rr.info.LastDiag = lines[len(lines)-1]
+			// Find the last "t=" progress line for SimTime.
+			for i := len(lines) - 1; i >= 0; i-- {
+				if strings.HasPrefix(lines[i], "t=") {
+					rest := strings.TrimPrefix(lines[i], "t=")
+					if idx := strings.Index(rest, " E"); idx > 0 {
+						if t, err := strconv.ParseFloat(strings.TrimSpace(rest[:idx]), 64); err == nil {
+							rr.info.SimTime = t
+						}
+					}
+					break
 				}
 			}
 		}
 
 		if !alive {
-			// Check exit status.
-			exitOut, _ := r.sshRun(ctx, fmt.Sprintf("wait %s 2>/dev/null; echo $?", pid))
+			// Process is gone. Check exit code from a wrapper file written at start.
+			// Since `wait` doesn't work across SSH sessions, we check if the log
+			// contains error indicators or if the nohup process wrote an exit marker.
+			exitOut, _ := r.sshRun(ctx, fmt.Sprintf("cat /root/run_%s.exit 2>/dev/null", rr.info.ID))
 			exitCode := strings.TrimSpace(exitOut)
-			switch exitCode {
-			case "0", "":
+			if exitCode == "" {
+				// No exit file — assume success if log has content, failure otherwise.
+				logCheck, _ := r.sshRun(ctx, fmt.Sprintf("wc -l < %s 2>/dev/null", logFile))
+				lines := strings.TrimSpace(logCheck)
+				if lines != "" && lines != "0" {
+					rr.info.Status = RunComplete
+				} else {
+					rr.info.Status = RunFailed
+					rr.info.Error = "process exited with no output"
+				}
+			} else if exitCode == "0" {
 				rr.info.Status = RunComplete
-			default:
+			} else {
+				// Non-zero exit — grab last 20 lines of log for error context.
+				tailOut, _ := r.sshRun(ctx, fmt.Sprintf("tail -20 %s 2>/dev/null", logFile))
+				tail := strings.TrimSpace(tailOut)
+				if tail != "" {
+					rr.info.Error = fmt.Sprintf("exit code %s\n%s", exitCode, tail)
+				} else {
+					rr.info.Error = fmt.Sprintf("exit code %s", exitCode)
+				}
 				rr.info.Status = RunFailed
-				rr.info.Error = fmt.Sprintf("exit code %s", exitCode)
 			}
 			rr.mu.Unlock()
 			return

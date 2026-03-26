@@ -8,7 +8,9 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"reflect"
+	"strings"
 	"sync"
 	"time"
 )
@@ -51,6 +53,7 @@ type MCPServer struct {
 	mu       sync.RWMutex
 	writeMu  sync.Mutex
 	writer   *json.Encoder
+	monitor  *Monitor
 }
 
 func NewMCPServer(executor Executor) *MCPServer {
@@ -114,7 +117,8 @@ func (s *MCPServer) handleInitialize(req *jsonRPCRequest) {
 	result := map[string]any{
 		"protocolVersion": "2024-11-05",
 		"capabilities": map[string]any{
-			"tools": map[string]any{},
+			"tools":   map[string]any{},
+			"logging": map[string]any{},
 		},
 		"serverInfo": map[string]any{
 			"name":    "scp-runner",
@@ -216,6 +220,33 @@ func (s *MCPServer) sendError(id any, code int, msg string) {
 	s.writer.Encode(resp)
 }
 
+// sendNotification sends a server-initiated JSON-RPC notification (no id, no response expected).
+func (s *MCPServer) sendNotification(method string, params any) {
+	data, err := json.Marshal(params)
+	if err != nil {
+		log.Printf("marshal notification: %v", err)
+		return
+	}
+	msg := map[string]any{
+		"jsonrpc": "2.0",
+		"method":  method,
+		"params":  json.RawMessage(data),
+	}
+	s.writeMu.Lock()
+	defer s.writeMu.Unlock()
+	s.writer.Encode(msg)
+}
+
+// sendLogMessage sends an MCP logging notification (notifications/message).
+// This is the standard MCP method that clients like Claude Code surface to users.
+func (s *MCPServer) sendLogMessage(level string, message string) {
+	s.sendNotification("notifications/message", map[string]any{
+		"level":  level,
+		"logger": "scp-runner",
+		"data":   message,
+	})
+}
+
 // --- Tool table ---
 
 func (s *MCPServer) buildToolTable() []ToolDef {
@@ -292,6 +323,12 @@ func (s *MCPServer) buildToolTable() []ToolDef {
 			InputType:   reflect.TypeOf(SimExecParams{}),
 			Handler:     s.handleExec,
 		},
+		{
+			Name:        "sim_list_templates",
+			Description: "List available template SFA files for use with init=template",
+			InputType:   reflect.TypeOf(SimListTemplatesParams{}),
+			Handler:     s.handleListTemplates,
+		},
 	}
 }
 
@@ -308,6 +345,9 @@ func (s *MCPServer) handleSetup(ctx context.Context, raw any) (any, error) {
 	switch ExecType(p.Executor) {
 	case ExecLocal:
 		local := NewLocalExecutor(workDir)
+		if s.monitor != nil {
+			local.OnRunDone = s.monitor.Wakeup
+		}
 		if err := local.Setup(ctx); err != nil {
 			return nil, fmt.Errorf("local setup: %w", err)
 		}
@@ -318,18 +358,34 @@ func (s *MCPServer) handleSetup(ctx context.Context, raw any) (any, error) {
 
 	case ExecRemote:
 		remote := NewRemoteExecutor(RemoteConfig{WorkDir: workDir})
+		if s.monitor != nil {
+			remote.OnRunDone = s.monitor.Wakeup
+		}
 		if err := remote.Setup(ctx); err != nil {
 			return nil, fmt.Errorf("remote setup: %w", err)
 		}
 		if p.Host != "" && p.Port > 0 {
+			// Connect to existing instance.
 			if err := remote.Connect(ctx, p.Host, p.Port); err != nil {
 				return nil, fmt.Errorf("connect: %w", err)
+			}
+		} else {
+			// Auto-provision: find/create a Vast.ai instance.
+			if err := remote.Provision(ctx, p.GPUFilter); err != nil {
+				return nil, fmt.Errorf("provision: %w", err)
 			}
 		}
 		s.mu.Lock()
 		s.executor = remote
 		s.mu.Unlock()
-		return &SimSetupResult{Status: "ok", Type: "remote", Host: p.Host}, nil
+		return &SimSetupResult{
+			Status:     "ok",
+			Type:       "remote",
+			Host:       remote.sshHost,
+			Port:       remote.sshPort,
+			GPUName:    remote.gpuName,
+			InstanceID: remote.instanceID,
+		}, nil
 
 	default:
 		return nil, fmt.Errorf("unknown type: %s (use 'local' or 'remote')", p.Executor)
@@ -380,6 +436,45 @@ func (s *MCPServer) handleBuild(ctx context.Context, raw any) (any, error) {
 	return ex.Build(ctx, p.Sources, p.Cmd)
 }
 
+// validInitModes lists the init modes supported by the simulation kernel.
+var validInitModes = map[string]string{
+	"oscillon": "Analytical oscillon initialization",
+	"braid":    "Braid (topological winding) initialization",
+	"sfa":      "Load full state from an SFA file (init_sfa=path, init_frame=N)",
+	"exec":     "Run an external program to generate initial conditions (init_exec=cmd)",
+	"template": "Stamp a small template SFA into an analytical background (init_sfa=path)",
+}
+
+// replaceConfigValue replaces the value of a key in key=value config content.
+func replaceConfigValue(config, key, newVal string) string {
+	var lines []string
+	for _, line := range strings.Split(config, "\n") {
+		trimmed := strings.TrimSpace(line)
+		parts := strings.SplitN(trimmed, "=", 2)
+		if len(parts) == 2 && strings.TrimSpace(parts[0]) == key {
+			lines = append(lines, key+"="+newVal)
+		} else {
+			lines = append(lines, line)
+		}
+	}
+	return strings.Join(lines, "\n")
+}
+
+// parseConfigValue extracts a key's value from key=value config content.
+func parseConfigValue(config, key string) string {
+	for _, line := range strings.Split(config, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || line[0] == '#' {
+			continue
+		}
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) == 2 && strings.TrimSpace(parts[0]) == key {
+			return strings.TrimSpace(parts[1])
+		}
+	}
+	return ""
+}
+
 func (s *MCPServer) handleRun(ctx context.Context, raw any) (any, error) {
 	p := raw.(*SimRunParams)
 
@@ -390,10 +485,76 @@ func (s *MCPServer) handleRun(ctx context.Context, raw any) (any, error) {
 	if p.Config == "" || p.ID == "" {
 		return nil, fmt.Errorf("config and id required")
 	}
-	if err := ex.Run(ctx, p.Config, p.ID); err != nil {
+
+	// Validate init mode if config is key=value content.
+	var initMode, initSFA string
+	if isConfigContent(p.Config) {
+		initMode = parseConfigValue(p.Config, "init")
+		initSFA = parseConfigValue(p.Config, "init_sfa")
+
+		if initMode == "" {
+			return nil, fmt.Errorf("config missing 'init' key — valid modes: oscillon, braid, sfa, exec, template")
+		}
+		if _, ok := validInitModes[initMode]; !ok {
+			modes := make([]string, 0, len(validInitModes))
+			for m := range validInitModes {
+				modes = append(modes, m)
+			}
+			return nil, fmt.Errorf("unknown init mode %q — valid modes: %s", initMode, strings.Join(modes, ", "))
+		}
+
+		// For template and sfa modes, validate that init_sfa is provided and the file exists.
+		if initMode == "template" || initMode == "sfa" {
+			if initSFA == "" {
+				return nil, fmt.Errorf("init=%s requires init_sfa=<path> to be set in config — use sim_list_templates to see available templates", initMode)
+			}
+			// Resolve bare names (e.g. "proton") to sfa/templates/proton.sfa.
+			initSFA = resolveTemplatePath(initSFA)
+			// Rewrite the config with the resolved absolute path.
+			p.Config = replaceConfigValue(p.Config, "init_sfa", initSFA)
+
+			// For local executor, check if the file exists.
+			if ex.Type() == ExecLocal {
+				if _, err := os.Stat(initSFA); err != nil {
+					return nil, fmt.Errorf("init_sfa file not found: %s — use sim_list_templates to see available templates", initSFA)
+				}
+			}
+		}
+	}
+
+	notifyInterval := time.Duration(p.NotifyInterval * float64(time.Second))
+	if err := ex.Run(ctx, p.Config, p.ID, notifyInterval); err != nil {
 		return nil, err
 	}
-	return &SimRunResult{RunID: p.ID, Status: "started", Executor: string(ex.Type())}, nil
+
+	if !p.Wait {
+		return &SimRunResult{
+			RunID:    p.ID,
+			Status:   "started",
+			Executor: string(ex.Type()),
+			Init:     initMode,
+			InitSFA:  initSFA,
+		}, nil
+	}
+
+	// Block until run completes, polling every 2 seconds.
+	ticker := time.NewTicker(2 * time.Second)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-ticker.C:
+			info := ex.RunStatus(p.ID)
+			if info == nil {
+				return nil, fmt.Errorf("run %s disappeared", p.ID)
+			}
+			switch info.Status {
+			case RunComplete, RunFailed, RunCancelled:
+				return info, nil
+			}
+		}
+	}
 }
 
 func (s *MCPServer) handleRunStatus(_ context.Context, raw any) (any, error) {
@@ -494,6 +655,83 @@ func (s *MCPServer) handleListFiles(ctx context.Context, raw any) (any, error) {
 		return nil, err
 	}
 	return &SimListFilesResult{Files: files}, nil
+}
+
+// findTemplatesDir locates the sfa/templates/ directory by walking up from cwd.
+func findTemplatesDir() string {
+	cwd, _ := os.Getwd()
+	for d := cwd; d != "/"; d = filepath.Dir(d) {
+		td := filepath.Join(d, "sfa", "templates")
+		if info, err := os.Stat(td); err == nil && info.IsDir() {
+			return td
+		}
+	}
+	return ""
+}
+
+// resolveTemplatePath resolves an init_sfa value to an absolute path.
+// If the value is already absolute and exists, it is returned as-is.
+// Otherwise, it checks the sfa/templates/ directory for a match
+// (with or without .sfa extension).
+func resolveTemplatePath(initSFA string) string {
+	// Already absolute and exists — use directly.
+	if filepath.IsAbs(initSFA) {
+		if _, err := os.Stat(initSFA); err == nil {
+			return initSFA
+		}
+	}
+
+	td := findTemplatesDir()
+	if td == "" {
+		return initSFA
+	}
+
+	// Try exact name in templates dir.
+	candidate := filepath.Join(td, initSFA)
+	if _, err := os.Stat(candidate); err == nil {
+		return candidate
+	}
+
+	// Try with .sfa extension.
+	if !strings.HasSuffix(initSFA, ".sfa") {
+		candidate = filepath.Join(td, initSFA+".sfa")
+		if _, err := os.Stat(candidate); err == nil {
+			return candidate
+		}
+	}
+
+	return initSFA
+}
+
+func (s *MCPServer) handleListTemplates(_ context.Context, _ any) (any, error) {
+	td := findTemplatesDir()
+	if td == "" {
+		return nil, fmt.Errorf("sfa/templates/ directory not found — expected at <project>/sfa/templates/")
+	}
+
+	entries, err := os.ReadDir(td)
+	if err != nil {
+		return nil, fmt.Errorf("read templates dir: %w", err)
+	}
+
+	var templates []TemplateInfo
+	for _, e := range entries {
+		if e.IsDir() || !strings.HasSuffix(e.Name(), ".sfa") {
+			continue
+		}
+		info, err := e.Info()
+		if err != nil {
+			continue
+		}
+		templates = append(templates, TemplateInfo{
+			Path:    filepath.Join(td, e.Name()),
+			Name:    strings.TrimSuffix(e.Name(), ".sfa"),
+			Size:    info.Size(),
+			ModTime: info.ModTime().Format(time.RFC3339),
+		})
+	}
+
+	return &SimListTemplatesResult{Templates: templates}, nil
 }
 
 func (s *MCPServer) handleExec(ctx context.Context, raw any) (any, error) {

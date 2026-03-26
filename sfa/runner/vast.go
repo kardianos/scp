@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
@@ -50,13 +49,22 @@ func NewVastClient() (*VastClient, error) {
 	if err != nil {
 		return nil, fmt.Errorf("home dir: %w", err)
 	}
-	keyPath := filepath.Join(home, ".vast_api_key")
-	data, err := os.ReadFile(keyPath)
-	if err != nil {
-		// Fall back to env var.
+	keyPaths := []string{
+		filepath.Join(home, ".vast_api_key"),
+		filepath.Join(home, ".config", "vastai", "vast_api_key"),
+	}
+	var data []byte
+	for _, kp := range keyPaths {
+		d, err := os.ReadFile(kp)
+		if err == nil {
+			data = d
+			break
+		}
+	}
+	if data == nil {
 		key := os.Getenv("VAST_API_KEY")
 		if key == "" {
-			return nil, fmt.Errorf("read %s: %w (and VAST_API_KEY not set)", keyPath, err)
+			return nil, fmt.Errorf("no API key found in %v (and VAST_API_KEY not set)", keyPaths)
 		}
 		data = []byte(key)
 	}
@@ -93,14 +101,49 @@ func (v *VastClient) doRequest(ctx context.Context, method, path string, body io
 	return data, nil
 }
 
+// parseFilter converts a CLI-style filter string like "gpu_name=Tesla_V100 num_gpus=1 disk_space>=20"
+// into the Vast.ai API JSON query format: {"gpu_name": {"eq": "Tesla V100"}, "num_gpus": {"eq": "1"}, ...}
+func parseFilter(filter string) map[string]any {
+	query := map[string]any{
+		"verified": map[string]any{"eq": true},
+		"external": map[string]any{"eq": false},
+		"rented":   map[string]any{"eq": false},
+		"order":    [][]string{{"dph_total", "asc"}},
+		"type":     "on-demand",
+	}
+
+	for _, token := range strings.Fields(filter) {
+		// Try operators in order: >=, <=, !=, =, >, <
+		for _, op := range []struct {
+			sym string
+			api string
+		}{
+			{">=", "gte"}, {"<=", "lte"}, {"!=", "neq"}, {"=", "eq"}, {">", "gt"}, {"<", "lt"},
+		} {
+			if idx := strings.Index(token, op.sym); idx > 0 {
+				key := token[:idx]
+				val := token[idx+len(op.sym):]
+				// Replace underscores with spaces in GPU names.
+				if key == "gpu_name" {
+					val = strings.ReplaceAll(val, "_", " ")
+				}
+				query[key] = map[string]any{op.api: val}
+				break
+			}
+		}
+	}
+	return query
+}
+
 // SearchOffers finds available GPU offers matching a filter query.
 func (v *VastClient) SearchOffers(ctx context.Context, filter string) ([]VastOffer, error) {
-	q := url.Values{}
-	q.Set("q", filter)
-	q.Set("order", "dph_total")
-	q.Set("type", "on-demand")
+	query := parseFilter(filter)
+	body, err := json.Marshal(query)
+	if err != nil {
+		return nil, fmt.Errorf("marshal query: %w", err)
+	}
 
-	data, err := v.doRequest(ctx, "GET", "/bundles/?"+q.Encode(), nil)
+	data, err := v.doRequest(ctx, "POST", "/bundles/", strings.NewReader(string(body)))
 	if err != nil {
 		return nil, fmt.Errorf("search offers: %w", err)
 	}
@@ -114,8 +157,16 @@ func (v *VastClient) SearchOffers(ctx context.Context, filter string) ([]VastOff
 	return result.Offers, nil
 }
 
-// CreateInstance rents a GPU instance.
-func (v *VastClient) CreateInstance(ctx context.Context, offerID int, image string, diskGB int, onstart string) (*VastInstance, error) {
+// CreateInstanceResult holds the response from creating a Vast.ai instance.
+type CreateInstanceResult struct {
+	Success     bool   `json:"success"`
+	NewContract int    `json:"new_contract"`
+	Error       string `json:"error,omitempty"`
+	Msg         string `json:"msg,omitempty"`
+}
+
+// CreateInstance rents a GPU instance. Returns the instance/contract ID.
+func (v *VastClient) CreateInstance(ctx context.Context, offerID int, image string, diskGB int, onstart string) (int, error) {
 	payload := map[string]any{
 		"client_id": "me",
 		"image":     image,
@@ -124,19 +175,22 @@ func (v *VastClient) CreateInstance(ctx context.Context, offerID int, image stri
 	}
 	body, err := json.Marshal(payload)
 	if err != nil {
-		return nil, fmt.Errorf("marshal: %w", err)
+		return 0, fmt.Errorf("marshal: %w", err)
 	}
 
 	data, err := v.doRequest(ctx, "PUT", fmt.Sprintf("/asks/%d/", offerID), strings.NewReader(string(body)))
 	if err != nil {
-		return nil, fmt.Errorf("create instance: %w", err)
+		return 0, fmt.Errorf("create instance: %w", err)
 	}
 
-	var inst VastInstance
-	if err := json.Unmarshal(data, &inst); err != nil {
-		return nil, fmt.Errorf("parse instance: %w", err)
+	var result CreateInstanceResult
+	if err := json.Unmarshal(data, &result); err != nil {
+		return 0, fmt.Errorf("parse response: %w: %s", err, string(data))
 	}
-	return &inst, nil
+	if !result.Success || result.NewContract == 0 {
+		return 0, fmt.Errorf("create failed: %s %s", result.Error, result.Msg)
+	}
+	return result.NewContract, nil
 }
 
 // ShowInstances lists all running instances.

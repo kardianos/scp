@@ -1,9 +1,11 @@
 CC = gcc
 NVCC = nvcc
 CFLAGS = -O3 -fopenmp
-NVFLAGS = -O3 -arch=sm_70
+GPU_ARCH ?= sm_70
+NVFLAGS = -O3 -arch=$(GPU_ARCH)
 LDFLAGS = -lzstd -lm
 SDL_FLAGS = $(shell sdl2-config --cflags --libs 2>/dev/null)
+BINDIR = ../bin
 
 # ---- Analysis tools ----
 
@@ -54,12 +56,11 @@ viewer/volview: viewer/volview.c format/sfa.h
 
 RUNNER_SRC = $(wildcard runner/*.go)
 
-runner/scp-runner: $(RUNNER_SRC)
-	cd runner && go build -o scp-runner .
+$(BINDIR)/scp-runner: $(RUNNER_SRC)
+	@mkdir -p $(BINDIR)
+	cd runner && go build -o $(CURDIR)/$(BINDIR)/scp-runner .
 
 # ---- Targets ----
-
-BINDIR = ../bin
 
 .PHONY: all analysis seeds sim tools runner viewer cuda install clean help
 
@@ -73,7 +74,7 @@ sim: sim/scp_sim sim/scp_multi
 
 tools: $(TOOL_BINS)
 
-runner: runner/scp-runner
+runner: $(BINDIR)/scp-runner
 
 cuda: sim/scp_sim_cuda sim/scp_multi_cuda
 
@@ -85,13 +86,12 @@ install: all
 	@for t in $(SEED_BINS); do cp $$t $(BINDIR)/; done
 	@cp sim/scp_sim $(BINDIR)/
 	@for t in $(TOOL_BINS); do cp $$t $(BINDIR)/; done
-	@cp runner/scp-runner $(BINDIR)/
 	@echo "Installed $$(ls $(BINDIR) | wc -l) binaries to $(BINDIR)/"
 
 clean:
 	rm -f $(ANALYSIS_BINS) $(SEED_BINS) $(TOOL_BINS)
 	rm -f sim/scp_sim sim/scp_multi sim/scp_sim_cuda sim/scp_multi_cuda
-	rm -f viewer/volview runner/scp-runner
+	rm -f viewer/volview
 	rm -rf $(BINDIR)
 
 help:

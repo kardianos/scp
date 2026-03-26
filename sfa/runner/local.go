@@ -17,10 +17,12 @@ import (
 
 // LocalExecutor runs simulations on the local machine.
 type LocalExecutor struct {
-	workDir   string
-	hasNVCC   bool
-	hasGCC    bool
-	startTime time.Time
+	workDir     string
+	hasNVCC     bool
+	hasGCC      bool
+	startTime   time.Time
+	lastBinary  string // set after successful Build
+	OnRunDone   func() // called when any run reaches terminal state
 
 	runs      sync.Map // map[string]*localRun
 	downloads sync.Map // map[string]*DownloadInfo
@@ -28,9 +30,11 @@ type LocalExecutor struct {
 }
 
 type localRun struct {
-	info   RunInfo
-	cancel context.CancelFunc
-	mu     sync.Mutex
+	info           RunInfo
+	cancel         context.CancelFunc
+	notifyInterval time.Duration
+	onDone         func() // called when run reaches terminal state
+	mu             sync.Mutex
 }
 
 func NewLocalExecutor(workDir string) *LocalExecutor {
@@ -116,7 +120,7 @@ func (l *LocalExecutor) Status(ctx context.Context) (*ExecutorStatus, error) {
 }
 
 func (l *LocalExecutor) Build(ctx context.Context, sources []string, cmd string) (*BuildResult, error) {
-	hash, err := hashSources(sources)
+	hash, err := hashBuild(sources, cmd)
 	if err != nil {
 		return nil, fmt.Errorf("hash sources: %w", err)
 	}
@@ -127,6 +131,9 @@ func (l *LocalExecutor) Build(ctx context.Context, sources []string, cmd string)
 
 	// Check cache.
 	if _, err := os.Stat(binPath); err == nil {
+		l.mu.Lock()
+		l.lastBinary = binPath
+		l.mu.Unlock()
 		return &BuildResult{Status: "cached", Binary: binPath, Cached: true}, nil
 	}
 
@@ -144,10 +151,29 @@ func (l *LocalExecutor) Build(ctx context.Context, sources []string, cmd string)
 		return &BuildResult{Status: "failed", Error: fmt.Sprintf("%v: %s", err, out)}, nil
 	}
 
+	l.mu.Lock()
+	l.lastBinary = binPath
+	l.mu.Unlock()
 	return &BuildResult{Status: "built", Binary: binPath}, nil
 }
 
-func (l *LocalExecutor) Run(ctx context.Context, config string, id string) error {
+// isConfigContent returns true if s looks like config file content (key=value lines)
+// rather than a command to execute.
+func isConfigContent(s string) bool {
+	for _, line := range strings.Split(s, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || line[0] == '#' {
+			continue
+		}
+		if strings.Contains(line, "=") {
+			return true
+		}
+		return false // first non-empty, non-comment line has no '=' → it's a command
+	}
+	return false
+}
+
+func (l *LocalExecutor) Run(ctx context.Context, config string, id string, notifyInterval time.Duration) error {
 	if _, loaded := l.runs.Load(id); loaded {
 		return fmt.Errorf("run %s already exists", id)
 	}
@@ -158,7 +184,8 @@ func (l *LocalExecutor) Run(ctx context.Context, config string, id string) error
 			ID:     id,
 			Status: RunStarting,
 		},
-		cancel: cancel,
+		cancel:         cancel,
+		notifyInterval: notifyInterval,
 	}
 	l.runs.Store(id, lr)
 
@@ -168,30 +195,68 @@ func (l *LocalExecutor) Run(ctx context.Context, config string, id string) error
 
 func (l *LocalExecutor) executeRun(ctx context.Context, lr *localRun, config string) {
 	defer lr.cancel()
+	defer func() {
+		if l.OnRunDone != nil {
+			l.OnRunDone()
+		}
+	}()
 	startWall := time.Now()
 
-	// Parse config to find binary and args.
-	// Expected format: binary_path [args...] or binary_path -c config_file
-	parts := strings.Fields(config)
-	if len(parts) == 0 {
-		lr.mu.Lock()
-		lr.info.Status = RunFailed
-		lr.info.Error = "empty config"
-		lr.mu.Unlock()
-		return
+	var binPath string
+	var args []string
+
+	if isConfigContent(config) {
+		// Write config to a file and use lastBinary.
+		l.mu.Lock()
+		binPath = l.lastBinary
+		l.mu.Unlock()
+		if binPath == "" {
+			lr.mu.Lock()
+			lr.info.Status = RunFailed
+			lr.info.Error = "no binary built yet — call sim_build first"
+			lr.mu.Unlock()
+			return
+		}
+
+		cfgPath := filepath.Join(l.workDir, fmt.Sprintf("run_%s.cfg", lr.info.ID))
+		if err := os.WriteFile(cfgPath, []byte(config), 0644); err != nil {
+			lr.mu.Lock()
+			lr.info.Status = RunFailed
+			lr.info.Error = fmt.Sprintf("write config: %v", err)
+			lr.mu.Unlock()
+			return
+		}
+		args = []string{cfgPath}
+	} else {
+		// Treat as a command line: binary [args...]
+		parts := strings.Fields(config)
+		if len(parts) == 0 {
+			lr.mu.Lock()
+			lr.info.Status = RunFailed
+			lr.info.Error = "empty config"
+			lr.mu.Unlock()
+			return
+		}
+		binPath = parts[0]
+		args = parts[1:]
 	}
 
-	cmd := exec.CommandContext(ctx, parts[0], parts[1:]...)
+	cmd := exec.CommandContext(ctx, binPath, args...)
 	cmd.Dir = l.workDir
 
-	stderr, err := cmd.StderrPipe()
+	// Capture stdout for progress lines (sim writes progress to stdout).
+	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		lr.mu.Lock()
 		lr.info.Status = RunFailed
-		lr.info.Error = fmt.Sprintf("stderr pipe: %v", err)
+		lr.info.Error = fmt.Sprintf("stdout pipe: %v", err)
 		lr.mu.Unlock()
 		return
 	}
+
+	// Capture stderr for error reporting on non-zero exit.
+	var stderrBuf strings.Builder
+	cmd.Stderr = &stderrBuf
 
 	if err := cmd.Start(); err != nil {
 		lr.mu.Lock()
@@ -205,8 +270,28 @@ func (l *LocalExecutor) executeRun(ctx context.Context, lr *localRun, config str
 	lr.info.Status = RunRunning
 	lr.mu.Unlock()
 
-	// Tail stderr for diagnostic output.
-	go l.tailDiag(ctx, lr, stderr)
+	// Tail stdout for progress output (t=... lines).
+	go l.tailDiag(ctx, lr, stdout)
+
+	// Also parse total_time from config if present.
+	if isConfigContent(config) {
+		for _, line := range strings.Split(config, "\n") {
+			line = strings.TrimSpace(line)
+			if strings.HasPrefix(line, "T") {
+				parts := strings.SplitN(line, "=", 2)
+				if len(parts) == 2 {
+					key := strings.TrimSpace(parts[0])
+					if key == "T" {
+						if t, err := strconv.ParseFloat(strings.TrimSpace(parts[1]), 64); err == nil {
+							lr.mu.Lock()
+							lr.info.TotalTime = t
+							lr.mu.Unlock()
+						}
+					}
+				}
+			}
+		}
+	}
 
 	// Wait for process.
 	err = cmd.Wait()
@@ -221,7 +306,14 @@ func (l *LocalExecutor) executeRun(ctx context.Context, lr *localRun, config str
 		lr.info.Status = RunCancelled
 	case err != nil:
 		lr.info.Status = RunFailed
-		lr.info.Error = err.Error()
+		stderr := strings.TrimSpace(stderrBuf.String())
+		if stderr != "" {
+			lr.info.Error = fmt.Sprintf("%v\n%s", err, stderr)
+		} else if lr.info.LastDiag != "" {
+			lr.info.Error = fmt.Sprintf("%v\nlast output: %s", err, lr.info.LastDiag)
+		} else {
+			lr.info.Error = err.Error()
+		}
 	default:
 		lr.info.Status = RunComplete
 	}
@@ -242,10 +334,14 @@ func (l *LocalExecutor) tailDiag(ctx context.Context, lr *localRun, r io.Reader)
 		line := scanner.Text()
 		lr.mu.Lock()
 		lr.info.LastDiag = line
-		// Parse sim_time from first tab-separated field.
-		if fields := strings.Fields(line); len(fields) > 0 {
-			if t, err := strconv.ParseFloat(fields[0], 64); err == nil {
-				lr.info.SimTime = t
+		// Parse sim_time from progress lines like "t=    3.0 E=..."
+		// The %7.1f format pads with spaces, so extract between "t=" and " E"
+		if strings.HasPrefix(line, "t=") {
+			rest := strings.TrimPrefix(line, "t=")
+			if idx := strings.Index(rest, " E"); idx > 0 {
+				if t, err := strconv.ParseFloat(strings.TrimSpace(rest[:idx]), 64); err == nil {
+					lr.info.SimTime = t
+				}
 			}
 		}
 		lr.mu.Unlock()

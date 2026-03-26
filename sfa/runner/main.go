@@ -18,8 +18,9 @@ func main() {
 	// Create MCP server with no executor initially (sim_setup will configure one).
 	server := NewMCPServer(nil)
 
-	// Start background monitor.
+	// Start background monitor and link it to the server.
 	monitor := NewMonitor(server, "/tmp/scp-runner")
+	server.monitor = monitor
 	go monitor.Run(ctx)
 
 	log.Println("scp-runner: MCP server starting on stdio")

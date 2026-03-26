@@ -42,24 +42,44 @@ execution, both local and remote. It exposes `sim_*` tools via MCP that handle
 instance management, building, running, monitoring, and downloading — with NO
 sleep polling required. Use these tools instead of manual SSH/SCP/rsync.
 
+**IMPORTANT: Only one executor is active at a time.** Calling `sim_setup` replaces
+the current executor. To run local then remote, complete the local workflow first,
+then call `sim_setup(executor="remote")` to switch.
+
 **Local execution** (CPU, for quick tests):
 ```
 sim_setup(executor="local")
-sim_build(sources=["sfa/sim/scp_sim.c"], cmd="gcc -O3 -march=native -fopenmp -o scp_sim scp_sim.c -lzstd -lm")
-sim_run(config="N=128\nL=25\nT=10\n...", id="test_001")
+sim_build(sources=["sfa/sim/scp_sim.c"])          ← auto-detects gcc
+sim_run(config="N=64\nL=15\nT=5\n...", id="test_001")  ← config content, uses last-built binary
 sim_run_status(id="test_001")   ← instant, no polling
 ```
 
 **Remote execution** (GPU, for production runs):
 ```
-sim_setup(executor="remote")     ← auto-creates Vast.ai instance
-sim_build(sources=["sfa/sim/scp_sim.cu", "sfa/format/sfa.h"],
-          cmd="nvcc -O3 -arch=sm_70 -o scp_sim_cuda scp_sim.cu -lzstd -lm -lpthread")
+sim_setup(executor="remote")     ← auto-provisions Vast.ai instance (reuses existing if running)
+sim_build(sources=["sfa/sim/scp_sim.cu", "sfa/format/sfa.h"])  ← auto-detects nvcc
 sim_run(config="N=384\nL=100\nT=200\n...", id="gradient_test")
 sim_run_status(id="gradient_test")
 sim_download(remote_path="output.sfa", local_path="/space/scp/results/")
 sim_teardown()                   ← verifies downloads, destroys instance
 ```
+
+**Remote with existing instance** (connect to already-running GPU):
+```
+sim_setup(executor="remote", host="ssh5.vast.ai", port=12345)
+```
+
+**Custom GPU filter** (default is V100 16GB):
+```
+sim_setup(executor="remote", gpu_filter="gpu_name=RTX_4090 num_gpus=1 rentable=true disk_space>=20")
+```
+
+**sim_run config**: Pass config file content (key=value lines). The runner writes it to
+a `.cfg` file and invokes the last-built binary automatically. Alternatively, pass a
+command string (e.g. `/path/to/binary /path/to/config.cfg`) for direct execution.
+
+**sim_build**: Omit `cmd` for auto-detection (gcc for .c, nvcc for .cu). If you need
+a custom build command, use `${OUTPUT}` as the output path placeholder.
 
 **DO NOT** use manual SSH, SCP, rsync, or `sleep N` polling for simulation work.
 The runner handles all of this internally with goroutines — every tool call

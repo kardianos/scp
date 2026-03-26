@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -12,10 +13,28 @@ import (
 
 // StatusState holds the latest snapshot written to disk.
 type StatusState struct {
-	Executor  *ExecutorStatus        `json:"executor,omitempty"`
-	Runs      map[string]*RunInfo    `json:"runs,omitempty"`
+	Executor  *ExecutorStatus          `json:"executor,omitempty"`
+	Runs      map[string]*RunInfo      `json:"runs,omitempty"`
 	Downloads map[string]*DownloadInfo `json:"downloads,omitempty"`
-	UpdatedAt string                 `json:"updated_at"`
+	UpdatedAt string                   `json:"updated_at"`
+}
+
+// ProgressNotification is the payload for notifications/sim_progress.
+type ProgressNotification struct {
+	ID        string   `json:"id"`
+	Status    RunState `json:"status"`
+	SimTime   float64  `json:"sim_time"`
+	TotalTime float64  `json:"total_time"`
+	WallSecs  float64  `json:"wall_seconds"`
+	LastDiag  string   `json:"last_diag,omitempty"`
+	Error     string   `json:"error,omitempty"`
+	Done      bool     `json:"done"`
+}
+
+// notifyState tracks per-run notification timing.
+type notifyState struct {
+	lastNotify time.Time
+	doneSent   bool
 }
 
 // Monitor writes periodic status snapshots and manages background tasks.
@@ -24,12 +43,24 @@ type Monitor struct {
 	dir     string
 	mu      sync.Mutex
 	latest  StatusState
+	notify  map[string]*notifyState // per-run notification tracking
+	wakeup  chan struct{}           // signal for immediate notification check
 }
 
 func NewMonitor(server *MCPServer, dir string) *Monitor {
 	return &Monitor{
 		server: server,
 		dir:    dir,
+		notify: make(map[string]*notifyState),
+		wakeup: make(chan struct{}, 4),
+	}
+}
+
+// Wakeup triggers an immediate notification check (non-blocking).
+func (m *Monitor) Wakeup() {
+	select {
+	case m.wakeup <- struct{}{}:
+	default:
 	}
 }
 
@@ -49,6 +80,8 @@ func (m *Monitor) Run(ctx context.Context) {
 			return
 		case <-ticker.C:
 			m.snapshot(ctx)
+		case <-m.wakeup:
+			m.snapshot(ctx)
 		}
 	}
 }
@@ -67,8 +100,9 @@ func (m *Monitor) snapshot(ctx context.Context) {
 			state.Executor = status
 		}
 
-		// Collect run states.
+		// Collect run states and send notifications.
 		collectRuns(ex, state.Runs)
+		m.sendRunNotifications(ex, state.Runs)
 
 		// Collect download states.
 		collectDownloads(ex, state.Downloads)
@@ -88,6 +122,98 @@ func (m *Monitor) snapshot(ctx context.Context) {
 	m.mu.Lock()
 	m.latest = state
 	m.mu.Unlock()
+}
+
+// sendRunNotifications checks each run and emits progress notifications as needed.
+func (m *Monitor) sendRunNotifications(ex Executor, runs map[string]*RunInfo) {
+	now := time.Now()
+
+	for id, info := range runs {
+		interval := getNotifyInterval(ex, id)
+		if interval <= 0 {
+			continue
+		}
+
+		ns, ok := m.notify[id]
+		if !ok {
+			ns = &notifyState{}
+			m.notify[id] = ns
+		}
+
+		done := info.Status == RunComplete || info.Status == RunFailed || info.Status == RunCancelled
+
+		if done {
+			if !ns.doneSent {
+				pn := ProgressNotification{
+					ID:        id,
+					Status:    info.Status,
+					SimTime:   info.SimTime,
+					TotalTime: info.TotalTime,
+					WallSecs:  info.WallSecs,
+					LastDiag:  info.LastDiag,
+					Error:     info.Error,
+					Done:      true,
+				}
+				m.server.sendNotification("notifications/sim_progress", pn)
+				// Also send standard MCP log message so clients surface it.
+				level := "info"
+				msg := fmt.Sprintf("[%s] %s — sim_time=%.1f/%.1f wall=%.1fs",
+					id, info.Status, info.SimTime, info.TotalTime, info.WallSecs)
+				if info.Status == RunFailed {
+					level = "error"
+					msg = fmt.Sprintf("[%s] FAILED (%.1fs): %s", id, info.WallSecs, info.Error)
+				} else if info.Status == RunCancelled {
+					level = "warning"
+					msg = fmt.Sprintf("[%s] cancelled at sim_time=%.1f/%.1f (%.1fs)",
+						id, info.SimTime, info.TotalTime, info.WallSecs)
+				}
+				m.server.sendLogMessage(level, msg)
+				ns.doneSent = true
+			}
+			continue
+		}
+
+		// Running — check if enough time has elapsed.
+		if now.Sub(ns.lastNotify) >= interval {
+			pn := ProgressNotification{
+				ID:        id,
+				Status:    info.Status,
+				SimTime:   info.SimTime,
+				TotalTime: info.TotalTime,
+				WallSecs:  info.WallSecs,
+				LastDiag:  info.LastDiag,
+				Done:      false,
+			}
+			m.server.sendNotification("notifications/sim_progress", pn)
+			// Also send standard MCP log message for progress.
+			pct := 0.0
+			if info.TotalTime > 0 {
+				pct = 100 * info.SimTime / info.TotalTime
+			}
+			m.server.sendLogMessage("info", fmt.Sprintf("[%s] running — sim_time=%.1f/%.1f (%.0f%%) wall=%.1fs",
+				id, info.SimTime, info.TotalTime, pct, info.WallSecs))
+			ns.lastNotify = now
+		}
+	}
+}
+
+// getNotifyInterval extracts the notify interval from the run's internal struct.
+func getNotifyInterval(ex Executor, id string) time.Duration {
+	switch e := ex.(type) {
+	case *LocalExecutor:
+		v, ok := e.runs.Load(id)
+		if !ok {
+			return 0
+		}
+		return v.(*localRun).notifyInterval
+	case *RemoteExecutor:
+		v, ok := e.runs.Load(id)
+		if !ok {
+			return 0
+		}
+		return v.(*remoteRun).notifyInterval
+	}
+	return 0
 }
 
 // collectRuns gathers run info from the executor's internal maps.

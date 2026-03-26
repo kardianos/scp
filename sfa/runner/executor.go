@@ -97,7 +97,7 @@ type Executor interface {
 
 	Build(ctx context.Context, sources []string, cmd string) (*BuildResult, error)
 
-	Run(ctx context.Context, config string, id string) error
+	Run(ctx context.Context, config string, id string, notifyInterval time.Duration) error
 	RunStatus(id string) *RunInfo
 	RunCancel(id string) error
 
