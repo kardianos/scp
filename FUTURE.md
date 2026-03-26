@@ -67,9 +67,15 @@ test UDD with a distant UUD (separation > 80) — does the UUD's residual
 
 ### F19: Force Equilibration Mechanism
 
-**Status**: Open. In deuterium (V42), the strong/EM force ratio self-tunes
-from 259:1 to 1:1 over T=300. This is an emergent property — not built
-into the initial conditions. Why does the system equilibrate?
+**Status**: Partially addressed [V43]. The V43 binding phase analysis shows
+the binding asymmetry (asym_P) oscillates with the breathing cycle, and
+10/11 frame transitions show asym_P sign matching drift direction. The force
+equilibration is linked to the breathing-driven binding oscillation. However,
+the full mechanism (why 259:1 → 1:1) remains open.
+
+In deuterium (V42), the strong/EM force ratio self-tunes from 259:1 to
+1:1 over T=300. This is an emergent property — not built into the initial
+conditions. Why does the system equilibrate?
 
 Hypothesis: the θ radiation channel drains EM energy until the curl force
 matches the binding force. When they're equal, the energy flow reaches
@@ -82,16 +88,17 @@ at a ratio proportional to η?
 
 ### F20: Intermediate Phase Group in Deuterium
 
-**Status**: Open. At T=500, deuterium developed a third phase group at
-φ≈0.7, intermediate between the two anti-phase groups (-0.79 and +2.40).
-This was NOT seen in single baryons.
+**Status**: Investigated [V43] — null result. The phase group at φ≈0.7 was
+tracked across all V42 frames (t=0 through t=500). It is completely absent
+before t=400 and appears at t=500 as a spatially DIFFUSE population (16,927
+voxels, centroid 18.8 units from the bond midpoint, only 33% within the bond
+region). Its phase spectrum is broad (~1 radian), consistent with incoherent
+radiation from nonlinear wave scattering, not a phase-locked mediator.
 
-This may be the inter-baryon mediator — a field structure that bridges the
-two baryons' phase configurations. In QCD, the nuclear force is mediated
-by pion exchange. The intermediate phase group could be the Cosserat analog.
-
-**Test**: Track the spatial location of φ≈0.7 regions. Are they concentrated
-between the two baryons (at the bond axis)? Do they oscillate or grow?
+**Conclusion**: The intermediate phase group is NOT a localized inter-baryon
+bond. It is a late-time bifurcation of the B-phase population. The nuclear
+force mediator, if it exists as a distinct field structure, must be sought
+in other observables (e.g., depletion overlap, not carrier phase).
 
 ### F24: Controlled Mass Defect Measurement
 
@@ -204,6 +211,12 @@ Field-dependent mass (Track GB) does not help — constant m² is optimal.
 
 ### F2: Gravity Mechanism — Resolved (Dynamic Footprint, NOT Energy Minimization)
 
+**Status**: CONFIRMED for proton [V43]. The V33 braid measurement established
+F ∝ ∇ρ. The V43 proton test confirmed that the physical particle (isotropic,
+spherical) drifts toward low ρ, and that the force is pure φ-depletion
+(η=0 gives same or larger drift than η=0.5). The z-aligned braid drifts
+OPPOSITE, contaminated by EM/anisotropy effects.
+
 **The original tension**: Is the force from DYNAMIC processing (intake
 asymmetry → momentum) or from ENERGY MINIMIZATION (overlapping
 depletions → lower total energy)?
@@ -212,7 +225,7 @@ depletions → lower total energy)?
 response to the local density gradient, linear in ∇ρ. It is NOT
 derivable from the static energy landscape (which is purely repulsive).
 
-**Complete experimental findings** (V33, March 2026):
+**Complete experimental findings** (V33, March 2026; V43 proton confirmation):
 
 1. **Footprint asymmetry CONFIRMED**: In a ρ gradient, the braid's
    perturbation profile (δρ above background) is asymmetric. The
@@ -250,17 +263,19 @@ derivable from the static energy landscape (which is purely repulsive).
    asymmetry provides the mechanism; the gradient sets the magnitude.
 
 **Summary of mechanism**:
-- The braid's oscillation cycle creates an asymmetric spatial perturbation
+- The particle's oscillation cycle creates an asymmetric spatial perturbation
   in a ρ gradient (footprint extends further into depleted side)
 - This asymmetry produces a net force proportional to ∇ρ
-- The force is DYNAMIC (from the braid's ongoing interaction with the
+- The force is DYNAMIC (from the particle's ongoing interaction with the
   gradient field), not from static energy minimization
 - The coupling strength is proportional to ρ (stronger in dense field)
-- The force direction is toward depletion = toward other braids = GRAVITY
+- The force direction is toward depletion = toward other particles = GRAVITY
+- Confirmed for the proton composite (V43); bare z-aligned braids drift
+  opposite due to EM anisotropy dominating the gravitational signal
 
 **Still open**:
-- Precise analytical derivation of the proportionality constant C ≈ 186
-- Connection between C and braid parameters (m, μ, κ, braid size)
+- Precise measurement of C_proton (pure gravitational coupling constant)
+- Connection between C and particle parameters (m, μ, κ, particle size)
 - N=512 gradient test in progress — higher resolution confirmation
 
 **Source**: Gemini-02 §1, V33 tests (footprint, drag, energy_vs_D, gradient sweep).
@@ -305,11 +320,11 @@ of the φ field. If EM is added (complex fields + gauge), do EM waves
 also deplete the background?
 
 **Test**: Once EM is integrated (see F8), send a localized EM wave packet
-through the field. Does it create a depletion zone? Does a braid respond
+through the field. Does it create a depletion zone? Does a proton respond
 to it gravitationally?
 
 **If NO**: the model violates the equivalence principle. Only "matter"
-(braids) gravitates, not radiation. This would be a fundamental failure.
+(baryons) gravitates, not radiation. This would be a fundamental failure.
 
 **Source**: Gemini-02 §4.
 
@@ -350,9 +365,10 @@ Massless θ (m_θ=0) sourced by the braid's helical twist.
 
 ### F7: Multi-Braid Formation (Nucleosynthesis)
 
-**Concept**: Heavier "atoms" are braids sharing helical structure, formed
-by condensation from hot dense field (stellar nucleosynthesis analog),
-NOT by collision of existing braids (which scatter, V33-C3).
+**Concept**: Heavier nuclei are multi-baryon composites, each baryon being
+a phase-confined 3-braid structure. They form by condensation from hot
+dense field (stellar nucleosynthesis analog), NOT by collision of
+existing particles (which scatter, V33-C3).
 
 **Test**: High-density field initialization with controlled cooling.
 V30's expansion tests failed (no spontaneous braids from FRW expansion).
@@ -376,7 +392,50 @@ there is genuine binding energy and the braid is energetically favored.
 
 **Source**: Grok-02 §3.
 
+### F25: Measure C_proton — Pure Gravitational Coupling Constant [V43]
+
+**Status**: Open. The V43 proton gradient test confirms drift toward low ρ
+at two gradient strengths (ΔA=0.04 and 0.10), but the coupling constant
+C_proton = drift/∇ρ has not been precisely extracted. The V33 C=186 used
+a z-aligned braid which drifts OPPOSITE — it is not a clean gravitational
+measurement.
+
+**Test**: Run the proton gradient test at 4+ gradient strengths (ΔA = 0.02,
+0.04, 0.08, 0.12, 0.16). Fit C_proton = drift/∇ρ. Verify linearity
+(R² > 0.99). Compare C_proton to the braid C=186 to quantify the EM
+contamination in the braid measurement.
+
+### F26: Equivalence Principle — Mass-Independent Acceleration [V43]
+
+**Status**: Open. The equivalence principle requires that ALL objects
+experience the same gravitational acceleration in a given gradient,
+regardless of their internal structure. In this theory, this means
+C/m_inert should be constant across different particles.
+
+**Test**: Place protons with different P_int (breathing amplitude) in the
+same gradient. If they drift at the same rate, the equivalence principle
+holds. If drift depends on P_int, gravitational and inertial mass differ.
+Also compare proton vs deuterium drift in the same gradient.
+
+### F27: Braid η=0 Gradient Test — Confirm Opposite-Drift is EM [V43]
+
+**Status**: Open. The V43 test showed the z-aligned braid drifts toward
+HIGH ρ (opposite to gravity). The η=0 braid runs were corrupted/incomplete.
+If the braid at η=0 drifts toward LOW ρ (like the proton), then the
+opposite-drift at η=0.5 is confirmed as an EM artifact. If it still drifts
+toward high ρ, the anisotropy effect is geometric, not electromagnetic.
+
+**Test**: Run braid_gentle_eta0 and braid_steep_eta0 to completion. Compare
+drift direction to the η=0.5 braid results.
+
 ### F9: Analytical Effective Potential
+
+**Status**: Partially resolved [V43]. The analytical derivation had concerns
+(V33 F9v2 skeptic review questioned reproducibility of the braid gradient test).
+The V43 proton gradient test now CONFIRMS the mechanism numerically: the proton
+drifts toward low ρ, the force scales linearly with gradient, and the asymmetric
+binding density |P| directly drives the drift (10/11 frame correlation). The
+analytical derivation of the coupling constant C_proton remains open.
 
 **Goal**: Derive the effective braid-braid interaction potential V_eff(D)
 analytically from linearized perturbation theory around the braid.

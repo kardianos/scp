@@ -2,6 +2,67 @@
 
 ---
 
+## V43: Proton Gradient Force and EM Confirmations (March 2026)
+
+**CONFIRMED**: A pre-converged UUD proton drifts toward LOW density in a
+linear gradient — the gravitational response. This is the first clean
+gravitational measurement using an isotropic test object (aspect ratio
+1.05–1.09), free of the z-aligned braid's EM/anisotropy artifacts.
+
+Centroid drift over T=200 (N=384, L=100, gradient-pinned BCs):
+
+| Object | Gradient ΔA | η | Drift | Direction |
+|--------|------------|---|-------|-----------|
+| Proton | 0.04 (gentle) | 0.5 | +0.80 | → low ρ ✓ |
+| Proton | 0.04 (gentle) | 0.0 | +0.98 | → low ρ ✓ |
+| Proton | 0.10 (steep) | 0.5 | +1.84 | → low ρ ✓ |
+| Braid | 0.04 (gentle) | 0.5 | -1.02 | → high ρ ✗ |
+| Braid | 0.10 (steep) | 0.5 | -2.75 | → high ρ ✗ |
+
+**DISCOVERY**: Gravity is pure φ-depletion. The η=0 proton (no θ coupling)
+drifts +0.98 — slightly MORE than η=0.5 (+0.80). The θ coupling provides a
+small counter-force (radiation drag), but the gravitational mechanism is
+entirely in the position-field sector.
+
+**DISCOVERY**: The z-aligned braid drifts OPPOSITE to gravity (toward high ρ).
+This is an EM/anisotropy artifact, not gravitational. The V33 C=186
+measurement used z-aligned braids and is therefore a mixed gravitational+EM
+quantity, not a pure gravitational coupling constant.
+
+**DISCOVERY**: Asymmetric binding DIRECTLY drives the drift. The density
+gradient creates 20–42% left/right imbalance in |P| (the triple product
+binding density). In 10/11 frame transitions, asym_P sign matches drift
+direction. The φ energy asymmetry is only 1–3% — the force is driven by the
+V(P) coupling, not raw field amplitude. P_total oscillates 54% between peak
+(5.31) and trough (3.05) during the breathing cycle, but the net drift is
+persistent (+1.84 in the steep case).
+
+**DISCOVERY**: Cross-run binding comparison reveals the proton-braid dichotomy.
+The proton (P_total≈2, asym_P=5–32%) responds gravitationally — its weak,
+isotropic binding is sensitive to the external gradient. The braid
+(P_total≈100, asym_P=55–96%) responds electromagnetically — its massive,
+anisotropic binding overwhelms the gradient, and the z-aligned current loop
+drives it toward HIGH density. The braid gentle and steep runs show nearly
+identical asym_P patterns, confirming the braid's response is dominated by
+its own structure, not the gradient. This maps to the physical hierarchy:
+EM (braid/quark scale) >> gravity (proton/baryon scale).
+
+**CONFIRMED**: Proton formation dynamics. 3-braid → proton in ~1 time unit
+(smooth, no sharp transition). Aspect ratio ≈1.14 throughout. The converged
+proton is a breathing shell: depleted core, field concentrated at r≈5.
+Breathing period 2.2t with extreme amplitude (φ_rms varies 9× peak/trough).
+
+**CONFIRMED**: 1/r² Coulomb force (OQ2) proven from energy conservation
+(Poynting vector derivation).
+
+**CONFIRMED**: Photon speed (OQ5). Plane-wave θ pulse at v=0.997c (η=0)
+and v=0.906c (η=0.5). Curl coupling slows the photon branch by ~10%.
+
+**CONFIRMED**: No vacuum birefringence (OQ6). Cross-polarization mixing
+only through the χ² nonlinearity. Structural from multilinear P.
+
+---
+
 ## V42: Deuterium Nuclear Binding (March 2026)
 
 **DISCOVERY**: Two phase-confined baryons (UUD proton + UDD neutron) bind at

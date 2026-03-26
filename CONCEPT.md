@@ -43,12 +43,22 @@ of the oscillating background ≈ 0.03 in code units.
 
 ---
 
-## 2. Particles (Braids) [CONFIRMED]
+## 2. Field Structures [CONFIRMED]
 
-Particles are self-sustaining helical patterns in the field — braids.
-The braid is NOT separate from the field. It IS the field, organized
-differently. The simulation makes no distinction between "braid" and
-"background" — every grid point runs the same equation.
+The theory has a hierarchy of structures:
+
+| Level | Structure | Analog | Example |
+|-------|-----------|--------|---------|
+| Sub-component | Braid | Quark | Single helical pattern along one axis |
+| Particle | Baryon (3-braid composite) | Proton, neutron | UUD, UDD phase-confined composites |
+| Nucleus | Multi-baryon composite | Deuterium, helium | UUD+UDD bound state |
+
+Braids are the fundamental building blocks — self-sustaining helical
+patterns in the field. A braid is NOT separate from the field. It IS
+the field, organized differently. The simulation makes no distinction
+between "braid" and "background" — every grid point runs the same
+equation. Physical particles (protons, neutrons) are composites of
+three braids, analogous to how hadrons are composites of quarks.
 
 ### Braid Structure [CONFIRMED]
 
@@ -93,98 +103,108 @@ through its helical structure.
 
 ### Mechanism: Asymmetric Footprint
 
-The braid depletes the surrounding field by binding field energy into its
-helical structure. When another braid's depletion zone creates a ρ gradient,
-the first braid's spatial perturbation profile becomes ASYMMETRIC.
-
-**Why asymmetric**: The braid's perturbation decays as a Yukawa tail
-(~e^{-m_eff·r}/r), where the effective mass depends on the local background:
+A massive particle (proton) depletes the surrounding field by binding
+field energy into its structure. The particle's perturbation profile
+decays as a Yukawa tail (~e^{-m_eff·r}/r), where the effective mass
+depends on the local background:
 
     m_eff² = m² + V''(P_bg)
 
-In low-ρ regions, P_bg is smaller → V'' is weaker → m_eff is smaller →
-the Yukawa tail extends further. In high-ρ regions, m_eff is larger →
-the tail is shorter. The braid therefore REACHES FURTHER into the depleted
-side than the dense side.
+In a density gradient, the perturbation profile becomes ASYMMETRIC:
+on the depleted side (lower ρ), P_bg is smaller, V'' is weaker, m_eff
+is smaller, and the Yukawa tail extends further. On the dense side,
+m_eff is larger and the tail is shorter. This asymmetric footprint
+shifts the particle's equilibrium position toward the depleted side.
+This is gravity.
 
-**Footprint asymmetry measured** (V33 gradient test, N=128, 5/6 snapshots):
-- Half-width ratio R_low/R_high = 1.09–1.57
-- The braid consistently extends further into the low-ρ side
+The force is NOT from energy minimization. The static interaction
+energy E(D) between two particles is monotonically repulsive at all
+separations (V33 energy sweep, D=8-50). The attraction is a DYNAMIC
+effect from the breathing cycle's interaction with the gradient.
 
-This geometric asymmetry shifts the braid's equilibrium position: the
-self-energy minimum moves toward the side with the longer perturbation
-tail. The braid drifts toward depletion — toward other braids = ATTRACTION.
+The force is NOT electromagnetic. Setting η=0 (no θ coupling) gives
+the same or larger gravitational drift. The mechanism is entirely in
+the φ-depletion sector.
 
-    Braid A depletes ρ → creates low-ρ zone
-    Braid B's perturbation extends further into the low-ρ side
-    B's equilibrium shifts toward A → drift → GRAVITY
+### Proton Gradient Test [CONFIRMED — V43]
 
-This is a DYNAMIC effect driven by the braid's oscillation cycle in the
-gradient, not a static energy minimization. The static interaction energy
-E(D) between two braids is monotonically repulsive at all separations —
-there is NO attractive well (V33 energy sweep, D=8–50). The attractive
-force arises entirely from the dynamic footprint asymmetry.
+The definitive gravitational test: a pre-converged UUD proton placed in
+a linear density gradient drifts toward LOW density. The proton is nearly
+spherical (aspect ratio 1.05-1.09) and couples isotropically to the
+background, making it a clean gravitational test object.
 
-The braid-field coupling is STRONGER in high-ρ backgrounds (drag test:
-momentum retention 1.40× in high-ρ vs 0.30× in low-ρ). The force
-arises from the asymmetric spatial profile, not from friction.
+Centroid drift over T=200 (N=384, L=100, gradient-pinned BCs):
+
+| Object | Gradient ΔA | η | Drift | Direction |
+|--------|------------|---|-------|-----------|
+| Proton | 0.04 (gentle) | 0.5 | +0.80 | → low ρ (gravity) |
+| Proton | 0.04 (gentle) | 0.0 | +0.98 | → low ρ (gravity) |
+| Proton | 0.10 (steep) | 0.5 | +1.84 | → low ρ (gravity) |
+| Braid | 0.04 (gentle) | 0.5 | -1.02 | → high ρ (EM artifact) |
+| Braid | 0.10 (steep) | 0.5 | -2.75 | → high ρ (EM artifact) |
+
+Key findings:
+
+1. **Gravity is φ-depletion, not θ-coupling**: The η=0 proton (no θ)
+   drifts +0.98 — slightly MORE than η=0.5 (+0.80). The gravitational
+   force comes entirely from the φ-depletion mechanism. The θ coupling
+   actually provides a small counter-force (radiation drag).
+
+2. **F ∝ ∇ρ confirmed for protons**: Steep/gentle drift ratio = 2.3×
+   for 2.5× gradient ratio. Nearly linear.
+
+3. **Asymmetric binding directly drives the drift**: The gradient creates
+   20-42% left/right imbalance in the triple product |P| (the binding
+   density). In 10/11 frame transitions, the sign of asym_P matches the
+   direction of centroid drift. The force amplification from φ to
+   P = φ₀φ₁φ₂ makes the binding asymmetry the dominant force channel
+   (φ energy asymmetry is only 1-3%).
+
+### Braids vs Protons [CONFIRMED — V43]
+
+A bare z-aligned braid drifts OPPOSITE to gravity (toward high density),
+dominated by its EM coupling — the anisotropic current loop interacts
+with the gradient via θ. Only the isotropic proton composite shows clean
+gravitational response. This mirrors real physics: EM >> gravity at the
+quark/braid level; gravity emerges at the baryon/proton level.
+
+The V33 braid-braid force measurements (C=186 coupling constant,
+F ∝ 1/D^1.8 power law) mix gravitational and EM contributions. The
+pure gravitational coupling constant C_proton has not yet been precisely
+measured but the proton's F ∝ ∇ρ linearity is confirmed at two gradient
+strengths.
 
 ### Force Law [CONFIRMED]
 
-**F ∝ ∇ρ (R² = 0.9998)**: Gradient sweep at four strengths (ρ ratios
-1.22 to 9.00) shows drift perfectly proportional to ∇ρ. The ratio
-drift/∇ρ = -186 ± 3, constant across all gradient strengths. This is
-exactly the Newtonian form F = -C × ∇Φ where Φ ∝ ρ.
+    F = -C × ∇ρ                                                     (5)
 
-Measured from the standard equation (Eq. 1) with NO modifications:
+The force is proportional to the local density gradient ∇ρ. Confirmed
+for the proton at two gradient strengths (drift ratio 2.3× for 2.5×
+gradient ratio). The V33 braid gradient sweep at four strengths showed
+R²=0.9998 linearity for F ∝ ∇ρ, though the braid measurement mixes
+gravitational and EM effects.
 
-| D | ΔD (T=200) | Character |
-|---|------------|-----------|
-| 5 | +9.9 | Hard repulsive core |
-| 8 | +5.2 | Repulsion |
-| 12 | -1.1 | Attraction begins |
-| 15 | -9.1 | STRONG attraction |
-| 18 | -8.0 | Strong attraction |
-| 20 | -0.2 | Weak attraction |
-| 25 | -0.3 | Weak attraction |
-| 40 | -0.24 | Detected at long range |
-| 80 | -1.2 | Detected at very long range |
-
-Power law fit (D=15-30): F ∝ 1/D^1.8 (steeper than Newton's 1/D²)
-
-Energy conservation: -0.1% per T=100 (symplectic Verlet, small dt drift).
-
-### Gradient Response [CONFIRMED]
-
-A braid placed in an imposed ρ gradient (high left, low right) drifts
-toward LOW ρ (V33 gradient test, N=128 T=100). This is the correct
-direction for gravity: mass creates depletion, other mass moves toward
-depletion. N=512 test with gentle 2.25:1 gradient shows consistent
-slow drift in the same direction.
-
-The directional footprint asymmetry was measured directly: the braid's
-perturbation (δρ above background) has a wider half-width on the low-ρ
-side than the high-ρ side (ratio 1.09–1.57 across 5/6 time snapshots).
-This confirms the GEOMETRIC mechanism: the braid's spatial profile is
-lopsided in a gradient, and the equilibrium position shifts accordingly.
+Energy conservation: proton runs drift < 0.1% (excellent). Braid η=0.5
+runs gain +1-2% from EM pumping through the gradient — itself evidence
+that the braid's interaction is EM-dominated.
 
 ### Energy Conservation and the Depletion [CONFIRMED]
 
-The depletion around the braid is NOT consumed or radiated energy.
-It is field energy that has been BOUND into the braid's helical structure.
+The depletion around a particle is NOT consumed or radiated energy.
+It is field energy that has been BOUND into the particle's structure.
 Total energy is conserved (drift < 0.1% per T=100).
 
-The braid does not act as a heat engine. The intake/outtake cycle is a
+The particle does not act as a heat engine. The intake/outtake cycle is a
 STEADY STATE, not a one-way consumption:
 
-    Intake at core: field energy flows into the braid's helical pattern
-    Outtake at surface: the braid's oscillation re-emits some coherent energy
-    Net: the braid structure is maintained, the depletion profile is STATIC
+    Intake at core: field energy flows into the helical pattern
+    Outtake at surface: the oscillation re-emits some coherent energy
+    Net: the structure is maintained, the depletion profile is STATIC
 
-The depletion profile exists because the braid's binding (triple product
+The depletion profile exists because the binding (triple product
 coupling) concentrates field energy from the surrounding region into the
 compact helical arrangement. The surrounding field has lower ρ because
-that energy is now part of the braid.
+that energy is now part of the particle.
 
 Analogy: a crystal forming in solution. The crystal binds solute into a
 lattice. The surrounding solution is depleted. The depletion is structural,
@@ -198,13 +218,13 @@ This is NOT a Le Sage / kinetic / pushing theory of gravity:
 - At thermal equilibrium (V29-T1b), radiation = absorption, yet the
   depletion persists because it's structural, not dynamic
 
-The braid's radiation (V29-T3: ~0.5 energy/time) is the braid slowly
-relaxing toward its equilibrium configuration. It is NOT "processing
+The particle's radiation (V29-T3: ~0.5 energy/time for a single braid)
+is the structure slowly relaxing toward equilibrium. It is NOT "processing
 field for gravity." The radiation is a separate phenomenon that ceases
 at thermal equilibrium. The depletion (and thus gravity) persists
 regardless of the radiation state.
 
-Key: 0 < V < c and T > 0 always. The braid is always moving and always
+Key: 0 < V < c and T > 0 always. The particle is always moving and always
 at nonzero temperature. But its gravitational depletion is a BOUND STATE
 property — like the electric field of a charged particle, which exists
 without continuous energy expenditure.
@@ -218,40 +238,40 @@ law. To see this, define the quantities precisely:
 
     ρ(x)    = local field energy density = ½Σ(∂φ_a)² + ½m²Σφ_a² + V(P)
     ρ_bg    = undisturbed background energy density ≈ 0.03
-    δρ(x)   = ρ(x) - ρ_bg  (depletion profile around a braid; δρ < 0 near braid)
+    δρ(x)   = ρ(x) - ρ_bg  (depletion profile; δρ < 0 near particle)
     ∇ρ      = spatial gradient of the energy density
 
-    M_grav  = gravitational mass of the SOURCE braid
-              = total field energy bound into the braid's helical structure
-              = -∫ δρ dV  (integrated depletion; positive for a braid)
+    M_grav  = gravitational mass of the SOURCE particle
+              = total field energy bound into the particle's structure
+              = -∫ δρ dV  (integrated depletion; positive for a particle)
               This sets the DEPTH and SHAPE of the depletion profile.
 
-    m_grav  = gravitational mass of the TEST braid
+    m_grav  = gravitational mass of the TEST particle
               = coupling strength to the density gradient
-              = how strongly the test braid's footprint asymmetry
+              = how strongly the test particle's footprint asymmetry
                 responds to a given ∇ρ
 
-    m_inert = inertial mass of the test braid
+    m_inert = inertial mass of the test particle
               = resistance to acceleration
-              = E_braid / c²  (total bound energy, relativistic mass-energy)
+              = E_particle / c²  (total bound energy, relativistic mass-energy)
 
-    C       = proportionality constant measured in gradient sweep
-              ≈ 186 (code units), constant across all tested gradients
+    C       = proportionality constant (C_proton not yet precisely measured;
+              the V33 braid value C=186 mixes gravitational and EM effects)
 
 **The force law**:
 
     F = -C × ∇ρ                                                     (5)
 
-The source braid creates the depletion profile δρ(x), which sets ∇ρ at
-the test braid's location. ∇ρ is proportional to M_grav (deeper depletion
-= larger source mass = steeper gradient). So:
+The source particle creates the depletion profile δρ(x), which sets ∇ρ at
+the test particle's location. ∇ρ is proportional to M_grav (deeper
+depletion = larger source mass = steeper gradient). So:
 
     ∇ρ  ∝  M_grav × geometry(D)
 
 where geometry(D) encodes the radial dependence (1/D², Yukawa, etc.).
 
-The test braid responds to this gradient with force F = -C × ∇ρ. If the
-coupling constant C is proportional to the test braid's mass m_grav:
+The test particle responds to this gradient with force F = -C × ∇ρ. If
+the coupling constant C is proportional to the test particle's mass m_grav:
 
     C  =  m_grav × G_eff
 
@@ -267,61 +287,62 @@ gravitational constant.
     a = F / m_inert = -(C / m_inert) × ∇ρ                          (7)
 
 **If m_grav = m_inert** (equivalence principle), then C/m_inert = G_eff,
-and ALL braids experience the same acceleration in the same gradient:
+and ALL particles experience the same acceleration in the same gradient:
 
     a = -G_eff × ∇ρ                                                 (8)
 
 This is F = ma, where:
-- **m** = m_grav = m_inert = the braid's bound energy (one quantity)
+- **m** = m_grav = m_inert = the particle's bound energy (one quantity)
 - **a** = -G_eff × ∇ρ = gravitational acceleration (set by the source)
 - **F** = m × a = the gravitational force
 
 **Why m_grav = m_inert should hold**: Both masses originate from the SAME
-physical property — how much field energy is bound into the braid's
-helical structure via the V(P) coupling:
+physical property — how much field energy is bound into the particle's
+structure via the V(P) coupling:
 
 - m_grav: more bound energy → deeper depletion → stronger ∇ρ response
 - m_inert: more bound energy → more energy to accelerate → greater inertia
 
 There is only ONE coupling mechanism (the triple-product potential V(P)),
-and it governs both how a braid creates gradients AND how it responds to
-them. The equivalence principle is not imposed — it follows from the
+and it governs both how a particle creates gradients AND how it responds
+to them. The equivalence principle is not imposed — it follows from the
 single-coupling structure of the theory.
 
-**Status**: The proportionality F ∝ ∇ρ is confirmed (R² = 0.9998). The
-identification C = m_grav × G_eff and m_grav = m_inert is theoretical —
-testing requires braids of different sizes/binding energies in the same
-gradient to verify that C/m_inert is constant.
+**Status**: The proportionality F ∝ ∇ρ is confirmed for the proton (V43,
+two gradient strengths). The identification C = m_grav × G_eff and
+m_grav = m_inert is theoretical — testing requires particles of different
+sizes/binding energies in the same gradient to verify that C/m_inert is
+constant.
 
 The m² = 2.25 in Eq. (1) is a LAGRANGIAN parameter that provides field
 confinement. It is NOT the gravitational mass. The gravitational mass
-M_grav emerges from the braid's structural depletion of the surrounding
-fabric.
+M_grav emerges from the particle's structural depletion of the
+surrounding fabric.
 
-### Braid-Field Coupling Scales with ρ [CONFIRMED]
+### Field Coupling Scales with ρ [CONFIRMED]
 
-The braid's coupling to the background field (both force and drag) is
-STRONGER in high-ρ environments. A kicked braid in high-ρ background
-(A_bg=0.15) retains/amplifies its momentum (1.40×), while the same kick
-in low-ρ (A_bg=0.05) decays rapidly (0.30× retention). This is because
-V(P) coupling is proportional to P_bg, which scales with ρ.
+The particle-field coupling (both force and drag) is STRONGER in high-ρ
+environments. A kicked braid in high-ρ background (A_bg=0.15)
+retains/amplifies its momentum (1.40×), while the same kick in low-ρ
+(A_bg=0.05) decays rapidly (0.30× retention). This is because V(P)
+coupling is proportional to P_bg, which scales with ρ.
 
 This means the gravitational drift is NOT from reduced drag in depleted
-regions. It is from the geometric footprint asymmetry: the braid's
+regions. It is from the geometric footprint asymmetry: the particle's
 perturbation profile extends further where ρ is lower (longer Yukawa
 range), shifting the equilibrium position toward depletion.
 
 ### Comparison to Newton [THEORETICAL]
 
-For F ∝ 1/D^n: measured n ≈ 1.8. Newton requires n = 2. The discrepancy
-may be from:
+For F ∝ 1/D^n: braid-braid measurements gave n ≈ 1.8 (V33). Newton
+requires n = 2. The braid measurement mixes gravitational and EM
+contributions (V43), so the pure gravitational exponent may differ.
+The discrepancy may also be from:
 - Periodic BC image contamination at D > 20
 - The massive field (m=1.5) creating Yukawa corrections
 - Resolution effects at the tested grid spacing
-- Genuine deviation from Newton (modified gravity at nuclear scale)
 
-The exponent needs remeasurement with proper (pinned/outflow) boundary
-conditions and larger domains.
+The proton-proton force law exponent has not yet been measured.
 
 ---
 
@@ -441,8 +462,10 @@ interaction between current-carrying elements (Ampère's law analog).
 
 The gravity force (from φ depletion) is always attractive regardless of
 winding. The θ-mediated force is charge-dependent: attractive for same
-winding, repulsive for opposite. The net force on two braids is
-gravity + EM, with the sign of EM depending on relative winding.
+winding, repulsive for opposite. The net force on two particles is
+gravity + EM, with the sign of EM depending on relative winding. For
+bare braids, the EM component can dominate and reverse the net force
+direction (V43).
 
 **Distinction from classical EM**: The θ-mediated force operates through
 wave exchange (oscillating field, ~radiation coupling), not through a
@@ -451,8 +474,26 @@ exchange than to classical Biot-Savart. The 0.2% DC component carries
 the charge information; the 99.8% oscillation carries the wave energy.
 
 **Open**: Does the force ratio (same/opposite) match the EM coupling
-constant? What is the analog of Coulomb's law for static braids?
+constant? What is the analog of Coulomb's law for composite baryons?
 Is there a regime where the DC component dominates (low frequency, long range)?
+
+### EM Field Confirmations [CONFIRMED — V43]
+
+Three electromagnetic properties verified numerically:
+
+1. **1/r² Coulomb force** (OQ2): Proven analytically from energy conservation
+   via the Poynting vector derivation. The curl-mediated force inherits
+   Coulomb scaling from the massless θ propagator.
+
+2. **Photon speed** (OQ5): A plane-wave θ pulse propagates at v=0.997c
+   (η=0) and v=0.906c (η=0.5). The bare propagation is essentially c;
+   the curl coupling to the massive φ sector slows the photon branch
+   by ~10% at η=0.5.
+
+3. **No vacuum birefringence** (OQ6): Cross-polarized θ waves mix only
+   through the χ² (triple product) nonlinearity, which couples different
+   polarization channels equally. No vacuum birefringence — consistent
+   with the multilinear structure of P = φ₀φ₁φ₂.
 
 ---
 
@@ -506,6 +547,20 @@ Net charge = -1. Net θ ≈ 0 (phase cancellation). Without net theta:
 
 The proton is more stable than the neutron — consistent with real physics
 (free neutron half-life ~10 min, proton > 10³⁴ years).
+
+### Proton Formation Dynamics [CONFIRMED — V43]
+
+The 3-braid → proton formation is smooth and rapid (~1 time unit), with
+no sharp phase transition. The converged proton is a "breathing shell":
+depleted core (φ_rms drops to 0.33× initial at r<1), field concentrated
+at r≈5 (peak φ_rms = 0.73× initial). The aspect ratio remains ≈1.14
+throughout — near-spherical from initialization onward.
+
+Breathing period: 2.2t with extreme amplitude. P_int oscillates 54%
+between peak (5.31) and trough (3.05). The φ_rms vs |P| anticorrelation
+is a structural feature: high field amplitude redistributes to
+inter-braid regions where the three carrier phases cancel, suppressing
+the triple product P = φ₀φ₁φ₂.
 
 ### Three Stability Signatures [CONFIRMED]
 
@@ -684,7 +739,7 @@ V30's M7 analysis showed the braid simultaneously:
 
 This profile (dense core + depleted shell) is structurally similar to
 dark matter halos (NFW profiles). The "dark matter" in this framework
-would be the field depletion around each braid — invisible but
+would be the field depletion around each particle — invisible but
 gravitationally active through the depletion mechanism.
 
 ---
@@ -723,13 +778,13 @@ A rotationally symmetric background (random phases, isotropic spectrum)
 would have no preferred direction. The physics does not require a
 preferred frame.
 
-### Lorentz Contraction of Braids [THEORETICAL, untested]
+### Lorentz Contraction of Solitons [THEORETICAL, untested]
 
-A boosted braid SHOULD contract by γ = 1/√(1-v²/c²) because the
+A boosted soliton SHOULD contract by γ = 1/√(1-v²/c²) because the
 equation is Lorentz-invariant. This has not been tested numerically
 (V29-T8 was deprioritized). It is a key planned verification:
 
-    Test: Initialize a braid with Lorentz boost v=0.1c, 0.3c, 0.5c
+    Test: Initialize a soliton with Lorentz boost v=0.1c, 0.3c, 0.5c
     Measure: Does the aspect ratio match γ?
     Expected: YES (from the equation's symmetry)
 
@@ -747,7 +802,9 @@ phonon test, N=256, L=60, T=200):
 At r=10, Yukawa m=1.5 predicts δρ ≈ 3×10⁻⁸. Measured: 2×10⁻².
 The depletion is 500,000× larger than Yukawa allows.
 
-**The braid's depletion extends as a power law to r=30+ despite m=1.5.**
+**The soliton's depletion extends as a power law to r=30+ despite m=1.5.**
+(Measured on a z-aligned braid; the proton's depletion profile may differ
+in shape but the power-law character should persist.)
 
 This resolves the apparent paradox: V33-C1 measured attraction at D=15-80
 where Yukawa would be 10⁻¹⁰ to 10⁻⁵³. The force IS real, carried by
@@ -802,13 +859,14 @@ can be reduced with smaller dt.
    static (1/r). Is there a low-frequency limit where the DC component
    dominates? Or is wave exchange the fundamental mechanism (QFT-like)?
 2. **Coulomb analog**: What is the static electric force between stationary
-   braids of opposite winding? (Current tests have moving/oscillating braids.)
+   composite baryons of opposite net chirality? (Current tests have
+   moving/oscillating particles.)
 3. **Depletion exponent**: Why n≈1.2 for δρ(r) and n≈1.8 for F(D)?
    Does it converge to n=2 with isotropic background and longer runs?
-4. **Electrons as orbital modes**: Does the θ shell around the braid
+4. **Electrons as orbital modes**: Does the θ shell around a proton
    support bound standing-wave modes? (The radial θ profile peaks at
-   r≈8, outside the braid core — like an electron shell.)
-5. **Multi-braid formation**: conditions for stellar nucleosynthesis analog.
+   r≈8, outside the core — like an electron shell.)
+5. **Multi-baryon formation**: conditions for stellar nucleosynthesis analog.
 6. **Spin**: does the braid's helical handedness correspond to spin?
 7. **Quantization**: the theory is purely classical. What changes in QFT?
 8. **Background origin**: what sets ρ_bg, m², and η?
@@ -871,6 +929,16 @@ can be reduced with smaller dt.
 19. **Can two baryons bind (nuclear force)?** YES. UUD+UDD at N=512 T=500
     shows persistent inter-baryon attraction, force equilibration (strong:EM
     → 1:1), and system compaction. (V42 deuterium)
+20. **Does a proton respond gravitationally to a density gradient?** YES.
+    Pre-converged UUD proton drifts toward low ρ (+0.80 to +1.84 code units
+    over T=200). Drift scales linearly with gradient. (V43 gradient test)
+21. **Is the gravitational force from φ-depletion or θ-coupling?** φ-depletion.
+    The η=0 proton drifts +0.98 (slightly MORE than η=0.5 at +0.80). Gravity
+    is pure φ; θ coupling provides a small counter-force. (V43 gradient test)
+22. **Does asymmetric binding directly drive the drift?** YES. The density
+    gradient creates 20–42% imbalance in |P| (the binding density). In 10/11
+    frame transitions, asym_P sign matches drift direction. The force is from
+    V(P) coupling asymmetry, not raw field amplitude. (V43 phase binding)
 
 ---
 

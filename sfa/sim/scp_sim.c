@@ -46,7 +46,10 @@ typedef struct {
     double inv_alpha, inv_beta, kappa_gamma;
 
     /* Boundary */
+    int bc_type;                /* 0=absorb_sphere (default), 1=gradient_pinned */
     double damp_width, damp_rate;
+    double gradient_A_high, gradient_A_low;
+    int gradient_margin;
 
     /* Init */
     char init[32];          /* "oscillon", "braid", "sfa", "exec" */
@@ -69,7 +72,9 @@ static Config cfg_defaults(void) {
     c.m2 = 2.25;  c.mtheta2 = 0.0;  c.eta = 0.5;
     c.mu = -41.345;  c.kappa = 50.0;
     c.mode = 0;  c.inv_alpha = 2.25;  c.inv_beta = 5.0;  c.kappa_gamma = 2.0;
+    c.bc_type = 0;
     c.damp_width = 3.0;  c.damp_rate = 0.01;
+    c.gradient_A_high = 0.15;  c.gradient_A_low = 0.05;  c.gradient_margin = 3;
     strcpy(c.init, "oscillon");
     c.A = 0.8;  c.sigma = 3.0;  c.A_bg = 0.1;
     c.ellip = 0.3325;  c.R_tube = 3.0;
@@ -96,8 +101,12 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"inv_alpha"))   c->inv_alpha = atof(val);
     else if (!strcmp(key,"inv_beta"))    c->inv_beta = atof(val);
     else if (!strcmp(key,"kappa_gamma")) c->kappa_gamma = atof(val);
+    else if (!strcmp(key,"bc_type"))      c->bc_type = atoi(val);
     else if (!strcmp(key,"damp_width"))  c->damp_width = atof(val);
     else if (!strcmp(key,"damp_rate"))   c->damp_rate = atof(val);
+    else if (!strcmp(key,"gradient_A_high")) c->gradient_A_high = atof(val);
+    else if (!strcmp(key,"gradient_A_low"))  c->gradient_A_low = atof(val);
+    else if (!strcmp(key,"gradient_margin")) c->gradient_margin = atoi(val);
     else if (!strcmp(key,"init"))        strncpy(c->init, val, 31);
     else if (!strcmp(key,"A"))           c->A = atof(val);
     else if (!strcmp(key,"sigma"))       c->sigma = atof(val);
@@ -158,7 +167,11 @@ static void cfg_print(const Config *c) {
     printf("Mode:    %d", c->mode);
     if (c->mode == 1) printf(" (inverse: α=%.3f β=%.3f)", c->inv_alpha, c->inv_beta);
     if (c->mode == 3) printf(" (density-κ: γ=%.3f)", c->kappa_gamma);
-    printf("\nBC:      absorbing sphere (width=%.1f rate=%.4f)\n", c->damp_width, c->damp_rate);
+    if (c->bc_type == 0)
+        printf("\nBC:      absorbing sphere (width=%.1f rate=%.4f)\n", c->damp_width, c->damp_rate);
+    else if (c->bc_type == 1)
+        printf("\nBC:      gradient pinned (A_high=%.3f A_low=%.3f margin=%d)\n",
+               c->gradient_A_high, c->gradient_A_low, c->gradient_margin);
     printf("Init:    %s", c->init);
     if (!strcmp(c->init, "sfa")) printf(" (%s frame=%d)", c->init_sfa, c->init_frame);
     if (!strcmp(c->init, "exec")) printf(" (%s)", c->init_exec);
@@ -202,6 +215,8 @@ typedef struct {
     double *mem;
     double *phi[NFIELDS], *phi_vel[NFIELDS], *phi_acc[NFIELDS];
     double *theta[NFIELDS], *theta_vel[NFIELDS], *theta_acc[NFIELDS];
+    double *pin_phi[NFIELDS], *pin_vel[NFIELDS];  /* pinned BC storage (bc_type=1) */
+    double *pin_theta[NFIELDS], *pin_tvel[NFIELDS];
     int N; long N3;
     double L, dx, dt;
 } Grid;
@@ -231,7 +246,27 @@ static Grid *grid_alloc(const Config *c) {
     return g;
 }
 
-static void grid_free(Grid *g) { free(g->mem); free(g); }
+static void grid_free(Grid *g) {
+    for (int a = 0; a < NFIELDS; a++) {
+        free(g->pin_phi[a]); free(g->pin_vel[a]);
+        free(g->pin_theta[a]); free(g->pin_tvel[a]);
+    }
+    free(g->mem); free(g);
+}
+
+/* Save current state as pinned boundary values (for bc_type=1) */
+static void grid_save_pinned(Grid *g) {
+    for (int a = 0; a < NFIELDS; a++) {
+        g->pin_phi[a]   = malloc(g->N3 * sizeof(double));
+        g->pin_vel[a]   = malloc(g->N3 * sizeof(double));
+        g->pin_theta[a] = malloc(g->N3 * sizeof(double));
+        g->pin_tvel[a]  = malloc(g->N3 * sizeof(double));
+        memcpy(g->pin_phi[a],   g->phi[a],       g->N3 * sizeof(double));
+        memcpy(g->pin_vel[a],   g->phi_vel[a],   g->N3 * sizeof(double));
+        memcpy(g->pin_theta[a], g->theta[a],     g->N3 * sizeof(double));
+        memcpy(g->pin_tvel[a],  g->theta_vel[a], g->N3 * sizeof(double));
+    }
+}
 
 /* ================================================================
    Curl helper
@@ -375,11 +410,99 @@ static void init_from_exec(Grid *g, const Config *c) {
     remove(tmppath);
 }
 
+/* init=template: Load a small template SFA and stamp it into the grid.
+ * Background generated analytically (with gradient if bc_type=1).
+ * Uses init_sfa for the template path. */
+static void init_template(Grid *g, const Config *c) {
+    printf("Init: template '%s'\n", c->init_sfa);
+
+    const int N=g->N, NN=N*N;
+    const double L=g->L, dx=g->dx;
+    const double k_bg=PI/L, omega_bg=sqrt(k_bg*k_bg+c->m2);
+
+    /* Generate background (with optional gradient) */
+    #pragma omp parallel for schedule(static)
+    for (long idx=0; idx<g->N3; idx++) {
+        int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+        double x=-L+i*dx, z=-L+k*dx;
+        double A_bg_x = c->A_bg;
+        if (c->bc_type == 1) {
+            double frac = (x + L) / (2.0 * L);
+            A_bg_x = c->gradient_A_high * (1.0 - frac) + c->gradient_A_low * frac;
+        }
+        for (int a=0; a<NFIELDS; a++) {
+            double ph_bg = k_bg*z + 2*PI*a/3.0;
+            g->phi[a][idx] = A_bg_x * cos(ph_bg);
+            g->phi_vel[a][idx] = omega_bg * A_bg_x * sin(ph_bg);
+        }
+    }
+
+    /* Load template and stamp at center */
+    SFA *tmpl = sfa_open(c->init_sfa);
+    if (!tmpl) { fprintf(stderr, "FATAL: cannot open template '%s'\n", c->init_sfa); exit(1); }
+    int TN=tmpl->Nx; double TL=tmpl->Lx, Tdx=2.0*TL/(TN-1);
+    long TN3=(long)TN*TN*TN; int TNN=TN*TN;
+    printf("  Template: %d^3, L=%.2f, dx=%.4f\n", TN, TL, Tdx);
+
+    int frame = tmpl->total_frames - 1;
+    void *buf = malloc(tmpl->frame_bytes);
+    sfa_read_frame(tmpl, frame, buf);
+
+    double *tphi[3], *tvel[3], *ttheta[3], *ttvel[3];
+    for (int a=0; a<3; a++) {
+        tphi[a]=calloc(TN3,sizeof(double)); tvel[a]=calloc(TN3,sizeof(double));
+        ttheta[a]=calloc(TN3,sizeof(double)); ttvel[a]=calloc(TN3,sizeof(double));
+    }
+    uint64_t off=0;
+    for (int col=0; col<tmpl->n_columns; col++) {
+        int dtype=tmpl->columns[col].dtype, sem=tmpl->columns[col].semantic, comp=tmpl->columns[col].component;
+        int es=sfa_dtype_size[dtype]; uint8_t *src=(uint8_t*)buf+off;
+        double *target=NULL;
+        if (sem==SFA_POSITION&&comp<3) target=tphi[comp];
+        else if (sem==SFA_ANGLE&&comp<3) target=ttheta[comp];
+        else if (sem==SFA_VELOCITY&&comp<3) target=tvel[comp];
+        else if (sem==SFA_VELOCITY&&comp>=3&&comp<6) target=ttvel[comp-3];
+        if (target) {
+            if (dtype==SFA_F64) for(long i=0;i<TN3;i++) target[i]=((double*)src)[i];
+            else if (dtype==SFA_F32) for(long i=0;i<TN3;i++) target[i]=(double)((float*)src)[i];
+            else if (dtype==SFA_F16) for(long i=0;i<TN3;i++) target[i]=f16_to_f64(((uint16_t*)src)[i]);
+        }
+        off += (uint64_t)TN3 * es;
+    }
+    free(buf); sfa_close(tmpl);
+
+    int ci=N/2, cj=N/2, ck=N/2, half=TN/2;
+    int placed=0;
+    for (int ti=0; ti<TN; ti++) {
+        int gi=ci+ti-half; if(gi<0||gi>=N) continue;
+        for (int tj=0; tj<TN; tj++) {
+            int gj=cj+tj-half; if(gj<0||gj>=N) continue;
+            for (int tk=0; tk<TN; tk++) {
+                int gk=ck+tk-half; if(gk<0||gk>=N) continue;
+                long tidx=(long)ti*TNN+tj*TN+tk, gidx=(long)gi*NN+gj*N+gk;
+                double tz=-TL+tk*Tdx;
+                for (int a=0; a<NFIELDS; a++) {
+                    double ph_bg_t=k_bg*tz+2*PI*a/3.0;
+                    double bg_phi=c->A_bg*cos(ph_bg_t), bg_vel=omega_bg*c->A_bg*sin(ph_bg_t);
+                    g->phi[a][gidx] += tphi[a][tidx] - bg_phi;
+                    g->phi_vel[a][gidx] += tvel[a][tidx] - bg_vel;
+                    g->theta[a][gidx] += ttheta[a][tidx];
+                    g->theta_vel[a][gidx] += ttvel[a][tidx];
+                }
+                placed++;
+            }
+        }
+    }
+    for (int a=0;a<3;a++) { free(tphi[a]);free(tvel[a]);free(ttheta[a]);free(ttvel[a]); }
+    printf("  Placed %d voxels from template\n", placed);
+}
+
 static void do_init(Grid *g, const Config *c) {
     if      (!strcmp(c->init, "oscillon")) init_oscillon(g, c);
     else if (!strcmp(c->init, "braid"))    init_braid(g, c);
     else if (!strcmp(c->init, "sfa"))      init_from_sfa(g, c);
     else if (!strcmp(c->init, "exec"))     init_from_exec(g, c);
+    else if (!strcmp(c->init, "template")) init_template(g, c);
     else { fprintf(stderr, "FATAL: unknown init mode '%s'\n", c->init); exit(1); }
 }
 
@@ -441,9 +564,10 @@ static void compute_forces(Grid *g, const Config *c) {
 }
 
 /* ================================================================
-   Absorbing boundary (spherical)
+   Boundary conditions
    ================================================================ */
 
+/* bc_type=0: Spherical absorbing boundary */
 static void apply_damping(Grid *g, const Config *c) {
     const int N=g->N, NN=N*N;
     const double L=g->L, dx=g->dx, DW=c->damp_width, DR=c->damp_rate;
@@ -459,6 +583,58 @@ static void apply_damping(Grid *g, const Config *c) {
             double s = (r-R_damp)/DW; if (s>1) s=1;
             double d = 1.0 - DR*s*s;
             for (int a=0;a<NFIELDS;a++) { g->phi_vel[a][idx]*=d; g->theta_vel[a][idx]*=d; }
+        }
+    }
+}
+
+/* bc_type=1: Gradient pinned boundary
+ * x-direction: pin first/last margin slabs to initial values (maintains gradient)
+ * y,z-directions: linear extrapolation from interior (free-floating outflow)
+ * z-direction: periodic (handled by Laplacian stencil's modular indexing)
+ */
+static void apply_gradient_bc(Grid *g, const Config *c) {
+    const int N=g->N, NN=N*N;
+    const int M = c->gradient_margin;
+
+    /* x-direction: pin boundary slabs to saved initial state */
+    #pragma omp parallel for schedule(static)
+    for (long idx = 0; idx < g->N3; idx++) {
+        int i = (int)(idx / NN);
+        if (i < M || i >= N - M) {
+            for (int a = 0; a < NFIELDS; a++) {
+                g->phi[a][idx]       = g->pin_phi[a][idx];
+                g->phi_vel[a][idx]   = g->pin_vel[a][idx];
+                g->phi_acc[a][idx]   = 0;
+                g->theta[a][idx]     = g->pin_theta[a][idx];
+                g->theta_vel[a][idx] = g->pin_tvel[a][idx];
+                g->theta_acc[a][idx] = 0;
+            }
+        }
+    }
+
+    /* y-direction: linear extrapolation from interior (free-floating) */
+    #pragma omp parallel for schedule(static)
+    for (int i = M; i < N - M; i++) {
+        for (int k = 0; k < N; k++) {
+            for (int a = 0; a < NFIELDS; a++) {
+                /* j=0 edge: extrapolate from j=1,2 */
+                long idx0 = (long)i*NN + 0*N + k;
+                long idx1 = (long)i*NN + 1*N + k;
+                long idx2 = (long)i*NN + 2*N + k;
+                g->phi[a][idx0] = 2*g->phi[a][idx1] - g->phi[a][idx2];
+                g->phi_vel[a][idx0] = 2*g->phi_vel[a][idx1] - g->phi_vel[a][idx2];
+                g->theta[a][idx0] = 2*g->theta[a][idx1] - g->theta[a][idx2];
+                g->theta_vel[a][idx0] = 2*g->theta_vel[a][idx1] - g->theta_vel[a][idx2];
+
+                /* j=N-1 edge: extrapolate from j=N-2,N-3 */
+                idx0 = (long)i*NN + (N-1)*N + k;
+                idx1 = (long)i*NN + (N-2)*N + k;
+                idx2 = (long)i*NN + (N-3)*N + k;
+                g->phi[a][idx0] = 2*g->phi[a][idx1] - g->phi[a][idx2];
+                g->phi_vel[a][idx0] = 2*g->phi_vel[a][idx1] - g->phi_vel[a][idx2];
+                g->theta[a][idx0] = 2*g->theta[a][idx1] - g->theta[a][idx2];
+                g->theta_vel[a][idx0] = 2*g->theta_vel[a][idx1] - g->theta_vel[a][idx2];
+            }
         }
     }
 }
@@ -485,7 +661,10 @@ static void verlet_step(Grid *g, const Config *c) {
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
     }
-    apply_damping(g, c);
+    if (c->bc_type == 0)
+        apply_damping(g, c);
+    else if (c->bc_type == 1)
+        apply_gradient_bc(g, c);
 }
 
 /* ================================================================
@@ -685,6 +864,13 @@ int main(int argc, char **argv) {
     do_init(g, &c);
     compute_forces(g, &c);
 
+    /* For gradient_pinned BC: save initial state as pinned boundary values */
+    if (c.bc_type == 1) {
+        grid_save_pinned(g);
+        printf("Gradient BC: pinned %d slabs on each x-face (A_high=%.3f, A_low=%.3f)\n\n",
+               c.gradient_margin, c.gradient_A_high, c.gradient_A_low);
+    }
+
     /* SFA archive: 12 columns + KVMD metadata */
     uint8_t sfa_dtype = (c.precision == 0) ? SFA_F16 : (c.precision == 1) ? SFA_F32 : SFA_F64;
     SFA *sfa = sfa_create(c.output, c.N, c.N, c.N, c.L, c.L, c.L, g->dt);
@@ -703,12 +889,19 @@ int main(int argc, char **argv) {
         snprintf(vdw,32,"%.6f",c.damp_width); snprintf(vdr,32,"%.6f",c.damp_rate);
         snprintf(vprec,32,"%s", (const char*[]){"f16","f32","f64"}[c.precision]);
         snprintf(vdelta,64,"%.6f,%.6f,%.6f",c.delta[0],c.delta[1],c.delta[2]);
+        char vbc[32], vgah[32], vgal[32], vgm[32];
+        snprintf(vbc,32,"%d",c.bc_type);
+        snprintf(vgah,32,"%.6f",c.gradient_A_high);
+        snprintf(vgal,32,"%.6f",c.gradient_A_low);
+        snprintf(vgm,32,"%d",c.gradient_margin);
         const char *keys[] = {"N","L","T","dt_factor","m","m_theta","eta","mu","kappa",
                               "mode","inv_alpha","inv_beta","kappa_gamma",
-                              "damp_width","damp_rate","precision","delta"};
+                              "damp_width","damp_rate","precision","delta",
+                              "bc_type","gradient_A_high","gradient_A_low","gradient_margin"};
         const char *vals[] = {vN,vL,vT,vdt,vm,vmt,veta,vmu,vkappa,
-                              vmode,via,vib,vkg,vdw,vdr,vprec,vdelta};
-        sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 17);
+                              vmode,via,vib,vkg,vdw,vdr,vprec,vdelta,
+                              vbc,vgah,vgal,vgm};
+        sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 21);
     }
     sfa_add_column(sfa, "phi_x",    sfa_dtype, SFA_POSITION, 0);
     sfa_add_column(sfa, "phi_y",    sfa_dtype, SFA_POSITION, 1);

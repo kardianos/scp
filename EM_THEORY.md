@@ -104,7 +104,7 @@ The coupled system has two hybridized dispersion branches:
 **Branch 2 (matter-like)**: Massive, dispersive.
 - Mostly δφ with small δθ admixture
 - For small η: ω² ≈ k² + m² + O(η²) → massive Klein-Gordon
-- This IS the field excitation (not a particle — particles are braids)
+- This IS the field excitation (not a particle — particles are braids and their composites)
 
 The hybridization is controlled by η. For η = 0.5 and m = 1.5, the mixing
 is small (~η²/m² ≈ 0.11) — the photon-like branch is nearly pure θ.
@@ -251,6 +251,10 @@ The mechanism operates through **ponderomotive force** (radiation pressure):
    SCATTERS the radiation, absorbing momentum proportional to the
    incident flux
 4. The momentum transfer force F ∝ incident flux ∝ 1/r² — the Coulomb law
+
+Note: this describes the braid-level (sub-component) interaction. The
+physical Coulomb force between composite baryons involves the composite
+radiation pattern of three orthogonal current loops (see OQ1).
 
 Note: this is radiation SCATTERING/momentum transfer, not the ponderomotive
 gradient force (which would give F ∝ -∇⟨|B|²⟩ ∝ 1/r³). The 1/r² dependence
@@ -414,30 +418,30 @@ radiation pattern that mimics one.
 
 ### Concept
 
-A "wire" in this theory would be a lattice of braids (same winding) in a
-line or tube. Applying a θ gradient (voltage) across the wire would accelerate
-the braids along the wire. Resistance arises from:
-- Braid-braid scattering at depletion zone boundaries
+A "wire" in this theory would be a lattice of baryons in a line or tube.
+Applying a θ gradient (voltage) across the wire would accelerate charge
+carriers along it. Resistance arises from:
+- Baryon-baryon scattering at depletion zone boundaries
 - θ radiation losses (electromagnetic radiation from accelerating charges)
-- V(P) coupling friction between moving braids and the background
+- V(P) coupling friction between moving baryons and the background
 
 ### Requirements
 
 This is a many-body problem requiring:
-- ~10-100 braids in a line geometry
+- ~10-100 baryons in a line geometry
 - N ≥ 1024 grid for adequate resolution
 - Applied θ boundary conditions (voltage analog)
-- Measurement of braid drift velocity vs applied θ gradient
+- Measurement of charge carrier drift velocity vs applied θ gradient
 
 If J ∝ E (linear response), the proportionality constant is the
-conductivity σ. The resistance R would depend on the braid spacing,
+conductivity σ. The resistance R would depend on the baryon spacing,
 amplitude, and coupling η.
 
 ### Status
 
 This is a V43+ experiment. The multi-baryon framework and phase confinement
 machinery from V41/V42 provide the tools, but the simulation scale (100+
-braids) requires significantly larger grids than current capability.
+baryons) requires significantly larger grids than current capability.
 
 ---
 
@@ -504,17 +508,24 @@ transition table in §3 and the θ/φ energy ratios are robust (they
 measure relative quantities at each radius), but the absolute θ(r)
 power law is unreliable beyond r≈L/3 ≈ 8 in this dataset.
 
-**Still needed**: The time-averaged SIGNED θ profile ⟨θ(r)⟩ (DC
-component as a function of radius). This requires a custom analysis
-sampling θ at fixed radii across all 264 frames of braid_hires.sfa
-and computing the mean. The shell_analysis gives θ_rms (unsigned)
-but not the DC/AC decomposition.
+**V43 per-voxel DC measurement**: Two approaches were tried. The shell-
+averaged method (dc_profile.c) found DC/RMS=5–12% in the core, but this
+conflates spatial and temporal averaging. The corrected per-voxel method
+(dc_pervoxel.c) found DC/RMS=5–8% excluding transients, but the braid
+centroid drifts 9 grid cells over 264 frames, contaminating the per-voxel
+time average. The flat radial profile (no core concentration) suggests
+drift dominance. The physical DC is likely below 1%, broadly consistent
+with V34's 0.2% (which may have been measured at a specific far-field
+point using a different methodology).
 
-**Important caveat**: Since the effective Coulomb force comes from AC
-radiation scattering (OQ2), the DC component may be physically irrelevant
-to the force law — it could be a small numerical artifact of the discrete
-grid initialization. The AC RMS intensity profile ⟨θ_rms²(r)⟩ may be the
-physically meaningful quantity for force calculations.
+A clean measurement would require soliton-frame re-centering (interpolate
+each frame to centroid-centered coordinates before accumulating). This is
+a moderate coding effort for diminishing returns, since the effective
+Coulomb force comes from AC radiation scattering (OQ2), not DC.
+
+**Important caveat**: The DC component may be physically irrelevant
+to the force law. The AC RMS intensity profile ⟨θ_rms²(r)⟩ is the
+physically meaningful quantity for radiation-pressure forces.
 
 ### OQ4: Fine Structure Constant from Theory Parameters
 
@@ -576,5 +587,5 @@ intensity).
 7. **η-variation of DC/total ratio** (5 single-braid runs)
 
 ### Future (V43+):
-8. **Wire/Ohm's law simulation** (100+ braids, N=1024+)
+8. **Wire/Ohm's law simulation** (100+ baryons, N=1024+)
 9. **Photon-photon scattering** (two θ wave packets crossing)

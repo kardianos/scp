@@ -1,5 +1,24 @@
 # SCP Project Conventions
 
+## Document Roles — CRITICAL
+- **CONCEPT.md** is the THEORY DOCUMENT — it presents the current best understanding
+  of the physics as a cohesive, replicable description. Write it like a textbook chapter,
+  NOT a lab notebook. Someone reading only CONCEPT.md should be able to understand and
+  replicate the theory without knowing about the trial and error that got there.
+  - Do NOT include chronological experiment narratives or failed approaches
+  - DO include null results that clarify the theory ("it is NOT X, it IS Y")
+  - DO include key numerical data that confirms claims
+  - Present the physics as understood NOW, not as it was discovered over time
+  - Use correct terminology: "particle" or "proton" for gravitationally responsive
+    objects, "braid" only for the z-aligned sub-component (quark analog)
+- **DISCOVERIES.md** is the chronological lab notebook — records what was found, when,
+  including failed approaches and process. This is where the history lives.
+- **EM_THEORY.md** is the detailed electromagnetic sector theory document (same
+  standards as CONCEPT.md — cohesive, not chronological).
+- **FUTURE.md** tracks open questions and proposed experiments.
+- **Version directories** (v28/, v34/, v41/, v42/, v43/) contain per-experiment
+  plans, results, analysis, and generated data. Each version builds on the previous.
+
 ## Data Format Policy
 - **ALL simulation output MUST use SFA format** (`.sfa` files via `sfa.h`)
 - **NO `.bin` file output** — remove `save_field()` functions that write raw binary
@@ -58,7 +77,10 @@
 ## Simulation Kernel Location
 - CPU kernel: `sfa/sim/scp_sim.c` — build with `gcc -O3 -march=native -fopenmp -o scp_sim scp_sim.c -lzstd -lm`
 - GPU kernel: `sfa/sim/scp_sim.cu` — build with `nvcc -O3 -arch=sm_70 -o scp_sim_cuda scp_sim.cu -lzstd -lm`
-- Seed generators: `sfa/seed/gen_braid.c`, `sfa/seed/gen_oscillon.c`
+- Seed generators: `sfa/seed/gen_braid.c`, `sfa/seed/gen_oscillon.c`,
+  `sfa/seed/gen_phase_confined.c` (UUD/UDD composites),
+  `sfa/seed/gen_proton_analytical.c` (algebraic proton/neutron),
+  `sfa/seed/gen_composite.c` (stamp templates into grids for composite nuclei)
 - Config files: `sfa/sim/*.cfg`
 - SFA header: `sfa/format/sfa.h` (single copy, include via relative path `../format/sfa.h`)
 - Reference implementation (historical): `v34/torsion_coupling/src/v33_cosserat.c`
