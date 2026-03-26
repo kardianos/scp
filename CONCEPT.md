@@ -488,7 +488,10 @@ Three electromagnetic properties verified numerically:
 2. **Photon speed** (OQ5): A plane-wave θ pulse propagates at v=0.997c
    (η=0) and v=0.906c (η=0.5). The bare propagation is essentially c;
    the curl coupling to the massive φ sector slows the photon branch
-   by ~10% at η=0.5.
+   by ~10% at η=0.5. This means the vacuum has a refractive index
+   n = c/v ≈ 1.10 — the background φ field acts as a dielectric medium
+   for θ waves, analogous to how the Higgs condensate gives mass to
+   weak bosons. The index depends on η and A_bg.
 
 3. **No vacuum birefringence** (OQ6): Cross-polarized θ waves mix only
    through the χ² (triple product) nonlinearity, which couples different
@@ -556,8 +559,11 @@ depleted core (φ_rms drops to 0.33× initial at r<1), field concentrated
 at r≈5 (peak φ_rms = 0.73× initial). The aspect ratio remains ≈1.14
 throughout — near-spherical from initialization onward.
 
-Breathing period: 2.2t with extreme amplitude. P_int oscillates 54%
-between peak (5.31) and trough (3.05). The φ_rms vs |P| anticorrelation
+Two breathing timescales: the fast internal field oscillation has period
+~2.2t (the φ carrier wave completing one cycle), while the structural
+envelope breathing (expansion/contraction of R_rms) has period ~150t
+for a single proton (V42). The 2.2t oscillation modulates P_int, which
+oscillates 54% between peak (5.31) and trough (3.05). The φ_rms vs |P| anticorrelation
 is a structural feature: high field amplitude redistributes to
 inter-braid regions where the three carrier phases cancel, suppressing
 the triple product P = φ₀φ₁φ₂.
