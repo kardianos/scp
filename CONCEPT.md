@@ -62,7 +62,13 @@ three braids, analogous to how hadrons are composites of quarks.
 
 ### Braid Structure [CONFIRMED]
 
-The bimodal braid (the best-characterized configuration):
+The following is the SEED initialization — the initial condition that,
+when evolved by the field equations, relaxes into a stable braid. The
+braid's dynamics are entirely governed by Eq. (1); the seed merely
+provides a starting point close enough to the attractor that the
+structure survives and self-organizes.
+
+The bimodal braid seed (the best-characterized configuration):
 
     φ_a(x,y,z,0) = A_a × E(x,y) × cos(k·z + δ_a) + A_bg × cos(...)
 
@@ -72,16 +78,18 @@ The bimodal braid (the best-characterized configuration):
 
 The three fields oscillate with specific phase offsets (δ), creating a
 helical twist along z. The elliptical envelope (ε = 0.333) breaks
-azimuthal symmetry.
+azimuthal symmetry. After initialization, the field equations reshape
+this seed into the equilibrium braid structure described below.
 
 ### Binding Anatomy [CONFIRMED]
 
-The braid has internal geometry measured by |P| = |φ₀φ₁φ₂|:
+The equilibrium braid has internal geometry measured by the triple
+product magnitude P = \|φ₀φ₁φ₂\|:
 
-| Region | r | |P| | Role |
-|--------|---|-----|------|
-| Tight core | 0-3 | 0.11-0.15 | Strongly bound, self-contained |
-| Interaction surface | 4-6 | 0.01-0.06 | WHERE the braid talks to the fabric |
+| Region | r | P | Role |
+|--------|---|---|------|
+| Tight core | 0–3 | 0.11–0.15 | Strongly bound, self-contained |
+| Interaction surface | 4–6 | 0.01–0.06 | Where the braid couples to the fabric |
 | Fabric | >6 | ~0 | Unbound ambient field |
 
 The core INTAKES field (energy flows inward). The surface OUTTAKES
