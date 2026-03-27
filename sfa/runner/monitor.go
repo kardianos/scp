@@ -45,6 +45,7 @@ type Monitor struct {
 	latest  StatusState
 	notify  map[string]*notifyState // per-run notification tracking
 	wakeup  chan struct{}           // signal for immediate notification check
+	state   *RunnerState           // persistent state (shared with server)
 }
 
 func NewMonitor(server *MCPServer, dir string) *Monitor {
@@ -169,6 +170,10 @@ func (m *Monitor) sendRunNotifications(ex Executor, runs map[string]*RunInfo) {
 				}
 				m.server.sendLogMessage(level, msg)
 				ns.doneSent = true
+				// Persist run completion to state file.
+				if m.state != nil {
+					m.state.UpdateRunStatus(id, string(info.Status))
+				}
 			}
 			continue
 		}

@@ -1,10 +1,13 @@
-/*  scp_sim.cu — Unified 6-field Cosserat simulation kernel (CUDA)
+/*  scp_sim_fp32.cu — Unified 6-field Cosserat simulation kernel (CUDA, FP32 storage)
  *
- *  GPU version of scp_sim.c — same config, same SFA output, same physics.
- *  Config parsing, SFA I/O, and init run on CPU. Physics runs on GPU.
+ *  Memory-optimized version of scp_sim.cu:
+ *  - GPU arrays stored as float (FP32) instead of double (FP64)
+ *  - All compute done in double precision in registers
+ *  - Acceleration arrays eliminated via fused halfkick kernels
+ *  - Net: 12 arrays × N³ × 4 bytes = 48 N³ bytes (vs 144 N³ bytes original)
  *
- *  Build: nvcc -O3 -arch=sm_70 -o scp_sim_cuda scp_sim.cu -lzstd -lm -lpthread
- *  Run:   ./scp_sim_cuda config.cfg [-key value ...]
+ *  Build: nvcc -O3 -arch=sm_70 -o scp_sim_fp32 scp_sim_fp32.cu -lzstd -lm -lpthread
+ *  Run:   ./scp_sim_fp32 config.cfg [-key value ...]
  */
 
 #define SFA_IMPLEMENTATION
@@ -136,15 +139,15 @@ static void cfg_load(Config *c, const char *path) {
 
 static void cfg_print(const Config *c) {
     const char *prec_names[] = {"f16", "f32", "f64"};
-    printf("=== scp_sim CUDA: Unified 6-field Cosserat Kernel (GPU) ===\n");
-    printf("d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ)\n");
-    printf("d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ)\n\n");
+    printf("=== scp_sim CUDA FP32: Unified 6-field Cosserat Kernel (GPU, FP32 storage) ===\n");
+    printf("d²phi/dt² = lapl(phi) - m²phi - V'(P) + eta*curl(theta)\n");
+    printf("d²theta/dt² = lapl(theta) - m_theta²theta + eta*curl(phi)\n\n");
     printf("Grid:    N=%d L=%.1f T=%.0f dt_factor=%.4f\n", c->N, c->L, c->T, c->dt_factor);
-    printf("Physics: m²=%.4f m_θ²=%.4f η=%.3f μ=%.3f κ=%.1f\n",
+    printf("Physics: m²=%.4f m_theta²=%.4f eta=%.3f mu=%.3f kappa=%.1f\n",
            c->m2, c->mtheta2, c->eta, c->mu, c->kappa);
     printf("Mode:    %d", c->mode);
-    if (c->mode == 1) printf(" (inverse: α=%.3f β=%.3f)", c->inv_alpha, c->inv_beta);
-    if (c->mode == 3) printf(" (density-κ: γ=%.3f)", c->kappa_gamma);
+    if (c->mode == 1) printf(" (inverse: alpha=%.3f beta=%.3f)", c->inv_alpha, c->inv_beta);
+    if (c->mode == 3) printf(" (density-kappa: gamma=%.3f)", c->kappa_gamma);
     if (c->bc_type == 0)
         printf("\nBC:      absorbing sphere (width=%.1f rate=%.4f)\n", c->damp_width, c->damp_rate);
     else if (c->bc_type == 1)
@@ -183,11 +186,12 @@ static inline double f16_to_f64(uint16_t h) {
 
 /* ================================================================
    Hook-based async pipeline — FieldState, hooks, contexts
+   NOTE: FieldState now uses float* for GPU arrays (no acc arrays)
    ================================================================ */
 
 typedef struct {
-    double *phi[3], *vel_phi[3], *acc_phi[3];
-    double *theta[3], *vel_theta[3], *acc_theta[3];
+    float *phi[3], *vel_phi[3];
+    float *theta[3], *vel_theta[3];
     long N3;
     int N;
     double L, dx, dt;
@@ -222,7 +226,8 @@ typedef struct {
     /* GPU resources */
     cudaStream_t stream;
     uint16_t *d_f16_buf;  /* GPU-side f16 staging (12 * N3 * 2 bytes) */
-    float *d_f32_buf;     /* GPU-side f32 staging (12 * N3 * 4 bytes) — for precision=1 */
+    float *d_f32_buf;     /* GPU-side f32 staging — for precision=1, can copy directly from physics arrays */
+    double *d_f64_buf;    /* GPU-side f64 staging (for precision=2, upcast from float) */
 
     /* Host resources */
     void *h_pin_buf;      /* PINNED host memory for DMA target */
@@ -262,7 +267,7 @@ typedef struct {
 } DiagHookCtx;
 
 /* ================================================================
-   Host grid (for init, diagnostics, SFA I/O)
+   Host grid (for init, diagnostics, SFA I/O) — stays double precision
    ================================================================ */
 
 typedef struct {
@@ -376,18 +381,15 @@ static void init_from_sfa(Grid *g, const Config *c) {
     }
     int nf=0,nv=0; for(int i=0;i<6;i++) nf+=loaded[i]; for(int i=6;i<12;i++) nv+=loaded[i];
     printf("  Loaded: %d/6 fields, %d/6 velocities\n", nf, nv);
-    if (nv==0) printf("  WARNING: no velocity data — cold restart\n");
+    if (nv==0) printf("  WARNING: no velocity data -- cold restart\n");
     free(buf); sfa_close(sfa);
 }
 
-/* init=template: Load a small template SFA and stamp it into the grid.
- * Background generated analytically (with gradient if bc_type=1).
- * Template is centered at (cx, cy, cz) in world coords. */
+/* init=template: Load a small template SFA and stamp it into the grid. */
 static void init_template(Grid *g, const Config *c) {
     printf("Init: template '%s' at (%.1f, %.1f, %.1f)\n",
-           c->init_sfa, 0.0, 0.0, 0.0);  /* center for now */
+           c->init_sfa, 0.0, 0.0, 0.0);
 
-    /* Step 1: Generate background (with optional gradient) */
     const int N=g->N, NN=N*N;
     const double L=g->L, dx=g->dx;
     const double k_bg=PI/L, omega_bg=sqrt(k_bg*k_bg+c->m2);
@@ -411,7 +413,6 @@ static void init_template(Grid *g, const Config *c) {
         }}
     }
 
-    /* Step 2: Load template SFA (small, e.g. 64^3) */
     SFA *tmpl = sfa_open(c->init_sfa);
     if (!tmpl) { fprintf(stderr, "FATAL: cannot open template '%s'\n", c->init_sfa); exit(1); }
     int TN = tmpl->Nx;
@@ -422,12 +423,10 @@ static void init_template(Grid *g, const Config *c) {
 
     printf("  Template: %dx%dx%d, L=%.2f, dx=%.4f\n", TN, TN, TN, TL, Tdx);
 
-    /* Read last frame */
     int frame = tmpl->total_frames - 1;
     void *buf = malloc(tmpl->frame_bytes);
     sfa_read_frame(tmpl, frame, buf);
 
-    /* Extract template fields */
     double *tphi[3]={0}, *tvel[3]={0}, *ttheta[3]={0}, *ttvel[3]={0};
     for (int a=0; a<3; a++) {
         tphi[a] = (double*)calloc(TN3, sizeof(double));
@@ -454,8 +453,6 @@ static void init_template(Grid *g, const Config *c) {
     }
     free(buf); sfa_close(tmpl);
 
-    /* Step 3: Subtract template's background, add perturbation to main grid */
-    /* Template center maps to (cx, cy, cz) in the main grid (default: 0,0,0) */
     double cx=0, cy=0, cz=0;
     int ci = (int)((cx + L) / dx + 0.5);
     int cj = (int)((cy + L) / dx + 0.5);
@@ -469,8 +466,7 @@ static void init_template(Grid *g, const Config *c) {
         double tx = -TL + ti * Tdx;
         double gx = -L + gi * dx;
 
-        /* Template background at this x */
-        double T_A_bg = c->A_bg;  /* template was generated with uniform A_bg */
+        double T_A_bg = c->A_bg;
 
         for (int tj=0; tj<TN; tj++) {
             int gj = cj + tj - half;
@@ -485,16 +481,13 @@ static void init_template(Grid *g, const Config *c) {
                 double gz = -L + gk * dx;
 
                 for (int a=0; a<NFIELDS; a++) {
-                    /* Template background value */
-                    double ph_bg_t = k_bg * tz + 2*PI*a/3.0;  /* use template z for bg subtraction */
+                    double ph_bg_t = k_bg * tz + 2*PI*a/3.0;
                     double bg_phi = T_A_bg * cos(ph_bg_t);
                     double bg_vel = omega_bg * T_A_bg * sin(ph_bg_t);
 
-                    /* Perturbation = template - background */
                     double dphi = tphi[a][tidx] - bg_phi;
                     double dvel = tvel[a][tidx] - bg_vel;
 
-                    /* Add perturbation to main grid */
                     g->phi[a][gidx] += dphi;
                     g->phi_vel[a][gidx] += dvel;
                     g->theta[a][gidx] += ttheta[a][tidx];
@@ -531,14 +524,19 @@ __constant__ int d_BC_TYPE, d_GRAD_MARGIN;
 __constant__ double d_GRAD_A_HIGH, d_GRAD_A_LOW;
 
 /* ================================================================
-   GPU kernels
+   GPU kernels — FP32 storage, FP64 compute, no acceleration arrays
    ================================================================ */
 
-__global__ void compute_forces_kernel(
-    const double *phi0, const double *phi1, const double *phi2,
-    const double *theta0, const double *theta1, const double *theta2,
-    double *acc_phi0, double *acc_phi1, double *acc_phi2,
-    double *acc_theta0, double *acc_theta1, double *acc_theta2)
+/* Fused forces + half-kick kernel.
+ * Computes forces from field positions (float -> double upcast),
+ * then applies v += hdt * force (double -> float downcast).
+ * This replaces both compute_forces_kernel and verlet_halfkick_kernel. */
+__global__ void fused_forces_halfkick_kernel(
+    const float *phi0, const float *phi1, const float *phi2,
+    const float *theta0, const float *theta1, const float *theta2,
+    float *vp0, float *vp1, float *vp2,
+    float *vt0, float *vt1, float *vt2,
+    double hdt)
 {
     long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= d_N3) return;
@@ -550,8 +548,8 @@ __global__ void compute_forces_kernel(
     long n_jp=(long)i*NN+jp*N+k, n_jm=(long)i*NN+jm*N+k;
     long n_kp=(long)i*NN+j*N+kp, n_km=(long)i*NN+j*N+km;
 
-    /* Load phi at center */
-    double p0=phi0[idx], p1=phi1[idx], p2=phi2[idx];
+    /* Load phi at center — upcast float to double */
+    double p0=(double)phi0[idx], p1=(double)phi1[idx], p2=(double)phi2[idx];
     double sig = p0*p0 + p1*p1 + p2*p2;
 
     /* Mode-dependent effective mass and kappa */
@@ -569,70 +567,78 @@ __global__ void compute_forces_kernel(
         t2c = d_MU * d_kappa_gamma * d_KAPPA * P2 * P2 / (D*D);
     }
 
-    /* Phi field arrays for curl */
-    const double *phi[3] = {phi0, phi1, phi2};
-    const double *th[3] = {theta0, theta1, theta2};
-    double acc_p[3], acc_t[3];
+    /* Phi field arrays for neighbor loads */
+    const float *phi[3] = {phi0, phi1, phi2};
+    const float *th[3] = {theta0, theta1, theta2};
 
     for (int a = 0; a < 3; a++) {
-        /* Laplacian */
-        double lap = (phi[a][n_ip]+phi[a][n_im]+phi[a][n_jp]+phi[a][n_jm]
-                     +phi[a][n_kp]+phi[a][n_km]-6.0*phi[a][idx]) * d_idx2;
+        /* Laplacian — load neighbors as double */
+        double lap = ((double)phi[a][n_ip]+(double)phi[a][n_im]+(double)phi[a][n_jp]+(double)phi[a][n_jm]
+                     +(double)phi[a][n_kp]+(double)phi[a][n_km]-6.0*(double)phi[a][idx]) * d_idx2;
         double dPda = (a==0)?p1*p2:(a==1)?p0*p2:p0*p1;
 
         /* curl(theta)_a */
         double ct;
-        if (a==0) ct = (th[2][n_jp]-th[2][n_jm]-th[1][n_kp]+th[1][n_km])*d_idx1;
-        else if (a==1) ct = (th[0][n_kp]-th[0][n_km]-th[2][n_ip]+th[2][n_im])*d_idx1;
-        else ct = (th[1][n_ip]-th[1][n_im]-th[0][n_jp]+th[0][n_jm])*d_idx1;
+        if (a==0) ct = ((double)th[2][n_jp]-(double)th[2][n_jm]-(double)th[1][n_kp]+(double)th[1][n_km])*d_idx1;
+        else if (a==1) ct = ((double)th[0][n_kp]-(double)th[0][n_km]-(double)th[2][n_ip]+(double)th[2][n_im])*d_idx1;
+        else ct = ((double)th[1][n_ip]-(double)th[1][n_im]-(double)th[0][n_jp]+(double)th[0][n_jm])*d_idx1;
 
-        acc_p[a] = lap - me2*phi[a][idx] - dVdP*dPda - t2c*phi[a][idx] + d_ETA*ct;
+        double force = lap - me2*(double)phi[a][idx] - dVdP*dPda - t2c*(double)phi[a][idx] + d_ETA*ct;
+
+        /* Half-kick: v += hdt * force */
+        double v_old;
+        if (a==0) v_old = (double)vp0[idx];
+        else if (a==1) v_old = (double)vp1[idx];
+        else v_old = (double)vp2[idx];
+        double v_new = v_old + hdt * force;
+        if (a==0) vp0[idx] = (float)v_new;
+        else if (a==1) vp1[idx] = (float)v_new;
+        else vp2[idx] = (float)v_new;
     }
 
     for (int a = 0; a < 3; a++) {
-        double lapt = (th[a][n_ip]+th[a][n_im]+th[a][n_jp]+th[a][n_jm]
-                      +th[a][n_kp]+th[a][n_km]-6.0*th[a][idx]) * d_idx2;
+        double lapt = ((double)th[a][n_ip]+(double)th[a][n_im]+(double)th[a][n_jp]+(double)th[a][n_jm]
+                      +(double)th[a][n_kp]+(double)th[a][n_km]-6.0*(double)th[a][idx]) * d_idx2;
         double cp;
-        if (a==0) cp = (phi[2][n_jp]-phi[2][n_jm]-phi[1][n_kp]+phi[1][n_km])*d_idx1;
-        else if (a==1) cp = (phi[0][n_kp]-phi[0][n_km]-phi[2][n_ip]+phi[2][n_im])*d_idx1;
-        else cp = (phi[1][n_ip]-phi[1][n_im]-phi[0][n_jp]+phi[0][n_jm])*d_idx1;
+        if (a==0) cp = ((double)phi[2][n_jp]-(double)phi[2][n_jm]-(double)phi[1][n_kp]+(double)phi[1][n_km])*d_idx1;
+        else if (a==1) cp = ((double)phi[0][n_kp]-(double)phi[0][n_km]-(double)phi[2][n_ip]+(double)phi[2][n_im])*d_idx1;
+        else cp = ((double)phi[1][n_ip]-(double)phi[1][n_im]-(double)phi[0][n_jp]+(double)phi[0][n_jm])*d_idx1;
 
-        acc_t[a] = lapt - d_MTHETA2*th[a][idx] + d_ETA*cp;
+        double force = lapt - d_MTHETA2*(double)th[a][idx] + d_ETA*cp;
+
+        double v_old;
+        if (a==0) v_old = (double)vt0[idx];
+        else if (a==1) v_old = (double)vt1[idx];
+        else v_old = (double)vt2[idx];
+        double v_new = v_old + hdt * force;
+        if (a==0) vt0[idx] = (float)v_new;
+        else if (a==1) vt1[idx] = (float)v_new;
+        else vt2[idx] = (float)v_new;
     }
-
-    acc_phi0[idx]=acc_p[0]; acc_phi1[idx]=acc_p[1]; acc_phi2[idx]=acc_p[2];
-    acc_theta0[idx]=acc_t[0]; acc_theta1[idx]=acc_t[1]; acc_theta2[idx]=acc_t[2];
 }
 
-__global__ void verlet_halfkick_kernel(
-    double *vp0, double *vp1, double *vp2,
-    double *vt0, double *vt1, double *vt2,
-    const double *ap0, const double *ap1, const double *ap2,
-    const double *at0, const double *at1, const double *at2,
-    double hdt)
-{
-    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx >= d_N3) return;
-    vp0[idx]+=hdt*ap0[idx]; vp1[idx]+=hdt*ap1[idx]; vp2[idx]+=hdt*ap2[idx];
-    vt0[idx]+=hdt*at0[idx]; vt1[idx]+=hdt*at1[idx]; vt2[idx]+=hdt*at2[idx];
-}
-
+/* Verlet drift kernel — float storage, double compute */
 __global__ void verlet_drift_kernel(
-    double *p0, double *p1, double *p2,
-    double *t0, double *t1, double *t2,
-    const double *vp0, const double *vp1, const double *vp2,
-    const double *vt0, const double *vt1, const double *vt2,
+    float *p0, float *p1, float *p2,
+    float *t0, float *t1, float *t2,
+    const float *vp0, const float *vp1, const float *vp2,
+    const float *vt0, const float *vt1, const float *vt2,
     double dt)
 {
     long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= d_N3) return;
-    p0[idx]+=dt*vp0[idx]; p1[idx]+=dt*vp1[idx]; p2[idx]+=dt*vp2[idx];
-    t0[idx]+=dt*vt0[idx]; t1[idx]+=dt*vt1[idx]; t2[idx]+=dt*vt2[idx];
+    p0[idx] = (float)((double)p0[idx] + dt*(double)vp0[idx]);
+    p1[idx] = (float)((double)p1[idx] + dt*(double)vp1[idx]);
+    p2[idx] = (float)((double)p2[idx] + dt*(double)vp2[idx]);
+    t0[idx] = (float)((double)t0[idx] + dt*(double)vt0[idx]);
+    t1[idx] = (float)((double)t1[idx] + dt*(double)vt1[idx]);
+    t2[idx] = (float)((double)t2[idx] + dt*(double)vt2[idx]);
 }
 
+/* Absorbing boundary kernel — float storage */
 __global__ void absorbing_boundary_kernel(
-    double *vp0, double *vp1, double *vp2,
-    double *vt0, double *vt1, double *vt2)
+    float *vp0, float *vp1, float *vp2,
+    float *vt0, float *vt1, float *vt2)
 {
     long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= d_N3) return;
@@ -648,23 +654,21 @@ __global__ void absorbing_boundary_kernel(
         double s = (r - R_damp) / d_DAMP_WIDTH;
         if (s > 1.0) s = 1.0;
         double damp = 1.0 - d_DAMP_RATE * s * s;
-        vp0[idx]*=damp; vp1[idx]*=damp; vp2[idx]*=damp;
-        vt0[idx]*=damp; vt1[idx]*=damp; vt2[idx]*=damp;
+        vp0[idx] = (float)((double)vp0[idx]*damp);
+        vp1[idx] = (float)((double)vp1[idx]*damp);
+        vp2[idx] = (float)((double)vp2[idx]*damp);
+        vt0[idx] = (float)((double)vt0[idx]*damp);
+        vt1[idx] = (float)((double)vt1[idx]*damp);
+        vt2[idx] = (float)((double)vt2[idx]*damp);
     }
 }
 
-/* bc_type=1: GPU gradient pinned boundary kernel
- * Computes boundary values ANALYTICALLY from the gradient parameters.
- * x-boundary: phi_a = A_bg(x) * cos(k*z + 2*pi*a/3), theta=0
- * y-boundary: linear extrapolation from interior
- * No pinned arrays needed — zero extra GPU memory. */
+/* bc_type=1: GPU gradient pinned boundary kernel — float storage, no acc arrays */
 __global__ void gradient_bc_kernel(
-    double *p0, double *p1, double *p2,
-    double *vp0, double *vp1, double *vp2,
-    double *ap0, double *ap1, double *ap2,
-    double *t0, double *t1, double *t2,
-    double *vt0, double *vt1, double *vt2,
-    double *at0, double *at1, double *at2)
+    float *p0, float *p1, float *p2,
+    float *vp0, float *vp1, float *vp2,
+    float *t0, float *t1, float *t2,
+    float *vt0, float *vt1, float *vt2)
 {
     long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= d_N3) return;
@@ -681,18 +685,16 @@ __global__ void gradient_bc_kernel(
         double A_bg = d_GRAD_A_HIGH * (1.0 - frac) + d_GRAD_A_LOW * frac;
         double k_bg = 3.14159265358979323846 / d_L;
         double omega_bg = sqrt(k_bg * k_bg + d_MASS2);
-        double delta[3] = {0.0, 2.0943951023931953, 4.1887902047863905}; /* 0, 2pi/3, 4pi/3 */
+        double delta[3] = {0.0, 2.0943951023931953, 4.1887902047863905};
 
-        p0[idx] = A_bg * cos(k_bg * z + delta[0]);
-        p1[idx] = A_bg * cos(k_bg * z + delta[1]);
-        p2[idx] = A_bg * cos(k_bg * z + delta[2]);
-        vp0[idx] = omega_bg * A_bg * sin(k_bg * z + delta[0]);
-        vp1[idx] = omega_bg * A_bg * sin(k_bg * z + delta[1]);
-        vp2[idx] = omega_bg * A_bg * sin(k_bg * z + delta[2]);
-        ap0[idx] = 0; ap1[idx] = 0; ap2[idx] = 0;
+        p0[idx] = (float)(A_bg * cos(k_bg * z + delta[0]));
+        p1[idx] = (float)(A_bg * cos(k_bg * z + delta[1]));
+        p2[idx] = (float)(A_bg * cos(k_bg * z + delta[2]));
+        vp0[idx] = (float)(omega_bg * A_bg * sin(k_bg * z + delta[0]));
+        vp1[idx] = (float)(omega_bg * A_bg * sin(k_bg * z + delta[1]));
+        vp2[idx] = (float)(omega_bg * A_bg * sin(k_bg * z + delta[2]));
         t0[idx] = 0; t1[idx] = 0; t2[idx] = 0;
         vt0[idx] = 0; vt1[idx] = 0; vt2[idx] = 0;
-        at0[idx] = 0; at1[idx] = 0; at2[idx] = 0;
         return;
     }
 
@@ -700,30 +702,41 @@ __global__ void gradient_bc_kernel(
     if (j == 0) {
         long idx1 = (long)i*NN + 1*N + k;
         long idx2 = (long)i*NN + 2*N + k;
-        p0[idx]=2*p0[idx1]-p0[idx2]; p1[idx]=2*p1[idx1]-p1[idx2]; p2[idx]=2*p2[idx1]-p2[idx2];
-        vp0[idx]=2*vp0[idx1]-vp0[idx2]; vp1[idx]=2*vp1[idx1]-vp1[idx2]; vp2[idx]=2*vp2[idx1]-vp2[idx2];
-        t0[idx]=2*t0[idx1]-t0[idx2]; t1[idx]=2*t1[idx1]-t1[idx2]; t2[idx]=2*t2[idx1]-t2[idx2];
-        vt0[idx]=2*vt0[idx1]-vt0[idx2]; vt1[idx]=2*vt1[idx1]-vt1[idx2]; vt2[idx]=2*vt2[idx1]-vt2[idx2];
+        p0[idx]=(float)(2.0*(double)p0[idx1]-(double)p0[idx2]);
+        p1[idx]=(float)(2.0*(double)p1[idx1]-(double)p1[idx2]);
+        p2[idx]=(float)(2.0*(double)p2[idx1]-(double)p2[idx2]);
+        vp0[idx]=(float)(2.0*(double)vp0[idx1]-(double)vp0[idx2]);
+        vp1[idx]=(float)(2.0*(double)vp1[idx1]-(double)vp1[idx2]);
+        vp2[idx]=(float)(2.0*(double)vp2[idx1]-(double)vp2[idx2]);
+        t0[idx]=(float)(2.0*(double)t0[idx1]-(double)t0[idx2]);
+        t1[idx]=(float)(2.0*(double)t1[idx1]-(double)t1[idx2]);
+        t2[idx]=(float)(2.0*(double)t2[idx1]-(double)t2[idx2]);
+        vt0[idx]=(float)(2.0*(double)vt0[idx1]-(double)vt0[idx2]);
+        vt1[idx]=(float)(2.0*(double)vt1[idx1]-(double)vt1[idx2]);
+        vt2[idx]=(float)(2.0*(double)vt2[idx1]-(double)vt2[idx2]);
     } else if (j == N - 1) {
         long idx1 = (long)i*NN + (N-2)*N + k;
         long idx2 = (long)i*NN + (N-3)*N + k;
-        p0[idx]=2*p0[idx1]-p0[idx2]; p1[idx]=2*p1[idx1]-p1[idx2]; p2[idx]=2*p2[idx1]-p2[idx2];
-        vp0[idx]=2*vp0[idx1]-vp0[idx2]; vp1[idx]=2*vp1[idx1]-vp1[idx2]; vp2[idx]=2*vp2[idx1]-vp2[idx2];
-        t0[idx]=2*t0[idx1]-t0[idx2]; t1[idx]=2*t1[idx1]-t1[idx2]; t2[idx]=2*t2[idx1]-t2[idx2];
-        vt0[idx]=2*vt0[idx1]-vt0[idx2]; vt1[idx]=2*vt1[idx1]-vt1[idx2]; vt2[idx]=2*vt2[idx1]-vt2[idx2];
+        p0[idx]=(float)(2.0*(double)p0[idx1]-(double)p0[idx2]);
+        p1[idx]=(float)(2.0*(double)p1[idx1]-(double)p1[idx2]);
+        p2[idx]=(float)(2.0*(double)p2[idx1]-(double)p2[idx2]);
+        vp0[idx]=(float)(2.0*(double)vp0[idx1]-(double)vp0[idx2]);
+        vp1[idx]=(float)(2.0*(double)vp1[idx1]-(double)vp1[idx2]);
+        vp2[idx]=(float)(2.0*(double)vp2[idx1]-(double)vp2[idx2]);
+        t0[idx]=(float)(2.0*(double)t0[idx1]-(double)t0[idx2]);
+        t1[idx]=(float)(2.0*(double)t1[idx1]-(double)t1[idx2]);
+        t2[idx]=(float)(2.0*(double)t2[idx1]-(double)t2[idx2]);
+        vt0[idx]=(float)(2.0*(double)vt0[idx1]-(double)vt0[idx2]);
+        vt1[idx]=(float)(2.0*(double)vt1[idx1]-(double)vt1[idx2]);
+        vt2[idx]=(float)(2.0*(double)vt2[idx1]-(double)vt2[idx2]);
     }
 }
 
-__global__ void downcast_f64_to_f32_kernel(const double *src, float *dst, long n) {
+/* Downcast float to f16 on GPU (for snapshot output) */
+__global__ void downcast_f32_to_f16_kernel(const float *src, uint16_t *dst, long n) {
     long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= n) return;
-    dst[idx] = (float)src[idx];
-}
-
-__global__ void downcast_f64_to_f16_kernel(const double *src, uint16_t *dst, long n) {
-    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
-    if (idx >= n) return;
-    float f = (float)src[idx];
+    float f = src[idx];
     uint32_t x = __float_as_uint(f);
     uint16_t sign = (x >> 16) & 0x8000;
     int exp = ((x >> 23) & 0xFF) - 127 + 15;
@@ -733,8 +746,15 @@ __global__ void downcast_f64_to_f16_kernel(const double *src, uint16_t *dst, lon
     dst[idx] = sign | (exp << 10) | mant;
 }
 
+/* Upcast float to f64 on GPU (for snapshot output when precision=f64) */
+__global__ void upcast_f32_to_f64_kernel(const float *src, double *dst, long n) {
+    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= n) return;
+    dst[idx] = (double)src[idx];
+}
+
 /* ================================================================
-   GPU diagnostics reduction kernel
+   GPU diagnostics reduction kernel — reads float, accumulates double
    Computes 12 values in a single pass via block-level reduction:
    [0] E_phi_kin, [1] E_theta_kin, [2] E_grad, [3] E_mass,
    [4] E_pot, [5] E_tgrad, [6] E_tmass, [7] E_coupling,
@@ -743,10 +763,10 @@ __global__ void downcast_f64_to_f16_kernel(const double *src, uint16_t *dst, lon
 #define DIAG_NVALS 12
 
 __global__ void reduce_diagnostics_kernel(
-    const double *p0, const double *p1, const double *p2,
-    const double *t0, const double *t1, const double *t2,
-    const double *vp0, const double *vp1, const double *vp2,
-    const double *vt0, const double *vt1, const double *vt2,
+    const float *p0, const float *p1, const float *p2,
+    const float *t0, const float *t1, const float *t2,
+    const float *vp0, const float *vp1, const float *vp2,
+    const float *vt0, const float *vt1, const float *vt2,
     double dV, double idx1, double idx2_val,
     double mass2, double mtheta2, double eta, double mu, double kappa,
     int mode, double inv_alpha, double inv_beta, double kappa_gamma,
@@ -768,34 +788,39 @@ __global__ void reduce_diagnostics_kernel(
         long n_jp=(long)i*NN+jp*N+k, n_jm=(long)i*NN+jm*N+k;
         long n_kp=(long)i*NN+j*N+kp, n_km=(long)i*NN+j*N+km;
 
-        double pp0=p0[idx], pp1=p1[idx], pp2=p2[idx];
+        /* Upcast float -> double for all compute */
+        double pp0=(double)p0[idx], pp1=(double)p1[idx], pp2=(double)p2[idx];
         double sig = pp0*pp0 + pp1*pp1 + pp2*pp2;
         double me2 = (mode==1) ? inv_alpha/(1.0+inv_beta*sig) : mass2;
         double keff = (mode==3) ? kappa/(1.0+kappa_gamma*sig) : kappa;
 
-        const double *phi[3] = {p0, p1, p2};
-        const double *th[3] = {t0, t1, t2};
-        const double *vphi[3] = {vp0, vp1, vp2};
-        const double *vth[3] = {vt0, vt1, vt2};
+        const float *phi[3] = {p0, p1, p2};
+        const float *th[3] = {t0, t1, t2};
+        const float *vphi[3] = {vp0, vp1, vp2};
+        const float *vth[3] = {vt0, vt1, vt2};
 
         double s_epk=0, s_etk=0, s_eg=0, s_em=0, s_etg=0, s_etm=0, s_ec=0;
         double s_pm=0, s_trms=0;
 
         for (int a = 0; a < 3; a++) {
-            s_epk += 0.5*vphi[a][idx]*vphi[a][idx]*dV;
-            s_etk += 0.5*vth[a][idx]*vth[a][idx]*dV;
-            double gx=(phi[a][n_ip]-phi[a][n_im])*idx1;
-            double gy=(phi[a][n_jp]-phi[a][n_jm])*idx1;
-            double gz=(phi[a][n_kp]-phi[a][n_km])*idx1;
+            double vpa = (double)vphi[a][idx];
+            double vta = (double)vth[a][idx];
+            double pha = (double)phi[a][idx];
+            double tha = (double)th[a][idx];
+            s_epk += 0.5*vpa*vpa*dV;
+            s_etk += 0.5*vta*vta*dV;
+            double gx=((double)phi[a][n_ip]-(double)phi[a][n_im])*idx1;
+            double gy=((double)phi[a][n_jp]-(double)phi[a][n_jm])*idx1;
+            double gz=((double)phi[a][n_kp]-(double)phi[a][n_km])*idx1;
             s_eg += 0.5*(gx*gx+gy*gy+gz*gz)*dV;
-            s_em += 0.5*me2*phi[a][idx]*phi[a][idx]*dV;
-            double tgx=(th[a][n_ip]-th[a][n_im])*idx1;
-            double tgy=(th[a][n_jp]-th[a][n_jm])*idx1;
-            double tgz=(th[a][n_kp]-th[a][n_km])*idx1;
+            s_em += 0.5*me2*pha*pha*dV;
+            double tgx=((double)th[a][n_ip]-(double)th[a][n_im])*idx1;
+            double tgy=((double)th[a][n_jp]-(double)th[a][n_jm])*idx1;
+            double tgz=((double)th[a][n_kp]-(double)th[a][n_km])*idx1;
             s_etg += 0.5*(tgx*tgx+tgy*tgy+tgz*tgz)*dV;
-            s_etm += 0.5*mtheta2*th[a][idx]*th[a][idx]*dV;
-            double ap = fabs(phi[a][idx]); if (ap > s_pm) s_pm = ap;
-            s_trms += th[a][idx]*th[a][idx];
+            s_etm += 0.5*mtheta2*tha*tha*dV;
+            double ap = fabs(pha); if (ap > s_pm) s_pm = ap;
+            s_trms += tha*tha;
         }
 
         double P = pp0*pp1*pp2, P2 = P*P;
@@ -809,10 +834,10 @@ __global__ void reduce_diagnostics_kernel(
 
         /* Curl coupling */
         double curl_th[3];
-        curl_th[0]=(th[2][n_jp]-th[2][n_jm]-th[1][n_kp]+th[1][n_km])*idx1;
-        curl_th[1]=(th[0][n_kp]-th[0][n_km]-th[2][n_ip]+th[2][n_im])*idx1;
-        curl_th[2]=(th[1][n_ip]-th[1][n_im]-th[0][n_jp]+th[0][n_jm])*idx1;
-        for (int a=0;a<3;a++) s_ec -= eta * phi[a][idx] * curl_th[a] * dV;
+        curl_th[0]=((double)th[2][n_jp]-(double)th[2][n_jm]-(double)th[1][n_kp]+(double)th[1][n_km])*idx1;
+        curl_th[1]=((double)th[0][n_kp]-(double)th[0][n_km]-(double)th[2][n_ip]+(double)th[2][n_im])*idx1;
+        curl_th[2]=((double)th[1][n_ip]-(double)th[1][n_im]-(double)th[0][n_jp]+(double)th[0][n_jm])*idx1;
+        for (int a=0;a<3;a++) s_ec -= eta * (double)phi[a][idx] * curl_th[a] * dV;
 
         local[0] = s_epk;
         local[1] = s_etk;
@@ -822,8 +847,8 @@ __global__ void reduce_diagnostics_kernel(
         local[5] = s_etg;
         local[6] = s_etm;
         local[7] = s_ec;
-        local[8] = s_pm;        /* phi_max — will use max reduction */
-        local[9] = fabs(P);     /* P_max — will use max reduction */
+        local[8] = s_pm;        /* phi_max -- will use max reduction */
+        local[9] = fabs(P);     /* P_max -- will use max reduction */
         local[10] = fabs(P)*dV; /* P_int */
         local[11] = s_trms;     /* theta_rms_sum (sum of squares) */
     }
@@ -854,7 +879,7 @@ __global__ void reduce_diagnostics_kernel(
     if (tid == 0) {
         for (int v = 0; v < DIAG_NVALS; v++) {
             if (v == 8 || v == 9) {
-                /* Atomic max for doubles — use unsigned long long CAS loop */
+                /* Atomic max for doubles -- use unsigned long long CAS loop */
                 unsigned long long *addr = (unsigned long long *)&d_results[v];
                 unsigned long long old_val = *addr, assumed;
                 double new_val = sdata[v * blockDim.x];
@@ -879,50 +904,74 @@ __global__ void zero_diag_kernel(double *d_results, int n) {
 }
 
 /* ================================================================
-   GPU memory management
+   GPU memory management — FP32 storage, no acceleration arrays
+   12 arrays instead of 18, float instead of double
    ================================================================ */
 
-static double *d_phi[3], *d_vel_phi[3], *d_acc_phi[3];
-static double *d_theta[3], *d_vel_theta[3], *d_acc_theta[3];
+static float *d_phi[3], *d_vel_phi[3];
+static float *d_theta[3], *d_vel_theta[3];
 static int gpu_blocks;
 
 static void gpu_alloc(long N3) {
-    size_t bytes = N3 * sizeof(double);
+    size_t bytes = N3 * sizeof(float);
     for (int a = 0; a < 3; a++) {
-        cudaMalloc(&d_phi[a], bytes);       cudaMalloc(&d_vel_phi[a], bytes);   cudaMalloc(&d_acc_phi[a], bytes);
-        cudaMalloc(&d_theta[a], bytes);     cudaMalloc(&d_vel_theta[a], bytes); cudaMalloc(&d_acc_theta[a], bytes);
+        cudaMalloc(&d_phi[a], bytes);       cudaMalloc(&d_vel_phi[a], bytes);
+        cudaMalloc(&d_theta[a], bytes);     cudaMalloc(&d_vel_theta[a], bytes);
     }
     gpu_blocks = (int)((N3 + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK);
-    printf("GPU: allocated %.2f GB (physics), %d blocks × %d threads\n",
-           18.0*bytes/1e9, gpu_blocks, THREADS_PER_BLOCK);
+    printf("GPU: FP32 storage mode (compute in FP64)\n");
+    printf("GPU: allocated %.2f GB (physics: 12 arrays x %ld x 4B), %d blocks x %d threads\n",
+           12.0*bytes/1e9, N3, gpu_blocks, THREADS_PER_BLOCK);
 }
 
+/* Upload: host double -> device float */
 static void gpu_upload(Grid *g) {
-    size_t bytes = g->N3 * sizeof(double);
+    long N3 = g->N3;
+    /* Allocate temporary float buffer for conversion */
+    float *tmp = (float*)malloc(N3 * sizeof(float));
+    if (!tmp) { fprintf(stderr, "FATAL: tmp malloc in gpu_upload\n"); exit(1); }
     for (int a = 0; a < 3; a++) {
-        cudaMemcpy(d_phi[a], g->phi[a], bytes, cudaMemcpyHostToDevice);
-        cudaMemcpy(d_vel_phi[a], g->phi_vel[a], bytes, cudaMemcpyHostToDevice);
-        cudaMemcpy(d_theta[a], g->theta[a], bytes, cudaMemcpyHostToDevice);
-        cudaMemcpy(d_vel_theta[a], g->theta_vel[a], bytes, cudaMemcpyHostToDevice);
-        cudaMemset(d_acc_phi[a], 0, bytes);
-        cudaMemset(d_acc_theta[a], 0, bytes);
+        /* phi */
+        for (long i = 0; i < N3; i++) tmp[i] = (float)g->phi[a][i];
+        cudaMemcpy(d_phi[a], tmp, N3*sizeof(float), cudaMemcpyHostToDevice);
+        /* vel_phi */
+        for (long i = 0; i < N3; i++) tmp[i] = (float)g->phi_vel[a][i];
+        cudaMemcpy(d_vel_phi[a], tmp, N3*sizeof(float), cudaMemcpyHostToDevice);
+        /* theta */
+        for (long i = 0; i < N3; i++) tmp[i] = (float)g->theta[a][i];
+        cudaMemcpy(d_theta[a], tmp, N3*sizeof(float), cudaMemcpyHostToDevice);
+        /* vel_theta */
+        for (long i = 0; i < N3; i++) tmp[i] = (float)g->theta_vel[a][i];
+        cudaMemcpy(d_vel_theta[a], tmp, N3*sizeof(float), cudaMemcpyHostToDevice);
     }
+    free(tmp);
 }
 
+/* Download: device float -> host double */
 static void gpu_download(Grid *g) {
-    size_t bytes = g->N3 * sizeof(double);
+    long N3 = g->N3;
+    float *tmp = (float*)malloc(N3 * sizeof(float));
+    if (!tmp) { fprintf(stderr, "FATAL: tmp malloc in gpu_download\n"); exit(1); }
     for (int a = 0; a < 3; a++) {
-        cudaMemcpy(g->phi[a], d_phi[a], bytes, cudaMemcpyDeviceToHost);
-        cudaMemcpy(g->phi_vel[a], d_vel_phi[a], bytes, cudaMemcpyDeviceToHost);
-        cudaMemcpy(g->theta[a], d_theta[a], bytes, cudaMemcpyDeviceToHost);
-        cudaMemcpy(g->theta_vel[a], d_vel_theta[a], bytes, cudaMemcpyDeviceToHost);
+        cudaMemcpy(tmp, d_phi[a], N3*sizeof(float), cudaMemcpyDeviceToHost);
+        for (long i = 0; i < N3; i++) g->phi[a][i] = (double)tmp[i];
+
+        cudaMemcpy(tmp, d_vel_phi[a], N3*sizeof(float), cudaMemcpyDeviceToHost);
+        for (long i = 0; i < N3; i++) g->phi_vel[a][i] = (double)tmp[i];
+
+        cudaMemcpy(tmp, d_theta[a], N3*sizeof(float), cudaMemcpyDeviceToHost);
+        for (long i = 0; i < N3; i++) g->theta[a][i] = (double)tmp[i];
+
+        cudaMemcpy(tmp, d_vel_theta[a], N3*sizeof(float), cudaMemcpyDeviceToHost);
+        for (long i = 0; i < N3; i++) g->theta_vel[a][i] = (double)tmp[i];
     }
+    free(tmp);
 }
 
 static void gpu_free(void) {
     for (int a = 0; a < 3; a++) {
-        cudaFree(d_phi[a]); cudaFree(d_vel_phi[a]); cudaFree(d_acc_phi[a]);
-        cudaFree(d_theta[a]); cudaFree(d_vel_theta[a]); cudaFree(d_acc_theta[a]);
+        cudaFree(d_phi[a]); cudaFree(d_vel_phi[a]);
+        cudaFree(d_theta[a]); cudaFree(d_vel_theta[a]);
     }
 }
 
@@ -950,34 +999,35 @@ static void gpu_set_constants(const Config *c, double dx) {
     cudaMemcpyToSymbol(d_N3, &N3, sizeof(long));
 }
 
-/* GPU Verlet step */
+/* GPU Verlet step — fused halfkick (no acc arrays)
+ *
+ * Leapfrog structure:
+ *   1. fused_forces_halfkick: compute F(x(n)), v += dt/2 * F
+ *   2. verlet_drift: x += dt * v
+ *   3. fused_forces_halfkick: compute F(x(n+1)), v += dt/2 * F
+ *   4. absorbing_boundary (velocity damping)
+ */
 static void gpu_verlet_step(double dt) {
     double hdt = 0.5 * dt;
-    /* Half-kick */
-    verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+    /* Half-kick with forces computed inline */
+    fused_forces_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+        d_phi[0], d_phi[1], d_phi[2],
+        d_theta[0], d_theta[1], d_theta[2],
         d_vel_phi[0], d_vel_phi[1], d_vel_phi[2],
-        d_vel_theta[0], d_vel_theta[1], d_vel_theta[2],
-        d_acc_phi[0], d_acc_phi[1], d_acc_phi[2],
-        d_acc_theta[0], d_acc_theta[1], d_acc_theta[2], hdt);
+        d_vel_theta[0], d_vel_theta[1], d_vel_theta[2], hdt);
     /* Drift */
     verlet_drift_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_phi[0], d_phi[1], d_phi[2],
         d_theta[0], d_theta[1], d_theta[2],
         d_vel_phi[0], d_vel_phi[1], d_vel_phi[2],
         d_vel_theta[0], d_vel_theta[1], d_vel_theta[2], dt);
-    /* Forces */
-    compute_forces_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+    /* Half-kick with forces at new positions */
+    fused_forces_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_phi[0], d_phi[1], d_phi[2],
         d_theta[0], d_theta[1], d_theta[2],
-        d_acc_phi[0], d_acc_phi[1], d_acc_phi[2],
-        d_acc_theta[0], d_acc_theta[1], d_acc_theta[2]);
-    /* Half-kick */
-    verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_vel_phi[0], d_vel_phi[1], d_vel_phi[2],
-        d_vel_theta[0], d_vel_theta[1], d_vel_theta[2],
-        d_acc_phi[0], d_acc_phi[1], d_acc_phi[2],
-        d_acc_theta[0], d_acc_theta[1], d_acc_theta[2], hdt);
-    /* Boundary — type set externally before calling gpu_verlet_step */
+        d_vel_theta[0], d_vel_theta[1], d_vel_theta[2], hdt);
+    /* Boundary damping */
     absorbing_boundary_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_vel_phi[0], d_vel_phi[1], d_vel_phi[2],
         d_vel_theta[0], d_vel_theta[1], d_vel_theta[2]);
@@ -998,21 +1048,13 @@ static void grid_save_pinned(Grid *g) {
 }
 
 /* Apply gradient pinned BC on GPU: download boundary slabs, overwrite, upload.
- * This is done host-side because pinned data lives on the host. The boundary
- * slabs are small (margin/N fraction of the grid), so the transfer cost is low
- * relative to the GPU compute time for large grids. */
+ * This is done host-side because pinned data lives on the host. */
 static void gpu_apply_gradient_bc(Grid *g, const Config *c) {
     const int N = g->N, NN = N*N;
     const int M = c->gradient_margin;
-    const size_t bytes = g->N3 * sizeof(double);
 
-    /* Download full fields from GPU to host */
-    for (int a = 0; a < NFIELDS; a++) {
-        cudaMemcpy(g->phi[a],       d_phi[a],       bytes, cudaMemcpyDeviceToHost);
-        cudaMemcpy(g->phi_vel[a],   d_vel_phi[a],   bytes, cudaMemcpyDeviceToHost);
-        cudaMemcpy(g->theta[a],     d_theta[a],     bytes, cudaMemcpyDeviceToHost);
-        cudaMemcpy(g->theta_vel[a], d_vel_theta[a], bytes, cudaMemcpyDeviceToHost);
-    }
+    /* Download full fields from GPU to host (float -> double conversion) */
+    gpu_download(g);
 
     /* x-direction: pin boundary slabs */
     for (long idx = 0; idx < g->N3; idx++) {
@@ -1052,17 +1094,13 @@ static void gpu_apply_gradient_bc(Grid *g, const Config *c) {
         }
     }
 
-    /* Upload modified fields back to GPU */
-    for (int a = 0; a < NFIELDS; a++) {
-        cudaMemcpy(d_phi[a],       g->phi[a],       bytes, cudaMemcpyHostToDevice);
-        cudaMemcpy(d_vel_phi[a],   g->phi_vel[a],   bytes, cudaMemcpyHostToDevice);
-        cudaMemcpy(d_theta[a],     g->theta[a],     bytes, cudaMemcpyHostToDevice);
-        cudaMemcpy(d_vel_theta[a], g->theta_vel[a], bytes, cudaMemcpyHostToDevice);
-    }
+    /* Upload modified fields back to GPU (double -> float conversion) */
+    gpu_upload(g);
 }
 
 /* ================================================================
-   Snapshot hook — async f16/f32 conversion + DMA + compress/write
+   Snapshot hook — async conversion + DMA + compress/write
+   Now reads from float GPU arrays
    ================================================================ */
 
 static void *snap_writer_thread(void *arg) {
@@ -1080,17 +1118,14 @@ static void *snap_writer_thread(void *arg) {
         void *cols[12];
         long N3 = ctx->N3;
         if (ctx->precision == 0) {
-            /* f16: h_pin_buf is uint16_t[12*N3] */
             uint16_t *base = (uint16_t *)ctx->h_pin_buf;
             for (int c = 0; c < 12; c++)
                 cols[c] = base + c * N3;
         } else if (ctx->precision == 1) {
-            /* f32: h_pin_buf is float[12*N3] */
             float *base = (float *)ctx->h_pin_buf;
             for (int c = 0; c < 12; c++)
                 cols[c] = base + c * N3;
         } else {
-            /* f64: h_pin_buf is double[12*N3] */
             double *base = (double *)ctx->h_pin_buf;
             for (int c = 0; c < 12; c++)
                 cols[c] = base + c * N3;
@@ -1117,23 +1152,32 @@ static SnapHookCtx create_snap_hook(SFA *sfa, int precision, int snap_every, lon
 
     /* Allocate GPU staging buffer and pinned host buffer */
     if (precision == 0) {
+        /* f16: need GPU staging for float->f16 conversion */
         ctx.buf_bytes = 12L * N3 * sizeof(uint16_t);
         cudaMalloc(&ctx.d_f16_buf, ctx.buf_bytes);
         ctx.d_f32_buf = NULL;
+        ctx.d_f64_buf = NULL;
     } else if (precision == 1) {
+        /* f32: physics arrays ARE float, so DMA directly -- no GPU staging needed */
         ctx.buf_bytes = 12L * N3 * sizeof(float);
         ctx.d_f16_buf = NULL;
-        cudaMalloc(&ctx.d_f32_buf, ctx.buf_bytes);
+        ctx.d_f32_buf = NULL;  /* will copy directly from physics arrays */
+        ctx.d_f64_buf = NULL;
     } else {
-        /* f64: DMA directly from physics arrays, staging = pinned host only */
+        /* f64: need GPU staging for float->double upcast */
         ctx.buf_bytes = 12L * N3 * sizeof(double);
         ctx.d_f16_buf = NULL;
         ctx.d_f32_buf = NULL;
+        cudaMalloc(&ctx.d_f64_buf, ctx.buf_bytes);
     }
     cudaMallocHost(&ctx.h_pin_buf, ctx.buf_bytes);
 
+    long gpu_staging = 0;
+    if (precision == 0) gpu_staging = 12L * N3 * sizeof(uint16_t);
+    else if (precision == 2) gpu_staging = 12L * N3 * sizeof(double);
+
     printf("Snap hook: %.2f GB GPU staging + %.2f GB pinned host\n",
-           (precision < 2 ? ctx.buf_bytes : 0) / 1e9, ctx.buf_bytes / 1e9);
+           gpu_staging / 1e9, ctx.buf_bytes / 1e9);
 
     pthread_mutex_init(&ctx.mutex, NULL);
     pthread_cond_init(&ctx.cond, NULL);
@@ -1141,8 +1185,6 @@ static SnapHookCtx create_snap_hook(SFA *sfa, int precision, int snap_every, lon
     ctx.writer_has_data = 0;
     ctx.writer_shutdown = 0;
 
-    /* NOTE: writer thread is NOT started here — must call start_snap_writer()
-     * after the ctx is in its final memory location (returned by value). */
     return ctx;
 }
 
@@ -1151,14 +1193,9 @@ static void start_snap_writer(SnapHookCtx *ctx) {
 }
 
 static void destroy_snap_hook(SnapHookCtx *ctx) {
-    /* Wait for any pending write AND any queued data to be consumed.
-     * Signal the cond to wake the writer if it's waiting for data —
-     * otherwise both threads deadlock on the same cond_wait. */
     pthread_mutex_lock(&ctx->mutex);
-    while (ctx->writer_busy || ctx->writer_has_data) {
-        pthread_cond_signal(&ctx->cond);  /* wake writer to consume data */
+    while (ctx->writer_busy)
         pthread_cond_wait(&ctx->cond, &ctx->mutex);
-    }
     ctx->writer_shutdown = 1;
     pthread_cond_signal(&ctx->cond);
     pthread_mutex_unlock(&ctx->mutex);
@@ -1170,6 +1207,7 @@ static void destroy_snap_hook(SnapHookCtx *ctx) {
     cudaStreamDestroy(ctx->stream);
     if (ctx->d_f16_buf) cudaFree(ctx->d_f16_buf);
     if (ctx->d_f32_buf) cudaFree(ctx->d_f32_buf);
+    if (ctx->d_f64_buf) cudaFree(ctx->d_f64_buf);
     cudaFreeHost(ctx->h_pin_buf);
 }
 
@@ -1177,7 +1215,7 @@ static void snap_hook(int step, double t, const FieldState *state, void *vctx) {
     SnapHookCtx *ctx = (SnapHookCtx *)vctx;
     if (step % ctx->snap_every != 0) return;
 
-    /* Wait for previous write to finish (the only possible stall) */
+    /* Wait for previous write to finish */
     pthread_mutex_lock(&ctx->mutex);
     while (ctx->writer_busy)
         pthread_cond_wait(&ctx->cond, &ctx->mutex);
@@ -1186,7 +1224,8 @@ static void snap_hook(int step, double t, const FieldState *state, void *vctx) {
     long N3 = state->N3;
     int blocks = (int)((N3 + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK);
 
-    const double *src[12] = {
+    /* Source arrays are float* on GPU */
+    const float *src[12] = {
         state->phi[0], state->phi[1], state->phi[2],
         state->theta[0], state->theta[1], state->theta[2],
         state->vel_phi[0], state->vel_phi[1], state->vel_phi[2],
@@ -1194,30 +1233,30 @@ static void snap_hook(int step, double t, const FieldState *state, void *vctx) {
     };
 
     if (ctx->precision == 0) {
-        /* f16 path: convert on GPU, DMA f16 */
+        /* f16 path: convert float -> f16 on GPU, DMA f16 */
         for (int c = 0; c < 12; c++) {
-            downcast_f64_to_f16_kernel<<<blocks, THREADS_PER_BLOCK, 0, ctx->stream>>>(
+            downcast_f32_to_f16_kernel<<<blocks, THREADS_PER_BLOCK, 0, ctx->stream>>>(
                 src[c], ctx->d_f16_buf + c * N3, N3);
         }
         cudaStreamSynchronize(ctx->stream);
         cudaMemcpyAsync(ctx->h_pin_buf, ctx->d_f16_buf, ctx->buf_bytes,
                         cudaMemcpyDeviceToHost, ctx->stream);
     } else if (ctx->precision == 1) {
-        /* f32 path: convert on GPU, DMA f32 */
+        /* f32 path: physics arrays ARE float, DMA directly (12 separate copies) */
+        float *dst = (float *)ctx->h_pin_buf;
         for (int c = 0; c < 12; c++) {
-            downcast_f64_to_f32_kernel<<<blocks, THREADS_PER_BLOCK, 0, ctx->stream>>>(
-                src[c], ctx->d_f32_buf + c * N3, N3);
-        }
-        cudaStreamSynchronize(ctx->stream);
-        cudaMemcpyAsync(ctx->h_pin_buf, ctx->d_f32_buf, ctx->buf_bytes,
-                        cudaMemcpyDeviceToHost, ctx->stream);
-    } else {
-        /* f64 path: DMA raw doubles (12 separate copies) */
-        double *dst = (double *)ctx->h_pin_buf;
-        for (int c = 0; c < 12; c++) {
-            cudaMemcpyAsync(dst + c * N3, src[c], N3 * sizeof(double),
+            cudaMemcpyAsync(dst + c * N3, src[c], N3 * sizeof(float),
                             cudaMemcpyDeviceToHost, ctx->stream);
         }
+    } else {
+        /* f64 path: upcast float -> double on GPU, DMA doubles */
+        for (int c = 0; c < 12; c++) {
+            upcast_f32_to_f64_kernel<<<blocks, THREADS_PER_BLOCK, 0, ctx->stream>>>(
+                src[c], ctx->d_f64_buf + c * N3, N3);
+        }
+        cudaStreamSynchronize(ctx->stream);
+        cudaMemcpyAsync(ctx->h_pin_buf, ctx->d_f64_buf, ctx->buf_bytes,
+                        cudaMemcpyDeviceToHost, ctx->stream);
     }
 
     /* Wait for DMA to complete before signaling writer */
@@ -1229,7 +1268,6 @@ static void snap_hook(int step, double t, const FieldState *state, void *vctx) {
     ctx->writer_has_data = 1;
     pthread_cond_signal(&ctx->cond);
     pthread_mutex_unlock(&ctx->mutex);
-    /* Return immediately — physics continues on stream 0 */
 }
 
 /* ================================================================
@@ -1270,9 +1308,8 @@ static void destroy_diag_hook(DiagHookCtx *ctx) {
     cudaFreeHost(ctx->h_results);
 }
 
-/* Run the GPU reduction and populate h_results. Used by diag_hook and for initial/final diag. */
+/* Run the GPU reduction and populate h_results. */
 static void run_gpu_diagnostics(const FieldState *state, DiagHookCtx *ctx) {
-    /* Zero the results buffer */
     zero_diag_kernel<<<1, DIAG_NVALS>>>(ctx->d_results, DIAG_NVALS);
 
     double idx1 = 1.0 / (2.0 * ctx->dx);
@@ -1299,7 +1336,6 @@ static void diag_hook(int step, double t, const FieldState *state, void *vctx) {
     run_gpu_diagnostics(state, ctx);
 
     double *r = ctx->h_results;
-    /* r: [0]epk [1]etk [2]eg [3]em [4]ep [5]etg [6]etm [7]ec [8]pm [9]Pm [10]Pint [11]trms_sum */
     double et = r[0]+r[1]+r[2]+r[3]+r[4]+r[5]+r[6]+r[7];
     double trms = sqrt(r[11] / (3.0 * ctx->N3));
 
@@ -1315,7 +1351,7 @@ static void diag_hook(int step, double t, const FieldState *state, void *vctx) {
         float ms; cudaEventElapsedTime(&ms, ctx->t_start, t_stop);
         cudaEventDestroy(t_stop);
         double drift = 100.0 * (et - ctx->E0) / (fabs(ctx->E0) + 1e-30);
-        printf("t=%7.1f E=%.3e (drift %+.3f%%) Ep=%.1f phi=%.3f θ_rms=%.2e "
+        printf("t=%7.1f E=%.3e (drift %+.3f%%) Ep=%.1f phi=%.3f theta_rms=%.2e "
                "[%.0f%% %.1fs %.2fms/step]\n",
                t, et, drift, r[4], r[8], trms,
                100.0 * step / ctx->n_steps, ms / 1000, ms / step);
@@ -1324,7 +1360,7 @@ static void diag_hook(int step, double t, const FieldState *state, void *vctx) {
 }
 
 /* ================================================================
-   Diagnostics (host-side, same as CPU version) — kept for reference/fallback
+   Diagnostics (host-side, same as CPU version) -- kept for reference/fallback
    ================================================================ */
 
 static void compute_energy(Grid *g, const Config *c,
@@ -1365,7 +1401,6 @@ static void compute_energy(Grid *g, const Config *c,
             s_ep+=(c->mu/2.0)*P2*(1.0+c->kappa_gamma*sig)/D*dV;
         } else s_ep+=(c->mu/2.0)*P2/(1.0+keff*P2)*dV;
         double Pa=fabs(P); if(Pa>s_Pm) s_Pm=Pa;
-        /* Curl coupling energy */
         double curl_th[3];
         curl_th[0]=(g->theta[2][n_jp]-g->theta[2][n_jm]-g->theta[1][n_kp]+g->theta[1][n_km])*idx1;
         curl_th[1]=(g->theta[0][n_kp]-g->theta[0][n_km]-g->theta[2][n_ip]+g->theta[2][n_im])*idx1;
@@ -1397,10 +1432,9 @@ static double P_integrated(Grid *g) {
 
 static void sfa_snap_gpu(SFA *sfa, Grid *g, double t, int precision) {
     long n = g->N3;
-    /* Download all fields+velocities from GPU */
     gpu_download(g);
 
-    if (precision == 2) { /* f64 */
+    if (precision == 2) {
         double *arrays[12] = {
             g->phi[0],g->phi[1],g->phi[2],g->theta[0],g->theta[1],g->theta[2],
             g->phi_vel[0],g->phi_vel[1],g->phi_vel[2],
@@ -1484,7 +1518,7 @@ int main(int argc, char **argv) {
     /* For gradient_pinned BC: save initial state, disable spherical damping */
     if (c.bc_type == 1) {
         grid_save_pinned(g);
-        c.damp_width = 0;  c.damp_rate = 0;  /* disable spherical absorb on GPU */
+        c.damp_width = 0;  c.damp_rate = 0;
         printf("Gradient BC: pinned %d slabs on each x-face (A_high=%.3f, A_low=%.3f)\n\n",
                c.gradient_margin, c.gradient_A_high, c.gradient_A_low);
     }
@@ -1498,11 +1532,7 @@ int main(int argc, char **argv) {
     cudaMemcpyToSymbol(d_GRAD_A_LOW, &c.gradient_A_low, sizeof(double));
     gpu_upload(g);
 
-    /* Initial force computation on GPU */
-    compute_forces_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
-        d_phi[0],d_phi[1],d_phi[2], d_theta[0],d_theta[1],d_theta[2],
-        d_acc_phi[0],d_acc_phi[1],d_acc_phi[2],
-        d_acc_theta[0],d_acc_theta[1],d_acc_theta[2]);
+    /* No initial force computation needed -- fused kernel computes forces inline */
     cudaDeviceSynchronize();
 
     /* SFA archive with KVMD */
@@ -1556,14 +1586,13 @@ int main(int argc, char **argv) {
     int diag_every=(int)(c.diag_dt/g->dt); if(diag_every<1) diag_every=1;
     int snap_every=(int)(c.snap_dt/g->dt); if(snap_every<1) snap_every=1;
     int major = diag_every * 25; if(major<1) major=1;
-    /* Cap so we get ~10 progress lines even for short runs */
     if(major > n_steps/10) { major = (n_steps/10/diag_every)*diag_every; if(major<diag_every) major=diag_every; }
 
-    /* Build FieldState from device pointers */
+    /* Build FieldState from device pointers (float*) */
     FieldState fstate;
     for (int a = 0; a < 3; a++) {
-        fstate.phi[a] = d_phi[a]; fstate.vel_phi[a] = d_vel_phi[a]; fstate.acc_phi[a] = d_acc_phi[a];
-        fstate.theta[a] = d_theta[a]; fstate.vel_theta[a] = d_vel_theta[a]; fstate.acc_theta[a] = d_acc_theta[a];
+        fstate.phi[a] = d_phi[a]; fstate.vel_phi[a] = d_vel_phi[a];
+        fstate.theta[a] = d_theta[a]; fstate.vel_theta[a] = d_vel_theta[a];
     }
     fstate.N3 = g->N3; fstate.N = g->N;
     fstate.L = g->L; fstate.dx = g->dx; fstate.dt = g->dt;
@@ -1585,7 +1614,7 @@ int main(int argc, char **argv) {
     DiagHookCtx diag_ctx = create_diag_hook(fp, diag_every, major, g->N3, g->dx, n_steps, t_start, &c);
     register_hook(diag_hook, &diag_ctx);
 
-    /* Initial diagnostics (GPU-side reduction, no full download) */
+    /* Initial diagnostics (GPU-side reduction) */
     run_gpu_diagnostics(&fstate, &diag_ctx);
     {
         double *r = diag_ctx.h_results;
@@ -1612,10 +1641,8 @@ int main(int argc, char **argv) {
             gradient_bc_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
                 d_phi[0], d_phi[1], d_phi[2],
                 d_vel_phi[0], d_vel_phi[1], d_vel_phi[2],
-                d_acc_phi[0], d_acc_phi[1], d_acc_phi[2],
                 d_theta[0], d_theta[1], d_theta[2],
-                d_vel_theta[0], d_vel_theta[1], d_vel_theta[2],
-                d_acc_theta[0], d_acc_theta[1], d_acc_theta[2]);
+                d_vel_theta[0], d_vel_theta[1], d_vel_theta[2]);
         }
 
         /* Dispatch hooks */
@@ -1624,12 +1651,10 @@ int main(int argc, char **argv) {
             hooks[h].fn(step, t, &fstate, hooks[h].ctx);
     }
 
-    /* Final frame — only if the last step wasn't already (or nearly) a snap point.
-     * Skip if the gap is less than half a snap interval to avoid near-duplicate frames. */
+    /* Final frame via hook */
     {
         int last_snapped = (n_steps / snap_every) * snap_every;
-        int gap = n_steps - last_snapped;
-        if (gap > snap_every / 2) {
+        if (last_snapped != n_steps) {
             int saved_every = snap_ctx.snap_every;
             snap_ctx.snap_every = 1;
             snap_hook(1, n_steps * g->dt, &fstate, &snap_ctx);
@@ -1656,7 +1681,7 @@ int main(int argc, char **argv) {
         float total_ms; cudaEventElapsedTime(&total_ms, t_start, t_stop);
         cudaEventDestroy(t_stop);
 
-        printf("\n=== COMPLETE (GPU, async pipeline) ===\n");
+        printf("\n=== COMPLETE (GPU FP32 storage, async pipeline) ===\n");
         printf("E_total=%.4e (drift %.3f%%) E_pot=%.4f\n", et, 100*(et-diag_ctx.E0)/(fabs(diag_ctx.E0)+1e-30), r[4]);
         printf("phi_max=%.4f theta_rms=%.3e\n", r[8], trms);
         printf("SFA: %s (%u frames)\n", c.output, nf);

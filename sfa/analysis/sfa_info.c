@@ -77,68 +77,24 @@ int main(int argc, char **argv) {
             t_step = (t_last - t_first) / (s->total_frames - 1);
     }
 
-    /* Frame integrity check: verify each frame's data fits within the file */
-    int n_valid_frames = 0, n_truncated_frames = 0, n_missing_frames = 0;
-    int truncation_warning = 0;
-    uint32_t first_bad_frame = s->total_frames;
-    if (s->total_frames > 0 && s->fp) {
-        /* Walk JTOP → JMPF to read per-frame offsets and sizes */
-        FILE *fp = s->fp;
-        long saved_pos = ftell(fp);
+    /* Frame integrity check using shared sfa_count_valid_frames */
+    int n_valid_frames = sfa_count_valid_frames(s, file_bytes);
+    int n_truncated_frames = (int)s->total_frames - n_valid_frames;
+    int n_missing_frames = 0;  /* count_valid_frames stops at first bad frame */
+    int truncation_warning = (n_valid_frames < (int)s->total_frames);
+    uint32_t first_bad_frame = (uint32_t)n_valid_frames;
 
-        /* Find JMPF via JTOP */
-        fseek(fp, (long)s->first_jtop_offset + 12 + 4 + 4 + 8, SEEK_SET);
-        uint64_t jmpf_off;
-        fread(&jmpf_off, 8, 1, fp);
-
-        /* Read JMPF entries */
-        fseek(fp, (long)jmpf_off + 12 + 4 + 4, SEEK_SET);
-
-        for (uint32_t f = 0; f < s->total_frames; f++) {
-            double ftime;
-            uint64_t foffset, fcomp_size;
-            uint32_t fcrc, freserved;
-            fread(&ftime, 8, 1, fp);
-            fread(&foffset, 8, 1, fp);
-            fread(&fcomp_size, 8, 1, fp);
-            fread(&fcrc, 4, 1, fp);
-            fread(&freserved, 4, 1, fp);
-
-            if (foffset == 0 && fcomp_size == 0 && f > 0) {
-                /* Empty JMPF slot — frame was never written */
-                n_missing_frames++;
-                if (f < first_bad_frame) first_bad_frame = f;
-            } else {
-                /* Check if the frame data fits within the file */
-                /* Frame chunk = 12 bytes header + comp_size bytes data */
-                uint64_t frame_end = foffset + 12 + fcomp_size;
-                if (frame_end > file_bytes) {
-                    n_truncated_frames++;
-                    if (f < first_bad_frame) first_bad_frame = f;
-                } else {
-                    n_valid_frames++;
-                }
-            }
-        }
-
-        truncation_warning = (n_truncated_frames > 0 || n_missing_frames > 0);
-
+    if (truncation_warning) {
         /* Recalculate compression using only valid frames */
-        if (n_valid_frames > 0 && n_valid_frames != (int)s->total_frames) {
-            compression = (n_valid_frames > 0 && frame_raw > 0) ?
-                (double)file_bytes / ((double)n_valid_frames * frame_raw) : 0;
-        }
+        if (n_valid_frames > 0 && frame_raw > 0)
+            compression = (double)file_bytes / ((double)n_valid_frames * frame_raw);
 
         /* Update time range to reflect only valid frames */
-        if (truncation_warning && first_bad_frame > 0) {
-            /* Re-read the last valid frame's time */
-            fseek(fp, (long)jmpf_off + 12 + 8 + (first_bad_frame - 1) * 32, SEEK_SET);
-            fread(&t_last, 8, 1, fp);
-            if (first_bad_frame > 1)
-                t_step = (t_last - t_first) / (first_bad_frame - 1);
+        if (n_valid_frames > 0) {
+            t_last = sfa_frame_time(s, n_valid_frames - 1);
+            if (n_valid_frames > 1)
+                t_step = (t_last - t_first) / (n_valid_frames - 1);
         }
-
-        fseek(fp, saved_pos, SEEK_SET);
     }
 
     /* KVMD */

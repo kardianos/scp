@@ -34,10 +34,13 @@ this reproduces the nuclear stability curve.
 
 **Requirements**:
 - N=512 fits V100-32GB (19.3 GB). N=768 needs A100-40GB or multi-V100.
+  With FP32 kernel (`scp_sim_fp32.cu`, untested): N=768 fits V100-32GB (21.6 GB).
 - Seed generator: place 3 or 4 baryons in tetrahedral/triangular arrangement
 - Each baryon: phase-confined 3-braid with {0, 2π/3, 4π/3} carrier phases
 - Separation: ~30-40 code units (from deuterium equilibrium)
 - T=500 minimum for stability confirmation
+- **Depends on F24**: Must first validate the differential mass defect method
+  on deuterium before attempting ³He/⁴He binding energy measurements.
 
 **Prediction**: ⁴He should show the strongest binding because:
 1. Each baryon has 3 neighbors (vs 1 in deuterium) → more depletion overlap
@@ -52,18 +55,26 @@ this reproduces the nuclear stability curve.
 
 ### F18: Stabilize UDD (Neutron) Independently
 
-**Status**: Open. UDD decays when alone (phases converge, confinement fails).
-But in deuterium, UDD survives alongside UUD. Can UDD be independently
-stabilized, or does it fundamentally require a UUD partner?
+**Status**: Partially resolved [V44]. UDD survives T=1000 without catastrophic
+decay. The free neutron half-life is 614 s = 3.3×10²⁶ code time units — our
+T=1000 run covers 3×10⁻²³ of one half-life, so the absence of decay is expected.
 
-This is critical for multi-baryon nuclei — if neutrons are inherently
-unstable, they must be placed adjacent to protons from initialization.
-In real physics, the free neutron decays (t½=10 min) but bound neutrons
-are stable. Our UDD shows the same behavior.
+**V44 findings**:
+- UDD at T=1000 (analytical seed): P_int plateau ~900-1100, no collapse
+- Cluster analysis (template seed): UDD dominant cluster P_peak=0.334 vs
+  UUD P_peak=0.642 at comparable times — the neutron core is weaker but
+  not dissolving. UDD has MORE fragments (16 vs 10 clusters).
+- UDD P_int drift is -5.5%/200t (template) vs UUD -0.1%/200t — the neutron
+  IS less stable, consistent with V41 (S_final=0.72 vs 0.97).
 
-**Test**: Run UDD alone at T=1000 to confirm it eventually decays. Then
-test UDD with a distant UUD (separation > 80) — does the UUD's residual
-θ field stabilize the UDD even at long range?
+**Conclusion**: The UDD neutron is NOT rapidly unstable but IS structurally
+weaker than UUD. It maintains coherence at T=1000 but with lower peak binding
+and more fragmentation. This matches real physics: free neutron is metastable
+with a very long half-life relative to nuclear timescales.
+
+**Remaining**: Test UDD with distant UUD (separation > 80) to see if residual
+θ stabilizes the neutron. A clean measurement requires pre-converged templates
+and T=5000+ to detect differential P_int drift.
 
 ### F19: Force Equilibration Mechanism
 
@@ -102,26 +113,43 @@ in other observables (e.g., depletion overlap, not carrier phase).
 
 ### F24: Controlled Mass Defect Measurement
 
-**Status**: Open. The initial mass defect calculation (V42) was INCONCLUSIVE
-because the deuterium (N=512, L=100) and the individual baryons (N=192, L=25-30)
-were simulated at different grid sizes. The absorbing BC drains energy differently
-in different boxes, making direct E_total comparison invalid.
+**Status**: REDESIGNED after V44. The isolated-baryon approach failed because
+initial conditions cannot be matched precisely enough. Two attempts:
 
-**Preliminary E_pot comparison** (time-averaged, background-independent):
-- Deuterium <E_pot>: -94.7
-- UUD + UDD <E_pot>: -125.9
-- The deuterium is 31 code units SHALLOWER — but this comparison is unreliable
-  due to different simulation conditions.
+1. **V44 analytical seeds** (gen_proton_analytical Level 2): Baryons were 4×
+   over-compressed vs V42 equilibrium (P_int=1270 vs V42's 320/baryon), with
+   18%/200t decay rate. Not equilibrated, comparison invalid.
 
-**The proper test**: Run isolated UUD and isolated UDD at the SAME grid
-(N=512, L=100, T=500, same absorbing BC) as the deuterium. Compare
-time-averaged E_pot (and ideally full energy decomposition).
+2. **V44 template seeds** (V43 proton template + V41 neutron): Much better
+   (P_int drift -0.1% for UUD), but per-baryon P_int (683) still 2× V42's
+   (321). Different seed generators produce different equilibria.
 
-If E_bind = E_deut - (E_UUD_alone + E_UDD_alone) < 0, the deuterium is
-genuinely bound with measurable binding energy. This number would be the
-first data point on the SCP nuclear binding energy curve.
+**Root cause**: The absorbing BC drains different amounts depending on seed
+structure. Any comparison between separately-run simulations has uncontrolled
+systematics from the initial transient radiation.
 
-**Cost**: 2 additional V100-32GB runs at ~2.5 hours each ≈ $0.90.
+**Redesigned approach (differential measurement)**:
+
+Run TWO deuterium simulations from IDENTICAL seeds (gen_deuterium.c), differing
+ONLY in inter-baryon separation:
+- Run A: UUD+UDD at D=40 (V42 equilibrium distance, bound)
+- Run B: UUD+UDD at D=80 (effectively non-interacting, unbound)
+- Mass defect = E_total(D=40) - E_total(D=80)
+
+Same seeds, same grid (N=512, L=200), same BC — all systematics cancel. The
+only variable is the binding interaction. Additionally, measure E_pot within a
+fixed radius around each baryon's centroid (tracked per-frame via |P|-weighted
+centroid), to get per-particle binding energy independent of radiated background.
+
+**Analysis method**:
+1. At each diagnostic step, identify baryon centroids via |P| thresholding
+2. Integrate E_pot within r < 15 of each centroid (captures the bound structure,
+   excludes radiation)
+3. Time-average over t=200-400 (post-transient window)
+4. Compare per-baryon core E_pot between D=40 and D=80 runs
+
+**Cost**: 2 runs at N=512, L=200 on V100-32GB, ~5 hr each ≈ $2.00.
+Grid needs L=200 to fit D=80 separation with absorbing BC margin.
 
 ### F21: Verify Group Velocity Remains Subluminal
 

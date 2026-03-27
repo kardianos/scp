@@ -133,6 +133,14 @@ returns instantly with cached state.
   `sfa/seed/gen_phase_confined.c` (UUD/UDD composites),
   `sfa/seed/gen_proton_analytical.c` (algebraic proton/neutron),
   `sfa/seed/gen_composite.c` (stamp templates into grids for composite nuclei)
+- **Analytical seed warning**: `gen_proton_analytical` (Level 2) produces baryons
+  with ~4× the equilibrium binding density (P_int ~1270 vs ~320 per baryon in V42).
+  These seeds need T=2000+ to relax and are NOT suitable for energy comparisons.
+  For energy-sensitive experiments (mass defect, binding), use template seeding
+  (`init=template` with `proton_template.sfa`) or the `gen_deuterium.c` generator
+  which produces better-equilibrated initial conditions.
+- Pre-converged templates: `v43/proton_formation/proton_template.sfa` (64³, UUD),
+  `v43/proton_formation/neutron_template.sfa` (192³, UDD from V41)
 - Config files: `sfa/sim/*.cfg`
 - SFA header: `sfa/format/sfa.h` (single copy, include via relative path `../format/sfa.h`)
 - Reference implementation (historical): `v34/torsion_coupling/src/v33_cosserat.c`

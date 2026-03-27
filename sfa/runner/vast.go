@@ -30,7 +30,27 @@ type VastOffer struct {
 	GPUMemMB    int64   `json:"gpu_ram"`
 	Reliability float64 `json:"reliability2"`
 	InetDown    float64 `json:"inet_down"`
+	Geolocation string  `json:"geolocation"`
 }
+
+// allowedGPUs defines the hardcoded set of acceptable GPU models with their
+// minimum VRAM in MB and CUDA compute capability.
+var allowedGPUs = []struct {
+	Name   string // Vast.ai gpu_name (exact match)
+	MinRAM int64  // Minimum VRAM in MB to accept
+	Arch   string // CUDA arch (sm_XX) for reference
+}{
+	{"Tesla V100", 16 * 1024, "sm_70"},
+	{"A100 SXM4", 40 * 1024, "sm_80"},
+	{"A100 PCIE", 40 * 1024, "sm_80"},
+	{"L40S", 45 * 1024, "sm_89"},
+	{"H100 SXM", 80 * 1024, "sm_90"},
+	{"H100 PCIE", 80 * 1024, "sm_90"},
+	{"B200", 179 * 1024, "sm_100"},
+}
+
+// allowedRegions restricts provisioning to these country codes.
+var allowedRegions = []string{"US", "CA"}
 
 // VastInstance is a running instance.
 type VastInstance struct {
@@ -101,10 +121,17 @@ func (v *VastClient) doRequest(ctx context.Context, method, path string, body io
 	return data, nil
 }
 
-// parseFilter converts a CLI-style filter string like "gpu_name=Tesla_V100 num_gpus=1 disk_space>=20"
-// into the Vast.ai API JSON query format: {"gpu_name": {"eq": "Tesla V100"}, "num_gpus": {"eq": "1"}, ...}
-func parseFilter(filter string) map[string]any {
-	query := map[string]any{
+// resolveGPUSpec parses a gpu_filter string and returns the API query, the
+// minimum VRAM requirement (in MB), and whether to enforce region filtering.
+//
+// The gpu_filter can be:
+//   - A gpu_name filter: "gpu_name=Tesla_V100" — looked up in allowedGPUs
+//   - A min_ram filter:  "min_ram=32" — picks cheapest allowed GPU with >= 32 GB
+//   - Raw Vast.ai tokens for backwards compat (but still post-filtered)
+//
+// All queries enforce region=North America and the allowedGPUs whitelist.
+func resolveGPUSpec(filter string) (query map[string]any, minRAM int64) {
+	query = map[string]any{
 		"verified": map[string]any{"eq": true},
 		"external": map[string]any{"eq": false},
 		"rented":   map[string]any{"eq": false},
@@ -112,7 +139,18 @@ func parseFilter(filter string) map[string]any {
 		"type":     "on-demand",
 	}
 
+	var requestedGPU string
+
 	for _, token := range strings.Fields(filter) {
+		// Handle min_ram=XX (in GB) as a VRAM floor.
+		if strings.HasPrefix(token, "min_ram=") {
+			val := token[len("min_ram="):]
+			var gb int64
+			fmt.Sscanf(val, "%d", &gb)
+			minRAM = gb * 1024
+			continue
+		}
+
 		// Try operators in order: >=, <=, !=, =, >, <
 		for _, op := range []struct {
 			sym string
@@ -123,21 +161,73 @@ func parseFilter(filter string) map[string]any {
 			if idx := strings.Index(token, op.sym); idx > 0 {
 				key := token[:idx]
 				val := token[idx+len(op.sym):]
-				// Replace underscores with spaces in GPU names.
 				if key == "gpu_name" {
 					val = strings.ReplaceAll(val, "_", " ")
+					requestedGPU = val
 				}
 				query[key] = map[string]any{op.api: val}
 				break
 			}
 		}
 	}
-	return query
+
+	// If a specific GPU was requested, look up its min RAM from the allowlist.
+	if requestedGPU != "" && minRAM == 0 {
+		for _, g := range allowedGPUs {
+			if g.Name == requestedGPU {
+				minRAM = g.MinRAM
+				break
+			}
+		}
+	}
+
+	return query, minRAM
+}
+
+// isAllowedGPU checks if a GPU name is in the allowedGPUs whitelist.
+func isAllowedGPU(name string) bool {
+	for _, g := range allowedGPUs {
+		if g.Name == name {
+			return true
+		}
+	}
+	return false
+}
+
+// isAllowedRegion checks if a geolocation string ends with an allowed country code.
+func isAllowedRegion(geo string) bool {
+	for _, r := range allowedRegions {
+		if strings.HasSuffix(geo, ", "+r) || strings.HasSuffix(geo, ","+r) {
+			return true
+		}
+	}
+	return false
+}
+
+// filterOffers applies the allowedGPUs whitelist, minimum VRAM, and region
+// restrictions to a list of offers.
+func filterOffers(offers []VastOffer, minRAM int64) []VastOffer {
+	var filtered []VastOffer
+	for _, o := range offers {
+		if !isAllowedGPU(o.GPUName) {
+			continue
+		}
+		if minRAM > 0 && o.GPUMemMB < minRAM {
+			continue
+		}
+		if !isAllowedRegion(o.Geolocation) {
+			continue
+		}
+		filtered = append(filtered, o)
+	}
+	return filtered
 }
 
 // SearchOffers finds available GPU offers matching a filter query.
+// Results are post-filtered against the allowedGPUs whitelist, minimum VRAM,
+// and North America region restriction.
 func (v *VastClient) SearchOffers(ctx context.Context, filter string) ([]VastOffer, error) {
-	query := parseFilter(filter)
+	query, minRAM := resolveGPUSpec(filter)
 	body, err := json.Marshal(query)
 	if err != nil {
 		return nil, fmt.Errorf("marshal query: %w", err)
@@ -154,7 +244,22 @@ func (v *VastClient) SearchOffers(ctx context.Context, filter string) ([]VastOff
 	if err := json.Unmarshal(data, &result); err != nil {
 		return nil, fmt.Errorf("parse offers: %w", err)
 	}
-	return result.Offers, nil
+
+	filtered := filterOffers(result.Offers, minRAM)
+	if len(filtered) == 0 && len(result.Offers) > 0 {
+		// Log what we rejected to help debug.
+		fmt.Fprintf(os.Stderr, "scp-runner: %d offers found but none passed filters (gpu whitelist, min_ram=%d MB, region=NA)\n",
+			len(result.Offers), minRAM)
+		for i, o := range result.Offers {
+			if i >= 5 {
+				fmt.Fprintf(os.Stderr, "  ... and %d more\n", len(result.Offers)-5)
+				break
+			}
+			fmt.Fprintf(os.Stderr, "  rejected: %s (%d MB) %s $%.3f/hr\n",
+				o.GPUName, o.GPUMemMB, o.Geolocation, o.DPHTot)
+		}
+	}
+	return filtered, nil
 }
 
 // CreateInstanceResult holds the response from creating a Vast.ai instance.

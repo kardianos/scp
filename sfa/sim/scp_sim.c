@@ -970,8 +970,14 @@ int main(int argc, char **argv) {
         }
     }
 
-    /* Final frame + close */
-    sfa_snap(sfa, g, n_steps*g->dt, c.precision);
+    /* Final frame — only if the last step wasn't already (or nearly) a snap point.
+     * Skip if the gap is less than half a snap interval to avoid near-duplicate frames. */
+    {
+        int last_snapped = (n_steps / snap_every) * snap_every;
+        int gap = n_steps - last_snapped;
+        if (gap > snap_every / 2)
+            sfa_snap(sfa, g, n_steps*g->dt, c.precision);
+    }
     uint32_t nf = sfa->total_frames;
     sfa_close(sfa);
 

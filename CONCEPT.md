@@ -506,6 +506,18 @@ Three electromagnetic properties verified numerically:
    polarization channels equally. No vacuum birefringence — consistent
    with the multilinear structure of P = φ₀φ₁φ₂.
 
+4. **Composite proton is an effective monopole** (OQ1, V44): Spherical
+   harmonic decomposition of |θ| around a UUD proton shows the l=0
+   (monopole) component carries 54–87% of angular power at all radii,
+   with monopole dominance increasing at far field (76% at r=20). Each
+   individual θ component remains dipolar (l=1 dominated), confirming
+   each braid is a magnetic dipole — but the composite |θ| from three
+   orthogonal dipoles sums to an effectively isotropic radiation pattern.
+   The proton acts as an effective point charge at distances beyond the
+   core radius, producing 1/r² radiation pressure indistinguishable from
+   a Coulomb monopole. No true scalar monopole exists (∇·E = 0 is exact);
+   the "charge" is an isotropic radiation pattern.
+
 ---
 
 ## 5. Composite Particles (Baryons) [CONFIRMED]

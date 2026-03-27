@@ -13,7 +13,8 @@ type SimSetupParams struct {
 	Executor  string `json:"executor" desc:"Execution type: local or remote" required:"true"`
 	Host      string `json:"host" desc:"SSH host for existing remote instance"`
 	Port      int    `json:"port" desc:"SSH port for existing remote instance"`
-	GPUFilter string `json:"gpu_filter" desc:"Vast.ai GPU filter (default: V100 16GB). Examples: 'gpu_name=Tesla_V100', 'gpu_name=RTX_4090'"`
+	GPUFilter string `json:"gpu_filter" desc:"GPU filter (default: Tesla V100). Use gpu_name= and min_ram= (GB). Allowed: Tesla_V100, A100_SXM4, A100_PCIE, L40S, H100_SXM, H100_PCIE, B200. Example: 'gpu_name=Tesla_V100 min_ram=32'"`
+	DiskGB    int    `json:"disk_gb" desc:"Disk space in GB to provision (required for remote)" required:"true"`
 	WorkDir   string `json:"work_dir" desc:"Working directory"`
 }
 
@@ -44,6 +45,7 @@ type SimRunParams struct {
 	ID             string  `json:"id" desc:"Run identifier" required:"true"`
 	NotifyInterval float64 `json:"notify_interval" desc:"Send progress notifications every N seconds (0=disabled)"`
 	Wait           bool    `json:"wait" desc:"Block until run completes and return final status (default: false)"`
+	AutoDownload   string  `json:"auto_download" desc:"Local directory for automatic incremental downloads during the run"`
 }
 
 type SimRunResult struct {

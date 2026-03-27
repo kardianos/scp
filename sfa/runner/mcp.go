@@ -54,6 +54,7 @@ type MCPServer struct {
 	writeMu  sync.Mutex
 	writer   *json.Encoder
 	monitor  *Monitor
+	state    *RunnerState
 }
 
 func NewMCPServer(executor Executor) *MCPServer {
@@ -354,6 +355,10 @@ func (s *MCPServer) handleSetup(ctx context.Context, raw any) (any, error) {
 		s.mu.Lock()
 		s.executor = local
 		s.mu.Unlock()
+		// Clear remote instance from persisted state for local executor.
+		if s.state != nil {
+			s.state.ClearInstance()
+		}
 		return &SimSetupResult{Status: "ok", Type: "local", WorkDir: workDir}, nil
 
 	case ExecRemote:
@@ -371,13 +376,22 @@ func (s *MCPServer) handleSetup(ctx context.Context, raw any) (any, error) {
 			}
 		} else {
 			// Auto-provision: find/create a Vast.ai instance.
-			if err := remote.Provision(ctx, p.GPUFilter); err != nil {
+			if err := remote.Provision(ctx, p.GPUFilter, p.DiskGB); err != nil {
 				return nil, fmt.Errorf("provision: %w", err)
 			}
 		}
 		s.mu.Lock()
 		s.executor = remote
 		s.mu.Unlock()
+		// Persist instance state.
+		if s.state != nil {
+			s.state.SetInstance(&InstanceState{
+				ID:      remote.instanceID,
+				Host:    remote.sshHost,
+				Port:    remote.sshPort,
+				GPUName: remote.gpuName,
+			})
+		}
 		return &SimSetupResult{
 			Status:     "ok",
 			Type:       "remote",
@@ -420,6 +434,10 @@ func (s *MCPServer) handleTeardown(ctx context.Context, _ any) (any, error) {
 	s.mu.Lock()
 	s.executor = nil
 	s.mu.Unlock()
+	// Clear persisted state.
+	if s.state != nil {
+		s.state.ClearInstance()
+	}
 	return &SimTeardownResult{Status: "ok"}, nil
 }
 
@@ -433,7 +451,15 @@ func (s *MCPServer) handleBuild(ctx context.Context, raw any) (any, error) {
 	if len(p.Sources) == 0 {
 		return nil, fmt.Errorf("sources required")
 	}
-	return ex.Build(ctx, p.Sources, p.Cmd)
+	result, err := ex.Build(ctx, p.Sources, p.Cmd)
+	if err != nil {
+		return nil, err
+	}
+	// Persist binary path on successful build.
+	if s.state != nil && result != nil && result.Status != "failed" {
+		s.state.SetBinary(result.Binary)
+	}
+	return result, nil
 }
 
 // validInitModes lists the init modes supported by the simulation kernel.
@@ -523,8 +549,42 @@ func (s *MCPServer) handleRun(ctx context.Context, raw any) (any, error) {
 	}
 
 	notifyInterval := time.Duration(p.NotifyInterval * float64(time.Second))
-	if err := ex.Run(ctx, p.Config, p.ID, notifyInterval); err != nil {
-		return nil, err
+
+	// Use auto-download variant for remote executor when auto_download is set.
+	if p.AutoDownload != "" {
+		if remote, ok := ex.(*RemoteExecutor); ok {
+			if err := remote.RunWithAutoDownload(ctx, p.Config, p.ID, notifyInterval, p.AutoDownload); err != nil {
+				return nil, err
+			}
+		} else {
+			// Local executor: ignore auto_download, just run normally.
+			if err := ex.Run(ctx, p.Config, p.ID, notifyInterval); err != nil {
+				return nil, err
+			}
+		}
+	} else {
+		if err := ex.Run(ctx, p.Config, p.ID, notifyInterval); err != nil {
+			return nil, err
+		}
+	}
+
+	// Persist run state.
+	if s.state != nil {
+		var outputFiles []string
+		if isConfigContent(p.Config) {
+			if out := parseConfigValue(p.Config, "output"); out != "" {
+				outputFiles = append(outputFiles, out)
+			}
+			if diag := parseConfigValue(p.Config, "diag_file"); diag != "" {
+				outputFiles = append(outputFiles, diag)
+			}
+		}
+		s.state.SetRun(p.ID, &PersistRun{
+			Status:       "running",
+			AutoDownload: p.AutoDownload,
+			OutputFiles:  outputFiles,
+			RemoteDir:    "/root",
+		})
 	}
 
 	if !p.Wait {

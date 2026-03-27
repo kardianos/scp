@@ -49,6 +49,11 @@
 #define SFA_CODEC_F16BSS  4   /* f16 downcast + BSS + zstd (lossy, ~57-89x, preview) */
 #define SFA_CODEC_BQ8     5   /* block-quant 8-bit + zstd (lossy, ~119-163x, thumbnail) */
 #define SFA_CODEC_IDELTA  6   /* int64 spatial delta + BSS + zstd (lossless, +5-7%) */
+#define SFA_CODEC_COLZSTD 7   /* per-column BSS+zstd: each column BSS-encoded then compressed.
+                               * FRMD layout: [n_cols(4)] [comp_size(8)]×n_cols [data...]
+                               * Enables parallel decompression and lazy column access.
+                               * BSS byte reordering within each column gives ~2x compression
+                               * vs whole-frame BSS+zstd, with 12-way parallel decompress. */
 
 /* Chunk type codes (as uint32 for comparison) */
 #define SFA_CHUNK_SFAH  0x48414653  /* "SFAH" little-endian */
@@ -218,6 +223,10 @@ static inline uint64_t sfa_jmpf_slot_offset(SFA *s, uint32_t frame_in_table) {
 
 /* Fixup: scan an incomplete .sfa file, fill in zeroed JMPF entries from FRMD chunks */
 int sfa_fixup_index(const char *path);
+
+/* Count valid (non-truncated, non-missing) frames given the actual file size.
+ * Returns the number of consecutive valid frames from the start. */
+int sfa_count_valid_frames(SFA *s, uint64_t file_bytes);
 
 SFA *sfa_open(const char *path);
 int  sfa_read_frame(SFA *s, uint32_t frame_idx, void *buf);
@@ -556,23 +565,84 @@ int sfa_write_frame_ex(SFA *s, double time, void **column_data,
     /* CRC on original data (before any transform) */
     uint32_t checksum = sfa_crc32(raw, s->frame_bytes);
 
-    /* Apply BSS transform if enabled */
-    uint8_t *to_compress = raw;
-    uint8_t *bss_buf = NULL;
-    if ((s->flags & 0xF) == SFA_CODEC_BSS) {
-        bss_buf = (uint8_t*)malloc(s->frame_bytes);
-        sfa_bss_encode_frame(s, raw, bss_buf);
-        to_compress = bss_buf;
+    int codec = s->flags & 0xF;
+    void *comp;
+    size_t comp_size;
+
+    if (codec == SFA_CODEC_RAW) {
+        /* No compression — write raw data directly */
+        comp = raw;
+        comp_size = s->frame_bytes;
+        raw = NULL;  /* don't free — comp points to it */
+    } else if (codec == SFA_CODEC_COLZSTD) {
+        /* Per-column BSS+zstd: BSS-encode each column, then compress independently.
+         * Layout: [n_cols(4)] [comp_size(8)]×n_cols [col0_data...] [col1_data...] ... */
+        uint32_t nc = s->n_columns;
+        uint64_t *col_comp_sizes = (uint64_t*)calloc(nc, sizeof(uint64_t));
+        uint8_t **col_comp_data = (uint8_t**)calloc(nc, sizeof(uint8_t*));
+        uint64_t total_comp = 4 + nc * 8;  /* header: n_cols + sizes array */
+
+        uint64_t col_off = 0;
+        for (uint32_t c = 0; c < nc; c++) {
+            int es = sfa_dtype_size[s->columns[c].dtype];
+            uint64_t col_bytes = s->N_total * es;
+
+            /* BSS-encode this column: reorder bytes [v0b0,v0b1,...,v1b0,...] → [v0b0,v1b0,...,v0b1,v1b1,...] */
+            uint8_t *bss_col = (uint8_t*)malloc(col_bytes);
+            uint8_t *src_col = raw + col_off;
+            for (int b = 0; b < es; b++) {
+                for (uint64_t v = 0; v < s->N_total; v++) {
+                    bss_col[b * s->N_total + v] = src_col[v * es + b];
+                }
+            }
+
+            size_t bound = ZSTD_compressBound(col_bytes);
+            col_comp_data[c] = (uint8_t*)malloc(bound);
+            col_comp_sizes[c] = ZSTD_compress(col_comp_data[c], bound,
+                                               bss_col, col_bytes, 3);
+            free(bss_col);
+            if (ZSTD_isError(col_comp_sizes[c])) {
+                fprintf(stderr, "SFA: colzstd error col %u: %s\n", c,
+                        ZSTD_getErrorName(col_comp_sizes[c]));
+                for (uint32_t j = 0; j <= c; j++) free(col_comp_data[j]);
+                free(col_comp_sizes); free(col_comp_data); free(raw);
+                return -1;
+            }
+            total_comp += col_comp_sizes[c];
+            col_off += col_bytes;
+        }
+
+        /* Assemble into a single buffer: [n_cols][sizes...][data...] */
+        comp = malloc(total_comp);
+        uint8_t *p = (uint8_t*)comp;
+        memcpy(p, &nc, 4); p += 4;
+        memcpy(p, col_comp_sizes, nc * 8); p += nc * 8;
+        for (uint32_t c = 0; c < nc; c++) {
+            memcpy(p, col_comp_data[c], col_comp_sizes[c]);
+            p += col_comp_sizes[c];
+            free(col_comp_data[c]);
+        }
+        comp_size = total_comp;
+        free(col_comp_sizes); free(col_comp_data); free(raw);
+    } else {
+        /* Apply BSS transform if enabled */
+        uint8_t *to_compress = raw;
+        uint8_t *bss_buf = NULL;
+        if (codec == SFA_CODEC_BSS) {
+            bss_buf = (uint8_t*)malloc(s->frame_bytes);
+            sfa_bss_encode_frame(s, raw, bss_buf);
+            to_compress = bss_buf;
+        }
+
+        /* Compress */
+        size_t bound = ZSTD_compressBound(s->frame_bytes);
+        comp = (void*)malloc(bound);
+        comp_size = ZSTD_compress(comp, bound, to_compress, s->frame_bytes, 3);
+        free(raw);
+        if (bss_buf) free(bss_buf);
     }
 
-    /* Compress */
-    size_t bound = ZSTD_compressBound(s->frame_bytes);
-    void *comp = (void*)malloc(bound);
-    size_t comp_size = ZSTD_compress(comp, bound, to_compress, s->frame_bytes, 3);
-    free(raw);
-    if (bss_buf) free(bss_buf);
-
-    if (ZSTD_isError(comp_size)) {
+    if (comp_size > 0 && ZSTD_isError(comp_size)) {
         fprintf(stderr, "SFA: zstd error: %s\n", ZSTD_getErrorName(comp_size));
         free(comp);
         return -1;
@@ -766,15 +836,70 @@ int sfa_read_frame(SFA *s, uint32_t frame_idx, void *buf) {
     SFA_L2Entry entry;
     if (sfa_find_frame(s, frame_idx, &entry) < 0) return -1;
 
+    int codec = s->flags & 0xF;
+
     /* Read compressed data */
     fseek(s->fp, (long)entry.offset + 12, SEEK_SET);  /* skip FRMD chunk header */
     void *comp = (void*)malloc(entry.compressed_size);
     fread(comp, 1, entry.compressed_size, s->fp);
 
+    if (codec == SFA_CODEC_COLZSTD) {
+        /* Per-column zstd: [n_cols(4)] [comp_size(8)]×n_cols [data...] */
+        uint8_t *p = (uint8_t*)comp;
+        uint32_t nc;
+        memcpy(&nc, p, 4); p += 4;
+        if (nc != s->n_columns) {
+            fprintf(stderr, "SFA: colzstd n_cols mismatch (%u vs %u)\n", nc, s->n_columns);
+            free(comp);
+            return -1;
+        }
+        uint64_t *col_sizes = (uint64_t*)p;
+        p += nc * 8;
+
+        /* Decompress and BSS-decode each column sequentially
+         * (C version — Go version does parallel) */
+        uint64_t out_off = 0;
+        for (uint32_t c = 0; c < nc; c++) {
+            int es = sfa_dtype_size[s->columns[c].dtype];
+            uint64_t col_bytes = s->N_total * es;
+
+            /* Decompress into temp buffer (BSS-encoded) */
+            uint8_t *bss_col = (uint8_t*)malloc(col_bytes);
+            size_t result = ZSTD_decompress(bss_col, col_bytes, p, col_sizes[c]);
+            if (ZSTD_isError(result)) {
+                fprintf(stderr, "SFA: colzstd decompress col %u: %s\n",
+                        c, ZSTD_getErrorName(result));
+                free(bss_col); free(comp);
+                return -1;
+            }
+
+            /* BSS-decode: [b0v0,b0v1,...,b1v0,...] → [v0b0,v0b1,...,v1b0,v1b1,...] */
+            uint8_t *dst_col = (uint8_t*)buf + out_off;
+            for (int b = 0; b < es; b++) {
+                for (uint64_t v = 0; v < s->N_total; v++) {
+                    dst_col[v * es + b] = bss_col[b * s->N_total + v];
+                }
+            }
+            free(bss_col);
+
+            p += col_sizes[c];
+            out_off += col_bytes;
+        }
+        free(comp);
+        return 0;
+    }
+
+    /* Standard codecs (RAW, ZSTD, BSS, etc.) */
+    if (codec == SFA_CODEC_RAW) {
+        memcpy(buf, comp, s->frame_bytes);
+        free(comp);
+        return 0;
+    }
+
     /* Decompress (into buf or temp if BSS needs reversal) */
     uint8_t *decomp_buf = (uint8_t *)buf;
     uint8_t *bss_temp = NULL;
-    if ((s->flags & 0xF) == SFA_CODEC_BSS) {
+    if (codec == SFA_CODEC_BSS) {
         bss_temp = (uint8_t*)malloc(s->frame_bytes);
         decomp_buf = bss_temp;
     }
@@ -924,6 +1049,38 @@ const char *sfa_dtype_name(uint8_t dtype) {
         "f16","f32","f64","f128","i8","i16","i32","i64","u8","u16","u32","u64"
     };
     return (dtype < 12) ? names[dtype] : "unknown";
+}
+
+/* ---- Frame validity check ---- */
+
+int sfa_count_valid_frames(SFA *s, uint64_t file_bytes) {
+    if (!s || s->total_frames == 0 || !s->fp) return 0;
+    FILE *fp = s->fp;
+    long saved = ftell(fp);
+
+    fseek(fp, (long)s->first_jtop_offset + 12 + 4 + 4 + 8, SEEK_SET);
+    uint64_t jmpf_off;
+    fread(&jmpf_off, 8, 1, fp);
+    fseek(fp, (long)jmpf_off + 12 + 4 + 4, SEEK_SET);
+
+    int valid = 0;
+    for (uint32_t f = 0; f < s->total_frames; f++) {
+        double ftime;
+        uint64_t foffset, fcomp_size;
+        uint32_t fcrc, freserved;
+        fread(&ftime, 8, 1, fp);
+        fread(&foffset, 8, 1, fp);
+        fread(&fcomp_size, 8, 1, fp);
+        fread(&fcrc, 4, 1, fp);
+        fread(&freserved, 4, 1, fp);
+
+        if (foffset == 0 && fcomp_size == 0 && f > 0) break;
+        if (foffset + 12 + fcomp_size > file_bytes) break;
+        valid++;
+    }
+
+    fseek(fp, saved, SEEK_SET);
+    return valid;
 }
 
 /* ---- Streaming fixup: scan FRMD chunks, fill zeroed JMPF entries ---- */

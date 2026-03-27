@@ -39,6 +39,10 @@ type remoteRun struct {
 	info           RunInfo
 	cancel         context.CancelFunc
 	notifyInterval time.Duration
+	autoDownload   string   // local directory for auto-download
+	outputFiles    []string // remote output files to sync
+	remoteDir      string   // remote directory containing outputs (e.g. /root)
+	adDone         chan struct{} // closed when auto-download goroutine exits
 	mu             sync.Mutex
 }
 
@@ -52,9 +56,9 @@ type RemoteConfig struct {
 }
 
 const (
-	defaultGPUFilter = "gpu_name=Tesla_V100 num_gpus=1 rentable=true disk_space>=20"
+	defaultGPUFilter = "gpu_name=Tesla_V100 num_gpus=1 disk_space>=20"
 	defaultImage     = "nvidia/cuda:12.2.0-devel-ubuntu22.04"
-	defaultDiskGB    = 30
+	defaultDiskGB    = 100
 	defaultOnstart   = "apt-get update && apt-get install -y libzstd-dev rsync && ldconfig"
 )
 
@@ -81,12 +85,15 @@ func (r *RemoteExecutor) Setup(ctx context.Context) error {
 }
 
 // Provision searches for a GPU offer, creates an instance, waits for it to be ready, and connects.
-func (r *RemoteExecutor) Provision(ctx context.Context, gpuFilter string) error {
+func (r *RemoteExecutor) Provision(ctx context.Context, gpuFilter string, diskGB int) error {
 	if r.vast == nil {
 		return fmt.Errorf("vast client not initialized — call Setup first")
 	}
 	if gpuFilter == "" {
 		gpuFilter = defaultGPUFilter
+	}
+	if diskGB <= 0 {
+		diskGB = defaultDiskGB
 	}
 
 	// Check for existing running instances first.
@@ -111,12 +118,12 @@ func (r *RemoteExecutor) Provision(ctx context.Context, gpuFilter string) error 
 		return fmt.Errorf("no GPU offers found for filter: %s", gpuFilter)
 	}
 
-	// Pick cheapest offer (already sorted by dph_total).
+	// Pick cheapest offer (already sorted by dph_total, post-filtered by whitelist+region).
 	offer := offers[0]
-	fmt.Fprintf(os.Stderr, "scp-runner: creating instance on %s ($%.3f/hr, %d MB VRAM)\n",
-		offer.GPUName, offer.DPHTot, offer.GPUMemMB)
+	fmt.Fprintf(os.Stderr, "scp-runner: creating instance on %s (%d GB VRAM, %s, $%.3f/hr) [%d offers available]\n",
+		offer.GPUName, offer.GPUMemMB/1024, offer.Geolocation, offer.DPHTot, len(offers))
 
-	instanceID, err := r.vast.CreateInstance(ctx, offer.ID, defaultImage, defaultDiskGB, defaultOnstart)
+	instanceID, err := r.vast.CreateInstance(ctx, offer.ID, defaultImage, diskGB, defaultOnstart)
 	if err != nil {
 		return fmt.Errorf("create instance: %w", err)
 	}
@@ -377,9 +384,54 @@ func (r *RemoteExecutor) Run(ctx context.Context, config string, id string, noti
 	return nil
 }
 
+// RunWithAutoDownload starts a run and configures auto-download if autoDownload is set.
+func (r *RemoteExecutor) RunWithAutoDownload(ctx context.Context, config string, id string, notifyInterval time.Duration, autoDownload string) error {
+	if _, loaded := r.runs.Load(id); loaded {
+		return fmt.Errorf("run %s already exists", id)
+	}
+
+	runCtx, cancel := context.WithCancel(ctx)
+	rr := &remoteRun{
+		info: RunInfo{
+			ID:     id,
+			Status: RunStarting,
+		},
+		cancel:         cancel,
+		notifyInterval: notifyInterval,
+		autoDownload:   autoDownload,
+		remoteDir:      "/root",
+	}
+
+	// Parse output file names from config.
+	if autoDownload != "" && isConfigContent(config) {
+		var files []string
+		if out := parseConfigValue(config, "output"); out != "" {
+			files = append(files, "/root/"+out)
+		}
+		if diag := parseConfigValue(config, "diag_file"); diag != "" {
+			files = append(files, "/root/"+diag)
+		}
+		rr.outputFiles = files
+	}
+
+	r.runs.Store(id, rr)
+
+	go r.executeRemoteRun(runCtx, rr, config)
+	return nil
+}
+
 func (r *RemoteExecutor) executeRemoteRun(ctx context.Context, rr *remoteRun, config string) {
+	// We use a separate context for auto-download so we can signal it to do a
+	// final sync when the run finishes, while still allowing it to complete.
+	adCtx, adCancel := context.WithCancel(context.Background())
+	defer adCancel()
 	defer rr.cancel()
 	defer func() {
+		// Signal auto-download to do final sync, then wait for it.
+		adCancel()
+		if rr.adDone != nil {
+			<-rr.adDone
+		}
 		if r.OnRunDone != nil {
 			r.OnRunDone()
 		}
@@ -449,6 +501,9 @@ func (r *RemoteExecutor) executeRemoteRun(ctx context.Context, rr *remoteRun, co
 	rr.mu.Lock()
 	rr.info.Status = RunRunning
 	rr.mu.Unlock()
+
+	// Start auto-download goroutine if configured.
+	r.StartAutoDownload(adCtx, rr)
 
 	// Monitor loop: check if process is alive and tail diag.
 	ticker := time.NewTicker(5 * time.Second)
@@ -527,6 +582,72 @@ func (r *RemoteExecutor) executeRemoteRun(ctx context.Context, rr *remoteRun, co
 		}
 		rr.mu.Unlock()
 	}
+}
+
+// rsyncFile does a single rsync --append-verify of a remote file to a local directory.
+// Returns nil on success, error on failure.
+func (r *RemoteExecutor) rsyncFile(ctx context.Context, remotePath, localDir string) error {
+	if err := os.MkdirAll(localDir, 0755); err != nil {
+		return fmt.Errorf("mkdir %s: %w", localDir, err)
+	}
+	cmd := fmt.Sprintf("rsync -az --partial --append-verify -e 'ssh -o StrictHostKeyChecking=no -p %d' root@%s:%s %s/",
+		r.sshPort, r.sshHost, remotePath, localDir)
+	out, err := execOutput(ctx, "bash", "-c", cmd)
+	if err != nil {
+		return fmt.Errorf("rsync %s: %v: %s", remotePath, err, out)
+	}
+	return nil
+}
+
+// autoDownloadLoop periodically rsyncs output files to a local directory.
+// It runs until the run's context is cancelled (run done or cancelled), then
+// does one final sync. Closes rr.adDone when it exits.
+func (r *RemoteExecutor) autoDownloadLoop(ctx context.Context, rr *remoteRun) {
+	defer close(rr.adDone)
+
+	ticker := time.NewTicker(60 * time.Second)
+	defer ticker.Stop()
+
+	syncAll := func() {
+		rr.mu.Lock()
+		files := rr.outputFiles
+		localDir := rr.autoDownload
+		rr.mu.Unlock()
+
+		for _, f := range files {
+			// Use a short timeout per file so we don't block forever.
+			dlCtx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+			if err := r.rsyncFile(dlCtx, f, localDir); err != nil {
+				fmt.Fprintf(os.Stderr, "scp-runner: auto-download %s: %v\n", f, err)
+			}
+			cancel()
+		}
+	}
+
+	for {
+		select {
+		case <-ctx.Done():
+			// Run is done. Do one final sync.
+			fmt.Fprintf(os.Stderr, "scp-runner: auto-download final sync for run %s\n", rr.info.ID)
+			syncAll()
+			return
+		case <-ticker.C:
+			syncAll()
+		}
+	}
+}
+
+// StartAutoDownload launches the auto-download goroutine for an existing run.
+// Used both for new runs and for recovery of previously running runs.
+func (r *RemoteExecutor) StartAutoDownload(runCtx context.Context, rr *remoteRun) {
+	rr.mu.Lock()
+	if rr.autoDownload == "" || len(rr.outputFiles) == 0 {
+		rr.mu.Unlock()
+		return
+	}
+	rr.adDone = make(chan struct{})
+	rr.mu.Unlock()
+	go r.autoDownloadLoop(runCtx, rr)
 }
 
 func (r *RemoteExecutor) RunStatus(id string) *RunInfo {
