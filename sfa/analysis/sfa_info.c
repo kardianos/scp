@@ -24,6 +24,7 @@ static const char *codec_name(uint32_t flags) {
     case 4: return "f16+BSS+zstd";
     case 5: return "bq8+zstd";
     case 6: return "idelta+BSS+zstd";
+    case 7: return "colzstd (per-column BSS+zstd)";
     default: return "unknown";
     }
 }

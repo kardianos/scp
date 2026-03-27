@@ -874,6 +874,7 @@ int main(int argc, char **argv) {
     /* SFA archive: 12 columns + KVMD metadata */
     uint8_t sfa_dtype = (c.precision == 0) ? SFA_F16 : (c.precision == 1) ? SFA_F32 : SFA_F64;
     SFA *sfa = sfa_create(c.output, c.N, c.N, c.N, c.L, c.L, c.L, g->dt);
+    sfa->flags = SFA_CODEC_COLZSTD | SFA_FLAG_STREAMING;  /* per-column parallel compression */
 
     /* Embed physics parameters as KVMD metadata */
     {

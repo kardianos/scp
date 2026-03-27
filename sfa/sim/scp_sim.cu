@@ -1508,6 +1508,7 @@ int main(int argc, char **argv) {
     /* SFA archive with KVMD */
     uint8_t sfa_dtype = (c.precision==0)?SFA_F16:(c.precision==1)?SFA_F32:SFA_F64;
     SFA *sfa = sfa_create(c.output, c.N, c.N, c.N, c.L, c.L, c.L, g->dt);
+    sfa->flags = SFA_CODEC_COLZSTD | SFA_FLAG_STREAMING;  /* per-column parallel compression */
     {
         char vN[32],vL[32],vT[32],vdt[32],vm[32],vmt[32],veta[32],vmu[32],vkappa[32];
         char vmode[32],via[32],vib[32],vkg[32],vdw[32],vdr[32],vprec[32],vdelta[64];
@@ -1549,7 +1550,7 @@ int main(int argc, char **argv) {
     sfa_add_column(sfa,"theta_vz",sfa_dtype,SFA_VELOCITY,5);
     sfa_finalize_header(sfa);
     const char *pn[]={"f16","f32","f64"};
-    printf("SFA: %s (12 cols, %s, BSS+zstd)\n\n", c.output, pn[c.precision]);
+    printf("SFA: %s (12 cols, %s, colzstd)\n\n", c.output, pn[c.precision]);
 
     /* Timing, step counts */
     int n_steps=(int)(c.T/g->dt);
