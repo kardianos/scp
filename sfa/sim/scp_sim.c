@@ -927,9 +927,9 @@ int main(int argc, char **argv) {
     fprintf(fp, "t\tE_phi_kin\tE_theta_kin\tE_grad\tE_mass\tE_pot\tE_tgrad\tE_tmass\t"
                 "E_coupling\tE_total\tphi_max\tP_max\tP_int\ttheta_rms\n");
 
-    int n_steps = (int)(c.T / g->dt);
-    int diag_every = (int)(c.diag_dt / g->dt); if (diag_every<1) diag_every=1;
-    int snap_every = (int)(c.snap_dt / g->dt); if (snap_every<1) snap_every=1;
+    int n_steps = (int)lround(c.T / g->dt);
+    int diag_every = (int)lround(c.diag_dt / g->dt); if (diag_every<1) diag_every=1;
+    int snap_every = (int)lround(c.snap_dt / g->dt); if (snap_every<1) snap_every=1;
 
     /* Initial diagnostic */
     double epk,etk,eg,em,ep,etg,etm,ec,et,pm,Pm;
@@ -971,12 +971,11 @@ int main(int argc, char **argv) {
         }
     }
 
-    /* Final frame — only if the last step wasn't already (or nearly) a snap point.
-     * Skip if the gap is less than half a snap interval to avoid near-duplicate frames. */
+    /* Final frame — write if the last step wasn't exactly a snap point. */
     {
         int last_snapped = (n_steps / snap_every) * snap_every;
         int gap = n_steps - last_snapped;
-        if (gap > snap_every / 2)
+        if (gap > 0)
             sfa_snap(sfa, g, n_steps*g->dt, c.precision);
     }
     uint32_t nf = sfa->total_frames;

@@ -1552,10 +1552,10 @@ int main(int argc, char **argv) {
     const char *pn[]={"f16","f32","f64"};
     printf("SFA: %s (12 cols, %s, colzstd)\n\n", c.output, pn[c.precision]);
 
-    /* Timing, step counts */
-    int n_steps=(int)(c.T/g->dt);
-    int diag_every=(int)(c.diag_dt/g->dt); if(diag_every<1) diag_every=1;
-    int snap_every=(int)(c.snap_dt/g->dt); if(snap_every<1) snap_every=1;
+    /* Timing, step counts — use lround to avoid truncation errors */
+    int n_steps=(int)lround(c.T/g->dt);
+    int diag_every=(int)lround(c.diag_dt/g->dt); if(diag_every<1) diag_every=1;
+    int snap_every=(int)lround(c.snap_dt/g->dt); if(snap_every<1) snap_every=1;
     int major = diag_every * 25; if(major<1) major=1;
     /* Cap so we get ~10 progress lines even for short runs */
     if(major > n_steps/10) { major = (n_steps/10/diag_every)*diag_every; if(major<diag_every) major=diag_every; }
@@ -1625,12 +1625,11 @@ int main(int argc, char **argv) {
             hooks[h].fn(step, t, &fstate, hooks[h].ctx);
     }
 
-    /* Final frame — only if the last step wasn't already (or nearly) a snap point.
-     * Skip if the gap is less than half a snap interval to avoid near-duplicate frames. */
+    /* Final frame — write if the last step wasn't exactly a snap point. */
     {
         int last_snapped = (n_steps / snap_every) * snap_every;
         int gap = n_steps - last_snapped;
-        if (gap > snap_every / 2) {
+        if (gap > 0) {
             int saved_every = snap_ctx.snap_every;
             snap_ctx.snap_every = 1;
             snap_hook(1, n_steps * g->dt, &fstate, &snap_ctx);

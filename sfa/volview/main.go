@@ -189,12 +189,24 @@ func sfaOpen(path string) (*sfaFile, error) {
 
 	// mmap the file for zero-copy access to compressed frame data
 	fi, err := fp.Stat()
+	fileSize := uint64(0)
 	if err == nil {
+		fileSize = uint64(fi.Size())
 		data, err := syscall.Mmap(int(fp.Fd()), 0, int(fi.Size()),
 			syscall.PROT_READ, syscall.MAP_PRIVATE)
 		if err == nil {
 			s.mmapData = data
 			fmt.Printf("  mmap: %.1f GB mapped\n", float64(len(data))/1e9)
+		}
+	}
+
+	// Handle streaming files: totalFrames may be 0 or stale.
+	// Scan the JMPF to count actually-written frames.
+	if s.totalFrames == 0 || (s.flags&0x20) != 0 { // SFA_FLAG_STREAMING = 0x20
+		counted := s.countValidFrames(fileSize)
+		if counted > 0 {
+			fmt.Printf("  streaming: found %d valid frames (header said %d)\n", counted, s.totalFrames)
+			s.totalFrames = uint32(counted)
 		}
 	}
 
@@ -214,6 +226,47 @@ func sfaOpen(path string) (*sfaFile, error) {
 	s.theta2Buf = make([]float32, s.nTotal)
 
 	return s, nil
+}
+
+// countValidFrames scans the JMPF index to count frames with valid offsets
+// that fit within the file. Handles streaming files where totalFrames=0.
+func (s *sfaFile) countValidFrames(fileSize uint64) int {
+	// Navigate: JTOP → first L1 entry → JMPF offset
+	s.fp.Seek(int64(s.firstJtopOff)+12+4+4+8, io.SeekStart) // skip chunk hdr + max + cur + next
+	var jmpfOff uint64
+	binary.Read(s.fp, binary.LittleEndian, &jmpfOff)
+
+	// Read JMPF header
+	s.fp.Seek(int64(jmpfOff)+12, io.SeekStart) // skip chunk header
+	var jmpfMax, jmpfCur uint32
+	binary.Read(s.fp, binary.LittleEndian, &jmpfMax)
+	binary.Read(s.fp, binary.LittleEndian, &jmpfCur)
+
+	// Scan entries
+	count := 0
+	limit := jmpfMax
+	if jmpfCur > 0 && jmpfCur < limit {
+		limit = jmpfCur
+	}
+	for i := uint32(0); i < limit; i++ {
+		var ftime float64
+		var foffset, fcompSize uint64
+		var fcrc, freserved uint32
+		binary.Read(s.fp, binary.LittleEndian, &ftime)
+		binary.Read(s.fp, binary.LittleEndian, &foffset)
+		binary.Read(s.fp, binary.LittleEndian, &fcompSize)
+		binary.Read(s.fp, binary.LittleEndian, &fcrc)
+		binary.Read(s.fp, binary.LittleEndian, &freserved)
+
+		if foffset == 0 && fcompSize == 0 && i > 0 {
+			break // empty slot
+		}
+		if fileSize > 0 && foffset+12+fcompSize > fileSize {
+			break // truncated
+		}
+		count++
+	}
+	return count
 }
 
 func (s *sfaFile) close() {
@@ -630,6 +683,11 @@ func f32min(a, b float32) float32 {
 	return b
 }
 
+// f32cbrt returns the cube root of a float32.
+func f32cbrt(x float32) float32 {
+	return float32(math.Cbrt(float64(x)))
+}
+
 // computeFieldView fills RGBA volume from SFA column data.
 // Uses pre-allocated intermediate buffers from sfa.absPBuf/phi2Buf/theta2Buf
 // to avoid reading the input arrays twice.
@@ -770,6 +828,286 @@ func computeFieldView(n int, phi0, phi1, phi2, theta0, theta1, theta2 []float32,
 				out[j+0] = pn  // unclamped — shader handles display clamp
 				out[j+1] = gv  // non-negative now (sqrtPn ≤ 1)
 				out[j+2] = bv
+				out[j+3] = 1.0
+			}
+		}(w)
+	}
+	wg.Wait()
+}
+
+// computeVelocityView fills RGBA volume from velocity columns.
+// R = |v| = sqrt(vphi0^2 + vphi1^2 + vphi2^2)
+// G = |vphi0| (x-velocity component)
+// B = |vphi1| (y-velocity component)
+// Each channel normalized independently.
+func computeVelocityView(n int, phi0, phi1, phi2, vphi0, vphi1, vphi2 []float32, vol *volumeData) {
+	total := n * n * n
+	vol.n = n
+	vol.loaded = true
+	if len(vol.rgba) != total*4 {
+		vol.rgba = make([]float32, total*4)
+	}
+
+	nWorkers := runtime.GOMAXPROCS(0)
+	if nWorkers < 1 {
+		nWorkers = 1
+	}
+	chunkSize := (total + nWorkers - 1) / nWorkers
+
+	// Reuse intermediate buffers: absPBuf=|v|, phi2Buf=|vphi0|, theta2Buf=|vphi1|
+	absPBuf := vol.absPBuf
+	phi2Buf := vol.phi2Buf
+	theta2Buf := vol.theta2Buf
+	if len(absPBuf) < total {
+		absPBuf = make([]float32, total)
+		phi2Buf = make([]float32, total)
+		theta2Buf = make([]float32, total)
+	}
+
+	// Pass 1: compute intermediates and find max
+	type maxVals struct {
+		maxVmag, maxVx, maxVy float32
+		_pad                  [4]float32
+	}
+	var resultsBuf [64]maxVals
+	results := resultsBuf[:nWorkers]
+
+	var wg sync.WaitGroup
+	for w := 0; w < nWorkers; w++ {
+		wg.Add(1)
+		go func(w int) {
+			defer wg.Done()
+			start := w * chunkSize
+			end := start + chunkSize
+			if end > total {
+				end = total
+			}
+			var mvm, mvx, mvy float32
+			vm := absPBuf[start:end]
+			vx := phi2Buf[start:end]
+			vy := theta2Buf[start:end]
+			v0 := vphi0[start:end]
+			v1 := vphi1[start:end]
+			v2 := vphi2[start:end]
+
+			for i := range vm {
+				mag := f32sqrt(v0[i]*v0[i] + v1[i]*v1[i] + v2[i]*v2[i])
+				vm[i] = mag
+				if mag > mvm {
+					mvm = mag
+				}
+				ax := f32abs(v0[i])
+				vx[i] = ax
+				if ax > mvx {
+					mvx = ax
+				}
+				ay := f32abs(v1[i])
+				vy[i] = ay
+				if ay > mvy {
+					mvy = ay
+				}
+			}
+			results[w] = maxVals{maxVmag: mvm, maxVx: mvx, maxVy: mvy}
+		}(w)
+	}
+	wg.Wait()
+
+	var maxVmag, maxVx, maxVy float32
+	for _, r := range results {
+		if r.maxVmag > maxVmag {
+			maxVmag = r.maxVmag
+		}
+		if r.maxVx > maxVx {
+			maxVx = r.maxVx
+		}
+		if r.maxVy > maxVy {
+			maxVy = r.maxVy
+		}
+	}
+
+	invVmag := float32(1)
+	if maxVmag*0.3 > 1e-20 {
+		invVmag = 1.0 / (maxVmag * 0.3)
+	}
+	invVx := float32(1)
+	if maxVx*0.3 > 1e-20 {
+		invVx = 1.0 / (maxVx * 0.3)
+	}
+	invVy := float32(1)
+	if maxVy*0.3 > 1e-20 {
+		invVy = 1.0 / (maxVy * 0.3)
+	}
+
+	// Pass 2: normalize to RGBA
+	rgba := vol.rgba
+	for w := 0; w < nWorkers; w++ {
+		wg.Add(1)
+		go func(w int) {
+			defer wg.Done()
+			start := w * chunkSize
+			end := start + chunkSize
+			if end > total {
+				end = total
+			}
+			vm := absPBuf[start:end]
+			vx := phi2Buf[start:end]
+			vy := theta2Buf[start:end]
+			out := rgba[start*4 : end*4]
+
+			for i := range vm {
+				j := i * 4
+				out[j+0] = vm[i] * invVmag
+				out[j+1] = vx[i] * invVx
+				out[j+2] = vy[i] * invVy
+				out[j+3] = 1.0
+			}
+		}(w)
+	}
+	wg.Wait()
+}
+
+// computeAccelView fills RGBA volume with a combined force/energy view.
+// R = |P|^(1/3) — cube root enhances weak binding regions
+// G = theta_rms^2 with enhanced contrast
+// B = |v| velocity magnitude
+func computeAccelView(n int, phi0, phi1, phi2, theta0, theta1, theta2, vphi0, vphi1, vphi2 []float32, vol *volumeData) {
+	total := n * n * n
+	vol.n = n
+	vol.loaded = true
+	if len(vol.rgba) != total*4 {
+		vol.rgba = make([]float32, total*4)
+	}
+
+	hasTheta := theta0 != nil && theta1 != nil && theta2 != nil
+	hasVel := vphi0 != nil && vphi1 != nil && vphi2 != nil
+
+	nWorkers := runtime.GOMAXPROCS(0)
+	if nWorkers < 1 {
+		nWorkers = 1
+	}
+	chunkSize := (total + nWorkers - 1) / nWorkers
+
+	// Reuse intermediate buffers: absPBuf=|P|^(1/3), phi2Buf=theta_rms^2, theta2Buf=|v|
+	absPBuf := vol.absPBuf
+	phi2Buf := vol.phi2Buf
+	theta2Buf := vol.theta2Buf
+	if len(absPBuf) < total {
+		absPBuf = make([]float32, total)
+		phi2Buf = make([]float32, total)
+		theta2Buf = make([]float32, total)
+	}
+
+	// Pass 1: compute intermediates and find max
+	type maxVals struct {
+		maxCbrtP, maxTheta2, maxVmag float32
+		_pad                         [4]float32
+	}
+	var resultsBuf [64]maxVals
+	results := resultsBuf[:nWorkers]
+
+	var wg sync.WaitGroup
+	for w := 0; w < nWorkers; w++ {
+		wg.Add(1)
+		go func(w int) {
+			defer wg.Done()
+			start := w * chunkSize
+			end := start + chunkSize
+			if end > total {
+				end = total
+			}
+			var mcp, mt2, mvm float32
+			cp := absPBuf[start:end]
+			t2 := phi2Buf[start:end]
+			vm := theta2Buf[start:end]
+			p0 := phi0[start:end]
+			p1 := phi1[start:end]
+			p2 := phi2[start:end]
+
+			for i := range cp {
+				absP := f32abs(p0[i] * p1[i] * p2[i])
+				cbrtP := f32cbrt(absP)
+				cp[i] = cbrtP
+				if cbrtP > mcp {
+					mcp = cbrtP
+				}
+			}
+			if hasTheta {
+				t0s := theta0[start:end]
+				t1s := theta1[start:end]
+				t2s := theta2[start:end]
+				for i := range t2 {
+					tv := t0s[i]*t0s[i] + t1s[i]*t1s[i] + t2s[i]*t2s[i]
+					t2[i] = tv
+					if tv > mt2 {
+						mt2 = tv
+					}
+				}
+			}
+			if hasVel {
+				v0 := vphi0[start:end]
+				v1 := vphi1[start:end]
+				v2 := vphi2[start:end]
+				for i := range vm {
+					mag := f32sqrt(v0[i]*v0[i] + v1[i]*v1[i] + v2[i]*v2[i])
+					vm[i] = mag
+					if mag > mvm {
+						mvm = mag
+					}
+				}
+			}
+			results[w] = maxVals{maxCbrtP: mcp, maxTheta2: mt2, maxVmag: mvm}
+		}(w)
+	}
+	wg.Wait()
+
+	var maxCbrtP, maxTheta2, maxVmag float32
+	for _, r := range results {
+		if r.maxCbrtP > maxCbrtP {
+			maxCbrtP = r.maxCbrtP
+		}
+		if r.maxTheta2 > maxTheta2 {
+			maxTheta2 = r.maxTheta2
+		}
+		if r.maxVmag > maxVmag {
+			maxVmag = r.maxVmag
+		}
+	}
+
+	// Stronger normalization for |P|^(1/3) to enhance weak binding
+	invCbrtP := float32(1)
+	if maxCbrtP*0.1 > 1e-20 {
+		invCbrtP = 1.0 / (maxCbrtP * 0.1)
+	}
+	invTheta2 := float32(1)
+	if maxTheta2*0.15 > 1e-20 {
+		invTheta2 = 1.0 / (maxTheta2 * 0.15)
+	}
+	invVmag := float32(1)
+	if maxVmag*0.3 > 1e-20 {
+		invVmag = 1.0 / (maxVmag * 0.3)
+	}
+
+	// Pass 2: normalize to RGBA
+	rgba := vol.rgba
+	for w := 0; w < nWorkers; w++ {
+		wg.Add(1)
+		go func(w int) {
+			defer wg.Done()
+			start := w * chunkSize
+			end := start + chunkSize
+			if end > total {
+				end = total
+			}
+			cp := absPBuf[start:end]
+			t2 := phi2Buf[start:end]
+			vm := theta2Buf[start:end]
+			out := rgba[start*4 : end*4]
+
+			for i := range cp {
+				j := i * 4
+				out[j+0] = cp[i] * invCbrtP
+				out[j+1] = t2[i] * invTheta2
+				out[j+2] = vm[i] * invVmag
 				out[j+3] = 1.0
 			}
 		}(w)
@@ -1173,14 +1511,15 @@ func (g *gpuResources) render() {
 // ============================================================
 
 type frameLoader struct {
-	sfa    *sfaFile
-	volN   int
-	mu     sync.Mutex
-	ready  *volumeData // non-nil when a new frame is ready for upload
-	readyT float64     // time of the ready frame
-	readyF int         // frame index of the ready frame
-	busy   atomic.Bool // true while loading
-	workVol volumeData // pre-allocated work buffer for computing volume
+	sfa      *sfaFile
+	volN     int
+	viewMode int        // 0=field, 1=velocity, 2=acceleration
+	mu       sync.Mutex
+	ready    *volumeData // non-nil when a new frame is ready for upload
+	readyT   float64     // time of the ready frame
+	readyF   int         // frame index of the ready frame
+	busy     atomic.Bool // true while loading
+	workVol  volumeData  // pre-allocated work buffer for computing volume
 }
 
 func (fl *frameLoader) isLoading() bool {
@@ -1193,7 +1532,8 @@ func (fl *frameLoader) startLoad(frameIdx int) {
 		return // already loading
 	}
 	fl.busy.Store(true)
-	fmt.Printf("Loading frame %d/%d...\n", frameIdx+1, fl.sfa.totalFrames)
+	mode := fl.viewMode
+	fmt.Printf("Loading frame %d/%d (mode %d)...\n", frameIdx+1, fl.sfa.totalFrames, mode)
 	go func() {
 		defer fl.busy.Store(false)
 
@@ -1203,7 +1543,7 @@ func (fl *frameLoader) startLoad(frameIdx int) {
 			return
 		}
 
-		// Extract only the columns we need (lazy: skip velocity/acceleration)
+		// Extract phi columns (always needed)
 		phi0 := fl.sfa.extractColumnF32(0)
 		phi1 := fl.sfa.extractColumnF32(1)
 		phi2 := fl.sfa.extractColumnF32(2)
@@ -1213,8 +1553,27 @@ func (fl *frameLoader) startLoad(frameIdx int) {
 			theta1 = fl.sfa.extractColumnF32(4)
 			theta2 = fl.sfa.extractColumnF32(5)
 		}
+		// Extract velocity columns if available and needed
+		var vphi0, vphi1, vphi2 []float32
+		if fl.sfa.nColumns >= 9 && mode >= 1 {
+			vphi0 = fl.sfa.extractColumnF32(6)
+			vphi1 = fl.sfa.extractColumnF32(7)
+			vphi2 = fl.sfa.extractColumnF32(8)
+		}
 
-		computeFieldView(fl.volN, phi0, phi1, phi2, theta0, theta1, theta2, &fl.workVol)
+		switch mode {
+		case 1:
+			if vphi0 != nil {
+				computeVelocityView(fl.volN, phi0, phi1, phi2, vphi0, vphi1, vphi2, &fl.workVol)
+			} else {
+				fmt.Println("Warning: no velocity columns (need >=9 columns), falling back to field view")
+				computeFieldView(fl.volN, phi0, phi1, phi2, theta0, theta1, theta2, &fl.workVol)
+			}
+		case 2:
+			computeAccelView(fl.volN, phi0, phi1, phi2, theta0, theta1, theta2, vphi0, vphi1, vphi2, &fl.workVol)
+		default:
+			computeFieldView(fl.volN, phi0, phi1, phi2, theta0, theta1, theta2, &fl.workVol)
+		}
 
 		fl.mu.Lock()
 		fl.ready = &fl.workVol
@@ -1242,6 +1601,9 @@ func navigateFrame(fl *frameLoader, params *viewParams, delta int) {
 	if fl.isLoading() {
 		return
 	}
+	if fl.sfa.totalFrames == 0 {
+		return // no frames available
+	}
 	next := params.curFrame + delta
 	if next < 0 {
 		next = 0
@@ -1257,6 +1619,15 @@ func navigateFrame(fl *frameLoader, params *viewParams, delta int) {
 }
 
 func loadSFAFrame(fl *frameLoader, params *viewParams) {
+	if fl.sfa.totalFrames == 0 {
+		return
+	}
+	if params.curFrame >= int(fl.sfa.totalFrames) {
+		params.curFrame = int(fl.sfa.totalFrames) - 1
+	}
+	if params.curFrame < 0 {
+		params.curFrame = 0
+	}
 	fl.startLoad(params.curFrame)
 }
 
@@ -1476,6 +1847,9 @@ func printHelp() {
 	fmt.Println("  Home / End     First/last frame")
 	fmt.Println("  Space          Play/pause animation")
 	fmt.Println("  1 / 2 / 3     Toggle Red/Green/Blue channel")
+	fmt.Println("  4              Field view  (R=|P|, G=phi^2, B=theta^2)")
+	fmt.Println("  5              Velocity view (R=|v|, G=|vx|, B=|vy|)")
+	fmt.Println("  6              Accel view  (R=cbrt|P|, G=theta^2, B=|v|)")
 	fmt.Println("  + / -          Brightness up/down")
 	fmt.Println("  O / P          Opacity down/up")
 	fmt.Println("  B              Toggle white/dark background")
@@ -1483,8 +1857,6 @@ func printHelp() {
 	fmt.Println("  Shift+A        Export animated WebP (2x2 composite)")
 	fmt.Println("  R              Reset view")
 	fmt.Println("  Escape / Q     Quit")
-	fmt.Println()
-	fmt.Println("  RED=|P| (binding), GREEN=phi^2 (fabric), BLUE=theta^2 (torsion)")
 	fmt.Println()
 }
 
@@ -1687,6 +2059,27 @@ func main() {
 			params.showG = !params.showG
 		case glfw.Key3:
 			params.showB = !params.showB
+		case glfw.Key4:
+			if fl != nil && params.viewMode != 0 {
+				params.viewMode = 0
+				fl.viewMode = 0
+				fmt.Println("View: FIELD (R=|P|, G=phi^2, B=theta^2)")
+				loadSFAFrame(fl, params)
+			}
+		case glfw.Key5:
+			if fl != nil && params.viewMode != 1 {
+				params.viewMode = 1
+				fl.viewMode = 1
+				fmt.Println("View: VELOCITY (R=|v|, G=|vx|, B=|vy|)")
+				loadSFAFrame(fl, params)
+			}
+		case glfw.Key6:
+			if fl != nil && params.viewMode != 2 {
+				params.viewMode = 2
+				fl.viewMode = 2
+				fmt.Println("View: ACCEL (R=cbrt|P|, G=theta^2, B=|v|)")
+				loadSFAFrame(fl, params)
+			}
 		case glfw.KeyEqual: // + key
 			params.brightness *= 1.3
 		case glfw.KeyMinus:
