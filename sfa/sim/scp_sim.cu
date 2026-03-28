@@ -29,7 +29,7 @@
 typedef struct {
     int N;
     double L, T, dt_factor;
-    double m2, mtheta2, eta, mu, kappa;
+    double m2, mtheta2, eta, eta1, mu, kappa;
     int mode;
     double inv_alpha, inv_beta, kappa_gamma;
     int bc_type;                /* 0=absorb_sphere, 1=gradient_pinned */
@@ -51,7 +51,7 @@ typedef struct {
 static Config cfg_defaults(void) {
     Config c = {};
     c.N = 128;  c.L = 10.0;  c.T = 200.0;  c.dt_factor = 0.025;
-    c.m2 = 2.25;  c.mtheta2 = 0.0;  c.eta = 0.5;
+    c.m2 = 2.25;  c.mtheta2 = 0.0;  c.eta = 0.5;  c.eta1 = 0.0;
     c.mu = -41.345;  c.kappa = 50.0;
     c.mode = 0;  c.inv_alpha = 2.25;  c.inv_beta = 5.0;  c.kappa_gamma = 2.0;
     c.bc_type = 0;
@@ -77,6 +77,7 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"m"))         { double m = atof(val); c->m2 = m*m; }
     else if (!strcmp(key,"m_theta"))   { double m = atof(val); c->mtheta2 = m*m; }
     else if (!strcmp(key,"eta"))         c->eta = atof(val);
+    else if (!strcmp(key,"eta1"))        c->eta1 = atof(val);
     else if (!strcmp(key,"mu"))          c->mu = atof(val);
     else if (!strcmp(key,"kappa"))       c->kappa = atof(val);
     else if (!strcmp(key,"mode"))        c->mode = atoi(val);
@@ -140,8 +141,8 @@ static void cfg_print(const Config *c) {
     printf("d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ)\n");
     printf("d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ)\n\n");
     printf("Grid:    N=%d L=%.1f T=%.0f dt_factor=%.4f\n", c->N, c->L, c->T, c->dt_factor);
-    printf("Physics: m²=%.4f m_θ²=%.4f η=%.3f μ=%.3f κ=%.1f\n",
-           c->m2, c->mtheta2, c->eta, c->mu, c->kappa);
+    printf("Physics: m²=%.4f m_θ²=%.4f η=%.3f η₁=%.3f μ=%.3f κ=%.1f\n",
+           c->m2, c->mtheta2, c->eta, c->eta1, c->mu, c->kappa);
     printf("Mode:    %d", c->mode);
     if (c->mode == 1) printf(" (inverse: α=%.3f β=%.3f)", c->inv_alpha, c->inv_beta);
     if (c->mode == 3) printf(" (density-κ: γ=%.3f)", c->kappa_gamma);
@@ -256,7 +257,7 @@ typedef struct {
     double *h_results;    /* 12 doubles on host (pinned) */
 
     /* Config params for potential energy */
-    double m2, mtheta2, eta, mu, kappa;
+    double m2, mtheta2, eta, eta1, mu, kappa;
     int mode;
     double inv_alpha, inv_beta, kappa_gamma;
 } DiagHookCtx;
@@ -521,7 +522,7 @@ static void do_init(Grid *g, const Config *c) {
    GPU constant memory
    ================================================================ */
 
-__constant__ double d_MU, d_KAPPA, d_MASS2, d_MTHETA2, d_ETA;
+__constant__ double d_MU, d_KAPPA, d_MASS2, d_MTHETA2, d_ETA, d_ETA1;
 __constant__ double d_inv_alpha, d_inv_beta, d_kappa_gamma;
 __constant__ double d_idx2, d_idx1;
 __constant__ double d_L, d_dx, d_DAMP_WIDTH, d_DAMP_RATE;
@@ -569,6 +570,10 @@ __global__ void compute_forces_kernel(
         t2c = d_MU * d_kappa_gamma * d_KAPPA * P2 * P2 / (D*D);
     }
 
+    /* Topology-dependent coupling: eta(P) = eta0 + eta1*P²/(1+kappa*P²)
+     * Saturates at eta0 + eta1/kappa. P2 already computed above. */
+    double eta_eff = d_ETA + d_ETA1 * P2 / (1.0 + d_KAPPA * P2);
+
     /* Phi field arrays for curl */
     const double *phi[3] = {phi0, phi1, phi2};
     const double *th[3] = {theta0, theta1, theta2};
@@ -586,7 +591,7 @@ __global__ void compute_forces_kernel(
         else if (a==1) ct = (th[0][n_kp]-th[0][n_km]-th[2][n_ip]+th[2][n_im])*d_idx1;
         else ct = (th[1][n_ip]-th[1][n_im]-th[0][n_jp]+th[0][n_jm])*d_idx1;
 
-        acc_p[a] = lap - me2*phi[a][idx] - dVdP*dPda - t2c*phi[a][idx] + d_ETA*ct;
+        acc_p[a] = lap - me2*phi[a][idx] - dVdP*dPda - t2c*phi[a][idx] + eta_eff*ct;
     }
 
     for (int a = 0; a < 3; a++) {
@@ -597,7 +602,7 @@ __global__ void compute_forces_kernel(
         else if (a==1) cp = (phi[0][n_kp]-phi[0][n_km]-phi[2][n_ip]+phi[2][n_im])*d_idx1;
         else cp = (phi[1][n_ip]-phi[1][n_im]-phi[0][n_jp]+phi[0][n_jm])*d_idx1;
 
-        acc_t[a] = lapt - d_MTHETA2*th[a][idx] + d_ETA*cp;
+        acc_t[a] = lapt - d_MTHETA2*th[a][idx] + eta_eff*cp;
     }
 
     acc_phi0[idx]=acc_p[0]; acc_phi1[idx]=acc_p[1]; acc_phi2[idx]=acc_p[2];
@@ -748,7 +753,7 @@ __global__ void reduce_diagnostics_kernel(
     const double *vp0, const double *vp1, const double *vp2,
     const double *vt0, const double *vt1, const double *vt2,
     double dV, double idx1, double idx2_val,
-    double mass2, double mtheta2, double eta, double mu, double kappa,
+    double mass2, double mtheta2, double eta, double eta1, double mu, double kappa,
     int mode, double inv_alpha, double inv_beta, double kappa_gamma,
     double *d_results)
 {
@@ -807,12 +812,13 @@ __global__ void reduce_diagnostics_kernel(
             s_ep = (mu/2.0)*P2/(1.0+keff*P2)*dV;
         }
 
-        /* Curl coupling */
+        /* Curl coupling with topology-dependent eta */
         double curl_th[3];
         curl_th[0]=(th[2][n_jp]-th[2][n_jm]-th[1][n_kp]+th[1][n_km])*idx1;
         curl_th[1]=(th[0][n_kp]-th[0][n_km]-th[2][n_ip]+th[2][n_im])*idx1;
         curl_th[2]=(th[1][n_ip]-th[1][n_im]-th[0][n_jp]+th[0][n_jm])*idx1;
-        for (int a=0;a<3;a++) s_ec -= eta * phi[a][idx] * curl_th[a] * dV;
+        double eta_eff_diag = eta + eta1 * P2 / (1.0 + kappa * P2);
+        for (int a=0;a<3;a++) s_ec -= eta_eff_diag * phi[a][idx] * curl_th[a] * dV;
 
         local[0] = s_epk;
         local[1] = s_etk;
@@ -935,6 +941,7 @@ static void gpu_set_constants(const Config *c, double dx) {
     cudaMemcpyToSymbol(d_MASS2, &c->m2, sizeof(double));
     cudaMemcpyToSymbol(d_MTHETA2, &c->mtheta2, sizeof(double));
     cudaMemcpyToSymbol(d_ETA, &c->eta, sizeof(double));
+    cudaMemcpyToSymbol(d_ETA1, &c->eta1, sizeof(double));
     cudaMemcpyToSymbol(d_inv_alpha, &c->inv_alpha, sizeof(double));
     cudaMemcpyToSymbol(d_inv_beta, &c->inv_beta, sizeof(double));
     cudaMemcpyToSymbol(d_kappa_gamma, &c->kappa_gamma, sizeof(double));
@@ -1253,6 +1260,7 @@ static DiagHookCtx create_diag_hook(FILE *fp, int diag_every, int major_every,
     ctx.m2 = c->m2;
     ctx.mtheta2 = c->mtheta2;
     ctx.eta = c->eta;
+    ctx.eta1 = c->eta1;
     ctx.mu = c->mu;
     ctx.kappa = c->kappa;
     ctx.mode = c->mode;
@@ -1284,7 +1292,7 @@ static void run_gpu_diagnostics(const FieldState *state, DiagHookCtx *ctx) {
         state->vel_phi[0], state->vel_phi[1], state->vel_phi[2],
         state->vel_theta[0], state->vel_theta[1], state->vel_theta[2],
         ctx->dV, idx1, idx2_val,
-        ctx->m2, ctx->mtheta2, ctx->eta, ctx->mu, ctx->kappa,
+        ctx->m2, ctx->mtheta2, ctx->eta, ctx->eta1, ctx->mu, ctx->kappa,
         ctx->mode, ctx->inv_alpha, ctx->inv_beta, ctx->kappa_gamma,
         ctx->d_results);
 
@@ -1370,7 +1378,8 @@ static void compute_energy(Grid *g, const Config *c,
         curl_th[0]=(g->theta[2][n_jp]-g->theta[2][n_jm]-g->theta[1][n_kp]+g->theta[1][n_km])*idx1;
         curl_th[1]=(g->theta[0][n_kp]-g->theta[0][n_km]-g->theta[2][n_ip]+g->theta[2][n_im])*idx1;
         curl_th[2]=(g->theta[1][n_ip]-g->theta[1][n_im]-g->theta[0][n_jp]+g->theta[0][n_jm])*idx1;
-        for (int a=0;a<3;a++) s_ec -= c->eta * g->phi[a][idx] * curl_th[a] * dV;
+        double eta_eff_h = c->eta + c->eta1 * fabs(P);
+        for (int a=0;a<3;a++) s_ec -= eta_eff_h * g->phi[a][idx] * curl_th[a] * dV;
     }
     *epk=s_epk;*etk=s_etk;*eg=s_eg;*em=s_em;*ep=s_ep;
     *etg=s_etg;*etm=s_etm;*ec=s_ec;
@@ -1510,12 +1519,13 @@ int main(int argc, char **argv) {
     SFA *sfa = sfa_create(c.output, c.N, c.N, c.N, c.L, c.L, c.L, g->dt);
     sfa->flags = SFA_CODEC_COLZSTD | SFA_FLAG_STREAMING;  /* per-column parallel compression */
     {
-        char vN[32],vL[32],vT[32],vdt[32],vm[32],vmt[32],veta[32],vmu[32],vkappa[32];
+        char vN[32],vL[32],vT[32],vdt[32],vm[32],vmt[32],veta[32],veta1[32],vmu[32],vkappa[32];
         char vmode[32],via[32],vib[32],vkg[32],vdw[32],vdr[32],vprec[32],vdelta[64];
         snprintf(vN,32,"%d",c.N); snprintf(vL,32,"%.6f",c.L); snprintf(vT,32,"%.6f",c.T);
         snprintf(vdt,32,"%.6f",c.dt_factor);
         snprintf(vm,32,"%.6f",sqrt(c.m2)); snprintf(vmt,32,"%.6f",sqrt(c.mtheta2));
-        snprintf(veta,32,"%.6f",c.eta); snprintf(vmu,32,"%.6f",c.mu);
+        snprintf(veta,32,"%.6f",c.eta); snprintf(veta1,32,"%.6f",c.eta1);
+        snprintf(vmu,32,"%.6f",c.mu);
         snprintf(vkappa,32,"%.6f",c.kappa); snprintf(vmode,32,"%d",c.mode);
         snprintf(via,32,"%.6f",c.inv_alpha); snprintf(vib,32,"%.6f",c.inv_beta);
         snprintf(vkg,32,"%.6f",c.kappa_gamma);
@@ -1527,14 +1537,14 @@ int main(int argc, char **argv) {
         snprintf(vgah,32,"%.6f",c.gradient_A_high);
         snprintf(vgal,32,"%.6f",c.gradient_A_low);
         snprintf(vgm,32,"%d",c.gradient_margin);
-        const char *keys[]={"N","L","T","dt_factor","m","m_theta","eta","mu","kappa",
+        const char *keys[]={"N","L","T","dt_factor","m","m_theta","eta","eta1","mu","kappa",
                             "mode","inv_alpha","inv_beta","kappa_gamma",
                             "damp_width","damp_rate","precision","delta",
                             "bc_type","gradient_A_high","gradient_A_low","gradient_margin"};
-        const char *vals[]={vN,vL,vT,vdt,vm,vmt,veta,vmu,vkappa,
+        const char *vals[]={vN,vL,vT,vdt,vm,vmt,veta,veta1,vmu,vkappa,
                             vmode,via,vib,vkg,vdw,vdr,vprec,vdelta,
                             vbc,vgah,vgal,vgm};
-        sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 21);
+        sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 22);
     }
     sfa_add_column(sfa,"phi_x",sfa_dtype,SFA_POSITION,0);
     sfa_add_column(sfa,"phi_y",sfa_dtype,SFA_POSITION,1);

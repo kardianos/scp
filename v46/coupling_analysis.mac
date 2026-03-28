@@ -1,0 +1,401 @@
+/* V46 Coupling Analysis — Comprehensive Maxima Worksheet
+ *
+ * Analyzes all proposed coupling mechanisms for the Cosserat equation:
+ *
+ * A. Existing:     η φ·(∇×θ)         — single curl coupling
+ * B. Gradient:     g (∇φ)·(∇θ)       — gradient-gradient coupling
+ * C. Double curl:  h (∇×φ)·(∇×θ)     — curl-curl coupling
+ * D. Density rate: breathing mode synchronization through V(P) nonlinearity
+ * E. Asymmetric:   η₁ φ·(∇×θ) + η₂ θ·(∇×φ)  — split coupling
+ *
+ * For each: compute Derrick scaling, virial contribution, and
+ * whether it can produce binding.
+ *
+ * Run: maxima -b coupling_analysis.mac
+ */
+
+d: 3$  /* spatial dimensions */
+
+print("================================================================");
+print("V46 COUPLING ANALYSIS — Derrick Scaling for All Proposed Terms");
+print("================================================================");
+print("");
+
+/* ================================================================
+   Standard terms (for reference)
+   ================================================================ */
+
+print("--- REFERENCE: Standard terms ---");
+print("  ½|∇φ|²       scales as λ^", d-2, " = λ^1  (gradient)");
+print("  ½m²φ²        scales as λ^", d,   " = λ^3  (mass)");
+print("  V(P)          scales as λ^", d,   " = λ^3  (potential)");
+print("");
+
+/* ================================================================
+   A. Existing coupling: η φ·(∇×θ)
+   ================================================================ */
+
+/* φ_λ(x) = φ(x/λ): amplitude unchanged
+   (∇×θ)_λ = (1/λ)(∇×θ)(x/λ): one derivative → 1/λ
+   φ·(∇×θ) → (1/λ) × [φ·(∇×θ)](x/λ)
+   ∫d³x → λ³
+   Total: λ^(3-1) = λ^2 */
+
+a_exp: d - 1;
+print("--- A. η φ·(∇×θ) [existing single curl] ---");
+print("  Scaling: λ^", a_exp, " = λ^2");
+print("  Virial coefficient: ", a_exp);
+print("  Role: intermediate between grad(1) and mass(3)");
+print("  Binding potential: YES (intermediate scaling can shift virial)");
+print("  Issue: at η=0.5, too weak. Need η~8 for binding (from V45 data).");
+print("");
+
+/* ================================================================
+   B. Gradient coupling: g (∇φ)·(∇θ)
+   ================================================================ */
+
+/* (∇φ)_λ = (1/λ)(∇φ)(x/λ): one derivative → 1/λ
+   (∇θ)_λ = (1/λ)(∇θ)(x/λ): one derivative → 1/λ
+   (∇φ)·(∇θ) → (1/λ²) × [(∇φ)·(∇θ)](x/λ)
+   ∫d³x → λ³
+   Total: λ^(3-2) = λ^1 */
+
+b_exp: d - 2;
+print("--- B. g (∇φ)·(∇θ) [gradient-gradient] ---");
+print("  Scaling: λ^", b_exp, " = λ^1");
+print("  Virial coefficient: ", b_exp);
+print("  Role: SAME scaling as gradient energy ½|∇φ|²");
+print("  Binding potential: NO — same exponent as the gradient penalty.");
+print("  This term just renormalizes the effective gradient stiffness.");
+print("  It cannot shift the virial balance.");
+print("  REJECTED for binding purposes.");
+print("");
+
+/* ================================================================
+   C. Double curl: h (∇×φ)·(∇×θ)
+   ================================================================ */
+
+/* (∇×φ)_λ = (1/λ)(∇×φ)(x/λ): one derivative → 1/λ
+   (∇×θ)_λ = (1/λ)(∇×θ)(x/λ): one derivative → 1/λ
+   (∇×φ)·(∇×θ) → (1/λ²) × [(∇×φ)·(∇×θ)](x/λ)
+   ∫d³x → λ³
+   Total: λ^(3-2) = λ^1 */
+
+c_exp: d - 2;
+print("--- C. h (∇×φ)·(∇×θ) [double curl] ---");
+print("  Scaling: λ^", c_exp, " = λ^1");
+print("  Virial coefficient: ", c_exp);
+print("  Role: SAME scaling as gradient — λ^1");
+print("  Binding potential: NO — same reason as B.");
+print("  Even though it couples the rotational structure,");
+print("  two curls = two derivatives = same scaling as ∇².");
+print("  REJECTED for binding purposes.");
+print("");
+
+/* ================================================================
+   D. Quartic coupling: q (φ·∇×θ)² or q |φ|²|∇×θ|²
+   ================================================================ */
+
+/* φ²(∇×θ)² → (1/λ²) × [φ²(∇×θ)²](x/λ)
+   ∫d³x → λ³
+   Total: λ^(3-2) = λ^1 */
+
+d_exp: d - 2;
+print("--- D. q |φ|²|∇×θ|² [quartic field-curl] ---");
+print("  Scaling: λ^", d_exp, " = λ^1");
+print("  Virial coefficient: ", d_exp);
+print("  SAME as gradient. REJECTED.");
+print("");
+
+/* ================================================================
+   E. Skyrme-like quartic: s |φ×(∇×θ)|²
+   ================================================================ */
+
+/* Same structure as D: two fields, two derivatives in d³x integral.
+   Still λ^1. */
+
+print("--- E. s |φ×(∇×θ)|² [Skyrme cross-term] ---");
+print("  Scaling: λ^1. Same analysis. REJECTED.");
+print("");
+
+/* ================================================================
+   F. Zero-derivative quartic: V₂(φ,θ) = f(φ²θ²)
+   ================================================================ */
+
+/* φ²θ² → [φ²θ²](x/λ)
+   ∫d³x → λ³
+   Total: λ^3 */
+
+f_exp: d;
+print("--- F. V₂(φ²θ²) [quartic potential coupling] ---");
+print("  Scaling: λ^", f_exp, " = λ^3");
+print("  Virial coefficient: ", f_exp);
+print("  SAME as mass/potential — λ^3.");
+print("  Cannot help: same scaling as existing V(P).");
+print("  REJECTED.");
+print("");
+
+/* ================================================================
+   G. Inverse-Laplacian coupling: φ·(∇⁻²∇×θ)
+   ================================================================ */
+
+/* ∇⁻² brings +2 powers of λ (inverse of two derivatives)
+   ∇× brings -1 power
+   Net: φ × λ^(+2-1) × θ = φ × λ × θ
+   ∫d³x → λ³
+   Total: λ^(3+1) = λ^4 */
+
+g_exp: d + 1;
+print("--- G. φ·(∇⁻²∇×θ) [inverse-Laplacian curl] ---");
+print("  Scaling: λ^", g_exp, " = λ^4");
+print("  WORSE than mass term. Makes binding harder, not easier.");
+print("  REJECTED.");
+print("");
+
+/* ================================================================
+   H. Lower-derivative: φ·θ (direct field coupling, no derivatives)
+   ================================================================ */
+
+/* φ·θ → [φ·θ](x/λ)
+   ∫d³x → λ³
+   Total: λ^3 */
+
+h_exp: d;
+print("--- H. φ·θ [direct field coupling] ---");
+print("  Scaling: λ^", h_exp, " = λ^3");
+print("  Same as mass term. REJECTED.");
+print("  Also: this would give θ a mass through mixing. Changes EM physics.");
+print("");
+
+/* ================================================================
+   SUMMARY
+   ================================================================ */
+
+print("================================================================");
+print("SUMMARY: Derrick Scaling of All Coupling Terms (d=3)");
+print("================================================================");
+print("");
+print("  λ^1 (same as gradient): (∇φ)·(∇θ), (∇×φ)·(∇×θ), |φ|²|∇×θ|²");
+print("  λ^2 (INTERMEDIATE):     φ·(∇×θ)   ← THE ONLY ONE");
+print("  λ^3 (same as potential): φ·θ, φ²θ²");
+print("  λ^4 (worse):            φ·(∇⁻²∇×θ)");
+print("");
+print("  ONLY the existing coupling η φ·(∇×θ) has intermediate λ^2 scaling.");
+print("  No other bilinear or quartic term in φ and θ achieves this.");
+print("  The curl coupling is UNIQUE in the Cosserat structure.");
+print("");
+
+/* ================================================================
+   What about terms with FEWER than one derivative?
+   These require non-local operators or fractional derivatives.
+   ================================================================ */
+
+print("================================================================");
+print("FRACTIONAL DERIVATIVE ANALYSIS");
+print("================================================================");
+print("");
+print("For scaling λ^α with 1 < α < 2, we need:");
+print("  α = d - (number of derivatives)");
+print("  For α between 1 and 2: need between 1 and 2 derivatives.");
+print("  This means FRACTIONAL derivatives: (-∇²)^(s/2) with 1 < s < 2.");
+print("");
+print("  Example: φ · (-∇²)^(1/2) θ  would scale as λ^(3-1) = λ^2  (wait,");
+print("  (-∇²)^(1/2) is one half-derivative in each direction = 0.5 derivatives.");
+print("  Scaling: λ^(3-0.5) = λ^2.5");
+print("");
+print("  φ · (-∇²)^(s/2) θ  scales as λ^(d-s) = λ^(3-s)");
+print("  For s=1 (one derivative = curl): λ^2  ← what we have");
+print("  For s=0.5: λ^2.5");
+print("  For s=0: λ^3 (no derivative)");
+print("");
+print("  The ONLY integer-derivative term giving λ^2 is the curl coupling.");
+print("  Fractional derivatives give non-integer exponents between 2 and 3.");
+print("  These are non-local and physically unmotivated.");
+print("");
+
+/* ================================================================
+   BREATHING MODE SYNCHRONIZATION — does V(P) nonlinearity suffice?
+   ================================================================ */
+
+print("================================================================");
+print("BREATHING MODE ANALYSIS");
+print("================================================================");
+print("");
+
+/* The breathing oscillation modulates the field amplitude:
+   φ_a(x,t) = [A_a(r) + ε_a(r)sin(ω_b t)] × cos(kz + δ_a)
+
+   The triple product becomes:
+   P(t) = [A₀ + ε₀ sin(ωt)] × [A₁ + ε₁ sin(ωt)] × [A₂ + ε₂ sin(ωt)] × cos³(...)
+
+   Expanding to leading order in ε:
+   P(t) ≈ A₀A₁A₂ [1 + sin(ωt)(ε₀/A₀ + ε₁/A₁ + ε₂/A₂)] × cos³(...)
+
+   The V(P) potential creates an effective coupling between the breathing
+   modes of nearby baryons through the cross-term in P_total = P₁ + P₂. */
+
+print("Breathing mode perturbation: φ → A(r)[1 + ε sin(ωt)]");
+print("");
+print("For a single baryon:");
+print("  P(t) = P₀ [1 + 3ε sin(ωt)]  (to leading order, identical ε)");
+print("  V(P) = (μ/2) P₀² [1 + 3ε sin(ωt)]² / [1 + κP₀²(1+3ε sin(ωt))²]");
+print("");
+
+/* V(P) expanded around P₀: */
+V(P) := mu/2 * P^2 / (1 + kappa * P^2);
+Vp(P) := diff(V(P), P);
+Vpp(P) := diff(Vp(P), P);
+
+print("V(P) = (μ/2)P²/(1+κP²)");
+print("V'(P) =", Vp(P));
+print("V''(P) =", ratsimp(Vpp(P)));
+
+/* For two baryons at separation D, breathing at the SAME frequency ω
+   but with phases ψ₁ and ψ₂:
+
+   P₁(t) = P₀ [1 + 3ε sin(ωt + ψ₁)]
+   P₂(t) = P₀ [1 + 3ε sin(ωt + ψ₂)]
+
+   In the overlap region: P_total = P₁ + P₂ (approximate for small overlap)
+   V(P_total) = V(P₁ + P₂)
+
+   The interaction energy comes from the cross-term:
+   V(P₁+P₂) - V(P₁) - V(P₂) ≈ V''(0) × P₁ × P₂
+
+   (This is the Born approximation for weak overlap.)
+
+   Time-averaged interaction:
+   ⟨P₁ P₂⟩_t = P₀² [1 + 9ε² ⟨sin(ωt+ψ₁)sin(ωt+ψ₂)⟩]
+              = P₀² [1 + (9ε²/2) cos(ψ₁-ψ₂)]
+
+   The cos(ψ₁-ψ₂) term IS the Adler synchronization coupling!
+   When ψ₁=ψ₂ (in-phase): ⟨P₁P₂⟩ is maximized → V_int most negative
+   When ψ₁=ψ₂+π (anti-phase): ⟨P₁P₂⟩ is minimized → V_int less negative */
+
+print("");
+print("Time-averaged breathing cross-term:");
+print("  ⟨P₁P₂⟩ = P₀² [1 + (9ε²/2) cos(Δψ)]");
+print("  where Δψ = ψ₁ - ψ₂ (breathing phase difference)");
+print("");
+print("Synchronization energy:");
+print("  ΔE_sync = V''(P_overlap) × P₀² × (9ε²/2) × cos(Δψ) × (overlap volume)");
+print("");
+
+/* The key question: how large is V''(P_overlap) × P₀² × ε² × (overlap volume)
+   compared to the gradient energy penalty? */
+
+/* Compute V''(0) for our parameters */
+mu_val: -41.345$
+kappa_val: 50$
+
+V_at(P) := mu_val/2 * P^2 / (1 + kappa_val * P^2);
+Vpp_at_0: float(subst(0, P, diff(diff(V_at(P), P), P)));
+Vpp_at_Pcore: float(subst(0.08, P, diff(diff(V_at(P), P), P)));
+
+print("V''(P) at P=0:", Vpp_at_0);
+print("V''(P) at P=0.08 (core):", Vpp_at_Pcore);
+
+/* Estimate synchronization energy */
+/* P₀ ~ 0.08 (core triple product)
+   ε ~ 0.3 (30% breathing modulation, from V43 proton formation)
+   Overlap volume at D=40 ~ 4πR²δR where R~5, δR~2 → ~600 code³
+   But the overlap P₁×P₂ at D=40 is essentially zero (Yukawa decay) */
+
+print("");
+print("ESTIMATE of synchronization energy:");
+print("  P₀ = 0.08, ε = 0.3, V''(0) =", Vpp_at_0);
+print("  ΔE_sync = V''(0) × P₀² × 9ε²/2 × overlap_volume × cos(Δψ)");
+
+sync_coeff: float(Vpp_at_0 * 0.08^2 * 9 * 0.3^2 / 2);
+print("  ΔE_sync = ", sync_coeff, " × overlap_volume × cos(Δψ)");
+print("");
+print("  The overlap volume depends on the spatial decay of P₀(r).");
+print("  P₀ ~ exp(-m_eff × r) / r with m_eff ≈ 1.5");
+print("  At D=40: P₀(40) ≈ exp(-60)/40 ≈ 10⁻²⁶ → ZERO overlap.");
+print("");
+print("  CONCLUSION: The V(P) breathing synchronization is");
+print("  exponentially suppressed at nuclear distances (D>10).");
+print("  It can only work at D < 2/m_eff ≈ 1.3 code units.");
+print("  This is INSIDE the confinement repulsion zone.");
+print("");
+print("  The breathing mechanism CANNOT produce binding at D=40.");
+print("  It's a core-scale effect, not a nuclear-scale effect.");
+
+/* ================================================================
+   THE θ CHANNEL: breathing transmitted through massless radiation
+   ================================================================ */
+
+print("");
+print("================================================================");
+print("BREATHING VIA θ RADIATION (massless channel)");
+print("================================================================");
+print("");
+print("The φ overlap decays exponentially (Yukawa, range ~0.67).");
+print("But the θ field is MASSLESS — it decays as 1/r.");
+print("Breathing modulates the φ curl source: ∇×φ oscillates at ω_b.");
+print("This drives θ oscillations at ω_b that propagate as 1/r.");
+print("");
+print("At baryon B (distance D), the θ breathing signal amplitude is:");
+print("  θ_b(D) ~ η × (curl amplitude) × cos(ω_b t) / D");
+print("");
+print("The θ breathing wave couples BACK to baryon B through η curl(θ).");
+print("This creates a force on B proportional to:");
+print("  F_sync ~ η² × (curl_A)² × cos(Δψ) / D²");
+print("");
+print("This is the ponderomotive / radiation pressure force.");
+print("It falls as 1/D² (same as Coulomb) but is modulated by cos(Δψ).");
+print("");
+print("The synchronization energy through the θ channel:");
+print("  ΔE_sync_θ ~ η² × ∫(curl_A)² / D² × cos(Δψ)");
+print("");
+print("This is NOT exponentially suppressed — it falls as 1/D².");
+print("At D=40 with η=0.5:");
+eta_val: 0.5$
+curl_amp: 0.1$  /* approximate curl amplitude from V34 */
+sync_theta: float(eta_val^2 * curl_amp^2 / 40^2);
+print("  ΔE_sync_θ(D=40) ~ η²×curl²/D² ≈", sync_theta, "per voxel");
+print("  Total over interaction volume (~1000 voxels): ~", float(sync_theta * 1000));
+print("");
+print("  V45 ΔE_total penalty at D=40: +282 code units");
+print("  θ synchronization energy: ~", float(sync_theta * 1000), "code units");
+print("  Ratio: synchronization/penalty ≈", float(sync_theta * 1000 / 282));
+print("");
+print("  This is ~10⁻⁴ of what's needed. η² is too small.");
+print("  Need η² ~ 282/", float(sync_theta * 1000), " ≈ ", float(282 / (sync_theta * 1000)));
+print("  So η ≈ ", float(sqrt(282 / (sync_theta * 1000))));
+
+/* ================================================================
+   FINAL SUMMARY
+   ================================================================ */
+
+print("");
+print("================================================================");
+print("FINAL SUMMARY");
+print("================================================================");
+print("");
+print("1. DERRICK SCALING:");
+print("   Only φ·(∇×θ) has intermediate λ^2 scaling.");
+print("   All other bilinear/quartic couplings give λ^1 or λ^3.");
+print("   No new coupling term can improve on the existing structure.");
+print("");
+print("2. BREATHING VIA V(P):");
+print("   Exponentially suppressed at nuclear distances (Yukawa decay).");
+print("   Cannot produce binding at D>2.");
+print("");
+print("3. BREATHING VIA θ RADIATION:");
+print("   Falls as 1/D² (not exponential) — reaches nuclear distances.");
+print("   But coupling η² is too weak by factor ~10⁴.");
+print("   Need η ≈", float(sqrt(282 / (sync_theta * 1000))), "for binding.");
+print("");
+print("4. OPTIONS:");
+print("   a) Accept that η~8 is the strong force coupling (different from");
+print("      the EM coupling, which stays at η_EM~0.5 for the far-field).");
+print("      But the SAME η governs both — can't split it in the Lagrangian.");
+print("");
+print("   b) Add m_θ > 0: massive θ gives Yukawa attraction WITHOUT");
+print("      needing large η. The meson IS a massive θ mode.");
+print("      This is the simplest path to binding.");
+print("");
+print("   c) The theory genuinely predicts no nuclear binding with the");
+print("      current equation. Binding requires new physics.");
+print("================================================================");

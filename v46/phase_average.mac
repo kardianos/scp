@@ -1,0 +1,115 @@
+/* Phase-Averaged Effective Potential
+ *
+ * Compute ⟨P²⟩ and cross-terms for carrier wave product
+ * P = φ₀φ₁φ₂ = A₀cos(kz+δ₀) × A₁cos(kz+δ₁) × A₂cos(kz+δ₂)
+ *
+ * Run: maxima -b phase_average.mac
+ */
+
+/* Phase offsets from V28 CMA-ES optimization */
+delta0: 0;
+delta1: 3.0005;
+delta2: 4.4325;
+
+print("Phase offsets: δ =", [delta0, delta1, delta2]);
+
+/* Reference: exact 2π/3 values */
+delta1_exact: 2*%pi/3;
+delta2_exact: 4*%pi/3;
+
+/* ======================================================
+   1. Triple cosine product identity
+   ====================================================== */
+
+/* cos(a)cos(b)cos(c) = ¼[cos(a+b-c) + cos(a-b+c) + cos(-a+b+c) + cos(a+b+c)] */
+
+/* Time average over one carrier cycle (kz from 0 to 2π):
+   ⟨cos(n·kz + phase)⟩ = 0 for n ≠ 0, = 1 for n = 0 */
+
+/* P = A₀A₁A₂ × cos(kz+δ₀)cos(kz+δ₁)cos(kz+δ₂) */
+/* Using the identity: */
+
+expr: cos(x + delta0) * cos(x + delta1) * cos(x + delta2);
+expr_expanded: trigexpand(expr);
+
+print("---");
+print("P / (A₀A₁A₂) = cos(x+δ₀)cos(x+δ₁)cos(x+δ₂)");
+
+/* Average over one period: integrate from 0 to 2π and divide by 2π */
+avg_P: integrate(expr, x, 0, 2*%pi) / (2*%pi);
+avg_P_simplified: float(ratsimp(avg_P));
+
+print("---");
+print("⟨P⟩ / (A₀A₁A₂) =", avg_P_simplified);
+
+/* Now compute ⟨P²⟩ */
+expr2: expr^2;
+avg_P2: integrate(expr2, x, 0, 2*%pi) / (2*%pi);
+avg_P2_simplified: float(ratsimp(avg_P2));
+
+print("⟨P²⟩ / (A₀A₁A₂)² =", avg_P2_simplified);
+
+/* ======================================================
+   2. Compare with exact 2π/3 phases
+   ====================================================== */
+
+print("---");
+print("Comparison with exact 2π/3 phases:");
+
+expr_exact: cos(x) * cos(x + 2*%pi/3) * cos(x + 4*%pi/3);
+avg_P_exact: integrate(expr_exact, x, 0, 2*%pi) / (2*%pi);
+avg_P2_exact: integrate(expr_exact^2, x, 0, 2*%pi) / (2*%pi);
+
+print("  Exact 2π/3:  ⟨P⟩ =", float(ratsimp(avg_P_exact)),
+      "  ⟨P²⟩ =", float(ratsimp(avg_P2_exact)));
+print("  CMA-ES:      ⟨P⟩ =", avg_P_simplified,
+      "  ⟨P²⟩ =", avg_P2_simplified);
+
+/* ======================================================
+   3. Cross-term for two baryons
+   ====================================================== */
+
+print("---");
+print("CROSS-TERM ANALYSIS:");
+print("Two baryons with relative carrier phase Δφ:");
+
+/* Baryon 1: P₁ = A cos(kz+δ₀)cos(kz+δ₁)cos(kz+δ₂) */
+/* Baryon 2: P₂ = A cos(kz+δ₀+Δ)cos(kz+δ₁+Δ)cos(kz+δ₂+Δ) */
+/* Cross-term: ⟨P₁ × P₂⟩ as function of Δ */
+
+P1: cos(x + delta0) * cos(x + delta1) * cos(x + delta2);
+P2: cos(x + delta0 + Delta) * cos(x + delta1 + Delta) * cos(x + delta2 + Delta);
+
+cross: P1 * P2;
+avg_cross: integrate(cross, x, 0, 2*%pi) / (2*%pi);
+avg_cross_simplified: ratsimp(avg_cross);
+
+print("⟨P₁P₂⟩ / (A⁶) as function of Δ (relative carrier phase):");
+print("  ", avg_cross_simplified);
+
+/* Evaluate at specific Δ values */
+print("---");
+for Delta_val in [0, %pi/6, %pi/4, %pi/3, %pi/2, %pi] do (
+    val: float(subst(Delta_val, Delta, avg_cross_simplified)),
+    print("  Δ =", float(Delta_val), "  ⟨P₁P₂⟩ =", val)
+);
+
+/* ======================================================
+   4. Effective interaction potential
+   ====================================================== */
+
+print("---");
+print("EFFECTIVE INTERACTION:");
+print("V_int ∝ μ × ⟨P₁P₂⟩ × (overlap integral)");
+print("Since μ < 0 and ⟨P₁P₂⟩ > 0 for Δ near 0:");
+print("  V_int < 0 → ATTRACTIVE when baryons are in-phase");
+print("Since ⟨P₁P₂⟩ < 0 for some Δ:");
+print("  V_int > 0 → REPULSIVE when baryons are out-of-phase");
+print("");
+print("gen_deuterium.c sets both baryons with the SAME carrier phases (Δ=0).");
+print("At Δ=0: ⟨P₁P₂⟩ =", float(subst(0, Delta, avg_cross_simplified)));
+print("This should be MAXIMALLY ATTRACTIVE (if μ<0).");
+print("");
+print("But V45 showed repulsion at all D. This means the overlap integral");
+print("(spatial decay of ⟨P₁P₂⟩ with separation D) is too weak to overcome");
+print("the gradient energy penalty, even with constructive phase matching.");

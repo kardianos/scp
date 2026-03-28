@@ -1,0 +1,188 @@
+/* Derrick Virial Analysis for the 6-field Cosserat Lagrangian
+ *
+ * Compute the scaling of each energy term under x → λx
+ * and derive the virial identity for equilibrium solitons.
+ *
+ * Run: maxima -b derrick_virial.mac
+ */
+
+/* ======================================================
+   1. Define the energy functional terms
+   ====================================================== */
+
+/* Under spatial rescaling x → λx, a field configuration φ(x) → φ(λx).
+   The spatial volume element d³x → λ⁻³ d³x (we integrate over the
+   original coordinates, so the Jacobian gives λ³).
+
+   Actually, the standard Derrick argument: consider φ_λ(x) = φ(x/λ).
+   Then ∇φ_λ = (1/λ)∇φ(x/λ), and d³x stays the same but the support
+   scales as λ³. So:
+
+   E[φ_λ] = ∫ L[φ_λ] d³x
+
+   Each term scales as follows. Let d=3 (spatial dimensions). */
+
+d: 3;
+
+/* Gradient energy: ½∫|∇φ|² d³x
+   ∇φ_λ = (1/λ)(∇φ)(x/λ), |∇φ_λ|² = (1/λ²)|∇φ|²(x/λ)
+   ∫ over x: Jacobian from x→x/λ gives λ^d factor
+   E_grad(λ) = λ^(d-2) × E_grad(1) */
+
+e_grad_exp: d - 2;
+print("E_grad scales as λ^", e_grad_exp, " = λ^1");
+
+/* Mass energy: ½∫m²φ² d³x
+   φ_λ² = φ²(x/λ), Jacobian gives λ^d
+   E_mass(λ) = λ^d × E_mass(1) */
+
+e_mass_exp: d;
+print("E_mass scales as λ^", e_mass_exp, " = λ^3");
+
+/* Potential energy: ∫V(P) d³x where P = φ₀φ₁φ₂
+   V(P_λ) = V(P(x/λ)), same pointwise value, Jacobian gives λ^d
+   E_pot(λ) = λ^d × E_pot(1) */
+
+e_pot_exp: d;
+print("E_pot  scales as λ^", e_pot_exp, " = λ^3");
+
+/* θ gradient energy: ½∫|∇θ|² d³x — same scaling as φ gradient */
+e_tgrad_exp: d - 2;
+print("E_tgrad scales as λ^", e_tgrad_exp, " = λ^1");
+
+/* θ mass energy: ½∫m_θ²θ² d³x — same scaling as φ mass */
+e_tmass_exp: d;
+print("E_tmass scales as λ^", e_tmass_exp, " = λ^3");
+
+/* ======================================================
+   2. The critical term: η φ·(∇×θ) coupling
+   ====================================================== */
+
+/* E_coupling = η ∫ φ·(∇×θ) d³x
+
+   φ_λ(x) = φ(x/λ)  →  amplitude unchanged
+   (∇×θ)_λ(x) = (1/λ)(∇×θ)(x/λ)  →  curl brings (1/λ)
+   φ_λ · (∇×θ)_λ = (1/λ) × [φ·(∇×θ)](x/λ)
+   Jacobian: λ^d
+
+   E_coupling(λ) = λ^(d-1) × E_coupling(1)  = λ^2 × E_coupling(1) */
+
+e_coupling_exp: d - 1;
+print("E_coupling scales as λ^", e_coupling_exp, " = λ^2  *** INTERMEDIATE SCALING ***");
+
+print("---");
+print("Summary of scaling exponents:");
+print("  λ^1: E_grad, E_tgrad  (gradient terms)");
+print("  λ^2: E_coupling       (curl cross-term — UNIQUE)");
+print("  λ^3: E_mass, E_pot, E_tmass  (local terms)");
+
+/* ======================================================
+   3. Derive the virial identity
+   ====================================================== */
+
+/* Total energy as function of λ:
+   E(λ) = λ^1 × (E_grad + E_tgrad)
+         + λ^2 × E_coupling
+         + λ^3 × (E_mass + E_pot + E_tmass)
+
+   At equilibrium, dE/dλ = 0 at λ = 1: */
+
+print("---");
+print("Virial identity (dE/dλ = 0 at λ=1):");
+
+/* dE/dλ = 1×λ^0×(E_grad+E_tgrad) + 2×λ^1×E_coupling + 3×λ^2×(E_mass+E_pot+E_tmass) */
+/* At λ=1: */
+
+print("  1·(E_grad + E_tgrad) + 2·E_coupling + 3·(E_mass + E_pot + E_tmass) = 0");
+print("");
+print("  Or equivalently:");
+print("  E_coupling = -½[E_grad + E_tgrad + 3(E_mass + E_pot + E_tmass)]");
+
+/* ======================================================
+   4. Implications for binding
+   ====================================================== */
+
+print("---");
+print("BINDING ANALYSIS:");
+print("");
+print("For a SINGLE soliton without coupling (η=0, E_coupling=0):");
+print("  E_grad + E_tgrad + 3(E_mass + E_pot) = 0");
+print("  Since E_grad>0, E_tgrad>0, E_mass>0, this requires E_pot < 0");
+print("  and |E_pot| > (E_grad + E_tgrad + 3·E_mass)/3");
+print("  This is Derrick's NO-GO for d≥2 if V≥0 everywhere.");
+print("  Our V(P) CAN be negative (μ<0), so single solitons CAN exist.");
+print("");
+print("For TWO solitons, the INTERACTION energy ΔE(D) = E(D) - E(∞):");
+print("  If ΔE has a minimum at finite D → binding.");
+print("  The η coupling term (λ²) provides the ONLY intermediate-scaling");
+print("  contribution. In the Skyrme model, the E₄ term has the SAME λ²");
+print("  scaling and IS what enables Skyrmion binding.");
+print("");
+print("  For binding through E_coupling:");
+print("  Need ΔE_coupling(D) < 0 (attractive) and");
+print("  |ΔE_coupling| > |ΔE_grad + ΔE_mass| (overcomes repulsion)");
+print("");
+print("  The V45 data shows:");
+print("  At D=0: ΔE_coupling = +21 (REPULSIVE — wrong sign!)");
+print("  But E_coupling in the diagnostics is η∫φ·curl(θ), which");
+print("  includes both the soliton and background contributions.");
+print("  The interaction ΔE_coupling needs background subtraction.");
+
+/* ======================================================
+   5. Critical η analysis
+   ====================================================== */
+
+print("---");
+print("CRITICAL η ANALYSIS:");
+print("");
+
+/* For the virial to be satisfied with binding:
+   E_coupling must compensate for the gradient penalty.
+
+   E_coupling ~ η × ∫ φ · (∇×θ) d³x
+
+   The θ field is sourced by η∇×φ, so θ ~ η × (∇×φ convolved with Green's fn).
+   Therefore E_coupling ~ η² × ∫ φ · (∇× G * (∇×φ)) d³x
+
+   E_coupling scales as η². For binding, need:
+   η² × C_coupling > C_gradient
+
+   η_crit = sqrt(C_gradient / C_coupling)
+
+   where C_gradient and C_coupling are profile-dependent integrals. */
+
+print("E_coupling ~ η² × (profile integral)");
+print("For binding: η > η_crit = sqrt(E_grad_penalty / C_coupling)");
+print("");
+print("To compute η_crit, need the profile integrals from simulation data.");
+print("The V45 data gives E_grad ~ 278 for the baseline.");
+print("Need to extract C_coupling from the SFA data.");
+
+/* ======================================================
+   6. Comparison with Skyrme model
+   ====================================================== */
+
+print("---");
+print("SKYRME MODEL COMPARISON:");
+print("");
+print("Skyrme Lagrangian: L = E₂ + E₄ + E_V");
+print("  E₂ = ½∫Tr(L_i L_i) ~ gradient, scales as λ^1");
+print("  E₄ = (1/32e²)∫Tr([L_i,L_j]²) ~ quartic, scales as λ^(d-4) = λ^(-1)");
+print("  E_V = ∫(m_π² term) ~ mass, scales as λ^3");
+print("");
+print("Skyrme virial: 1·E₂ + (-1)·E₄ + 3·E_V = 0 → E₂ = E₄ - 3E_V");
+print("At m_π=0: E₂ = E₄ (verified in our v2 solver)");
+print("");
+print("In our Cosserat system:");
+print("  E_coupling plays the role of Skyrme E₄ but scales as λ^2, not λ^(-1).");
+print("  This is LESS favorable for binding than Skyrme (λ^(-1) grows as");
+print("  soliton shrinks, providing stronger short-range repulsion).");
+print("");
+print("  However, λ^2 is still intermediate between λ^1 (grad) and λ^3 (mass),");
+print("  so it CAN shift the virial balance. The question is whether the");
+print("  coefficient (proportional to η²) is large enough.");
+
+print("---");
+print("DONE. Key result: E_coupling scales as λ^2 (confirmed).");
+print("This is the ONLY term with intermediate scaling.");
+print("Binding requires η > η_crit, computable from profile integrals.");

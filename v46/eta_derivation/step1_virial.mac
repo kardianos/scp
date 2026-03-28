@@ -1,0 +1,206 @@
+/* Step 1: Virial Self-Consistency for η(P) = η₀ + η₁|P|
+ *
+ * Derive the equilibrium condition that determines η₁.
+ *
+ * The Lagrangian:
+ *   L = ½(∂φ)² - ½|∇φ|² - ½m²φ² - V(P)
+ *     + ½(∂θ)² - ½|∇θ|² - ½m_θ²θ²
+ *     + [η₀ + η₁|P|] × φ·(∇×θ)
+ *
+ * V(P) = (μ/2)P²/(1+κP²),  P = φ₀φ₁φ₂
+ */
+
+print("================================================================");
+print("STEP 1: VIRIAL SELF-CONSISTENCY EQUATION FOR η₁");
+print("================================================================");
+print("");
+
+/* ================================================================
+   1a. Energy functional with named integrals
+   ================================================================ */
+
+/* Define the energy components as abstract integrals over the soliton.
+   We work with TIME-AVERAGED quantities (static virial). */
+
+print("Define energy integrals over the soliton profile:");
+print("");
+print("  I_grad  = ∫ |∇φ|² d³x          (gradient energy of φ)");
+print("  I_tgrad = ∫ |∇θ|² d³x          (gradient energy of θ)");
+print("  I_mass  = ∫ m²|φ|² d³x         (mass energy)");
+print("  I_pot   = ∫ V(P) d³x           (potential energy)");
+print("  I_C0    = ∫ φ·(∇×θ) d³x        (coupling integral, η₀ part)");
+print("  I_C1    = ∫ |P|·φ·(∇×θ) d³x    (coupling integral, η₁ part)");
+print("");
+
+/* ================================================================
+   1b. Virial identity
+   ================================================================ */
+
+print("Total static energy:");
+print("  E = ½I_grad + ½I_tgrad + ½I_mass + I_pot + η₀·I_C0 + η₁·I_C1");
+print("");
+
+/* Under x → λx (Derrick scaling):
+   E(λ) = λ¹·(½I_grad + ½I_tgrad)
+         + λ²·(η₀·I_C0 + η₁·I_C1)
+         + λ³·(½I_mass + I_pot)
+*/
+
+print("Under Derrick scaling x → λx:");
+print("  E(λ) = λ¹·E₁ + λ²·E₂ + λ³·E₃");
+print("  where:");
+print("    E₁ = ½I_grad + ½I_tgrad");
+print("    E₂ = η₀·I_C0 + η₁·I_C1");
+print("    E₃ = ½I_mass + I_pot");
+print("");
+
+print("Virial identity (dE/dλ=0 at λ=1):");
+print("  E₁ + 2·E₂ + 3·E₃ = 0");
+print("");
+print("  (½I_grad + ½I_tgrad) + 2(η₀·I_C0 + η₁·I_C1) + 3(½I_mass + I_pot) = 0");
+print("");
+
+/* ================================================================
+   1c. Solve for η₁
+   ================================================================ */
+
+print("Solving for η₁:");
+print("");
+print("  2η₁·I_C1 = -(½I_grad + ½I_tgrad) - 2η₀·I_C0 - 3(½I_mass + I_pot)");
+print("");
+print("  η₁ = -[½(I_grad + I_tgrad) + 2η₀·I_C0 + 3(½I_mass + I_pot)] / (2·I_C1)");
+print("");
+
+/* Define symbolically */
+eta1_virial: -(I_grad/2 + I_tgrad/2 + 2*eta0*I_C0 + 3*(I_mass/2 + I_pot)) / (2*I_C1);
+
+print("  η₁ =", eta1_virial);
+print("");
+
+/* ================================================================
+   1d. The θ self-consistency: θ is determined by φ
+   ================================================================ */
+
+print("--- Self-consistency: θ is sourced by φ ---");
+print("");
+print("The θ equation: □θ = η(P)·∇×φ = [η₀ + η₁|P|]·∇×φ");
+print("Solution: θ = G * {[η₀ + η₁|P|]·∇×φ}  (retarded Green's function)");
+print("");
+print("This means I_C0, I_C1, I_tgrad all depend on η₀ and η₁:");
+print("  θ ~ (η₀ + η₁|P|) × (something from φ)");
+print("  I_C0 = ∫ φ·∇×θ ~ (η₀ + η₁⟨|P|⟩) × ∫ φ·∇×[G*(∇×φ)]");
+print("  I_C1 = ∫ |P|·φ·∇×θ ~ (η₀ + η₁⟨|P|⟩) × ∫ |P|·φ·∇×[G*(∇×φ)]");
+print("");
+
+/* Define the PURE profile integrals (independent of η): */
+print("Define pure profile integrals (η-independent):");
+print("  J₀ = ∫ φ·∇×[G*(∇×φ)] d³x      (curl-curl Green's fn integral)");
+print("  J₁ = ∫ |P|·φ·∇×[G*(∇×φ)] d³x   (topology-weighted curl-curl)");
+print("  K₀ = ∫ |∇[G*(∇×φ)]|² d³x        (θ gradient energy integral)");
+print("");
+print("Then:");
+print("  I_C0 ≈ (η₀ + η₁·P_eff) × J₀     where P_eff = ⟨|P|⟩ weighted avg");
+print("  I_C1 ≈ (η₀ + η₁·P_eff) × J₁");
+print("  I_tgrad ≈ (η₀ + η₁·P_eff)² × K₀");
+print("");
+
+/* ================================================================
+   1e. Simplified self-consistency (leading order)
+   ================================================================ */
+
+print("--- Leading-order approximation ---");
+print("");
+print("At leading order, ignore the η₁ correction to θ itself");
+print("(i.e., θ ≈ η₀ × G*(∇×φ), same as current simulation).");
+print("Then I_C0, I_C1, I_tgrad are fixed by the η₀ solution:");
+print("");
+print("  I_C0 ≈ η₀ × J₀");
+print("  I_C1 ≈ η₀ × J₁");
+print("  I_tgrad ≈ η₀² × K₀");
+print("");
+
+print("Substituting into the virial:");
+print("  η₁ = -[½I_grad + ½η₀²K₀ + 2η₀²J₀ + 3(½I_mass + I_pot)] / (2η₀J₁)");
+print("");
+
+/* For the CURRENT simulation (η₁=0), the virial at η₀ gives:
+   ½I_grad + ½η₀²K₀ + 2η₀²J₀ + 3(½I_mass + I_pot) = R (residual ≠ 0)
+
+   This residual R is the virial imbalance — the amount by which the
+   current soliton fails to satisfy the virial. η₁ must compensate: */
+
+print("The current soliton (η₁=0) has virial residual:");
+print("  R = ½I_grad + ½η₀²K₀ + 2η₀²J₀ + 3(½I_mass + I_pot)");
+print("");
+print("If R ≠ 0, the soliton is NOT in Derrick equilibrium.");
+print("η₁ compensates the residual:");
+print("  η₁ = -R / (2η₀J₁)");
+print("");
+print("This is a UNIQUE value determined by the profile integrals.");
+print("");
+
+/* ================================================================
+   1f. The naturalness conjecture: η₁ = |μ|/η₀
+   ================================================================ */
+
+print("--- Naturalness check: η₁ = |μ|/η₀ ---");
+print("");
+print("Conjecture: η₁ = |μ|/η₀ = 41.345/0.5 = 82.69");
+print("");
+print("This would mean: R/(2η₀J₁) = |μ|/η₀");
+print("  → R = 2η₀² × J₁ × |μ|/η₀ = 2η₀|μ|J₁");
+print("  → R = 2 × 0.5 × 41.345 × J₁ = 41.345 × J₁");
+print("");
+print("To verify: compute R and J₁ from the SFA data.");
+print("If R/J₁ ≈ 41.345 = |μ|, the conjecture is confirmed.");
+print("");
+print("Alternatively, express η₁ in terms of dimensionless ratios:");
+print("  η₁/η₀ = |μ|/η₀² = 41.345/0.25 = 165.4");
+print("  η₁ = 165.4 × η₀ = 82.7");
+print("");
+print("  η₁·|P_core| = 82.7 × 0.1 = 8.27");
+print("  η_eff(core) = η₀ + η₁·|P| = 0.5 + 8.27 = 8.77");
+print("");
+
+/* ================================================================
+   1g. Alternative derivation: balance at the core
+   ================================================================ */
+
+print("--- Alternative: force balance at braid core ---");
+print("");
+print("At the braid core, the dominant forces are:");
+print("  F_grad = ∇²φ ~ -φ/R² (gradient restoring, R=core radius)");
+print("  F_pot  = -V'(P)∂P/∂φ ~ -μP·(P/φ) (binding)");
+print("  F_curl = η(P)·(∇×θ) ~ η(P)·η₀·(∇×φ)/R (curl force)");
+print("");
+print("For equilibrium: F_grad + F_pot + F_curl = 0");
+print("  φ/R² ≈ |μ|P²/φ + η(P)·η₀·|∇×φ|/R");
+print("");
+print("If F_curl must balance F_grad (the Derrick condition):");
+print("  η(P_core) ≈ φ/(η₀·R·|∇×φ|)");
+print("");
+print("Using φ ~ A_core, |∇×φ| ~ A_core/R, P ~ A_core³:");
+print("  η₀ + η₁·A³ ≈ A/(η₀·R·A/R) = 1/η₀");
+print("  η₁ ≈ (1/η₀ - η₀)/A³");
+print("");
+print("With A_core ≈ 0.2 (from V34 phi_rms at core):");
+print("  η₁ ≈ (2.0 - 0.5)/0.008 = 187.5");
+print("");
+print("With A_core ≈ 0.3:");
+print("  η₁ ≈ 1.5/0.027 = 55.6");
+print("");
+print("The core amplitude matters — η₁ is in the range 50-200");
+print("depending on the precise core size. |μ|/η₀ = 82.7 sits in");
+print("the middle of this range.");
+print("");
+
+print("================================================================");
+print("STEP 1 COMPLETE");
+print("================================================================");
+print("");
+print("Key result: η₁ = -R/(2η₀J₁) where R is the virial residual");
+print("and J₁ = ∫|P|·φ·∇×[G*(∇×φ)] is the topology-weighted integral.");
+print("");
+print("To evaluate: need numerical integrals from SFA data (Step 3).");
+print("Conjecture η₁ = |μ|/η₀ ≈ 83 is consistent with the force");
+print("balance estimate (range 50-200).");

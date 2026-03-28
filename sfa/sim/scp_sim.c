@@ -39,7 +39,7 @@ typedef struct {
     double L, T, dt_factor;
 
     /* Physics */
-    double m2, mtheta2, eta, mu, kappa;
+    double m2, mtheta2, eta, eta1, mu, kappa;
 
     /* Mass coupling mode */
     int mode;
@@ -69,7 +69,7 @@ typedef struct {
 static Config cfg_defaults(void) {
     Config c = {0};
     c.N = 128;  c.L = 10.0;  c.T = 200.0;  c.dt_factor = 0.025;
-    c.m2 = 2.25;  c.mtheta2 = 0.0;  c.eta = 0.5;
+    c.m2 = 2.25;  c.mtheta2 = 0.0;  c.eta = 0.5;  c.eta1 = 0.0;
     c.mu = -41.345;  c.kappa = 50.0;
     c.mode = 0;  c.inv_alpha = 2.25;  c.inv_beta = 5.0;  c.kappa_gamma = 2.0;
     c.bc_type = 0;
@@ -95,6 +95,7 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"m"))         { double m = atof(val); c->m2 = m*m; }
     else if (!strcmp(key,"m_theta"))   { double m = atof(val); c->mtheta2 = m*m; }
     else if (!strcmp(key,"eta"))         c->eta = atof(val);
+    else if (!strcmp(key,"eta1"))        c->eta1 = atof(val);
     else if (!strcmp(key,"mu"))          c->mu = atof(val);
     else if (!strcmp(key,"kappa"))       c->kappa = atof(val);
     else if (!strcmp(key,"mode"))        c->mode = atoi(val);
@@ -162,8 +163,8 @@ static void cfg_print(const Config *c) {
     printf("d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ)\n");
     printf("d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ)\n\n");
     printf("Grid:    N=%d L=%.1f T=%.0f dt_factor=%.4f\n", c->N, c->L, c->T, c->dt_factor);
-    printf("Physics: m²=%.4f m_θ²=%.4f η=%.3f μ=%.3f κ=%.1f\n",
-           c->m2, c->mtheta2, c->eta, c->mu, c->kappa);
+    printf("Physics: m²=%.4f m_θ²=%.4f η=%.3f η₁=%.3f μ=%.3f κ=%.1f\n",
+           c->m2, c->mtheta2, c->eta, c->eta1, c->mu, c->kappa);
     printf("Mode:    %d", c->mode);
     if (c->mode == 1) printf(" (inverse: α=%.3f β=%.3f)", c->inv_alpha, c->inv_beta);
     if (c->mode == 3) printf(" (density-κ: γ=%.3f)", c->kappa_gamma);
@@ -516,7 +517,7 @@ static void compute_forces(Grid *g, const Config *c) {
     const double idx2 = 1.0 / (g->dx * g->dx);
     const double idx1 = 1.0 / (2.0 * g->dx);
     const double MU = c->mu, KAPPA = c->kappa, MASS2 = c->m2;
-    const double MTHETA2 = c->mtheta2, ETA = c->eta;
+    const double MTHETA2 = c->mtheta2, ETA = c->eta, ETA1 = c->eta1;
     const int MODE = c->mode;
     const double KG = c->kappa_gamma, IA = c->inv_alpha, IB = c->inv_beta;
 
@@ -544,13 +545,17 @@ static void compute_forces(Grid *g, const Config *c) {
             t2c = MU * KG * KAPPA * P2 * P2 / (D*D);
         }
 
+        /* Topology-dependent coupling: eta(P) = eta0 + eta1*P²/(1+kappa*P²)
+         * Saturates at eta0 + eta1/kappa. P2 already computed above. */
+        double eta_eff = ETA + ETA1 * P2 / (1.0 + KAPPA * P2);
+
         for (int a = 0; a < NFIELDS; a++) {
             double lap = (g->phi[a][n_ip]+g->phi[a][n_im]+g->phi[a][n_jp]
                         +g->phi[a][n_jm]+g->phi[a][n_kp]+g->phi[a][n_km]
                         -6.0*g->phi[a][idx]) * idx2;
             double dPda = (a==0)?p1*p2:(a==1)?p0*p2:p0*p1;
             double ct = curl_component(g->theta, a, n_ip,n_im,n_jp,n_jm,n_kp,n_km, idx1);
-            g->phi_acc[a][idx] = lap - me2*g->phi[a][idx] - dVdP*dPda - t2c*g->phi[a][idx] + ETA*ct;
+            g->phi_acc[a][idx] = lap - me2*g->phi[a][idx] - dVdP*dPda - t2c*g->phi[a][idx] + eta_eff*ct;
         }
 
         for (int a = 0; a < NFIELDS; a++) {
@@ -558,7 +563,7 @@ static void compute_forces(Grid *g, const Config *c) {
                          +g->theta[a][n_jm]+g->theta[a][n_kp]+g->theta[a][n_km]
                          -6.0*g->theta[a][idx]) * idx2;
             double cp = curl_component(g->phi, a, n_ip,n_im,n_jp,n_jm,n_kp,n_km, idx1);
-            g->theta_acc[a][idx] = lapt - MTHETA2*g->theta[a][idx] + ETA*cp;
+            g->theta_acc[a][idx] = lapt - MTHETA2*g->theta[a][idx] + eta_eff*cp;
         }
     }
 }
@@ -677,7 +682,8 @@ static void compute_energy(Grid *g, const Config *c,
     double *phi_max, double *P_max) {
     const int N=g->N,NN=N*N; const long N3=g->N3;
     const double dx=g->dx, dV=dx*dx*dx, idx1=1.0/(2.0*dx);
-    const double MU=c->mu, KAPPA=c->kappa, MASS2=c->m2, MTHETA2=c->mtheta2, ETA=c->eta;
+    const double MU=c->mu, KAPPA=c->kappa, MASS2=c->m2, MTHETA2=c->mtheta2;
+    const double ETA=c->eta, ETA1=c->eta1;
     const int MODE=c->mode; const double KG=c->kappa_gamma;
     double s_epk=0,s_etk=0,s_eg=0,s_em=0,s_ep=0,s_etg=0,s_etm=0,s_ec=0,s_pm=0,s_Pm=0;
 
@@ -693,6 +699,9 @@ static void compute_energy(Grid *g, const Config *c,
         double sig=p0*p0+p1*p1+p2*p2;
         double me2=(MODE==1)?c->inv_alpha/(1.0+c->inv_beta*sig):MASS2;
         double keff=(MODE==3)?KAPPA/(1.0+KG*sig):KAPPA;
+        double P=p0*p1*p2;
+        double P2e=P*P;
+        double eta_eff=ETA+ETA1*P2e/(1.0+KAPPA*P2e);
         for (int a=0;a<NFIELDS;a++) {
             s_epk+=0.5*g->phi_vel[a][idx]*g->phi_vel[a][idx]*dV;
             s_etk+=0.5*g->theta_vel[a][idx]*g->theta_vel[a][idx]*dV;
@@ -708,7 +717,7 @@ static void compute_energy(Grid *g, const Config *c,
             s_etm+=0.5*MTHETA2*g->theta[a][idx]*g->theta[a][idx]*dV;
             double ap=fabs(g->phi[a][idx]); if(ap>s_pm) s_pm=ap;
         }
-        double P=p0*p1*p2, P2=P*P;
+        double P2=P*P;
         if (MODE==3) {
             double D=1.0+KG*sig+KAPPA*P2;
             s_ep+=(MU/2.0)*P2*(1.0+KG*sig)/D*dV;
@@ -718,7 +727,7 @@ static void compute_energy(Grid *g, const Config *c,
         double Pa=fabs(P); if(Pa>s_Pm) s_Pm=Pa;
         for (int a=0;a<NFIELDS;a++) {
             double ct=curl_component(g->theta,a,n_ip,n_im,n_jp,n_jm,n_kp,n_km,idx1);
-            s_ec-=ETA*g->phi[a][idx]*ct*dV;
+            s_ec-=eta_eff*g->phi[a][idx]*ct*dV;
         }
     }
     *epk=s_epk;*etk=s_etk;*eg=s_eg;*em=s_em;*ep=s_ep;
@@ -878,12 +887,13 @@ int main(int argc, char **argv) {
 
     /* Embed physics parameters as KVMD metadata */
     {
-        char vN[32],vL[32],vT[32],vdt[32],vm[32],vmt[32],veta[32],vmu[32],vkappa[32];
+        char vN[32],vL[32],vT[32],vdt[32],vm[32],vmt[32],veta[32],veta1[32],vmu[32],vkappa[32];
         char vmode[32],via[32],vib[32],vkg[32],vdw[32],vdr[32],vprec[32],vdelta[64];
         snprintf(vN,32,"%d",c.N); snprintf(vL,32,"%.6f",c.L); snprintf(vT,32,"%.6f",c.T);
         snprintf(vdt,32,"%.6f",c.dt_factor);
         snprintf(vm,32,"%.6f",sqrt(c.m2)); snprintf(vmt,32,"%.6f",sqrt(c.mtheta2));
-        snprintf(veta,32,"%.6f",c.eta); snprintf(vmu,32,"%.6f",c.mu);
+        snprintf(veta,32,"%.6f",c.eta); snprintf(veta1,32,"%.6f",c.eta1);
+        snprintf(vmu,32,"%.6f",c.mu);
         snprintf(vkappa,32,"%.6f",c.kappa); snprintf(vmode,32,"%d",c.mode);
         snprintf(via,32,"%.6f",c.inv_alpha); snprintf(vib,32,"%.6f",c.inv_beta);
         snprintf(vkg,32,"%.6f",c.kappa_gamma);
@@ -895,14 +905,14 @@ int main(int argc, char **argv) {
         snprintf(vgah,32,"%.6f",c.gradient_A_high);
         snprintf(vgal,32,"%.6f",c.gradient_A_low);
         snprintf(vgm,32,"%d",c.gradient_margin);
-        const char *keys[] = {"N","L","T","dt_factor","m","m_theta","eta","mu","kappa",
+        const char *keys[] = {"N","L","T","dt_factor","m","m_theta","eta","eta1","mu","kappa",
                               "mode","inv_alpha","inv_beta","kappa_gamma",
                               "damp_width","damp_rate","precision","delta",
                               "bc_type","gradient_A_high","gradient_A_low","gradient_margin"};
-        const char *vals[] = {vN,vL,vT,vdt,vm,vmt,veta,vmu,vkappa,
+        const char *vals[] = {vN,vL,vT,vdt,vm,vmt,veta,veta1,vmu,vkappa,
                               vmode,via,vib,vkg,vdw,vdr,vprec,vdelta,
                               vbc,vgah,vgal,vgm};
-        sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 21);
+        sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 22);
     }
     sfa_add_column(sfa, "phi_x",    sfa_dtype, SFA_POSITION, 0);
     sfa_add_column(sfa, "phi_y",    sfa_dtype, SFA_POSITION, 1);
