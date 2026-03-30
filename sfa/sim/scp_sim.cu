@@ -29,11 +29,12 @@
 typedef struct {
     int N;
     double L, T, dt_factor;
-    double m2, mtheta2, eta, eta1, mu, kappa;
+    double m2, mtheta2, eta, eta1, mu, kappa, lambda_theta;
     int mode;
     double inv_alpha, inv_beta, kappa_gamma;
     int bc_type;                /* 0=absorb_sphere, 1=gradient_pinned */
     double damp_width, damp_rate;
+    double bc_switch_time;      /* switch absorb->periodic at this sim time (0=never) */
     double gradient_A_high, gradient_A_low;
     int gradient_margin;
     char init[32];
@@ -45,17 +46,18 @@ typedef struct {
     char output[512];
     char diag_file[512];
     int precision;
+    int output_split;
     double snap_dt, diag_dt;
 } Config;
 
 static Config cfg_defaults(void) {
     Config c = {};
     c.N = 128;  c.L = 10.0;  c.T = 200.0;  c.dt_factor = 0.025;
-    c.m2 = 2.25;  c.mtheta2 = 0.0;  c.eta = 0.5;  c.eta1 = 0.0;
+    c.m2 = 2.25;  c.mtheta2 = 0.0;  c.eta = 0.5;  c.eta1 = 0.0;  c.lambda_theta = 0.0;
     c.mu = -41.345;  c.kappa = 50.0;
     c.mode = 0;  c.inv_alpha = 2.25;  c.inv_beta = 5.0;  c.kappa_gamma = 2.0;
     c.bc_type = 0;
-    c.damp_width = 3.0;  c.damp_rate = 0.01;
+    c.damp_width = 3.0;  c.damp_rate = 0.01;  c.bc_switch_time = 0.0;
     c.gradient_A_high = 0.15;  c.gradient_A_low = 0.05;  c.gradient_margin = 3;
     strcpy(c.init, "oscillon");
     c.A = 0.8;  c.sigma = 3.0;  c.A_bg = 0.1;
@@ -65,6 +67,7 @@ static Config cfg_defaults(void) {
     strcpy(c.output, "output.sfa");
     strcpy(c.diag_file, "diag.tsv");
     c.precision = 1;
+    c.output_split = 0;
     c.snap_dt = 5.0;  c.diag_dt = 2.0;
     return c;
 }
@@ -78,6 +81,7 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"m_theta"))   { double m = atof(val); c->mtheta2 = m*m; }
     else if (!strcmp(key,"eta"))         c->eta = atof(val);
     else if (!strcmp(key,"eta1"))        c->eta1 = atof(val);
+    else if (!strcmp(key,"lambda_theta")) c->lambda_theta = atof(val);
     else if (!strcmp(key,"mu"))          c->mu = atof(val);
     else if (!strcmp(key,"kappa"))       c->kappa = atof(val);
     else if (!strcmp(key,"mode"))        c->mode = atoi(val);
@@ -87,6 +91,7 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"bc_type"))      c->bc_type = atoi(val);
     else if (!strcmp(key,"damp_width"))  c->damp_width = atof(val);
     else if (!strcmp(key,"damp_rate"))   c->damp_rate = atof(val);
+    else if (!strcmp(key,"bc_switch_time")) c->bc_switch_time = atof(val);
     else if (!strcmp(key,"gradient_A_high")) c->gradient_A_high = atof(val);
     else if (!strcmp(key,"gradient_A_low"))  c->gradient_A_low = atof(val);
     else if (!strcmp(key,"gradient_margin")) c->gradient_margin = atoi(val);
@@ -109,6 +114,7 @@ static void cfg_set(Config *c, const char *key, const char *val) {
         else if (!strcmp(val,"f32")) c->precision = 1;
         else if (!strcmp(val,"f64")) c->precision = 2;
     }
+    else if (!strcmp(key,"output_split")) c->output_split = atoi(val);
 }
 
 static void cfg_load(Config *c, const char *path) {
@@ -138,16 +144,20 @@ static void cfg_load(Config *c, const char *path) {
 static void cfg_print(const Config *c) {
     const char *prec_names[] = {"f16", "f32", "f64"};
     printf("=== scp_sim CUDA: Unified 6-field Cosserat Kernel (GPU) ===\n");
-    printf("d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ)\n");
-    printf("d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ)\n\n");
+    printf("d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ)%s\n",
+           c->lambda_theta > 0 ? " - λ_θ·P·(∂P/∂φ)·|θ|²" : "");
+    printf("d²θ/dt² = ∇²θ - (m_θ² + λ_θ·P²)θ + η·curl(φ)\n\n");
     printf("Grid:    N=%d L=%.1f T=%.0f dt_factor=%.4f\n", c->N, c->L, c->T, c->dt_factor);
-    printf("Physics: m²=%.4f m_θ²=%.4f η=%.3f η₁=%.3f μ=%.3f κ=%.1f\n",
-           c->m2, c->mtheta2, c->eta, c->eta1, c->mu, c->kappa);
+    printf("Physics: m²=%.4f m_θ²=%.4f η=%.3f η₁=%.3f μ=%.3f κ=%.1f λ_θ=%.3f\n",
+           c->m2, c->mtheta2, c->eta, c->eta1, c->mu, c->kappa, c->lambda_theta);
     printf("Mode:    %d", c->mode);
     if (c->mode == 1) printf(" (inverse: α=%.3f β=%.3f)", c->inv_alpha, c->inv_beta);
     if (c->mode == 3) printf(" (density-κ: γ=%.3f)", c->kappa_gamma);
-    if (c->bc_type == 0)
-        printf("\nBC:      absorbing sphere (width=%.1f rate=%.4f)\n", c->damp_width, c->damp_rate);
+    if (c->bc_type == 0) {
+        printf("\nBC:      absorbing sphere (width=%.1f rate=%.4f)", c->damp_width, c->damp_rate);
+        if (c->bc_switch_time > 0) printf(" -> periodic at t=%.0f", c->bc_switch_time);
+        printf("\n");
+    }
     else if (c->bc_type == 1)
         printf("\nBC:      gradient pinned (A_high=%.3f A_low=%.3f margin=%d)\n",
                c->gradient_A_high, c->gradient_A_low, c->gradient_margin);
@@ -257,7 +267,7 @@ typedef struct {
     double *h_results;    /* 12 doubles on host (pinned) */
 
     /* Config params for potential energy */
-    double m2, mtheta2, eta, eta1, mu, kappa;
+    double m2, mtheta2, eta, eta1, mu, kappa, lambda_theta;
     int mode;
     double inv_alpha, inv_beta, kappa_gamma;
 } DiagHookCtx;
@@ -522,7 +532,7 @@ static void do_init(Grid *g, const Config *c) {
    GPU constant memory
    ================================================================ */
 
-__constant__ double d_MU, d_KAPPA, d_MASS2, d_MTHETA2, d_ETA, d_ETA1;
+__constant__ double d_MU, d_KAPPA, d_MASS2, d_MTHETA2, d_ETA, d_ETA1, d_LAMBDA_THETA;
 __constant__ double d_inv_alpha, d_inv_beta, d_kappa_gamma;
 __constant__ double d_idx2, d_idx1;
 __constant__ double d_L, d_dx, d_DAMP_WIDTH, d_DAMP_RATE;
@@ -574,6 +584,13 @@ __global__ void compute_forces_kernel(
      * Saturates at eta0 + eta1/kappa. P2 already computed above. */
     double eta_eff = d_ETA + d_ETA1 * P2 / (1.0 + d_KAPPA * P2);
 
+    /* Field-dependent theta mass: m_theta^2(x) = m_theta^2 + lambda_theta * P^2 */
+    double mtheta2_eff = d_MTHETA2 + d_LAMBDA_THETA * P2;
+
+    /* Theta energy density for phi back-reaction */
+    double t0v=theta0[idx], t1v=theta1[idx], t2v=theta2[idx];
+    double thetamag2 = t0v*t0v + t1v*t1v + t2v*t2v;
+
     /* Phi field arrays for curl */
     const double *phi[3] = {phi0, phi1, phi2};
     const double *th[3] = {theta0, theta1, theta2};
@@ -591,7 +608,8 @@ __global__ void compute_forces_kernel(
         else if (a==1) ct = (th[0][n_kp]-th[0][n_km]-th[2][n_ip]+th[2][n_im])*d_idx1;
         else ct = (th[1][n_ip]-th[1][n_im]-th[0][n_jp]+th[0][n_jm])*d_idx1;
 
-        acc_p[a] = lap - me2*phi[a][idx] - dVdP*dPda - t2c*phi[a][idx] + eta_eff*ct;
+        acc_p[a] = lap - me2*phi[a][idx] - dVdP*dPda - t2c*phi[a][idx]
+                 + eta_eff*ct - d_LAMBDA_THETA*P*dPda*thetamag2;
     }
 
     for (int a = 0; a < 3; a++) {
@@ -602,7 +620,7 @@ __global__ void compute_forces_kernel(
         else if (a==1) cp = (phi[0][n_kp]-phi[0][n_km]-phi[2][n_ip]+phi[2][n_im])*d_idx1;
         else cp = (phi[1][n_ip]-phi[1][n_im]-phi[0][n_jp]+phi[0][n_jm])*d_idx1;
 
-        acc_t[a] = lapt - d_MTHETA2*th[a][idx] + eta_eff*cp;
+        acc_t[a] = lapt - mtheta2_eff*th[a][idx] + eta_eff*cp;
     }
 
     acc_phi0[idx]=acc_p[0]; acc_phi1[idx]=acc_p[1]; acc_phi2[idx]=acc_p[2];
@@ -754,6 +772,7 @@ __global__ void reduce_diagnostics_kernel(
     const double *vt0, const double *vt1, const double *vt2,
     double dV, double idx1, double idx2_val,
     double mass2, double mtheta2, double eta, double eta1, double mu, double kappa,
+    double lambda_theta,
     int mode, double inv_alpha, double inv_beta, double kappa_gamma,
     double *d_results)
 {
@@ -783,6 +802,9 @@ __global__ void reduce_diagnostics_kernel(
         const double *vphi[3] = {vp0, vp1, vp2};
         const double *vth[3] = {vt0, vt1, vt2};
 
+        double P = pp0*pp1*pp2, P2 = P*P;
+        double mtheta2_eff_diag = mtheta2 + lambda_theta * P2;
+
         double s_epk=0, s_etk=0, s_eg=0, s_em=0, s_etg=0, s_etm=0, s_ec=0;
         double s_pm=0, s_trms=0;
 
@@ -798,12 +820,11 @@ __global__ void reduce_diagnostics_kernel(
             double tgy=(th[a][n_jp]-th[a][n_jm])*idx1;
             double tgz=(th[a][n_kp]-th[a][n_km])*idx1;
             s_etg += 0.5*(tgx*tgx+tgy*tgy+tgz*tgz)*dV;
-            s_etm += 0.5*mtheta2*th[a][idx]*th[a][idx]*dV;
+            s_etm += 0.5*mtheta2_eff_diag*th[a][idx]*th[a][idx]*dV;
             double ap = fabs(phi[a][idx]); if (ap > s_pm) s_pm = ap;
             s_trms += th[a][idx]*th[a][idx];
         }
 
-        double P = pp0*pp1*pp2, P2 = P*P;
         double s_ep;
         if (mode==3) {
             double D = 1.0+kappa_gamma*sig+kappa*P2;
@@ -942,6 +963,7 @@ static void gpu_set_constants(const Config *c, double dx) {
     cudaMemcpyToSymbol(d_MTHETA2, &c->mtheta2, sizeof(double));
     cudaMemcpyToSymbol(d_ETA, &c->eta, sizeof(double));
     cudaMemcpyToSymbol(d_ETA1, &c->eta1, sizeof(double));
+    cudaMemcpyToSymbol(d_LAMBDA_THETA, &c->lambda_theta, sizeof(double));
     cudaMemcpyToSymbol(d_inv_alpha, &c->inv_alpha, sizeof(double));
     cudaMemcpyToSymbol(d_inv_beta, &c->inv_beta, sizeof(double));
     cudaMemcpyToSymbol(d_kappa_gamma, &c->kappa_gamma, sizeof(double));
@@ -1263,6 +1285,7 @@ static DiagHookCtx create_diag_hook(FILE *fp, int diag_every, int major_every,
     ctx.eta1 = c->eta1;
     ctx.mu = c->mu;
     ctx.kappa = c->kappa;
+    ctx.lambda_theta = c->lambda_theta;
     ctx.mode = c->mode;
     ctx.inv_alpha = c->inv_alpha;
     ctx.inv_beta = c->inv_beta;
@@ -1293,6 +1316,7 @@ static void run_gpu_diagnostics(const FieldState *state, DiagHookCtx *ctx) {
         state->vel_theta[0], state->vel_theta[1], state->vel_theta[2],
         ctx->dV, idx1, idx2_val,
         ctx->m2, ctx->mtheta2, ctx->eta, ctx->eta1, ctx->mu, ctx->kappa,
+        ctx->lambda_theta,
         ctx->mode, ctx->inv_alpha, ctx->inv_beta, ctx->kappa_gamma,
         ctx->d_results);
 
@@ -1352,6 +1376,8 @@ static void compute_energy(Grid *g, const Config *c,
         double sig=p0*p0+p1*p1+p2*p2;
         double me2=(c->mode==1)?c->inv_alpha/(1.0+c->inv_beta*sig):c->m2;
         double keff=(c->mode==3)?c->kappa/(1.0+c->kappa_gamma*sig):c->kappa;
+        double P=p0*p1*p2, P2=P*P;
+        double mte=(c->mtheta2+c->lambda_theta*P2);
         for (int a=0;a<NFIELDS;a++) {
             s_epk+=0.5*g->phi_vel[a][idx]*g->phi_vel[a][idx]*dV;
             s_etk+=0.5*g->theta_vel[a][idx]*g->theta_vel[a][idx]*dV;
@@ -1364,10 +1390,9 @@ static void compute_energy(Grid *g, const Config *c,
             double tgy=(g->theta[a][n_jp]-g->theta[a][n_jm])*idx1;
             double tgz=(g->theta[a][n_kp]-g->theta[a][n_km])*idx1;
             s_etg+=0.5*(tgx*tgx+tgy*tgy+tgz*tgz)*dV;
-            s_etm+=0.5*c->mtheta2*g->theta[a][idx]*g->theta[a][idx]*dV;
+            s_etm+=0.5*mte*g->theta[a][idx]*g->theta[a][idx]*dV;
             double ap=fabs(g->phi[a][idx]); if(ap>s_pm) s_pm=ap;
         }
-        double P=p0*p1*p2, P2=P*P;
         if (c->mode==3) {
             double D=1.0+c->kappa_gamma*sig+c->kappa*P2;
             s_ep+=(c->mu/2.0)*P2*(1.0+c->kappa_gamma*sig)/D*dV;
@@ -1518,9 +1543,15 @@ int main(int argc, char **argv) {
     uint8_t sfa_dtype = (c.precision==0)?SFA_F16:(c.precision==1)?SFA_F32:SFA_F64;
     SFA *sfa = sfa_create(c.output, c.N, c.N, c.N, c.L, c.L, c.L, g->dt);
     sfa->flags = SFA_CODEC_COLZSTD | SFA_FLAG_STREAMING;  /* per-column parallel compression */
+    if (c.output_split) {
+        sfa_enable_split(sfa);
+        strncpy(sfa->split_base, c.output, 507);
+        char *ext = strrchr(sfa->split_base, '.');
+        if (ext && !strcmp(ext, ".sfa")) *ext = '\0';
+    }
     {
         char vN[32],vL[32],vT[32],vdt[32],vm[32],vmt[32],veta[32],veta1[32],vmu[32],vkappa[32];
-        char vmode[32],via[32],vib[32],vkg[32],vdw[32],vdr[32],vprec[32],vdelta[64];
+        char vmode[32],via[32],vib[32],vkg[32],vdw[32],vdr[32],vprec[32],vdelta[64],vlt[32],vbcsw[32];
         snprintf(vN,32,"%d",c.N); snprintf(vL,32,"%.6f",c.L); snprintf(vT,32,"%.6f",c.T);
         snprintf(vdt,32,"%.6f",c.dt_factor);
         snprintf(vm,32,"%.6f",sqrt(c.m2)); snprintf(vmt,32,"%.6f",sqrt(c.mtheta2));
@@ -1532,19 +1563,23 @@ int main(int argc, char **argv) {
         snprintf(vdw,32,"%.6f",c.damp_width); snprintf(vdr,32,"%.6f",c.damp_rate);
         snprintf(vprec,32,"%s",(const char*[]){"f16","f32","f64"}[c.precision]);
         snprintf(vdelta,64,"%.6f,%.6f,%.6f",c.delta[0],c.delta[1],c.delta[2]);
+        snprintf(vlt,32,"%.6f",c.lambda_theta);
+        snprintf(vbcsw,32,"%.6f",c.bc_switch_time);
         char vbc[32], vgah[32], vgal[32], vgm[32];
         snprintf(vbc,32,"%d",c.bc_type);
         snprintf(vgah,32,"%.6f",c.gradient_A_high);
         snprintf(vgal,32,"%.6f",c.gradient_A_low);
         snprintf(vgm,32,"%d",c.gradient_margin);
         const char *keys[]={"N","L","T","dt_factor","m","m_theta","eta","eta1","mu","kappa",
+                            "lambda_theta","bc_switch_time",
                             "mode","inv_alpha","inv_beta","kappa_gamma",
                             "damp_width","damp_rate","precision","delta",
                             "bc_type","gradient_A_high","gradient_A_low","gradient_margin"};
         const char *vals[]={vN,vL,vT,vdt,vm,vmt,veta,veta1,vmu,vkappa,
+                            vlt,vbcsw,
                             vmode,via,vib,vkg,vdw,vdr,vprec,vdelta,
                             vbc,vgah,vgal,vgm};
-        sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 22);
+        sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 24);
     }
     sfa_add_column(sfa,"phi_x",sfa_dtype,SFA_POSITION,0);
     sfa_add_column(sfa,"phi_y",sfa_dtype,SFA_POSITION,1);
@@ -1615,8 +1650,20 @@ int main(int argc, char **argv) {
     printf("Async pipeline: snap every %d steps, diag every %d steps, %d total\n\n",
            snap_every, diag_every, n_steps);
 
+    /* BC switch: absorb -> periodic at bc_switch_time */
+    int bc_switched = 0;
+    int bc_switch_step = (c.bc_switch_time > 0) ? (int)lround(c.bc_switch_time / g->dt) : 0;
+
     /* ===== Main loop ===== */
     for (int step = 1; step <= n_steps; step++) {
+        /* Check for BC switch */
+        if (bc_switch_step > 0 && step == bc_switch_step && !bc_switched) {
+            double zero = 0.0;
+            cudaMemcpyToSymbol(d_DAMP_RATE, &zero, sizeof(double));
+            printf("\n*** BC SWITCH at t=%.1f: absorbing -> periodic ***\n\n", step * g->dt);
+            bc_switched = 1;
+        }
+
         gpu_verlet_step(g->dt);
 
         if (c.bc_type == 1) {

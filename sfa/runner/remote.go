@@ -600,7 +600,9 @@ func (r *RemoteExecutor) rsyncFile(ctx context.Context, remotePath, localDir str
 }
 
 // autoDownloadLoop periodically rsyncs output files to a local directory.
-// It runs until the run's context is cancelled (run done or cancelled), then
+// It also scans for .sfp part files, downloads them, verifies, and deletes
+// the remote copy to free disk space.
+// Runs until the run's context is cancelled (run done or cancelled), then
 // does one final sync. Closes rr.adDone when it exits.
 func (r *RemoteExecutor) autoDownloadLoop(ctx context.Context, rr *remoteRun) {
 	defer close(rr.adDone)
@@ -612,16 +614,20 @@ func (r *RemoteExecutor) autoDownloadLoop(ctx context.Context, rr *remoteRun) {
 		rr.mu.Lock()
 		files := rr.outputFiles
 		localDir := rr.autoDownload
+		remoteDir := rr.remoteDir
 		rr.mu.Unlock()
 
+		// Sync the main output files (sfa, tsv)
 		for _, f := range files {
-			// Use a short timeout per file so we don't block forever.
 			dlCtx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 			if err := r.rsyncFile(dlCtx, f, localDir); err != nil {
 				fmt.Fprintf(os.Stderr, "scp-runner: auto-download %s: %v\n", f, err)
 			}
 			cancel()
 		}
+
+		// Scan for completed .sfp part files (not .tmp) and download+delete them
+		r.syncAndCleanSFP(context.Background(), remoteDir, localDir)
 	}
 
 	for {
@@ -633,6 +639,67 @@ func (r *RemoteExecutor) autoDownloadLoop(ctx context.Context, rr *remoteRun) {
 			return
 		case <-ticker.C:
 			syncAll()
+		}
+	}
+}
+
+// syncAndCleanSFP lists .sfp files on the remote (excluding .tmp), downloads
+// each one, verifies the local size matches, and deletes the remote copy.
+func (r *RemoteExecutor) syncAndCleanSFP(ctx context.Context, remoteDir, localDir string) {
+	// List .sfp files (completed only — .sfp.tmp excluded by the glob)
+	listCmd := fmt.Sprintf("ls -1 %s/*.sfp 2>/dev/null || true", remoteDir)
+	listCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+	out, err := r.sshRun(listCtx, listCmd)
+	if err != nil || strings.TrimSpace(out) == "" {
+		return
+	}
+
+	for _, remotePath := range strings.Split(strings.TrimSpace(out), "\n") {
+		remotePath = strings.TrimSpace(remotePath)
+		if remotePath == "" || strings.HasSuffix(remotePath, ".tmp") {
+			continue
+		}
+
+		// Get remote file size
+		sizeCtx, sizeCancel := context.WithTimeout(ctx, 10*time.Second)
+		sizeOut, err := r.sshRun(sizeCtx, fmt.Sprintf("stat -c%%s %s", remotePath))
+		sizeCancel()
+		if err != nil {
+			continue
+		}
+		remoteSize, _ := strconv.ParseInt(strings.TrimSpace(sizeOut), 10, 64)
+		if remoteSize == 0 {
+			continue
+		}
+
+		// Download
+		dlCtx, dlCancel := context.WithTimeout(ctx, 10*time.Minute)
+		err = r.rsyncFile(dlCtx, remotePath, localDir)
+		dlCancel()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "scp-runner: sfp download %s: %v\n", remotePath, err)
+			continue
+		}
+
+		// Verify local size matches
+		baseName := remotePath[strings.LastIndex(remotePath, "/")+1:]
+		localPath := filepath.Join(localDir, baseName)
+		info, err := os.Stat(localPath)
+		if err != nil || info.Size() != remoteSize {
+			fmt.Fprintf(os.Stderr, "scp-runner: sfp verify failed %s (remote=%d local=%d)\n",
+				baseName, remoteSize, func() int64 { if info != nil { return info.Size() }; return -1 }())
+			continue
+		}
+
+		// Delete remote copy to free disk
+		rmCtx, rmCancel := context.WithTimeout(ctx, 10*time.Second)
+		_, err = r.sshRun(rmCtx, fmt.Sprintf("rm -f %s", remotePath))
+		rmCancel()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "scp-runner: sfp delete %s: %v\n", remotePath, err)
+		} else {
+			fmt.Fprintf(os.Stderr, "scp-runner: sfp downloaded+deleted %s (%d bytes)\n", baseName, remoteSize)
 		}
 	}
 }

@@ -39,7 +39,7 @@ typedef struct {
     double L, T, dt_factor;
 
     /* Physics */
-    double m2, mtheta2, eta, eta1, mu, kappa;
+    double m2, mtheta2, eta, eta1, mu, kappa, lambda_theta;
 
     /* Mass coupling mode */
     int mode;
@@ -48,6 +48,7 @@ typedef struct {
     /* Boundary */
     int bc_type;                /* 0=absorb_sphere (default), 1=gradient_pinned */
     double damp_width, damp_rate;
+    double bc_switch_time;      /* switch absorb->periodic at this sim time (0=never) */
     double gradient_A_high, gradient_A_low;
     int gradient_margin;
 
@@ -63,17 +64,18 @@ typedef struct {
     char output[512];
     char diag_file[512];
     int precision;          /* 0=f16, 1=f32, 2=f64 */
+    int output_split;       /* 0=single .sfa, 1=header .sfa + per-frame .sfp */
     double snap_dt, diag_dt;
 } Config;
 
 static Config cfg_defaults(void) {
     Config c = {0};
     c.N = 128;  c.L = 10.0;  c.T = 200.0;  c.dt_factor = 0.025;
-    c.m2 = 2.25;  c.mtheta2 = 0.0;  c.eta = 0.5;  c.eta1 = 0.0;
+    c.m2 = 2.25;  c.mtheta2 = 0.0;  c.eta = 0.5;  c.eta1 = 0.0;  c.lambda_theta = 0.0;
     c.mu = -41.345;  c.kappa = 50.0;
     c.mode = 0;  c.inv_alpha = 2.25;  c.inv_beta = 5.0;  c.kappa_gamma = 2.0;
     c.bc_type = 0;
-    c.damp_width = 3.0;  c.damp_rate = 0.01;
+    c.damp_width = 3.0;  c.damp_rate = 0.01;  c.bc_switch_time = 0.0;
     c.gradient_A_high = 0.15;  c.gradient_A_low = 0.05;  c.gradient_margin = 3;
     strcpy(c.init, "oscillon");
     c.A = 0.8;  c.sigma = 3.0;  c.A_bg = 0.1;
@@ -83,6 +85,7 @@ static Config cfg_defaults(void) {
     strcpy(c.output, "output.sfa");
     strcpy(c.diag_file, "diag.tsv");
     c.precision = 1;  /* f32 */
+    c.output_split = 0;
     c.snap_dt = 5.0;  c.diag_dt = 2.0;
     return c;
 }
@@ -96,6 +99,7 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"m_theta"))   { double m = atof(val); c->mtheta2 = m*m; }
     else if (!strcmp(key,"eta"))         c->eta = atof(val);
     else if (!strcmp(key,"eta1"))        c->eta1 = atof(val);
+    else if (!strcmp(key,"lambda_theta")) c->lambda_theta = atof(val);
     else if (!strcmp(key,"mu"))          c->mu = atof(val);
     else if (!strcmp(key,"kappa"))       c->kappa = atof(val);
     else if (!strcmp(key,"mode"))        c->mode = atoi(val);
@@ -105,6 +109,7 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"bc_type"))      c->bc_type = atoi(val);
     else if (!strcmp(key,"damp_width"))  c->damp_width = atof(val);
     else if (!strcmp(key,"damp_rate"))   c->damp_rate = atof(val);
+    else if (!strcmp(key,"bc_switch_time")) c->bc_switch_time = atof(val);
     else if (!strcmp(key,"gradient_A_high")) c->gradient_A_high = atof(val);
     else if (!strcmp(key,"gradient_A_low"))  c->gradient_A_low = atof(val);
     else if (!strcmp(key,"gradient_margin")) c->gradient_margin = atoi(val);
@@ -127,6 +132,7 @@ static void cfg_set(Config *c, const char *key, const char *val) {
         else if (!strcmp(val,"f32")) c->precision = 1;
         else if (!strcmp(val,"f64")) c->precision = 2;
     }
+    else if (!strcmp(key,"output_split")) c->output_split = atoi(val);
     else fprintf(stderr, "WARNING: unknown config key '%s'\n", key);
 }
 
@@ -160,11 +166,12 @@ static void cfg_load(Config *c, const char *path) {
 static void cfg_print(const Config *c) {
     const char *prec_names[] = {"f16", "f32", "f64"};
     printf("=== scp_sim: Unified 6-field Cosserat Kernel ===\n");
-    printf("d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ)\n");
-    printf("d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ)\n\n");
+    printf("d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ)%s\n",
+           c->lambda_theta > 0 ? " - λ_θ·P·(∂P/∂φ)·|θ|²" : "");
+    printf("d²θ/dt² = ∇²θ - (m_θ² + λ_θ·P²)θ + η·curl(φ)\n\n");
     printf("Grid:    N=%d L=%.1f T=%.0f dt_factor=%.4f\n", c->N, c->L, c->T, c->dt_factor);
-    printf("Physics: m²=%.4f m_θ²=%.4f η=%.3f η₁=%.3f μ=%.3f κ=%.1f\n",
-           c->m2, c->mtheta2, c->eta, c->eta1, c->mu, c->kappa);
+    printf("Physics: m²=%.4f m_θ²=%.4f η=%.3f η₁=%.3f μ=%.3f κ=%.1f λ_θ=%.3f\n",
+           c->m2, c->mtheta2, c->eta, c->eta1, c->mu, c->kappa, c->lambda_theta);
     printf("Mode:    %d", c->mode);
     if (c->mode == 1) printf(" (inverse: α=%.3f β=%.3f)", c->inv_alpha, c->inv_beta);
     if (c->mode == 3) printf(" (density-κ: γ=%.3f)", c->kappa_gamma);
@@ -518,6 +525,7 @@ static void compute_forces(Grid *g, const Config *c) {
     const double idx1 = 1.0 / (2.0 * g->dx);
     const double MU = c->mu, KAPPA = c->kappa, MASS2 = c->m2;
     const double MTHETA2 = c->mtheta2, ETA = c->eta, ETA1 = c->eta1;
+    const double LAMBDA_THETA = c->lambda_theta;
     const int MODE = c->mode;
     const double KG = c->kappa_gamma, IA = c->inv_alpha, IB = c->inv_beta;
 
@@ -549,13 +557,23 @@ static void compute_forces(Grid *g, const Config *c) {
          * Saturates at eta0 + eta1/kappa. P2 already computed above. */
         double eta_eff = ETA + ETA1 * P2 / (1.0 + KAPPA * P2);
 
+        /* Field-dependent θ mass: m_θ²(x) = m_θ² + λ_θ·P²
+         * From Lagrangian term -½λ_θ P²|θ|². Gives massive θ where P≠0
+         * (braid cores) and massless θ in free space (P≈0). */
+        double mtheta2_eff = MTHETA2 + LAMBDA_THETA * P2;
+
+        /* θ energy density |θ|² for φ back-reaction */
+        double t0=g->theta[0][idx], t1=g->theta[1][idx], t2=g->theta[2][idx];
+        double theta2 = t0*t0 + t1*t1 + t2*t2;
+
         for (int a = 0; a < NFIELDS; a++) {
             double lap = (g->phi[a][n_ip]+g->phi[a][n_im]+g->phi[a][n_jp]
                         +g->phi[a][n_jm]+g->phi[a][n_kp]+g->phi[a][n_km]
                         -6.0*g->phi[a][idx]) * idx2;
             double dPda = (a==0)?p1*p2:(a==1)?p0*p2:p0*p1;
             double ct = curl_component(g->theta, a, n_ip,n_im,n_jp,n_jm,n_kp,n_km, idx1);
-            g->phi_acc[a][idx] = lap - me2*g->phi[a][idx] - dVdP*dPda - t2c*g->phi[a][idx] + eta_eff*ct;
+            g->phi_acc[a][idx] = lap - me2*g->phi[a][idx] - dVdP*dPda - t2c*g->phi[a][idx]
+                               + eta_eff*ct - LAMBDA_THETA*P*dPda*theta2;
         }
 
         for (int a = 0; a < NFIELDS; a++) {
@@ -563,7 +581,7 @@ static void compute_forces(Grid *g, const Config *c) {
                          +g->theta[a][n_jm]+g->theta[a][n_kp]+g->theta[a][n_km]
                          -6.0*g->theta[a][idx]) * idx2;
             double cp = curl_component(g->phi, a, n_ip,n_im,n_jp,n_jm,n_kp,n_km, idx1);
-            g->theta_acc[a][idx] = lapt - MTHETA2*g->theta[a][idx] + eta_eff*cp;
+            g->theta_acc[a][idx] = lapt - mtheta2_eff*g->theta[a][idx] + eta_eff*cp;
         }
     }
 }
@@ -683,7 +701,7 @@ static void compute_energy(Grid *g, const Config *c,
     const int N=g->N,NN=N*N; const long N3=g->N3;
     const double dx=g->dx, dV=dx*dx*dx, idx1=1.0/(2.0*dx);
     const double MU=c->mu, KAPPA=c->kappa, MASS2=c->m2, MTHETA2=c->mtheta2;
-    const double ETA=c->eta, ETA1=c->eta1;
+    const double ETA=c->eta, ETA1=c->eta1, LAMBDA_THETA=c->lambda_theta;
     const int MODE=c->mode; const double KG=c->kappa_gamma;
     double s_epk=0,s_etk=0,s_eg=0,s_em=0,s_ep=0,s_etg=0,s_etm=0,s_ec=0,s_pm=0,s_Pm=0;
 
@@ -714,7 +732,7 @@ static void compute_energy(Grid *g, const Config *c,
             double tgy=(g->theta[a][n_jp]-g->theta[a][n_jm])*idx1;
             double tgz=(g->theta[a][n_kp]-g->theta[a][n_km])*idx1;
             s_etg+=0.5*(tgx*tgx+tgy*tgy+tgz*tgz)*dV;
-            s_etm+=0.5*MTHETA2*g->theta[a][idx]*g->theta[a][idx]*dV;
+            s_etm+=0.5*(MTHETA2+LAMBDA_THETA*P2e)*g->theta[a][idx]*g->theta[a][idx]*dV;
             double ap=fabs(g->phi[a][idx]); if(ap>s_pm) s_pm=ap;
         }
         double P2=P*P;
@@ -884,11 +902,18 @@ int main(int argc, char **argv) {
     uint8_t sfa_dtype = (c.precision == 0) ? SFA_F16 : (c.precision == 1) ? SFA_F32 : SFA_F64;
     SFA *sfa = sfa_create(c.output, c.N, c.N, c.N, c.L, c.L, c.L, g->dt);
     sfa->flags = SFA_CODEC_COLZSTD | SFA_FLAG_STREAMING;  /* per-column parallel compression */
+    if (c.output_split) {
+        sfa_enable_split(sfa);
+        /* Derive split base: strip .sfa extension */
+        strncpy(sfa->split_base, c.output, 507);
+        char *ext = strrchr(sfa->split_base, '.');
+        if (ext && !strcmp(ext, ".sfa")) *ext = '\0';
+    }
 
     /* Embed physics parameters as KVMD metadata */
     {
         char vN[32],vL[32],vT[32],vdt[32],vm[32],vmt[32],veta[32],veta1[32],vmu[32],vkappa[32];
-        char vmode[32],via[32],vib[32],vkg[32],vdw[32],vdr[32],vprec[32],vdelta[64];
+        char vmode[32],via[32],vib[32],vkg[32],vdw[32],vdr[32],vprec[32],vdelta[64],vlt[32],vbcsw[32];
         snprintf(vN,32,"%d",c.N); snprintf(vL,32,"%.6f",c.L); snprintf(vT,32,"%.6f",c.T);
         snprintf(vdt,32,"%.6f",c.dt_factor);
         snprintf(vm,32,"%.6f",sqrt(c.m2)); snprintf(vmt,32,"%.6f",sqrt(c.mtheta2));
@@ -900,19 +925,23 @@ int main(int argc, char **argv) {
         snprintf(vdw,32,"%.6f",c.damp_width); snprintf(vdr,32,"%.6f",c.damp_rate);
         snprintf(vprec,32,"%s", (const char*[]){"f16","f32","f64"}[c.precision]);
         snprintf(vdelta,64,"%.6f,%.6f,%.6f",c.delta[0],c.delta[1],c.delta[2]);
+        snprintf(vlt,32,"%.6f",c.lambda_theta);
+        snprintf(vbcsw,32,"%.6f",c.bc_switch_time);
         char vbc[32], vgah[32], vgal[32], vgm[32];
         snprintf(vbc,32,"%d",c.bc_type);
         snprintf(vgah,32,"%.6f",c.gradient_A_high);
         snprintf(vgal,32,"%.6f",c.gradient_A_low);
         snprintf(vgm,32,"%d",c.gradient_margin);
         const char *keys[] = {"N","L","T","dt_factor","m","m_theta","eta","eta1","mu","kappa",
+                              "lambda_theta","bc_switch_time",
                               "mode","inv_alpha","inv_beta","kappa_gamma",
                               "damp_width","damp_rate","precision","delta",
                               "bc_type","gradient_A_high","gradient_A_low","gradient_margin"};
         const char *vals[] = {vN,vL,vT,vdt,vm,vmt,veta,veta1,vmu,vkappa,
+                              vlt,vbcsw,
                               vmode,via,vib,vkg,vdw,vdr,vprec,vdelta,
                               vbc,vgah,vgal,vgm};
-        sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 22);
+        sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 24);
     }
     sfa_add_column(sfa, "phi_x",    sfa_dtype, SFA_POSITION, 0);
     sfa_add_column(sfa, "phi_y",    sfa_dtype, SFA_POSITION, 1);
@@ -956,7 +985,15 @@ int main(int argc, char **argv) {
     /* Cap so we get ~10 progress lines even for short runs */
     if (major > n_steps/10) { major = (n_steps/10/diag_every)*diag_every; if (major<diag_every) major=diag_every; }
 
+    int bc_switched = 0;
+    int bc_switch_step = (c.bc_switch_time > 0) ? (int)lround(c.bc_switch_time / g->dt) : 0;
+
     for (int step = 1; step <= n_steps; step++) {
+        if (bc_switch_step > 0 && step == bc_switch_step && !bc_switched) {
+            c.damp_rate = 0.0;
+            printf("\n*** BC SWITCH at t=%.1f: absorbing -> periodic ***\n\n", step * g->dt);
+            bc_switched = 1;
+        }
         verlet_step(g, &c);
         double t = step * g->dt;
 

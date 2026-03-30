@@ -141,6 +141,10 @@ typedef struct {
     uint32_t cur_jmpf_entries;
     uint32_t cur_l1_index;
 
+    /* Split output mode: frames go to individual .sfp files */
+    int split_output;           /* 0=single file (default), 1=split .sfp */
+    char split_base[512];       /* base path without extension */
+
     /* Read state / mmap */
     void *mmap_ptr;
     uint64_t mmap_size;
@@ -220,6 +224,29 @@ void sfa_close(SFA *s);
 static inline uint64_t sfa_jmpf_slot_offset(SFA *s, uint32_t frame_in_table) {
     return s->cur_jmpf_offset + 12 + 8 + (uint64_t)frame_in_table * 32;
 }
+
+/* Split output: write frames as individual .sfp files.
+ * Call sfa_enable_split() BEFORE sfa_finalize_header().
+ * Each sfa_write_frame() then writes to <base>_NNNN.sfp.tmp,
+ * renames to <base>_NNNN.sfp on completion (atomic).
+ * The .sfa file contains only the header (no frame data).
+ *
+ * To reconstruct a single .sfa:
+ *   sfa_combine("output.sfa", "output_*.sfp", "combined.sfa")
+ * or manually:
+ *   cat output.sfa output_0001.sfp ... > combined.sfa
+ *   sfa_fixup_index combined.sfa
+ *
+ * SFP file format:
+ *   "SFP1" (4 bytes) — magic
+ *   uint32 frame_idx  — 0-based frame number
+ *   double time       — simulation time
+ *   FRMD chunk        — standard "FRMD" + size(8) + compressed data
+ */
+#define SFA_SFP_MAGIC "SFP1"
+void sfa_enable_split(SFA *s);
+int  sfa_combine(const char *header_path, const char *output_path,
+                 const char **sfp_paths, int n_sfp);
 
 /* Fixup: scan an incomplete .sfa file, fill in zeroed JMPF entries from FRMD chunks */
 int sfa_fixup_index(const char *path);
@@ -687,35 +714,67 @@ int sfa_write_frame_ex(SFA *s, double time, void **column_data,
         fseek(s->fp, 0, SEEK_END);
     }
 
-    /* Write FRMD chunk */
-    fseek(s->fp, 0, SEEK_END);
-    uint64_t frmd_offset = (uint64_t)ftell(s->fp);
-    uint64_t frmd_size = 12 + comp_size;
-    sfa_write_chunk_header(s->fp, "FRMD", frmd_size);
-    fwrite(comp, 1, comp_size, s->fp);
-    free(comp);
+    if (s->split_output) {
+        /* Split mode: write FRMD to a separate .sfp file with atomic rename */
+        char tmp_path[600], final_path[600];
+        snprintf(tmp_path,   600, "%s_%04d.sfp.tmp", s->split_base, s->total_frames + 1);
+        snprintf(final_path, 600, "%s_%04d.sfp",     s->split_base, s->total_frames + 1);
 
-    /* Update JMPF entry */
-    long jmpf_entry = (long)s->cur_jmpf_offset + 12 + 8 + s->cur_jmpf_entries * 32;
-    fseek(s->fp, jmpf_entry, SEEK_SET);
-    fwrite(&time, 8, 1, s->fp);
-    fwrite(&frmd_offset, 8, 1, s->fp);
-    fwrite(&comp_size, 8, 1, s->fp);
-    fwrite(&checksum, 4, 1, s->fp);
-    fwrite(&grid_id, 4, 1, s->fp);
+        FILE *sfp = fopen(tmp_path, "wb");
+        if (!sfp) {
+            fprintf(stderr, "SFA: cannot open SFP file %s\n", tmp_path);
+            free(comp);
+            return -1;
+        }
 
-    /* Update JMPF current_entries */
-    s->cur_jmpf_entries++;
-    fseek(s->fp, (long)s->cur_jmpf_offset + 12 + 4, SEEK_SET);
-    fwrite(&s->cur_jmpf_entries, 4, 1, s->fp);
+        /* SFP header: magic + frame_idx + time */
+        fwrite(SFA_SFP_MAGIC, 1, 4, sfp);
+        uint32_t fidx = s->total_frames;
+        fwrite(&fidx, 4, 1, sfp);
+        fwrite(&time, 8, 1, sfp);
 
-    /* Update JTOP frame_count for current L2 */
-    long jtop_fc = (long)s->cur_jtop_offset + 12 + 16 + s->cur_l1_index * 16 + 12;
-    fseek(s->fp, jtop_fc, SEEK_SET);
-    fwrite(&s->cur_jmpf_entries, 4, 1, s->fp);
+        /* Standard FRMD chunk */
+        uint64_t frmd_size = 12 + comp_size;
+        sfa_write_chunk_header(sfp, "FRMD", frmd_size);
+        fwrite(comp, 1, comp_size, sfp);
+        fclose(sfp);
 
-    s->total_frames++;
-    fseek(s->fp, 0, SEEK_END);
+        /* Atomic rename: .sfp.tmp -> .sfp */
+        rename(tmp_path, final_path);
+
+        free(comp);
+        s->total_frames++;
+    } else {
+        /* Standard mode: append FRMD to the .sfa file and update index */
+        fseek(s->fp, 0, SEEK_END);
+        uint64_t frmd_offset = (uint64_t)ftell(s->fp);
+        uint64_t frmd_size = 12 + comp_size;
+        sfa_write_chunk_header(s->fp, "FRMD", frmd_size);
+        fwrite(comp, 1, comp_size, s->fp);
+        free(comp);
+
+        /* Update JMPF entry */
+        long jmpf_entry = (long)s->cur_jmpf_offset + 12 + 8 + s->cur_jmpf_entries * 32;
+        fseek(s->fp, jmpf_entry, SEEK_SET);
+        fwrite(&time, 8, 1, s->fp);
+        fwrite(&frmd_offset, 8, 1, s->fp);
+        fwrite(&comp_size, 8, 1, s->fp);
+        fwrite(&checksum, 4, 1, s->fp);
+        fwrite(&grid_id, 4, 1, s->fp);
+
+        /* Update JMPF current_entries */
+        s->cur_jmpf_entries++;
+        fseek(s->fp, (long)s->cur_jmpf_offset + 12 + 4, SEEK_SET);
+        fwrite(&s->cur_jmpf_entries, 4, 1, s->fp);
+
+        /* Update JTOP frame_count for current L2 */
+        long jtop_fc = (long)s->cur_jtop_offset + 12 + 16 + s->cur_l1_index * 16 + 12;
+        fseek(s->fp, jtop_fc, SEEK_SET);
+        fwrite(&s->cur_jmpf_entries, 4, 1, s->fp);
+
+        s->total_frames++;
+        fseek(s->fp, 0, SEEK_END);
+    }
 
     /* Restore original N_total and frame_bytes */
     s->N_total = saved_N_total;
@@ -723,20 +782,80 @@ int sfa_write_frame_ex(SFA *s, double time, void **column_data,
     return 0;
 }
 
+void sfa_enable_split(SFA *s) {
+    s->split_output = 1;
+    /* Derive base path: strip .sfa extension from output path */
+    const char *path = NULL;
+    /* Get filename from fp — we need the output path stored somewhere.
+     * The caller must set split_base before calling finalize_header.
+     * Typically: strncpy(sfa->split_base, "output", 511) after sfa_create. */
+}
+
 void sfa_close(SFA *s) {
     if (s->mode == 1 && s->fp) {
-        /* Patch total_frames in SFAH (offset 68) */
-        fseek(s->fp, 12 + 4 + 4 + 4*3 + 8*3 + 8 + 4, SEEK_SET);
-        fwrite(&s->total_frames, 4, 1, s->fp);
+        if (s->split_output) {
+            /* Split mode: patch total_frames but leave streaming flag
+             * (JMPF entries are empty — fixup needed after combine) */
+            fseek(s->fp, 12 + 4 + 4 + 4*3 + 8*3 + 8 + 4, SEEK_SET);
+            fwrite(&s->total_frames, 4, 1, s->fp);
+        } else {
+            /* Patch total_frames in SFAH (offset 68) */
+            fseek(s->fp, 12 + 4 + 4 + 4*3 + 8*3 + 8 + 4, SEEK_SET);
+            fwrite(&s->total_frames, 4, 1, s->fp);
 
-        /* Clear streaming flag — file is now complete with valid indexes */
-        uint32_t flags = s->flags & ~SFA_FLAG_STREAMING;
-        fseek(s->fp, 12 + 4, SEEK_SET);  /* offset 16: flags field */
-        fwrite(&flags, 4, 1, s->fp);
+            /* Clear streaming flag — file is now complete with valid indexes */
+            uint32_t flags = s->flags & ~SFA_FLAG_STREAMING;
+            fseek(s->fp, 12 + 4, SEEK_SET);  /* offset 16: flags field */
+            fwrite(&flags, 4, 1, s->fp);
+        }
     }
     if (s->fp) fclose(s->fp);
     if (s->columns) free(s->columns);
     free(s);
+}
+
+int sfa_combine(const char *header_path, const char *output_path,
+                const char **sfp_paths, int n_sfp) {
+    /* Copy header .sfa to output */
+    FILE *hdr = fopen(header_path, "rb");
+    FILE *out = fopen(output_path, "wb");
+    if (!hdr || !out) {
+        if (hdr) fclose(hdr);
+        if (out) fclose(out);
+        return -1;
+    }
+    /* Copy header file entirely */
+    char buf[65536];
+    size_t n;
+    while ((n = fread(buf, 1, sizeof(buf), hdr)) > 0)
+        fwrite(buf, 1, n, out);
+    fclose(hdr);
+
+    /* Append each .sfp's FRMD chunk (skip the 16-byte SFP header) */
+    for (int i = 0; i < n_sfp; i++) {
+        FILE *sfp = fopen(sfp_paths[i], "rb");
+        if (!sfp) { fprintf(stderr, "sfa_combine: cannot open %s\n", sfp_paths[i]); continue; }
+
+        /* Verify SFP magic */
+        char magic[4];
+        fread(magic, 1, 4, sfp);
+        if (memcmp(magic, SFA_SFP_MAGIC, 4) != 0) {
+            fprintf(stderr, "sfa_combine: bad magic in %s\n", sfp_paths[i]);
+            fclose(sfp);
+            continue;
+        }
+        /* Skip frame_idx(4) + time(8) = 12 more bytes */
+        fseek(sfp, 12, SEEK_CUR);
+
+        /* Copy FRMD chunk */
+        while ((n = fread(buf, 1, sizeof(buf), sfp)) > 0)
+            fwrite(buf, 1, n, out);
+        fclose(sfp);
+    }
+    fclose(out);
+
+    /* Run fixup to populate JMPF entries */
+    return sfa_fixup_index(output_path);
 }
 
 /* ---- Reader ---- */
@@ -786,6 +905,33 @@ SFA *sfa_open(const char *path) {
     }
 
     sfa_compute_frame_bytes(s);
+
+    /* Streaming files: total_frames in header is 0 until sfa_close().
+     * The JTOP/JMPF index IS updated live during writes, so scan it
+     * to get the actual frame count. This allows reading streaming files
+     * while they're still being written. */
+    if ((s->flags & SFA_FLAG_STREAMING) && s->total_frames == 0) {
+        uint32_t count = 0;
+        uint64_t jtop_off = s->first_jtop_offset;
+        while (jtop_off != 0) {
+            fseek(fp, (long)jtop_off + 12, SEEK_SET);
+            uint32_t max_ent, cur_ent;
+            uint64_t next_jtop;
+            fread(&max_ent, 4, 1, fp);
+            fread(&cur_ent, 4, 1, fp);
+            fread(&next_jtop, 8, 1, fp);
+            for (uint32_t i = 0; i < cur_ent; i++) {
+                fseek(fp, (long)jtop_off + 12 + 16 + i * 16 + 12, SEEK_SET);
+                uint32_t fc;
+                fread(&fc, 4, 1, fp);
+                count += fc;
+            }
+            jtop_off = next_jtop;
+        }
+        if (count > 0)
+            s->total_frames = count;
+    }
+
     return s;
 }
 
