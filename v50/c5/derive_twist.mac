@@ -1,0 +1,134 @@
+/* derive_twist.mac — EL derivation of quadratic helicity stiffening
+ *
+ * L_twist = (lambda/2) * P^2 * h^2
+ *
+ * where P = phi_0 * phi_1 * phi_2 (triple product)
+ *       h = phi . curl(phi) = phi_0*curlphi_0 + phi_1*curlphi_1 + phi_2*curlphi_2
+ *       curlphi_0 = dyp2 - dzp1, etc.
+ *
+ * Force = dL/dphi_a - d_j(dL/d(d_j phi_a))
+ */
+
+P : p0 * p1 * p2;
+P2 : P^2;
+
+curlphi0 : dyp2 - dzp1;
+curlphi1 : dzp0 - dxp2;
+curlphi2 : dxp1 - dyp0;
+
+h : p0 * curlphi0 + p1 * curlphi1 + p2 * curlphi2;
+h2 : h^2;
+
+/* L = (lam/2) * P^2 * h^2. Factor lam_half_P2h = (lam/2)*P^2*h for clarity */
+L : lam_half * P2 * h2;
+
+print("=== L_twist ===");
+
+/* Part 1: dL/dphi_a (algebraic — phi appears in P, P^2, h, h^2) */
+print("=== dL/dp0 ===");
+dLdp0 : diff(L, p0);
+
+/* Check structure: dL/dp0 = lam_half * (dP2/dp0 * h^2 + P^2 * dh2/dp0)
+   dP2/dp0 = 2*P*p1*p2
+   dh2/dp0 = 2*h*dh/dp0 = 2*h*curlphi0
+   So dL/dp0 = lam_half * (2P*p1p2*h^2 + P^2*2*h*curlphi0) */
+expected0 : lam_half * (2*P*p1*p2*h2 + P2*2*h*curlphi0);
+check0 : expand(dLdp0 - expected0);
+print("dL/dp0 - expected = ", check0);
+
+print("=== dL/dp1 ===");
+dLdp1 : diff(L, p1);
+expected1 : lam_half * (2*P*p0*p2*h2 + P2*2*h*curlphi1);
+check1 : expand(dLdp1 - expected1);
+print("dL/dp1 - expected = ", check1);
+
+print("=== dL/dp2 ===");
+dLdp2 : diff(L, p2);
+expected2 : lam_half * (2*P*p0*p1*h2 + P2*2*h*curlphi2);
+check2 : expand(dLdp2 - expected2);
+print("dL/dp2 - expected = ", check2);
+
+/* Part 2: dL/d(d_j phi_a) — from h depending on curl(phi) */
+/* h depends on spatial derivatives through curl.
+   dh/d(dyp0) = -p2 (from curlphi2 = dxp1 - dyp0, and h has p2*curlphi2)
+   Wait: h = p0*(dyp2-dzp1) + p1*(dzp0-dxp2) + p2*(dxp1-dyp0)
+   dh/d(dyp0) = -p2
+   dh/d(dzp0) = p1
+   dh/d(dxp0) = 0
+
+   dL/d(dyp0) = lam_half * P^2 * 2*h * dh/d(dyp0) = lam_half * P^2 * 2*h*(-p2)
+*/
+
+print("=== dL/d(d_j phi_0) ===");
+dLdxp0 : diff(L, dxp0); print("dL/d(dxp0) = ", factor(dLdxp0));
+dLdyp0 : diff(L, dyp0); print("dL/d(dyp0) = ", factor(dLdyp0));
+dLdzp0 : diff(L, dzp0); print("dL/d(dzp0) = ", factor(dLdzp0));
+
+/* Check: dL/d(dyp0) should be -lam_half * P^2 * 2*h*p2 */
+check_dyp0 : expand(dLdyp0 - (-lam_half * P2 * 2 * h * p2));
+print("check dyp0: ", check_dyp0);
+check_dzp0 : expand(dLdzp0 - (lam_half * P2 * 2 * h * p1));
+print("check dzp0: ", check_dzp0);
+
+print("=== dL/d(d_j phi_1) ===");
+dLdxp1 : diff(L, dxp1); print("dL/d(dxp1) = ", factor(dLdxp1));
+dLdyp1 : diff(L, dyp1); print("dL/d(dyp1) = ", factor(dLdyp1));
+dLdzp1 : diff(L, dzp1); print("dL/d(dzp1) = ", factor(dLdzp1));
+
+check_dxp1 : expand(dLdxp1 - (lam_half * P2 * 2 * h * p2));
+print("check dxp1: ", check_dxp1);
+check_dzp1 : expand(dLdzp1 - (-lam_half * P2 * 2 * h * p0));
+print("check dzp1: ", check_dzp1);
+
+print("=== dL/d(d_j phi_2) ===");
+dLdxp2 : diff(L, dxp2); print("dL/d(dxp2) = ", factor(dLdxp2));
+dLdyp2 : diff(L, dyp2); print("dL/d(dyp2) = ", factor(dLdyp2));
+dLdzp2 : diff(L, dzp2); print("dL/d(dzp2) = ", factor(dLdzp2));
+
+check_dxp2 : expand(dLdxp2 - (-lam_half * P2 * 2 * h * p1));
+print("check dxp2: ", check_dxp2);
+check_dyp2 : expand(dLdyp2 - (lam_half * P2 * 2 * h * p0));
+print("check dyp2: ", check_dyp2);
+
+/* So the momentum terms dL/d(d_j phi_a) have the structure:
+   lam_half * P^2 * 2*h * (Levi-Civita contraction with phi)
+
+   Specifically, define S_a = P^2 * h * phi_b (Levi-Civita cross product)
+   Then dL/d(d_j phi_a) = lam * S components
+
+   The divergence d_j(dL/d(d_j phi_a)) has the same structure as the
+   chiral term but with h replacing 1:
+
+   For phi_0: d_j terms = d_y(-lam*P^2*h*p2) + d_z(lam*P^2*h*p1)
+   = -lam * d_y(P^2*h*p2) + lam * d_z(P^2*h*p1)
+
+   This involves ∇(P^2*h) cross products — similar to the chiral case
+   but with the extra factor of h.
+
+   On the grid: define W_a = P^2 * h * curl(phi)_a (like the chiral's
+   P^2 * curl_a but with an h factor).
+
+   Actually, the structure is:
+   dL/d(dyp0) = -lam * P^2 * h * p2  (compare chiral: -kh * P^2 * p2)
+
+   So the divergence term is EXACTLY the chiral divergence but with
+   kh replaced by lam*h. The full force is:
+
+   F_twist_a = dL/dphi_a - d_j(dL/d(d_j phi_a))
+             = lam_half*(2P*dPda*h^2 + P^2*2h*curl_a)
+               - [same structure as chiral divergence but with lam*h]
+
+   The t3 cross terms become: -(dP2h_dz*p1 - dP2h_dy*p2) for a=0
+   where P2h = P^2 * h (not just P^2)
+*/
+
+print("");
+print("=== CONCLUSION ===");
+print("The twist stiffening force has the SAME structure as the chiral force");
+print("but with every occurrence of P^2 replaced by P^2*h:");
+print("");
+print("F_a = lam * [2P*dPda*h^2 + 2*P^2*h*curl(phi)_a");
+print("       - (d_j(P^2*h) cross phi terms)]");
+print("");
+print("Implementation: same as chiral but compute P2h = P^2*h at each");
+print("voxel and P2h at 6 neighbors for the gradient cross terms.");

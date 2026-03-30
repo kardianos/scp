@@ -401,17 +401,38 @@ as a proper elastic solid should.
 - Net θ = 0 in UDD causes phase convergence → confinement loss (V41)
 - In deuterium, strong/EM forces self-equilibrate to 1:1 ratio (V42)
 
-**The equation** (Eq. 10):
+**The equation** (Eq. 10, V50/C4 — current best):
 
     ∂²φ_a/∂t² = ∇²φ_a - m²φ_a - ∂V/∂φ_a + η × curl(θ)_a       (10a)
-    ∂²θ_a/∂t² = ∇²θ_a - m_θ²θ_a          + η × curl(φ)_a       (10b)
+                 - α × curl(M)_a - 2 × curl(Q)_a
+
+    ∂²θ_a/∂t² = ∇²θ_a + η × curl(φ)_a                           (10b)
+                 + 2α × M_a - β × |∇×φ|² × θ_a
+
+    M_a = curl(φ)_a/2 - θ_a           (Cosserat geometric mismatch)
+    Q_a = (β/2)|θ|² curl(φ)_a         (hardening intermediate)
 
     curl(F)₀ = ∂F₂/∂y - ∂F₁/∂z
     curl(F)₁ = ∂F₀/∂z - ∂F₂/∂x
     curl(F)₂ = ∂F₁/∂x - ∂F₀/∂y
 
-Parameters: η = 0.5 (coupling), m_θ² = 0 (massless angles).
+Parameters: η = 0.5 (curl coupling), α = 0.1 (Cosserat strain),
+β = 0.5 (curl²-hardening). m_θ² = 0 (bare theta mass).
 Field↔space identification: φ₀↔x, φ₁↔y, φ₂↔z (and similarly for θ).
+
+The V44 base equation (η curl coupling only) produces correct gravity,
+EM, and braid geometry but allows two protons to merge into a blob at
+close range. The Cosserat strain term (α) constrains θ to follow the
+geometric twist (θ → curl(φ)/2 at equilibrium), preventing theta from
+filling the simulation box. The curl²-hardening term (β) creates a
+rigid shell at the braid surface where |∇×φ|² peaks, preventing two
+approaching braids from merging. Together, these terms produce a
+confirmed bound two-body state with distinct cores (V50, N=100, D=12).
+
+All force signs verified with Maxima computer algebra
+(derive_cosserat.mac, derive_harden.mac in v50/c4/).
+Cosserat equilibrium properties formally verified in Lean 4
+(lean/V50C3/Cosserat.lean, lean/V50C4/CurlHardening.lean).
 
 **Stability results** (V34 Cosserat):
 
@@ -465,8 +486,15 @@ interaction between current-carrying elements (Ampère's law analog).
 
 | Sector | Fields | Mass | Coupling | Mediates |
 |--------|--------|------|----------|----------|
-| Position (φ) | 3 | m²=2.25 (massive) | V(P), nonlinear | Matter, gravity (always attractive) |
-| Angle (θ) | 3 | m_θ²=0 (massless) | curl(φ), linear | EM-like (charge-dependent, wave-mediated) |
+| Position (φ) | 3 | m²=2.25 (massive) | V(P), Cosserat, hardening | Matter, gravity (always attractive) |
+| Angle (θ) | 3 | Effective: β\|∇×φ\|² (zero in vacuum) | curl(φ), Cosserat constraint | EM-like (charge-dependent, wave-mediated) |
+
+Note (V50): θ is geometrically constrained to curl(φ)/2 by the Cosserat
+strain term (α). It is NOT an independent scalar field. The curl²-hardening
+(β) gives θ a position-dependent mass that is zero in vacuum (massless
+photon, 1/r Coulomb force preserved) and maximum at the braid surface
+(creates a rigid shell that prevents particle merger). See V50/C4 for
+the full derivation and confirmed two-body bound state results.
 
 The gravity force (from φ depletion) is always attractive regardless of
 winding. The θ-mediated force is charge-dependent: attractive for same

@@ -27,8 +27,8 @@ radial_solver
 *.sfa
 *.bin
 *.o
+lean/.lake
 
-# Go module cache
 key.txt
 .claude/worktrees/*
 *.npz

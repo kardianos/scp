@@ -12,14 +12,29 @@ from linearizing the Cosserat equation around a uniform background.
 
 ## 1. The Field Mapping
 
-### Cosserat Equation (Eq. 10 in CONCEPT.md)
+### Cosserat Equation (Eq. 10 in CONCEPT.md, V50/C4 current)
 
 ```
-∂²φ_a/∂t² = ∇²φ_a - m²φ_a - ∂V/∂φ_a + η × curl(θ)_a     (position, massive)
-∂²θ_a/∂t² = ∇²θ_a - m_θ²θ_a          + η × curl(φ)_a     (angle, massless)
+∂²φ_a/∂t² = ∇²φ_a - m²φ_a - ∂V/∂φ_a + η × curl(θ)_a
+             - α × curl(M)_a - 2 × curl(Q)_a
+
+∂²θ_a/∂t² = ∇²θ_a + η × curl(φ)_a
+             + 2α × M_a - β × |∇×φ|² × θ_a
 ```
 
-Parameters: m² = 2.25, m_θ² = 0, η = 0.5, μ = -41.345, κ = 50.
+Where M_a = curl(φ)_a/2 - θ_a (Cosserat mismatch),
+Q_a = (β/2)|θ|² curl(φ)_a (hardening vector).
+
+Parameters: m² = 2.25, m_θ² = 0, η = 0.5, μ = -41.345, κ = 50,
+α = 0.1 (Cosserat strain), β = 0.5 (curl² hardening).
+
+The Cosserat strain term (α) constrains θ toward the geometric value
+curl(φ)/2 — theta IS the twist of the displacement field, not an
+independent wave. The curl²-hardening (β) gives theta an effective
+mass proportional to |∇×φ|² — exactly zero in vacuum (massless photon),
+maximum at the braid surface (shell formation). Together, these ensure
+θ follows the braid geometry while remaining massless for free-space
+EM propagation.
 
 ### Electromagnetic Identification
 

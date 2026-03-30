@@ -1,0 +1,256 @@
+/* derive_chiral.mac — Euler-Lagrange derivation of chiral helicity forces
+ *
+ * L_h = kappa_h * P^2 * phi . curl(phi)
+ *      = kappa_h * P^2 * sum_a phi_a * curl(phi)_a
+ *      = kappa_h * P^2 * h
+ *
+ * where P = phi_0 * phi_1 * phi_2 (triple product)
+ *       h = phi . curl(phi) (helicity)
+ *
+ * We need F_phi_a = dL/dphi_a - d_j(dL/d(d_j phi_a))
+ *
+ * curl(phi)_0 = d_y phi_2 - d_z phi_1  (= dyp2 - dzp1)
+ * curl(phi)_1 = d_z phi_0 - d_x phi_2  (= dzp0 - dxp2)
+ * curl(phi)_2 = d_x phi_1 - d_y phi_0  (= dxp1 - dyp0)
+ */
+
+/* Field values */
+declare(kh, constant);
+
+/* Triple product and its square */
+P : p0 * p1 * p2;
+P2 : P^2;
+
+/* Curl components */
+curlphi0 : dyp2 - dzp1;
+curlphi1 : dzp0 - dxp2;
+curlphi2 : dxp1 - dyp0;
+
+/* Helicity */
+h : p0 * curlphi0 + p1 * curlphi1 + p2 * curlphi2;
+
+/* The Lagrangian density */
+L : kh * P2 * h;
+
+print("=== L_chiral ===");
+print(expand(L));
+
+/* ============================================================
+   PART 1: dL/dphi_a (algebraic derivative — phi appears in P, P², and h)
+   ============================================================ */
+
+print("=== dL/dphi_0 (algebraic part) ===");
+dLdp0 : diff(L, p0);
+print("dL/dp0 = ", expand(dLdp0));
+
+print("=== dL/dphi_1 (algebraic part) ===");
+dLdp1 : diff(L, p1);
+print("dL/dp1 = ", expand(dLdp1));
+
+print("=== dL/dphi_2 (algebraic part) ===");
+dLdp2 : diff(L, p2);
+print("dL/dp2 = ", expand(dLdp2));
+
+/* ============================================================
+   PART 2: dL/d(d_j phi_a) — derivative w.r.t. spatial derivatives
+
+   phi appears in curl components through its spatial derivatives.
+   We need all 9 partial derivatives dL/d(dxp0), dL/d(dyp0), etc.
+   ============================================================ */
+
+print("=== dL/d(d_j phi_a) for all 9 combinations ===");
+
+/* phi_0 derivatives */
+dLdxp0 : diff(L, dxp0);
+dLdyp0 : diff(L, dyp0);
+dLdzp0 : diff(L, dzp0);
+print("dL/d(d_x p0) = ", expand(dLdxp0));
+print("dL/d(d_y p0) = ", expand(dLdyp0));
+print("dL/d(d_z p0) = ", expand(dLdzp0));
+
+/* phi_1 derivatives */
+dLdxp1 : diff(L, dxp1);
+dLdyp1 : diff(L, dyp1);
+dLdzp1 : diff(L, dzp1);
+print("dL/d(d_x p1) = ", expand(dLdxp1));
+print("dL/d(d_y p1) = ", expand(dLdyp1));
+print("dL/d(d_z p1) = ", expand(dLdzp1));
+
+/* phi_2 derivatives */
+dLdxp2 : diff(L, dxp2);
+dLdyp2 : diff(L, dyp2);
+dLdzp2 : diff(L, dzp2);
+print("dL/d(d_x p2) = ", expand(dLdxp2));
+print("dL/d(d_y p2) = ", expand(dLdyp2));
+print("dL/d(d_z p2) = ", expand(dLdzp2));
+
+/* ============================================================
+   PART 3: The EL force is:
+   F_phi_a = dL/dphi_a - d_j(dL/d(d_j phi_a))
+
+   The d_j(...) terms require taking spatial derivatives of the
+   expressions above. Since these depend on phi values AND phi
+   derivatives at a single point, the spatial derivative produces
+   terms with SECOND derivatives of phi and first derivatives of
+   phi values.
+
+   On a grid, d_j(f) is implemented as finite differences.
+   The key question: can we express d_j(dL/d(d_j phi_a)) in a
+   form that only requires first derivatives at neighbors?
+
+   For phi_0:
+   d_j(dL/d(d_j p0)) = d_x(dL/dxp0) + d_y(dL/dyp0) + d_z(dL/dzp0)
+
+   Let's see what dL/d(d_j p0) looks like:
+   ============================================================ */
+
+print("=== Structure of dL/d(d_j phi_0) ===");
+print("dL/d(dxp0) = ", factor(dLdxp0));
+print("dL/d(dyp0) = ", factor(dLdyp0));
+print("dL/d(dzp0) = ", factor(dLdzp0));
+
+print("=== Structure of dL/d(d_j phi_1) ===");
+print("dL/d(dxp1) = ", factor(dLdxp1));
+print("dL/d(dyp1) = ", factor(dLdyp1));
+print("dL/d(dzp1) = ", factor(dLdzp1));
+
+print("=== Structure of dL/d(d_j phi_2) ===");
+print("dL/d(dxp2) = ", factor(dLdxp2));
+print("dL/d(dyp2) = ", factor(dLdyp2));
+print("dL/d(dzp2) = ", factor(dLdzp2));
+
+/* ============================================================
+   PART 4: Verify the code's implementation
+
+   The code computes:
+     chiral = kh * (2*P*dPda*h + 2*P2*curlphi[a] + grad_P2_cross_terms)
+
+   The first two terms are dL/dphi_a (algebraic part).
+   The third term is supposed to be -d_j(dL/d(d_j phi_a)).
+
+   Let's check: is dL/dphi_0 = kh*(2*P*p1*p2*h + P2*curlphi0)?
+   ============================================================ */
+
+print("=== Checking dL/dphi_0 structure ===");
+/* dP/dp0 = p1*p2 */
+/* dP2/dp0 = 2*P*p1*p2 */
+/* dh/dp0 = curlphi0 (phi_0 appears linearly in h as p0*curlphi0) */
+
+/* So dL/dp0 = kh * (dP2/dp0 * h + P2 * dh/dp0)
+             = kh * (2*P*p1*p2*h + P2*curlphi0) */
+expected_dLdp0 : kh * (2*P*p1*p2*h + P2*curlphi0);
+check0 : expand(dLdp0 - expected_dLdp0);
+print("dL/dp0 - expected = ", check0);
+print("(should be 0)");
+
+print("=== Checking dL/dphi_1 structure ===");
+expected_dLdp1 : kh * (2*P*p0*p2*h + P2*curlphi1);
+check1 : expand(dLdp1 - expected_dLdp1);
+print("dL/dp1 - expected = ", check1);
+
+print("=== Checking dL/dphi_2 structure ===");
+expected_dLdp2 : kh * (2*P*p0*p1*h + P2*curlphi2);
+check2 : expand(dLdp2 - expected_dLdp2);
+print("dL/dp2 - expected = ", check2);
+
+/* ============================================================
+   PART 5: Check the divergence term structure
+
+   For phi_0: d_j(dL/d(d_j p0)) requires:
+   dL/d(dxp0) = 0  (from above check)
+   dL/d(dyp0) = -kh*P2*p2   (curl(phi)_2 has -dyp0, and p2 from helicity)
+   dL/d(dzp0) = kh*P2*p1    (curl(phi)_1 has dzp0, and p1 from helicity)
+
+   Wait, let me check this more carefully from the Maxima output...
+   ============================================================ */
+
+print("=== Checking: is dL/d(dyp0) = -kh*P2*p2? ===");
+check_dyp0 : expand(dLdyp0 - (-kh*P2*p2));
+print("dL/d(dyp0) + kh*P2*p2 = ", check_dyp0);
+
+print("=== Checking: is dL/d(dzp0) = +kh*P2*p1? ===");
+check_dzp0 : expand(dLdzp0 - kh*P2*p1);
+print("dL/d(dzp0) - kh*P2*p1 = ", check_dzp0);
+
+print("=== Checking: is dL/d(dxp0) = 0? ===");
+print("dL/d(dxp0) = ", expand(dLdxp0));
+
+/* So for phi_0:
+   d_j(dL/d(d_j p0)) = d_x(0) + d_y(-kh*P2*p2) + d_z(kh*P2*p1)
+                      = -kh * d_y(P2*p2) + kh * d_z(P2*p1)
+                      = -kh * [dP2dy*p2 + P2*dyp2] + kh * [dP2dz*p1 + P2*dzp1]
+                      = kh * [P2*(dzp1 - dyp2) + dP2dz*p1 - dP2dy*p2]
+                      = kh * [-P2*curlphi0 + dP2dz*p1 - dP2dy*p2]
+
+   Therefore the FULL EL force on phi_0 is:
+   F_0 = dL/dp0 - d_j(dL/d(d_j p0))
+       = kh*(2P*p1p2*h + P2*curlphi0) - kh*(-P2*curlphi0 + dP2dz*p1 - dP2dy*p2)
+       = kh*(2P*p1p2*h + P2*curlphi0 + P2*curlphi0 - dP2dz*p1 + dP2dy*p2)
+       = kh*(2P*dPdp0*h + 2*P2*curlphi0 - dP2dz*p1 + dP2dy*p2)
+*/
+
+print("");
+print("=== CONCLUSION for phi_0 force ===");
+print("F_phi_0 = kh * (2P*p1*p2*h + 2*P2*curl(phi)_0 - dP2dz*p1 + dP2dy*p2)");
+print("");
+print("=== The code computes for a=0: ===");
+print("  t1 = 2*P*dPda*h              (matches)");
+print("  t2 = 2*P2*curlphi[a]         (matches)");
+print("  t3 = dP2dz*p1 - dP2dy*p2     (CODE HAS THIS)");
+print("");
+print("=== But the correct sign is: -dP2dz*p1 + dP2dy*p2 ===");
+print("=== The t3 term in the code has THE WRONG SIGN! ===");
+print("=== Code: +dP2dz*p1 - dP2dy*p2, correct: -dP2dz*p1 + dP2dy*p2 ===");
+
+/* Let's verify for phi_1 and phi_2 too */
+print("");
+print("=== Verify phi_1 ===");
+print("dL/d(dxp1) should be kh*P2*p2 (from curlphi2 = dxp1 - dyp0):");
+check_dxp1 : expand(dLdxp1 - kh*P2*p2);
+print("  diff = ", check_dxp1);
+
+print("dL/d(dzp1) should be -kh*P2*p0 (from curlphi0 = dyp2 - dzp1):");
+check_dzp1 : expand(dLdzp1 - (-kh*P2*p0));
+print("  diff = ", check_dzp1);
+
+print("dL/d(dyp1) should be 0:");
+print("  value = ", expand(dLdyp1));
+
+/* F_phi_1 = dL/dp1 - [d_x(kh*P2*p2) + d_z(-kh*P2*p0)]
+           = kh*(2P*p0p2*h + P2*curlphi1)
+             - kh*(dP2dx*p2 + P2*dxp2 - dP2dz*p0 - P2*dzp0)
+           = kh*(2P*p0p2*h + P2*curlphi1 - P2*(dxp2 - dzp0) + dP2dz*p0 - dP2dx*p2)
+           = kh*(2P*dPdp1*h + P2*curlphi1 + P2*curlphi1 + dP2dz*p0 - dP2dx*p2)
+           wait: dxp2 - dzp0 = -curlphi1, so -P2*(dxp2-dzp0) = +P2*curlphi1
+           = kh*(2P*dPdp1*h + 2P2*curlphi1 + dP2dz*p0 - dP2dx*p2)
+   Hmm... need to be more careful with signs.
+*/
+
+print("");
+print("=== F_phi_1: d_j(dL/d(d_j p1)) ===");
+print("  = d_x(kh*P2*p2) + d_y(0) + d_z(-kh*P2*p0)");
+print("  = kh * [dP2dx*p2 + P2*dxp2 - dP2dz*p0 - P2*dzp0]");
+print("  = kh * [P2*(dxp2 - dzp0) + dP2dx*p2 - dP2dz*p0]");
+print("  = kh * [-P2*curlphi1 + dP2dx*p2 - dP2dz*p0]");
+print("");
+print("  F_1 = dL/dp1 - above");
+print("      = kh*(2P*p0p2*h + P2*curl1) - kh*(-P2*curl1 + dP2dx*p2 - dP2dz*p0)");
+print("      = kh*(2P*p0p2*h + 2*P2*curl1 - dP2dx*p2 + dP2dz*p0)");
+print("");
+print("  Code for a=1: t3 = dP2dx*p2 - dP2dz*p0");
+print("  Correct:          -dP2dx*p2 + dP2dz*p0");
+print("  WRONG SIGN on t3 again!");
+
+print("");
+print("=== F_phi_2 (by symmetry) ===");
+print("  F_2 = kh*(2P*p0p1*h + 2P2*curl2 - dP2dy*p0 + dP2dx*p1)");
+print("  Code for a=2: t3 = dP2dy*p0 - dP2dx*p1");
+print("  Correct:          -dP2dy*p0 + dP2dx*p1");
+print("  WRONG SIGN on t3 again!");
+
+print("");
+print("=============================================");
+print("SUMMARY: The t3 (grad P2 cross) term in the");
+print("chiral force has WRONG SIGN for ALL three");
+print("components. The fix: negate t3.");
+print("=============================================");

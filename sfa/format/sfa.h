@@ -602,27 +602,46 @@ int sfa_write_frame_ex(SFA *s, double time, void **column_data,
         comp_size = s->frame_bytes;
         raw = NULL;  /* don't free — comp points to it */
     } else if (codec == SFA_CODEC_COLZSTD) {
-        /* Per-column BSS+zstd: BSS-encode each column, then compress independently.
+        /* Per-column BSS+zstd with OpenMP parallel compression.
+         * Each column is independently BSS-encoded then zstd-compressed
+         * in parallel across available threads. Assembly is sequential.
          * Layout: [n_cols(4)] [comp_size(8)]×n_cols [col0_data...] [col1_data...] ... */
         uint32_t nc = s->n_columns;
         uint64_t *col_comp_sizes = (uint64_t*)calloc(nc, sizeof(uint64_t));
         uint8_t **col_comp_data = (uint8_t**)calloc(nc, sizeof(uint8_t*));
-        uint64_t total_comp = 4 + nc * 8;  /* header: n_cols + sizes array */
+        int col_error = 0;
 
-        uint64_t col_off = 0;
+        /* Compute column offsets and sizes (needed for parallel indexing) */
+        uint64_t *col_offsets = (uint64_t*)calloc(nc, sizeof(uint64_t));
+        uint64_t *col_bytesv = (uint64_t*)calloc(nc, sizeof(uint64_t));
+        {
+            uint64_t off2 = 0;
+            for (uint32_t c = 0; c < nc; c++) {
+                col_offsets[c] = off2;
+                col_bytesv[c] = s->N_total * sfa_dtype_size[s->columns[c].dtype];
+                off2 += col_bytesv[c];
+            }
+        }
+
+        /* Parallel BSS-encode + zstd compress each column */
+        #ifdef _OPENMP
+        #pragma omp parallel for schedule(dynamic)
+        #endif
         for (uint32_t c = 0; c < nc; c++) {
+            if (col_error) continue;  /* skip if a previous column failed */
             int es = sfa_dtype_size[s->columns[c].dtype];
-            uint64_t col_bytes = s->N_total * es;
+            uint64_t col_bytes = col_bytesv[c];
 
-            /* BSS-encode this column: reorder bytes [v0b0,v0b1,...,v1b0,...] → [v0b0,v1b0,...,v0b1,v1b1,...] */
+            /* BSS-encode: [v0b0,v0b1,...] → [b0v0,b0v1,...,b1v0,...] */
             uint8_t *bss_col = (uint8_t*)malloc(col_bytes);
-            uint8_t *src_col = raw + col_off;
+            uint8_t *src_col = raw + col_offsets[c];
             for (int b = 0; b < es; b++) {
                 for (uint64_t v = 0; v < s->N_total; v++) {
                     bss_col[b * s->N_total + v] = src_col[v * es + b];
                 }
             }
 
+            /* Compress */
             size_t bound = ZSTD_compressBound(col_bytes);
             col_comp_data[c] = (uint8_t*)malloc(bound);
             col_comp_sizes[c] = ZSTD_compress(col_comp_data[c], bound,
@@ -631,15 +650,22 @@ int sfa_write_frame_ex(SFA *s, double time, void **column_data,
             if (ZSTD_isError(col_comp_sizes[c])) {
                 fprintf(stderr, "SFA: colzstd error col %u: %s\n", c,
                         ZSTD_getErrorName(col_comp_sizes[c]));
-                for (uint32_t j = 0; j <= c; j++) free(col_comp_data[j]);
-                free(col_comp_sizes); free(col_comp_data); free(raw);
-                return -1;
+                col_error = 1;
             }
-            total_comp += col_comp_sizes[c];
-            col_off += col_bytes;
         }
 
-        /* Assemble into a single buffer: [n_cols][sizes...][data...] */
+        free(col_offsets); free(col_bytesv);
+
+        if (col_error) {
+            for (uint32_t c = 0; c < nc; c++) free(col_comp_data[c]);
+            free(col_comp_sizes); free(col_comp_data); free(raw);
+            return -1;
+        }
+
+        /* Sequential assembly: [n_cols][sizes...][data...] */
+        uint64_t total_comp = 4 + nc * 8;
+        for (uint32_t c = 0; c < nc; c++) total_comp += col_comp_sizes[c];
+
         comp = malloc(total_comp);
         uint8_t *p = (uint8_t*)comp;
         memcpy(p, &nc, 4); p += 4;
@@ -910,27 +936,10 @@ SFA *sfa_open(const char *path) {
      * The JTOP/JMPF index IS updated live during writes, so scan it
      * to get the actual frame count. This allows reading streaming files
      * while they're still being written. */
-    if ((s->flags & SFA_FLAG_STREAMING) && s->total_frames == 0) {
-        uint32_t count = 0;
-        uint64_t jtop_off = s->first_jtop_offset;
-        while (jtop_off != 0) {
-            fseek(fp, (long)jtop_off + 12, SEEK_SET);
-            uint32_t max_ent, cur_ent;
-            uint64_t next_jtop;
-            fread(&max_ent, 4, 1, fp);
-            fread(&cur_ent, 4, 1, fp);
-            fread(&next_jtop, 8, 1, fp);
-            for (uint32_t i = 0; i < cur_ent; i++) {
-                fseek(fp, (long)jtop_off + 12 + 16 + i * 16 + 12, SEEK_SET);
-                uint32_t fc;
-                fread(&fc, 4, 1, fp);
-                count += fc;
-            }
-            jtop_off = next_jtop;
-        }
-        if (count > 0)
-            s->total_frames = count;
-    }
+    /* NOTE: Streaming frame count scan disabled due to crashes on large
+     * multi-chain JTOP files (>1024 frames). Tools that need frame counts
+     * for streaming files should call sfa_count_valid_frames() explicitly.
+     * TODO: Fix the streaming scan to handle multi-chain JTOP safely. */
 
     return s;
 }
@@ -984,10 +993,18 @@ int sfa_read_frame(SFA *s, uint32_t frame_idx, void *buf) {
 
     int codec = s->flags & 0xF;
 
+    /* Validate entry before allocating */
+    if (entry.compressed_size == 0 || entry.compressed_size > 500000000ULL) {
+        /* Sanity: no frame should be >500 MB compressed */
+        return -1;
+    }
+
     /* Read compressed data */
     fseek(s->fp, (long)entry.offset + 12, SEEK_SET);  /* skip FRMD chunk header */
     void *comp = (void*)malloc(entry.compressed_size);
-    fread(comp, 1, entry.compressed_size, s->fp);
+    if (!comp) return -1;
+    size_t nread = fread(comp, 1, entry.compressed_size, s->fp);
+    if (nread != entry.compressed_size) { free(comp); return -1; }
 
     if (codec == SFA_CODEC_COLZSTD) {
         /* Per-column zstd: [n_cols(4)] [comp_size(8)]×n_cols [data...] */

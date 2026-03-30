@@ -469,7 +469,13 @@ func (s *sfaFile) readFrameColZstdInto(data []byte) error {
 				return
 			}
 
-			if es == 4 && s.columns[c].dtype == sfaDtypeF32 {
+			if es == 1 && s.columns[c].dtype == 8 { // SFA_U8
+				// FAST PATH: uint8 → float32 (0-1 range)
+				out := s.colF32Bufs[c]
+				for v := 0; v < nVals; v++ {
+					out[v] = float32(bssBuf[v]) / 255.0
+				}
+			} else if es == 4 && s.columns[c].dtype == sfaDtypeF32 {
 				// FAST PATH: fused BSS decode + f32 extraction
 				// Combine 4 byte streams directly into float32 output
 				// bssBuf layout: [b0_v0..b0_vN, b1_v0..b1_vN, b2_v0..b2_vN, b3_v0..b3_vN]
@@ -524,9 +530,9 @@ func (s *sfaFile) readFrameColZstdInto(data []byte) error {
 // extractColumnF32 extracts a column into s.colF32Bufs[colIdx] (zero-alloc).
 // For COLZSTD with f32 columns, the fused decode already filled colF32Bufs — this is a no-op.
 func (s *sfaFile) extractColumnF32(colIdx int) []float32 {
-	// If COLZSTD with f32, the fused BSS+f32 path already wrote directly to colF32Bufs
+	// If COLZSTD with f32 or u8, the fused decode already wrote to colF32Bufs
 	codec := s.flags & 0xF
-	if codec == sfaCodecColZstd && s.columns[colIdx].dtype == sfaDtypeF32 {
+	if codec == sfaCodecColZstd && (s.columns[colIdx].dtype == sfaDtypeF32 || s.columns[colIdx].dtype == 8) {
 		return s.colF32Bufs[colIdx] // already populated by readFrameColZstdInto
 	}
 
@@ -553,6 +559,15 @@ func (s *sfaFile) extractColumnF32(colIdx int) []float32 {
 		for i := uint64(0); i < s.nTotal; i++ {
 			h := binary.LittleEndian.Uint16(s.rawBuf[off+i*2 : off+i*2+2])
 			result[i] = f16ToF32(h)
+		}
+	case 8: // SFA_U8
+		for i := uint64(0); i < s.nTotal; i++ {
+			result[i] = float32(s.rawBuf[off+i]) / 255.0
+		}
+	case 9: // SFA_U16
+		for i := uint64(0); i < s.nTotal; i++ {
+			v := binary.LittleEndian.Uint16(s.rawBuf[off+i*2 : off+i*2+2])
+			result[i] = float32(v) / 65535.0
 		}
 	}
 	return result
@@ -1543,36 +1558,80 @@ func (fl *frameLoader) startLoad(frameIdx int) {
 			return
 		}
 
-		// Extract phi columns (always needed)
-		phi0 := fl.sfa.extractColumnF32(0)
-		phi1 := fl.sfa.extractColumnF32(1)
-		phi2 := fl.sfa.extractColumnF32(2)
-		var theta0, theta1, theta2 []float32
-		if fl.sfa.nColumns >= 6 {
-			theta0 = fl.sfa.extractColumnF32(3)
-			theta1 = fl.sfa.extractColumnF32(4)
-			theta2 = fl.sfa.extractColumnF32(5)
-		}
-		// Extract velocity columns if available and needed
-		var vphi0, vphi1, vphi2 []float32
-		if fl.sfa.nColumns >= 9 && mode >= 1 {
-			vphi0 = fl.sfa.extractColumnF32(6)
-			vphi1 = fl.sfa.extractColumnF32(7)
-			vphi2 = fl.sfa.extractColumnF32(8)
+		// Detect preview mode: 3 columns named P_abs, phi_sq, theta_sq
+		colName0 := strings.TrimRight(string(fl.sfa.columns[0].name[:]), "\x00")
+		isPreview := fl.sfa.nColumns == 3 && colName0 == "P_abs"
+		if isPreview {
+			fmt.Printf("  Preview mode: 3 uint8 channels (P_abs, phi_sq, theta_sq)\n")
 		}
 
-		switch mode {
-		case 1:
-			if vphi0 != nil {
-				computeVelocityView(fl.volN, phi0, phi1, phi2, vphi0, vphi1, vphi2, &fl.workVol)
-			} else {
-				fmt.Println("Warning: no velocity columns (need >=9 columns), falling back to field view")
+		if isPreview {
+			// Preview mode: columns ARE the pre-computed derived quantities.
+			// Column 0 = |P| (0-1 normalized), Column 1 = |φ|² (0-1), Column 2 = |θ|² (0-1)
+			pAbs := fl.sfa.extractColumnF32(0)
+			phiSq := fl.sfa.extractColumnF32(1)
+			thetaSq := fl.sfa.extractColumnF32(2)
+			n := fl.volN
+			vol := &fl.workVol
+			vol.n = n
+			nn := n * n * n
+			if len(vol.rgba) != nn*4 {
+				vol.rgba = make([]float32, nn*4)
+			}
+			// Find per-frame max for normalization (same as computeFieldView)
+			var maxP, maxPhi, maxTh float32
+			for i := 0; i < nn; i++ {
+				if pAbs[i] > maxP { maxP = pAbs[i] }
+				if phiSq[i] > maxPhi { maxPhi = phiSq[i] }
+				if thetaSq[i] > maxTh { maxTh = thetaSq[i] }
+			}
+			invP := float32(1); if maxP*0.3 > 1e-20 { invP = 1.0 / (maxP * 0.3) }
+			invPhi := float32(1); if maxPhi*0.15 > 1e-20 { invPhi = 1.0 / (maxPhi * 0.15) }
+			invTh := float32(1); if maxTh*0.3 > 1e-20 { invTh = 1.0 / (maxTh * 0.3) }
+
+			for i := 0; i < nn; i++ {
+				pn := pAbs[i] * invP
+				sqP := pn; if sqP > 1 { sqP = 1 }
+				// Match computeFieldView: G = phi² * (1-sqrt(P_norm))
+				gv := phiSq[i] * (1 - float32(math.Sqrt(float64(sqP)))) * invPhi
+				bv := thetaSq[i] * invTh
+				vol.rgba[i*4+0] = pn
+				vol.rgba[i*4+1] = gv
+				vol.rgba[i*4+2] = bv
+				vol.rgba[i*4+3] = 1.0  // full alpha, same as computeFieldView
+			}
+			vol.loaded = true
+		} else {
+			// Standard mode: extract phi/theta columns and compute derived view
+			phi0 := fl.sfa.extractColumnF32(0)
+			phi1 := fl.sfa.extractColumnF32(1)
+			phi2 := fl.sfa.extractColumnF32(2)
+			var theta0, theta1, theta2 []float32
+			if fl.sfa.nColumns >= 6 {
+				theta0 = fl.sfa.extractColumnF32(3)
+				theta1 = fl.sfa.extractColumnF32(4)
+				theta2 = fl.sfa.extractColumnF32(5)
+			}
+			var vphi0, vphi1, vphi2 []float32
+			if fl.sfa.nColumns >= 9 && mode >= 1 {
+				vphi0 = fl.sfa.extractColumnF32(6)
+				vphi1 = fl.sfa.extractColumnF32(7)
+				vphi2 = fl.sfa.extractColumnF32(8)
+			}
+
+			switch mode {
+			case 1:
+				if vphi0 != nil {
+					computeVelocityView(fl.volN, phi0, phi1, phi2, vphi0, vphi1, vphi2, &fl.workVol)
+				} else {
+					fmt.Println("Warning: no velocity columns (need >=9 columns), falling back to field view")
+					computeFieldView(fl.volN, phi0, phi1, phi2, theta0, theta1, theta2, &fl.workVol)
+				}
+			case 2:
+				computeAccelView(fl.volN, phi0, phi1, phi2, theta0, theta1, theta2, vphi0, vphi1, vphi2, &fl.workVol)
+			default:
 				computeFieldView(fl.volN, phi0, phi1, phi2, theta0, theta1, theta2, &fl.workVol)
 			}
-		case 2:
-			computeAccelView(fl.volN, phi0, phi1, phi2, theta0, theta1, theta2, vphi0, vphi1, vphi2, &fl.workVol)
-		default:
-			computeFieldView(fl.volN, phi0, phi1, phi2, theta0, theta1, theta2, &fl.workVol)
 		}
 
 		fl.mu.Lock()

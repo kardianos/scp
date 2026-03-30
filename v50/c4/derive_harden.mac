@@ -1,0 +1,115 @@
+/* derive_harden.mac — EL derivation of curl-squared hardening
+ *
+ * E_harden = (beta/2) * |theta|^2 * |curl(phi)|^2
+ *          = (beta/2) * T2 * (curl0^2 + curl1^2 + curl2^2)
+ *
+ * where T2 = theta_0^2 + theta_1^2 + theta_2^2 (treated as constant for phi variation)
+ *       curl(phi)_0 = dyp2 - dzp1, etc.
+ *
+ * Theta force: -dE/dtheta_a = -beta * theta_a * |curl(phi)|^2
+ * Phi force: F_phi_a = d_j(dE/d(d_j phi_a))  (EL divergence, E doesn't depend on phi_a directly)
+ */
+
+/* curl components */
+curlphi0 : dyp2 - dzp1;
+curlphi1 : dzp0 - dxp2;
+curlphi2 : dxp1 - dyp0;
+
+curl_sq : curlphi0^2 + curlphi1^2 + curlphi2^2;
+
+/* Energy density (beta/2 * T2 * curl_sq, but T2 is a coefficient, not varied) */
+E : beta_half_T2 * curl_sq;
+
+print("=== E_harden (with beta/2 * T2 factored as beta_half_T2) ===");
+print(expand(E));
+
+/* dE/d(d_j phi_a) for all 9 */
+print("=== Phi momentum derivatives ===");
+
+dEdxp0 : diff(E, dxp0); print("dE/d(dxp0) = ", expand(dEdxp0));
+dEdyp0 : diff(E, dyp0); print("dE/d(dyp0) = ", expand(dEdyp0));
+dEdzp0 : diff(E, dzp0); print("dE/d(dzp0) = ", expand(dEdzp0));
+
+dEdxp1 : diff(E, dxp1); print("dE/d(dxp1) = ", expand(dEdxp1));
+dEdyp1 : diff(E, dyp1); print("dE/d(dyp1) = ", expand(dEdyp1));
+dEdzp1 : diff(E, dzp1); print("dE/d(dzp1) = ", expand(dEdzp1));
+
+dEdxp2 : diff(E, dxp2); print("dE/d(dxp2) = ", expand(dEdxp2));
+dEdyp2 : diff(E, dyp2); print("dE/d(dyp2) = ", expand(dEdyp2));
+dEdzp2 : diff(E, dzp2); print("dE/d(dzp2) = ", expand(dEdzp2));
+
+/* Check: is dE/d(d_j phi_a) = beta_half_T2 * 2 * curl_b * d(curl_b)/d(d_j phi_a)?
+   For phi_0:
+     dyp0 appears in curlphi2 with -1: d(curlphi2)/d(dyp0) = -1
+     dzp0 appears in curlphi1 with +1: d(curlphi1)/d(dzp0) = +1
+     dxp0 appears nowhere
+
+   dE/d(dyp0) = beta_half_T2 * 2 * curlphi2 * (-1) = -2 * beta_half_T2 * curlphi2
+   dE/d(dzp0) = beta_half_T2 * 2 * curlphi1 * (+1) = +2 * beta_half_T2 * curlphi1
+*/
+
+print("=== Verify structure for phi_0 ===");
+print("dE/d(dyp0) should be -2*beta_half_T2*curlphi2:");
+check_dyp0 : expand(dEdyp0 - (-2*beta_half_T2*curlphi2));
+print("  diff = ", check_dyp0);
+
+print("dE/d(dzp0) should be +2*beta_half_T2*curlphi1:");
+check_dzp0 : expand(dEdzp0 - (2*beta_half_T2*curlphi1));
+print("  diff = ", check_dzp0);
+
+print("dE/d(dxp0) should be 0:");
+print("  value = ", expand(dEdxp0));
+
+/* So for phi_0:
+   F_phi_0 = d_y(dE/dyp0) + d_z(dE/dzp0)
+           = d_y(-2*C*curlphi2) + d_z(2*C*curlphi1)
+   where C = beta_half_T2 = (beta/2)*|theta|^2
+
+   = -2*[d_y(C)*curlphi2 + C*d_y(curlphi2)] + 2*[d_z(C)*curlphi1 + C*d_z(curlphi1)]
+
+   The C*curl terms:
+   = 2*C*[d_z(curlphi1) - d_y(curlphi2)] = -2*C*curl(curl(phi))_0... wait.
+
+   Actually: d_y(curlphi2) - d_z(curlphi1) = curl(curl(phi))_0
+   So: -d_y(curlphi2) + d_z(curlphi1) = -curl(curl(phi))_0
+
+   And: F_phi_0 = -2C*curl(curlphi)_0 + 2*(-d_y(C)*curlphi2 + d_z(C)*curlphi1)
+
+   Hmm, the gradient-of-C terms... these involve ∇(|θ|²) which is nonzero.
+   But on the grid, C = (beta/2)|θ|² at each voxel. Its gradient is computed
+   from neighbor values.
+
+   Let's define Q_a = C * curl(phi)_a = (beta/2)|θ|² curl(phi)_a.
+   Then dE/d(d_j phi_a) has the structure of the Levi-Civita-contracted Q.
+
+   For phi_0: dE/d(dyp0) = -2*Q_2, dE/d(dzp0) = +2*Q_1
+   F_phi_0 = d_y(-2*Q_2) + d_z(2*Q_1) = -2*(d_y Q_2 - d_z Q_1) = -2*curl(Q)_0
+*/
+
+print("");
+print("=== CONCLUSION ===");
+print("Define Q_a = (beta/2)|theta|^2 * curl(phi)_a");
+print("Then F_phi_a = -2 * curl(Q)_a");
+print("            = -curl(beta |theta|^2 curl(phi))_a");
+print("");
+print("This is MINUS the curl of (beta*|theta|^2 * curl(phi)).");
+print("On the grid: compute Q at each voxel, then curl(Q) via stencil.");
+print("Two-pass: pass 1 computes Q, pass 2 computes curl(Q).");
+
+/* Verify for phi_1 */
+print("");
+print("=== Verify phi_1 ===");
+print("dE/d(dxp1) should be +2*beta_half_T2*curlphi2:");
+check_dxp1 : expand(dEdxp1 - 2*beta_half_T2*curlphi2);
+print("  diff = ", check_dxp1);
+
+print("dE/d(dzp1) should be -2*beta_half_T2*curlphi0:");
+check_dzp1 : expand(dEdzp1 - (-2*beta_half_T2*curlphi0));
+print("  diff = ", check_dzp1);
+
+/* phi_1: F = d_x(2Q_2) + d_z(-2Q_0) = 2(d_x Q_2 - d_z Q_0) = -2*curl(Q)_1
+   since curl(Q)_1 = d_z Q_0 - d_x Q_2 → -curl(Q)_1 = d_x Q_2 - d_z Q_0
+   Wait: curl(Q)_1 = d_z Q_0 - d_x Q_2
+   So d_x(2Q_2) + d_z(-2Q_0) = 2(d_x Q_2 - d_z Q_0) = -2*curl(Q)_1 ✓ */
+
+print("F_phi_1 = d_x(2Q_2) + d_z(-2Q_0) = -2*curl(Q)_1  ✓");

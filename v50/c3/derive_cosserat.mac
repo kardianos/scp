@@ -1,0 +1,146 @@
+/* derive_cosserat.mac — Euler-Lagrange derivation of Cosserat strain forces
+ *
+ * E_strain = alpha * sum_a (curl(phi)_a / 2 - theta_a)^2
+ *
+ * We need:
+ *   F_theta_a = -dE/dtheta_a  (algebraic, simple)
+ *   F_phi_a = -dE/dphi_a + d_j(dE/d(d_j phi_a))  (involves curl derivatives)
+ *
+ * The curl components:
+ *   curl(phi)_0 = d_y phi_2 - d_z phi_1
+ *   curl(phi)_1 = d_z phi_0 - d_x phi_2
+ *   curl(phi)_2 = d_x phi_1 - d_y phi_0
+ *
+ * We use symbolic differentiation to get the exact EL equations.
+ */
+
+/* Define the mismatch components symbolically */
+/* M_a = curl(phi)_a / 2 - theta_a */
+
+/* curl(phi) components in terms of partial derivatives */
+curlphi0 : dyp2 - dzp1;
+curlphi1 : dzp0 - dxp2;
+curlphi2 : dxp1 - dyp0;
+
+M0 : curlphi0/2 - th0;
+M1 : curlphi1/2 - th1;
+M2 : curlphi2/2 - th2;
+
+/* The energy density (per voxel): alpha * (M0^2 + M1^2 + M2^2) */
+E : alpha * (M0^2 + M1^2 + M2^2);
+
+print("=== E_strain expression ===");
+print(expand(E));
+
+/* ============================================================
+   THETA FORCES: F_theta_a = -dE/dtheta_a
+   (theta appears algebraically, no derivatives involved)
+   ============================================================ */
+
+print("=== Theta forces (simple partial derivatives) ===");
+F_th0 : -diff(E, th0);
+F_th1 : -diff(E, th1);
+F_th2 : -diff(E, th2);
+print("F_theta_0 = ", expand(F_th0));
+print("F_theta_1 = ", expand(F_th1));
+print("F_theta_2 = ", expand(F_th2));
+
+/* ============================================================
+   PHI FORCES: Euler-Lagrange with derivatives
+
+   The energy depends on d_j phi_a (spatial derivatives of phi).
+   The EL equation is:
+     F_phi_a = -dE/dphi_a + d_j(dE/d(d_j phi_a))
+
+   Since E doesn't depend on phi_a directly (only on its derivatives
+   through curl), dE/dphi_a = 0. So:
+     F_phi_a = d_j(dE/d(d_j phi_a))
+
+   We need dE/d(d_j phi_a) for all (j, a) combinations.
+
+   The independent derivative variables are:
+     dxp0 = d_x phi_0,  dyp0 = d_y phi_0,  dzp0 = d_z phi_0
+     dxp1 = d_x phi_1,  dyp1 = d_y phi_1,  dzp1 = d_z phi_1
+     dxp2 = d_x phi_2,  dyp2 = d_y phi_2,  dzp2 = d_z phi_2
+   ============================================================ */
+
+print("=== Phi force: dE/d(d_j phi_a) for all 9 combinations ===");
+
+/* For phi_0: which derivatives does E depend on?
+   curlphi1 contains dzp0, curlphi2 contains dyp0 (with minus sign) */
+dEdxp0 : diff(E, dxp0);  /* d_x phi_0 — not in any curl component */
+dEdyp0 : diff(E, dyp0);  /* d_y phi_0 — in curlphi2 = dxp1 - dyp0 */
+dEdzp0 : diff(E, dzp0);  /* d_z phi_0 — in curlphi1 = dzp0 - dxp2 */
+
+print("dE/d(d_x phi_0) = ", expand(dEdxp0));
+print("dE/d(d_y phi_0) = ", expand(dEdyp0));
+print("dE/d(d_z phi_0) = ", expand(dEdzp0));
+
+/* For phi_1: */
+dEdxp1 : diff(E, dxp1);  /* d_x phi_1 — in curlphi2 = dxp1 - dyp0 */
+dEdyp1 : diff(E, dyp1);  /* d_y phi_1 — not in any curl */
+dEdzp1 : diff(E, dzp1);  /* d_z phi_1 — in curlphi0 = dyp2 - dzp1 */
+
+print("dE/d(d_x phi_1) = ", expand(dEdxp1));
+print("dE/d(d_y phi_1) = ", expand(dEdyp1));
+print("dE/d(d_z phi_1) = ", expand(dEdzp1));
+
+/* For phi_2: */
+dEdxp2 : diff(E, dxp2);  /* d_x phi_2 — in curlphi1 = dzp0 - dxp2 */
+dEdyp2 : diff(E, dyp2);  /* d_y phi_2 — in curlphi0 = dyp2 - dzp1 */
+dEdzp2 : diff(E, dzp2);  /* d_z phi_2 — not in any curl */
+
+print("dE/d(d_x phi_2) = ", expand(dEdxp2));
+print("dE/d(d_y phi_2) = ", expand(dEdyp2));
+print("dE/d(d_z phi_2) = ", expand(dEdzp2));
+
+/* ============================================================
+   The phi force is: F_phi_a = sum_j d_j(dE/d(d_j phi_a))
+
+   For phi_0: F_phi_0 = d_x(dE/dxp0) + d_y(dE/dyp0) + d_z(dE/dzp0)
+
+   Since we can't take spatial derivatives of symbols, we express
+   the result in terms of M and note the structure:
+
+   dE/d(d_j phi_a) = alpha * M_b * d(curlphi_b)/d(d_j phi_a)
+
+   This has the structure of alpha * curl(M).
+   Let's verify by computing curl(M) and comparing.
+   ============================================================ */
+
+print("=== Verifying: is F_phi = alpha * curl(M)? ===");
+
+/* curl(M)_0 = d_y M_2 - d_z M_1
+   But M depends on spatial derivatives of phi AND theta.
+
+   What we actually need to implement is:
+   F_phi_0 = d_y(dE/dyp0) + d_z(dE/dzp0)
+
+   dE/dyp0 = alpha * M2 * d(curlphi2)/d(dyp0) = alpha * M2 * (-1)
+   dE/dzp0 = alpha * M1 * d(curlphi1)/d(dzp0) = alpha * M1 * (1)
+
+   So: F_phi_0 = d_y(-alpha*M2) + d_z(alpha*M1) = -alpha*d_y(M2) + alpha*d_z(M1)
+              = alpha * (d_z(M1) - d_y(M2)) = alpha * (-1) * (d_y(M2) - d_z(M1))
+              = -alpha * curl(M)_0
+
+   Wait — that gives MINUS alpha curl(M), not plus!
+   Let me verify this with the symbolic expressions.
+*/
+
+print("=== Detailed F_phi_0 ===");
+print("dE/d(dyp0) should be -alpha*M2:");
+print("  actual: ", expand(dEdyp0));
+print("  expected: ", expand(-alpha*M2));
+
+print("dE/d(dzp0) should be +alpha*M1:");
+print("  actual: ", expand(dEdzp0));
+print("  expected: ", expand(alpha*M1));
+
+print("=== So F_phi_0 = d_y(dE/dyp0) + d_z(dE/dzp0) ===");
+print("  = d_y(-alpha*M2) + d_z(alpha*M1)");
+print("  = alpha * (d_z(M1) - d_y(M2))");
+print("  = alpha * (-curl(M)_0)    since curl(M)_0 = d_y(M2) - d_z(M1)");
+print("  = -alpha * curl(M)_0");
+print("");
+print("=== CONCLUSION: F_phi_a = -alpha * curl(M)_a ===");
+print("=== The code had +alpha * curl(M)_a — WRONG SIGN! ===");
