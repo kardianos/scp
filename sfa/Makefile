@@ -10,8 +10,7 @@ BINDIR = ../bin
 # ---- Analysis tools ----
 
 ANALYSIS_TOOLS = analyze_sfa spatial_analysis cluster_profile stable_vs_unstable \
-                 shell_analysis modify_sfa freq_phase accel_analysis breathing sfa_info sfa_extract \
-                 sfa_uncompress
+                 shell_analysis modify_sfa freq_phase accel_analysis breathing
 
 ANALYSIS_BINS = $(addprefix analysis/, $(ANALYSIS_TOOLS))
 
@@ -28,7 +27,10 @@ seed/%: seed/%.c format/sfa.h
 
 # ---- Tools ----
 
-TOOL_BINS = tools/sfa_render
+TOOL_BINS = tools/sfa tools/sfa_render
+
+tools/sfa: tools/sfa.c format/sfa.h
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 tools/sfa_render: tools/sfa_render.c format/sfa.h
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) -lwebp -lwebpmux -lsharpyuv
@@ -48,8 +50,6 @@ sim/scp_sim_cuda: sim/scp_sim.cu format/sfa.h
 sim/scp_multi_cuda: sim/scp_multi.cu format/sfa.h
 	$(NVCC) $(NVFLAGS) -o $@ $< $(LDFLAGS)
 
-sim/scp_sim_fp32: sim/scp_sim_fp32.cu format/sfa.h
-	$(NVCC) $(NVFLAGS) -o $@ $< $(LDFLAGS) -lpthread
 
 # ---- Viewer (Go + OpenGL) ----
 
@@ -82,9 +82,9 @@ tools: $(TOOL_BINS)
 
 runner: $(BINDIR)/scp-runner
 
-cuda: sim/scp_sim_cuda sim/scp_multi_cuda sim/scp_sim_fp32
+cuda: sim/scp_sim_cuda sim/scp_multi_cuda
 
-cuda-fp32: sim/scp_sim_fp32
+cuda-fp32:
 
 viewer: volview/volview
 
@@ -93,13 +93,14 @@ install: all
 	@for t in $(ANALYSIS_BINS); do cp $$t $(BINDIR)/; done
 	@for t in $(SEED_BINS); do cp $$t $(BINDIR)/; done
 	@cp sim/scp_sim $(BINDIR)/
-	@for t in $(TOOL_BINS); do cp $$t $(BINDIR)/; done
+	@cp tools/sfa $(BINDIR)/sfa
+	@cp tools/sfa_render $(BINDIR)/sfa_render
 	@if [ -f volview/volview ]; then cp volview/volview $(BINDIR)/; fi
 	@echo "Installed $$(ls $(BINDIR) | wc -l) binaries to $(BINDIR)/"
 
 clean:
 	rm -f $(ANALYSIS_BINS) $(SEED_BINS) $(TOOL_BINS)
-	rm -f sim/scp_sim sim/scp_multi sim/scp_sim_cuda sim/scp_multi_cuda sim/scp_sim_fp32
+	rm -f sim/scp_sim sim/scp_multi sim/scp_sim_cuda sim/scp_multi_cuda
 	rm -f volview/volview
 	rm -rf $(BINDIR)
 
@@ -114,7 +115,6 @@ help:
 	@echo "  make tools      Build visualization tools (sfa_render)"
 	@echo "  make runner     Build the MCP simulation runner (Go)"
 	@echo "  make cuda       Build CUDA simulation kernels (requires nvcc)"
-	@echo "  make cuda-fp32  Build FP32-storage CUDA kernel (67% less GPU memory)"
 	@echo "  make viewer     Build volume viewer (Go + OpenGL)"
 	@echo "  make clean      Remove all binaries"
 	@echo ""

@@ -1,0 +1,246 @@
+/* core_interaction.mac — Algebraic analysis of two-proton core overlap
+ *
+ * Model: Each proton is a 3-braid composite.
+ * Braid b along axis_b contributes to field component a:
+ *   φ_a(x) = A × env(r_perp) × cos(chi_b × k × coord_b + δ_a + Δ_b)
+ *
+ * Chiralities UUD: chi = (+1, +1, -1)
+ * Carrier phases: Δ = (0, 2π/3, 4π/3)
+ * Phase offsets: δ = (0, δ₁, δ₂)  [from optimization]
+ *
+ * Two protons centered at x = ±D/2, approaching along x-axis.
+ * Evaluate fields at the midpoint x=0.
+ */
+
+/* Clean symbolic setup */
+kill(all)$
+declare([A, k, D, r], real)$
+assume(A > 0, k > 0, D > 0)$
+
+/* Phase offsets (symbolic for now) */
+delta : [0, d1, d2]$
+
+/* Carrier phases */
+Delta : [0, 2*%pi/3, 4*%pi/3]$
+
+/* Chiralities: UUD */
+chi : [1, 1, -1]$
+
+/* ================================================================
+   Single proton at origin: field at point (x, 0, 0)
+   ================================================================
+   Braid 0 (x-axis): sees coord_x = x
+   Braid 1 (y-axis): sees coord_y = 0 (we're on x-axis)
+   Braid 2 (z-axis): sees coord_z = 0 (we're on x-axis)
+
+   φ_a from braid b:
+     If b=0 (x-axis): A × env × cos(chi[0]*k*x + δ_a + Δ[0])
+     If b=1 (y-axis): A × env × cos(δ_a + Δ[1])   [coord_y=0]
+     If b=2 (z-axis): A × env × cos(δ_a + Δ[2])   [coord_z=0]
+*/
+
+/* Total φ_a at (x, 0, 0) from proton centered at origin */
+phi_single(a, x) := A * (
+    cos(chi[1]*k*x + delta[a+1] + Delta[1])   /* braid 0 (x-axis) */
+  + cos(delta[a+1] + Delta[2])                  /* braid 1 (y-axis), y=0 */
+  + cos(delta[a+1] + Delta[3])                  /* braid 2 (z-axis), z=0 */
+)$
+
+/* ================================================================
+   Two protons: centered at +D/2 and -D/2
+   ================================================================ */
+
+/* Proton L at x = -D/2: field at midpoint (0,0,0) means x_local = +D/2 */
+/* Proton R at x = +D/2: field at midpoint (0,0,0) means x_local = -D/2 */
+
+phi_L(a) := phi_single(a, D/2)$
+phi_R(a) := phi_single(a, -D/2)$
+
+/* Total field at midpoint */
+phi_total(a) := phi_L(a) + phi_R(a)$
+
+print("=== Single proton φ_0 at distance x from center ===")$
+print(expand(trigreduce(phi_single(0, x))))$
+print("")$
+
+print("=== Two-proton φ_0 at midpoint (sum of L and R) ===")$
+phi0_total : trigreduce(expand(phi_total(0)))$
+print(phi0_total)$
+print("")$
+
+/* ================================================================
+   Triple product P at midpoint
+   ================================================================ */
+
+print("=== Triple product P = φ_0 × φ_1 × φ_2 at midpoint ===")$
+
+/* For a SINGLE proton at the midpoint, P depends on the phase structure */
+P_single_mid : trigreduce(expand(phi_single(0, D/2) * phi_single(1, D/2) * phi_single(2, D/2)))$
+
+/* For TWO protons overlapping at midpoint */
+P_total_mid : trigreduce(expand(phi_total(0) * phi_total(1) * phi_total(2)))$
+
+print("Single proton P at midpoint (x = D/2 from its center):")$
+print(P_single_mid)$
+print("")$
+
+print("Two-proton P at midpoint:")$
+/* This is huge — let's evaluate numerically */
+
+/* Use the actual phase offsets from V28 optimization */
+d1_val : 3.0005$
+d2_val : 4.4325$
+
+P_single_num(DD) := subst([d1=d1_val, d2=d2_val, A=0.1, k=1.5],
+    float(subst(D=DD, P_single_mid)))$
+
+P_total_num(DD) := subst([d1=d1_val, d2=d2_val, A=0.1, k=1.5],
+    float(subst(D=DD, P_total_mid)))$
+
+print("=== P vs separation D (A=0.1, k=1.5) ===")$
+print("  D    P_single    P_total    ratio")$
+for DD in [50, 30, 25, 20, 15, 10, 8, 6, 4, 2, 1, 0.5, 0.1] do (
+    ps : P_single_num(DD),
+    pt : P_total_num(DD),
+    ratio : if abs(ps) > 1e-15 then pt/ps else 0,
+    printf(true, "  ~4,1f   ~12,6e   ~12,6e   ~6,2f~%", DD, ps, pt, ratio)
+)$
+
+print("")$
+
+/* ================================================================
+   Curl of phi at midpoint — the EM sector
+   ================================================================
+
+   curl(φ)_x = ∂φ_z/∂y - ∂φ_y/∂z
+
+   Along the x-axis (y=z=0), the y and z derivatives come from
+   braids 1 and 2:
+
+   ∂φ_a/∂y from braid 1 (y-axis): -A × chi[1] × k × sin(chi[1]*k*y + δ_a + Δ[1])
+     At y=0: -A × chi[1] × k × sin(δ_a + Δ[1])
+
+   ∂φ_a/∂z from braid 2 (z-axis): -A × chi[2] × k × sin(chi[2]*k*z + δ_a + Δ[2])
+     At z=0: -A × chi[2] × k × sin(δ_a + Δ[2])
+*/
+
+/* curl(φ)_x = ∂φ_z/∂y - ∂φ_y/∂z  at (x, 0, 0) for single proton at origin */
+/* ∂φ_z/∂y: braid 1 contribution to φ_z */
+dphi_z_dy_single : -A * chi[2] * k * sin(delta[3] + Delta[2])$  /* braid 1 (y-axis) -> phi_z */
+/* ∂φ_y/∂z: braid 2 contribution to φ_y */
+dphi_y_dz_single : -A * chi[3] * k * sin(delta[2] + Delta[3])$  /* braid 2 (z-axis) -> phi_y */
+
+curl_x_single : dphi_z_dy_single - dphi_y_dz_single$
+
+print("=== curl(φ)_x for single proton (at any point on x-axis) ===")$
+print("Note: this is INDEPENDENT of x — braids 1,2 don't vary along x!")$
+print(trigreduce(curl_x_single))$
+print("")$
+
+/* For two protons: curl is LINEAR so curl(φ_L + φ_R) = curl(φ_L) + curl(φ_R) */
+/* Since curl_x doesn't depend on x (braids 1,2 at y=z=0 are constant), */
+/* TWO protons at the midpoint have EXACTLY 2× the curl of one proton! */
+
+print("=== KEY RESULT ===")$
+print("curl(φ)_x at midpoint for two protons = 2 × curl(φ)_x for one proton")$
+print("Because braids 1,2 contribute to curl_x at y=z=0 INDEPENDENTLY of x.")$
+print("The curl DOUBLES when two protons overlap on the x-axis!")$
+print("")$
+
+/* But θ at midpoint is the AVERAGE of the two protons' θ fields */
+/* (θ propagates as a wave, so it's the superposition, not a constraint) */
+/* M = curl(φ)/2 - θ */
+/* If θ ≈ curl(φ_single)/2 for each proton (Cosserat equilibrium), */
+/* then at overlap: */
+/* curl(φ_total)/2 = curl(φ_L)/2 + curl(φ_R)/2 */
+/* θ_total = θ_L + θ_R ≈ curl(φ_L)/2 + curl(φ_R)/2 */
+/* M = curl(φ_total)/2 - θ_total ≈ 0 */
+/* BUT this assumes θ had time to adjust. If the approach is fast, */
+/* θ lags behind curl(φ)/2 and M grows! */
+
+print("=== Mismatch dynamics ===")$
+print("If approach is SLOW (adiabatic): θ tracks curl(φ)/2 → M ≈ 0")$
+print("If approach is FAST: θ lags → M = curl(φ)/2 - θ_old grows")$
+print("")$
+
+/* ================================================================
+   The x-derivative: what DOES change with D
+   ================================================================
+
+   ∂φ_a/∂x comes from braid 0 (x-axis):
+   -A × chi[0] × k × sin(chi[0]*k*x + δ_a + Δ[0])
+
+   For proton L at -D/2, evaluated at midpoint (x=0):
+   braid 0 sees x_local = +D/2
+   → -A × k × sin(k*D/2 + δ_a)
+
+   For proton R at +D/2:
+   braid 0 sees x_local = -D/2
+   → -A × k × sin(-k*D/2 + δ_a) = A × k × sin(k*D/2 - δ_a)
+*/
+
+dphi_a_dx_L(a) := -A * chi[1] * k * sin(chi[1]*k*D/2 + delta[a+1] + Delta[1])$
+dphi_a_dx_R(a) := -A * chi[1] * k * sin(-chi[1]*k*D/2 + delta[a+1] + Delta[1])$
+
+curl_y_at_mid : dphi_a_dx_R(0) - dphi_a_dx_L(0)$  /* simplified: just x-derivatives of φ_z */
+
+print("=== ∂φ_0/∂x at midpoint from each proton ===")$
+print("From L: ", trigreduce(dphi_a_dx_L(0)))$
+print("From R: ", trigreduce(dphi_a_dx_R(0)))$
+print("Sum:    ", trigreduce(dphi_a_dx_L(0) + dphi_a_dx_R(0)))$
+print("")$
+
+/* The sum of x-derivatives: */
+sum_dphi0_dx : trigreduce(expand(dphi_a_dx_L(0) + dphi_a_dx_R(0)))$
+print("∂φ_0/∂x total = ", sum_dphi0_dx)$
+print("")$
+
+/* This IS D-dependent through the sin(kD/2) factor. */
+/* At D=0: the two derivatives cancel (protons on top of each other). */
+/* At D=π/k: they add constructively. */
+
+print("=== ∂φ_0/∂x total vs D (numerical) ===")$
+for DD in [25, 20, 15, 10, 5, 2, 1, 0] do (
+    val : float(subst([d1=d1_val, d2=d2_val, A=0.1, k=1.5, D=DD], sum_dphi0_dx)),
+    printf(true, "  D=~4,1f  ∂φ₀/∂x = ~10,4e~%", DD, val)
+)$
+print("")$
+
+/* ================================================================
+   Energy density at midpoint
+   ================================================================ */
+
+/* The key energy terms at midpoint:
+   E_pot = V(P) = (μ/2) P² / (1 + κ P²)
+   E_strain = α |M|²
+   E_hardening = β |∇×φ|² |θ|²
+
+   As D decreases:
+   - P_total grows (more field overlap) → E_pot grows (deeper well)
+   - |curl(φ)| doubles → E_hardening quadruples (if θ also doubles)
+   - M depends on θ response time
+*/
+
+print("=== Summary of core interaction physics ===")$
+print("")$
+print("1. TRIPLE PRODUCT P: grows as cores overlap (more field at midpoint)")$
+print("   → Deeper binding well V(P). This is ATTRACTIVE.")$
+print("")$
+print("2. CURL(φ): doubles at overlap (linear superposition)")$
+print("   → Hardening energy β|∇×φ|²|θ|² quadruples")$
+print("   → This is REPULSIVE (energy cost)")$
+print("")$
+print("3. MISMATCH M: depends on θ response time")$
+print("   → Slow approach: M≈0 (θ tracks), only V(P) and hardening matter")$
+print("   → Fast approach: M grows, strain energy α|M|² adds repulsion")$
+print("")$
+print("4. BREATHING: the oscillation of P within each proton is INTERNAL")$
+print("   → The carrier phase cancellation (Σcos(δ+Δ_b)=0) holds regardless")$
+print("     of the OTHER proton's presence")$
+print("   → Breathing amplitude is set by initial conditions, not by overlap")$
+print("   → This explains why breathing is unperturbed by collision!")$
+print("")$
+print("5. THE φ_x DERIVATIVE: this IS D-dependent (through sin(kD/2))")$
+print("   → Contributes to curl_y and curl_z at midpoint")$
+print("   → These components oscillate with D at wavelength 2π/k")$
+print("   → Creates a D-dependent force modulation")$

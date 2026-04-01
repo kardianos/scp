@@ -70,9 +70,20 @@ theorem chiral_parity_even (κh : R) (φ curlPhi : FieldVec) :
     chiralEnergy κh (fun a => -(φ a)) (fun a => -(curlPhi a)) =
     chiralEnergy κh φ curlPhi := by
   unfold chiralEnergy tripleProduct dot
-  -- (-φ0)*(-φ1)*(-φ2) = -(φ0*φ1*φ2), squared gives same P²
-  -- (-φ)·(-curlφ) = φ·curlφ
-  sorry  -- algebra with neg_mul, mul_neg
+  -- Step 1: (-a)*(-b) = a*b
+  have neg_mul_neg (a b : R) : (-a) * (-b) = a * b := by
+    rw [R.neg_mul, R.mul_neg, R.neg_neg]
+  -- Step 2: (-φ0)*(-φ1)*(-φ2) = -(φ0*φ1*φ2)
+  have triple_neg : (-(φ 0)) * (-(φ 1)) * (-(φ 2)) = -((φ 0) * (φ 1) * (φ 2)) := by
+    rw [neg_mul_neg, R.mul_neg]
+  -- Step 3: (-(x))^2 = x^2
+  have neg_sq (x : R) : (-x) ^ (2 : Nat) = x ^ (2 : Nat) := by
+    rw [R.pow_two, R.pow_two, neg_mul_neg]
+  -- Step 4: dot product with double negation
+  have dot_neg : (-(φ 0)) * (-(curlPhi 0)) + (-(φ 1)) * (-(curlPhi 1)) + (-(φ 2)) * (-(curlPhi 2)) =
+                 (φ 0) * (curlPhi 0) + (φ 1) * (curlPhi 1) + (φ 2) * (curlPhi 2) := by
+    rw [neg_mul_neg, neg_mul_neg, neg_mul_neg]
+  rw [triple_neg, neg_sq, dot_neg]
 
 /-! ## Force from chiral helicity (algebraic part) -/
 

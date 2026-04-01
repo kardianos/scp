@@ -73,8 +73,7 @@ theorem theta_restoring_sign (α : R) (hα : (0 : R) < α) (δ : R) (hδ : (0 : 
       (fun b => curlPhi b / (2 : R) + (fun _ => δ) b) a < (0 : R) := by
   rw [strain_force_linear]
   -- Need to show -(2*α*δ) < 0, i.e., 2*α*δ > 0
-  -- 2 > 0, α > 0, δ > 0 ⟹ 2*α*δ > 0 ⟹ -(2*α*δ) < 0
-  sorry  -- order arithmetic
+  exact R.neg_neg_of_pos _ (R.mul_pos _ _ (R.mul_pos _ _ R.two_pos hα) hδ)
 
 /-! ## Vacuum stationarity -/
 
@@ -84,15 +83,19 @@ theorem vacuum_phi (p : C3Params) (a : Fin 3) :
       (fun _ => (0 : R)) (fun _ => (0 : R))
       (fun _ => (0 : R)) (fun _ => (0 : R)) a = (0 : R) := by
   unfold phiForceC3
-  -- V44 phi force at vacuum = 0, curlM term = 0, chiral force = 0
-  sorry  -- sum of zero terms
+  rw [V44.vacuum_stationary_phi, chiralForce_zero_curl]
+  simp [R.mul_zero, R.neg_zero, R.add_zero]
 
 theorem vacuum_theta (p : C3Params) (a : Fin 3) :
     thetaForceC3 p (fun _ => (0 : R)) (fun _ => (0 : R))
       (fun _ => (0 : R)) a = (0 : R) := by
   unfold thetaForceC3
-  -- V44 theta force at vacuum = 0, strain force with M=0 = 0
-  sorry  -- sum of zero terms
+  rw [V44.vacuum_stationary_theta]
+  simp only [thetaForceStrain, mismatch]
+  -- Need: 0 / 2 = 0
+  have zero_div_two : (0 : R) / (2 : R) = 0 := by
+    rw [R.div_def, R.zero_mul]
+  simp [R.add_zero, R.sub_def, R.neg_zero, R.mul_zero, zero_div_two]
 
 /-! ## Total C3 energy -/
 

@@ -29,7 +29,10 @@
 typedef struct {
     int N;
     double L, T, dt_factor;
-    double m2, mtheta2, eta, eta1, mu, kappa, lambda_theta;
+    double m2, mtheta2, eta, mu, kappa;
+    double kappa_h;             /* chiral helicity coupling */
+    double alpha_cs;            /* Cosserat strain */
+    double beta_h;              /* curl-squared hardening */
     int mode;
     double inv_alpha, inv_beta, kappa_gamma;
     int bc_type;                /* 0=absorb_sphere, 1=gradient_pinned */
@@ -48,13 +51,14 @@ typedef struct {
     int precision;
     int output_split;
     double snap_dt, diag_dt;
+    double burst_start, burst_end, burst_every;
 } Config;
 
 static Config cfg_defaults(void) {
     Config c = {};
     c.N = 128;  c.L = 10.0;  c.T = 200.0;  c.dt_factor = 0.025;
-    c.m2 = 2.25;  c.mtheta2 = 0.0;  c.eta = 0.5;  c.eta1 = 0.0;  c.lambda_theta = 0.0;
-    c.mu = -41.345;  c.kappa = 50.0;
+    c.m2 = 2.25;  c.mtheta2 = 0.0;  c.eta = 0.5;
+    c.mu = -41.345;  c.kappa = 50.0;  c.kappa_h = 0.0;  c.alpha_cs = 0.0;  c.beta_h = 0.0;
     c.mode = 0;  c.inv_alpha = 2.25;  c.inv_beta = 5.0;  c.kappa_gamma = 2.0;
     c.bc_type = 0;
     c.damp_width = 3.0;  c.damp_rate = 0.01;  c.bc_switch_time = 0.0;
@@ -69,6 +73,7 @@ static Config cfg_defaults(void) {
     c.precision = 1;
     c.output_split = 0;
     c.snap_dt = 5.0;  c.diag_dt = 2.0;
+    c.burst_start = 0;  c.burst_end = 0;  c.burst_every = 0;
     return c;
 }
 
@@ -80,10 +85,11 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"m"))         { double m = atof(val); c->m2 = m*m; }
     else if (!strcmp(key,"m_theta"))   { double m = atof(val); c->mtheta2 = m*m; }
     else if (!strcmp(key,"eta"))         c->eta = atof(val);
-    else if (!strcmp(key,"eta1"))        c->eta1 = atof(val);
-    else if (!strcmp(key,"lambda_theta")) c->lambda_theta = atof(val);
     else if (!strcmp(key,"mu"))          c->mu = atof(val);
     else if (!strcmp(key,"kappa"))       c->kappa = atof(val);
+    else if (!strcmp(key,"kappa_h"))    c->kappa_h = atof(val);
+    else if (!strcmp(key,"alpha_cs"))   c->alpha_cs = atof(val);
+    else if (!strcmp(key,"beta_h"))    c->beta_h = atof(val);
     else if (!strcmp(key,"mode"))        c->mode = atoi(val);
     else if (!strcmp(key,"inv_alpha"))   c->inv_alpha = atof(val);
     else if (!strcmp(key,"inv_beta"))    c->inv_beta = atof(val);
@@ -115,6 +121,10 @@ static void cfg_set(Config *c, const char *key, const char *val) {
         else if (!strcmp(val,"f64")) c->precision = 2;
     }
     else if (!strcmp(key,"output_split")) c->output_split = atoi(val);
+    else if (!strcmp(key,"burst_start")) c->burst_start = atof(val);
+    else if (!strcmp(key,"burst_end"))   c->burst_end = atof(val);
+    else if (!strcmp(key,"burst_every")) c->burst_every = atof(val);
+    else fprintf(stderr, "WARNING: unknown config key '%s'\n", key);
 }
 
 static void cfg_load(Config *c, const char *path) {
@@ -143,13 +153,13 @@ static void cfg_load(Config *c, const char *path) {
 
 static void cfg_print(const Config *c) {
     const char *prec_names[] = {"f16", "f32", "f64"};
-    printf("=== scp_sim CUDA: Unified 6-field Cosserat Kernel (GPU) ===\n");
-    printf("d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ)%s\n",
-           c->lambda_theta > 0 ? " - λ_θ·P·(∂P/∂φ)·|θ|²" : "");
-    printf("d²θ/dt² = ∇²θ - (m_θ² + λ_θ·P²)θ + η·curl(φ)\n\n");
+    printf("=== scp_sim CUDA: V50/C4 Cosserat + Curl²-Hardening (GPU) ===\n");
+    printf("d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ) - α·curl(M) - 2curl(Q)\n");
+    printf("d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ) + 2α·M - β|∇×φ|²θ\n");
+    printf("  M = curl(φ)/2 - θ,  Q = (β/2)|θ|²curl(φ)\n\n");
     printf("Grid:    N=%d L=%.1f T=%.0f dt_factor=%.4f\n", c->N, c->L, c->T, c->dt_factor);
-    printf("Physics: m²=%.4f m_θ²=%.4f η=%.3f η₁=%.3f μ=%.3f κ=%.1f λ_θ=%.3f\n",
-           c->m2, c->mtheta2, c->eta, c->eta1, c->mu, c->kappa, c->lambda_theta);
+    printf("Physics: m²=%.4f m_θ²=%.4f η=%.3f μ=%.3f κ=%.1f κ_h=%.3f α=%.3f β=%.3f\n",
+           c->m2, c->mtheta2, c->eta, c->mu, c->kappa, c->kappa_h, c->alpha_cs, c->beta_h);
     printf("Mode:    %d", c->mode);
     if (c->mode == 1) printf(" (inverse: α=%.3f β=%.3f)", c->inv_alpha, c->inv_beta);
     if (c->mode == 3) printf(" (density-κ: γ=%.3f)", c->kappa_gamma);
@@ -267,7 +277,8 @@ typedef struct {
     double *h_results;    /* 12 doubles on host (pinned) */
 
     /* Config params for potential energy */
-    double m2, mtheta2, eta, eta1, mu, kappa, lambda_theta;
+    double m2, mtheta2, eta, mu, kappa;
+    double kappa_h, alpha_cs, beta_h;
     int mode;
     double inv_alpha, inv_beta, kappa_gamma;
 } DiagHookCtx;
@@ -532,7 +543,8 @@ static void do_init(Grid *g, const Config *c) {
    GPU constant memory
    ================================================================ */
 
-__constant__ double d_MU, d_KAPPA, d_MASS2, d_MTHETA2, d_ETA, d_ETA1, d_LAMBDA_THETA;
+__constant__ double d_MU, d_KAPPA, d_MASS2, d_MTHETA2, d_ETA;
+__constant__ double d_KAPPA_H, d_ALPHA_CS, d_BETA_H;
 __constant__ double d_inv_alpha, d_inv_beta, d_kappa_gamma;
 __constant__ double d_idx2, d_idx1;
 __constant__ double d_L, d_dx, d_DAMP_WIDTH, d_DAMP_RATE;
@@ -545,11 +557,56 @@ __constant__ double d_GRAD_A_HIGH, d_GRAD_A_LOW;
    GPU kernels
    ================================================================ */
 
+/* Pass 1: compute intermediate fields (mismatch M, hardening Q) at all voxels.
+ * Only launched when alpha_cs > 0 or beta_h > 0. */
+__global__ void compute_intermediates_kernel(
+    const double *phi0, const double *phi1, const double *phi2,
+    const double *theta0, const double *theta1, const double *theta2,
+    double *mis0, double *mis1, double *mis2,
+    double *Q0, double *Q1, double *Q2)
+{
+    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= d_N3) return;
+
+    int N = d_N, NN = d_NN;
+    int i = (int)(idx / NN), j = (int)((idx / N) % N), k = (int)(idx % N);
+    int ip=(i+1)%N, im=(i-1+N)%N, jp=(j+1)%N, jm=(j-1+N)%N, kp=(k+1)%N, km=(k-1+N)%N;
+    long n_ip=(long)ip*NN+j*N+k, n_im=(long)im*NN+j*N+k;
+    long n_jp=(long)i*NN+jp*N+k, n_jm=(long)i*NN+jm*N+k;
+    long n_kp=(long)i*NN+j*N+kp, n_km=(long)i*NN+j*N+km;
+
+    const double *phi[3] = {phi0, phi1, phi2};
+    /* curl(phi) at this voxel */
+    double cp0 = (phi[2][n_jp]-phi[2][n_jm]-phi[1][n_kp]+phi[1][n_km])*d_idx1;
+    double cp1 = (phi[0][n_kp]-phi[0][n_km]-phi[2][n_ip]+phi[2][n_im])*d_idx1;
+    double cp2 = (phi[1][n_ip]-phi[1][n_im]-phi[0][n_jp]+phi[0][n_jm])*d_idx1;
+
+    /* Cosserat mismatch: M_a = curl(φ)_a/2 - θ_a */
+    if (d_ALPHA_CS != 0) {
+        mis0[idx] = cp0 * 0.5 - theta0[idx];
+        mis1[idx] = cp1 * 0.5 - theta1[idx];
+        mis2[idx] = cp2 * 0.5 - theta2[idx];
+    }
+
+    /* Hardening vector: Q_a = (β/2)|θ|²·curl(φ)_a */
+    if (d_BETA_H != 0) {
+        double t0=theta0[idx], t1=theta1[idx], t2=theta2[idx];
+        double T2 = t0*t0 + t1*t1 + t2*t2;
+        double coeff = 0.5 * d_BETA_H * T2;
+        Q0[idx] = coeff * cp0;
+        Q1[idx] = coeff * cp1;
+        Q2[idx] = coeff * cp2;
+    }
+}
+
+/* Pass 2: compute all forces using pre-computed intermediates */
 __global__ void compute_forces_kernel(
     const double *phi0, const double *phi1, const double *phi2,
     const double *theta0, const double *theta1, const double *theta2,
     double *acc_phi0, double *acc_phi1, double *acc_phi2,
-    double *acc_theta0, double *acc_theta1, double *acc_theta2)
+    double *acc_theta0, double *acc_theta1, double *acc_theta2,
+    const double *mis0, const double *mis1, const double *mis2,
+    const double *Q0, const double *Q1, const double *Q2)
 {
     long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= d_N3) return;
@@ -580,24 +637,51 @@ __global__ void compute_forces_kernel(
         t2c = d_MU * d_kappa_gamma * d_KAPPA * P2 * P2 / (D*D);
     }
 
-    /* Topology-dependent coupling: eta(P) = eta0 + eta1*P²/(1+kappa*P²)
-     * Saturates at eta0 + eta1/kappa. P2 already computed above. */
-    double eta_eff = d_ETA + d_ETA1 * P2 / (1.0 + d_KAPPA * P2);
-
-    /* Field-dependent theta mass: m_theta^2(x) = m_theta^2 + lambda_theta * P^2 */
-    double mtheta2_eff = d_MTHETA2 + d_LAMBDA_THETA * P2;
-
-    /* Theta energy density for phi back-reaction */
-    double t0v=theta0[idx], t1v=theta1[idx], t2v=theta2[idx];
-    double thetamag2 = t0v*t0v + t1v*t1v + t2v*t2v;
-
     /* Phi field arrays for curl */
     const double *phi[3] = {phi0, phi1, phi2};
     const double *th[3] = {theta0, theta1, theta2};
+
+    /* curl(φ) at this voxel — needed for chiral and theta hardening */
+    double curl_phi[3];
+    curl_phi[0] = (phi[2][n_jp]-phi[2][n_jm]-phi[1][n_kp]+phi[1][n_km])*d_idx1;
+    curl_phi[1] = (phi[0][n_kp]-phi[0][n_km]-phi[2][n_ip]+phi[2][n_im])*d_idx1;
+    curl_phi[2] = (phi[1][n_ip]-phi[1][n_im]-phi[0][n_jp]+phi[0][n_jm])*d_idx1;
+
+    /* Chiral helicity: κ_h P² φ·curl(φ) */
+    double h_chiral = p0*curl_phi[0] + p1*curl_phi[1] + p2*curl_phi[2];
+    double dP2dx=0, dP2dy=0, dP2dz=0;
+    if (d_KAPPA_H != 0) {
+        double Pip=phi0[n_ip]*phi1[n_ip]*phi2[n_ip], Pim=phi0[n_im]*phi1[n_im]*phi2[n_im];
+        double Pjp=phi0[n_jp]*phi1[n_jp]*phi2[n_jp], Pjm=phi0[n_jm]*phi1[n_jm]*phi2[n_jm];
+        double Pkp=phi0[n_kp]*phi1[n_kp]*phi2[n_kp], Pkm=phi0[n_km]*phi1[n_km]*phi2[n_km];
+        dP2dx=(Pip*Pip-Pim*Pim)*d_idx1; dP2dy=(Pjp*Pjp-Pjm*Pjm)*d_idx1; dP2dz=(Pkp*Pkp-Pkm*Pkm)*d_idx1;
+    }
+
+    /* Cosserat strain: curl(M) for phi force */
+    double curl_M[3] = {0, 0, 0};
+    if (d_ALPHA_CS != 0) {
+        const double *M[3] = {mis0, mis1, mis2};
+        curl_M[0] = (M[2][n_jp]-M[2][n_jm]-M[1][n_kp]+M[1][n_km])*d_idx1;
+        curl_M[1] = (M[0][n_kp]-M[0][n_km]-M[2][n_ip]+M[2][n_im])*d_idx1;
+        curl_M[2] = (M[1][n_ip]-M[1][n_im]-M[0][n_jp]+M[0][n_jm])*d_idx1;
+    }
+
+    /* Curl-squared hardening: curl(Q) for phi force */
+    double curl_Q[3] = {0, 0, 0};
+    if (d_BETA_H != 0) {
+        const double *Qv[3] = {Q0, Q1, Q2};
+        curl_Q[0] = (Qv[2][n_jp]-Qv[2][n_jm]-Qv[1][n_kp]+Qv[1][n_km])*d_idx1;
+        curl_Q[1] = (Qv[0][n_kp]-Qv[0][n_km]-Qv[2][n_ip]+Qv[2][n_im])*d_idx1;
+        curl_Q[2] = (Qv[1][n_ip]-Qv[1][n_im]-Qv[0][n_jp]+Qv[0][n_jm])*d_idx1;
+    }
+
+    /* |curl(φ)|² for theta hardening */
+    double curl_sq = curl_phi[0]*curl_phi[0] + curl_phi[1]*curl_phi[1] + curl_phi[2]*curl_phi[2];
+
     double acc_p[3], acc_t[3];
 
+    /* --- Phi forces --- */
     for (int a = 0; a < 3; a++) {
-        /* Laplacian */
         double lap = (phi[a][n_ip]+phi[a][n_im]+phi[a][n_jp]+phi[a][n_jm]
                      +phi[a][n_kp]+phi[a][n_km]-6.0*phi[a][idx]) * d_idx2;
         double dPda = (a==0)?p1*p2:(a==1)?p0*p2:p0*p1;
@@ -608,10 +692,25 @@ __global__ void compute_forces_kernel(
         else if (a==1) ct = (th[0][n_kp]-th[0][n_km]-th[2][n_ip]+th[2][n_im])*d_idx1;
         else ct = (th[1][n_ip]-th[1][n_im]-th[0][n_jp]+th[0][n_jm])*d_idx1;
 
+        /* Chiral force */
+        double chiral = 0;
+        if (d_KAPPA_H != 0) {
+            double t1c = 2.0 * P * dPda * h_chiral;
+            double t2c_ = 2.0 * P2 * curl_phi[a];
+            double t3c;
+            if (a == 0)      t3c = -(dP2dz * p1 - dP2dy * p2);
+            else if (a == 1) t3c = -(dP2dx * p2 - dP2dz * p0);
+            else             t3c = -(dP2dy * p0 - dP2dx * p1);
+            chiral = d_KAPPA_H * (t1c + t2c_ + t3c);
+        }
+
         acc_p[a] = lap - me2*phi[a][idx] - dVdP*dPda - t2c*phi[a][idx]
-                 + eta_eff*ct - d_LAMBDA_THETA*P*dPda*thetamag2;
+                 + d_ETA*ct + chiral
+                 - d_ALPHA_CS * curl_M[a]    /* Cosserat strain */
+                 - 2.0 * curl_Q[a];          /* Curl² hardening */
     }
 
+    /* --- Theta forces --- */
     for (int a = 0; a < 3; a++) {
         double lapt = (th[a][n_ip]+th[a][n_im]+th[a][n_jp]+th[a][n_jm]
                       +th[a][n_kp]+th[a][n_km]-6.0*th[a][idx]) * d_idx2;
@@ -620,7 +719,18 @@ __global__ void compute_forces_kernel(
         else if (a==1) cp = (phi[0][n_kp]-phi[0][n_km]-phi[2][n_ip]+phi[2][n_im])*d_idx1;
         else cp = (phi[1][n_ip]-phi[1][n_im]-phi[0][n_jp]+phi[0][n_jm])*d_idx1;
 
-        acc_t[a] = lapt - mtheta2_eff*th[a][idx] + eta_eff*cp;
+        /* Cosserat strain: +2α·M_a (computed inline from M at center) */
+        double cosserat_theta = 0;
+        if (d_ALPHA_CS != 0) {
+            const double *M[3] = {mis0, mis1, mis2};
+            cosserat_theta = 2.0 * d_ALPHA_CS * M[a][idx];
+        }
+
+        /* Hardening: -β|∇×φ|²·θ_a */
+        double harden_theta = -d_BETA_H * curl_sq * th[a][idx];
+
+        acc_t[a] = lapt - d_MTHETA2*th[a][idx] + d_ETA*cp
+                 + cosserat_theta + harden_theta;
     }
 
     acc_phi0[idx]=acc_p[0]; acc_phi1[idx]=acc_p[1]; acc_phi2[idx]=acc_p[2];
@@ -771,8 +881,8 @@ __global__ void reduce_diagnostics_kernel(
     const double *vp0, const double *vp1, const double *vp2,
     const double *vt0, const double *vt1, const double *vt2,
     double dV, double idx1, double idx2_val,
-    double mass2, double mtheta2, double eta, double eta1, double mu, double kappa,
-    double lambda_theta,
+    double mass2, double mtheta2, double eta, double mu, double kappa,
+    double alpha_cs, double beta_h, double kappa_h,
     int mode, double inv_alpha, double inv_beta, double kappa_gamma,
     double *d_results)
 {
@@ -803,7 +913,6 @@ __global__ void reduce_diagnostics_kernel(
         const double *vth[3] = {vt0, vt1, vt2};
 
         double P = pp0*pp1*pp2, P2 = P*P;
-        double mtheta2_eff_diag = mtheta2 + lambda_theta * P2;
 
         double s_epk=0, s_etk=0, s_eg=0, s_em=0, s_etg=0, s_etm=0, s_ec=0;
         double s_pm=0, s_trms=0;
@@ -820,7 +929,7 @@ __global__ void reduce_diagnostics_kernel(
             double tgy=(th[a][n_jp]-th[a][n_jm])*idx1;
             double tgz=(th[a][n_kp]-th[a][n_km])*idx1;
             s_etg += 0.5*(tgx*tgx+tgy*tgy+tgz*tgz)*dV;
-            s_etm += 0.5*mtheta2_eff_diag*th[a][idx]*th[a][idx]*dV;
+            s_etm += 0.5*mtheta2*th[a][idx]*th[a][idx]*dV;
             double ap = fabs(phi[a][idx]); if (ap > s_pm) s_pm = ap;
             s_trms += th[a][idx]*th[a][idx];
         }
@@ -833,13 +942,30 @@ __global__ void reduce_diagnostics_kernel(
             s_ep = (mu/2.0)*P2/(1.0+keff*P2)*dV;
         }
 
-        /* Curl coupling with topology-dependent eta */
+        /* Cosserat/hardening/chiral energy contributions (added to E_pot) */
+        double cx0=(phi[2][n_jp]-phi[2][n_jm]-phi[1][n_kp]+phi[1][n_km])*idx1;
+        double cx1=(phi[0][n_kp]-phi[0][n_km]-phi[2][n_ip]+phi[2][n_im])*idx1;
+        double cx2=(phi[1][n_ip]-phi[1][n_im]-phi[0][n_jp]+phi[0][n_jm])*idx1;
+        if (alpha_cs != 0) {
+            double m0=cx0*0.5-th[0][idx], m1=cx1*0.5-th[1][idx], m2c=cx2*0.5-th[2][idx];
+            s_ep += alpha_cs * (m0*m0 + m1*m1 + m2c*m2c) * dV;
+        }
+        if (beta_h != 0) {
+            double csq = cx0*cx0 + cx1*cx1 + cx2*cx2;
+            double T2 = th[0][idx]*th[0][idx]+th[1][idx]*th[1][idx]+th[2][idx]*th[2][idx];
+            s_ep += 0.5 * beta_h * T2 * csq * dV;
+        }
+        if (kappa_h != 0) {
+            double hel = pp0*cx0 + pp1*cx1 + pp2*cx2;
+            s_ep += kappa_h * P2 * hel * dV;
+        }
+
+        /* Curl coupling energy */
         double curl_th[3];
         curl_th[0]=(th[2][n_jp]-th[2][n_jm]-th[1][n_kp]+th[1][n_km])*idx1;
         curl_th[1]=(th[0][n_kp]-th[0][n_km]-th[2][n_ip]+th[2][n_im])*idx1;
         curl_th[2]=(th[1][n_ip]-th[1][n_im]-th[0][n_jp]+th[0][n_jm])*idx1;
-        double eta_eff_diag = eta + eta1 * P2 / (1.0 + kappa * P2);
-        for (int a=0;a<3;a++) s_ec -= eta_eff_diag * phi[a][idx] * curl_th[a] * dV;
+        for (int a=0;a<3;a++) s_ec -= eta * phi[a][idx] * curl_th[a] * dV;
 
         local[0] = s_epk;
         local[1] = s_etk;
@@ -911,17 +1037,30 @@ __global__ void zero_diag_kernel(double *d_results, int n) {
 
 static double *d_phi[3], *d_vel_phi[3], *d_acc_phi[3];
 static double *d_theta[3], *d_vel_theta[3], *d_acc_theta[3];
+static double *d_mismatch[3], *d_harden_Q[3];  /* intermediates for Cosserat/hardening */
 static int gpu_blocks;
+static int gpu_has_intermediates = 0;  /* nonzero if intermediate arrays allocated */
 
-static void gpu_alloc(long N3) {
+static void gpu_alloc(long N3, int need_intermediates) {
     size_t bytes = N3 * sizeof(double);
     for (int a = 0; a < 3; a++) {
         cudaMalloc(&d_phi[a], bytes);       cudaMalloc(&d_vel_phi[a], bytes);   cudaMalloc(&d_acc_phi[a], bytes);
         cudaMalloc(&d_theta[a], bytes);     cudaMalloc(&d_vel_theta[a], bytes); cudaMalloc(&d_acc_theta[a], bytes);
     }
+    double total_gb = 18.0*bytes/1e9;
+    if (need_intermediates) {
+        for (int a = 0; a < 3; a++) {
+            cudaMalloc(&d_mismatch[a], bytes);
+            cudaMalloc(&d_harden_Q[a], bytes);
+            cudaMemset(d_mismatch[a], 0, bytes);
+            cudaMemset(d_harden_Q[a], 0, bytes);
+        }
+        gpu_has_intermediates = 1;
+        total_gb += 6.0*bytes/1e9;
+    }
     gpu_blocks = (int)((N3 + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK);
-    printf("GPU: allocated %.2f GB (physics), %d blocks × %d threads\n",
-           18.0*bytes/1e9, gpu_blocks, THREADS_PER_BLOCK);
+    printf("GPU: allocated %.2f GB (physics%s), %d blocks × %d threads\n",
+           total_gb, need_intermediates ? "+Cosserat" : "", gpu_blocks, THREADS_PER_BLOCK);
 }
 
 static void gpu_upload(Grid *g) {
@@ -951,6 +1090,11 @@ static void gpu_free(void) {
         cudaFree(d_phi[a]); cudaFree(d_vel_phi[a]); cudaFree(d_acc_phi[a]);
         cudaFree(d_theta[a]); cudaFree(d_vel_theta[a]); cudaFree(d_acc_theta[a]);
     }
+    if (gpu_has_intermediates) {
+        for (int a = 0; a < 3; a++) {
+            cudaFree(d_mismatch[a]); cudaFree(d_harden_Q[a]);
+        }
+    }
 }
 
 static void gpu_set_constants(const Config *c, double dx) {
@@ -962,8 +1106,9 @@ static void gpu_set_constants(const Config *c, double dx) {
     cudaMemcpyToSymbol(d_MASS2, &c->m2, sizeof(double));
     cudaMemcpyToSymbol(d_MTHETA2, &c->mtheta2, sizeof(double));
     cudaMemcpyToSymbol(d_ETA, &c->eta, sizeof(double));
-    cudaMemcpyToSymbol(d_ETA1, &c->eta1, sizeof(double));
-    cudaMemcpyToSymbol(d_LAMBDA_THETA, &c->lambda_theta, sizeof(double));
+    cudaMemcpyToSymbol(d_KAPPA_H, &c->kappa_h, sizeof(double));
+    cudaMemcpyToSymbol(d_ALPHA_CS, &c->alpha_cs, sizeof(double));
+    cudaMemcpyToSymbol(d_BETA_H, &c->beta_h, sizeof(double));
     cudaMemcpyToSymbol(d_inv_alpha, &c->inv_alpha, sizeof(double));
     cudaMemcpyToSymbol(d_inv_beta, &c->inv_beta, sizeof(double));
     cudaMemcpyToSymbol(d_kappa_gamma, &c->kappa_gamma, sizeof(double));
@@ -994,12 +1139,22 @@ static void gpu_verlet_step(double dt) {
         d_theta[0], d_theta[1], d_theta[2],
         d_vel_phi[0], d_vel_phi[1], d_vel_phi[2],
         d_vel_theta[0], d_vel_theta[1], d_vel_theta[2], dt);
+    /* Intermediates (Cosserat mismatch + hardening Q) */
+    if (gpu_has_intermediates) {
+        compute_intermediates_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_phi[0], d_phi[1], d_phi[2],
+            d_theta[0], d_theta[1], d_theta[2],
+            d_mismatch[0], d_mismatch[1], d_mismatch[2],
+            d_harden_Q[0], d_harden_Q[1], d_harden_Q[2]);
+    }
     /* Forces */
     compute_forces_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_phi[0], d_phi[1], d_phi[2],
         d_theta[0], d_theta[1], d_theta[2],
         d_acc_phi[0], d_acc_phi[1], d_acc_phi[2],
-        d_acc_theta[0], d_acc_theta[1], d_acc_theta[2]);
+        d_acc_theta[0], d_acc_theta[1], d_acc_theta[2],
+        d_mismatch[0], d_mismatch[1], d_mismatch[2],
+        d_harden_Q[0], d_harden_Q[1], d_harden_Q[2]);
     /* Half-kick */
     verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_vel_phi[0], d_vel_phi[1], d_vel_phi[2],
@@ -1282,10 +1437,11 @@ static DiagHookCtx create_diag_hook(FILE *fp, int diag_every, int major_every,
     ctx.m2 = c->m2;
     ctx.mtheta2 = c->mtheta2;
     ctx.eta = c->eta;
-    ctx.eta1 = c->eta1;
     ctx.mu = c->mu;
     ctx.kappa = c->kappa;
-    ctx.lambda_theta = c->lambda_theta;
+    ctx.kappa_h = c->kappa_h;
+    ctx.alpha_cs = c->alpha_cs;
+    ctx.beta_h = c->beta_h;
     ctx.mode = c->mode;
     ctx.inv_alpha = c->inv_alpha;
     ctx.inv_beta = c->inv_beta;
@@ -1315,8 +1471,8 @@ static void run_gpu_diagnostics(const FieldState *state, DiagHookCtx *ctx) {
         state->vel_phi[0], state->vel_phi[1], state->vel_phi[2],
         state->vel_theta[0], state->vel_theta[1], state->vel_theta[2],
         ctx->dV, idx1, idx2_val,
-        ctx->m2, ctx->mtheta2, ctx->eta, ctx->eta1, ctx->mu, ctx->kappa,
-        ctx->lambda_theta,
+        ctx->m2, ctx->mtheta2, ctx->eta, ctx->mu, ctx->kappa,
+        ctx->alpha_cs, ctx->beta_h, ctx->kappa_h,
         ctx->mode, ctx->inv_alpha, ctx->inv_beta, ctx->kappa_gamma,
         ctx->d_results);
 
@@ -1377,7 +1533,6 @@ static void compute_energy(Grid *g, const Config *c,
         double me2=(c->mode==1)?c->inv_alpha/(1.0+c->inv_beta*sig):c->m2;
         double keff=(c->mode==3)?c->kappa/(1.0+c->kappa_gamma*sig):c->kappa;
         double P=p0*p1*p2, P2=P*P;
-        double mte=(c->mtheta2+c->lambda_theta*P2);
         for (int a=0;a<NFIELDS;a++) {
             s_epk+=0.5*g->phi_vel[a][idx]*g->phi_vel[a][idx]*dV;
             s_etk+=0.5*g->theta_vel[a][idx]*g->theta_vel[a][idx]*dV;
@@ -1390,7 +1545,7 @@ static void compute_energy(Grid *g, const Config *c,
             double tgy=(g->theta[a][n_jp]-g->theta[a][n_jm])*idx1;
             double tgz=(g->theta[a][n_kp]-g->theta[a][n_km])*idx1;
             s_etg+=0.5*(tgx*tgx+tgy*tgy+tgz*tgz)*dV;
-            s_etm+=0.5*mte*g->theta[a][idx]*g->theta[a][idx]*dV;
+            s_etm+=0.5*c->mtheta2*g->theta[a][idx]*g->theta[a][idx]*dV;
             double ap=fabs(g->phi[a][idx]); if(ap>s_pm) s_pm=ap;
         }
         if (c->mode==3) {
@@ -1398,13 +1553,29 @@ static void compute_energy(Grid *g, const Config *c,
             s_ep+=(c->mu/2.0)*P2*(1.0+c->kappa_gamma*sig)/D*dV;
         } else s_ep+=(c->mu/2.0)*P2/(1.0+keff*P2)*dV;
         double Pa=fabs(P); if(Pa>s_Pm) s_Pm=Pa;
+        /* Cosserat/hardening/chiral energy */
+        double cx0=(g->phi[2][n_jp]-g->phi[2][n_jm]-g->phi[1][n_kp]+g->phi[1][n_km])*idx1;
+        double cx1=(g->phi[0][n_kp]-g->phi[0][n_km]-g->phi[2][n_ip]+g->phi[2][n_im])*idx1;
+        double cx2=(g->phi[1][n_ip]-g->phi[1][n_im]-g->phi[0][n_jp]+g->phi[0][n_jm])*idx1;
+        if (c->alpha_cs != 0) {
+            double m0=cx0*0.5-g->theta[0][idx], m1=cx1*0.5-g->theta[1][idx], m2c=cx2*0.5-g->theta[2][idx];
+            s_ep += c->alpha_cs * (m0*m0 + m1*m1 + m2c*m2c) * dV;
+        }
+        if (c->beta_h != 0) {
+            double csq = cx0*cx0 + cx1*cx1 + cx2*cx2;
+            double T2 = g->theta[0][idx]*g->theta[0][idx]+g->theta[1][idx]*g->theta[1][idx]+g->theta[2][idx]*g->theta[2][idx];
+            s_ep += 0.5 * c->beta_h * T2 * csq * dV;
+        }
+        if (c->kappa_h != 0) {
+            double hel = p0*cx0 + p1*cx1 + p2*cx2;
+            s_ep += c->kappa_h * P2 * hel * dV;
+        }
         /* Curl coupling energy */
         double curl_th[3];
         curl_th[0]=(g->theta[2][n_jp]-g->theta[2][n_jm]-g->theta[1][n_kp]+g->theta[1][n_km])*idx1;
         curl_th[1]=(g->theta[0][n_kp]-g->theta[0][n_km]-g->theta[2][n_ip]+g->theta[2][n_im])*idx1;
         curl_th[2]=(g->theta[1][n_ip]-g->theta[1][n_im]-g->theta[0][n_jp]+g->theta[0][n_jm])*idx1;
-        double eta_eff_h = c->eta + c->eta1 * fabs(P);
-        for (int a=0;a<3;a++) s_ec -= eta_eff_h * g->phi[a][idx] * curl_th[a] * dV;
+        for (int a=0;a<3;a++) s_ec -= c->eta * g->phi[a][idx] * curl_th[a] * dV;
     }
     *epk=s_epk;*etk=s_etk;*eg=s_eg;*em=s_em;*ep=s_ep;
     *etg=s_etg;*etm=s_etm;*ec=s_ec;
@@ -1524,7 +1695,7 @@ int main(int argc, char **argv) {
     }
 
     /* GPU setup */
-    gpu_alloc(g->N3);
+    gpu_alloc(g->N3, (c.alpha_cs != 0 || c.beta_h != 0));
     gpu_set_constants(&c, g->dx);
     cudaMemcpyToSymbol(d_BC_TYPE, &c.bc_type, sizeof(int));
     cudaMemcpyToSymbol(d_GRAD_MARGIN, &c.gradient_margin, sizeof(int));
@@ -1533,10 +1704,18 @@ int main(int argc, char **argv) {
     gpu_upload(g);
 
     /* Initial force computation on GPU */
+    if (gpu_has_intermediates) {
+        compute_intermediates_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_phi[0],d_phi[1],d_phi[2], d_theta[0],d_theta[1],d_theta[2],
+            d_mismatch[0],d_mismatch[1],d_mismatch[2],
+            d_harden_Q[0],d_harden_Q[1],d_harden_Q[2]);
+    }
     compute_forces_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_phi[0],d_phi[1],d_phi[2], d_theta[0],d_theta[1],d_theta[2],
         d_acc_phi[0],d_acc_phi[1],d_acc_phi[2],
-        d_acc_theta[0],d_acc_theta[1],d_acc_theta[2]);
+        d_acc_theta[0],d_acc_theta[1],d_acc_theta[2],
+        d_mismatch[0],d_mismatch[1],d_mismatch[2],
+        d_harden_Q[0],d_harden_Q[1],d_harden_Q[2]);
     cudaDeviceSynchronize();
 
     /* SFA archive with KVMD */
@@ -1550,36 +1729,36 @@ int main(int argc, char **argv) {
         if (ext && !strcmp(ext, ".sfa")) *ext = '\0';
     }
     {
-        char vN[32],vL[32],vT[32],vdt[32],vm[32],vmt[32],veta[32],veta1[32],vmu[32],vkappa[32];
-        char vmode[32],via[32],vib[32],vkg[32],vdw[32],vdr[32],vprec[32],vdelta[64],vlt[32],vbcsw[32];
+        char vN[32],vL[32],vT[32],vdt[32],vm[32],vmt[32],veta[32],vmu[32],vkappa[32],vkh[32],vacs[32],vbh[32];
+        char vmode[32],via[32],vib[32],vkg[32],vdw[32],vdr[32],vprec[32],vdelta[64],vbcsw[32];
         snprintf(vN,32,"%d",c.N); snprintf(vL,32,"%.6f",c.L); snprintf(vT,32,"%.6f",c.T);
         snprintf(vdt,32,"%.6f",c.dt_factor);
         snprintf(vm,32,"%.6f",sqrt(c.m2)); snprintf(vmt,32,"%.6f",sqrt(c.mtheta2));
-        snprintf(veta,32,"%.6f",c.eta); snprintf(veta1,32,"%.6f",c.eta1);
-        snprintf(vmu,32,"%.6f",c.mu);
-        snprintf(vkappa,32,"%.6f",c.kappa); snprintf(vmode,32,"%d",c.mode);
+        snprintf(veta,32,"%.6f",c.eta); snprintf(vmu,32,"%.6f",c.mu);
+        snprintf(vkappa,32,"%.6f",c.kappa); snprintf(vkh,32,"%.6f",c.kappa_h);
+        snprintf(vacs,32,"%.6f",c.alpha_cs); snprintf(vbh,32,"%.6f",c.beta_h);
+        snprintf(vmode,32,"%d",c.mode);
         snprintf(via,32,"%.6f",c.inv_alpha); snprintf(vib,32,"%.6f",c.inv_beta);
         snprintf(vkg,32,"%.6f",c.kappa_gamma);
         snprintf(vdw,32,"%.6f",c.damp_width); snprintf(vdr,32,"%.6f",c.damp_rate);
         snprintf(vprec,32,"%s",(const char*[]){"f16","f32","f64"}[c.precision]);
         snprintf(vdelta,64,"%.6f,%.6f,%.6f",c.delta[0],c.delta[1],c.delta[2]);
-        snprintf(vlt,32,"%.6f",c.lambda_theta);
         snprintf(vbcsw,32,"%.6f",c.bc_switch_time);
         char vbc[32], vgah[32], vgal[32], vgm[32];
         snprintf(vbc,32,"%d",c.bc_type);
         snprintf(vgah,32,"%.6f",c.gradient_A_high);
         snprintf(vgal,32,"%.6f",c.gradient_A_low);
         snprintf(vgm,32,"%d",c.gradient_margin);
-        const char *keys[]={"N","L","T","dt_factor","m","m_theta","eta","eta1","mu","kappa",
-                            "lambda_theta","bc_switch_time",
+        const char *keys[]={"N","L","T","dt_factor","m","m_theta","eta","mu","kappa",
+                            "kappa_h","alpha_cs","beta_h","bc_switch_time",
                             "mode","inv_alpha","inv_beta","kappa_gamma",
                             "damp_width","damp_rate","precision","delta",
                             "bc_type","gradient_A_high","gradient_A_low","gradient_margin"};
-        const char *vals[]={vN,vL,vT,vdt,vm,vmt,veta,veta1,vmu,vkappa,
-                            vlt,vbcsw,
+        const char *vals[]={vN,vL,vT,vdt,vm,vmt,veta,vmu,vkappa,
+                            vkh,vacs,vbh,vbcsw,
                             vmode,via,vib,vkg,vdw,vdr,vprec,vdelta,
                             vbc,vgah,vgal,vgm};
-        sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 24);
+        sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 25);
     }
     sfa_add_column(sfa,"phi_x",sfa_dtype,SFA_POSITION,0);
     sfa_add_column(sfa,"phi_y",sfa_dtype,SFA_POSITION,1);
@@ -1676,10 +1855,31 @@ int main(int argc, char **argv) {
                 d_acc_theta[0], d_acc_theta[1], d_acc_theta[2]);
         }
 
-        /* Dispatch hooks */
+        /* Dispatch hooks — with burst mode snap override */
         double t = step * g->dt;
-        for (int h = 0; h < n_hooks; h++)
-            hooks[h].fn(step, t, &fstate, hooks[h].ctx);
+        double burst_dur = c.burst_end - c.burst_start;
+        int in_burst = 0;
+        if (burst_dur > 0) {
+            double t_rel = t - c.burst_start;
+            if (t_rel >= 0) {
+                if (c.burst_every > 0) t_rel = fmod(t_rel, c.burst_every);
+                in_burst = (t_rel >= 0 && t_rel < burst_dur);
+            }
+        }
+        if (in_burst) {
+            /* Burst: snap every timestep. Call snap directly, skip it in hook dispatch. */
+            int saved = snap_ctx.snap_every;
+            snap_ctx.snap_every = 1;
+            snap_hook(1, t, &fstate, &snap_ctx);
+            snap_ctx.snap_every = saved;
+            /* Dispatch only non-snap hooks */
+            for (int h = 0; h < n_hooks; h++)
+                if (hooks[h].fn != snap_hook)
+                    hooks[h].fn(step, t, &fstate, hooks[h].ctx);
+        } else {
+            for (int h = 0; h < n_hooks; h++)
+                hooks[h].fn(step, t, &fstate, hooks[h].ctx);
+        }
     }
 
     /* Final frame — write if the last step wasn't exactly a snap point. */

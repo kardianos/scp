@@ -1,0 +1,85 @@
+/* dispersion.mac — Coupled θ-φ wave dispersion relation
+ *
+ * Linearize the Cosserat equations around uniform background.
+ * For a transverse plane wave propagating in z, polarized in x:
+ *   δφ_x, δθ_y coupled through curl (cross-polarization pairing).
+ *
+ * φ equation: ω²δφ = k²δφ + m²δφ + ηk·δθ   (from curl coupling)
+ * θ equation: ω²δθ = k²δθ + ηk·δφ            (massless θ)
+ *
+ * This is a 2×2 eigenvalue problem for ω².
+ */
+
+/* Variables */
+declare([omega, k, m, eta], real)$
+assume(omega > 0, k > 0, m > 0, eta > 0)$
+
+/* Dispersion matrix: (ω² - k² - m²)δφ = ηk·δθ
+ *                    (ω² - k²)δθ = ηk·δφ (note: -ηk for the cross-curl)
+ * Product: (ω² - k² - m²)(ω² - k²) = η²k²
+ */
+
+/* Define w = ω² for convenience */
+eq: (w - k^2 - m^2)*(w - k^2) - eta^2*k^2;
+expanded: expand(eq);
+print("Dispersion equation:")$
+print(expanded, " = 0")$
+
+/* Solve for ω² */
+solutions: solve(eq, w);
+print("")$
+print("Two branches:")$
+print("  ω² = ", rhs(solutions[1]))$
+print("  ω² = ", rhs(solutions[2]))$
+
+/* Identify photon branch (lower, massless at k=0) */
+w_photon: rhs(solutions[1]);
+w_matter: rhs(solutions[2]);
+
+/* Check: at k=0 */
+print("")$
+print("At k=0:")$
+print("  photon branch ω² = ", subst(0, k, w_photon))$
+print("  matter branch ω² = ", subst(0, k, w_matter))$
+
+/* Phase velocity of photon branch: v² = ω²/k² */
+v2_photon: w_photon / k^2;
+
+/* Low-k limit: expand to leading order in k */
+print("")$
+print("Phase velocity squared (general):")$
+print("  v² = ", ratsimp(v2_photon))$
+
+/* Small k expansion: v² ≈ 1 - η²/m² */
+v2_lowk: taylor(v2_photon, k, 0, 2);
+print("")$
+print("Low-k expansion of v²:")$
+print("  v² = ", v2_lowk)$
+
+/* Substitute physical values */
+v2_physical: subst([m = 3/2, eta = 1/2], w_photon) / k^2;
+v2_phys_lowk: subst(k = 0.01, v2_physical);
+print("")$
+print("Physical (m=1.5, η=0.5):")$
+print("  v²(k→0) = ", float(subst(k = 0.001, v2_physical)))$
+print("  v = ", float(sqrt(subst(k = 0.001, v2_physical))))$
+
+/* The mixing ratio: how much δφ is in the photon mode? */
+/* From (ω² - k²)δθ = ηk·δφ → δφ/δθ = (ω² - k²)/(ηk) */
+mixing: (w_photon - k^2) / (eta * k);
+print("")$
+print("φ/θ mixing ratio in photon branch:")$
+print("  δφ/δθ = ", ratsimp(mixing))$
+mixing_lowk: taylor(mixing, k, 0, 1);
+print("  Low-k: δφ/δθ ≈ ", mixing_lowk)$
+
+/* With physical values */
+mixing_phys: float(subst([m = 3/2, eta = 1/2, k = 1.0], ratsimp(mixing)));
+print("  At k=1.0 (m=1.5, η=0.5): δφ/δθ = ", mixing_phys)$
+
+print("")$
+print("=== KEY RESULT ===")$
+print("The photon-like wave is a POLARITON:")$
+print("  v_phase = c × sqrt(1 - η²/m²) at low k")$
+print("  v_phase = c × sqrt(1 - ", float(subst([m=3/2, eta=1/2], eta^2/m^2)), ") = ",
+      float(sqrt(subst([m=3/2, eta=1/2], 1 - eta^2/m^2))))$

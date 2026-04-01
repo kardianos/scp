@@ -55,6 +55,18 @@ type MCPServer struct {
 	writer   *json.Encoder
 	monitor  *Monitor
 	state    *RunnerState
+	protoLog *os.File // protocol log file (nil = disabled)
+}
+
+// prefixWriter prepends a prefix to each Write call for protocol logging.
+type prefixWriter struct {
+	prefix string
+	w      io.Writer
+}
+
+func (pw *prefixWriter) Write(p []byte) (int, error) {
+	pw.w.Write([]byte(pw.prefix))
+	return pw.w.Write(p)
 }
 
 func NewMCPServer(executor Executor) *MCPServer {
@@ -66,7 +78,25 @@ func NewMCPServer(executor Executor) *MCPServer {
 }
 
 func (s *MCPServer) Serve(ctx context.Context) error {
-	s.writer = json.NewEncoder(os.Stdout)
+	// Set up protocol logging to ~/.scp-runner/protocol.log
+	var protoLog *os.File
+	if dir, err := stateDir(); err == nil {
+		logPath := filepath.Join(dir, "protocol.log")
+		if f, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644); err == nil {
+			protoLog = f
+			defer f.Close()
+			fmt.Fprintf(f, "=== scp-runner protocol log started %s ===\n", time.Now().Format(time.RFC3339))
+		}
+	}
+	s.protoLog = protoLog
+
+	// Tee stdout through the log.
+	var out io.Writer = os.Stdout
+	if protoLog != nil {
+		out = io.MultiWriter(os.Stdout, &prefixWriter{prefix: ">>> ", w: protoLog})
+	}
+	s.writer = json.NewEncoder(out)
+
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
@@ -82,6 +112,11 @@ func (s *MCPServer) Serve(ctx context.Context) error {
 				return nil
 			}
 			return fmt.Errorf("read stdin: %w", err)
+		}
+
+		// Log incoming message.
+		if protoLog != nil {
+			fmt.Fprintf(protoLog, "<<< %s", line)
 		}
 
 		var req jsonRPCRequest
@@ -116,15 +151,24 @@ func (s *MCPServer) handleRequest(ctx context.Context, req *jsonRPCRequest) {
 
 func (s *MCPServer) handleInitialize(req *jsonRPCRequest) {
 	result := map[string]any{
-		"protocolVersion": "2024-11-05",
+		"protocolVersion": "2025-11-25",
 		"capabilities": map[string]any{
 			"tools":   map[string]any{},
 			"logging": map[string]any{},
+			"experimental": map[string]any{
+				"claude/channel": map[string]any{},
+			},
 		},
 		"serverInfo": map[string]any{
 			"name":    "scp-runner",
-			"version": "0.1.0",
+			"version": "0.2.0",
 		},
+		"instructions": "Events from the scp-runner channel arrive as <channel source=\"scp-runner\" event=\"...\">. " +
+			"Events include: run_complete, run_failed, download_complete, download_failed, teardown_blocked. " +
+			"When you receive a run_complete event, download the output files. " +
+			"When you receive a run_failed event, diagnose the error and decide whether to retry. " +
+			"When you receive a teardown_blocked event, download the listed files before retrying teardown. " +
+			"When you receive a download_complete event, note the file and continue with analysis or the next step.",
 	}
 	s.sendResult(req.ID, result)
 }
@@ -248,6 +292,46 @@ func (s *MCPServer) sendLogMessage(level string, message string) {
 	})
 }
 
+// handleRunDone is called directly from the executor goroutine when a run reaches
+// terminal state. It sends a channel event immediately, without waiting for the
+// 5-second monitor tick.
+func (s *MCPServer) handleRunDone(id string, info RunInfo) {
+	switch info.Status {
+	case RunComplete:
+		msg := fmt.Sprintf("Run %s complete — sim_time=%.1f/%.1f wall=%.1fs", id, info.SimTime, info.TotalTime, info.WallSecs)
+		s.sendChannelEvent("run_complete", map[string]string{
+			"run_id":    id,
+			"sim_time":  fmt.Sprintf("%.1f", info.SimTime),
+			"wall_secs": fmt.Sprintf("%.1f", info.WallSecs),
+		}, msg)
+	case RunFailed:
+		msg := fmt.Sprintf("Run %s FAILED (%.1fs): %s", id, info.WallSecs, info.Error)
+		s.sendChannelEvent("run_failed", map[string]string{
+			"run_id": id,
+			"error":  info.Error,
+		}, msg)
+	case RunCancelled:
+		msg := fmt.Sprintf("Run %s cancelled at sim_time=%.1f/%.1f", id, info.SimTime, info.TotalTime)
+		s.sendChannelEvent("run_cancelled", map[string]string{
+			"run_id": id,
+		}, msg)
+	}
+}
+
+// sendChannelEvent sends a channel notification that arrives in the Claude session
+// as a <channel source="scp-runner" event="..." ...> tag. This interrupts the session
+// and lets the agent react to events like run completion, errors, or download status.
+func (s *MCPServer) sendChannelEvent(event string, meta map[string]string, content string) {
+	m := map[string]string{"event": event}
+	for k, v := range meta {
+		m[k] = v
+	}
+	s.sendNotification("notifications/claude/channel", map[string]any{
+		"content": content,
+		"meta":    m,
+	})
+}
+
 // --- Tool table ---
 
 func (s *MCPServer) buildToolTable() []ToolDef {
@@ -349,6 +433,7 @@ func (s *MCPServer) handleSetup(ctx context.Context, raw any) (any, error) {
 		if s.monitor != nil {
 			local.OnRunDone = s.monitor.Wakeup
 		}
+		local.OnRunComplete = s.handleRunDone
 		if err := local.Setup(ctx); err != nil {
 			return nil, fmt.Errorf("local setup: %w", err)
 		}
@@ -365,6 +450,23 @@ func (s *MCPServer) handleSetup(ctx context.Context, raw any) (any, error) {
 		remote := NewRemoteExecutor(RemoteConfig{WorkDir: workDir})
 		if s.monitor != nil {
 			remote.OnRunDone = s.monitor.Wakeup
+		}
+		remote.OnRunComplete = s.handleRunDone
+		remote.OnDownloadDone = func(id, remotePath, localPath string, err error) {
+			if err != nil {
+				s.sendChannelEvent("download_failed", map[string]string{
+					"download_id": id,
+					"remote_path": remotePath,
+					"local_path":  localPath,
+					"error":       err.Error(),
+				}, fmt.Sprintf("Download FAILED: %s -> %s: %v", remotePath, localPath, err))
+			} else {
+				s.sendChannelEvent("download_complete", map[string]string{
+					"download_id": id,
+					"remote_path": remotePath,
+					"local_path":  localPath,
+				}, fmt.Sprintf("Download complete: %s -> %s", remotePath, localPath))
+			}
 		}
 		if err := remote.Setup(ctx); err != nil {
 			return nil, fmt.Errorf("remote setup: %w", err)
@@ -423,11 +525,28 @@ func (s *MCPServer) handleStatus(ctx context.Context, _ any) (any, error) {
 	return ex.Status(ctx)
 }
 
-func (s *MCPServer) handleTeardown(ctx context.Context, _ any) (any, error) {
+func (s *MCPServer) handleTeardown(ctx context.Context, raw any) (any, error) {
+	p := raw.(*SimTeardownParams)
 	ex, err := s.getExecutor()
 	if err != nil {
 		return nil, err
 	}
+
+	// Safety check: refuse teardown if there are undownloaded output files.
+	if !p.Force {
+		if pending := s.pendingDownloads(); len(pending) > 0 {
+			msg := fmt.Sprintf("TEARDOWN BLOCKED: %d output file(s) not yet downloaded:\n", len(pending))
+			for _, f := range pending {
+				msg += fmt.Sprintf("  - %s\n", f)
+			}
+			msg += "Use force=true to override, or download files first."
+			s.sendChannelEvent("teardown_blocked", map[string]string{
+				"count": fmt.Sprintf("%d", len(pending)),
+			}, msg)
+			return nil, fmt.Errorf("teardown blocked: %d output file(s) not downloaded — use force=true to override", len(pending))
+		}
+	}
+
 	if err := ex.Teardown(ctx); err != nil {
 		return nil, fmt.Errorf("teardown: %w", err)
 	}
@@ -439,6 +558,52 @@ func (s *MCPServer) handleTeardown(ctx context.Context, _ any) (any, error) {
 		s.state.ClearInstance()
 	}
 	return &SimTeardownResult{Status: "ok"}, nil
+}
+
+// pendingDownloads returns a list of remote output files that have not been
+// downloaded locally. It checks the persisted run state for output files and
+// verifies whether corresponding local files exist with non-zero size.
+func (s *MCPServer) pendingDownloads() []string {
+	if s.state == nil {
+		return nil
+	}
+	s.state.mu.Lock()
+	runs := make(map[string]*PersistRun, len(s.state.Runs))
+	for k, v := range s.state.Runs {
+		runs[k] = v
+	}
+	s.state.mu.Unlock()
+
+	var pending []string
+	for _, run := range runs {
+		if run.AutoDownload == "" {
+			continue
+		}
+		for _, remote := range run.OutputFiles {
+			// Compute expected local path.
+			base := filepath.Base(remote)
+			local := filepath.Join(run.AutoDownload, base)
+			info, err := os.Stat(local)
+			if err != nil || info.Size() == 0 {
+				pending = append(pending, remote+" -> "+local)
+			}
+		}
+	}
+
+	// Also check active downloads that haven't completed.
+	ex, err := s.getExecutor()
+	if err != nil {
+		return pending
+	}
+	downloads := make(map[string]*DownloadInfo)
+	collectDownloads(ex, downloads)
+	for _, dl := range downloads {
+		if dl.Status == "running" || dl.Status == "started" {
+			pending = append(pending, dl.RemotePath+" -> "+dl.LocalPath+" (in progress)")
+		}
+	}
+
+	return pending
 }
 
 func (s *MCPServer) handleBuild(ctx context.Context, raw any) (any, error) {

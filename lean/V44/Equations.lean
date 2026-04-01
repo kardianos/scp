@@ -66,9 +66,8 @@ theorem thetaForce_zero_eta (p : SCPParams) (hη : p.η = (0 : R)) (θ : FieldVe
 theorem vacuum_stationary_phi (p : SCPParams) (a : Fin 3) :
     phiForce p (fun _ => (0 : R)) (fun _ => (0 : R)) (fun _ => (0 : R)) a = 0 := by
   unfold phiForce
-  rw [massForce_zero]
+  rw [massForce_zero, potentialForce_zero]
   simp [R.add_zero, R.mul_zero]
-  sorry  -- potentialForce at zero field = 0, then 0 + 0 + 0 + 0 = 0
 
 theorem vacuum_stationary_theta (p : SCPParams) (a : Fin 3) :
     thetaForce p (fun _ => (0 : R)) (fun _ => (0 : R)) (fun _ => (0 : R)) a = 0 := by

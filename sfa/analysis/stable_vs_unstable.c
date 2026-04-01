@@ -193,7 +193,8 @@ static void analyze_frame(SFA *sfa, void *buf, int N, double L, FrameInfo *fi)
     double threshold = P_THRESHOLD_FRAC * P_max;
     if (threshold < 1e-20) threshold = 1e-20;
 
-    int *labels = (int*)calloc(N3, sizeof(int));
+    if (N3 <= 0) return;
+    int *labels = (int*)calloc((unsigned long)N3, sizeof(int));
     int nc = bfs_clusters(phi[0], phi[1], phi[2], N, threshold, labels);
     fi->n_clusters = nc;
 

@@ -706,7 +706,7 @@ func f32cbrt(x float32) float32 {
 // computeFieldView fills RGBA volume from SFA column data.
 // Uses pre-allocated intermediate buffers from sfa.absPBuf/phi2Buf/theta2Buf
 // to avoid reading the input arrays twice.
-func computeFieldView(n int, phi0, phi1, phi2, theta0, theta1, theta2 []float32, vol *volumeData) {
+func computeFieldView(n int, phi0, phi1, phi2, theta0, theta1, theta2 []float32, vol *volumeData, fixedMax float32) {
 	total := n * n * n
 	vol.n = n
 	vol.loaded = true
@@ -801,16 +801,24 @@ func computeFieldView(n int, phi0, phi1, phi2, theta0, theta1, theta2 []float32,
 	}
 
 	invNormP := float32(1)
-	if maxP*0.3 > 1e-20 {
-		invNormP = 1.0 / (maxP * 0.3)
-	}
 	invNormPhi2 := float32(1)
-	if maxPhi2*0.15 > 1e-20 {
-		invNormPhi2 = 1.0 / (maxPhi2 * 0.15)
-	}
 	invNormTheta2 := float32(1)
-	if maxTheta2*0.3 > 1e-20 {
-		invNormTheta2 = 1.0 / (maxTheta2 * 0.3)
+	if fixedMax > 0 {
+		// Fixed scale: all channels use the same user-specified max
+		invNormP = 1.0 / fixedMax
+		invNormPhi2 = 1.0 / fixedMax
+		invNormTheta2 = 1.0 / fixedMax
+	} else {
+		// Auto-scale from data max
+		if maxP*0.3 > 1e-20 {
+			invNormP = 1.0 / (maxP * 0.3)
+		}
+		if maxPhi2*0.15 > 1e-20 {
+			invNormPhi2 = 1.0 / (maxPhi2 * 0.15)
+		}
+		if maxTheta2*0.3 > 1e-20 {
+			invNormTheta2 = 1.0 / (maxTheta2 * 0.3)
+		}
 	}
 
 	// Pass 2: normalize cached intermediates → RGBA (reads only 3 small arrays, not 6 input arrays)
@@ -1293,6 +1301,10 @@ type viewParams struct {
 	showG      bool
 	showB      bool
 
+	// Scale mode
+	fixedScale    bool    // true = use fixedScaleVal instead of auto-ranging
+	fixedScaleVal float32 // the fixed max value for color mapping
+
 	// State
 	viewMode   int
 	curFrame   int
@@ -1314,6 +1326,8 @@ func newViewParams() *viewParams {
 		showR:      true,
 		showG:      true,
 		showB:      true,
+		fixedScale:    false,
+		fixedScaleVal: 0.01,
 	}
 	p.updateCamera()
 	return p
@@ -1529,6 +1543,7 @@ type frameLoader struct {
 	sfa      *sfaFile
 	volN     int
 	viewMode int        // 0=field, 1=velocity, 2=acceleration
+	fixedMax float32    // >0: fixed color scale; 0: auto-scale from data
 	mu       sync.Mutex
 	ready    *volumeData // non-nil when a new frame is ready for upload
 	readyT   float64     // time of the ready frame
@@ -1619,18 +1634,19 @@ func (fl *frameLoader) startLoad(frameIdx int) {
 				vphi2 = fl.sfa.extractColumnF32(8)
 			}
 
+			fm := fl.fixedMax
 			switch mode {
 			case 1:
 				if vphi0 != nil {
 					computeVelocityView(fl.volN, phi0, phi1, phi2, vphi0, vphi1, vphi2, &fl.workVol)
 				} else {
 					fmt.Println("Warning: no velocity columns (need >=9 columns), falling back to field view")
-					computeFieldView(fl.volN, phi0, phi1, phi2, theta0, theta1, theta2, &fl.workVol)
+					computeFieldView(fl.volN, phi0, phi1, phi2, theta0, theta1, theta2, &fl.workVol, fm)
 				}
 			case 2:
 				computeAccelView(fl.volN, phi0, phi1, phi2, theta0, theta1, theta2, vphi0, vphi1, vphi2, &fl.workVol)
 			default:
-				computeFieldView(fl.volN, phi0, phi1, phi2, theta0, theta1, theta2, &fl.workVol)
+				computeFieldView(fl.volN, phi0, phi1, phi2, theta0, theta1, theta2, &fl.workVol, fm)
 			}
 		}
 
@@ -1686,6 +1702,12 @@ func loadSFAFrame(fl *frameLoader, params *viewParams) {
 	}
 	if params.curFrame < 0 {
 		params.curFrame = 0
+	}
+	// Sync fixed scale from viewParams
+	if params.fixedScale {
+		fl.fixedMax = params.fixedScaleVal
+	} else {
+		fl.fixedMax = 0
 	}
 	fl.startLoad(params.curFrame)
 }
@@ -1822,7 +1844,7 @@ func exportAnimation(gpu *gpuResources, params *viewParams, fl *frameLoader, sfa
 			theta1 = sfa.extractColumnF32(4)
 			theta2 = sfa.extractColumnF32(5)
 		}
-		computeFieldView(int(sfa.Nx), phi0, phi1, phi2, theta0, theta1, theta2, vol)
+		computeFieldView(int(sfa.Nx), phi0, phi1, phi2, theta0, theta1, theta2, vol, 0)
 
 		// Upload new volume data
 		gpu.uploadVolume(vol)
@@ -2138,6 +2160,41 @@ func main() {
 				fl.viewMode = 2
 				fmt.Println("View: ACCEL (R=cbrt|P|, G=theta^2, B=|v|)")
 				loadSFAFrame(fl, params)
+			}
+		case glfw.KeyF:
+			params.fixedScale = !params.fixedScale
+			if params.fixedScale {
+				fmt.Printf("Scale: FIXED (max=%.4f) — use [ ] to adjust\n", params.fixedScaleVal)
+			} else {
+				fmt.Println("Scale: AUTO")
+			}
+			if fl != nil {
+				fl.fixedMax = 0
+				if params.fixedScale {
+					fl.fixedMax = params.fixedScaleVal
+				}
+				loadSFAFrame(fl, params)
+			}
+		case glfw.KeyLeftBracket: // [ key — decrease fixed scale (zoom in)
+			params.fixedScaleVal *= 0.5
+			if params.fixedScaleVal < 1e-8 {
+				params.fixedScaleVal = 1e-8
+			}
+			if params.fixedScale {
+				fmt.Printf("Scale: fixed max=%.6f\n", params.fixedScaleVal)
+				if fl != nil {
+					fl.fixedMax = params.fixedScaleVal
+					loadSFAFrame(fl, params)
+				}
+			}
+		case glfw.KeyRightBracket: // ] key — increase fixed scale (zoom out)
+			params.fixedScaleVal *= 2.0
+			if params.fixedScale {
+				fmt.Printf("Scale: fixed max=%.6f\n", params.fixedScaleVal)
+				if fl != nil {
+					fl.fixedMax = params.fixedScaleVal
+					loadSFAFrame(fl, params)
+				}
 			}
 		case glfw.KeyEqual: // + key
 			params.brightness *= 1.3

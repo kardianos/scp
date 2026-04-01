@@ -68,48 +68,42 @@ def strainMomentum (α : R) (M : FieldVec) (j a : Fin 3) : R :=
 theorem momentum_y_0 (α : R) (M : FieldVec) :
     strainMomentum α M 1 0 = -(α * M 2) := by
   unfold strainMomentum leviCivita
-  simp
-  sorry  -- algebra: α*(M0*0 + M1*0 + M2*(-1)) = -(α*M2)
+  simp [R.mul_zero, R.zero_add, R.add_zero, R.mul_neg, R.mul_one]
 
 /-- π_{20} = ∂E/∂(∂_z φ_0) = +α M_1.
     Only ε_{120} = 1 contributes. -/
 theorem momentum_z_0 (α : R) (M : FieldVec) :
     strainMomentum α M 2 0 = α * M 1 := by
   unfold strainMomentum leviCivita
-  simp
-  sorry  -- algebra: α*(M0*0 + M1*1 + M2*0) = α*M1
+  simp [R.mul_zero, R.add_zero, R.zero_add, R.mul_one]
 
 /-- π_{21} = ∂E/∂(∂_z φ_1) = -α M_0.
     Only ε_{021} = -1 contributes. -/
 theorem momentum_z_1 (α : R) (M : FieldVec) :
     strainMomentum α M 2 1 = -(α * M 0) := by
   unfold strainMomentum leviCivita
-  simp
-  sorry  -- algebra
+  simp [R.mul_zero, R.add_zero, R.mul_neg, R.mul_one]
 
 /-- π_{01} = ∂E/∂(∂_x φ_1) = +α M_2.
     Only ε_{201} = 1 contributes. -/
 theorem momentum_x_1 (α : R) (M : FieldVec) :
     strainMomentum α M 0 1 = α * M 2 := by
   unfold strainMomentum leviCivita
-  simp
-  sorry  -- algebra
+  simp [R.mul_zero, R.add_zero, R.zero_add, R.mul_one]
 
 /-- π_{02} = ∂E/∂(∂_x φ_2) = -α M_1.
     Only ε_{102} = -1 contributes. -/
 theorem momentum_x_2 (α : R) (M : FieldVec) :
     strainMomentum α M 0 2 = -(α * M 1) := by
   unfold strainMomentum leviCivita
-  simp
-  sorry  -- algebra
+  simp [R.mul_zero, R.add_zero, R.zero_add, R.mul_neg, R.mul_one]
 
 /-- π_{12} = ∂E/∂(∂_y φ_2) = +α M_0.
     Only ε_{012} = 1 contributes. -/
 theorem momentum_y_2 (α : R) (M : FieldVec) :
     strainMomentum α M 1 2 = α * M 0 := by
   unfold strainMomentum leviCivita
-  simp
-  sorry  -- algebra
+  simp [R.mul_zero, R.add_zero, R.mul_one]
 
 /-! ## The key result: F_φ = -α curl(M)
 
@@ -128,11 +122,30 @@ The MINUS sign is verified by Maxima symbolic computation.
 /-- The Levi-Civita sign identity underlying F_φ = -α curl(M).
     For each a: Σ_b M_b ε_{b,j,a} = -Σ_b ε_{a,j,b} M_b
     This is antisymmetry ε_{bja} = -ε_{ajb} contracted with M. -/
+-- Helper for Fin 3 case analysis (same as in VectorCalc)
+private theorem fin3_cases' (P : Fin 3 → Prop) (h0 : P 0) (h1 : P 1) (h2 : P 2) :
+    ∀ i, P i := by
+  intro ⟨n, hn⟩
+  match n, hn with
+  | 0, _ => exact h0
+  | 1, _ => exact h1
+  | 2, _ => exact h2
+
 theorem levi_civita_sign_identity (M : FieldVec) (j a : Fin 3) :
     M 0 * leviCivita 0 j a + M 1 * leviCivita 1 j a + M 2 * leviCivita 2 j a =
     -(M 0 * leviCivita a j 0 + M 1 * leviCivita a j 1 + M 2 * leviCivita a j 2) := by
-  -- This is the antisymmetry of ε under swap of first two indices
-  sorry  -- Verified by exhaustive case check (27 cases)
+  -- Exhaustive case analysis on j and a (9 cases)
+  have hj := j.isLt; have ha := a.isLt
+  match j, a with
+  | ⟨0, _⟩, ⟨0, _⟩ => simp [leviCivita, R.mul_zero, R.add_zero, R.neg_zero]
+  | ⟨0, _⟩, ⟨1, _⟩ => simp [leviCivita, R.mul_zero, R.mul_one, R.mul_neg, R.add_zero, R.zero_add, R.neg_neg]
+  | ⟨0, _⟩, ⟨2, _⟩ => simp [leviCivita, R.mul_zero, R.mul_one, R.mul_neg, R.add_zero, R.zero_add]
+  | ⟨1, _⟩, ⟨0, _⟩ => simp [leviCivita, R.mul_zero, R.mul_one, R.mul_neg, R.add_zero, R.zero_add]
+  | ⟨1, _⟩, ⟨1, _⟩ => simp [leviCivita, R.mul_zero, R.add_zero, R.neg_zero]
+  | ⟨1, _⟩, ⟨2, _⟩ => simp [leviCivita, R.mul_zero, R.mul_one, R.mul_neg, R.add_zero, R.neg_neg]
+  | ⟨2, _⟩, ⟨0, _⟩ => simp [leviCivita, R.mul_zero, R.mul_one, R.mul_neg, R.add_zero, R.zero_add, R.neg_neg]
+  | ⟨2, _⟩, ⟨1, _⟩ => simp [leviCivita, R.mul_zero, R.mul_one, R.mul_neg, R.add_zero]
+  | ⟨2, _⟩, ⟨2, _⟩ => simp [leviCivita, R.mul_zero, R.add_zero, R.neg_zero]
 
 /-- The φ force from Cosserat strain is -α curl(M).
     AXIOM because it requires the abstract ∂_j operator. -/
@@ -181,12 +194,40 @@ theorem strain_nonneg (α : R) (hα : (0 : R) ≤ α) (curlPhi θ : FieldVec) :
 
 /-- Writing θ = curl(φ)/2 + δθ, the strain force becomes -2α δθ.
     This is a restoring force for α > 0. -/
+-- Helper: a - (a + b) = -b
+private theorem sub_add_cancel (a b : R) : a - (a + b) = -b := by
+  rw [R.sub_def]
+  -- a + (-(a + b)) = -b
+  -- a + (-a + (-b)) = -b  (neg distributes over addition needs a lemma)
+  -- We use: -(a + b) = -a + (-b)
+  have neg_add : -(a + b) = -a + -b := by
+    have h : (a + b) + (-a + -b) = 0 := by
+      calc (a + b) + (-a + -b)
+          = a + (b + (-a + -b)) := R.add_assoc _ _ _
+        _ = a + ((b + -a) + -b) := by rw [R.add_assoc b (-a) (-b)]
+        _ = a + ((-a + b) + -b) := by rw [R.add_comm b (-a)]
+        _ = a + (-a + (b + -b)) := by rw [R.add_assoc (-a) b (-b)]
+        _ = a + (-a + 0) := by rw [R.add_neg_cancel]
+        _ = a + -a := by rw [R.add_zero]
+        _ = 0 := R.add_neg_cancel a
+    -- So -(a+b) is the additive inverse, which equals -a + -b
+    have h2 : (a + b) + (-(a + b)) = 0 := R.add_neg_cancel (a + b)
+    -- From h and h2: -a + -b = -(a + b)
+    exact (R.add_left_cancel _ _ _ (by rw [h2, ← h])).symm
+  rw [neg_add]
+  -- Goal: a + (-a + -b) = -b
+  rw [← R.add_assoc a (-a) (-b)]
+  -- Goal: (a + -a) + -b = -b
+  rw [R.add_neg_cancel, R.zero_add]
+
 theorem strain_force_linear (α : R) (curlPhi δθ : FieldVec) (a : Fin 3) :
     thetaForceStrain α curlPhi (fun b => curlPhi b / (2 : R) + δθ b) a =
     -((2 : R) * α * δθ a) := by
-  unfold thetaForceStrain mismatch
-  -- curlPhi_a/2 - (curlPhi_a/2 + δθ_a) = -δθ_a
-  -- So force = 2α(-δθ_a) = -(2α δθ_a)
-  sorry  -- algebra: 2*α*(x/2 - (x/2 + d)) = -(2*α*d)
+  simp only [thetaForceStrain, mismatch]
+  -- Goal: 2 * α * (curlPhi a / 2 - (curlPhi a / 2 + δθ a)) = -(2 * α * δθ a)
+  have h := sub_add_cancel (curlPhi a / (2 : R)) (δθ a)
+  rw [h]
+  -- Goal: 2 * α * -(δθ a) = -(2 * α * δθ a)
+  exact R.mul_neg ((2 : R) * α) (δθ a)
 
 end V50C3

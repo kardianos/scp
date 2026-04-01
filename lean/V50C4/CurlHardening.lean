@@ -41,14 +41,18 @@ theorem harden_zero_no_theta (β : R) (phi_curl : FieldVec) :
 theorem harden_nonneg (β : R) (hβ : (0 : R) ≤ β)
     (theta phi_curl : FieldVec) :
     (0 : R) ≤ energyHarden β theta phi_curl := by
-  sorry -- requires ordered field multiplication
+  unfold energyHarden
+  -- (β/2) * normSq theta * normSq phi_curl
+  -- β/2 ≥ 0 (from hβ and 2 > 0), normSq ≥ 0 (sum of squares)
+  exact R.mul_nonneg _ _
+    (R.mul_nonneg _ _ (R.div_nonneg β (2 : R) hβ R.two_pos) (normSq_nonneg theta))
+    (normSq_nonneg phi_curl)
 
 -- Theta force vanishes in vacuum
 theorem hardenTheta_zero_in_vacuum (β : R) (theta : FieldVec) (a : Fin 3) :
     hardenThetaForce β (fun _ => (0 : R)) theta a = (0 : R) := by
   unfold hardenThetaForce normSq dot
-  simp [R.mul_zero, R.zero_add, R.zero_mul]
-  sorry -- neg_zero
+  simp [R.mul_zero, R.zero_add, R.zero_mul, R.neg_zero]
 
 -- Q vanishes in vacuum
 theorem hardenQ_zero_in_vacuum (β : R) (theta : FieldVec) :

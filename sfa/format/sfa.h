@@ -272,6 +272,15 @@ const char *sfa_dtype_name(uint8_t dtype);
 
 #ifdef SFA_IMPLEMENTATION
 
+/* Suppress -Wunused-result for fread/fwrite in the implementation.
+ * The SFA format uses fread for sequential binary parsing where partial
+ * reads indicate a truncated file, which is handled at a higher level
+ * by sfa_count_valid_frames() rather than per-call error checking. */
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-result"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -810,10 +819,7 @@ int sfa_write_frame_ex(SFA *s, double time, void **column_data,
 
 void sfa_enable_split(SFA *s) {
     s->split_output = 1;
-    /* Derive base path: strip .sfa extension from output path */
-    const char *path = NULL;
-    /* Get filename from fp — we need the output path stored somewhere.
-     * The caller must set split_base before calling finalize_header.
+    /* The caller must set split_base before calling finalize_header.
      * Typically: strncpy(sfa->split_base, "output", 511) after sfa_create. */
 }
 
@@ -994,8 +1000,8 @@ int sfa_read_frame(SFA *s, uint32_t frame_idx, void *buf) {
     int codec = s->flags & 0xF;
 
     /* Validate entry before allocating */
-    if (entry.compressed_size == 0 || entry.compressed_size > 500000000ULL) {
-        /* Sanity: no frame should be >500 MB compressed */
+    if (entry.compressed_size == 0 || entry.compressed_size > 50000000000ULL) {
+        /* Sanity: no frame should be >50 GB compressed */
         return -1;
     }
 
@@ -1414,5 +1420,9 @@ int sfa_fixup_index(const char *path) {
     printf("sfa_fixup: indexed %u frames, cleared streaming flag\n", frame_count);
     return (int)frame_count;
 }
+
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 
 #endif /* SFA_IMPLEMENTATION */

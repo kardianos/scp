@@ -58,10 +58,27 @@ theorem leviCivita_repeat (i j k : Fin 3) (h : i = j ∨ j = k ∨ i = k) :
   simp [leviCivita, h]
 
 /-- ε is antisymmetric under swap of first two indices: ε_{jik} = -ε_{ijk}. -/
+-- Helper to case-split on Fin 3
+private theorem fin3_cases (P : Fin 3 → Prop) (h0 : P 0) (h1 : P 1) (h2 : P 2) :
+    ∀ i, P i := by
+  intro ⟨n, hn⟩
+  match n, hn with
+  | 0, _ => exact h0
+  | 1, _ => exact h1
+  | 2, _ => exact h2
+
+-- Helper: 0 = -(0 : R)
+private theorem zero_eq_neg_zero : (0 : R) = -(0 : R) := R.neg_zero.symm
+
+-- Helper: (1 : R) = -(-1)
+private theorem one_eq_neg_neg_one : (1 : R) = -(-(1 : R)) := (R.neg_neg (1 : R)).symm
+
 theorem leviCivita_swap01 (i j k : Fin 3) :
     leviCivita j i k = R.neg (leviCivita i j k) := by
-  -- Exhaustive check on all 27 cases
-  sorry  -- native_decide would work with decidable ℤ; omitted for axiomatic R
+  apply fin3_cases (fun i => ∀ j k : Fin 3, leviCivita j i k = R.neg (leviCivita i j k)) <;>
+    intro j <;> apply fin3_cases (fun j => ∀ k : Fin 3, leviCivita j _ k = R.neg (leviCivita _ j k)) <;>
+    intro k <;> apply fin3_cases (fun k => leviCivita _ _ k = R.neg (leviCivita _ _ k)) <;>
+    simp [leviCivita] <;> first | rfl | exact R.neg_zero.symm | exact (R.neg_neg _).symm
 
 /-! ## Abstract differential operators -/
 

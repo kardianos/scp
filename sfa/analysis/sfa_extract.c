@@ -96,8 +96,11 @@ static int do_repair(const char *path) {
     if (s2) {
         FILE *fp2 = s2->fp;
         fseek(fp2, (long)s2->first_jtop_offset + 12 + 4 + 4 + 8, SEEK_SET);
-        uint64_t jmpf_off;
-        fread(&jmpf_off, 8, 1, fp2);
+        uint64_t jmpf_off = 0;
+        if (fread(&jmpf_off, 8, 1, fp2) != 1) {
+            fprintf(stderr, "Warning: cannot read JMPF offset\n");
+            sfa_close(s2); fclose(fp); return 1;
+        }
 
         for (int f = valid; f < total; f++) {
             long entry_off = (long)jmpf_off + 12 + 8 + (long)f * 32;

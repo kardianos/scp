@@ -39,7 +39,10 @@ typedef struct {
     double L, T, dt_factor;
 
     /* Physics */
-    double m2, mtheta2, eta, eta1, mu, kappa, lambda_theta;
+    double m2, mtheta2, eta, mu, kappa;
+    double kappa_h;             /* chiral helicity coupling: κ_h P² φ·curl(φ) */
+    double alpha_cs;            /* Cosserat strain: α|curl(φ)/2 - θ|² */
+    double beta_h;              /* curl-squared hardening: (β/2)|θ|²|∇×φ|² */
 
     /* Mass coupling mode */
     int mode;
@@ -64,15 +67,16 @@ typedef struct {
     char output[512];
     char diag_file[512];
     int precision;          /* 0=f16, 1=f32, 2=f64 */
-    int output_split;       /* 0=single .sfa, 1=header .sfa + per-frame .sfp */
     double snap_dt, diag_dt;
+    double burst_start, burst_end;  /* burst-snap window: every timestep between these */
+    double burst_every;             /* repeat burst at this interval (0=single burst) */
 } Config;
 
 static Config cfg_defaults(void) {
     Config c = {0};
     c.N = 128;  c.L = 10.0;  c.T = 200.0;  c.dt_factor = 0.025;
-    c.m2 = 2.25;  c.mtheta2 = 0.0;  c.eta = 0.5;  c.eta1 = 0.0;  c.lambda_theta = 0.0;
-    c.mu = -41.345;  c.kappa = 50.0;
+    c.m2 = 2.25;  c.mtheta2 = 0.0;  c.eta = 0.5;
+    c.mu = -41.345;  c.kappa = 50.0;  c.kappa_h = 0.0;  c.alpha_cs = 0.0;  c.beta_h = 0.0;
     c.mode = 0;  c.inv_alpha = 2.25;  c.inv_beta = 5.0;  c.kappa_gamma = 2.0;
     c.bc_type = 0;
     c.damp_width = 3.0;  c.damp_rate = 0.01;  c.bc_switch_time = 0.0;
@@ -85,8 +89,8 @@ static Config cfg_defaults(void) {
     strcpy(c.output, "output.sfa");
     strcpy(c.diag_file, "diag.tsv");
     c.precision = 1;  /* f32 */
-    c.output_split = 0;
     c.snap_dt = 5.0;  c.diag_dt = 2.0;
+    c.burst_start = 0;  c.burst_end = 0;  c.burst_every = 0;
     return c;
 }
 
@@ -98,18 +102,19 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"m"))         { double m = atof(val); c->m2 = m*m; }
     else if (!strcmp(key,"m_theta"))   { double m = atof(val); c->mtheta2 = m*m; }
     else if (!strcmp(key,"eta"))         c->eta = atof(val);
-    else if (!strcmp(key,"eta1"))        c->eta1 = atof(val);
-    else if (!strcmp(key,"lambda_theta")) c->lambda_theta = atof(val);
     else if (!strcmp(key,"mu"))          c->mu = atof(val);
     else if (!strcmp(key,"kappa"))       c->kappa = atof(val);
+    else if (!strcmp(key,"kappa_h"))    c->kappa_h = atof(val);
+    else if (!strcmp(key,"alpha_cs"))   c->alpha_cs = atof(val);
+    else if (!strcmp(key,"beta_h"))    c->beta_h = atof(val);
     else if (!strcmp(key,"mode"))        c->mode = atoi(val);
     else if (!strcmp(key,"inv_alpha"))   c->inv_alpha = atof(val);
     else if (!strcmp(key,"inv_beta"))    c->inv_beta = atof(val);
     else if (!strcmp(key,"kappa_gamma")) c->kappa_gamma = atof(val);
     else if (!strcmp(key,"bc_type"))      c->bc_type = atoi(val);
     else if (!strcmp(key,"damp_width"))  c->damp_width = atof(val);
-    else if (!strcmp(key,"damp_rate"))   c->damp_rate = atof(val);
     else if (!strcmp(key,"bc_switch_time")) c->bc_switch_time = atof(val);
+    else if (!strcmp(key,"damp_rate"))   c->damp_rate = atof(val);
     else if (!strcmp(key,"gradient_A_high")) c->gradient_A_high = atof(val);
     else if (!strcmp(key,"gradient_A_low"))  c->gradient_A_low = atof(val);
     else if (!strcmp(key,"gradient_margin")) c->gradient_margin = atoi(val);
@@ -127,12 +132,14 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"diag_file"))   strncpy(c->diag_file, val, 511);
     else if (!strcmp(key,"snap_dt"))     c->snap_dt = atof(val);
     else if (!strcmp(key,"diag_dt"))     c->diag_dt = atof(val);
+    else if (!strcmp(key,"burst_start")) c->burst_start = atof(val);
+    else if (!strcmp(key,"burst_end"))   c->burst_end = atof(val);
+    else if (!strcmp(key,"burst_every")) c->burst_every = atof(val);
     else if (!strcmp(key,"precision")) {
         if      (!strcmp(val,"f16")) c->precision = 0;
         else if (!strcmp(val,"f32")) c->precision = 1;
         else if (!strcmp(val,"f64")) c->precision = 2;
     }
-    else if (!strcmp(key,"output_split")) c->output_split = atoi(val);
     else fprintf(stderr, "WARNING: unknown config key '%s'\n", key);
 }
 
@@ -165,19 +172,21 @@ static void cfg_load(Config *c, const char *path) {
 
 static void cfg_print(const Config *c) {
     const char *prec_names[] = {"f16", "f32", "f64"};
-    printf("=== scp_sim: Unified 6-field Cosserat Kernel ===\n");
-    printf("d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ)%s\n",
-           c->lambda_theta > 0 ? " - λ_θ·P·(∂P/∂φ)·|θ|²" : "");
-    printf("d²θ/dt² = ∇²θ - (m_θ² + λ_θ·P²)θ + η·curl(φ)\n\n");
+    printf("=== scp_sim_c4: V44 + Cosserat + Curl²-Hardening (+ optional chiral) ===\n");
+    printf("d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ) - α·curl(M) - 2curl(Q)\n");
+    printf("d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ) + 2α·M - β|∇×φ|²θ\n");
+    printf("  M = curl(φ)/2 - θ,  Q = (β/2)|θ|²curl(φ)\n\n");
     printf("Grid:    N=%d L=%.1f T=%.0f dt_factor=%.4f\n", c->N, c->L, c->T, c->dt_factor);
-    printf("Physics: m²=%.4f m_θ²=%.4f η=%.3f η₁=%.3f μ=%.3f κ=%.1f λ_θ=%.3f\n",
-           c->m2, c->mtheta2, c->eta, c->eta1, c->mu, c->kappa, c->lambda_theta);
+    printf("Physics: m²=%.4f m_θ²=%.4f η=%.3f μ=%.3f κ=%.1f κ_h=%.3f α=%.3f β=%.3f\n",
+           c->m2, c->mtheta2, c->eta, c->mu, c->kappa, c->kappa_h, c->alpha_cs, c->beta_h);
     printf("Mode:    %d", c->mode);
     if (c->mode == 1) printf(" (inverse: α=%.3f β=%.3f)", c->inv_alpha, c->inv_beta);
     if (c->mode == 3) printf(" (density-κ: γ=%.3f)", c->kappa_gamma);
-    if (c->bc_type == 0)
-        printf("\nBC:      absorbing sphere (width=%.1f rate=%.4f)\n", c->damp_width, c->damp_rate);
-    else if (c->bc_type == 1)
+    if (c->bc_type == 0) {
+        printf("\nBC:      absorbing sphere (width=%.1f rate=%.4f)", c->damp_width, c->damp_rate);
+        if (c->bc_switch_time > 0) printf(" -> periodic at t=%.0f", c->bc_switch_time);
+        printf("\n");
+    } else if (c->bc_type == 1)
         printf("\nBC:      gradient pinned (A_high=%.3f A_low=%.3f margin=%d)\n",
                c->gradient_A_high, c->gradient_A_low, c->gradient_margin);
     printf("Init:    %s", c->init);
@@ -223,6 +232,8 @@ typedef struct {
     double *mem;
     double *phi[NFIELDS], *phi_vel[NFIELDS], *phi_acc[NFIELDS];
     double *theta[NFIELDS], *theta_vel[NFIELDS], *theta_acc[NFIELDS];
+    double *mismatch[NFIELDS];  /* Cosserat mismatch: M_a = curl(φ)_a/2 - θ_a */
+    double *harden_Q[NFIELDS]; /* Hardening vector: Q_a = (β/2)|θ|²curl(φ)_a */
     double *pin_phi[NFIELDS], *pin_vel[NFIELDS];  /* pinned BC storage (bc_type=1) */
     double *pin_theta[NFIELDS], *pin_tvel[NFIELDS];
     int N; long N3;
@@ -251,10 +262,16 @@ static Grid *grid_alloc(const Config *c) {
         g->theta_vel[a] = g->mem + (12 + a) * g->N3;
         g->theta_acc[a] = g->mem + (15 + a) * g->N3;
     }
+    /* Temporary arrays for two-pass force computations */
+    for (int a = 0; a < NFIELDS; a++) {
+        g->mismatch[a] = calloc(g->N3, sizeof(double));
+        g->harden_Q[a] = calloc(g->N3, sizeof(double));
+    }
     return g;
 }
 
 static void grid_free(Grid *g) {
+    for (int a = 0; a < NFIELDS; a++) { free(g->mismatch[a]); free(g->harden_Q[a]); }
     for (int a = 0; a < NFIELDS; a++) {
         free(g->pin_phi[a]); free(g->pin_vel[a]);
         free(g->pin_theta[a]); free(g->pin_tvel[a]);
@@ -356,7 +373,7 @@ static void init_from_sfa(Grid *g, const Config *c) {
     /* Walk columns and load by semantic+component */
     int loaded[12] = {0};  /* track which of our 12 fields got loaded */
     uint64_t off = 0;
-    for (int col = 0; col < sfa->n_columns; col++) {
+    for (uint32_t col = 0; col < sfa->n_columns; col++) {
         int dtype = sfa->columns[col].dtype;
         int sem   = sfa->columns[col].semantic;
         int comp  = sfa->columns[col].component;
@@ -412,7 +429,7 @@ static void init_from_exec(Grid *g, const Config *c) {
 
     /* Temporarily redirect to SFA loader */
     Config tmp = *c;
-    strncpy(tmp.init_sfa, tmppath, 511);
+    snprintf(tmp.init_sfa, sizeof(tmp.init_sfa), "%s", tmppath);
     tmp.init_frame = -1;
     init_from_sfa(g, &tmp);
     remove(tmppath);
@@ -431,7 +448,7 @@ static void init_template(Grid *g, const Config *c) {
     /* Generate background (with optional gradient) */
     #pragma omp parallel for schedule(static)
     for (long idx=0; idx<g->N3; idx++) {
-        int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+        int i=(int)(idx/NN), k=(int)(idx%N);
         double x=-L+i*dx, z=-L+k*dx;
         double A_bg_x = c->A_bg;
         if (c->bc_type == 1) {
@@ -462,7 +479,7 @@ static void init_template(Grid *g, const Config *c) {
         ttheta[a]=calloc(TN3,sizeof(double)); ttvel[a]=calloc(TN3,sizeof(double));
     }
     uint64_t off=0;
-    for (int col=0; col<tmpl->n_columns; col++) {
+    for (uint32_t col=0; col<tmpl->n_columns; col++) {
         int dtype=tmpl->columns[col].dtype, sem=tmpl->columns[col].semantic, comp=tmpl->columns[col].component;
         int es=sfa_dtype_size[dtype]; uint8_t *src=(uint8_t*)buf+off;
         double *target=NULL;
@@ -515,7 +532,11 @@ static void do_init(Grid *g, const Config *c) {
 }
 
 /* ================================================================
-   Forces: 6-field Cosserat with configurable mass/kappa
+   Forces: V44 + chiral helicity (C2) + Cosserat strain (C3)
+
+   Two-pass when alpha_cs > 0:
+   Pass 1: compute mismatch M_a = curl(φ)_a/2 - θ_a at all voxels
+   Pass 2: compute forces using M (for theta) and curl(M) (for phi)
    ================================================================ */
 
 static void compute_forces(Grid *g, const Config *c) {
@@ -524,11 +545,46 @@ static void compute_forces(Grid *g, const Config *c) {
     const double idx2 = 1.0 / (g->dx * g->dx);
     const double idx1 = 1.0 / (2.0 * g->dx);
     const double MU = c->mu, KAPPA = c->kappa, MASS2 = c->m2;
-    const double MTHETA2 = c->mtheta2, ETA = c->eta, ETA1 = c->eta1;
-    const double LAMBDA_THETA = c->lambda_theta;
+    const double MTHETA2 = c->mtheta2, ETA = c->eta;
+    const double KH = c->kappa_h, ACS = c->alpha_cs, BH = c->beta_h;
     const int MODE = c->mode;
     const double KG = c->kappa_gamma, IA = c->inv_alpha, IB = c->inv_beta;
 
+    /* === Pass 1: Compute temporary fields at all voxels === */
+    if (ACS != 0 || BH != 0) {
+        #pragma omp parallel for schedule(static)
+        for (long idx = 0; idx < N3; idx++) {
+            int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+            int ip=(i+1)%N,im=(i-1+N)%N,jp=(j+1)%N,jm=(j-1+N)%N,kp=(k+1)%N,km=(k-1+N)%N;
+            long n_ip=(long)ip*NN+j*N+k, n_im=(long)im*NN+j*N+k;
+            long n_jp=(long)i*NN+jp*N+k, n_jm=(long)i*NN+jm*N+k;
+            long n_kp=(long)i*NN+j*N+kp, n_km=(long)i*NN+j*N+km;
+
+            double cp0 = curl_component(g->phi, 0, n_ip,n_im,n_jp,n_jm,n_kp,n_km, idx1);
+            double cp1 = curl_component(g->phi, 1, n_ip,n_im,n_jp,n_jm,n_kp,n_km, idx1);
+            double cp2 = curl_component(g->phi, 2, n_ip,n_im,n_jp,n_jm,n_kp,n_km, idx1);
+
+            /* Cosserat mismatch: M_a = curl(φ)_a/2 - θ_a */
+            if (ACS != 0) {
+                g->mismatch[0][idx] = cp0 * 0.5 - g->theta[0][idx];
+                g->mismatch[1][idx] = cp1 * 0.5 - g->theta[1][idx];
+                g->mismatch[2][idx] = cp2 * 0.5 - g->theta[2][idx];
+            }
+
+            /* Hardening vector: Q_a = (β/2)|θ|² × curl(φ)_a
+             * (Maxima-verified: F_phi = -2 curl(Q), so Q is the intermediate) */
+            if (BH != 0) {
+                double t0=g->theta[0][idx], t1=g->theta[1][idx], t2=g->theta[2][idx];
+                double T2 = t0*t0 + t1*t1 + t2*t2;
+                double coeff = 0.5 * BH * T2;
+                g->harden_Q[0][idx] = coeff * cp0;
+                g->harden_Q[1][idx] = coeff * cp1;
+                g->harden_Q[2][idx] = coeff * cp2;
+            }
+        }
+    }
+
+    /* === Pass 2: Compute all forces === */
     #pragma omp parallel for schedule(static)
     for (long idx = 0; idx < N3; idx++) {
         int i = (int)(idx / NN), j = (int)((idx / N) % N), k = (int)(idx % N);
@@ -553,35 +609,113 @@ static void compute_forces(Grid *g, const Config *c) {
             t2c = MU * KG * KAPPA * P2 * P2 / (D*D);
         }
 
-        /* Topology-dependent coupling: eta(P) = eta0 + eta1*P²/(1+kappa*P²)
-         * Saturates at eta0 + eta1/kappa. P2 already computed above. */
-        double eta_eff = ETA + ETA1 * P2 / (1.0 + KAPPA * P2);
+        /* curl(φ) at this voxel — needed for chiral and Cosserat */
+        double curl_phi[3];
+        curl_phi[0] = (g->phi[2][n_jp]-g->phi[2][n_jm]-g->phi[1][n_kp]+g->phi[1][n_km])*idx1;
+        curl_phi[1] = (g->phi[0][n_kp]-g->phi[0][n_km]-g->phi[2][n_ip]+g->phi[2][n_im])*idx1;
+        curl_phi[2] = (g->phi[1][n_ip]-g->phi[1][n_im]-g->phi[0][n_jp]+g->phi[0][n_jm])*idx1;
 
-        /* Field-dependent θ mass: m_θ²(x) = m_θ² + λ_θ·P²
-         * From Lagrangian term -½λ_θ P²|θ|². Gives massive θ where P≠0
-         * (braid cores) and massless θ in free space (P≈0). */
-        double mtheta2_eff = MTHETA2 + LAMBDA_THETA * P2;
+        /* Chiral helicity: κ_h P² φ·curl(φ) */
+        double h = p0*curl_phi[0] + p1*curl_phi[1] + p2*curl_phi[2];
+        double P2_ip=0,P2_im=0,P2_jp=0,P2_jm=0,P2_kp=0,P2_km=0;
+        double dP2dx=0, dP2dy=0, dP2dz=0;
+        if (KH != 0) {
+            double Pip=g->phi[0][n_ip]*g->phi[1][n_ip]*g->phi[2][n_ip];
+            double Pim=g->phi[0][n_im]*g->phi[1][n_im]*g->phi[2][n_im];
+            double Pjp=g->phi[0][n_jp]*g->phi[1][n_jp]*g->phi[2][n_jp];
+            double Pjm=g->phi[0][n_jm]*g->phi[1][n_jm]*g->phi[2][n_jm];
+            double Pkp=g->phi[0][n_kp]*g->phi[1][n_kp]*g->phi[2][n_kp];
+            double Pkm=g->phi[0][n_km]*g->phi[1][n_km]*g->phi[2][n_km];
+            P2_ip=Pip*Pip; P2_im=Pim*Pim; P2_jp=Pjp*Pjp;
+            P2_jm=Pjm*Pjm; P2_kp=Pkp*Pkp; P2_km=Pkm*Pkm;
+            dP2dx=(P2_ip-P2_im)*idx1; dP2dy=(P2_jp-P2_jm)*idx1; dP2dz=(P2_kp-P2_km)*idx1;
+        }
 
-        /* θ energy density |θ|² for φ back-reaction */
-        double t0=g->theta[0][idx], t1=g->theta[1][idx], t2=g->theta[2][idx];
-        double theta2 = t0*t0 + t1*t1 + t2*t2;
+        /* Cosserat strain: curl(M) for phi force, M for theta force */
+        double curl_M[3] = {0, 0, 0};
+        if (ACS != 0) {
+            curl_M[0] = (g->mismatch[2][n_jp]-g->mismatch[2][n_jm]
+                        -g->mismatch[1][n_kp]+g->mismatch[1][n_km])*idx1;
+            curl_M[1] = (g->mismatch[0][n_kp]-g->mismatch[0][n_km]
+                        -g->mismatch[2][n_ip]+g->mismatch[2][n_im])*idx1;
+            curl_M[2] = (g->mismatch[1][n_ip]-g->mismatch[1][n_im]
+                        -g->mismatch[0][n_jp]+g->mismatch[0][n_jm])*idx1;
+        }
 
+        /* Curl-squared hardening: curl(Q) for phi force
+         * Q_a = (β/2)|θ|²curl(φ)_a (computed in pass 1)
+         * F_phi_a = -2 curl(Q)_a  (Maxima-verified sign) */
+        double curl_Q[3] = {0, 0, 0};
+        if (BH != 0) {
+            curl_Q[0] = (g->harden_Q[2][n_jp]-g->harden_Q[2][n_jm]
+                        -g->harden_Q[1][n_kp]+g->harden_Q[1][n_km])*idx1;
+            curl_Q[1] = (g->harden_Q[0][n_kp]-g->harden_Q[0][n_km]
+                        -g->harden_Q[2][n_ip]+g->harden_Q[2][n_im])*idx1;
+            curl_Q[2] = (g->harden_Q[1][n_ip]-g->harden_Q[1][n_im]
+                        -g->harden_Q[0][n_jp]+g->harden_Q[0][n_jm])*idx1;
+        }
+
+        /* |curl(φ)|² at this voxel — needed for theta hardening force */
+        double curl_sq = curl_phi[0]*curl_phi[0] + curl_phi[1]*curl_phi[1] + curl_phi[2]*curl_phi[2];
+
+        /* --- Phi forces --- */
         for (int a = 0; a < NFIELDS; a++) {
             double lap = (g->phi[a][n_ip]+g->phi[a][n_im]+g->phi[a][n_jp]
                         +g->phi[a][n_jm]+g->phi[a][n_kp]+g->phi[a][n_km]
                         -6.0*g->phi[a][idx]) * idx2;
             double dPda = (a==0)?p1*p2:(a==1)?p0*p2:p0*p1;
             double ct = curl_component(g->theta, a, n_ip,n_im,n_jp,n_jm,n_kp,n_km, idx1);
-            g->phi_acc[a][idx] = lap - me2*g->phi[a][idx] - dVdP*dPda - t2c*g->phi[a][idx]
-                               + eta_eff*ct - LAMBDA_THETA*P*dPda*theta2;
+
+            /* Chiral force: κ_h × [2P dPda h + 2P² curl(φ)_a - ∇P² cross terms]
+             * The t3 sign is MINUS (Maxima-verified EL derivation).
+             * F_a = dL/dφ_a - d_j(dL/d(d_j φ_a))
+             *      = kh*(2P dPda h + 2P² curl_a - dP²cross_a) */
+            double chiral = 0;
+            if (KH != 0) {
+                double t1 = 2.0 * P * dPda * h;
+                double t2 = 2.0 * P2 * curl_phi[a];
+                double t3;
+                if (a == 0)      t3 = -(dP2dz * p1 - dP2dy * p2);
+                else if (a == 1) t3 = -(dP2dx * p2 - dP2dz * p0);
+                else             t3 = -(dP2dy * p0 - dP2dx * p1);
+                chiral = KH * (t1 + t2 + t3);
+            }
+
+            /* Cosserat strain force on phi: -α × curl(M)_a
+             * (Maxima-verified: EL derivative gives MINUS curl(M)) */
+            double cosserat_phi = -ACS * curl_M[a];
+
+            /* Curl-squared hardening force on phi: -2 × curl(Q)_a
+             * (Maxima-verified: F = -2 curl(Q) where Q=(β/2)|θ|²curl(φ)) */
+            double harden_phi = -2.0 * curl_Q[a];
+
+            g->phi_acc[a][idx] = lap - me2*g->phi[a][idx] - dVdP*dPda
+                               - t2c*g->phi[a][idx] + ETA*ct + chiral
+                               + cosserat_phi + harden_phi;
         }
 
+        /* --- Theta forces --- */
         for (int a = 0; a < NFIELDS; a++) {
             double lapt = (g->theta[a][n_ip]+g->theta[a][n_im]+g->theta[a][n_jp]
                          +g->theta[a][n_jm]+g->theta[a][n_kp]+g->theta[a][n_km]
                          -6.0*g->theta[a][idx]) * idx2;
             double cp = curl_component(g->phi, a, n_ip,n_im,n_jp,n_jm,n_kp,n_km, idx1);
-            g->theta_acc[a][idx] = lapt - mtheta2_eff*g->theta[a][idx] + eta_eff*cp;
+
+            /* Cosserat strain force on theta: +2α × M_a = 2α(curl(φ)_a/2 - θ_a)
+             * = α curl(φ)_a - 2α θ_a
+             * This pulls theta toward the geometrically correct value curl(φ)/2.
+             * At equilibrium (θ = curl(φ)/2): force is zero. */
+            double cosserat_theta = 0;
+            if (ACS != 0)
+                cosserat_theta = 2.0 * ACS * g->mismatch[a][idx];
+
+            /* Curl-squared hardening force on theta: -β|∇×φ|²θ_a
+             * Theta becomes heavy where twist is strong → confines to shell.
+             * Massless in vacuum (|∇×φ|=0). */
+            double harden_theta = -BH * curl_sq * g->theta[a][idx];
+
+            g->theta_acc[a][idx] = lapt - MTHETA2*g->theta[a][idx] + ETA*cp
+                                 + cosserat_theta + harden_theta;
         }
     }
 }
@@ -700,8 +834,7 @@ static void compute_energy(Grid *g, const Config *c,
     double *phi_max, double *P_max) {
     const int N=g->N,NN=N*N; const long N3=g->N3;
     const double dx=g->dx, dV=dx*dx*dx, idx1=1.0/(2.0*dx);
-    const double MU=c->mu, KAPPA=c->kappa, MASS2=c->m2, MTHETA2=c->mtheta2;
-    const double ETA=c->eta, ETA1=c->eta1, LAMBDA_THETA=c->lambda_theta;
+    const double MU=c->mu, KAPPA=c->kappa, MASS2=c->m2, MTHETA2=c->mtheta2, ETA=c->eta;
     const int MODE=c->mode; const double KG=c->kappa_gamma;
     double s_epk=0,s_etk=0,s_eg=0,s_em=0,s_ep=0,s_etg=0,s_etm=0,s_ec=0,s_pm=0,s_Pm=0;
 
@@ -717,9 +850,6 @@ static void compute_energy(Grid *g, const Config *c,
         double sig=p0*p0+p1*p1+p2*p2;
         double me2=(MODE==1)?c->inv_alpha/(1.0+c->inv_beta*sig):MASS2;
         double keff=(MODE==3)?KAPPA/(1.0+KG*sig):KAPPA;
-        double P=p0*p1*p2;
-        double P2e=P*P;
-        double eta_eff=ETA+ETA1*P2e/(1.0+KAPPA*P2e);
         for (int a=0;a<NFIELDS;a++) {
             s_epk+=0.5*g->phi_vel[a][idx]*g->phi_vel[a][idx]*dV;
             s_etk+=0.5*g->theta_vel[a][idx]*g->theta_vel[a][idx]*dV;
@@ -732,10 +862,10 @@ static void compute_energy(Grid *g, const Config *c,
             double tgy=(g->theta[a][n_jp]-g->theta[a][n_jm])*idx1;
             double tgz=(g->theta[a][n_kp]-g->theta[a][n_km])*idx1;
             s_etg+=0.5*(tgx*tgx+tgy*tgy+tgz*tgz)*dV;
-            s_etm+=0.5*(MTHETA2+LAMBDA_THETA*P2e)*g->theta[a][idx]*g->theta[a][idx]*dV;
+            s_etm+=0.5*MTHETA2*g->theta[a][idx]*g->theta[a][idx]*dV;
             double ap=fabs(g->phi[a][idx]); if(ap>s_pm) s_pm=ap;
         }
-        double P2=P*P;
+        double P=p0*p1*p2, P2=P*P;
         if (MODE==3) {
             double D=1.0+KG*sig+KAPPA*P2;
             s_ep+=(MU/2.0)*P2*(1.0+KG*sig)/D*dV;
@@ -743,9 +873,34 @@ static void compute_energy(Grid *g, const Config *c,
             s_ep+=(MU/2.0)*P2/(1.0+keff*P2)*dV;
         }
         double Pa=fabs(P); if(Pa>s_Pm) s_Pm=Pa;
+        /* Cosserat strain energy: α|curl(φ)/2 - θ|² */
+        if (c->alpha_cs != 0) {
+            double cx0=(g->phi[2][n_jp]-g->phi[2][n_jm]-g->phi[1][n_kp]+g->phi[1][n_km])*idx1;
+            double cx1=(g->phi[0][n_kp]-g->phi[0][n_km]-g->phi[2][n_ip]+g->phi[2][n_im])*idx1;
+            double cx2=(g->phi[1][n_ip]-g->phi[1][n_im]-g->phi[0][n_jp]+g->phi[0][n_jm])*idx1;
+            double m0=cx0*0.5-g->theta[0][idx], m1=cx1*0.5-g->theta[1][idx], m2c=cx2*0.5-g->theta[2][idx];
+            s_ep += c->alpha_cs * (m0*m0 + m1*m1 + m2c*m2c) * dV;
+        }
+        /* Curl-squared hardening energy: (β/2)|θ|²|∇×φ|² */
+        if (c->beta_h != 0) {
+            double cx0=(g->phi[2][n_jp]-g->phi[2][n_jm]-g->phi[1][n_kp]+g->phi[1][n_km])*idx1;
+            double cx1=(g->phi[0][n_kp]-g->phi[0][n_km]-g->phi[2][n_ip]+g->phi[2][n_im])*idx1;
+            double cx2=(g->phi[1][n_ip]-g->phi[1][n_im]-g->phi[0][n_jp]+g->phi[0][n_jm])*idx1;
+            double csq = cx0*cx0 + cx1*cx1 + cx2*cx2;
+            double T2 = g->theta[0][idx]*g->theta[0][idx]+g->theta[1][idx]*g->theta[1][idx]+g->theta[2][idx]*g->theta[2][idx];
+            s_ep += 0.5 * c->beta_h * T2 * csq * dV;
+        }
+        /* Chiral helicity energy: E_h = κ_h P² φ·curl(φ) */
+        if (c->kappa_h != 0) {
+            double cx0=(g->phi[2][n_jp]-g->phi[2][n_jm]-g->phi[1][n_kp]+g->phi[1][n_km])*idx1;
+            double cx1=(g->phi[0][n_kp]-g->phi[0][n_km]-g->phi[2][n_ip]+g->phi[2][n_im])*idx1;
+            double cx2=(g->phi[1][n_ip]-g->phi[1][n_im]-g->phi[0][n_jp]+g->phi[0][n_jm])*idx1;
+            double hel = p0*cx0 + p1*cx1 + p2*cx2;
+            s_ep += c->kappa_h * P2 * hel * dV;
+        }
         for (int a=0;a<NFIELDS;a++) {
             double ct=curl_component(g->theta,a,n_ip,n_im,n_jp,n_jm,n_kp,n_km,idx1);
-            s_ec-=eta_eff*g->phi[a][idx]*ct*dV;
+            s_ec-=ETA*g->phi[a][idx]*ct*dV;
         }
     }
     *epk=s_epk;*etk=s_etk;*eg=s_eg;*em=s_em;*ep=s_ep;
@@ -774,16 +929,6 @@ static double P_integrated(Grid *g) {
    ================================================================ */
 
 static void *cast_buf = NULL;
-static long cast_buf_n = 0;
-
-static void *downcast(double *src, long n, int precision) {
-    if (precision == 2) return src;  /* f64: no conversion */
-    long need = n * ((precision == 0) ? 2 : 4);
-    if (need > cast_buf_n) { cast_buf_n = need; cast_buf = realloc(cast_buf, need); }
-    if (precision == 1) { float *p=(float*)cast_buf; for(long i=0;i<n;i++) p[i]=(float)src[i]; }
-    else { uint16_t *p=(uint16_t*)cast_buf; for(long i=0;i<n;i++) p[i]=f64_to_f16(src[i]); }
-    return cast_buf;
-}
 
 static void sfa_snap(SFA *sfa, Grid *g, double t, int precision) {
     long n = g->N3;
@@ -902,46 +1047,39 @@ int main(int argc, char **argv) {
     uint8_t sfa_dtype = (c.precision == 0) ? SFA_F16 : (c.precision == 1) ? SFA_F32 : SFA_F64;
     SFA *sfa = sfa_create(c.output, c.N, c.N, c.N, c.L, c.L, c.L, g->dt);
     sfa->flags = SFA_CODEC_COLZSTD | SFA_FLAG_STREAMING;  /* per-column parallel compression */
-    if (c.output_split) {
-        sfa_enable_split(sfa);
-        /* Derive split base: strip .sfa extension */
-        strncpy(sfa->split_base, c.output, 507);
-        char *ext = strrchr(sfa->split_base, '.');
-        if (ext && !strcmp(ext, ".sfa")) *ext = '\0';
-    }
 
     /* Embed physics parameters as KVMD metadata */
     {
-        char vN[32],vL[32],vT[32],vdt[32],vm[32],vmt[32],veta[32],veta1[32],vmu[32],vkappa[32];
-        char vmode[32],via[32],vib[32],vkg[32],vdw[32],vdr[32],vprec[32],vdelta[64],vlt[32],vbcsw[32];
+        char vN[32],vL[32],vT[32],vdt[32],vm[32],vmt[32],veta[32],vmu[32],vkappa[32],vkh[32],vacs[32],vbh[32],vbcsw[32];
+        char vmode[32],via[32],vib[32],vkg[32],vdw[32],vdr[32],vprec[32],vdelta[64];
         snprintf(vN,32,"%d",c.N); snprintf(vL,32,"%.6f",c.L); snprintf(vT,32,"%.6f",c.T);
         snprintf(vdt,32,"%.6f",c.dt_factor);
         snprintf(vm,32,"%.6f",sqrt(c.m2)); snprintf(vmt,32,"%.6f",sqrt(c.mtheta2));
-        snprintf(veta,32,"%.6f",c.eta); snprintf(veta1,32,"%.6f",c.eta1);
-        snprintf(vmu,32,"%.6f",c.mu);
-        snprintf(vkappa,32,"%.6f",c.kappa); snprintf(vmode,32,"%d",c.mode);
+        snprintf(veta,32,"%.6f",c.eta); snprintf(vmu,32,"%.6f",c.mu);
+        snprintf(vkappa,32,"%.6f",c.kappa); snprintf(vkh,32,"%.6f",c.kappa_h);
+        snprintf(vacs,32,"%.6f",c.alpha_cs); snprintf(vbh,32,"%.6f",c.beta_h);
+        snprintf(vbcsw,32,"%.6f",c.bc_switch_time);
+        snprintf(vmode,32,"%d",c.mode);
         snprintf(via,32,"%.6f",c.inv_alpha); snprintf(vib,32,"%.6f",c.inv_beta);
         snprintf(vkg,32,"%.6f",c.kappa_gamma);
         snprintf(vdw,32,"%.6f",c.damp_width); snprintf(vdr,32,"%.6f",c.damp_rate);
         snprintf(vprec,32,"%s", (const char*[]){"f16","f32","f64"}[c.precision]);
         snprintf(vdelta,64,"%.6f,%.6f,%.6f",c.delta[0],c.delta[1],c.delta[2]);
-        snprintf(vlt,32,"%.6f",c.lambda_theta);
-        snprintf(vbcsw,32,"%.6f",c.bc_switch_time);
         char vbc[32], vgah[32], vgal[32], vgm[32];
         snprintf(vbc,32,"%d",c.bc_type);
         snprintf(vgah,32,"%.6f",c.gradient_A_high);
         snprintf(vgal,32,"%.6f",c.gradient_A_low);
         snprintf(vgm,32,"%d",c.gradient_margin);
-        const char *keys[] = {"N","L","T","dt_factor","m","m_theta","eta","eta1","mu","kappa",
-                              "lambda_theta","bc_switch_time",
+        const char *keys[] = {"N","L","T","dt_factor","m","m_theta","eta","mu","kappa",
+                              "kappa_h","alpha_cs","beta_h","bc_switch_time",
                               "mode","inv_alpha","inv_beta","kappa_gamma",
                               "damp_width","damp_rate","precision","delta",
                               "bc_type","gradient_A_high","gradient_A_low","gradient_margin"};
-        const char *vals[] = {vN,vL,vT,vdt,vm,vmt,veta,veta1,vmu,vkappa,
-                              vlt,vbcsw,
+        const char *vals[] = {vN,vL,vT,vdt,vm,vmt,veta,vmu,vkappa,
+                              vkh,vacs,vbh,vbcsw,
                               vmode,via,vib,vkg,vdw,vdr,vprec,vdelta,
                               vbc,vgah,vgal,vgm};
-        sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 24);
+        sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 25);
     }
     sfa_add_column(sfa, "phi_x",    sfa_dtype, SFA_POSITION, 0);
     sfa_add_column(sfa, "phi_y",    sfa_dtype, SFA_POSITION, 1);
@@ -969,6 +1107,15 @@ int main(int argc, char **argv) {
     int n_steps = (int)lround(c.T / g->dt);
     int diag_every = (int)lround(c.diag_dt / g->dt); if (diag_every<1) diag_every=1;
     int snap_every = (int)lround(c.snap_dt / g->dt); if (snap_every<1) snap_every=1;
+    double burst_dur = c.burst_end - c.burst_start;
+    if (c.burst_start > 0 && burst_dur > 0) {
+        if (c.burst_every > 0)
+            printf("Burst snap: %.1f duration every %.0f time units starting t=%.1f\n",
+                   burst_dur, c.burst_every, c.burst_start);
+        else
+            printf("Burst snap: every timestep from t=%.1f to t=%.1f\n",
+                   c.burst_start, c.burst_end);
+    }
 
     /* Initial diagnostic */
     double epk,etk,eg,em,ep,etg,etm,ec,et,pm,Pm;
@@ -997,7 +1144,17 @@ int main(int argc, char **argv) {
         verlet_step(g, &c);
         double t = step * g->dt;
 
-        if (step % snap_every == 0)
+        /* Snap: normal interval OR every step during burst window(s) */
+        int in_burst = 0;
+        if (burst_dur > 0) {
+            double t_rel = t - c.burst_start;
+            if (t_rel >= 0) {
+                if (c.burst_every > 0)
+                    t_rel = fmod(t_rel, c.burst_every);
+                in_burst = (t_rel >= 0 && t_rel < burst_dur);
+            }
+        }
+        if (in_burst || step % snap_every == 0)
             sfa_snap(sfa, g, t, c.precision);
 
         if (step % diag_every == 0) {
@@ -1018,11 +1175,12 @@ int main(int argc, char **argv) {
         }
     }
 
-    /* Final frame — write if the last step wasn't exactly a snap point. */
+    /* Final frame — only if the last step wasn't already (or nearly) a snap point.
+     * Skip if the gap is less than half a snap interval to avoid near-duplicate frames. */
     {
         int last_snapped = (n_steps / snap_every) * snap_every;
         int gap = n_steps - last_snapped;
-        if (gap > 0)
+        if (gap > snap_every / 2)
             sfa_snap(sfa, g, n_steps*g->dt, c.precision);
     }
     uint32_t nf = sfa->total_frames;

@@ -582,7 +582,7 @@ phases are present.
 ### Proton vs Neutron [CONFIRMED]
 
 **UUD (proton analog)**: Two Up-chirality + one Down-chirality braids.
-Net charge = +1. Net θ ≠ 0. The net theta coupling SYNCHRONIZES the
+Net winding = +1 (two Up, one Down). Net θ ≠ 0. The net theta coupling SYNCHRONIZES the
 three braids, producing:
 - Coherent breathing (period ~90 time units)
 - Anti-phase locking (Δφ = π between groups)
@@ -590,7 +590,7 @@ three braids, producing:
 - S_final = 0.97, P_int GROWING (123% retention)
 
 **UDD (neutron analog)**: One Up + two Down-chirality braids.
-Net charge = -1. Net θ ≈ 0 (phase cancellation). Without net theta:
+Net winding = -1 (one Up, two Down). Net θ ≈ 0 (phase cancellation). Without net theta:
 - No coherent breathing (irregular oscillation)
 - Carrier phases CONVERGE (loss of color diversity)
 - Confinement weakening (one dominant blob absorbs others)
@@ -998,7 +998,12 @@ can be reduced with smaller dt.
 
 ## References to Simulation Code
 
-### Best-in-Class Simulation (3-field, gravity only)
+### Unified Simulation Kernel (current)
+**CPU**: `sfa/sim/scp_sim.c` — full 6-field C4 Cosserat, config-driven
+**GPU**: `sfa/sim/scp_sim.cu` — CUDA port, async I/O, ~50× faster
+Build and run via the `scp-runner` MCP server (see CLAUDE.md).
+
+### Historical: 3-field gravity-only
 **File**: `/home/d/code/scp/v33/src/v33.c`
 - Standard equation (Eq. 1), no modifications
 - Single malloc for entire simulation (9 arrays × N³ × 8 bytes)

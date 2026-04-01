@@ -43,6 +43,7 @@ typedef struct {
     double dx, dy, dz;
     float *data;             /* NCOLS * Nx*Ny*Nz floats (column-major per SFA) */
     double cx, cy, cz;      /* placement center in output world coords */
+    double vx, vy, vz;      /* velocity boost (Galilean, applied to phi_vel) */
 } Template;
 
 static void usage(const char *prog) {
@@ -55,6 +56,7 @@ static void usage(const char *prog) {
         "  -o <output.sfa>        Output file path\n"
         "  -template <file.sfa>   Template SFA file (repeatable, up to %d)\n"
         "  -place <cx>,<cy>,<cz>  Placement center for preceding template\n"
+        "  -velocity <vx>,<vy>,<vz>  Velocity boost for preceding template (Galilean)\n"
         "  -A_bg <value>          Background amplitude (default 0.1)\n"
         "  -gradient_A_high <v>   Background amplitude at x=+L (enables gradient)\n"
         "  -gradient_A_low <v>    Background amplitude at x=-L (enables gradient)\n"
@@ -268,6 +270,21 @@ int main(int argc, char **argv) {
             pending_template = 0;
             i++;
         }
+        else if (!strcmp(k, "-velocity")) {
+            if (n_particles == 0) {
+                fprintf(stderr, "ERROR: -velocity before any -template\n");
+                return 1;
+            }
+            double vx, vy, vz;
+            if (sscanf(v, "%lf,%lf,%lf", &vx, &vy, &vz) != 3) {
+                fprintf(stderr, "ERROR: -velocity requires vx,vy,vz (got '%s')\n", v);
+                return 1;
+            }
+            particles[n_particles-1].vx = vx;
+            particles[n_particles-1].vy = vy;
+            particles[n_particles-1].vz = vz;
+            i++;
+        }
     }
 
     if (pending_template) {
@@ -379,8 +396,11 @@ int main(int argc, char **argv) {
         if (oj_min < 0) oj_min = 0; if (oj_max >= N) oj_max = N - 1;
         if (ok_min < 0) ok_min = 0; if (ok_max >= N) ok_max = N - 1;
 
-        fprintf(stderr, "  Particle %d: output range [%d:%d, %d:%d, %d:%d]\n",
+        fprintf(stderr, "  Particle %d: output range [%d:%d, %d:%d, %d:%d]",
                 p, oi_min, oi_max, oj_min, oj_max, ok_min, ok_max);
+        if (t->vx != 0 || t->vy != 0 || t->vz != 0)
+            fprintf(stderr, " vel=(%.3f,%.3f,%.3f)", t->vx, t->vy, t->vz);
+        fprintf(stderr, "\n");
 
         #pragma omp parallel for collapse(2) schedule(static)
         for (int oi = oi_min; oi <= oi_max; oi++) {
@@ -448,6 +468,20 @@ int main(int argc, char **argv) {
                         double perturbation = (double)tmpl_val - bg;
                         fields[c][out_idx] += perturbation;
                     }
+
+                    /* Apply Galilean velocity boost: phi_vel_a += v · phi_a
+                     * Each field component gets the SAME velocity kick (scalar × field).
+                     * This is how gen_collision.c does it: phi_vel[a] += v_kick * phi[a]. */
+                    double v_mag = t->vx + t->vy + t->vz;  /* typically only one is nonzero */
+                    if (t->vx != 0 || t->vy != 0 || t->vz != 0) {
+                        /* Use the dominant velocity component as the kick magnitude.
+                         * For x-axis collision: vx is the kick, applied to all phi_vel_a. */
+                        for (int a = 0; a < 3; a++) {
+                            fields[6 + a][out_idx] += t->vx * fields[a][out_idx];
+                            fields[6 + a][out_idx] += t->vy * fields[a][out_idx];
+                            fields[6 + a][out_idx] += t->vz * fields[a][out_idx];
+                        }
+                    }
                 }
             }
         }
@@ -491,7 +525,7 @@ int main(int argc, char **argv) {
         /* Just store the filename, not full path */
         const char *basename = strrchr(particles[p].path, '/');
         basename = basename ? basename + 1 : particles[p].path;
-        snprintf(pbuf_tmpl[p], 512, "%s", basename);
+        snprintf(pbuf_tmpl[p], sizeof(pbuf_tmpl[p]), "%.511s", basename);
         snprintf(pbuf_pos[p], 128, "%.4f,%.4f,%.4f",
                  particles[p].cx, particles[p].cy, particles[p].cz);
         keys[nkv] = pkey_tmpl[p]; vals[nkv] = pbuf_tmpl[p]; nkv++;

@@ -797,7 +797,8 @@ int main(int argc, char **argv)
     if (!buf) { fprintf(stderr, "Cannot allocate %lu bytes for frame buffer\n",
                         (unsigned long)sfa->frame_bytes); return 1; }
 
-    FrameResult *results = (FrameResult*)calloc(n_frames, sizeof(FrameResult));
+    if (n_frames <= 0) { fprintf(stderr, "No frames to process\n"); return 1; }
+    FrameResult *results = (FrameResult*)calloc((unsigned)n_frames, sizeof(FrameResult));
 
     for (int fi = 0; fi < n_frames; fi++) {
         int f = frame_list[fi];

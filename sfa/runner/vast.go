@@ -123,6 +123,19 @@ func (v *VastClient) doRequest(ctx context.Context, method, path string, body io
 	return data, nil
 }
 
+// gpuFilterMapToString converts a map[string]string GPU filter to the legacy
+// whitespace-separated string format used by resolveGPUSpec.
+func gpuFilterMapToString(m map[string]string) string {
+	var parts []string
+	for k, v := range m {
+		parts = append(parts, k+"="+v)
+	}
+	if len(parts) == 0 {
+		return "gpu_name=Tesla_V100 num_gpus=1 disk_space>=20"
+	}
+	return strings.Join(parts, " ")
+}
+
 // resolveGPUSpec parses a gpu_filter string and returns the API query, the
 // minimum VRAM requirement (in MB), and whether to enforce region filtering.
 //
@@ -275,10 +288,9 @@ type CreateInstanceResult struct {
 // CreateInstance rents a GPU instance. Returns the instance/contract ID.
 func (v *VastClient) CreateInstance(ctx context.Context, offerID int, image string, diskGB int, onstart string) (int, error) {
 	payload := map[string]any{
-		"client_id": "me",
-		"image":     image,
-		"disk":      diskGB,
-		"onstart":   onstart,
+		"image":   image,
+		"disk":    diskGB,
+		"onstart": onstart,
 	}
 	body, err := json.Marshal(payload)
 	if err != nil {

@@ -1,0 +1,177 @@
+/* uud_vs_udd.mac — Algebraic comparison of UUD and UDD composites
+ *
+ * A UUD proton has 3 braids along x,y,z with chiralities (U,U,D) = (+1,+1,-1)
+ * A UDD neutron has chiralities (U,D,D) = (+1,-1,-1)
+ *
+ * Each braid contributes to the field:
+ *   φ_a(x,t) = A × envelope(r) × cos(k·axis + δ_a + Δ_braid)
+ *
+ * Where Δ_braid = {0, 2π/3, 4π/3} (carrier phase = color charge)
+ * and chirality determines the SIGN of the winding (k → ±k)
+ *
+ * Question 1: Does P = φ₀φ₁φ₂ differ between UUD and UDD?
+ * Question 2: Does the θ equilibrium (curl(φ)/2) differ?
+ * Question 3: What happens when two identical composites overlap?
+ */
+
+/* ================================================================
+   Single braid contribution
+   ================================================================ */
+
+/* A braid along axis 'ax' with chirality 'chi' (±1) and carrier phase 'Delta'
+ * contributes to field component 'a':
+ *   φ_a = A × env(r_perp) × cos(chi × k × coord_ax + δ_a + Delta)
+ *
+ * For the composite at the center (r=0), env=1, coord_ax=0:
+ *   φ_a = A × cos(δ_a + Delta)
+ */
+
+declare([A, k, delta0, delta1, delta2], real)$
+
+/* Phase offsets */
+delta0 : 0$
+delta1 : 3.0005$
+delta2 : 4.4325$
+
+/* Carrier phases (color charge) */
+Delta : [0, 2*%pi/3, 4*%pi/3]$
+
+/* Chiralities */
+chi_UUD : [1, 1, -1]$   /* proton: Up, Up, Down */
+chi_UDD : [1, -1, -1]$  /* neutron: Up, Down, Down */
+
+print("=== Phase structure at center (r=0, all axes at 0) ===")$
+print("")$
+
+/* At the center where all three braids overlap,
+ * each braid b contributes to each field component a:
+ *   φ_a += A × cos(δ_a + Δ_b)
+ * NOTE: chirality does NOT appear at center because k×coord=0 */
+
+phi_center(a, deltas) := A * sum(cos(deltas[a] + Delta[b]), b, 1, 3)$
+
+/* At center, the contribution is the SAME for UUD and UDD
+ * because chirality multiplies k×coord which is 0 at center */
+print("At center (r=0): chirality is invisible")$
+print("  φ₀ = A × [cos(δ₀) + cos(δ₀+2π/3) + cos(δ₀+4π/3)]")$
+print("     = A × 0  (carrier phases cancel!)")$
+print("")$
+print("This is the confinement mechanism: P → 0 at triple overlap")$
+print("It is IDENTICAL for UUD and UDD at center.")$
+print("")$
+
+/* ================================================================
+   Away from center: chirality matters
+   ================================================================ */
+
+print("=== Away from center: chirality breaks UUD/UDD symmetry ===")$
+print("")$
+
+/* Along the x-axis (the first braid's axis), at position x=x0:
+ * Braid 0 (along x): φ_a += A × cos(chi[0]*k*x0 + δ_a + Δ₀)
+ * Braid 1 (along y): y=0 for x-axis, so φ_a += A × cos(δ_a + Δ₁) (no chirality)
+ * Braid 2 (along z): z=0 for x-axis, so φ_a += A × cos(δ_a + Δ₂) (no chirality)
+ *
+ * Only braid 0 sees the chirality at (x0, 0, 0).
+ */
+
+/* For braid along x-axis, the curl contribution to θ involves
+ * ∂φ_z/∂y - ∂φ_y/∂z evaluated along x-axis.
+ *
+ * The curl(φ) at a point depends on the SPATIAL DERIVATIVES of φ,
+ * which involve k*chi — the chirality directly scales the spatial gradient.
+ */
+
+print("Spatial derivative: ∂φ_a/∂x_axis = -A × chi × k × sin(chi×k×x + δ_a + Δ)")$
+print("")$
+print("UUD braid 0 (chi=+1): ∂/∂x ~ -A×k×sin(kx + δ + Δ₀)")$
+print("UDD braid 0 (chi=+1): ∂/∂x ~ -A×k×sin(kx + δ + Δ₀)  [SAME]")$
+print("")$
+print("UUD braid 2 (chi=-1): ∂/∂z ~ +A×k×sin(-kz + δ + Δ₂) = -A×k×sin(kz - δ - Δ₂)")$
+print("UDD braid 2 (chi=-1): ∂/∂z ~ +A×k×sin(-kz + δ + Δ₂)  [SAME chirality]")$
+print("")$
+
+/* The key difference:
+ * UUD: braids 0,1 are Up (+k), braid 2 is Down (-k)
+ * UDD: braid 0 is Up (+k), braids 1,2 are Down (-k)
+ *
+ * This means the CURL pattern is different:
+ * curl(φ)_x = ∂φ_z/∂y - ∂φ_y/∂z
+ *
+ * For UUD: braid 1 (y-axis, Up) gives ∂φ/∂y with +k
+ *          braid 2 (z-axis, Down) gives ∂φ/∂z with -k
+ *
+ * For UDD: braid 1 (y-axis, Down) gives ∂φ/∂y with -k
+ *          braid 2 (z-axis, Down) gives ∂φ/∂z with -k
+ */
+
+print("=== Curl structure ===")$
+print("")$
+print("curl(φ)_x = ∂φ_z/∂y - ∂φ_y/∂z")$
+print("")$
+print("UUD: ∂φ_z/∂y from braid 1 (Up, +k) - ∂φ_y/∂z from braid 2 (Down, -k)")$
+print("     → involves (+k) and (-(-k)) = (+k) + (+k) terms → CONSTRUCTIVE")$
+print("")$
+print("UDD: ∂φ_z/∂y from braid 1 (Down, -k) - ∂φ_y/∂z from braid 2 (Down, -k)")$
+print("     → involves (-k) and (-(-k)) = (-k) + (+k) terms → PARTIALLY CANCELLING")$
+print("")$
+print("This is the fundamental UUD/UDD asymmetry in curl(φ)!")$
+print("UUD has LARGER |curl(φ)| → LARGER θ (Cosserat: θ ≈ curl(φ)/2)")$
+print("UDD has SMALLER |curl(φ)| → SMALLER θ")$
+print("")$
+print("Consequences:")$
+print("  1. UUD radiates more θ (stronger EM field) → proton has charge")$
+print("  2. UDD radiates less θ → neutron is nearly neutral")$
+print("  3. The hardening β|∇×φ|²θ is STRONGER for UUD → harder shell")$
+print("  4. The Cosserat energy α|M|² differs → different rest mass")$
+print("")$
+
+/* ================================================================
+   Two-proton overlap: what happens?
+   ================================================================ */
+
+print("=== Two UUD protons overlapping ===")$
+print("")$
+print("When two UUD protons with the SAME carrier phases overlap:")$
+print("  Each braid doubles: φ_a → 2 × φ_a at the overlap center")$
+print("  P = φ₀φ₁φ₂ → 8P (cubed from tripling each component)")$
+print("  But the carrier phases STILL cancel: Σcos(δ+Δ_b) = 0")$
+print("")$
+print("The carrier phase cancellation is INDEPENDENT of amplitude.")$
+print("Two overlapping UUD protons still have P → 0 at center.")$
+print("There is NO additional repulsion from the phase structure alone.")$
+print("")$
+print("For Pauli exclusion to emerge, we need something that distinguishes")$
+print("'two of the same' from 'two different'. The current equations don't")$
+print("have this — they see total field values, not individual particle identity.")$
+print("")$
+
+/* ================================================================
+   What WOULD create exclusion?
+   ================================================================ */
+
+print("=== Candidate mechanisms for exclusion ===")$
+print("")$
+print("1. TOPOLOGICAL CHARGE DENSITY PENALTY")$
+print("   Add E_excl = γ × (B⁰)² where B⁰ = baryon number density")$
+print("   B⁰ ∝ ε_abc φ_a ∂φ_b/∂x × ∂φ_c/∂y (Skyrme-like)")$
+print("   Two same-sign baryons → B⁰ adds → (B⁰)² grows → penalty")$
+print("   Baryon + antibaryon → B⁰ cancels → no penalty")$
+print("")$
+print("2. CARRIER PHASE ANTISYMMETRIZATION")$
+print("   Require total carrier phase wavefunction to be antisymmetric")$
+print("   under exchange. This is Pauli exclusion for the classical field.")$
+print("   Implementation: phase penalty when two same-phase structures overlap")$
+print("")$
+print("3. η AS A FUNCTION OF TOPOLOGICAL CHARGE")$
+print("   η_eff(x) = η₀ × (1 + λ × (B⁰)²)")$
+print("   Same-sign baryons → stronger EM coupling → stronger repulsion")$
+print("   Opposite-sign → weaker coupling → allows binding")$
+print("")$
+print("4. SPIN-STATISTICS FROM WINDING")$
+print("   In Skyrme theory, baryons are automatically fermions because")$
+print("   π₄(S³) = Z₂ gives a sign flip under 2π rotation.")$
+print("   Our theory has winding W=±1. If the exchange of two W=+1")$
+print("   composites picks up a phase (-1), this IS Pauli exclusion.")$
+print("   This would be TOPOLOGICAL, not dynamical.")$
+print("")$

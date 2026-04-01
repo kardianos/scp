@@ -21,8 +21,9 @@ type LocalExecutor struct {
 	hasNVCC     bool
 	hasGCC      bool
 	startTime   time.Time
-	lastBinary  string // set after successful Build
-	OnRunDone   func() // called when any run reaches terminal state
+	lastBinary     string                    // set after successful Build
+	OnRunDone      func()                    // called when any run reaches terminal state
+	OnRunComplete  func(id string, info RunInfo) // called with run details on completion
 
 	runs      sync.Map // map[string]*localRun
 	downloads sync.Map // map[string]*DownloadInfo
@@ -196,6 +197,12 @@ func (l *LocalExecutor) Run(ctx context.Context, config string, id string, notif
 func (l *LocalExecutor) executeRun(ctx context.Context, lr *localRun, config string) {
 	defer lr.cancel()
 	defer func() {
+		if l.OnRunComplete != nil {
+			lr.mu.Lock()
+			info := lr.info
+			lr.mu.Unlock()
+			l.OnRunComplete(info.ID, info)
+		}
 		if l.OnRunDone != nil {
 			l.OnRunDone()
 		}

@@ -20,3 +20,11 @@ lean_lib V50C3 where
 @[default_target]
 lean_lib V50C4 where
   srcDir := "."
+
+@[default_target]
+lean_lib Polariton where
+  srcDir := "."
+
+@[default_target]
+lean_lib SinglePass where
+  srcDir := "."

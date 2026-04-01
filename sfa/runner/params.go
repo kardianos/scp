@@ -10,12 +10,12 @@ import (
 // --- Tool parameter and result structs ---
 
 type SimSetupParams struct {
-	Executor  string `json:"executor" desc:"Execution type: local or remote" required:"true"`
-	Host      string `json:"host" desc:"SSH host for existing remote instance"`
-	Port      int    `json:"port" desc:"SSH port for existing remote instance"`
-	GPUFilter string `json:"gpu_filter" desc:"GPU filter (default: Tesla V100). Use gpu_name= and min_ram= (GB). Allowed: Tesla_V100, A100_SXM4, A100_PCIE, L40S, H100_SXM, H100_PCIE, B200. Example: 'gpu_name=Tesla_V100 min_ram=32'"`
-	DiskGB    int    `json:"disk_gb" desc:"Disk space in GB to provision (required for remote)" required:"true"`
-	WorkDir   string `json:"work_dir" desc:"Working directory"`
+	Executor  string            `json:"executor" desc:"Execution type: local or remote" required:"true"`
+	Host      string            `json:"host" desc:"SSH host for existing remote instance"`
+	Port      int               `json:"port" desc:"SSH port for existing remote instance"`
+	GPUFilter map[string]string `json:"gpu_filter" desc:"GPU filter as key-value pairs. Keys: gpu_name (e.g. Tesla_V100), min_ram (GB). Allowed GPUs: Tesla_V100, A100_SXM4, A100_PCIE, L40S, H100_SXM, H100_PCIE, B200"`
+	DiskGB    int               `json:"disk_gb" desc:"Disk space in GB to provision (required for remote)" required:"true"`
+	WorkDir   string            `json:"work_dir" desc:"Working directory"`
 }
 
 type SimSetupResult struct {
@@ -30,7 +30,9 @@ type SimSetupResult struct {
 
 type SimStatusParams struct{}
 
-type SimTeardownParams struct{}
+type SimTeardownParams struct {
+	Force bool `json:"force" desc:"Force teardown even if output files have not been downloaded"`
+}
 type SimTeardownResult struct {
 	Status string `json:"status"`
 }
@@ -180,7 +182,24 @@ func structToJSONSchema(t reflect.Type) map[string]any {
 }
 
 // unmarshalParams converts a map[string]any into a typed struct via JSON round-trip.
+// It pre-processes string values that look like JSON arrays or objects, which can
+// happen when MCP clients serialize complex types as strings.
 func unmarshalParams(params map[string]any, target any) error {
+	// Pre-process: if a value is a string that looks like a JSON array or object,
+	// decode it so the round-trip produces the correct Go types.
+	for k, v := range params {
+		if s, ok := v.(string); ok {
+			s = strings.TrimSpace(s)
+			if (strings.HasPrefix(s, "[") && strings.HasSuffix(s, "]")) ||
+				(strings.HasPrefix(s, "{") && strings.HasSuffix(s, "}")) {
+				var decoded any
+				if err := json.Unmarshal([]byte(s), &decoded); err == nil {
+					params[k] = decoded
+				}
+			}
+		}
+	}
+
 	data, err := json.Marshal(params)
 	if err != nil {
 		return fmt.Errorf("marshal params: %w", err)

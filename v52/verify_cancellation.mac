@@ -1,0 +1,308 @@
+/* verify_cancellation.mac — Verify that m_eff² = k² + m² exactly
+ *
+ * The equilibrium_seed.mac found that the C4 corrections produce
+ * m_eff²(S) = [k²(1-Γ) + m²] / [1 - Γ/2] = k² + m² for ALL S.
+ * This seems too perfect. Let's verify algebraically.
+ */
+
+kill(all)$
+
+declare([alpha, eta, beta, k, m2, S], real)$
+assume(alpha > 0, eta > 0, beta > 0, k > 0, S > 0)$
+
+/* Γ(S) = C²D/(D+βS)² - α/2  where C=α+η, D=2α */
+C : alpha + eta$
+D : 2*alpha$
+
+Gamma : C^2*D / (D + beta*S)^2 - alpha/2$
+
+print("Γ(S) = ", expand(Gamma))$
+
+/* m_eff² = [k²(1-Γ) + m2] / [1 - Γ/2] */
+num : k^2*(1-Gamma) + m2$
+den : 1 - Gamma/2$
+
+ratio : ratsimp(num/den)$
+
+print("m_eff² = [k²(1-Γ) + m²] / [1-Γ/2] = ", ratio)$
+print("")$
+
+/* Check if ratio = k² + m² */
+diff_check : ratsimp(ratio - (k^2 + m2))$
+print("m_eff² - (k²+m²) = ", diff_check)$
+print("")$
+
+/* If not zero, expand and inspect */
+if diff_check = 0 then
+    print("CONFIRMED: m_eff² = k²+m² exactly (the C4 corrections cancel in the effective mass)")
+else (
+    print("NOT exactly zero. Expanding..."),
+    print(expand(diff_check)),
+    /* Factor */
+    print("Factored: ", factor(diff_check))
+)$
+
+print("")$
+
+/* Let's also check the individual components:
+ * num = k²(1-Γ) + m² = k² - k²Γ + m²
+ * den = 1 - Γ/2
+ * num/den = k² + m² requires: k²-k²Γ+m² = (k²+m²)(1-Γ/2)
+ *                             k²-k²Γ+m² = k²+m² - (k²+m²)Γ/2
+ *                             -k²Γ = -(k²+m²)Γ/2
+ *                             -k² = -(k²+m²)/2
+ *                             2k² = k²+m²
+ *                             k² = m²
+ *
+ * This only holds when k² = m²! With k=1.5 and m²=2.25, k²=2.25=m².
+ * So the cancellation is NOT a general identity — it's SPECIFIC to our parameters!
+ */
+
+print("=== The cancellation mechanism ===")$
+print("")$
+print("For m_eff² = k²+m² to hold, we need k² = m².")$
+print("With k = 1.5 and m² = 2.25: k² = 2.25 = m². Yes!")$
+print("")$
+print("This is because k = m (the wavenumber equals the mass).")$
+print("This is the DISPERSION RELATION for a standing wave at ω = 0!")$
+print("  ω² = k² - m² = 0  ←→  k = m")$
+print("")$
+print("Physical meaning: the braid is a ZERO-FREQUENCY mode (static envelope).")$
+print("At k = m, the carrier wave is at the mass threshold, so the")$
+print("envelope sees no net dispersion from the C4 corrections.")$
+print("")$
+
+/* What happens for k ≠ m? */
+print("=== Correction for k ≠ m ===")$
+/* m_eff² = [k²(1-Γ) + m²] / [1-Γ/2]
+ *        = k²+m² + [k²(1-Γ)+m² - (k²+m²)(1-Γ/2)] / [1-Γ/2]
+ *        = k²+m² + [-k²Γ+m²·0 + (k²+m²)Γ/2] / [1-Γ/2]
+ *        = k²+m² + Γ[-k² + (k²+m²)/2] / [1-Γ/2]
+ *        = k²+m² + Γ(m²-k²)/2 / [1-Γ/2]
+ */
+
+correction : ratsimp(Gamma*(m2-k^2)/2 / (1-Gamma/2))$
+print("m_eff² = k²+m² + Γ(m²-k²)/2 / (1-Γ/2)")$
+print("       = k²+m² + δm² where δm² = ", correction)$
+print("")$
+print("When m² = k²: δm² = 0 (our case)")$
+print("When m² > k² (softer wave): δm² > 0 at small S (Γ>0) → stiffer core")$
+print("When m² < k² (harder wave): δm² < 0 at small S → softer core")$
+print("")$
+
+/* ================================================================
+   Now let's focus on what DOES differ: the effective diffusion coefficient
+   ================================================================
+
+   The ODE is: [1-Γ/2](f''+f'/r) - [k²+m²]f = 2N_V
+
+   With k²=m², this simplifies to:
+   [1-Γ(S)/2](f''+f'/r) - 2k²f = 2N_V(f)
+
+   The factor [1-Γ/2] modifies the DIFFUSION, not the mass.
+   At S=0: 1-Γ/2 = 1-0.875 = 0.125
+   At S=2: 1-Γ/2 = 1.0
+   At S→∞: 1-Γ/2 ≈ 1.025
+
+   So in the core (S small), diffusion is REDUCED by 8×.
+   This means the Laplacian is effectively weaker → STEEPER profiles!
+
+   Rescaling: f''+f'/r = 2k²f/(1-Γ/2) + 2N_V/(1-Γ/2)
+   At S=0: f''+f'/r = 16k²f + 16N_V  (the effective mass is 16k²!)
+   At S=2: f''+f'/r = 2k²f + 2N_V    (standard)
+
+   Wait, this contradicts the m_eff calculation. Let me recheck.
+
+   m_eff² = [k²(1-Γ)+m²] / [1-Γ/2]
+   With k²=m²=2.25:
+   = [2.25(1-Γ)+2.25] / [1-Γ/2]
+   = 2.25(2-Γ) / (1-Γ/2)
+   = 2.25 × 2(1-Γ/2) / (1-Γ/2)
+   = 4.5
+
+   Yes, the factors DO cancel. But the ODE is:
+   f''+f'/r = 4.5f/(1-Γ/2) + 2N_V/(1-Γ/2)
+
+   NO! The ODE is:
+   [1-Γ/2](f''+f'/r) = [k²(1-Γ)+m²]f + 2N_V
+   f''+f'/r = {[k²(1-Γ)+m²]f + 2N_V} / (1-Γ/2)
+   = 4.5f + 2N_V/(1-Γ/2)
+
+   So the LINEAR part is EXACTLY the standard modified Bessel equation!
+   f''+f'/r - 4.5f = 2N_V(f)/(1-Γ(S)/2)
+
+   The C4 corrections ONLY modify the effective nonlinear potential!
+   ================================================================ */
+
+print("=== MAJOR SIMPLIFICATION (k=m case) ===")$
+print("")$
+print("When k² = m² (our parameter choice), the radial ODE simplifies to:")$
+print("")$
+print("  f'' + f'/r - (k²+m²)f = 2·N_V(f) / (1 - Γ(S)/2)")$
+print("")$
+print("The LINEAR part (Laplacian + mass) is IDENTICAL to the bare equation!")$
+print("The C4 corrections only appear as a RESCALING of the nonlinear potential.")$
+print("")$
+print("In the core (S→0, Γ→1.75):")$
+print("  N_V_eff = N_V / (1-0.875) = 8 × N_V  (8× stronger binding!)")$
+print("")$
+print("At the shell (S≈2, Γ≈0):")$
+print("  N_V_eff = N_V  (standard)")$
+print("")$
+print("In the tail (S→0 again, Γ→1.75):")$
+print("  N_V_eff = 8 × N_V  (but N_V is tiny here → negligible)")$
+print("")$
+
+/* ================================================================
+   Compute the effective potential enhancement vs radius
+   ================================================================ */
+
+print("=== Effective potential enhancement factor 1/(1-Γ/2) ===")$
+print("")$
+
+alpha_val : 0.1$
+eta_val : 0.5$
+beta_val : 0.5$
+k_val : 1.5$
+
+Gamma_num(SS) := (alpha_val+eta_val)^2*2*alpha_val / (2*alpha_val+beta_val*SS)^2 - alpha_val/2$
+enhance(SS) := 1.0 / (1.0 - Gamma_num(SS)/2)$
+
+print("  S        Γ        1/(1-Γ/2)    Interpretation")$
+for SS in [0, 0.1, 0.2, 0.5, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0] do (
+    G : float(Gamma_num(SS)),
+    E : float(enhance(SS)),
+    printf(true, "  ~5,2f    ~7,4f    ~7,3f        ~a~%",
+           SS, G, E,
+           if SS < 0.3 then "core (enhanced binding)"
+           else if SS < 1.5 then "transition"
+           else if SS < 2.5 then "shell (standard)"
+           else "outer (slightly reduced)")
+)$
+print("")$
+
+/* ================================================================
+   The COMPLETE improved ODE and profile formula
+   ================================================================
+
+   For k = m (our case), the ODE is:
+   f'' + f'/r - 4.5f = 2N_V_eff(f, r)
+
+   where N_V_eff(f,r) = N_V(f) / (1 - Γ(f'²+k²f²)/2)
+
+   The general solution of f''+f'/r-4.5f = 0 is:
+   f(r) = C₁ I₀(√4.5 r) + C₂ K₀(√4.5 r)
+   For f→0 at infinity: f = C₂ K₀(√4.5 r)
+   For f finite at r=0: f = C₁ I₀(√4.5 r)
+
+   These are inconsistent! K₀ is singular at r=0, I₀ diverges at r=∞.
+   The resolution is the nonlinear potential: N_V provides a matching condition.
+
+   For the homogeneous solution valid near r=0:
+   f ≈ A × I₀(√4.5 r) ≈ A × (1 + 4.5r²/4 + ...)  [flat-topped core]
+
+   For the solution valid at large r:
+   f ≈ B × K₀(√4.5 r) ≈ B × √(π/(2√4.5 r)) × exp(-√4.5 r)
+
+   The nonlinear potential connects these at some matching radius R_match
+   where V_eff is significant.
+
+   A PRACTICAL approximation for the improved seed:
+   f(r) = A × K₀(√4.5 × max(r, r₀)) / K₀(√4.5 × r₀)
+   where r₀ is a regularization radius (core size).
+
+   Or simply: f(r) = A × sech(√4.5 × r) which has the right core
+   and tail behavior.
+   ================================================================ */
+
+print("=== PRACTICAL SEED FORMULAS ===")$
+print("")$
+meff : float(sqrt(k_val^2 + 2.25))$
+print("Decay parameter: m_eff = √(k²+m²) = ", meff)$
+print("")$
+
+/* Improved profile 1: sech */
+print("Profile 1 (sech): f(r) = A × sech(m_eff × r)")$
+r_half_sech : float(log(2+sqrt(3))/meff)$
+print("  Half-amplitude radius: ", r_half_sech)$
+print("  Exponential tail: f ~ 2A exp(-m_eff r)")$
+print("")$
+
+/* Improved profile 2: Regularized Bessel K₀ */
+print("Profile 2 (Bessel): f(r) = A × K₀(m_eff × max(r,ε)) / K₀(m_eff × ε)")$
+print("  with ε ~ 0.5 (regularization)")$
+print("  Exactly solves the linear equation for r > ε")$
+print("  Core is flat (f ≈ A for r < ε)")$
+print("")$
+
+/* Improved profile 3: Modified Gaussian with correct tail */
+print("Profile 3 (corrected Gaussian): f(r) = A × exp(-m_eff × r) × (1 + m_eff×r)")$
+print("  This is r×K₁(m_eff r) asymptotically")$
+print("  Smooth at r=0, correct exponential tail")$
+r_half_3 : float(log(2)/meff)$  /* Approximate */
+print("  Half-amplitude radius (approx): ", r_half_3)$
+print("")$
+
+/* ================================================================
+   THETA initialization: the critical improvement
+   ================================================================ */
+
+print("=== THETA INITIALIZATION ===")$
+print("")$
+print("The most important improvement is in θ, not in f(r).")$
+print("")$
+print("Current gen_phase_confined.c uses:")$
+print("  θ_a = theta_init_frac × η × braid_env × 0.1 × trig")$
+print("  ≈ 0.5 × 0.5 × 0.3 × 0.1 = 0.0075 at center")$
+print("")$
+print("The correct algebraic equilibrium is:")$
+print("  θ = G(S) × curl(φ)")$
+print("  G(S) = (α+η) / (2α + β|∇×φ|²)")$
+print("")$
+print("At the braid center (A=0.8):")$
+A_test : 0.8$
+S0 : float(k_val^2 * A_test^2)$
+G0 : float((alpha_val+eta_val)/(2*alpha_val + beta_val*S0))$
+theta_correct : float(G0 * A_test * k_val)$  /* |θ| ~ G × |curl| ~ G × Ak */
+theta_old : 0.0075$
+print("  S(0) = ", S0)$
+print("  G(0) = ", G0)$
+print("  |θ| at center ≈ G × A × k = ", theta_correct)$
+print("  Ratio to old: ", float(theta_correct / theta_old), "×")$
+print("")$
+print("The old initialization has θ that is ~100× TOO SMALL.")$
+print("This means the simulation spends hundreds of timesteps just growing θ")$
+print("to its equilibrium value, during which the braid structure destabilizes.")$
+print("")$
+
+/* ================================================================
+   Full formula for the improved seed generator
+   ================================================================ */
+
+print("======= COMPLETE IMPROVED SEED PRESCRIPTION =======")$
+print("")$
+print("For each braid b along axis_b:")$
+print("")$
+print("  φ_a(x) = f(r_perp) × cos(χ_b × k × coord_b + δ_a + Δ_b)")$
+print("")$
+print("where:")$
+print("  f(r) = A × sech(m_eff × r)   [m_eff = √(k²+m²) ≈ 2.12]")$
+print("  A ≥ 0.5 (above shell threshold)")$
+print("  r_perp = perpendicular distance to braid axis")$
+print("")$
+print("  θ_a(x) = G(S) × curl(φ)_a   [algebraic equilibrium]")$
+print("  G(S) = (α+η) / (2α + β × S)")$
+print("  S = |∇×φ|² = locally computed curl magnitude squared")$
+print("")$
+print("  Velocity: φ_vel = 0 (static equilibrium)")$
+print("  θ_vel: 0 or small inward contraction")$
+print("")$
+print("Key differences from gen_phase_confined.c:")$
+print("  1. Profile: sech(2.12r) instead of Gaussian exp(-r²/(2×4.5²))")$
+print("     → Core width: 0.62 vs ~4.5 (7× more compact!)")$
+print("     → Correct exponential tail")$
+print("  2. Theta: equilibrium G(S)×curl(φ) instead of 0.0075×trig")$
+print("     → 100× larger θ amplitude")$
+print("     → Eliminates transient mismatch growth")$
+print("  3. Amplitude: A=0.8 (above shell threshold) vs A=0.3")$
+print("  4. Velocity: zero (equilibrium) vs finite oscillation+contraction")$

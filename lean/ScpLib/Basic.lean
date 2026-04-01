@@ -79,6 +79,7 @@ axiom R.add_nonneg (a b : R) : (0 : R) ≤ a → (0 : R) ≤ b → (0 : R) ≤ a
 axiom R.mul_nonneg (a b : R) : (0 : R) ≤ a → (0 : R) ≤ b → (0 : R) ≤ a * b
 axiom R.mul_pos (a b : R) : (0 : R) < a → (0 : R) < b → (0 : R) < a * b
 axiom R.neg_pos_of_neg (a : R) : a < 0 → 0 < (-a)
+axiom R.neg_neg_of_pos (a : R) : (0 : R) < a → (-a) < 0
 axiom R.lt_irrefl (a : R) : ¬(a < a)
 
 -- OfNat compatibility
@@ -86,6 +87,9 @@ axiom R.ofNat_zero_eq : R.ofNat 0 = R.zero
 axiom R.ofNat_one_eq : R.ofNat 1 = R.one
 axiom R.two_pos : (0 : R) < (2 : R)
 axiom R.two_ne_zero : (2 : R) ≠ (0 : R)
+-- Numeral decomposition (needed to connect OfNat literals to algebra)
+axiom R.two_eq : (2 : R) = (1 : R) + (1 : R)
+axiom R.three_eq : (3 : R) = (2 : R) + (1 : R)
 
 -- Cancellation
 axiom R.mul_left_cancel (a b c : R) : a ≠ 0 → a * b = a * c → b = c
@@ -94,9 +98,18 @@ axiom R.add_left_cancel (a b c : R) : a + b = a + c → b = c
 -- Division
 axiom R.div_def (a b : R) : a / b = a * R.div 1 b  -- simplified
 axiom R.mul_div_cancel (a : R) (b : R) : b ≠ 0 → a / b * b = a
+axiom R.div_nonneg (a b : R) : (0 : R) ≤ a → (0 : R) < b → (0 : R) ≤ a / b
 -- For our purposes: a/2 - a/2 = 0
 axiom R.sub_self (a : R) : a - a = 0
 axiom R.half_sub_half (a : R) : a / 2 - a / 2 = 0
+
+-- Helper: a + a = 2 * a
+theorem R.two_mul (a : R) : (2 : R) * a = a + a := by
+  rw [R.two_eq, R.right_distrib, R.one_mul]
+
+-- Helper: a + a + a = 3 * a
+theorem R.three_mul (a : R) : (3 : R) * a = a + a + a := by
+  rw [R.three_eq, R.right_distrib, R.two_mul, R.one_mul]
 
 namespace ScpLib
 
@@ -153,14 +166,19 @@ theorem tripleProduct_cyclic (φ : FieldVec) :
     tripleProduct (mkVec (φ 1) (φ 2) (φ 0)) := by
   unfold tripleProduct mkVec
   -- (φ0 * φ1) * φ2 = (φ1 * φ2) * φ0 -- by comm/assoc of R
-  sorry  -- ring
+  calc (φ 0 * φ 1) * φ 2
+      = φ 0 * (φ 1 * φ 2) := R.mul_assoc _ _ _
+    _ = (φ 1 * φ 2) * φ 0 := R.mul_comm _ _
 
 /-- P is symmetric under the other cyclic permutation. -/
 theorem tripleProduct_cyclic' (φ : FieldVec) :
     tripleProduct φ =
     tripleProduct (mkVec (φ 2) (φ 0) (φ 1)) := by
   unfold tripleProduct mkVec
-  sorry  -- ring
+  -- (φ0 * φ1) * φ2 = (φ2 * φ0) * φ1
+  calc (φ 0 * φ 1) * φ 2
+      = φ 2 * (φ 0 * φ 1) := R.mul_comm _ _
+    _ = (φ 2 * φ 0) * φ 1 := (R.mul_assoc _ _ _).symm
 
 /-- ∂P/∂φ₀ = φ₁ * φ₂ -/
 theorem dTripleProduct_0 (φ : FieldVec) :
@@ -182,7 +200,19 @@ theorem euler_triple_product (φ : FieldVec) :
     dTripleProduct φ 2 * φ 2 =
     (3 : R) * tripleProduct φ := by
   unfold dTripleProduct tripleProduct
-  sorry  -- ring: (φ1*φ2)*φ0 + (φ0*φ2)*φ1 + (φ0*φ1)*φ2 = 3*(φ0*φ1*φ2)
+  -- LHS: (φ1*φ2)*φ0 + (φ0*φ2)*φ1 + (φ0*φ1)*φ2
+  -- Each term equals (φ0*φ1)*φ2 by comm/assoc, so sum = 3*((φ0*φ1)*φ2)
+  have h1 : (φ 1 * φ 2) * φ 0 = (φ 0 * φ 1) * φ 2 := by
+    calc (φ 1 * φ 2) * φ 0
+        = φ 0 * (φ 1 * φ 2) := R.mul_comm _ _
+      _ = (φ 0 * φ 1) * φ 2 := (R.mul_assoc _ _ _).symm
+  have h2 : (φ 0 * φ 2) * φ 1 = (φ 0 * φ 1) * φ 2 := by
+    calc (φ 0 * φ 2) * φ 1
+        = φ 0 * (φ 2 * φ 1) := R.mul_assoc _ _ _
+      _ = φ 0 * (φ 1 * φ 2) := by rw [R.mul_comm (φ 2) (φ 1)]
+      _ = (φ 0 * φ 1) * φ 2 := (R.mul_assoc _ _ _).symm
+  rw [h1, h2]
+  rw [R.three_mul]
 
 /-- Triple product of zero field is zero. -/
 theorem tripleProduct_zero :

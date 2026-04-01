@@ -169,6 +169,26 @@ func (m *Monitor) sendRunNotifications(ex Executor, runs map[string]*RunInfo) {
 						id, info.SimTime, info.TotalTime, info.WallSecs)
 				}
 				m.server.sendLogMessage(level, msg)
+
+				// Send channel event so the agent can react immediately.
+				switch info.Status {
+				case RunComplete:
+					m.server.sendChannelEvent("run_complete", map[string]string{
+						"run_id":    id,
+						"sim_time":  fmt.Sprintf("%.1f", info.SimTime),
+						"wall_secs": fmt.Sprintf("%.1f", info.WallSecs),
+					}, msg)
+				case RunFailed:
+					m.server.sendChannelEvent("run_failed", map[string]string{
+						"run_id": id,
+						"error":  info.Error,
+					}, msg)
+				case RunCancelled:
+					m.server.sendChannelEvent("run_cancelled", map[string]string{
+						"run_id": id,
+					}, msg)
+				}
+
 				ns.doneSent = true
 				// Persist run completion to state file.
 				if m.state != nil {

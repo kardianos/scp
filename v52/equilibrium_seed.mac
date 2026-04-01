@@ -1,0 +1,1035 @@
+/* equilibrium_seed.mac — Static equilibrium analysis for C4 braid profile
+ *
+ * Goal: Find the radial profile f(r) for a single braid along z such that
+ * the full C4 equations are satisfied at d²φ/dt²=0, d²θ/dt²=0.
+ *
+ * Equations (from scp_sim.c):
+ *   d²φ/dt² = ∇²φ - m²φ - V'(P)∂P/∂φ + η·curl(θ) - α·curl(M) - 2·curl(Q)
+ *   d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ) + 2α·M - β|∇×φ|²·θ
+ *
+ * where M = curl(φ)/2 - θ,  Q = (β/2)|θ|²·curl(φ)
+ *
+ * Parameters: m²=2.25, μ=-41.345, κ=50, η=0.5, α=0.1, β=0.5
+ */
+
+kill(all)$
+load(vect)$
+
+print("===== SINGLE BRAID EQUILIBRIUM (CYLINDRICAL SYMMETRY) =====")$
+print("")$
+
+/* ================================================================
+   ANSATZ: Single braid along z-axis
+   ================================================================
+   φ_a(r,z) = f(r) × cos(k·z + δ_a)    (a=0,1,2)
+
+   where r = sqrt(x² + y²) is the perpendicular distance,
+   k = m = 1.5, δ = {0, δ₁, δ₂}
+
+   We seek the ODE for f(r).
+   ================================================================ */
+
+declare([r, z, k, m2, eta, alpha, beta, mu, kappa, A0], real)$
+assume(r > 0, k > 0, A0 > 0, alpha > 0, beta > 0)$
+
+/* The profile function and its derivatives */
+depends(f, r)$
+
+/* STEP 1: Compute curl(φ) for the braid ansatz
+ *
+ * φ_a = f(r) cos(kz + δ_a)
+ *
+ * ∂φ_a/∂x = f'(r) × (x/r) × cos(kz + δ_a)
+ * ∂φ_a/∂y = f'(r) × (y/r) × cos(kz + δ_a)
+ * ∂φ_a/∂z = -f(r) × k × sin(kz + δ_a)
+ *
+ * curl(φ)_x = ∂φ_z/∂y - ∂φ_y/∂z
+ *           = f'(r)(y/r)cos(kz+δ₂) + f(r)k sin(kz+δ₁)
+ *
+ * curl(φ)_y = ∂φ_x/∂z - ∂φ_z/∂x
+ *           = -f(r)k sin(kz+δ₀) - f'(r)(x/r)cos(kz+δ₂)
+ *
+ * curl(φ)_z = ∂φ_y/∂x - ∂φ_x/∂y
+ *           = f'(r)(x/r)cos(kz+δ₁) - f'(r)(y/r)cos(kz+δ₀)
+ *
+ * In cylindrical coords (r, θ_cyl, z), with x = r cos(θ_cyl), y = r sin(θ_cyl):
+ *
+ * curl(φ)_x = f' sin(θ_cyl) cos(kz+δ₂) + fk sin(kz+δ₁)
+ * curl(φ)_y = -fk sin(kz+δ₀) - f' cos(θ_cyl) cos(kz+δ₂)
+ * curl(φ)_z = f'[cos(θ_cyl) cos(kz+δ₁) - sin(θ_cyl) cos(kz+δ₀)]
+ */
+
+print("STEP 1: Curl of braid ansatz φ_a = f(r)cos(kz + δ_a)")$
+print("")$
+
+/* For the magnitude |curl(φ)|², average over z (one period) and θ_cyl (azimuth) */
+/* This is valid for the equilibrium since we want the z-averaged radial profile */
+
+/* |curl(φ)|² = curl_x² + curl_y² + curl_z² */
+/* Each component involves products of trig functions in z and θ_cyl */
+
+/* Let's compute term by term, using ⟨cos²(.)⟩_z = 1/2, ⟨sin²(.)⟩_z = 1/2,
+ * ⟨cos(.)sin(.)⟩_z = 0 for distinct phases,
+ * ⟨cos²(θ)⟩_azim = 1/2, etc. */
+
+/* curl_x² = f'² sin²θ cos²(kz+δ₂) + f²k² sin²(kz+δ₁)
+ *          + 2f'f k sinθ cos(kz+δ₂)sin(kz+δ₁)
+ * Average over z: first two terms → f'²sin²θ/2 + f²k²/2
+ *   cross term: ⟨cos(kz+δ₂)sin(kz+δ₁)⟩_z = (1/2)sin(δ₁-δ₂)  */
+
+/* Average curl_x² over azimuth: */
+/* f'²⟨sin²θ⟩/2 + f²k²/2 + f'fk sin(δ₁-δ₂)⟨sinθ⟩ */
+/* = f'²/4 + f²k²/2 + 0 (since ⟨sinθ⟩=0) */
+
+/* Similarly for curl_y²:
+ * curl_y² = f²k² sin²(kz+δ₀) + f'² cos²θ cos²(kz+δ₂)
+ *         + 2fk f' cosθ sin(kz+δ₀)cos(kz+δ₂)
+ * ⟨⟩_z,θ = f²k²/2 + f'²/4 + 0 */
+
+/* curl_z²:
+ * = f'²[cosθ cos(kz+δ₁) - sinθ cos(kz+δ₀)]²
+ * = f'²[cos²θ cos²(kz+δ₁) + sin²θ cos²(kz+δ₀) - 2 cosθ sinθ cos(kz+δ₁)cos(kz+δ₀)]
+ * ⟨⟩_z = f'²[cos²θ/2 + sin²θ/2 - cosθ sinθ cos(δ₁-δ₀)]
+ * = f'²[1/2 - (sin2θ/2)cos(δ₁-δ₀)]
+ * ⟨⟩_θ = f'²/2 */
+
+/* TOTAL: ⟨|curl(φ)|²⟩_{z,θ} = f'²/4 + f²k²/2 + f'²/4 + f²k²/2 + f'²/2
+ *                              = f'² + f²k² */
+
+curl_sq_avg : 'diff(f,r)^2 + f^2*k^2$
+
+print("⟨|curl(φ)|²⟩ averaged over z and azimuth = ", curl_sq_avg)$
+print("")$
+
+/* ================================================================
+   STEP 2: θ equilibrium
+   ================================================================
+   0 = ∇²θ - m_θ²θ + η·curl(φ) + 2α·M - β|∇×φ|²·θ
+
+   where M = curl(φ)/2 - θ
+
+   Expanding: 0 = ∇²θ - m_θ²θ + η·curl(φ) + 2α(curl(φ)/2 - θ) - β|∇×φ|²θ
+            = ∇²θ + (α + η)curl(φ) - (m_θ² + 2α + β|∇×φ|²)θ
+
+   With m_θ² = 0 (standard):
+   0 = ∇²θ + (α + η)curl(φ) - (2α + β|∇×φ|²)θ
+   ================================================================ */
+
+print("STEP 2: θ equilibrium equation")$
+print("0 = ∇²θ + (α + η)·curl(φ) - (2α + β|∇×φ|²)·θ")$
+print("")$
+
+/* SIMPLEST APPROXIMATION: Neglect ∇²θ (valid when θ varies on same scale as φ)
+ * θ ≈ (α + η)·curl(φ) / (2α + β|∇×φ|²)
+ *
+ * This is the "adiabatic" or "algebraic" approximation.
+ */
+
+print("Algebraic approximation (∇²θ ≈ 0):")$
+print("  θ ≈ (α + η) × curl(φ) / (2α + β|∇×φ|²)")$
+print("")$
+
+/* With standard params: α=0.1, η=0.5 → α+η = 0.6, 2α = 0.2 */
+/* θ ≈ 0.6 × curl(φ) / (0.2 + 0.5|∇×φ|²) */
+
+alpha_val : 0.1$
+eta_val : 0.5$
+beta_val : 0.5$
+m2_val : 2.25$
+mu_val : -41.345$
+kappa_val : 50.0$
+k_val : 1.5$
+
+coeff_top : alpha_val + eta_val$
+coeff_bot_const : 2*alpha_val$
+coeff_bot_beta : beta_val$
+
+print("Numerical: θ ≈ ", coeff_top, " × curl(φ) / (", coeff_bot_const, " + ", coeff_bot_beta, "|∇×φ|²)")$
+print("")$
+
+/* ================================================================
+   STEP 3: Substitute θ into φ equation
+   ================================================================
+   0 = ∇²φ - m²φ - V'(P)∂P/∂φ + η·curl(θ) - α·curl(M) - 2·curl(Q)
+
+   With θ = C·curl(φ)/(D + β·S) where C = α+η, D = 2α, S = |∇×φ|²
+
+   For a single braid, P = f³ cos(kz+δ₀)cos(kz+δ₁)cos(kz+δ₂)
+   This is NOT zero in general.
+
+   Let's focus on the z-averaged radial dynamics.
+   ================================================================ */
+
+print("STEP 3: φ equilibrium with θ substituted")$
+print("")$
+
+/* ∇²φ for the braid ansatz φ_a = f(r) cos(kz + δ_a):
+ * ∇²φ_a = (f'' + f'/r - k²f) cos(kz + δ_a)
+ *
+ * This is the cylindrical Laplacian applied to f(r), minus k²f from the z-part.
+ */
+
+lap_phi : ('diff(f,r,2) + 'diff(f,r)/r - k^2*f)$
+
+print("∇²φ_a / cos(kz+δ_a) = f'' + f'/r - k²f = ", lap_phi)$
+print("")$
+
+/* Mass term: -m²φ_a = -m²f cos(kz+δ_a) */
+/* Combined: (f'' + f'/r - k²f - m²f) cos(kz+δ_a) */
+
+print("Linear part of φ_a equation:")$
+print("  (f'' + f'/r - (k²+m²)f) cos(kz+δ_a)")$
+print("  With k=1.5, m²=2.25: k²+m² = ", k_val^2 + m2_val, " = 4.5")$
+print("")$
+
+/* ================================================================
+   STEP 4: Curl coupling terms
+   ================================================================
+
+   η·curl(θ): If θ = C·curl(φ)/(D + β·S), then
+   curl(θ) = curl(C·curl(φ)/(D + βS))
+
+   In the algebraic approximation with S slowly varying:
+   curl(θ) ≈ C/(D+βS) × curl(curl(φ)) + gradient(C/(D+βS)) × curl(φ)
+
+   curl(curl(φ)) = ∇(∇·φ) - ∇²φ
+
+   For our ansatz ∇·φ = Σ_a ∂φ_a/∂x_a, but with 3 different δ_a values
+   this is non-trivial. Let's simplify by averaging.
+
+   curl(curl(φ))_a = -∇²φ_a + ∂(∇·φ)/∂x_a
+
+   For a single braid: ∇·φ = f'(r)(x cos(kz+δ₀)/r + y cos(kz+δ₁)/r)
+   - fk sin(kz+δ₂)  [only the z component of braid 2]
+
+   Actually, this gets complicated. Let's use the z-averaged approach.
+   ================================================================ */
+
+print("STEP 4: Full radial ODE via z-averaging")$
+print("")$
+
+/* The key insight: for a single braid, z-averaging eliminates the
+ * carrier wave modulation and gives an ODE for the envelope f(r).
+ *
+ * TERM 1: ∇²φ - m²φ → (f'' + f'/r - (k²+m²)f) × ⟨cos²(kz+δ)⟩_z = (1/2)(f'' + f'/r - μ_eff²·f)
+ * where μ_eff² = k² + m²
+ *
+ * TERM 2: V'(P)∂P/∂φ — the nonlinear binding potential.
+ * P = φ₀φ₁φ₂ = f³ cos(kz+δ₀)cos(kz+δ₁)cos(kz+δ₂)
+ * ∂P/∂φ_a = f² ∏_{b≠a} cos(kz+δ_b)
+ * V'(P)∂P/∂φ_a involves f^5 and cos products → z-average requires
+ * computing ⟨cos(kz+δ)·cos²(kz+δ₁)·cos²(kz+δ₂)·...⟩
+ */
+
+/* Triple product average:
+ * P² = f⁶ × cos²(kz+δ₀)cos²(kz+δ₁)cos²(kz+δ₂)
+ * ⟨P²⟩_z = f⁶ × ⟨cos²(kz+δ₀)cos²(kz+δ₁)cos²(kz+δ₂)⟩_z */
+
+/* Let me compute ⟨cos²(u)cos²(u+a)cos²(u+b)⟩_u for general a,b */
+/* Using cos²x = (1+cos2x)/2 */
+
+/* For the V'(P)∂P/∂φ_a term in the z-averaged φ_a equation:
+ * need ⟨V'(P) × (∏_{b≠a}φ_b) × cos(kz+δ_a)⟩_z
+ *
+ * V'(P) = μP/(1+κP²)², so this is a complicated nonlinear average.
+ *
+ * Simplify: for small f, P is small, so V'(P) ≈ μP, and the term becomes:
+ * μ × f⁴ × ⟨cos(kz+δ₀)²cos(kz+δ₁)²cos(kz+δ₂)² × cos(kz+δ_a)/cos(kz+δ_a)⟩_z
+ * = ... this is getting circular.
+ *
+ * Actually: V'(P)∂P/∂φ_a = V'(P) × f² × ∏_{b≠a} cos(kz+δ_b)
+ *
+ * Projected onto cos(kz+δ_a): multiply by cos(kz+δ_a) and z-average.
+ */
+
+print("Computing z-averaged nonlinear potential term...")$
+print("")$
+
+/* Direct approach: compute ⟨cos^n products⟩ numerically */
+/* I_mn = ⟨cos^m(u+δ₀)·cos^n(u+δ₁)·cos^p(u+δ₂)⟩ for specific δ values */
+
+d1 : 3.0005$
+d2 : 4.4325$
+
+/* Key integral: ⟨cos²(u)cos²(u+d1)cos²(u+d2)⟩ */
+I222 : float(integrate(cos(u)^2 * cos(u+d1)^2 * cos(u+d2)^2, u, 0, 2*%pi) / (2*%pi))$
+print("⟨cos²(u)cos²(u+d1)cos²(u+d2)⟩ = ", I222)$
+
+/* For the projection of V' term onto cos(kz+δ₀):
+ * Need ⟨cos(u)·[V'(f³·cos(u)·cos(u+d1)·cos(u+d2))]·f²·cos(u+d1)·cos(u+d2)⟩
+ *
+ * In the weak-field limit V'(P) ≈ μP:
+ * term = μf⁵ ⟨cos²(u)·cos²(u+d1)·cos²(u+d2)⟩ = μf⁵ I222
+ */
+
+/* In the saturated limit (large P): V'(P) ≈ μ/(κP) ~ 1/P */
+
+print("")$
+print("For WEAK binding (small f): potential force ≈ μ f⁵ × I222")$
+print("For STRONG binding (large f): potential saturates, force ≈ (μ/κ) × f³ × ...")$
+print("")$
+
+/* ================================================================
+   STEP 5: Effective radial ODE for f(r)
+   ================================================================
+
+   Collecting terms (z-averaged, projected onto cos(kz+δ_a)):
+
+   0 = (1/2)[f'' + f'/r - (k²+m²)f]          ... Laplacian + mass
+     - (1/2)μeff²·f^5·I222 / (1+κf⁶I222)²    ... V'(P) (approx)
+     + η·curl(θ) terms
+     - α·curl(M) terms
+     - 2·curl(Q) terms
+
+   The curl coupling terms are the critical new physics.
+   Let me evaluate them more carefully.
+   ================================================================ */
+
+print("STEP 5: Curl coupling contributions to radial ODE")$
+print("")$
+
+/* With θ = C·curl(φ)/(D+β·S), where S = |∇×φ|², C = α+η, D = 2α:
+ *
+ * The η·curl(θ) term:
+ * η·curl(θ) ≈ η·C/(D+βS)·curl(curl(φ)) + corrections from ∇(1/(D+βS))
+ *
+ * curl(curl(φ))_a = ∇(∇·φ)_a - ∇²φ_a
+ *
+ * For the braid ansatz, z-averaged:
+ * curl(curl(φ))_a → -(f'' + f'/r - k²f) cos(kz+δ_a) + ∇·φ corrections
+ *
+ * The Cosserat term: -α·curl(M) = -α·curl(curl(φ)/2 - θ)
+ * = -α/2·curl(curl(φ)) + α·curl(θ)
+ * = -α/2·(-∇²φ+∇(∇·φ)) + α·curl(θ)
+ *
+ * The hardening term: -2curl(Q) where Q = (β/2)|θ|²·curl(φ)
+ * This is the most complex: curl((β/2)|θ|²·curl(φ))
+ * ≈ (β/2)|θ|² curl(curl(φ)) + (β/2)∇(|θ|²) × curl(φ)
+ */
+
+/* Let's use a different strategy: work with the TOTAL effective mass and
+ * effective potential for f(r), absorbing the curl couplings.
+ *
+ * Key observation: In the algebraic approximation θ = C·curl(φ)/(D+βS),
+ * the mismatch M = curl(φ)/2 - θ = curl(φ)·[1/2 - C/(D+βS)]
+ *                                 = curl(φ)·[(D+βS)/2 - C] / (D+βS)
+ *                                 = curl(φ)·[α + βS/2 - (α+η)] / (D+βS)
+ *                                 = curl(φ)·[βS/2 - η] / (D+βS)
+ *
+ * With S = |curl(φ)|² ≈ f'² + k²f² (z-averaged):
+ * M ≈ curl(φ) × [β(f'²+k²f²)/2 - η] / [2α + β(f'²+k²f²)]
+ */
+
+S : fp^2 + k^2*f^2$  /* S = |∇×φ|² z-averaged, fp = f'(r) */
+
+M_factor : (beta*S/2 - eta) / (2*alpha + beta*S)$
+
+print("Mismatch factor (algebraic approx):")$
+print("  M = curl(φ) × [β·S/2 - η] / [2α + β·S]")$
+print("  where S = f'² + k²f²")$
+print("")$
+
+/* When is M = 0? When βS/2 = η, i.e., S = 2η/β */
+S_zero : 2*eta/beta$
+print("M = 0 when |∇×φ|² = 2η/β = ", S_zero)$
+print("  With η=0.5, β=0.5: S₀ = 2.0")$
+print("  This means f'² + k²f² = 2.0 at the zero-mismatch radius")$
+print("")$
+
+/* For Gaussian f = A exp(-r²/(2R²)):
+ * f' = -Ar/R² exp(-r²/(2R²))
+ * f'² + k²f² = A²(r²/R⁴ + k²) exp(-r²/R²)
+ * At r=0: k²A²  → for A=0.3, k=1.5: S(0) = 0.675 < 2 → M < 0 (θ overestimates curl/2)
+ * At r→∞: 0 < 2 → M < 0
+ * Peak of S at r = R√(1-k²R²/2)... depends on R
+ */
+
+print("For Gaussian profile f = A exp(-r²/(2R²)):")$
+A_val : 0.3$
+R_val : 4.5$
+S_at_0 : float(k_val^2 * A_val^2)$
+print("  S(r=0) = k²A² = ", S_at_0, " (< 2.0, so M < 0 at center)")$
+S_peak_r : float(R_val * sqrt(2))$
+S_peak_val : float(A_val^2 * (2/R_val^2 + k_val^2) * exp(-1))$
+print("  S peaks at r ≈ ", S_peak_r)$
+print("  S_peak ≈ ", S_peak_val)$
+print("")$
+
+/* ================================================================
+   STEP 6: The full radial ODE
+   ================================================================
+
+   After z-averaging and collecting all terms, the radial ODE for f(r) is:
+
+   0 = f'' + f'/r - μ_eff² f + N_V(f) + N_curl(f, f')
+
+   where:
+   μ_eff² = k² + m² + correction from curl couplings
+   N_V = nonlinear potential term
+   N_curl = curl coupling corrections
+
+   The curl coupling effectively modifies the mass:
+
+   From η·curl(θ): adds ηC/(D+βS) × k² f  (from curl(curl(φ))_z piece)
+   From -α·curl(M): adds -(α/2)k²f + α×curl(θ) terms
+   From -2curl(Q): adds β|θ|²k²f + ...
+
+   Let's collect these systematically.
+   ================================================================ */
+
+print("STEP 6: Systematic collection of curl coupling terms")$
+print("")$
+
+/* For a single braid along z, the z-averaged forces on the f(r) profile are:
+ *
+ * 1. LAPLACIAN: f'' + f'/r - k²f
+ * 2. MASS: -m²f
+ * 3. V'(P): nonlinear (computed below)
+ * 4. η curl(θ): this introduces curl(curl(φ)) and gradient corrections
+ * 5. Cosserat -α curl(M): similar structure
+ * 6. Hardening -2curl(Q): most complex
+ *
+ * In the ALGEBRAIC approximation (θ = proportional to curl(φ)),
+ * all curl coupling terms can be expressed in terms of f and its derivatives.
+ *
+ * The key structural result: curl(curl(f(r)cos(kz+δ))) projected onto cos(kz+δ)
+ * gives RADIAL terms proportional to f and its derivatives.
+ *
+ * curl(curl(φ))_a (projected onto cos(kz+δ_a), z-averaged):
+ * = -(f'' + f'/r) + k²f + divergence correction
+ * = -(f'' + f'/r - k²f)
+ * Wait — this is just -∇²φ + ∇(∇·φ). The ∇²φ part projects to f''+f'/r-k²f.
+ * The ∇(∇·φ) part involves cross-component coupling through ∇·φ.
+ *
+ * For a SINGLE braid with all 3 components having the SAME radial profile f(r):
+ * ∇·φ = f'(r)/r × [x cos(kz+δ₀) + y cos(kz+δ₁)] - fk sin(kz+δ₂)
+ * This is NOT zero. But when we z-average and project, the cross terms vanish.
+ *
+ * SIMPLIFIED RESULT: In the single-braid, cylindrical approximation,
+ * curl(curl(φ)) projected and z-averaged gives:
+ *   -(f'' + f'/r - k²f) + (f'' + f'/r)/2
+ * = -1/2(f'' + f'/r) + k²f   ... WRONG, need to be more careful.
+ *
+ * Let me just do this properly in components.
+ */
+
+print("Computing curl(curl(φ)) for braid ansatz directly...")$
+print("")$
+
+/* Work in Cartesian. φ_a = f(r) cos(kz + δ_a), r = sqrt(x²+y²).
+ *
+ * For component a=0 (phi_x):
+ *
+ * curl(curl(φ))_0 = ∂(∂φ_1/∂x₁ + ∂φ_0/∂x₀ + ∂φ_2/∂x₂)/∂x₀ - ∇²φ_0
+ *
+ * Wait, curl(curl(φ))_a = Σ_b ∂²φ_b/∂x_a∂x_b - ∇²φ_a
+ *   = ∂/∂x_a(∇·φ) - ∇²φ_a
+ *
+ * ∇·φ = ∂φ_0/∂x + ∂φ_1/∂y + ∂φ_2/∂z
+ *      = f'(x/r)cos(kz+δ₀) + f'(y/r)cos(kz+δ₁) - fk sin(kz+δ₂)
+ *
+ * For a=0: ∂(∇·φ)/∂x = f''(x²/r²)cos(kz+δ₀) + f'(1/r - x²/r³)cos(kz+δ₀)
+ *                       + f''(xy/r²)cos(kz+δ₁) + f'(-xy/r³)cos(kz+δ₁)
+ *                       - f'k(x/r)sin(kz+δ₂)
+ *
+ * z-average, project onto cos(kz+δ₀):
+ * ⟨[∂(∇·φ)/∂x] cos(kz+δ₀)⟩_z
+ *   = [f''(x²/r²) + f'(1/r-x²/r³)]·(1/2)   [from cos²(kz+δ₀) → 1/2]
+ *   + [f''(xy/r²) - f'(xy/r³)]·⟨cos(kz+δ₁)cos(kz+δ₀)⟩_z
+ *   - f'k(x/r)·⟨sin(kz+δ₂)cos(kz+δ₀)⟩_z
+ *
+ * ⟨cos(kz+δ₁)cos(kz+δ₀)⟩_z = (1/2)cos(δ₁-δ₀) = (1/2)cos(d1)
+ * ⟨sin(kz+δ₂)cos(kz+δ₀)⟩_z = (1/2)sin(δ₂-δ₀) = (1/2)sin(d2)
+ */
+
+cos_d1 : float(cos(d1))$
+sin_d2 : float(sin(d2))$
+cos_d12 : float(cos(d1-d2))$
+
+print("Phase coupling constants:")$
+print("  cos(δ₁) = ", cos_d1)$
+print("  sin(δ₂) = ", sin_d2)$
+print("  cos(δ₁-δ₂) = ", cos_d12)$
+print("")$
+
+/* These are numerically small: cos(3.0005) ≈ -0.9900, sin(4.4325) ≈ -0.9609 */
+/* These phase couplings are SIGNIFICANT — they don't vanish! */
+
+/* But after AZIMUTHAL averaging (over x,y → r):
+ * ⟨x²/r²⟩_θ = 1/2, ⟨y²/r²⟩_θ = 1/2, ⟨xy/r²⟩_θ = 0, ⟨x/r⟩_θ = 0, ⟨y/r⟩_θ = 0
+ */
+
+/* So azimuthal averaging kills the cross-phase terms! */
+/* ⟨∂(∇·φ)/∂x⟩_{z,θ} projected onto cos(kz+δ₀):
+ *   = (1/2)[f''·(1/2) + f'(1/r-1/(2r))]
+ *   = (1/2)[f''/2 + f'/(2r)]
+ *   = (1/4)(f'' + f'/r)
+ */
+
+/* And ⟨∇²φ_0⟩_{z,θ} = (1/2)(f''+f'/r-k²f) */
+
+/* So ⟨curl(curl(φ))_0⟩ projected = (1/4)(f''+f'/r) - (1/2)(f''+f'/r-k²f)
+ *                                 = -(1/4)(f''+f'/r) + (1/2)k²f */
+
+print("Z-and-azimuth-averaged curl(curl(φ))_a projected onto cos(kz+δ_a):")$
+print("  = -(1/4)(f''+f'/r) + (1/2)k²f")$
+print("")$
+
+/* ================================================================
+   STEP 7: Assemble the full ODE for f(r)
+   ================================================================
+
+   In the algebraic approximation:
+   θ = G(S) × curl(φ), where G(S) = (α+η)/(2α+βS), S = f'²+k²f²
+
+   |θ|² = G² × |curl(φ)|² = G² × S (z-averaged)
+
+   The z-and-azimuth-averaged, cos-projected φ equation:
+
+   0 = (1/2)(f''+f'/r-k²f) - (1/2)m²f          ... Laplacian + mass
+     - N_V(f)                                     ... potential
+     + η G curl(curl(φ))                         ... η curl(θ) (leading term)
+     + (α/2) curl(curl(φ))                       ... from -α curl(M) = -α curl(curl(φ)/2-θ)
+     - α G curl(curl(φ))                         ...   = -α/2 curl(curl(φ)) + α curl(θ)
+     - β G² S curl(curl(φ))                      ... from -2curl(Q)
+     + gradient corrections                       ... from ∇G × curl(φ) etc.
+
+   The curl(curl(φ)) terms all have the same structure:
+   η G + α/2 - α G - β G² S = coefficient × [-(1/4)(f''+f'/r) + (1/2)k²f]
+
+   (Dividing through by the 1/2 from the cos² projection:)
+   ================================================================ */
+
+print("STEP 7: Assembling the radial ODE")$
+print("")$
+
+/* Let's define G = G(r) = (α+η)/(2α+βS(r)) where S = f'²+k²f² */
+/* The total curl(curl) coefficient (before the -1/4,+1/2k² projections): */
+
+/* From the φ equation (before z-averaging):
+ * F_phi = ... + η curl(θ) - α curl(M) - 2curl(Q)
+ *
+ * η curl(θ) ≈ ηG·curl(curl(φ)) + η ∇G × curl(φ)
+ * -α curl(M) = -α curl(curl(φ)/2 - Gcurl(φ))
+ *            = -α/2·curl(curl(φ)) + αG·curl(curl(φ)) + α∇G × curl(φ)
+ * -2curl(Q) = -2curl((β/2)G²S·curl(φ))  [since |θ|²=G²S]
+ *           ≈ -βG²S·curl(curl(φ)) - β∇(G²S)×curl(φ)
+ *
+ * Total curl(curl) coefficient: ηG - α/2 + αG - βG²S
+ */
+
+/* Let me compute this coefficient with the algebraic G */
+/* G = C/(D+βS), C=α+η, D=2α */
+/* ηG = ηC/(D+βS)
+ * αG = αC/(D+βS)
+ * βG²S = βC²S/(D+βS)²
+ *
+ * Total = [ηC + αC]/(D+βS) - α/2 - βC²S/(D+βS)²
+ *       = C(η+α)/(D+βS) - α/2 - βC²S/(D+βS)²
+ *       = C²/(D+βS) - α/2 - βC²S/(D+βS)²
+ *
+ * Since C = α+η:
+ *       = C²(D+βS-βS)/(D+βS)² - α/2
+ *       = C²D/(D+βS)² - α/2
+ *       = (α+η)²·2α / (2α+βS)² - α/2
+ */
+
+print("Total curl(curl) coefficient:")$
+print("  Γ = (α+η)²·2α / (2α+βS)² - α/2")$
+print("")$
+
+/* With α=0.1, η=0.5: C²·2α = 0.36×0.2 = 0.072 */
+/* At S=0: Γ = 0.072/0.04 - 0.05 = 1.8 - 0.05 = 1.75 */
+/* At S=2: Γ = 0.072/(0.2+1)² - 0.05 = 0.072/1.44 - 0.05 = 0.05 - 0.05 = 0 */
+/* At S→∞: Γ → -0.05 */
+
+Gamma_func(SS) := float((alpha_val+eta_val)^2 * 2*alpha_val / (2*alpha_val + beta_val*SS)^2 - alpha_val/2)$
+
+print("Γ(S) values:")$
+for SS in [0, 0.5, 1.0, 2.0, 3.0, 5.0, 10.0] do (
+    printf(true, "  S = ~4,1f:  Γ = ~8,4f~%", SS, Gamma_func(SS))
+)$
+print("")$
+
+/* KEY RESULT: Γ goes through zero at S = 2.0 exactly!
+ * This matches the mismatch zero point S₀ = 2η/β = 2.
+ * Where S > 2: Γ < 0 → curl coupling is STABILIZING (adds to effective mass)
+ * Where S < 2: Γ > 0 → curl coupling is DESTABILIZING
+ *
+ * For a proton with shell structure: S peaks at the shell,
+ * so Γ < 0 in the shell → HARDENING (stabilizing).
+ * In the core (S small), Γ > 0 → slight softening.
+ */
+
+print("KEY RESULT: Γ(S) = 0 at S = 2η/β = 2.0 exactly.")$
+print("  S > 2 (shell): Γ < 0 → curl coupling stabilizes (hardening)")$
+print("  S < 2 (core):  Γ > 0 → curl coupling destabilizes (softening)")$
+print("")$
+
+/* ================================================================
+   STEP 8: The complete radial ODE (neglecting gradient corrections)
+   ================================================================
+
+   0 = f'' + f'/r - (k²+m²)f - 2·N_V(f) + 2Γ·[-(1/4)(f''+f'/r) + (1/2)k²f]·2
+
+   Wait, let me be careful with the factors.
+
+   The φ equation at stationarity:
+   0 = ∇²φ_a - m²φ_a - V'(P)∂P/∂φ_a + [curl coupling forces]_a
+
+   Z-average, project: multiply by 2cos(kz+δ_a) and integrate over z.
+
+   The Laplacian: f'' + f'/r - k²f
+   The mass: -m²f
+   The curl(curl) contribution: Γ × [-(1/2)(f''+f'/r) + k²f]
+
+   (The 1/2 projection factor cancels the 2 from the projection.)
+
+   Actually, let me reconsider. The projection operation is:
+   g(r) = (1/L_z)∫ F_a(r,z) × cos(kz+δ_a) dz × 2
+
+   For F_a = f(r)cos(kz+δ_a): (2/L_z)∫cos²=1 → g = f (correct)
+   For curl(curl) term: need the (2/L_z)∫... projection.
+
+   The curl(curl)_a projected is exactly:
+   (2/L_z)∫ curl(curl(φ))_a cos(kz+δ_a) dz = -(f''+f'/r)/2 + k²f
+
+   (After ALSO azimuthal averaging)
+
+   So the ODE becomes:
+   ================================================================ */
+
+print("STEP 8: The radial ODE for the braid profile")$
+print("")$
+print("0 = f'' + f'/r - (k²+m²)f")$
+print("  + Γ(S)·[-(f''+f'/r)/2 + k²f]")$
+print("  - 2·N_V(f)")$
+print("  + [gradient correction terms ∝ G'(r)]")$
+print("")$
+
+/* Rearranging: */
+/* [1 - Γ/2](f''+f'/r) - [k²+m² - Γk²]f - 2N_V = 0 */
+/* [1 - Γ/2](f''+f'/r) - [k²(1-Γ)+m²]f - 2N_V = 0 */
+
+print("Rearranged:")$
+print("  [1 - Γ(S)/2]·(f'' + f'/r) - [k²(1-Γ(S)) + m²]·f - 2·N_V(f) = 0")$
+print("")$
+
+/* This is a nonlinear ODE because Γ depends on S = f'²+k²f². */
+/* When Γ=0 (S=2): reduces to the standard Klein-Gordon + nonlinear potential. */
+/* When Γ>0 (S<2): the effective mass DECREASES (softening in core). */
+/* When Γ<0 (S>2): the effective mass INCREASES (hardening in shell). */
+
+print("Physical interpretation:")$
+print("  The C4 terms create a POSITION-DEPENDENT effective mass:")$
+print("  m_eff²(r) = [k²(1-Γ) + m²] / [1-Γ/2]")$
+print("")$
+
+/* Evaluate m_eff² at key points */
+for SS in [0, 0.5, 1.0, 2.0, 3.0, 5.0, 10.0] do (
+    GG : Gamma_func(SS),
+    meff2 : (k_val^2*(1-GG) + m2_val) / (1-GG/2),
+    printf(true, "  S = ~4,1f:  Γ = ~7,3f  m_eff² = ~7,3f  (cf. bare = ~5,2f)~%",
+           SS, GG, meff2, k_val^2+m2_val)
+)$
+print("")$
+
+/* ================================================================
+   STEP 9: Self-consistent profile via iteration
+   ================================================================
+
+   Strategy:
+   1. Start with Gaussian: f₀(r) = A exp(-r²/(2R²))
+   2. Compute S(r) = f₀'² + k²f₀²
+   3. Compute Γ(S(r))
+   4. Solve the LINEAR ODE:
+      [1-Γ/2](f''+f'/r) - [k²(1-Γ)+m²]f = 0
+      for the boundary conditions f(0) = A, f(∞) = 0
+   5. This gives the "improved" profile f₁(r)
+   6. Iterate until convergence
+
+   But first: can we find a simpler CLOSED FORM?
+   ================================================================ */
+
+print("STEP 9: Looking for analytic profile solutions")$
+print("")$
+
+/* For the linear part (no potential):
+ * [1-Γ/2](f''+f'/r) - m_eff²(r)f = 0
+ *
+ * If Γ were constant, this is Bessel: f = K₀(m_eff r) (modified Bessel).
+ *
+ * The Gaussian f = A exp(-r²/(2R²)) satisfies f''+f'/r = f(-2/R² + r²/R⁴)
+ * = f(-2/R²)(1 - r²/(2R²)) at small r.
+ *
+ * For the Gaussian to be a solution, we need:
+ * [1-Γ/2]·f·(-2/R²+r²/R⁴) = [k²(1-Γ)+m²]·f
+ * At r=0: -2(1-Γ₀/2)/R² = k²(1-Γ₀)+m²
+ * This gives R² = -2(1-Γ₀/2)/[k²(1-Γ₀)+m²]
+ * Since k²(1-Γ₀)+m² > 0, we need 1-Γ₀/2 < 0, i.e., Γ₀ > 2.
+ * But Γ(0) = 1.75 < 2. So a pure Gaussian does NOT solve the linear part.
+ *
+ * The modified Bessel K₀ decays as exp(-m_eff·r)/√r at large r.
+ * At large r, S→0, Γ→1.75, m_eff²→(k²(1-1.75)+m²)/(1-0.875)
+ *   = (2.25×(-0.75)+2.25)/0.125 = (2.25×0.25)/0.125 = 4.5
+ * So m_eff = √4.5 ≈ 2.12, and f ~ exp(-2.12r)/√r at large r.
+ *
+ * Hmm wait: m_eff²(S=0) = (2.25(1-1.75)+2.25)/(1-0.875)
+ *   = (2.25(-0.75)+2.25)/0.125 = (2.25×0.25)/0.125 = 4.5
+ * Same as bare! That's because at S=0, the curl corrections cancel.
+ *
+ * Actually let me recalculate:
+ * At S=0: Γ=1.75
+ * k²(1-Γ)+m² = 2.25(1-1.75)+2.25 = 2.25(-0.75)+2.25 = -1.6875+2.25 = 0.5625
+ * 1-Γ/2 = 1-0.875 = 0.125
+ * m_eff² = 0.5625/0.125 = 4.5
+ *
+ * So the far-field behavior is the SAME as without C4 corrections.
+ * The C4 terms only matter where S is significant (near the braid core).
+ */
+
+meff2_far : float((k_val^2*(1-Gamma_func(0)) + m2_val)/(1-Gamma_func(0)/2))$
+print("Far-field m_eff² (S→0) = ", meff2_far, " = k²+m² (same as bare)")$
+print("Far-field decay: f ~ K₀(√4.5 · r) ~ exp(-", float(sqrt(meff2_far)), "r)/√r")$
+print("")$
+
+/* ================================================================
+   STEP 10: Shell structure prediction
+   ================================================================
+
+   The key question: WHERE does the profile deviate from Gaussian/Bessel?
+
+   For a Gaussian with A=0.3, R=4.5:
+   S(r) = A²(r²/R⁴+k²)exp(-r²/R²)
+   S(0) = A²k² = 0.2025
+   S_max at r where dS/dr = 0: r ≈ R (roughly)
+   S(R) = A²(1/R²+k²)exp(-1) = 0.09(0.0494+2.25)/e = 0.09×2.299/2.718 = 0.076
+
+   So S << 2 everywhere for this Gaussian! The C4 correction is in the
+   high-Γ (≈1.75) regime throughout. This means:
+   - m_eff² = 4.5 everywhere (same as bare)
+   - The 1-Γ/2 = 0.125 prefactor makes the effective diffusion 8× SLOWER
+   - The profile should be MUCH STEEPER (more compact) than a Gaussian!
+
+   Let me find the profile for the case where S is large enough to matter.
+   For a proton template (A~0.8): S(0) = k²A² = 2.25×0.64 = 1.44.
+   Still less than 2 but getting close.
+   ================================================================ */
+
+print("STEP 10: Profile analysis for different amplitudes")$
+print("")$
+
+for AA in [0.1, 0.3, 0.5, 0.8, 1.0, 1.5] do (
+    S0 : float(k_val^2 * AA^2),
+    G0 : Gamma_func(S0),
+    meff : float((k_val^2*(1-G0)+m2_val)/(1-G0/2)),
+    printf(true, "  A = ~4,1f:  S(0) = ~5,3f  Γ(0) = ~6,3f  m_eff²(0) = ~6,2f~%",
+           AA, S0, G0, meff)
+)$
+print("")$
+
+/* For A=1.5: S(0) = 5.0625, Γ = -0.045, m_eff² = 4.69
+ * The correction is tiny! Less than 5% change from bare.
+ *
+ * This suggests the C4 terms primarily affect the profile through
+ * the GRADIENT corrections (∇G × curl(φ)) that I've been neglecting,
+ * and through the MISMATCH DYNAMICS that create the shell.
+ */
+
+print("IMPORTANT: The algebraic equilibrium gives SMALL corrections to f(r)")$
+print("because Γ ≈ const across the profile (S varies less than the dynamic range).")$
+print("")$
+print("The SHELL STRUCTURE seen in simulations likely comes from:")$
+print("  1. Dynamic relaxation: the transient mismatch M creates outward-propagating")$
+print("     theta waves that reflect and form standing-wave shells.")$
+print("  2. Gradient terms ∝ dΓ/dr × curl(φ): these create forces at the")$
+print("     boundary of the braid core where S changes rapidly.")$
+print("  3. Nonlinear saturation of V(P): the potential saturates at large P,")$
+print("     creating a flat core + steep decay.")$
+print("")$
+
+/* ================================================================
+   STEP 11: Improved ansatz — Kink profile
+   ================================================================
+
+   The template proton has:
+   - A flat-topped core (f ≈ const for r < R_core)
+   - A steep transition (f drops sharply at r ≈ R_shell)
+   - An exponential tail (f ~ exp(-m_eff r))
+
+   This suggests a KINK profile rather than Gaussian:
+   f(r) = A / (1 + (r/R)^n)  or  f(r) = A × sech(r/R)
+
+   The sech profile is special: sech² is the classic kink.
+   For sech: f' = -(A/R)sech(r/R)tanh(r/R)
+   S = A²[tanh²(r/R)/R² + k²]sech²(r/R)
+   S(0) = A²k², S → A²/R² as r → ∞ (before the decay kicks in)
+
+   Actually let's try a profile that naturally has a shell:
+   f(r) = A × exp(-r²/(2R²)) × (1 + B × (r/R)²)
+
+   This has f(0) = A, a bump at r ~ R for B > 0.
+   The shell structure would correspond to an enhanced amplitude at r ~ R.
+
+   But actually, what we want is a profile where THETA has a shell,
+   not phi itself. The theta shell is:
+   |θ|² ~ G²(S) × S
+   = (α+η)²S/(2α+βS)²
+   = C²S/(D+βS)²
+
+   d/dS[C²S/(D+βS)²] = C²(D-βS)/(D+βS)³ = 0 at S = D/β = 2α/β = 0.4
+
+   So |θ|² peaks where S = 2α/β = 0.4. For k=1.5, A=0.3:
+   S(0) = 0.2025 and S drops. The peak of |θ|² is at S=0.4, which is
+   INSIDE the braid (closer to center than S(0) if S(0)>0.4).
+
+   For larger A (A=0.5): S(0) = 1.125 > 0.4, so |θ|² peaks at the
+   radius where S = 0.4, which is at some r > 0. THIS is the shell!
+   ================================================================ */
+
+print("STEP 11: Theta shell structure")$
+print("")$
+
+S_theta_peak : float(2*alpha_val/beta_val)$
+print("|θ|² peaks at S = 2α/β = ", S_theta_peak)$
+print("")$
+
+/* For f(r) = A exp(-r²/(2R²)):
+ * S(r) = A²(r²/R⁴+k²)exp(-r²/R²)
+ * S = S_peak at r where S(r) = 0.4
+ *
+ * The shell radius R_shell satisfies:
+ * A²(R_shell²/R⁴+k²)exp(-R_shell²/R²) = 0.4
+ */
+
+print("Shell radius R_shell for different A (Gaussian profile, R=4.5):")$
+for AA in [0.3, 0.5, 0.7, 0.9, 1.2] do block(
+    /* Solve A²(r²/R⁴+k²)exp(-r²/R²) = 0.4 numerically */
+    S0 : float(k_val^2*AA^2),
+    if S0 > S_theta_peak then (
+        /* Find r where S(r) = S_theta_peak */
+        /* Binary search */
+        r_lo : 0.0, r_hi : 3*R_val,
+        for iter : 1 thru 50 do (
+            r_mid : (r_lo + r_hi)/2,
+            S_mid : AA^2*(r_mid^2/R_val^4 + k_val^2)*exp(-r_mid^2/R_val^2),
+            if S_mid > S_theta_peak then r_lo : r_mid else r_hi : r_mid
+        ),
+        R_shell : (r_lo + r_hi)/2,
+        printf(true, "  A = ~4,2f:  S(0) = ~5,3f  R_shell = ~5,2f~%", AA, S0, R_shell)
+    ) else (
+        printf(true, "  A = ~4,2f:  S(0) = ~5,3f  (S < S_peak everywhere → no shell)~%", AA, S0)
+    )
+)$
+print("")$
+
+/* ================================================================
+   STEP 12: The IMPROVED seed formula
+   ================================================================
+
+   Based on the analysis:
+
+   1. The phi profile f(r) should NOT be pure Gaussian.
+      It should have exponential (Bessel) tails: f ~ exp(-√(k²+m²)·r)/√r
+
+   2. The theta should be initialized to the ALGEBRAIC equilibrium:
+      θ ≈ (α+η)/(2α+β|∇×φ|²) × curl(φ)
+      NOT the simple fraction η·curl(φ)·0.1 used in gen_phase_confined.c
+
+   3. The amplitude A should be chosen so that S(0) > 2α/β = 0.4
+      to create the theta shell. This requires A > √(0.4/k²) = 0.42.
+
+   4. The tube radius R should be chosen so the profile matches the
+      equilibrium decay rate: R ~ 1/√(k²+m² - k²Γ∞/(1-Γ∞/2))
+      = 1/√m_eff² at large S.
+
+   Let me compute the improved seed parameters.
+   ================================================================ */
+
+print("======= IMPROVED SEED FORMULA =======")$
+print("")$
+
+/* Minimum A for shell formation: */
+A_min_shell : float(sqrt(S_theta_peak/k_val^2))$
+print("Minimum amplitude for θ-shell: A_min = √(2α/(βk²)) = ", A_min_shell)$
+print("  (Current gen_phase_confined uses A=0.3, which is below threshold)")$
+print("  (Need A ≥ 0.42 for shell formation)")$
+print("")$
+
+/* Effective decay length (far field): */
+decay_length : float(1.0/sqrt(k_val^2 + m2_val))$
+print("Far-field decay length: 1/√(k²+m²) = ", decay_length, " code units")$
+print("  (cf. Gaussian R_tube = 4.5 in gen_phase_confined → WAY too wide)")$
+print("  (The 'correct' R is ~", decay_length, ", not 4.5)")$
+print("")$
+
+/* The Bessel profile: K₀(√4.5·r) for the cylindrical case */
+/* K₀(x) ~ √(π/(2x)) exp(-x) for large x */
+/* f(r) ~ C × exp(-√4.5·r)/√r for large r */
+/* For small r: K₀(x) ~ -ln(x/2) (logarithmic singularity) — but this is for */
+/* the LINEAR equation. The nonlinear potential rounds it off. */
+
+meff_decay : float(sqrt(k_val^2 + m2_val))$
+print("Effective mass for exponential decay: m_eff = √(k²+m²) = ", meff_decay)$
+print("")$
+
+/* PROPOSED PROFILE:
+ * f(r) = A × sech(m_eff × r / w)
+ *
+ * where w controls the core width. The sech profile naturally:
+ * - Has a flat core (f ≈ A for r << w/m_eff)
+ * - Has exponential tails (f ~ 2A exp(-m_eff r/w) for r >> w/m_eff)
+ * - Has S(0) = k²A² (same as Gaussian)
+ * - Has S dropping to 0 smoothly
+ *
+ * The correct w to match far-field decay: w = 1 (so tail is exp(-m_eff r))
+ */
+
+print("PROPOSED IMPROVED PROFILE:")$
+print("  f(r) = A × sech(m_eff × r)")$
+print("  with m_eff = √(k²+m²) = ", meff_decay)$
+print("")$
+print("  At center: f(0) = A")$
+print("  Core radius (f = A/2): r_half = acosh(2)/m_eff = ", float(log(2+sqrt(3))/meff_decay))$
+print("  1/e radius: r_1e = acosh(e)/m_eff = ", float(log(exp(1)+sqrt(exp(2)-1))/meff_decay))$
+print("")$
+
+/* THETA INITIALIZATION: algebraic equilibrium */
+print("THETA INITIALIZATION (algebraic equilibrium):")$
+print("  θ_a = G(S) × curl(φ)_a")$
+print("  G(S) = (α+η)/(2α+β×S) = 0.6/(0.2+0.5×S)")$
+print("  where S = |∇×φ|² computed at each point")$
+print("")$
+
+/* Test: at the center of a braid with A=0.8:
+ * S(0) = k²A² = 2.25×0.64 = 1.44
+ * G(0) = 0.6/(0.2+0.72) = 0.6/0.92 = 0.652
+ * θ ≈ 0.652 × curl(φ)
+ *
+ * The old gen_phase_confined used θ = 0.5×0.5×0.3×0.1 = 0.0075 times some trig
+ * That's θ_init_frac × η × A × 0.1 ≈ 0.0075
+ * While the correct θ ≈ G × |curl| ≈ 0.652 × 1.2 ≈ 0.78
+ * Two orders of magnitude difference!
+ */
+
+print("Example: A=0.8 braid center:")$
+S0_ex : float(k_val^2*0.8^2)$
+G0_ex : float(coeff_top/(coeff_bot_const + coeff_bot_beta*S0_ex))$
+print("  S(0) = ", S0_ex, "  G(0) = ", G0_ex)$
+print("  θ ≈ ", G0_ex, " × curl(φ)")$
+print("  |θ| ≈ ", float(G0_ex * sqrt(S0_ex)))$
+print("")$
+
+theta_old : float(0.5 * 0.5 * 0.3 * 0.1)$
+print("  Old gen_phase_confined θ amplitude: ~", theta_old)$
+print("  Correct equilibrium θ amplitude: ~", float(G0_ex * sqrt(S0_ex)))$
+print("  Ratio: ", float(G0_ex*sqrt(S0_ex)/theta_old), "× larger!")$
+print("")$
+
+/* ================================================================
+   STEP 13: Summary of the radial ODE
+   ================================================================ */
+
+print("======= SUMMARY: RADIAL ODE FOR f(r) =======")$
+print("")$
+print("The z-averaged, azimuth-averaged equilibrium ODE for the braid")$
+print("radial profile f(r), INCLUDING the C4 Cosserat+hardening terms:")$
+print("")$
+print("  [1 - Γ(S)/2]·(f'' + f'/r) - [k²(1-Γ(S)) + m²]·f = 2·N_V(f)")$
+print("")$
+print("where:")$
+print("  S(r) = f'(r)² + k²f(r)²")$
+print("  Γ(S) = (α+η)²·2α/(2α+βS)² - α/2")$
+print("  N_V(f) = z-averaged nonlinear potential (≈ μf⁵I₂₂₂ for small f)")$
+print("  I₂₂₂ = ", I222, " (phase-averaged triple product)")$
+print("")$
+print("Boundary conditions: f(0) finite, f'(0) = 0, f(∞) = 0")$
+print("")$
+print("The theta field at equilibrium:")$
+print("  θ = G(S) × curl(φ)")$
+print("  G(S) = (α+η)/(2α+βS)")$
+print("")$
+print("Parameters:")$
+printf(true, "  m² = ~,3f~%", m2_val)$
+printf(true, "  k = ~,3f  (k² = ~,3f)~%", k_val, k_val^2)$
+printf(true, "  α = ~,3f  (Cosserat strain)~%", alpha_val)$
+printf(true, "  β = ~,3f  (curl² hardening)~%", beta_val)$
+printf(true, "  η = ~,3f  (torsion coupling)~%", eta_val)$
+printf(true, "  μ = ~,3f, κ = ~,3f  (triple product potential)~%", mu_val, kappa_val)$
+print("")$
+printf(true, "  Far-field decay: f ~ exp(-~,3f × r)/√r~%", meff_decay)$
+printf(true, "  Theta shell at S = ~,3f  (A_min = ~,3f for shell)~%", S_theta_peak, A_min_shell)$
+printf(true, "  Mismatch zero at S = ~,3f~%", float(2*eta_val/beta_val))$
+print("")$
+
+/* ================================================================
+   STEP 14: Numerical shooting for f(r) — simplified (no potential)
+   ================================================================
+
+   Solve the ODE numerically for the LINEAR case (N_V = 0) to see
+   how the C4 terms modify the profile shape.
+
+   The ODE: [1-Γ(S)/2](f''+f'/r) - [k²(1-Γ)+m²]f = 0
+   with Γ(S) = C²·D/(D+βS)² - α/2, S = f'²+k²f²
+
+   Shooting from r=0: f(0) = A, f'(0) = 0
+   ================================================================ */
+
+print("STEP 14: Numerical shooting for braid profile")$
+print("")$
+
+/* Simple Euler integration */
+A_shoot : 0.8$
+dr : 0.01$
+r_max : 10.0$
+n_steps : round(r_max/dr)$
+
+/* Without C4 corrections (Γ=0): standard Bessel */
+print("Shooting with A = ", A_shoot, ":")$
+print("")$
+print("  r     f_bare   f_C4    ratio   S      Γ")$
+
+f_bare : A_shoot$
+fp_bare : 0.0$
+f_c4 : A_shoot$
+fp_c4 : 0.0$
+
+for step : 0 thru n_steps do block(
+    rr : step * dr + 0.001,  /* avoid r=0 singularity */
+
+    /* Bare: f''+f'/r - (k²+m²)f = 0 */
+    fpp_bare : (k_val^2+m2_val)*f_bare - fp_bare/rr,
+
+    /* C4: [1-Γ/2](f''+f'/r) - [k²(1-Γ)+m²]f = 0 */
+    S_here : fp_c4^2 + k_val^2*f_c4^2,
+    G_here : Gamma_func(S_here),
+    coeff_lap : 1 - G_here/2,
+    coeff_f : k_val^2*(1-G_here) + m2_val,
+    fpp_c4 : if abs(coeff_lap) > 0.001 then (coeff_f*f_c4 - coeff_lap*fp_c4/rr)/coeff_lap else 0,
+
+    /* Output at selected points */
+    if mod(step, round(n_steps/20)) = 0 then (
+        ratio : if abs(f_bare) > 1e-10 then f_c4/f_bare else 0,
+        printf(true, "  ~5,2f  ~8,4f  ~8,4f  ~6,3f  ~6,3f  ~6,3f~%",
+               rr, f_bare, f_c4, ratio, S_here, G_here)
+    ),
+
+    /* Euler step */
+    f_bare : f_bare + fp_bare*dr,
+    fp_bare : fp_bare + fpp_bare*dr,
+    f_c4 : f_c4 + fp_c4*dr,
+    fp_c4 : fp_c4 + fpp_c4*dr
+)$
+print("")$
+
+print("===== ANALYSIS COMPLETE =====")$
+print("")$
+print("Key findings for seed generation:")$
+print("1. The braid profile should use sech or Bessel (NOT Gaussian)")$
+print("2. Theta must be initialized to algebraic equilibrium θ=G(S)curl(φ)")$
+print("   with G = 0.6/(0.2+0.5S), NOT the tiny θ in gen_phase_confined")$
+print("3. The shell structure arises naturally from the theta equilibrium")$
+print("   peaking at S = 2α/β = 0.4")$
+print("4. Minimum braid amplitude A ≥ 0.42 for shell formation")$
+print("5. The far-field decay rate √(k²+m²) = 2.12 is unchanged by C4")$
+print("6. The C4 terms mainly affect the core (r < 1/m_eff) through Γ(S)")$

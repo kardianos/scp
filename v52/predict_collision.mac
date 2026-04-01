@@ -1,0 +1,316 @@
+/* predict_collision.mac — Predict collision dynamics from parameters
+ *
+ * Given: D (initial separation), v (initial velocity), m_eff (effective mass),
+ *        μ, κ (binding potential), α (Cosserat strain), β (hardening),
+ *        A_bg (background amplitude), k (wavenumber), η (curl coupling)
+ *
+ * Compute:
+ *   1. Free-flight collision time (no interaction)
+ *   2. Effective potential V_eff(D) at the midpoint
+ *   3. Hardening barrier height for UU vs UD
+ *   4. Predicted closest approach distance
+ *   5. Predicted outcome: bound, scattered, or disrupted
+ */
+
+kill(all)$
+load(romberg)$
+
+/* ================================================================
+   Physical parameters (V50/C4 defaults)
+   ================================================================ */
+
+/* Field parameters */
+A_bg : 0.1$       /* background amplitude */
+k_wave : 1.5$     /* wavenumber (= m for massive field) */
+m_sq : 2.25$      /* mass² */
+mu : -41.345$     /* binding strength */
+kappa : 50.0$     /* binding saturation */
+eta : 0.5$        /* curl coupling */
+alpha_cs : 0.1$   /* Cosserat strain coefficient */
+beta_h : 0.5$     /* curl² hardening coefficient */
+
+/* Phase offsets (V28 optimized) */
+d1 : 3.0005$
+d2 : 4.4325$
+
+/* Carrier phases */
+Delta : [0, 2*%pi/3, 4*%pi/3]$
+
+/* Chiralities */
+chi_UUD : [1, 1, -1]$
+chi_UDD : [1, -1, -1]$
+
+/* ================================================================
+   1. Free-flight collision time
+   ================================================================
+
+   Two particles at x = ±D/2 with velocities ∓v (approaching).
+   Relative velocity = 2v, separation = D.
+   Free-flight time: t_collision = D / (2v)
+
+   With gravitational attraction F = -C ∇ρ, the particles accelerate.
+   But for a first estimate, free-flight is sufficient.
+*/
+
+t_free(D, v) := D / (2 * v)$
+
+print("=== 1. Free-flight collision time ===")$
+print("  t_collision = D / (2v)")$
+print("")$
+for params in [[25, 0.1], [25, 0.05], [25, 0.2], [25, 0.5], [15, 0.1]] do (
+    DD : params[1], vv : params[2],
+    printf(true, "  D=%4.1f  v=%4.2f  t_free=%6.1f~%", DD, vv, t_free(DD, vv))
+)$
+print("")$
+
+/* ================================================================
+   2. Proton rest-frame quantities
+   ================================================================
+
+   A single proton (UUD composite) has at its center:
+     - P ≈ 0 (carrier phase cancellation)
+     - |curl(φ)| = C_curl (from braids' spatial derivatives)
+     - θ ≈ curl(φ)/2 (Cosserat equilibrium)
+
+   The proton's binding density P_int ~ 200-400 (from simulation)
+   oscillates with the breathing mode (period T_breath ≈ 2.2).
+*/
+
+/* curl_x for a single composite (x-independent, from braids 1,2) */
+curl_x_fn(chi) := -A_bg*chi[2]*k_wave*sin(d2 + Delta[2])
+                  + A_bg*chi[3]*k_wave*sin(d1 + Delta[3])$
+
+curl_x_UUD : float(curl_x_fn(chi_UUD))$
+curl_x_UDD : float(curl_x_fn(chi_UDD))$
+
+/* Total proton energy (approximate, from V43 measurements) */
+/* E_proton ≈ 6000 code energy units (from V42/V43 data) */
+E_proton : 6000$
+
+/* Proton effective radius (from cluster analysis: core ~ 4 code units) */
+R_proton : 4.0$
+
+/* Effective mass: m_eff = E_proton (in natural units where c=1) */
+m_eff : E_proton$
+
+print("=== 2. Proton properties ===")$
+printf(true, "  curl_x(UUD) = %.6f~%", curl_x_UUD)$
+printf(true, "  curl_x(UDD) = %.6f~%", curl_x_UDD)$
+printf(true, "  E_proton ≈ %d code units~%", E_proton)$
+printf(true, "  R_proton ≈ %.1f code units~%", R_proton)$
+printf(true, "  T_breath ≈ 2.2 code time units~%")$
+print("")$
+
+/* ================================================================
+   3. Interaction potential at midpoint
+   ================================================================
+
+   When two protons approach to separation D, the field at the midpoint
+   receives contributions from both. The key energy densities:
+
+   E_binding = V(P_total) where P_total depends on D
+   E_hardening = β |curl(φ_total)|² |θ_total|²
+   E_strain = α |M|² = α |curl(φ)/2 - θ|²
+
+   The effective potential is the integral of these over the interaction
+   volume. For a 1D estimate along the x-axis, we evaluate at the midpoint.
+*/
+
+/* P at midpoint from a single proton at distance D/2 */
+/* (approximate: envelope × phase structure) */
+phi_single_a_at_mid(a, DD) := A_bg * (
+    cos(k_wave*DD/2 + [0, d1, d2][a+1] + Delta[1])
+  + cos([0, d1, d2][a+1] + Delta[2])
+  + cos([0, d1, d2][a+1] + Delta[3])
+)$
+
+/* For two UUD protons: each contributes at x = ±D/2 from its center */
+/* The midpoint is at D/2 from each center */
+phi_pair_a_at_mid(a, DD) := phi_single_a_at_mid(a, DD)
+                           + phi_single_a_at_mid(a, DD)$
+/* Note: both protons are at equal distance D/2, so their contributions
+   at the midpoint are IDENTICAL (symmetric approach). Total = 2× single. */
+
+P_mid(DD) := float(phi_single_a_at_mid(0, DD)
+                  * phi_single_a_at_mid(1, DD)
+                  * phi_single_a_at_mid(2, DD) * 8)$
+/* Factor 8 = 2³ from doubling each component */
+
+/* Binding potential energy density at midpoint */
+V_P(P_val) := (mu/2) * P_val^2 / (1 + kappa * P_val^2)$
+
+/* Hardening energy density at midpoint */
+/* |curl|² for UU and UD pairs (from uud_udd_interaction.mac results) */
+
+/* curl_x component (x-independent, doubles for UU, partial for UD) */
+cx_UU : 2 * curl_x_UUD$
+cx_UD : curl_x_UUD + curl_x_UDD$
+
+/* curl_z contribution from braid 1 y-derivative */
+C_braid1 : float(-A_bg * k_wave * sin(d2 + Delta[2]))$  /* UUD's ∂φ_z/∂y */
+
+/* Approximate |curl|² — dominant x-component plus braid-1 curl_z */
+curl_sq_UU_approx : cx_UU^2 + (2*C_braid1)^2$  /* both constructive */
+curl_sq_UD_approx : cx_UD^2 + 0$                /* braid 1 cancels */
+
+/* Hardening at Cosserat equilibrium (θ ≈ curl/2) */
+E_hard_UU : beta_h * curl_sq_UU_approx * (cx_UU/2)^2$
+E_hard_UD : beta_h * curl_sq_UD_approx * (cx_UD/2)^2$
+
+printf(true, "  E_hardening(UU midpoint) ≈ %.6f~%", E_hard_UU)$
+printf(true, "  E_hardening(UD midpoint) ≈ %.6f~%", E_hard_UD)$
+printf(true, "  Ratio UD/UU = %.4f~%", E_hard_UD/E_hard_UU)$
+print("")$
+
+/* ================================================================
+   4. Effective barrier and closest approach
+   ================================================================
+
+   The kinetic energy of approach is:
+     E_kin = (1/2) m_eff v² × 2 = m_eff v²  (both particles)
+
+   Closest approach D_min satisfies:
+     E_kin = ΔE_hard(D_min)  (hardening barrier absorbs kinetic energy)
+
+   For a rough estimate, the hardening energy per unit volume is:
+     e_hard ~ β |curl|² |θ|²
+   integrated over the overlap volume V_overlap ~ (4π/3) R³ where
+   R = R_proton is the core radius.
+
+   The barrier height scales as e_hard × V_overlap.
+*/
+
+V_overlap : (4.0/3.0) * 3.14159 * R_proton^3$
+
+E_barrier_UU : E_hard_UU * V_overlap$
+E_barrier_UD : E_hard_UD * V_overlap$
+
+print("=== 3. Barrier heights (approximate) ===")$
+printf(true, "  V_overlap = %.1f (sphere R=%.1f)~%", V_overlap, R_proton)$
+printf(true, "  E_barrier(UU) ≈ %.1f~%", E_barrier_UU)$
+printf(true, "  E_barrier(UD) ≈ %.1f~%", E_barrier_UD)$
+print("")$
+
+print("=== 4. Kinetic energy at various velocities ===")$
+for vv in [0.01, 0.05, 0.1, 0.2, 0.5] do (
+    Ek : m_eff * vv^2,
+    outcome_UU : if Ek > E_barrier_UU then "PENETRATE" else "BOUNCE",
+    outcome_UD : if Ek > E_barrier_UD then "PENETRATE" else "BOUNCE",
+    printf(true, "  v=%4.2f  E_kin=%8.1f  vs UU barrier: %s  vs UD barrier: %s~%",
+           vv, Ek, outcome_UU, outcome_UD)
+)$
+print("")$
+
+/* ================================================================
+   5. Predicted collision timeline
+   ================================================================
+
+   Phase 1: Free flight (t=0 to t≈t_free)
+     Particles approach at constant v, separation decreases linearly.
+
+   Phase 2: Interaction zone (D < 2R_proton ≈ 8 code units)
+     Hardening barrier felt, deceleration begins.
+     For UU: stronger barrier → earlier deceleration.
+     For UD: weaker barrier → later deceleration, closer approach.
+
+   Phase 3: Closest approach (D = D_min)
+     All kinetic energy converted to barrier + binding potential.
+     If E_kin > E_barrier: penetration → possible merger or disruption.
+     If E_kin < E_barrier: bounce → particles reverse direction.
+
+   Phase 4: Aftermath
+     If penetration: the particles' internal structure is disrupted.
+       Sub-case A: both survive → bound state (orbit/oscillation)
+       Sub-case B: one or both disrupted → fragments + radiation
+     If bounce: particles separate, possibly re-approach (bound orbit)
+       or escape (if initial v > escape velocity).
+*/
+
+print("=== 5. Predicted collision timeline ===")$
+print("")$
+
+/* For V51 collision: D=25, v=0.1 */
+D0 : 25$
+v0 : 0.1$
+
+t_free_val : t_free(D0, v0)$
+t_interact : (D0 - 2*R_proton) / (2*v0)$  /* time to reach interaction zone */
+Ek0 : m_eff * v0^2$
+
+printf(true, "  V51 collision parameters: D=%d, v=%.2f~%", D0, v0)$
+printf(true, "  Free-flight collision time: t = %.1f~%", t_free_val)$
+printf(true, "  Time to interaction zone (D=2R): t = %.1f~%", t_interact)$
+printf(true, "  Kinetic energy: E_kin = %.1f~%", Ek0)$
+printf(true, "  UU barrier: %.1f → %s~%", E_barrier_UU,
+       if Ek0 > E_barrier_UU then "PENETRATE" else "BOUNCE")$
+printf(true, "  UD barrier: %.1f → %s~%", E_barrier_UD,
+       if Ek0 > E_barrier_UD then "PENETRATE" else "BOUNCE")$
+print("")$
+
+/* ================================================================
+   6. Predictions for V52 experiments
+   ================================================================ */
+
+print("=== 6. V52 experiment predictions ===")$
+print("")$
+
+/* Experiment A: UUD+UUD at D=25, v=0.1 (repeat of V51 for comparison) */
+printf(true, "Exp A: UUD+UUD, D=25, v=0.1~%")$
+printf(true, "  t_collision = %.1f~%", t_free(25, 0.1))$
+printf(true, "  Prediction: bounce + bound orbit (V51 confirmed)~%")$
+print("")$
+
+/* Experiment B: UUD+UDD at D=25, v=0.1 */
+printf(true, "Exp B: UUD+UDD, D=25, v=0.1~%")$
+printf(true, "  t_collision = %.1f~%", t_free(25, 0.1))$
+printf(true, "  Prediction: deeper penetration than A (%.0f%% less barrier)~%",
+       (1 - E_barrier_UD/E_barrier_UU)*100)$
+printf(true, "  Expected: tighter bound state, smaller D_eq~%")$
+print("")$
+
+/* Experiment C: UUD+UUD at D=25, v=0.3 (higher energy) */
+printf(true, "Exp C: UUD+UUD, D=25, v=0.3~%")$
+printf(true, "  t_collision = %.1f~%", t_free(25, 0.3))$
+printf(true, "  E_kin = %.1f (%.1f× vs v=0.1)~%", m_eff*0.3^2, 0.3^2/0.1^2)$
+printf(true, "  Prediction: %s (9× more energy)~%",
+       if m_eff*0.3^2 > E_barrier_UU then "penetrate → possible disruption"
+       else "stronger bounce")$
+print("")$
+
+/* Experiment D: UUD+UDD at D=25, v=0 (fall from rest) */
+printf(true, "Exp D: UUD+UDD, D=25, v=0 (gravitational infall)~%")$
+printf(true, "  No initial velocity — pure gravitational attraction~%")$
+printf(true, "  Prediction: slow approach, gentle binding~%")$
+printf(true, "  Expected infall time: >>125 (depletion attraction is weak)~%")$
+print("")$
+
+/* Experiment E: UUD+UUD at D=25, v=0 (gravitational infall) */
+printf(true, "Exp E: UUD+UUD, D=25, v=0 (gravitational infall)~%")$
+printf(true, "  Prediction: slow approach, same as D but higher barrier~%")$
+printf(true, "  If both bind: compare D_eq(UU) vs D_eq(UD)~%")$
+print("")$
+
+/* ================================================================
+   7. Quantities to measure and compare
+   ================================================================ */
+
+print("=== 7. Measurable quantities for validation ===")$
+print("")$
+print("For each experiment, measure:")$
+print("  t_contact   — time of first minimum separation")$
+print("  D_min       — closest approach distance")$
+print("  D_eq        — equilibrium separation (time-averaged, t>2×t_contact)")$
+print("  E_bind      — binding energy (E_total at D_eq vs E_total at D=∞)")$
+print("  T_orbit     — orbital/oscillation period of bound state")$
+print("  P_int_ratio — P_int(UD pair) / P_int(UU pair) at equilibrium")$
+print("  M²_peak     — peak mismatch at midpoint during collision")$
+print("  Δcurl²      — |curl|²(UD) / |curl|²(UU) measured at D_min")$
+print("")$
+print("Predictions to verify:")$
+print("  1. t_contact(A) ≈ t_contact(B) ≈ 125 (same v, same D)")$
+print("  2. D_min(B) < D_min(A) (UD penetrates deeper)")$
+print("  3. D_eq(B) < D_eq(A) (UD binds tighter)")$
+print("  4. |E_bind(B)| > |E_bind(A)| (UD binds stronger)")$
+print("  5. M²_peak(A) > M²_peak(B) (UU has more mismatch)")$
+print("  6. Δcurl² ≈ 0.31-0.81 (matching Maxima prediction)")$
+print("  7. Breathing period unchanged across all experiments")$

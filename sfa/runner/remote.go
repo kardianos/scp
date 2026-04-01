@@ -27,8 +27,10 @@ type RemoteExecutor struct {
 	sshClient  *ssh.Client
 	startTime  time.Time
 	workDir    string // local work dir for downloads
-	lastBinary string // set after successful Build
-	OnRunDone  func() // called when any run reaches terminal state
+	lastBinary     string                            // set after successful Build
+	OnRunDone      func()                            // called when any run reaches terminal state
+	OnRunComplete  func(id string, info RunInfo)     // called with run details on completion
+	OnDownloadDone func(id, remote, local string, err error) // called when a download completes or fails
 
 	runs      sync.Map // map[string]*remoteRun
 	downloads sync.Map // map[string]*DownloadInfo
@@ -56,8 +58,7 @@ type RemoteConfig struct {
 }
 
 const (
-	defaultGPUFilter = "gpu_name=Tesla_V100 num_gpus=1 disk_space>=20"
-	defaultImage     = "nvidia/cuda:12.2.0-devel-ubuntu22.04"
+	defaultImage = "nvidia/cuda:12.2.0-devel-ubuntu22.04"
 	defaultDiskGB    = 100
 	defaultOnstart   = "apt-get update && apt-get install -y libzstd-dev rsync && ldconfig"
 )
@@ -85,16 +86,19 @@ func (r *RemoteExecutor) Setup(ctx context.Context) error {
 }
 
 // Provision searches for a GPU offer, creates an instance, waits for it to be ready, and connects.
-func (r *RemoteExecutor) Provision(ctx context.Context, gpuFilter string, diskGB int) error {
+func (r *RemoteExecutor) Provision(ctx context.Context, gpuFilter map[string]string, diskGB int) error {
 	if r.vast == nil {
 		return fmt.Errorf("vast client not initialized — call Setup first")
 	}
-	if gpuFilter == "" {
-		gpuFilter = defaultGPUFilter
+	if len(gpuFilter) == 0 {
+		gpuFilter = map[string]string{"gpu_name": "Tesla_V100"}
 	}
 	if diskGB <= 0 {
 		diskGB = defaultDiskGB
 	}
+
+	// Convert map to legacy filter string for SearchOffers.
+	filterStr := gpuFilterMapToString(gpuFilter)
 
 	// Check for existing running instances first.
 	instances, err := r.vast.ShowInstances(ctx)
@@ -110,25 +114,38 @@ func (r *RemoteExecutor) Provision(ctx context.Context, gpuFilter string, diskGB
 	}
 
 	// Search for offers.
-	offers, err := r.vast.SearchOffers(ctx, gpuFilter)
+	offers, err := r.vast.SearchOffers(ctx, filterStr)
 	if err != nil {
 		return fmt.Errorf("search offers: %w", err)
 	}
 	if len(offers) == 0 {
-		return fmt.Errorf("no GPU offers found for filter: %s", gpuFilter)
+		return fmt.Errorf("no GPU offers found for filter: %v", gpuFilter)
 	}
 
-	// Pick cheapest offer (already sorted by dph_total, post-filtered by whitelist+region).
-	offer := offers[0]
-	fmt.Fprintf(os.Stderr, "scp-runner: creating instance on %s (%d GB VRAM, %s, $%.3f/hr) [%d offers available]\n",
-		offer.GPUName, offer.GPUMemMB/1024, offer.Geolocation, offer.DPHTot, len(offers))
-
-	instanceID, err := r.vast.CreateInstance(ctx, offer.ID, defaultImage, diskGB, defaultOnstart)
-	if err != nil {
-		return fmt.Errorf("create instance: %w", err)
+	// Try offers in order (cheapest first). Offers are ephemeral — the first
+	// one may be snatched between search and create, so retry with the next.
+	maxTries := len(offers)
+	if maxTries > 5 {
+		maxTries = 5
 	}
-	r.instanceID = instanceID
-	r.gpuName = offer.GPUName
+	var instanceID int
+	var lastErr error
+	for i := 0; i < maxTries; i++ {
+		offer := offers[i]
+		fmt.Fprintf(os.Stderr, "scp-runner: trying offer %d/%d: %s (%d GB VRAM, %s, $%.3f/hr) [%d offers]\n",
+			i+1, maxTries, offer.GPUName, offer.GPUMemMB/1024, offer.Geolocation, offer.DPHTot, len(offers))
+
+		instanceID, lastErr = r.vast.CreateInstance(ctx, offer.ID, defaultImage, diskGB, defaultOnstart)
+		if lastErr == nil {
+			r.instanceID = instanceID
+			r.gpuName = offer.GPUName
+			break
+		}
+		fmt.Fprintf(os.Stderr, "scp-runner: offer %d failed (%v), trying next...\n", offer.ID, lastErr)
+	}
+	if lastErr != nil && r.instanceID == 0 {
+		return fmt.Errorf("create instance: all %d offers failed, last error: %w", maxTries, lastErr)
+	}
 
 	// Wait for instance to become ready with SSH info.
 	fmt.Fprintf(os.Stderr, "scp-runner: waiting for instance %d to start...\n", instanceID)
@@ -431,6 +448,12 @@ func (r *RemoteExecutor) executeRemoteRun(ctx context.Context, rr *remoteRun, co
 		adCancel()
 		if rr.adDone != nil {
 			<-rr.adDone
+		}
+		if r.OnRunComplete != nil {
+			rr.mu.Lock()
+			info := rr.info
+			rr.mu.Unlock()
+			r.OnRunComplete(info.ID, info)
 		}
 		if r.OnRunDone != nil {
 			r.OnRunDone()
@@ -775,6 +798,9 @@ func (r *RemoteExecutor) doDownload(ctx context.Context, di *DownloadInfo) {
 	if err := os.MkdirAll(filepath.Dir(di.LocalPath), 0755); err != nil {
 		di.Status = DLFailed
 		di.Error = fmt.Sprintf("mkdir: %v", err)
+		if r.OnDownloadDone != nil {
+			r.OnDownloadDone(di.ID, di.RemotePath, di.LocalPath, err)
+		}
 		return
 	}
 
@@ -800,6 +826,9 @@ func (r *RemoteExecutor) doDownload(ctx context.Context, di *DownloadInfo) {
 	if err := rsync.cmd.Wait(); err != nil {
 		di.Status = DLFailed
 		di.Error = err.Error()
+		if r.OnDownloadDone != nil {
+			r.OnDownloadDone(di.ID, di.RemotePath, di.LocalPath, err)
+		}
 		return
 	}
 
@@ -808,6 +837,9 @@ func (r *RemoteExecutor) doDownload(ctx context.Context, di *DownloadInfo) {
 	if err != nil {
 		di.Status = DLFailed
 		di.Error = fmt.Sprintf("stat local: %v", err)
+		if r.OnDownloadDone != nil {
+			r.OnDownloadDone(di.ID, di.RemotePath, di.LocalPath, err)
+		}
 		return
 	}
 
@@ -815,9 +847,15 @@ func (r *RemoteExecutor) doDownload(ctx context.Context, di *DownloadInfo) {
 	if di.BytesTotal > 0 && di.BytesDone != di.BytesTotal {
 		di.Status = DLFailed
 		di.Error = fmt.Sprintf("size mismatch: got %d, want %d", di.BytesDone, di.BytesTotal)
+		if r.OnDownloadDone != nil {
+			r.OnDownloadDone(di.ID, di.RemotePath, di.LocalPath, fmt.Errorf("%s", di.Error))
+		}
 		return
 	}
 	di.Status = DLComplete
+	if r.OnDownloadDone != nil {
+		r.OnDownloadDone(di.ID, di.RemotePath, di.LocalPath, nil)
+	}
 }
 
 func (r *RemoteExecutor) DownloadStatus(id string) *DownloadInfo {

@@ -1,0 +1,315 @@
+/* uud_udd_interaction.mac — Compare UUD+UUD vs UUD+UDD core overlap
+ *
+ * Two composites approaching along x-axis, separated by D.
+ * Proton L at x = -D/2, Proton/Neutron R at x = +D/2.
+ *
+ * UUD chiralities: (+1, +1, -1)
+ * UDD chiralities: (+1, -1, -1)
+ *
+ * The ONLY difference is braid 1 (y-axis): Up(+1) for UUD, Down(-1) for UDD.
+ * Braid 0 (x-axis) is Up in both.
+ * Braid 2 (z-axis) is Down in both.
+ */
+
+kill(all)$
+declare([A, k, D], real)$
+assume(A > 0, k > 0, D > 0)$
+
+delta : [0, d1, d2]$
+Delta : [0, 2*%pi/3, 4*%pi/3]$
+
+chi_UUD : [1, 1, -1]$
+chi_UDD : [1, -1, -1]$
+
+/* Phase offsets from V28 */
+d1_val : 3.0005$
+d2_val : 4.4325$
+
+/* ================================================================
+   Field component φ_a at point (x, y, z) from a single composite
+   centered at origin with chirality vector chi.
+
+   Braid b along axis_b:
+     φ_a += A × env(r_perp) × cos(chi_b × k × coord_b + δ_a + Δ_b)
+
+   At (x, 0, 0): coord_x = x, coord_y = 0, coord_z = 0
+   ================================================================ */
+
+phi_at_x(a, x, chi) := A * (
+    cos(chi[1]*k*x + delta[a+1] + Delta[1])
+  + cos(delta[a+1] + Delta[2])     /* braid 1: coord_y = 0 */
+  + cos(delta[a+1] + Delta[3])     /* braid 2: coord_z = 0 */
+)$
+
+/* Two composites: L at -D/2 with chi_L, R at +D/2 with chi_R */
+phi_pair(a, chi_L, chi_R) :=
+    phi_at_x(a, D/2, chi_L) + phi_at_x(a, -D/2, chi_R)$
+
+/* ================================================================
+   Triple product P at midpoint for each pair type
+   ================================================================ */
+
+P_UUD_UUD : trigreduce(expand(
+    phi_pair(0, chi_UUD, chi_UUD) *
+    phi_pair(1, chi_UUD, chi_UUD) *
+    phi_pair(2, chi_UUD, chi_UUD)))$
+
+P_UUD_UDD : trigreduce(expand(
+    phi_pair(0, chi_UUD, chi_UDD) *
+    phi_pair(1, chi_UUD, chi_UDD) *
+    phi_pair(2, chi_UUD, chi_UDD)))$
+
+print("=== P at midpoint vs D ===")$
+print("  D       P(UUD+UUD)     P(UUD+UDD)     ratio UDD/UUD")$
+for DD in [50, 30, 25, 20, 15, 12, 10, 8, 6, 4, 2, 1] do (
+    p_uu : float(subst([d1=d1_val, d2=d2_val, A=0.1, k=1.5, D=DD], P_UUD_UUD)),
+    p_ud : float(subst([d1=d1_val, d2=d2_val, A=0.1, k=1.5, D=DD], P_UUD_UDD)),
+    ratio : if abs(p_uu) > 1e-15 then p_ud/p_uu else 0,
+    printf(true, "  ~4,1f   ~14,6e   ~14,6e   ~8,3f~%", DD, p_uu, p_ud, ratio)
+)$
+print("")$
+
+/* ================================================================
+   Curl components at midpoint
+   ================================================================
+
+   curl(φ)_x = ∂φ_z/∂y - ∂φ_y/∂z
+
+   At (0, 0, 0), the y-derivative comes from braid 1 (y-axis):
+     ∂φ_a/∂y = -A × chi_1 × k × sin(chi_1 × k × 0 + δ_a + Δ_1)
+             = -A × chi_1 × k × sin(δ_a + Δ_1)
+
+   The z-derivative comes from braid 2 (z-axis):
+     ∂φ_a/∂z = -A × chi_2 × k × sin(chi_2 × k × 0 + δ_a + Δ_2)
+             = -A × chi_2 × k × sin(δ_a + Δ_2)
+
+   Note: these are INDEPENDENT of x and D!
+   So the curl_x from a composite at ±D/2 is the SAME as at origin.
+*/
+
+/* curl_x = ∂φ_z/∂y - ∂φ_y/∂z */
+/* ∂φ_z/∂y: derivative of field component z=2 w.r.t. y from braid 1 */
+curl_x_single(chi) := -A*chi[2]*k*sin(delta[3] + Delta[2])
+                      - (-A*chi[3]*k*sin(delta[2] + Delta[3]))$
+
+curl_x_UUD : trigreduce(curl_x_single(chi_UUD))$
+curl_x_UDD : trigreduce(curl_x_single(chi_UDD))$
+
+print("=== curl(φ)_x for single composite (x-independent!) ===")$
+print("UUD: ", curl_x_UUD)$
+print("UDD: ", curl_x_UDD)$
+
+curl_x_UUD_num : float(subst([d1=d1_val, d2=d2_val, A=0.1, k=1.5], curl_x_UUD))$
+curl_x_UDD_num : float(subst([d1=d1_val, d2=d2_val, A=0.1, k=1.5], curl_x_UDD))$
+
+printf(true, "UUD numerical: ~12,6e~%", curl_x_UUD_num)$
+printf(true, "UDD numerical: ~12,6e~%", curl_x_UDD_num)$
+printf(true, "Ratio UDD/UUD: ~8,4f~%", curl_x_UDD_num/curl_x_UUD_num)$
+print("")$
+
+/* curl_y = ∂φ_x/∂z - ∂φ_z/∂x */
+/* ∂φ_x/∂z from braid 2: -A*chi_2*k*sin(δ_x + Δ_2) — x-independent */
+/* ∂φ_z/∂x from braid 0: -A*chi_0*k*sin(chi_0*k*x + δ_z + Δ_0) — x-DEPENDENT */
+
+dphi_x_dz_single(chi) := -A*chi[3]*k*sin(delta[1] + Delta[3])$
+dphi_z_dx_at_mid_L(chi) := -A*chi[1]*k*sin(chi[1]*k*D/2 + delta[3] + Delta[1])$
+dphi_z_dx_at_mid_R(chi) := -A*chi[1]*k*sin(-chi[1]*k*D/2 + delta[3] + Delta[1])$
+
+curl_y_pair(chi_L, chi_R) :=
+    (dphi_x_dz_single(chi_L) + dphi_x_dz_single(chi_R))
+  - (dphi_z_dx_at_mid_L(chi_L) + dphi_z_dx_at_mid_R(chi_R))$
+
+/* curl_z = ∂φ_y/∂x - ∂φ_x/∂y */
+dphi_x_dy_single(chi) := -A*chi[2]*k*sin(delta[1] + Delta[2])$
+dphi_y_dx_at_mid_L(chi) := -A*chi[1]*k*sin(chi[1]*k*D/2 + delta[2] + Delta[1])$
+dphi_y_dx_at_mid_R(chi) := -A*chi[1]*k*sin(-chi[1]*k*D/2 + delta[2] + Delta[1])$
+
+curl_z_pair(chi_L, chi_R) :=
+    (dphi_y_dx_at_mid_L(chi_L) + dphi_y_dx_at_mid_R(chi_R))
+  - (dphi_x_dy_single(chi_L) + dphi_x_dy_single(chi_R))$
+
+/* ================================================================
+   |curl(φ)|² at midpoint for each pair type
+   ================================================================ */
+
+curl_sq_UU(DD) := block([cx, cy, cz],
+    cx : float(subst([d1=d1_val, d2=d2_val, A=0.1, k=1.5, D=DD],
+             trigreduce(2*curl_x_UUD))),  /* x-component doubles */
+    cy : float(subst([d1=d1_val, d2=d2_val, A=0.1, k=1.5, D=DD],
+             trigreduce(curl_y_pair(chi_UUD, chi_UUD)))),
+    cz : float(subst([d1=d1_val, d2=d2_val, A=0.1, k=1.5, D=DD],
+             trigreduce(curl_z_pair(chi_UUD, chi_UUD)))),
+    [cx*cx + cy*cy + cz*cz, cx, cy, cz])$
+
+curl_sq_UD(DD) := block([cx, cy, cz],
+    cx : float(subst([d1=d1_val, d2=d2_val, A=0.1, k=1.5, D=DD],
+             trigreduce(curl_x_UUD + curl_x_UDD))),  /* UUD + UDD */
+    cy : float(subst([d1=d1_val, d2=d2_val, A=0.1, k=1.5, D=DD],
+             trigreduce(curl_y_pair(chi_UUD, chi_UDD)))),
+    cz : float(subst([d1=d1_val, d2=d2_val, A=0.1, k=1.5, D=DD],
+             trigreduce(curl_z_pair(chi_UUD, chi_UDD)))),
+    [cx*cx + cy*cy + cz*cz, cx, cy, cz])$
+
+print("=== |curl(φ)|² at midpoint vs D ===")$
+print("  D     |curl|²(UU)  |curl|²(UD)  ratio UD/UU   cx_UU    cx_UD")$
+for DD in [50, 30, 25, 20, 15, 12, 10, 8, 6, 4, 2] do (
+    uu : curl_sq_UU(DD),
+    ud : curl_sq_UD(DD),
+    ratio : if abs(uu[1]) > 1e-20 then ud[1]/uu[1] else 0,
+    printf(true, "  ~4,1f  ~12,4e  ~12,4e  ~8,4f  ~8,4e ~8,4e~%",
+           DD, uu[1], ud[1], ratio, uu[2], ud[2])
+)$
+print("")$
+
+/* ================================================================
+   Hardening energy comparison: β |curl(φ)|² |θ|²
+   ================================================================
+
+   For the hardening to differ between UU and UD, we need |curl|² to differ.
+   The x-component curl_x is x-independent:
+     UU pair: 2 × curl_x_UUD
+     UD pair: curl_x_UUD + curl_x_UDD
+
+   If curl_x_UDD ≠ curl_x_UUD, these differ!
+*/
+
+print("=== Hardening analysis ===")$
+print("")$
+print("curl_x components (x-independent, constant everywhere on x-axis):")$
+printf(true, "  UUD single: ~12,6e~%", curl_x_UUD_num)$
+printf(true, "  UDD single: ~12,6e~%", curl_x_UDD_num)$
+printf(true, "  UU pair:    ~12,6e  (2 × UUD)~%", 2*curl_x_UUD_num)$
+printf(true, "  UD pair:    ~12,6e  (UUD + UDD)~%", curl_x_UUD_num + curl_x_UDD_num)$
+print("")$
+
+uu_curl_x_sq : (2*curl_x_UUD_num)^2$
+ud_curl_x_sq : (curl_x_UUD_num + curl_x_UDD_num)^2$
+printf(true, "curl_x² for UU pair: ~12,6e~%", uu_curl_x_sq)$
+printf(true, "curl_x² for UD pair: ~12,6e~%", ud_curl_x_sq)$
+printf(true, "Ratio UD/UU (curl_x² only): ~8,4f~%", ud_curl_x_sq/uu_curl_x_sq)$
+print("")$
+
+/* ================================================================
+   Mismatch M = curl(φ)/2 - θ at midpoint
+   ================================================================
+
+   For equilibrated single composites: θ_eq ≈ curl(φ)/2
+   When two composites overlap:
+     curl(φ_total) = curl(φ_L) + curl(φ_R)
+     θ_total = θ_L + θ_R ≈ curl(φ_L)/2 + curl(φ_R)/2
+
+   For UU pair (both UUD):
+     M_x = (curl_L + curl_R)/2 - (curl_L/2 + curl_R/2) = 0  [exact!]
+
+   For UD pair (UUD + UDD):
+     θ_L ≈ curl_x(UUD)/2,  θ_R ≈ curl_x(UDD)/2
+     M_x = (curl_x(UUD) + curl_x(UDD))/2 - (curl_x(UUD)/2 + curl_x(UDD)/2) = 0
+
+   Wait — this is ALSO zero for the x-component!
+   The mismatch from the x-independent part is zero for BOTH pairings.
+   The mismatch must come from the D-dependent part (curl_y, curl_z).
+*/
+
+print("=== Mismatch from D-dependent curl components ===")$
+print("")$
+print("The x-component of M is zero for both UU and UD (algebraic identity).")$
+print("The mismatch comes from curl_y and curl_z, which are D-dependent")$
+print("through braid 0's ∂φ/∂x contribution.")$
+print("")$
+
+/* For the D-dependent parts:
+   Proton L at -D/2: its braid 0 contributes ∂φ_z/∂x = -A*chi_0*k*sin(chi_0*k*(D/2) + δ_z)
+   Proton R at +D/2: its braid 0 contributes ∂φ_z/∂x = -A*chi_0*k*sin(-chi_0*k*(D/2) + δ_z)
+
+   For UU: both have chi_0 = +1, so:
+     ∂φ_z/∂x_L = -Ak sin(kD/2 + δ_z)
+     ∂φ_z/∂x_R = -Ak sin(-kD/2 + δ_z) = Ak sin(kD/2 - δ_z)
+     Sum = Ak[-sin(kD/2 + δ_z) + sin(kD/2 - δ_z)] = -2Ak cos(kD/2) sin(δ_z)
+     [uses sin(A-B) - sin(A+B) = -2cos(A)sin(B)]
+
+   For UD: L has chi_0 = +1 (UUD), R has chi_0 = +1 (UDD, braid 0 is Up)
+     SAME as UU for the x-derivative! Both braid 0's are Up.
+
+   But for curl_y, the z-derivative term:
+     ∂φ_x/∂z from braid 2 (z-axis):
+     UUD braid 2: chi_2 = -1: -A*(-1)*k*sin(δ_x + Δ_2) = Ak sin(δ_x + Δ_2)
+     UDD braid 2: chi_2 = -1: SAME (both Down)
+
+   And for curl_z, the y-derivative term:
+     ∂φ_x/∂y from braid 1 (y-axis):
+     UUD braid 1: chi_1 = +1: -A*(+1)*k*sin(δ_x + Δ_1) = -Ak sin(δ_x + Δ_1)
+     UDD braid 1: chi_1 = -1: -A*(-1)*k*sin(δ_x + Δ_1) = +Ak sin(δ_x + Δ_1)
+     OPPOSITE SIGN!
+*/
+
+print("=== THE KEY DIFFERENCE ===")$
+print("")$
+print("Braid 1 (y-axis) has OPPOSITE chirality in UUD vs UDD:")$
+print("  UUD braid 1: chi = +1  → ∂φ_x/∂y = -Ak sin(δ₀ + Δ₁)")$
+print("  UDD braid 1: chi = -1  → ∂φ_x/∂y = +Ak sin(δ₀ + Δ₁)")$
+print("")$
+print("This means curl_z = ∂φ_y/∂x - ∂φ_x/∂y differs between UU and UD:")$
+print("")$
+
+/* Compute the y-derivative contributions */
+dphi_x_dy_UUD : -A*chi_UUD[2]*k*sin(delta[1] + Delta[2])$
+dphi_x_dy_UDD : -A*chi_UDD[2]*k*sin(delta[1] + Delta[2])$
+
+dphi_x_dy_UUD_num : float(subst([d1=d1_val, d2=d2_val, A=0.1, k=1.5], dphi_x_dy_UUD))$
+dphi_x_dy_UDD_num : float(subst([d1=d1_val, d2=d2_val, A=0.1, k=1.5], dphi_x_dy_UDD))$
+
+printf(true, "∂φ_x/∂y from UUD braid 1: ~12,6e~%", dphi_x_dy_UUD_num)$
+printf(true, "∂φ_x/∂y from UDD braid 1: ~12,6e~%", dphi_x_dy_UDD_num)$
+printf(true, "Sum for UU pair (2 × UUD):   ~12,6e~%", 2*dphi_x_dy_UUD_num)$
+printf(true, "Sum for UD pair (UUD + UDD): ~12,6e~%", dphi_x_dy_UUD_num + dphi_x_dy_UDD_num)$
+print("")$
+
+print("=== curl_z contribution from ∂φ_x/∂y ===")$
+print("UU pair: 2 × (-Ak sin(δ₀ + Δ₁))  [both Up, constructive]")$
+print("UD pair: -Ak sin(δ₀ + Δ₁) + Ak sin(δ₀ + Δ₁) = 0  [CANCELS!]")$
+print("")$
+print("The y-derivative of φ_x from braid 1 CANCELS in the UD pair")$
+print("because opposite chiralities produce opposite derivatives.")$
+print("")$
+
+/* Now compute total curl_z at midpoint for both pair types */
+print("=== Full curl_z at midpoint vs D ===")$
+print("  D      curl_z(UU)     curl_z(UD)     ratio")$
+for DD in [50, 25, 15, 10, 6, 4, 2] do (
+    cz_uu : float(subst([d1=d1_val, d2=d2_val, A=0.1, k=1.5, D=DD],
+                trigreduce(curl_z_pair(chi_UUD, chi_UUD)))),
+    cz_ud : float(subst([d1=d1_val, d2=d2_val, A=0.1, k=1.5, D=DD],
+                trigreduce(curl_z_pair(chi_UUD, chi_UDD)))),
+    ratio : if abs(cz_uu) > 1e-15 then cz_ud/cz_uu else 0,
+    printf(true, "  ~4,1f  ~14,6e  ~14,6e  ~8,4f~%", DD, cz_uu, cz_ud, ratio)
+)$
+print("")$
+
+/* ================================================================
+   Summary: hardening energy ratio UU vs UD
+   ================================================================ */
+
+print("=== PREDICTED HARDENING ENERGY RATIO ===")$
+print("")$
+print("  D     E_hard(UU)   E_hard(UD)   ratio UD/UU   Δ%")$
+for DD in [50, 25, 20, 15, 12, 10, 8, 6, 4, 2] do (
+    uu : curl_sq_UU(DD),
+    ud : curl_sq_UD(DD),
+    ratio : if abs(uu[1]) > 1e-20 then ud[1]/uu[1] else 0,
+    pct : (ratio - 1.0) * 100,
+    printf(true, "  ~4,1f  ~12,4e  ~12,4e   ~8,4f   ~+6,1f%%~%",
+           DD, uu[1], ud[1], ratio, pct)
+)$
+print("")$
+
+print("=== PHYSICAL INTERPRETATION ===")$
+print("")$
+print("If UD/UU ratio < 1: UDD+UUD has LESS hardening → EASIER to approach")$
+print("  → Proton-neutron can get closer → STRONGER binding → deuterium")$
+print("")$
+print("If UD/UU ratio > 1: UDD+UUD has MORE hardening → HARDER to approach")$
+print("  → This would be wrong (contradicts real physics)")$
+print("")$
+print("The key mechanism: braid 1's chirality flip in UDD cancels the")$
+print("∂φ_x/∂y contribution to curl_z. This REDUCES |curl|² for the UD")$
+print("pair compared to UU, lowering the hardening barrier.")$
