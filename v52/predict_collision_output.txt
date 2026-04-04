@@ -1,0 +1,239 @@
+
+Maxima 5.46.0 https://maxima.sourceforge.io
+using Lisp GNU Common Lisp (GCL) GCL 2.6.14 git tag Version_2_6_15pre7
+Distributed under the GNU Public License. See the file COPYING.
+Dedicated to the memory of William Schelter.
+The function bug_report() provides bug reporting information.
+(%i1) batch("v52/predict_collision.mac")
+
+read and interpret /home/d/code/scp/v52/predict_collision.mac
+(%i2) kill(all)
+(%i1) load(romberg)
+(%i2) A_bg:0.1
+(%i3) k_wave:1.5
+(%i4) m_sq:2.25
+(%i5) mu:-41.345
+(%i6) kappa:50.0
+(%i7) eta:0.5
+(%i8) alpha_cs:0.1
+(%i9) beta_h:0.5
+(%i10) d1:3.0005
+(%i11) d2:4.4325
+(%i12) Delta:[0,(2*%pi)/3,(4*%pi)/3]
+(%i13) chi_UUD:[1,1,-1]
+(%i14) chi_UDD:[1,-1,-1]
+(%i15) t_free(D,v):=D/(2*v)
+(%i16) print("=== 1. Free-flight collision time ===")
+=== 1. Free-flight collision time === 
+(%i17) print("  t_collision = D / (2v)")
+  t_collision = D / (2v) 
+(%i18) print("")
+ 
+(%i19) for params in [[25,0.1],[25,0.05],[25,0.2],[25,0.5],[15,0.1]] do
+           (DD:params[1],vv:params[2],
+            printf(true,"  D=%4.1f  v=%4.2f  t_free=%6.1f~%",DD,vv,
+                   t_free(DD,vv)))
+  D=%4.1f  v=%4.2f  t_free=%6.1f
+  D=%4.1f  v=%4.2f  t_free=%6.1f
+  D=%4.1f  v=%4.2f  t_free=%6.1f
+  D=%4.1f  v=%4.2f  t_free=%6.1f
+  D=%4.1f  v=%4.2f  t_free=%6.1f
+(%i20) print("")
+ 
+(%i21) curl_x_fn(chi):=(-A_bg)*chi[2]*k_wave*sin(d2+Delta[2])
+                 +A_bg*chi[3]*k_wave*sin(d1+Delta[3])
+(%i22) curl_x_UUD:float(curl_x_fn(chi_UUD))
+(%i23) curl_x_UDD:float(curl_x_fn(chi_UDD))
+(%i24) E_proton:6000
+(%i25) R_proton:4.0
+(%i26) m_eff:E_proton
+(%i27) print("=== 2. Proton properties ===")
+=== 2. Proton properties === 
+(%i28) printf(true,"  curl_x(UUD) = %.6f~%",curl_x_UUD)
+  curl_x(UUD) = %.6f
+(%i29) printf(true,"  curl_x(UDD) = %.6f~%",curl_x_UDD)
+  curl_x(UDD) = %.6f
+(%i30) printf(true,"  E_proton ≈ %d code units~%",E_proton)
+  E_proton ≈ %d code units
+(%i31) printf(true,"  R_proton ≈ %.1f code units~%",R_proton)
+  R_proton ≈ %.1f code units
+(%i32) printf(true,"  T_breath ≈ 2.2 code time units~%")
+  T_breath ≈ 2.2 code time units
+(%i33) print("")
+ 
+(%i34) phi_single_a_at_mid(a,DD):=A_bg
+                           *(cos((k_wave*DD)/2+[0,d1,d2][a+1]+Delta[1])
+                            +cos([0,d1,d2][a+1]+Delta[2])
+                            +cos([0,d1,d2][a+1]+Delta[3]))
+(%i35) phi_pair_a_at_mid(a,DD):=phi_single_a_at_mid(a,DD)+phi_single_a_at_mid(
+                                                          a,DD)
+(%i36) P_mid(DD):=float(
+             phi_single_a_at_mid(0,DD)*phi_single_a_at_mid(1,DD)
+                                      *phi_single_a_at_mid(2,DD)*8)
+(%i37) V_P(P_val):=((mu/2)*P_val^2)/(1+kappa*P_val^2)
+(%i38) cx_UU:2*curl_x_UUD
+(%i39) cx_UD:curl_x_UUD+curl_x_UDD
+(%i40) C_braid1:float((-A_bg)*k_wave*sin(d2+Delta[2]))
+(%i41) curl_sq_UU_approx:cx_UU^2+(2*C_braid1)^2
+(%i42) curl_sq_UD_approx:cx_UD^2+0
+(%i43) E_hard_UU:beta_h*curl_sq_UU_approx*(cx_UU/2)^2
+(%i44) E_hard_UD:beta_h*curl_sq_UD_approx*(cx_UD/2)^2
+(%i45) printf(true,"  E_hardening(UU midpoint) ≈ %.6f~%",E_hard_UU)
+  E_hardening(UU midpoint) ≈ %.6f
+(%i46) printf(true,"  E_hardening(UD midpoint) ≈ %.6f~%",E_hard_UD)
+  E_hardening(UD midpoint) ≈ %.6f
+(%i47) printf(true,"  Ratio UD/UU = %.4f~%",E_hard_UD/E_hard_UU)
+  Ratio UD/UU = %.4f
+(%i48) print("")
+ 
+(%i49) V_overlap:(4.0/3.0)*3.14159*R_proton^3
+(%i50) E_barrier_UU:E_hard_UU*V_overlap
+(%i51) E_barrier_UD:E_hard_UD*V_overlap
+(%i52) print("=== 3. Barrier heights (approximate) ===")
+=== 3. Barrier heights (approximate) === 
+(%i53) printf(true,"  V_overlap = %.1f (sphere R=%.1f)~%",V_overlap,R_proton)
+  V_overlap = %.1f (sphere R=%.1f)
+(%i54) printf(true,"  E_barrier(UU) ≈ %.1f~%",E_barrier_UU)
+  E_barrier(UU) ≈ %.1f
+(%i55) printf(true,"  E_barrier(UD) ≈ %.1f~%",E_barrier_UD)
+  E_barrier(UD) ≈ %.1f
+(%i56) print("")
+ 
+(%i57) print("=== 4. Kinetic energy at various velocities ===")
+=== 4. Kinetic energy at various velocities === 
+(%i58) for vv in [0.01,0.05,0.1,0.2,0.5] do
+           (Ek:m_eff*vv^2,
+            outcome_UU:if Ek > E_barrier_UU then "PENETRATE" else "BOUNCE",
+            outcome_UD:if Ek > E_barrier_UD then "PENETRATE" else "BOUNCE",
+            printf(true,
+                   "  v=%4.2f  E_kin=%8.1f  vs UU barrier: %s  vs UD barrier: %s~%",
+                   vv,Ek,outcome_UU,outcome_UD))
+  v=%4.2f  E_kin=%8.1f  vs UU barrier: %s  vs UD barrier: %s
+  v=%4.2f  E_kin=%8.1f  vs UU barrier: %s  vs UD barrier: %s
+  v=%4.2f  E_kin=%8.1f  vs UU barrier: %s  vs UD barrier: %s
+  v=%4.2f  E_kin=%8.1f  vs UU barrier: %s  vs UD barrier: %s
+  v=%4.2f  E_kin=%8.1f  vs UU barrier: %s  vs UD barrier: %s
+(%i59) print("")
+ 
+(%i60) print("=== 5. Predicted collision timeline ===")
+=== 5. Predicted collision timeline === 
+(%i61) print("")
+ 
+(%i62) D0:25
+(%i63) v0:0.1
+(%i64) t_free_val:t_free(D0,v0)
+(%i65) t_interact:(D0-2*R_proton)/(2*v0)
+(%i66) Ek0:m_eff*v0^2
+(%i67) printf(true,"  V51 collision parameters: D=%d, v=%.2f~%",D0,v0)
+  V51 collision parameters: D=%d, v=%.2f
+(%i68) printf(true,"  Free-flight collision time: t = %.1f~%",t_free_val)
+  Free-flight collision time: t = %.1f
+(%i69) printf(true,"  Time to interaction zone (D=2R): t = %.1f~%",t_interact)
+  Time to interaction zone (D=2R): t = %.1f
+(%i70) printf(true,"  Kinetic energy: E_kin = %.1f~%",Ek0)
+  Kinetic energy: E_kin = %.1f
+(%i71) printf(true,"  UU barrier: %.1f → %s~%",E_barrier_UU,
+              if Ek0 > E_barrier_UU then "PENETRATE" else "BOUNCE")
+  UU barrier: %.1f → %s
+(%i72) printf(true,"  UD barrier: %.1f → %s~%",E_barrier_UD,
+              if Ek0 > E_barrier_UD then "PENETRATE" else "BOUNCE")
+  UD barrier: %.1f → %s
+(%i73) print("")
+ 
+(%i74) print("=== 6. V52 experiment predictions ===")
+=== 6. V52 experiment predictions === 
+(%i75) print("")
+ 
+(%i76) printf(true,"Exp A: UUD+UUD, D=25, v=0.1~%")
+Exp A: UUD+UUD, D=25, v=0.1
+(%i77) printf(true,"  t_collision = %.1f~%",t_free(25,0.1))
+  t_collision = %.1f
+(%i78) printf(true,"  Prediction: bounce + bound orbit (V51 confirmed)~%")
+  Prediction: bounce + bound orbit (V51 confirmed)
+(%i79) print("")
+ 
+(%i80) printf(true,"Exp B: UUD+UDD, D=25, v=0.1~%")
+Exp B: UUD+UDD, D=25, v=0.1
+(%i81) printf(true,"  t_collision = %.1f~%",t_free(25,0.1))
+  t_collision = %.1f
+(%i82) printf(true,
+              "  Prediction: deeper penetration than A (%.0f%% less barrier)~%",
+              (1-E_barrier_UD/E_barrier_UU)*100)
+  Prediction: deeper penetration than A (%.0f%% less barrier)
+(%i83) printf(true,"  Expected: tighter bound state, smaller D_eq~%")
+  Expected: tighter bound state, smaller D_eq
+(%i84) print("")
+ 
+(%i85) printf(true,"Exp C: UUD+UUD, D=25, v=0.3~%")
+Exp C: UUD+UUD, D=25, v=0.3
+(%i86) printf(true,"  t_collision = %.1f~%",t_free(25,0.3))
+  t_collision = %.1f
+(%i87) printf(true,"  E_kin = %.1f (%.1f× vs v=0.1)~%",m_eff*0.3^2,0.3^2
+                                                                     /0.1^2)
+  E_kin = %.1f (%.1f× vs v=0.1)
+(%i88) printf(true,"  Prediction: %s (9× more energy)~%",
+              if m_eff*0.3^2 > E_barrier_UU
+                  then "penetrate → possible disruption"
+                  else "stronger bounce")
+  Prediction: %s (9× more energy)
+(%i89) print("")
+ 
+(%i90) printf(true,"Exp D: UUD+UDD, D=25, v=0 (gravitational infall)~%")
+Exp D: UUD+UDD, D=25, v=0 (gravitational infall)
+(%i91) printf(true,"  No initial velocity — pure gravitational attraction~%")
+  No initial velocity — pure gravitational attraction
+(%i92) printf(true,"  Prediction: slow approach, gentle binding~%")
+  Prediction: slow approach, gentle binding
+(%i93) printf(true,"  Expected infall time: >>125 (depletion attraction is weak)~%")
+  Expected infall time: >>125 (depletion attraction is weak)
+(%i94) print("")
+ 
+(%i95) printf(true,"Exp E: UUD+UUD, D=25, v=0 (gravitational infall)~%")
+Exp E: UUD+UUD, D=25, v=0 (gravitational infall)
+(%i96) printf(true,"  Prediction: slow approach, same as D but higher barrier~%")
+  Prediction: slow approach, same as D but higher barrier
+(%i97) printf(true,"  If both bind: compare D_eq(UU) vs D_eq(UD)~%")
+  If both bind: compare D_eq(UU) vs D_eq(UD)
+(%i98) print("")
+ 
+(%i99) print("=== 7. Measurable quantities for validation ===")
+=== 7. Measurable quantities for validation === 
+(%i100) print("")
+ 
+(%i101) print("For each experiment, measure:")
+For each experiment, measure: 
+(%i102) print("  t_contact   — time of first minimum separation")
+  t_contact   — time of first minimum separation 
+(%i103) print("  D_min       — closest approach distance")
+  D_min       — closest approach distance 
+(%i104) print("  D_eq        — equilibrium separation (time-averaged, t>2×t_contact)")
+  D_eq        — equilibrium separation (time-averaged, t>2×t_contact) 
+(%i105) print("  E_bind      — binding energy (E_total at D_eq vs E_total at D=∞)")
+  E_bind      — binding energy (E_total at D_eq vs E_total at D=∞) 
+(%i106) print("  T_orbit     — orbital/oscillation period of bound state")
+  T_orbit     — orbital/oscillation period of bound state 
+(%i107) print("  P_int_ratio — P_int(UD pair) / P_int(UU pair) at equilibrium")
+  P_int_ratio — P_int(UD pair) / P_int(UU pair) at equilibrium 
+(%i108) print("  M²_peak     — peak mismatch at midpoint during collision")
+  M²_peak     — peak mismatch at midpoint during collision 
+(%i109) print("  Δcurl²      — |curl|²(UD) / |curl|²(UU) measured at D_min")
+  Δcurl²      — |curl|²(UD) / |curl|²(UU) measured at D_min 
+(%i110) print("")
+ 
+(%i111) print("Predictions to verify:")
+Predictions to verify: 
+(%i112) print("  1. t_contact(A) ≈ t_contact(B) ≈ 125 (same v, same D)")
+  1. t_contact(A) ≈ t_contact(B) ≈ 125 (same v, same D) 
+(%i113) print("  2. D_min(B) < D_min(A) (UD penetrates deeper)")
+  2. D_min(B) < D_min(A) (UD penetrates deeper) 
+(%i114) print("  3. D_eq(B) < D_eq(A) (UD binds tighter)")
+  3. D_eq(B) < D_eq(A) (UD binds tighter) 
+(%i115) print("  4. |E_bind(B)| > |E_bind(A)| (UD binds stronger)")
+  4. |E_bind(B)| > |E_bind(A)| (UD binds stronger) 
+(%i116) print("  5. M²_peak(A) > M²_peak(B) (UU has more mismatch)")
+  5. M²_peak(A) > M²_peak(B) (UU has more mismatch) 
+(%i117) print("  6. Δcurl² ≈ 0.31-0.81 (matching Maxima prediction)")
+  6. Δcurl² ≈ 0.31-0.81 (matching Maxima prediction) 
+(%i118) print("  7. Breathing period unchanged across all experiments")
+  7. Breathing period unchanged across all experiments 
+(%o119)           /home/d/code/scp/v52/predict_collision.mac

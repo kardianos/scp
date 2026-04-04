@@ -48,14 +48,14 @@ type ToolDef struct {
 // --- MCP server ---
 
 type MCPServer struct {
-	tools    []ToolDef
-	executor Executor
-	mu       sync.RWMutex
-	writeMu  sync.Mutex
-	writer   *json.Encoder
-	monitor  *Monitor
-	state    *RunnerState
-	protoLog *os.File // protocol log file (nil = disabled)
+	tools     []ToolDef
+	executors map[string]Executor // keyed by instance name
+	execMu    sync.RWMutex
+	writeMu   sync.Mutex
+	writer    *json.Encoder
+	monitor   *Monitor
+	state     *RunnerState
+	protoLog  *os.File // protocol log file (nil = disabled)
 }
 
 // prefixWriter prepends a prefix to each Write call for protocol logging.
@@ -71,8 +71,11 @@ func (pw *prefixWriter) Write(p []byte) (int, error) {
 
 func NewMCPServer(executor Executor) *MCPServer {
 	s := &MCPServer{
-		executor: executor,
+		executors: make(map[string]Executor),
 	}
+	// Legacy: if a single executor is provided at construction, ignore it.
+	// Instances are now created via sim_setup with a name.
+	_ = executor
 	s.tools = s.buildToolTable()
 	return s
 }
@@ -161,14 +164,15 @@ func (s *MCPServer) handleInitialize(req *jsonRPCRequest) {
 		},
 		"serverInfo": map[string]any{
 			"name":    "scp-runner",
-			"version": "0.2.0",
+			"version": "0.3.0",
 		},
 		"instructions": "Events from the scp-runner channel arrive as <channel source=\"scp-runner\" event=\"...\">. " +
 			"Events include: run_complete, run_failed, download_complete, download_failed, teardown_blocked. " +
 			"When you receive a run_complete event, download the output files. " +
 			"When you receive a run_failed event, diagnose the error and decide whether to retry. " +
 			"When you receive a teardown_blocked event, download the listed files before retrying teardown. " +
-			"When you receive a download_complete event, note the file and continue with analysis or the next step.",
+			"When you receive a download_complete event, note the file and continue with analysis or the next step. " +
+			"All tools require a 'name' parameter to identify the instance (set during sim_setup).",
 	}
 	s.sendResult(req.ID, result)
 }
@@ -295,25 +299,28 @@ func (s *MCPServer) sendLogMessage(level string, message string) {
 // handleRunDone is called directly from the executor goroutine when a run reaches
 // terminal state. It sends a channel event immediately, without waiting for the
 // 5-second monitor tick.
-func (s *MCPServer) handleRunDone(id string, info RunInfo) {
+func (s *MCPServer) handleRunDone(instanceName string, id string, info RunInfo) {
 	switch info.Status {
 	case RunComplete:
-		msg := fmt.Sprintf("Run %s complete — sim_time=%.1f/%.1f wall=%.1fs", id, info.SimTime, info.TotalTime, info.WallSecs)
+		msg := fmt.Sprintf("[%s] Run %s complete — sim_time=%.1f/%.1f wall=%.1fs", instanceName, id, info.SimTime, info.TotalTime, info.WallSecs)
 		s.sendChannelEvent("run_complete", map[string]string{
-			"run_id":    id,
+			"instance": instanceName,
+			"run_id":   id,
 			"sim_time":  fmt.Sprintf("%.1f", info.SimTime),
 			"wall_secs": fmt.Sprintf("%.1f", info.WallSecs),
 		}, msg)
 	case RunFailed:
-		msg := fmt.Sprintf("Run %s FAILED (%.1fs): %s", id, info.WallSecs, info.Error)
+		msg := fmt.Sprintf("[%s] Run %s FAILED (%.1fs): %s", instanceName, id, info.WallSecs, info.Error)
 		s.sendChannelEvent("run_failed", map[string]string{
-			"run_id": id,
-			"error":  info.Error,
+			"instance": instanceName,
+			"run_id":   id,
+			"error":    info.Error,
 		}, msg)
 	case RunCancelled:
-		msg := fmt.Sprintf("Run %s cancelled at sim_time=%.1f/%.1f", id, info.SimTime, info.TotalTime)
+		msg := fmt.Sprintf("[%s] Run %s cancelled at sim_time=%.1f/%.1f", instanceName, id, info.SimTime, info.TotalTime)
 		s.sendChannelEvent("run_cancelled", map[string]string{
-			"run_id": id,
+			"instance": instanceName,
+			"run_id":   id,
 		}, msg)
 	}
 }
@@ -332,79 +339,156 @@ func (s *MCPServer) sendChannelEvent(event string, meta map[string]string, conte
 	})
 }
 
+// --- Executor map management ---
+
+// setExecutor stores an executor under the given name.
+func (s *MCPServer) setExecutor(name string, ex Executor) {
+	s.execMu.Lock()
+	defer s.execMu.Unlock()
+	s.executors[name] = ex
+}
+
+// removeExecutor removes an executor by name.
+func (s *MCPServer) removeExecutor(name string) {
+	s.execMu.Lock()
+	defer s.execMu.Unlock()
+	delete(s.executors, name)
+}
+
+// getExecutor looks up an executor by name. If name is empty, returns an error
+// listing all active instances.
+func (s *MCPServer) getExecutor(name string) (Executor, error) {
+	if name == "" {
+		return nil, s.nameRequiredError()
+	}
+	s.execMu.RLock()
+	defer s.execMu.RUnlock()
+	ex, ok := s.executors[name]
+	if !ok {
+		return nil, fmt.Errorf("instance %q not found — active instances: %s", name, s.activeInstanceList())
+	}
+	return ex, nil
+}
+
+// getExecutorNames returns the names of all active executors.
+func (s *MCPServer) getExecutorNames() []string {
+	s.execMu.RLock()
+	defer s.execMu.RUnlock()
+	names := make([]string, 0, len(s.executors))
+	for n := range s.executors {
+		names = append(names, n)
+	}
+	return names
+}
+
+// getAllExecutors returns a snapshot of name->executor pairs.
+func (s *MCPServer) getAllExecutors() map[string]Executor {
+	s.execMu.RLock()
+	defer s.execMu.RUnlock()
+	result := make(map[string]Executor, len(s.executors))
+	for n, ex := range s.executors {
+		result[n] = ex
+	}
+	return result
+}
+
+// activeInstanceList returns a comma-separated string of active instance names,
+// or "(none)" if empty. Caller may or may not hold execMu.
+func (s *MCPServer) activeInstanceList() string {
+	// This is called from getExecutor which holds RLock, so we read directly.
+	if len(s.executors) == 0 {
+		return "(none)"
+	}
+	names := make([]string, 0, len(s.executors))
+	for n := range s.executors {
+		names = append(names, n)
+	}
+	return strings.Join(names, ", ")
+}
+
+// nameRequiredError returns a descriptive error when name is missing.
+func (s *MCPServer) nameRequiredError() error {
+	s.execMu.RLock()
+	defer s.execMu.RUnlock()
+	if len(s.executors) == 0 {
+		return fmt.Errorf("name required — no active instances (call sim_setup first)")
+	}
+	return fmt.Errorf("name required — active instances: %s", s.activeInstanceList())
+}
+
 // --- Tool table ---
 
 func (s *MCPServer) buildToolTable() []ToolDef {
 	return []ToolDef{
 		{
 			Name:        "sim_setup",
-			Description: "Create or connect to an execution environment (local or remote GPU)",
+			Description: "Create or connect to a named execution environment (local or remote GPU)",
 			InputType:   reflect.TypeOf(SimSetupParams{}),
 			Handler:     s.handleSetup,
 		},
 		{
 			Name:        "sim_status",
-			Description: "Get execution environment status (GPU, CPU, disk, active runs)",
+			Description: "Get execution environment status (GPU, CPU, disk, active runs). Omit name for all instances.",
 			InputType:   reflect.TypeOf(SimStatusParams{}),
 			Handler:     s.handleStatus,
 		},
 		{
 			Name:        "sim_teardown",
-			Description: "Destroy execution environment (terminates remote instances)",
+			Description: "Destroy a named execution environment (terminates remote instances)",
 			InputType:   reflect.TypeOf(SimTeardownParams{}),
 			Handler:     s.handleTeardown,
 		},
 		{
 			Name:        "sim_build",
-			Description: "Compile simulation kernel from source files",
+			Description: "Compile simulation kernel from source files on a named instance",
 			InputType:   reflect.TypeOf(SimBuildParams{}),
 			Handler:     s.handleBuild,
 		},
 		{
 			Name:        "sim_run",
-			Description: "Start a simulation run",
+			Description: "Start a simulation run on a named instance",
 			InputType:   reflect.TypeOf(SimRunParams{}),
 			Handler:     s.handleRun,
 		},
 		{
 			Name:        "sim_run_status",
-			Description: "Check simulation run progress (sim_time, wall_time, status, last diagnostic)",
+			Description: "Check simulation run progress on a named instance",
 			InputType:   reflect.TypeOf(SimRunStatusParams{}),
 			Handler:     s.handleRunStatus,
 		},
 		{
 			Name:        "sim_run_cancel",
-			Description: "Cancel a running simulation",
+			Description: "Cancel a running simulation on a named instance",
 			InputType:   reflect.TypeOf(SimRunCancelParams{}),
 			Handler:     s.handleRunCancel,
 		},
 		{
 			Name:        "sim_upload",
-			Description: "Upload a file to the execution environment",
+			Description: "Upload a file to a named execution environment",
 			InputType:   reflect.TypeOf(SimUploadParams{}),
 			Handler:     s.handleUpload,
 		},
 		{
 			Name:        "sim_download",
-			Description: "Download result files from the execution environment (rsync with append-verify)",
+			Description: "Download result files from a named execution environment",
 			InputType:   reflect.TypeOf(SimDownloadParams{}),
 			Handler:     s.handleDownload,
 		},
 		{
 			Name:        "sim_download_status",
-			Description: "Check download progress",
+			Description: "Check download progress on a named instance",
 			InputType:   reflect.TypeOf(SimDownloadStatusParams{}),
 			Handler:     s.handleDownloadStatus,
 		},
 		{
 			Name:        "sim_list_files",
-			Description: "List files in the execution environment",
+			Description: "List files in a named execution environment",
 			InputType:   reflect.TypeOf(SimListFilesParams{}),
 			Handler:     s.handleListFiles,
 		},
 		{
 			Name:        "sim_exec",
-			Description: "Execute an arbitrary command in the execution environment",
+			Description: "Execute an arbitrary command in a named execution environment",
 			InputType:   reflect.TypeOf(SimExecParams{}),
 			Handler:     s.handleExec,
 		},
@@ -422,10 +506,24 @@ func (s *MCPServer) buildToolTable() []ToolDef {
 func (s *MCPServer) handleSetup(ctx context.Context, raw any) (any, error) {
 	p := raw.(*SimSetupParams)
 
+	if p.Name == "" {
+		return nil, fmt.Errorf("name required — provide a unique name for this instance (e.g. 'gpu1', 'local_test')")
+	}
+
+	// Check if name is already in use.
+	s.execMu.RLock()
+	_, exists := s.executors[p.Name]
+	s.execMu.RUnlock()
+	if exists {
+		return nil, fmt.Errorf("instance %q already exists — teardown first or choose a different name", p.Name)
+	}
+
 	workDir := p.WorkDir
 	if workDir == "" {
-		workDir = "/tmp/scp-runner"
+		workDir = "/tmp/scp-runner/" + p.Name
 	}
+
+	instanceName := p.Name // capture for closures
 
 	switch ExecType(p.Executor) {
 	case ExecLocal:
@@ -433,39 +531,43 @@ func (s *MCPServer) handleSetup(ctx context.Context, raw any) (any, error) {
 		if s.monitor != nil {
 			local.OnRunDone = s.monitor.Wakeup
 		}
-		local.OnRunComplete = s.handleRunDone
+		local.OnRunComplete = func(id string, info RunInfo) {
+			s.handleRunDone(instanceName, id, info)
+		}
 		if err := local.Setup(ctx); err != nil {
 			return nil, fmt.Errorf("local setup: %w", err)
 		}
-		s.mu.Lock()
-		s.executor = local
-		s.mu.Unlock()
-		// Clear remote instance from persisted state for local executor.
+		s.setExecutor(p.Name, local)
+		// Clear any stale persisted state for this name.
 		if s.state != nil {
-			s.state.ClearInstance()
+			s.state.ClearInstance(p.Name)
 		}
-		return &SimSetupResult{Status: "ok", Type: "local", WorkDir: workDir}, nil
+		return &SimSetupResult{Status: "ok", Name: p.Name, Type: "local", WorkDir: workDir}, nil
 
 	case ExecRemote:
 		remote := NewRemoteExecutor(RemoteConfig{WorkDir: workDir})
 		if s.monitor != nil {
 			remote.OnRunDone = s.monitor.Wakeup
 		}
-		remote.OnRunComplete = s.handleRunDone
+		remote.OnRunComplete = func(id string, info RunInfo) {
+			s.handleRunDone(instanceName, id, info)
+		}
 		remote.OnDownloadDone = func(id, remotePath, localPath string, err error) {
 			if err != nil {
 				s.sendChannelEvent("download_failed", map[string]string{
+					"instance":    instanceName,
 					"download_id": id,
 					"remote_path": remotePath,
 					"local_path":  localPath,
 					"error":       err.Error(),
-				}, fmt.Sprintf("Download FAILED: %s -> %s: %v", remotePath, localPath, err))
+				}, fmt.Sprintf("[%s] Download FAILED: %s -> %s: %v", instanceName, remotePath, localPath, err))
 			} else {
 				s.sendChannelEvent("download_complete", map[string]string{
+					"instance":    instanceName,
 					"download_id": id,
 					"remote_path": remotePath,
 					"local_path":  localPath,
-				}, fmt.Sprintf("Download complete: %s -> %s", remotePath, localPath))
+				}, fmt.Sprintf("[%s] Download complete: %s -> %s", instanceName, remotePath, localPath))
 			}
 		}
 		if err := remote.Setup(ctx); err != nil {
@@ -482,20 +584,26 @@ func (s *MCPServer) handleSetup(ctx context.Context, raw any) (any, error) {
 				return nil, fmt.Errorf("provision: %w", err)
 			}
 		}
-		s.mu.Lock()
-		s.executor = remote
-		s.mu.Unlock()
+		s.setExecutor(p.Name, remote)
 		// Persist instance state.
 		if s.state != nil {
-			s.state.SetInstance(&InstanceState{
+			s.state.SetInstance(p.Name, &InstanceState{
 				ID:      remote.instanceID,
 				Host:    remote.sshHost,
 				Port:    remote.sshPort,
 				GPUName: remote.gpuName,
 			})
 		}
+		s.sendChannelEvent("setup_complete", map[string]string{
+			"instance": p.Name,
+			"type":     "remote",
+			"gpu":      remote.gpuName,
+			"host":     remote.sshHost,
+		}, fmt.Sprintf("[%s] GPU instance ready: %s (%s:%d)", p.Name, remote.gpuName, remote.sshHost, remote.sshPort))
+
 		return &SimSetupResult{
 			Status:     "ok",
+			Name:       p.Name,
 			Type:       "remote",
 			Host:       remote.sshHost,
 			Port:       remote.sshPort,
@@ -508,40 +616,82 @@ func (s *MCPServer) handleSetup(ctx context.Context, raw any) (any, error) {
 	}
 }
 
-func (s *MCPServer) getExecutor() (Executor, error) {
-	s.mu.RLock()
-	defer s.mu.RUnlock()
-	if s.executor == nil {
-		return nil, fmt.Errorf("no executor configured — call sim_setup first")
-	}
-	return s.executor, nil
-}
+func (s *MCPServer) handleStatus(ctx context.Context, raw any) (any, error) {
+	p := raw.(*SimStatusParams)
 
-func (s *MCPServer) handleStatus(ctx context.Context, _ any) (any, error) {
-	ex, err := s.getExecutor()
-	if err != nil {
-		return nil, err
+	if p.Name != "" {
+		// Single instance status.
+		ex, err := s.getExecutor(p.Name)
+		if err != nil {
+			return nil, err
+		}
+		status, err := ex.Status(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return map[string]any{
+			"instance": p.Name,
+			"status":   status,
+		}, nil
 	}
-	return ex.Status(ctx)
+
+	// All instances.
+	allExecs := s.getAllExecutors()
+	if len(allExecs) == 0 {
+		return map[string]any{
+			"instances": map[string]any{},
+			"message":   "no active instances — call sim_setup first",
+		}, nil
+	}
+
+	statuses := make(map[string]any, len(allExecs))
+	for name, ex := range allExecs {
+		status, err := ex.Status(ctx)
+		if err != nil {
+			statuses[name] = map[string]any{"error": err.Error()}
+		} else {
+			statuses[name] = status
+		}
+	}
+	return map[string]any{"instances": statuses}, nil
 }
 
 func (s *MCPServer) handleTeardown(ctx context.Context, raw any) (any, error) {
 	p := raw.(*SimTeardownParams)
-	ex, err := s.getExecutor()
+
+	if p.Name == "" {
+		return nil, s.nameRequiredError()
+	}
+
+	// Special case: name="all" with force=true tears down everything.
+	if p.Name == "all" && p.Force {
+		allExecs := s.getAllExecutors()
+		for name, ex := range allExecs {
+			_ = ex.Teardown(ctx)
+			s.removeExecutor(name)
+			if s.state != nil {
+				s.state.ClearInstance(name)
+			}
+		}
+		return &SimTeardownResult{Status: "ok (all instances destroyed)"}, nil
+	}
+
+	ex, err := s.getExecutor(p.Name)
 	if err != nil {
 		return nil, err
 	}
 
 	// Safety check: refuse teardown if there are undownloaded output files.
 	if !p.Force {
-		if pending := s.pendingDownloads(); len(pending) > 0 {
-			msg := fmt.Sprintf("TEARDOWN BLOCKED: %d output file(s) not yet downloaded:\n", len(pending))
+		if pending := s.pendingDownloads(p.Name, ex); len(pending) > 0 {
+			msg := fmt.Sprintf("[%s] TEARDOWN BLOCKED: %d output file(s) not yet downloaded:\n", p.Name, len(pending))
 			for _, f := range pending {
 				msg += fmt.Sprintf("  - %s\n", f)
 			}
 			msg += "Use force=true to override, or download files first."
 			s.sendChannelEvent("teardown_blocked", map[string]string{
-				"count": fmt.Sprintf("%d", len(pending)),
+				"instance": p.Name,
+				"count":    fmt.Sprintf("%d", len(pending)),
 			}, msg)
 			return nil, fmt.Errorf("teardown blocked: %d output file(s) not downloaded — use force=true to override", len(pending))
 		}
@@ -550,26 +700,32 @@ func (s *MCPServer) handleTeardown(ctx context.Context, raw any) (any, error) {
 	if err := ex.Teardown(ctx); err != nil {
 		return nil, fmt.Errorf("teardown: %w", err)
 	}
-	s.mu.Lock()
-	s.executor = nil
-	s.mu.Unlock()
+	s.removeExecutor(p.Name)
 	// Clear persisted state.
 	if s.state != nil {
-		s.state.ClearInstance()
+		s.state.ClearInstance(p.Name)
 	}
+	s.sendChannelEvent("teardown_complete", map[string]string{
+		"instance": p.Name,
+	}, fmt.Sprintf("[%s] Instance destroyed", p.Name))
 	return &SimTeardownResult{Status: "ok"}, nil
 }
 
 // pendingDownloads returns a list of remote output files that have not been
-// downloaded locally. It checks the persisted run state for output files and
-// verifies whether corresponding local files exist with non-zero size.
-func (s *MCPServer) pendingDownloads() []string {
+// downloaded locally for a specific instance.
+func (s *MCPServer) pendingDownloads(name string, ex Executor) []string {
 	if s.state == nil {
 		return nil
 	}
+
+	pi := s.state.GetInstance(name)
+	if pi == nil {
+		return nil
+	}
+
 	s.state.mu.Lock()
-	runs := make(map[string]*PersistRun, len(s.state.Runs))
-	for k, v := range s.state.Runs {
+	runs := make(map[string]*PersistRun, len(pi.Runs))
+	for k, v := range pi.Runs {
 		runs[k] = v
 	}
 	s.state.mu.Unlock()
@@ -591,10 +747,6 @@ func (s *MCPServer) pendingDownloads() []string {
 	}
 
 	// Also check active downloads that haven't completed.
-	ex, err := s.getExecutor()
-	if err != nil {
-		return pending
-	}
 	downloads := make(map[string]*DownloadInfo)
 	collectDownloads(ex, downloads)
 	for _, dl := range downloads {
@@ -609,7 +761,7 @@ func (s *MCPServer) pendingDownloads() []string {
 func (s *MCPServer) handleBuild(ctx context.Context, raw any) (any, error) {
 	p := raw.(*SimBuildParams)
 
-	ex, err := s.getExecutor()
+	ex, err := s.getExecutor(p.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -622,7 +774,17 @@ func (s *MCPServer) handleBuild(ctx context.Context, raw any) (any, error) {
 	}
 	// Persist binary path on successful build.
 	if s.state != nil && result != nil && result.Status != "failed" {
-		s.state.SetBinary(result.Binary)
+		s.state.SetBinary(p.Name, result.Binary)
+		s.sendChannelEvent("build_complete", map[string]string{
+			"instance": p.Name,
+			"binary":   result.Binary,
+			"cached":   fmt.Sprintf("%v", result.Cached),
+		}, fmt.Sprintf("[%s] Build complete: %s (cached=%v)", p.Name, result.Binary, result.Cached))
+	} else if result != nil && result.Status == "failed" {
+		s.sendChannelEvent("build_failed", map[string]string{
+			"instance": p.Name,
+			"error":    result.Error,
+		}, fmt.Sprintf("[%s] Build FAILED: %s", p.Name, result.Error))
 	}
 	return result, nil
 }
@@ -669,7 +831,7 @@ func parseConfigValue(config, key string) string {
 func (s *MCPServer) handleRun(ctx context.Context, raw any) (any, error) {
 	p := raw.(*SimRunParams)
 
-	ex, err := s.getExecutor()
+	ex, err := s.getExecutor(p.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -744,7 +906,7 @@ func (s *MCPServer) handleRun(ctx context.Context, raw any) (any, error) {
 				outputFiles = append(outputFiles, diag)
 			}
 		}
-		s.state.SetRun(p.ID, &PersistRun{
+		s.state.SetRun(p.Name, p.ID, &PersistRun{
 			Status:       "running",
 			AutoDownload: p.AutoDownload,
 			OutputFiles:  outputFiles,
@@ -752,10 +914,16 @@ func (s *MCPServer) handleRun(ctx context.Context, raw any) (any, error) {
 		})
 	}
 
+	s.sendChannelEvent("run_started", map[string]string{
+		"instance": p.Name,
+		"run_id":   p.ID,
+	}, fmt.Sprintf("[%s] Run %s started", p.Name, p.ID))
+
 	if !p.Wait {
 		return &SimRunResult{
 			RunID:    p.ID,
 			Status:   "started",
+			Instance: p.Name,
 			Executor: string(ex.Type()),
 			Init:     initMode,
 			InitSFA:  initSFA,
@@ -785,7 +953,7 @@ func (s *MCPServer) handleRun(ctx context.Context, raw any) (any, error) {
 func (s *MCPServer) handleRunStatus(_ context.Context, raw any) (any, error) {
 	p := raw.(*SimRunStatusParams)
 
-	ex, err := s.getExecutor()
+	ex, err := s.getExecutor(p.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -794,7 +962,7 @@ func (s *MCPServer) handleRunStatus(_ context.Context, raw any) (any, error) {
 	}
 	info := ex.RunStatus(p.ID)
 	if info == nil {
-		return nil, fmt.Errorf("run %s not found", p.ID)
+		return nil, fmt.Errorf("run %s not found on instance %s", p.ID, p.Name)
 	}
 	return info, nil
 }
@@ -802,7 +970,7 @@ func (s *MCPServer) handleRunStatus(_ context.Context, raw any) (any, error) {
 func (s *MCPServer) handleRunCancel(_ context.Context, raw any) (any, error) {
 	p := raw.(*SimRunCancelParams)
 
-	ex, err := s.getExecutor()
+	ex, err := s.getExecutor(p.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -818,7 +986,7 @@ func (s *MCPServer) handleRunCancel(_ context.Context, raw any) (any, error) {
 func (s *MCPServer) handleUpload(ctx context.Context, raw any) (any, error) {
 	p := raw.(*SimUploadParams)
 
-	ex, err := s.getExecutor()
+	ex, err := s.getExecutor(p.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -826,15 +994,26 @@ func (s *MCPServer) handleUpload(ctx context.Context, raw any) (any, error) {
 		return nil, fmt.Errorf("local_path and remote_path required")
 	}
 	if err := ex.Upload(ctx, p.LocalPath, p.RemotePath); err != nil {
+		s.sendChannelEvent("upload_failed", map[string]string{
+			"instance": p.Name,
+			"local":    p.LocalPath,
+			"remote":   p.RemotePath,
+			"error":    err.Error(),
+		}, fmt.Sprintf("[%s] Upload FAILED: %s -> %s: %v", p.Name, p.LocalPath, p.RemotePath, err))
 		return nil, err
 	}
+	s.sendChannelEvent("upload_complete", map[string]string{
+		"instance": p.Name,
+		"local":    p.LocalPath,
+		"remote":   p.RemotePath,
+	}, fmt.Sprintf("[%s] Upload complete: %s -> %s", p.Name, p.LocalPath, p.RemotePath))
 	return &SimUploadResult{Status: "ok"}, nil
 }
 
 func (s *MCPServer) handleDownload(ctx context.Context, raw any) (any, error) {
 	p := raw.(*SimDownloadParams)
 
-	ex, err := s.getExecutor()
+	ex, err := s.getExecutor(p.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -845,13 +1024,19 @@ func (s *MCPServer) handleDownload(ctx context.Context, raw any) (any, error) {
 	if err != nil {
 		return nil, err
 	}
+	s.sendChannelEvent("download_started", map[string]string{
+		"instance":    p.Name,
+		"download_id": id,
+		"remote":      p.RemotePath,
+		"local":       p.LocalPath,
+	}, fmt.Sprintf("[%s] Download started: %s -> %s", p.Name, p.RemotePath, p.LocalPath))
 	return &SimDownloadResult{DownloadID: id, Status: "started"}, nil
 }
 
 func (s *MCPServer) handleDownloadStatus(_ context.Context, raw any) (any, error) {
 	p := raw.(*SimDownloadStatusParams)
 
-	ex, err := s.getExecutor()
+	ex, err := s.getExecutor(p.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -860,7 +1045,7 @@ func (s *MCPServer) handleDownloadStatus(_ context.Context, raw any) (any, error
 	}
 	info := ex.DownloadStatus(p.ID)
 	if info == nil {
-		return nil, fmt.Errorf("download %s not found", p.ID)
+		return nil, fmt.Errorf("download %s not found on instance %s", p.ID, p.Name)
 	}
 	return info, nil
 }
@@ -868,7 +1053,7 @@ func (s *MCPServer) handleDownloadStatus(_ context.Context, raw any) (any, error
 func (s *MCPServer) handleListFiles(ctx context.Context, raw any) (any, error) {
 	p := raw.(*SimListFilesParams)
 
-	ex, err := s.getExecutor()
+	ex, err := s.getExecutor(p.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -962,7 +1147,7 @@ func (s *MCPServer) handleListTemplates(_ context.Context, _ any) (any, error) {
 func (s *MCPServer) handleExec(ctx context.Context, raw any) (any, error) {
 	p := raw.(*SimExecParams)
 
-	ex, err := s.getExecutor()
+	ex, err := s.getExecutor(p.Name)
 	if err != nil {
 		return nil, err
 	}

@@ -10,11 +10,12 @@ BINDIR = ../bin
 # ---- Analysis tools ----
 
 ANALYSIS_TOOLS = analyze_sfa spatial_analysis cluster_profile stable_vs_unstable \
-                 shell_analysis modify_sfa freq_phase accel_analysis breathing
+                 shell_analysis modify_sfa freq_phase accel_analysis breathing \
+                 sfa_vectorize3d vecstream_verify
 
 ANALYSIS_BINS = $(addprefix analysis/, $(ANALYSIS_TOOLS))
 
-analysis/%: analysis/%.c format/sfa.h
+analysis/%: analysis/%.c format/sfa.h format/vecstream.h
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 # ---- Seed generators ----
@@ -27,13 +28,19 @@ seed/%: seed/%.c format/sfa.h
 
 # ---- Tools ----
 
-TOOL_BINS = tools/sfa tools/sfa_render
+TOOL_BINS = tools/sfa tools/sfa_render tools/sfa2vecstream tools/vecstream2sfa
 
 tools/sfa: tools/sfa.c format/sfa.h
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 tools/sfa_render: tools/sfa_render.c format/sfa.h
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS) -lwebp -lwebpmux -lsharpyuv
+
+tools/sfa2vecstream: tools/sfa2vecstream.c format/sfa.h format/vecstream.h
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
+
+tools/vecstream2sfa: tools/vecstream2sfa.c format/sfa.h format/vecstream.h
+	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 # ---- Simulation kernels ----
 
@@ -95,6 +102,8 @@ install: all
 	@cp sim/scp_sim $(BINDIR)/
 	@cp tools/sfa $(BINDIR)/sfa
 	@cp tools/sfa_render $(BINDIR)/sfa_render
+	@cp tools/sfa2vecstream $(BINDIR)/sfa2vecstream
+	@cp tools/vecstream2sfa $(BINDIR)/vecstream2sfa
 	@if [ -f volview/volview ]; then cp volview/volview $(BINDIR)/; fi
 	@echo "Installed $$(ls $(BINDIR) | wc -l) binaries to $(BINDIR)/"
 

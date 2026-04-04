@@ -9,11 +9,17 @@ import (
 )
 
 // RunnerState is the top-level persistent state written to disk.
+// It holds a map of named instances, each with their own binary, runs, etc.
 type RunnerState struct {
-	Instance *InstanceState          `json:"instance,omitempty"`
-	Binary   string                  `json:"binary,omitempty"`
-	Runs     map[string]*PersistRun  `json:"runs,omitempty"`
-	mu       sync.Mutex
+	Instances map[string]*PersistedInstance `json:"instances,omitempty"`
+	mu        sync.Mutex
+}
+
+// PersistedInstance records the persistent state of a single named instance.
+type PersistedInstance struct {
+	Connection *InstanceState         `json:"connection,omitempty"`
+	Binary     string                 `json:"binary,omitempty"`
+	Runs       map[string]*PersistRun `json:"runs,omitempty"`
 }
 
 // InstanceState records the remote instance connection info.
@@ -59,13 +65,13 @@ func statePath() (string, error) {
 func LoadState() (*RunnerState, error) {
 	path, err := statePath()
 	if err != nil {
-		return &RunnerState{Runs: make(map[string]*PersistRun)}, nil
+		return newEmptyState(), nil
 	}
 
 	data, err := os.ReadFile(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return &RunnerState{Runs: make(map[string]*PersistRun)}, nil
+			return newEmptyState(), nil
 		}
 		return nil, fmt.Errorf("read state: %w", err)
 	}
@@ -74,10 +80,22 @@ func LoadState() (*RunnerState, error) {
 	if err := json.Unmarshal(data, &s); err != nil {
 		return nil, fmt.Errorf("parse state: %w", err)
 	}
-	if s.Runs == nil {
-		s.Runs = make(map[string]*PersistRun)
+	if s.Instances == nil {
+		s.Instances = make(map[string]*PersistedInstance)
+	}
+	// Ensure each instance has initialized maps.
+	for _, inst := range s.Instances {
+		if inst.Runs == nil {
+			inst.Runs = make(map[string]*PersistRun)
+		}
 	}
 	return &s, nil
+}
+
+func newEmptyState() *RunnerState {
+	return &RunnerState{
+		Instances: make(map[string]*PersistedInstance),
+	}
 }
 
 // SaveState writes the state to disk atomically (write .tmp then rename).
@@ -109,46 +127,78 @@ func saveStateLocked(s *RunnerState) error {
 	return nil
 }
 
-// SetInstance updates the instance info and saves.
-func (s *RunnerState) SetInstance(inst *InstanceState) {
+// GetInstance returns the persisted instance state for a given name, or nil.
+func (s *RunnerState) GetInstance(name string) *PersistedInstance {
 	s.mu.Lock()
-	s.Instance = inst
+	defer s.mu.Unlock()
+	return s.Instances[name]
+}
+
+// SetInstance updates (or creates) the instance connection info for a name and saves.
+func (s *RunnerState) SetInstance(name string, inst *InstanceState) {
+	s.mu.Lock()
+	pi := s.getOrCreateInstance(name)
+	pi.Connection = inst
 	saveStateLocked(s)
 	s.mu.Unlock()
 }
 
-// SetBinary updates the binary path and saves.
-func (s *RunnerState) SetBinary(binary string) {
+// SetBinary updates the binary path for a named instance and saves.
+func (s *RunnerState) SetBinary(name string, binary string) {
 	s.mu.Lock()
-	s.Binary = binary
+	pi := s.getOrCreateInstance(name)
+	pi.Binary = binary
 	saveStateLocked(s)
 	s.mu.Unlock()
 }
 
-// SetRun updates (or creates) a run entry and saves.
-func (s *RunnerState) SetRun(id string, run *PersistRun) {
+// SetRun updates (or creates) a run entry for a named instance and saves.
+func (s *RunnerState) SetRun(name string, id string, run *PersistRun) {
 	s.mu.Lock()
-	s.Runs[id] = run
+	pi := s.getOrCreateInstance(name)
+	pi.Runs[id] = run
 	saveStateLocked(s)
 	s.mu.Unlock()
 }
 
-// UpdateRunStatus updates only the status field of a run and saves.
-func (s *RunnerState) UpdateRunStatus(id string, status string) {
+// UpdateRunStatus updates only the status field of a run for a named instance and saves.
+func (s *RunnerState) UpdateRunStatus(name string, id string, status string) {
 	s.mu.Lock()
-	if r, ok := s.Runs[id]; ok {
-		r.Status = status
+	if pi, ok := s.Instances[name]; ok {
+		if r, ok := pi.Runs[id]; ok {
+			r.Status = status
+		}
 	}
 	saveStateLocked(s)
 	s.mu.Unlock()
 }
 
-// ClearInstance removes instance info and saves.
-func (s *RunnerState) ClearInstance() {
+// ClearInstance removes instance info for a named instance and saves.
+func (s *RunnerState) ClearInstance(name string) {
 	s.mu.Lock()
-	s.Instance = nil
-	s.Binary = ""
-	s.Runs = make(map[string]*PersistRun)
+	delete(s.Instances, name)
 	saveStateLocked(s)
 	s.mu.Unlock()
+}
+
+// InstanceNames returns the names of all persisted instances.
+func (s *RunnerState) InstanceNames() []string {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	names := make([]string, 0, len(s.Instances))
+	for n := range s.Instances {
+		names = append(names, n)
+	}
+	return names
+}
+
+// getOrCreateInstance returns the PersistedInstance for name, creating it if needed.
+// Caller must hold s.mu.
+func (s *RunnerState) getOrCreateInstance(name string) *PersistedInstance {
+	pi, ok := s.Instances[name]
+	if !ok {
+		pi = &PersistedInstance{Runs: make(map[string]*PersistRun)}
+		s.Instances[name] = pi
+	}
+	return pi
 }

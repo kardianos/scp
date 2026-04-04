@@ -17,212 +17,13 @@
 
 #define SFA_IMPLEMENTATION
 #include "../format/sfa.h"
+#include "scp_config.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
 #include <omp.h>
 #include <sys/stat.h>
-#include <unistd.h>
 
-#define NFIELDS 3
-#define PI 3.14159265358979323846
+/* Config, f16 helpers, and constants defined in scp_config.h */
 
-/* ================================================================
-   Configuration — all parameters with defaults
-   ================================================================ */
-
-typedef struct {
-    /* Grid */
-    int N;
-    double L, T, dt_factor;
-
-    /* Physics */
-    double m2, mtheta2, eta, mu, kappa;
-    double kappa_h;             /* chiral helicity coupling: κ_h P² φ·curl(φ) */
-    double alpha_cs;            /* Cosserat strain: α|curl(φ)/2 - θ|² */
-    double beta_h;              /* curl-squared hardening: (β/2)|θ|²|∇×φ|² */
-
-    /* Mass coupling mode */
-    int mode;
-    double inv_alpha, inv_beta, kappa_gamma;
-
-    /* Boundary */
-    int bc_type;                /* 0=absorb_sphere (default), 1=gradient_pinned */
-    double damp_width, damp_rate;
-    double bc_switch_time;      /* switch absorb->periodic at this sim time (0=never) */
-    double gradient_A_high, gradient_A_low;
-    int gradient_margin;
-
-    /* Init */
-    char init[32];          /* "oscillon", "braid", "sfa", "exec" */
-    double A, sigma, A_bg, ellip, R_tube;
-    double delta[3];
-    char init_sfa[512];
-    int init_frame;
-    char init_exec[1024];
-
-    /* Output */
-    char output[512];
-    char diag_file[512];
-    int precision;          /* 0=f16, 1=f32, 2=f64 */
-    double snap_dt, diag_dt;
-    double burst_start, burst_end;  /* burst-snap window: every timestep between these */
-    double burst_every;             /* repeat burst at this interval (0=single burst) */
-} Config;
-
-static Config cfg_defaults(void) {
-    Config c = {0};
-    c.N = 128;  c.L = 10.0;  c.T = 200.0;  c.dt_factor = 0.025;
-    c.m2 = 2.25;  c.mtheta2 = 0.0;  c.eta = 0.5;
-    c.mu = -41.345;  c.kappa = 50.0;  c.kappa_h = 0.0;  c.alpha_cs = 0.0;  c.beta_h = 0.0;
-    c.mode = 0;  c.inv_alpha = 2.25;  c.inv_beta = 5.0;  c.kappa_gamma = 2.0;
-    c.bc_type = 0;
-    c.damp_width = 3.0;  c.damp_rate = 0.01;  c.bc_switch_time = 0.0;
-    c.gradient_A_high = 0.15;  c.gradient_A_low = 0.05;  c.gradient_margin = 3;
-    strcpy(c.init, "oscillon");
-    c.A = 0.8;  c.sigma = 3.0;  c.A_bg = 0.1;
-    c.ellip = 0.3325;  c.R_tube = 3.0;
-    c.delta[0] = 0.0;  c.delta[1] = 3.0005;  c.delta[2] = 4.4325;
-    c.init_frame = -1;
-    strcpy(c.output, "output.sfa");
-    strcpy(c.diag_file, "diag.tsv");
-    c.precision = 1;  /* f32 */
-    c.snap_dt = 5.0;  c.diag_dt = 2.0;
-    c.burst_start = 0;  c.burst_end = 0;  c.burst_every = 0;
-    return c;
-}
-
-static void cfg_set(Config *c, const char *key, const char *val) {
-    if      (!strcmp(key,"N"))           c->N = atoi(val);
-    else if (!strcmp(key,"L"))           c->L = atof(val);
-    else if (!strcmp(key,"T"))           c->T = atof(val);
-    else if (!strcmp(key,"dt_factor"))   c->dt_factor = atof(val);
-    else if (!strcmp(key,"m"))         { double m = atof(val); c->m2 = m*m; }
-    else if (!strcmp(key,"m_theta"))   { double m = atof(val); c->mtheta2 = m*m; }
-    else if (!strcmp(key,"eta"))         c->eta = atof(val);
-    else if (!strcmp(key,"mu"))          c->mu = atof(val);
-    else if (!strcmp(key,"kappa"))       c->kappa = atof(val);
-    else if (!strcmp(key,"kappa_h"))    c->kappa_h = atof(val);
-    else if (!strcmp(key,"alpha_cs"))   c->alpha_cs = atof(val);
-    else if (!strcmp(key,"beta_h"))    c->beta_h = atof(val);
-    else if (!strcmp(key,"mode"))        c->mode = atoi(val);
-    else if (!strcmp(key,"inv_alpha"))   c->inv_alpha = atof(val);
-    else if (!strcmp(key,"inv_beta"))    c->inv_beta = atof(val);
-    else if (!strcmp(key,"kappa_gamma")) c->kappa_gamma = atof(val);
-    else if (!strcmp(key,"bc_type"))      c->bc_type = atoi(val);
-    else if (!strcmp(key,"damp_width"))  c->damp_width = atof(val);
-    else if (!strcmp(key,"bc_switch_time")) c->bc_switch_time = atof(val);
-    else if (!strcmp(key,"damp_rate"))   c->damp_rate = atof(val);
-    else if (!strcmp(key,"gradient_A_high")) c->gradient_A_high = atof(val);
-    else if (!strcmp(key,"gradient_A_low"))  c->gradient_A_low = atof(val);
-    else if (!strcmp(key,"gradient_margin")) c->gradient_margin = atoi(val);
-    else if (!strcmp(key,"init"))        strncpy(c->init, val, 31);
-    else if (!strcmp(key,"A"))           c->A = atof(val);
-    else if (!strcmp(key,"sigma"))       c->sigma = atof(val);
-    else if (!strcmp(key,"A_bg"))        c->A_bg = atof(val);
-    else if (!strcmp(key,"ellip"))       c->ellip = atof(val);
-    else if (!strcmp(key,"R_tube"))      c->R_tube = atof(val);
-    else if (!strcmp(key,"delta"))       sscanf(val, "%lf,%lf,%lf", &c->delta[0], &c->delta[1], &c->delta[2]);
-    else if (!strcmp(key,"init_sfa"))    strncpy(c->init_sfa, val, 511);
-    else if (!strcmp(key,"init_frame"))  c->init_frame = atoi(val);
-    else if (!strcmp(key,"init_exec"))   strncpy(c->init_exec, val, 1023);
-    else if (!strcmp(key,"output"))      strncpy(c->output, val, 511);
-    else if (!strcmp(key,"diag_file"))   strncpy(c->diag_file, val, 511);
-    else if (!strcmp(key,"snap_dt"))     c->snap_dt = atof(val);
-    else if (!strcmp(key,"diag_dt"))     c->diag_dt = atof(val);
-    else if (!strcmp(key,"burst_start")) c->burst_start = atof(val);
-    else if (!strcmp(key,"burst_end"))   c->burst_end = atof(val);
-    else if (!strcmp(key,"burst_every")) c->burst_every = atof(val);
-    else if (!strcmp(key,"precision")) {
-        if      (!strcmp(val,"f16")) c->precision = 0;
-        else if (!strcmp(val,"f32")) c->precision = 1;
-        else if (!strcmp(val,"f64")) c->precision = 2;
-    }
-    else fprintf(stderr, "WARNING: unknown config key '%s'\n", key);
-}
-
-static void cfg_load(Config *c, const char *path) {
-    FILE *fp = fopen(path, "r");
-    if (!fp) { fprintf(stderr, "Cannot open config: %s\n", path); exit(1); }
-    char line[2048];
-    while (fgets(line, sizeof(line), fp)) {
-        char *p = line;
-        while (*p == ' ' || *p == '\t') p++;
-        if (*p == '#' || *p == '\n' || *p == '\0') continue;
-        char *eq = strchr(p, '=');
-        if (!eq) continue;
-        *eq = '\0';
-        char *key = p, *val = eq + 1;
-        /* trim key */
-        char *ke = eq - 1;
-        while (ke > key && (*ke == ' ' || *ke == '\t')) *ke-- = '\0';
-        /* trim val */
-        while (*val == ' ' || *val == '\t') val++;
-        char *ve = val + strlen(val) - 1;
-        while (ve > val && (*ve == '\n' || *ve == '\r' || *ve == ' ')) *ve-- = '\0';
-        /* strip inline comments */
-        char *hash = strchr(val, '#');
-        if (hash) { *hash = '\0'; ve = hash - 1; while (ve > val && *ve == ' ') *ve-- = '\0'; }
-        cfg_set(c, key, val);
-    }
-    fclose(fp);
-}
-
-static void cfg_print(const Config *c) {
-    const char *prec_names[] = {"f16", "f32", "f64"};
-    printf("=== scp_sim_c4: V44 + Cosserat + Curl²-Hardening (+ optional chiral) ===\n");
-    printf("d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ) - α·curl(M) - 2curl(Q)\n");
-    printf("d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ) + 2α·M - β|∇×φ|²θ\n");
-    printf("  M = curl(φ)/2 - θ,  Q = (β/2)|θ|²curl(φ)\n\n");
-    printf("Grid:    N=%d L=%.1f T=%.0f dt_factor=%.4f\n", c->N, c->L, c->T, c->dt_factor);
-    printf("Physics: m²=%.4f m_θ²=%.4f η=%.3f μ=%.3f κ=%.1f κ_h=%.3f α=%.3f β=%.3f\n",
-           c->m2, c->mtheta2, c->eta, c->mu, c->kappa, c->kappa_h, c->alpha_cs, c->beta_h);
-    printf("Mode:    %d", c->mode);
-    if (c->mode == 1) printf(" (inverse: α=%.3f β=%.3f)", c->inv_alpha, c->inv_beta);
-    if (c->mode == 3) printf(" (density-κ: γ=%.3f)", c->kappa_gamma);
-    if (c->bc_type == 0) {
-        printf("\nBC:      absorbing sphere (width=%.1f rate=%.4f)", c->damp_width, c->damp_rate);
-        if (c->bc_switch_time > 0) printf(" -> periodic at t=%.0f", c->bc_switch_time);
-        printf("\n");
-    } else if (c->bc_type == 1)
-        printf("\nBC:      gradient pinned (A_high=%.3f A_low=%.3f margin=%d)\n",
-               c->gradient_A_high, c->gradient_A_low, c->gradient_margin);
-    printf("Init:    %s", c->init);
-    if (!strcmp(c->init, "sfa")) printf(" (%s frame=%d)", c->init_sfa, c->init_frame);
-    if (!strcmp(c->init, "exec")) printf(" (%s)", c->init_exec);
-    printf("\nOutput:  %s (%s, snap=%.1f diag=%.1f)\n\n",
-           c->output, prec_names[c->precision], c->snap_dt, c->diag_dt);
-}
-
-/* ================================================================
-   f16 conversion helpers
-   ================================================================ */
-
-static inline uint16_t f64_to_f16(double v) {
-    float f = (float)v;
-    uint32_t x;
-    memcpy(&x, &f, 4);
-    uint16_t sign = (x >> 16) & 0x8000;
-    int exp = ((x >> 23) & 0xFF) - 127 + 15;
-    uint16_t mant = (x >> 13) & 0x3FF;
-    if (exp <= 0) return sign;
-    if (exp >= 31) return sign | 0x7C00;
-    return sign | (exp << 10) | mant;
-}
-
-static inline double f16_to_f64(uint16_t h) {
-    uint16_t sign = h & 0x8000;
-    int exp = (h >> 10) & 0x1F;
-    uint16_t mant = h & 0x3FF;
-    if (exp == 0) return sign ? -0.0 : 0.0;
-    if (exp == 31) return sign ? -INFINITY : INFINITY;
-    float f;
-    uint32_t x = ((uint32_t)sign << 16) | ((uint32_t)(exp - 15 + 127) << 23) | ((uint32_t)mant << 13);
-    memcpy(&f, &x, 4);
-    return (double)f;
-}
 
 /* ================================================================
    Grid: 18 arrays (6 fields × {val, vel, acc})
@@ -305,11 +106,15 @@ static inline double curl_component(double *F[3], int a,
     return            (F[1][n_ip] - F[1][n_im] - F[0][n_jp] + F[0][n_jm]) * idx1;
 }
 
-/* ================================================================
-   Initialization
-   ================================================================ */
+/* Initialization and KVMD embedding from shared header */
+#include "scp_init.h"
 
-static void init_oscillon(Grid *g, const Config *c) {
+/* Forces start below — init functions are in scp_init.h */
+
+/*  init_oscillon through do_init deleted — now in scp_init.h */
+
+#if 0 /* deleted init block */
+static void DELETED_init_oscillon(Grid *g, const Config *c) {
     const int N = g->N, NN = N * N;
     const double L = g->L, dx = g->dx;
     printf("Init: oscillon (A=%.3f sigma=%.3f)\n", c->A, c->sigma);
@@ -530,6 +335,7 @@ static void do_init(Grid *g, const Config *c) {
     else if (!strcmp(c->init, "template")) init_template(g, c);
     else { fprintf(stderr, "FATAL: unknown init mode '%s'\n", c->init); exit(1); }
 }
+#endif /* deleted init block */
 
 /* ================================================================
    Forces: V44 + chiral helicity (C2) + Cosserat strain (C3)
@@ -928,6 +734,85 @@ static double P_integrated(Grid *g) {
    SFA output: 12 columns, configurable precision
    ================================================================ */
 
+/* ---- Vector frame fitting ---- */
+#define VS_ORDER 3
+#define VS_NC    ((VS_ORDER+1)*(VS_ORDER+1)*(VS_ORDER+1))  /* 64 */
+
+/* Fit a tricubic polynomial to an 8³ block via least-squares (normal equations).
+ * Writes VS_NC coefficients to out_coeffs. */
+static void fit_patch(const float *field, int N, int ox, int oy, int oz,
+                      int bs, float *out_coeffs) {
+    int o1 = VS_ORDER + 1;  /* 4 */
+    int nc = o1 * o1 * o1;  /* 64 */
+    /* Use AᵀA solve: accumulate in double for precision */
+    double AtA[64*64] = {0};
+    double Atb[64] = {0};
+
+    for (int di = 0; di < bs; di++) {
+        int gi = ox + di; if (gi >= N) gi = N-1;
+        double tx = (bs > 1) ? (double)di / (bs - 1) : 0;
+        double txi[4] = {1, tx, tx*tx, tx*tx*tx};
+        for (int dj = 0; dj < bs; dj++) {
+            int gj = oy + dj; if (gj >= N) gj = N-1;
+            double ty = (bs > 1) ? (double)dj / (bs - 1) : 0;
+            double tyj[4] = {1, ty, ty*ty, ty*ty*ty};
+            for (int dk = 0; dk < bs; dk++) {
+                int gk = oz + dk; if (gk >= N) gk = N-1;
+                double tz = (bs > 1) ? (double)dk / (bs - 1) : 0;
+                double tzk[4] = {1, tz, tz*tz, tz*tz*tz};
+
+                /* Compute basis values */
+                double basis[64];
+                int c = 0;
+                for (int a = 0; a < o1; a++)
+                for (int b = 0; b < o1; b++)
+                for (int g2 = 0; g2 < o1; g2++)
+                    basis[c++] = txi[a] * tyj[b] * tzk[g2];
+
+                float val = field[(long)gi*N*N + (long)gj*N + gk];
+                for (int r = 0; r < nc; r++) {
+                    Atb[r] += basis[r] * val;
+                    for (int s = r; s < nc; s++)
+                        AtA[r*nc+s] += basis[r] * basis[s];
+                }
+            }
+        }
+    }
+    /* Symmetrize */
+    for (int r = 0; r < nc; r++)
+        for (int s = 0; s < r; s++)
+            AtA[r*nc+s] = AtA[s*nc+r];
+
+    /* Solve via Cholesky (AtA is positive definite for non-degenerate data) */
+    /* Simple in-place Cholesky: L * L^T = AtA, then solve L*y=Atb, L^T*x=y */
+    double L[64*64] = {0};
+    for (int i = 0; i < nc; i++) {
+        for (int j = 0; j <= i; j++) {
+            double s = AtA[i*nc+j];
+            for (int k = 0; k < j; k++) s -= L[i*nc+k] * L[j*nc+k];
+            if (i == j) L[i*nc+j] = sqrt(s > 0 ? s : 1e-30);
+            else        L[i*nc+j] = s / (L[j*nc+j] + 1e-30);
+        }
+    }
+    /* Forward: L*y = Atb */
+    double y[64];
+    for (int i = 0; i < nc; i++) {
+        double s = Atb[i];
+        for (int k = 0; k < i; k++) s -= L[i*nc+k] * y[k];
+        y[i] = s / (L[i*nc+i] + 1e-30);
+    }
+    /* Back: L^T*x = y */
+    double x[64];
+    for (int i = nc-1; i >= 0; i--) {
+        double s = y[i];
+        for (int k = i+1; k < nc; k++) s -= L[k*nc+i] * x[k];
+        x[i] = s / (L[i*nc+i] + 1e-30);
+    }
+    for (int i = 0; i < nc; i++) out_coeffs[i] = (float)x[i];
+}
+
+/* ---- Voxel snapshot ---- */
+
 static void *cast_buf = NULL;
 
 static void sfa_snap(SFA *sfa, Grid *g, double t, int precision) {
@@ -1048,39 +933,7 @@ int main(int argc, char **argv) {
     SFA *sfa = sfa_create(c.output, c.N, c.N, c.N, c.L, c.L, c.L, g->dt);
     sfa->flags = SFA_CODEC_COLZSTD | SFA_FLAG_STREAMING;  /* per-column parallel compression */
 
-    /* Embed physics parameters as KVMD metadata */
-    {
-        char vN[32],vL[32],vT[32],vdt[32],vm[32],vmt[32],veta[32],vmu[32],vkappa[32],vkh[32],vacs[32],vbh[32],vbcsw[32];
-        char vmode[32],via[32],vib[32],vkg[32],vdw[32],vdr[32],vprec[32],vdelta[64];
-        snprintf(vN,32,"%d",c.N); snprintf(vL,32,"%.6f",c.L); snprintf(vT,32,"%.6f",c.T);
-        snprintf(vdt,32,"%.6f",c.dt_factor);
-        snprintf(vm,32,"%.6f",sqrt(c.m2)); snprintf(vmt,32,"%.6f",sqrt(c.mtheta2));
-        snprintf(veta,32,"%.6f",c.eta); snprintf(vmu,32,"%.6f",c.mu);
-        snprintf(vkappa,32,"%.6f",c.kappa); snprintf(vkh,32,"%.6f",c.kappa_h);
-        snprintf(vacs,32,"%.6f",c.alpha_cs); snprintf(vbh,32,"%.6f",c.beta_h);
-        snprintf(vbcsw,32,"%.6f",c.bc_switch_time);
-        snprintf(vmode,32,"%d",c.mode);
-        snprintf(via,32,"%.6f",c.inv_alpha); snprintf(vib,32,"%.6f",c.inv_beta);
-        snprintf(vkg,32,"%.6f",c.kappa_gamma);
-        snprintf(vdw,32,"%.6f",c.damp_width); snprintf(vdr,32,"%.6f",c.damp_rate);
-        snprintf(vprec,32,"%s", (const char*[]){"f16","f32","f64"}[c.precision]);
-        snprintf(vdelta,64,"%.6f,%.6f,%.6f",c.delta[0],c.delta[1],c.delta[2]);
-        char vbc[32], vgah[32], vgal[32], vgm[32];
-        snprintf(vbc,32,"%d",c.bc_type);
-        snprintf(vgah,32,"%.6f",c.gradient_A_high);
-        snprintf(vgal,32,"%.6f",c.gradient_A_low);
-        snprintf(vgm,32,"%d",c.gradient_margin);
-        const char *keys[] = {"N","L","T","dt_factor","m","m_theta","eta","mu","kappa",
-                              "kappa_h","alpha_cs","beta_h","bc_switch_time",
-                              "mode","inv_alpha","inv_beta","kappa_gamma",
-                              "damp_width","damp_rate","precision","delta",
-                              "bc_type","gradient_A_high","gradient_A_low","gradient_margin"};
-        const char *vals[] = {vN,vL,vT,vdt,vm,vmt,veta,vmu,vkappa,
-                              vkh,vacs,vbh,vbcsw,
-                              vmode,via,vib,vkg,vdw,vdr,vprec,vdelta,
-                              vbc,vgah,vgal,vgm};
-        sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 25);
-    }
+    sfa_embed_kvmd(sfa, &c);
     sfa_add_column(sfa, "phi_x",    sfa_dtype, SFA_POSITION, 0);
     sfa_add_column(sfa, "phi_y",    sfa_dtype, SFA_POSITION, 1);
     sfa_add_column(sfa, "phi_z",    sfa_dtype, SFA_POSITION, 2);
@@ -1098,6 +951,55 @@ int main(int argc, char **argv) {
     printf("SFA: %s (12 cols, %s, BSS+zstd)\n\n", c.output, pn[c.precision]);
 
     sfa_snap(sfa, g, 0.0, c.precision);
+
+    /* Vector frame output (FRVD into same SFA file) */
+    int vec_snap_every = 0;
+    int vec_frame = 0;
+    int vec_enabled = (c.vec_snap_dt > 0);
+    int vec_BS = c.vec_block_size > 0 ? c.vec_block_size : 8;
+    int vec_BN = c.N / vec_BS;
+    int vec_n_patches = vec_BN * vec_BN * vec_BN;
+    int vec_nc = (VS_ORDER+1)*(VS_ORDER+1)*(VS_ORDER+1);  /* coeffs per patch per field */
+    int vec_nc_total = 6 * vec_nc;  /* all 6 fields per patch */
+    int16_t *vec_origins = NULL;
+    float *vec_coeffs = NULL;
+    float *vec_prev_coeffs = NULL;
+    float *vec_buf = NULL;
+    /* Temporal model: mean + amp*cos(omega*t + phase) per coefficient */
+    float vec_omega = 2.0f * 3.14159265f / 2.2f;  /* breathing frequency */
+    float *vec_temp_mean = NULL, *vec_temp_amp = NULL, *vec_temp_phase = NULL;
+    float *vec_sum_cos = NULL, *vec_sum_sin = NULL, *vec_sum_mean = NULL;
+    int vec_temporal_count = 0;
+    int vec_refit_interval = 50;
+
+    if (vec_enabled) {
+        vec_snap_every = (int)lround(c.vec_snap_dt / g->dt);
+        if (vec_snap_every < 1) vec_snap_every = 1;
+
+        /* Pre-compute patch origins */
+        vec_origins = (int16_t*)malloc(vec_n_patches * 3 * sizeof(int16_t));
+        int pi = 0;
+        for (int bi = 0; bi < vec_BN; bi++)
+        for (int bj = 0; bj < vec_BN; bj++)
+        for (int bk = 0; bk < vec_BN; bk++) {
+            vec_origins[pi*3+0] = (int16_t)(bi * vec_BS);
+            vec_origins[pi*3+1] = (int16_t)(bj * vec_BS);
+            vec_origins[pi*3+2] = (int16_t)(bk * vec_BS);
+            pi++;
+        }
+        vec_coeffs = (float*)calloc((long)vec_n_patches * vec_nc_total, sizeof(float));
+        vec_prev_coeffs = (float*)calloc((long)vec_n_patches * vec_nc_total, sizeof(float));
+        vec_buf = (float*)malloc(g->N3 * sizeof(float));
+        long vec_n_total = (long)vec_n_patches * vec_nc_total;
+        vec_temp_mean  = (float*)calloc(vec_n_total, sizeof(float));
+        vec_temp_amp   = (float*)calloc(vec_n_total, sizeof(float));
+        vec_temp_phase = (float*)calloc(vec_n_total, sizeof(float));
+        vec_sum_cos    = (float*)calloc(vec_n_total, sizeof(float));
+        vec_sum_sin    = (float*)calloc(vec_n_total, sizeof(float));
+        vec_sum_mean   = (float*)calloc(vec_n_total, sizeof(float));
+        printf("Vec frames: BS=%d, %d patches, %d coeffs/patch, snap every %d steps (temporal)\n",
+               vec_BS, vec_n_patches, vec_nc_total, vec_snap_every);
+    }
 
     /* Diagnostics file */
     FILE *fp = fopen(c.diag_file, "w");
@@ -1157,6 +1059,94 @@ int main(int argc, char **argv) {
         if (in_burst || step % snap_every == 0)
             sfa_snap(sfa, g, t, c.precision);
 
+        /* Vector frame output (FRVD into same SFA) */
+        if (vec_enabled && step % vec_snap_every == 0) {
+            int is_iframe = (vec_frame == 0) || (vec_frame % c.vec_iframe_interval == 0);
+
+            /* Fit all 6 fields into one coefficient array: phi[3] + theta[3]
+             * Each patch gets 6 * vec_nc coefficients, interleaved per patch */
+            int nc_total = vec_nc_total;
+            float *all_coeffs = (float*)malloc((long)vec_n_patches * nc_total * sizeof(float));
+
+            for (int f = 0; f < 6; f++) {
+                double *src = (f < 3) ? g->phi[f] : g->theta[f-3];
+                #pragma omp parallel for schedule(static)
+                for (long i = 0; i < g->N3; i++) vec_buf[i] = (float)src[i];
+
+                #pragma omp parallel for schedule(dynamic)
+                for (int pi = 0; pi < vec_n_patches; pi++) {
+                    fit_patch(vec_buf, g->N,
+                              vec_origins[pi*3], vec_origins[pi*3+1], vec_origins[pi*3+2],
+                              vec_BS, &all_coeffs[(long)pi * nc_total + f * vec_nc]);
+                }
+            }
+
+            /* Update temporal accumulators */
+            {
+                long vnt = (long)vec_n_patches * nc_total;
+                float cos_wt = cosf(vec_omega * (float)t);
+                float sin_wt = sinf(vec_omega * (float)t);
+                for (long i = 0; i < vnt; i++) {
+                    vec_sum_mean[i] += all_coeffs[i];
+                    vec_sum_cos[i]  += all_coeffs[i] * cos_wt;
+                    vec_sum_sin[i]  += all_coeffs[i] * sin_wt;
+                }
+                vec_temporal_count++;
+
+                /* Refit model periodically */
+                if (vec_temporal_count >= vec_refit_interval && vec_temporal_count > 2) {
+                    float inv_n = 1.0f / vec_temporal_count;
+                    for (long i = 0; i < vnt; i++) {
+                        vec_temp_mean[i] = vec_sum_mean[i] * inv_n;
+                        float sc = vec_sum_cos[i] * inv_n - vec_temp_mean[i] * cos_wt;
+                        float ss = vec_sum_sin[i] * inv_n - vec_temp_mean[i] * sin_wt;
+                        vec_temp_amp[i] = 2.0f * sqrtf(sc*sc + ss*ss);
+                        vec_temp_phase[i] = atan2f(-ss, sc);
+                    }
+                    memset(vec_sum_cos, 0, vnt * sizeof(float));
+                    memset(vec_sum_sin, 0, vnt * sizeof(float));
+                    memset(vec_sum_mean, 0, vnt * sizeof(float));
+                    vec_temporal_count = 0;
+                }
+            }
+
+            if (is_iframe) {
+                long vnt = (long)vec_n_patches * nc_total;
+                sfa_write_vec_iframe_temporal(sfa, t, vec_n_patches, vec_BS, nc_total,
+                                     vec_origins, all_coeffs,
+                                     vec_omega, vec_temp_mean, vec_temp_amp, vec_temp_phase);
+                memcpy(vec_prev_coeffs, all_coeffs, vnt * sizeof(float));
+            } else {
+                /* P-frame: delta = actual - predicted(t) */
+                long vnt = (long)vec_n_patches * nc_total;
+                uint32_t *didx = (uint32_t*)malloc(vec_n_patches * sizeof(uint32_t));
+                float *dcoeffs = (float*)malloc(vnt * sizeof(float));
+                int nd = 0;
+                for (int p = 0; p < vec_n_patches; p++) {
+                    float mx = 0;
+                    long base = (long)p * nc_total;
+                    for (int ci = 0; ci < nc_total; ci++) {
+                        float predicted = vec_temp_mean[base+ci]
+                            + vec_temp_amp[base+ci] * cosf(vec_omega * (float)t + vec_temp_phase[base+ci]);
+                        float d = all_coeffs[base+ci] - predicted;
+                        dcoeffs[(long)nd*nc_total+ci] = d;  /* tentative */
+                        if (fabsf(d) > mx) mx = fabsf(d);
+                    }
+                    if (mx > c.vec_delta_tol) {
+                        didx[nd] = p;
+                        /* dcoeffs already written above at nd offset */
+                        nd++;
+                    }
+                }
+                sfa_write_vec_pframe(sfa, t, nd, nc_total, didx, dcoeffs);
+                free(didx); free(dcoeffs);
+                /* Update prev (for fallback if reader lacks temporal) */
+                memcpy(vec_prev_coeffs, all_coeffs, vnt * sizeof(float));
+            }
+            free(all_coeffs);
+            vec_frame++;
+        }
+
         if (step % diag_every == 0) {
             compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
             double Pint=P_integrated(g), trms=theta_rms(g);
@@ -1185,6 +1175,14 @@ int main(int argc, char **argv) {
     }
     uint32_t nf = sfa->total_frames;
     sfa_close(sfa);
+
+    /* Cleanup vec frame buffers */
+    if (vec_enabled) {
+        free(vec_origins); free(vec_coeffs); free(vec_prev_coeffs); free(vec_buf);
+        free(vec_temp_mean); free(vec_temp_amp); free(vec_temp_phase);
+        free(vec_sum_cos); free(vec_sum_sin); free(vec_sum_mean);
+        printf("Vec frames: %d written to %s (temporal)\n", vec_frame, c.output);
+    }
 
     /* Final summary */
     compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);

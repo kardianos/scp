@@ -1,0 +1,369 @@
+
+Maxima 5.46.0 https://maxima.sourceforge.io
+using Lisp GNU Common Lisp (GCL) GCL 2.6.14 git tag Version_2_6_15pre7
+Distributed under the GNU Public License. See the file COPYING.
+Dedicated to the memory of William Schelter.
+The function bug_report() provides bug reporting information.
+(%i1) batch("v52/verify_cancellation.mac")
+
+read and interpret /home/d/code/scp/v52/verify_cancellation.mac
+(%i2) kill(all)
+(%i1) declare([alpha,eta,beta,k,m2,S],real)
+(%i2) assume(alpha > 0,eta > 0,beta > 0,k > 0,S > 0)
+(%i3) C:alpha+eta
+(%i4) D:2*alpha
+(%i5) Gamma:(C^2*D)/(D+beta*S)^2-alpha/2
+(%i6) print("Γ(S) = ",expand(Gamma))
+                                2
+                     2 alpha eta
+Γ(S) =  ------------------------------------
+          2     2                           2
+         S  beta  + 4 S alpha beta + 4 alpha
+                      2                                        3
+               4 alpha  eta                             2 alpha
+ + ------------------------------------ + ------------------------------------
+    2     2                           2    2     2                           2
+   S  beta  + 4 S alpha beta + 4 alpha    S  beta  + 4 S alpha beta + 4 alpha
+   alpha
+ - ----- 
+     2
+(%i7) num:k^2*(1-Gamma)+m2
+(%i8) den:1-Gamma/2
+(%i9) ratio:ratsimp(num/den)
+(%i10) print("m_eff² = [k²(1-Γ) + m²] / [1-Γ/2] = ",ratio)
+m_eff² = [k²(1-Γ) + m²] / [1-Γ/2] =  
+       2     2                             2
+- ((4 S  beta  + 16 S alpha beta + 16 alpha ) m2
+                  2            2           2            2      2
+ + ((- 8 alpha eta ) - 16 alpha  eta + (2 S  alpha + 4 S ) beta
+             2                              2   2
+ + (8 S alpha  + 16 S alpha) beta + 16 alpha ) k )
+             2          2            2             2      2
+/(4 alpha eta  + 8 alpha  eta + ((- S  alpha) - 4 S ) beta
+                2                               2
+ + ((- 4 S alpha ) - 16 S alpha) beta - 16 alpha ) 
+(%i11) print("")
+ 
+(%i12) diff_check:ratsimp(ratio-(k^2+m2))
+(%i13) print("m_eff² - (k²+m²) = ",diff_check)
+                                      2          2        2           2
+m_eff² - (k²+m²) =  - ((4 alpha eta  + 8 alpha  eta - S  alpha beta
+            2                           2           2        2           2
+ - 4 S alpha  beta) m2 + ((- 4 alpha eta ) - 8 alpha  eta + S  alpha beta
+            2        2              2          2
+ + 4 S alpha  beta) k )/(4 alpha eta  + 8 alpha  eta
+        2             2      2                2
+ + ((- S  alpha) - 4 S ) beta  + ((- 4 S alpha ) - 16 S alpha) beta
+           2
+ - 16 alpha ) 
+(%i14) print("")
+ 
+(%i15) if diff_check = 0
+           then print("CONFIRMED: m_eff² = k²+m² exactly (the C4 corrections cancel in the effective mass)")
+           else (print("NOT exactly zero. Expanding..."),
+                 print(expand(diff_check)),
+                 print("Factored: ",factor(diff_check)))
+NOT exactly zero. Expanding... 
+               2                 2          2        2           2      2     2
+(- (4 alpha eta  m2)/(4 alpha eta  + 8 alpha  eta - S  alpha beta  - 4 S  beta
+            2                                  2
+ - 4 S alpha  beta - 16 S alpha beta - 16 alpha ))
+           2                     2          2        2           2      2     2
+ - (8 alpha  eta m2)/(4 alpha eta  + 8 alpha  eta - S  alpha beta  - 4 S  beta
+            2                                  2
+ - 4 S alpha  beta - 16 S alpha beta - 16 alpha )
+     2           2                 2          2        2           2
+ + (S  alpha beta  m2)/(4 alpha eta  + 8 alpha  eta - S  alpha beta
+      2     2            2                                  2
+ - 4 S  beta  - 4 S alpha  beta - 16 S alpha beta - 16 alpha )
+             2                      2          2        2           2
+ + (4 S alpha  beta m2)/(4 alpha eta  + 8 alpha  eta - S  alpha beta
+      2     2            2                                  2
+ - 4 S  beta  - 4 S alpha  beta - 16 S alpha beta - 16 alpha )
+               2  2              2          2        2           2      2     2
+ + (4 alpha eta  k )/(4 alpha eta  + 8 alpha  eta - S  alpha beta  - 4 S  beta
+            2                                  2
+ - 4 S alpha  beta - 16 S alpha beta - 16 alpha )
+           2      2              2          2        2           2      2     2
+ + (8 alpha  eta k )/(4 alpha eta  + 8 alpha  eta - S  alpha beta  - 4 S  beta
+            2                                  2
+ - 4 S alpha  beta - 16 S alpha beta - 16 alpha )
+     2           2  2              2          2        2           2
+ - (S  alpha beta  k )/(4 alpha eta  + 8 alpha  eta - S  alpha beta
+      2     2            2                                  2
+ - 4 S  beta  - 4 S alpha  beta - 16 S alpha beta - 16 alpha )
+             2       2              2          2        2           2
+ - (4 S alpha  beta k )/(4 alpha eta  + 8 alpha  eta - S  alpha beta
+      2     2            2                                  2
+ - 4 S  beta  - 4 S alpha  beta - 16 S alpha beta - 16 alpha ) 
+                                                                       2
+Factored:  - (alpha (2 eta - S beta) (2 eta + S beta + 4 alpha) (m2 - k ))
+             2          2        2           2      2     2            2
+/(4 alpha eta  + 8 alpha  eta - S  alpha beta  - 4 S  beta  - 4 S alpha  beta
+                             2
+ - 16 S alpha beta - 16 alpha ) 
+(%i16) print("")
+ 
+(%i17) print("=== The cancellation mechanism ===")
+=== The cancellation mechanism === 
+(%i18) print("")
+ 
+(%i19) print("For m_eff² = k²+m² to hold, we need k² = m².")
+For m_eff² = k²+m² to hold, we need k² = m². 
+(%i20) print("With k = 1.5 and m² = 2.25: k² = 2.25 = m². Yes!")
+With k = 1.5 and m² = 2.25: k² = 2.25 = m². Yes! 
+(%i21) print("")
+ 
+(%i22) print("This is because k = m (the wavenumber equals the mass).")
+This is because k = m (the wavenumber equals the mass). 
+(%i23) print("This is the DISPERSION RELATION for a standing wave at ω = 0!")
+This is the DISPERSION RELATION for a standing wave at ω = 0! 
+(%i24) print("  ω² = k² - m² = 0  ←→  k = m")
+  ω² = k² - m² = 0  ←→  k = m 
+(%i25) print("")
+ 
+(%i26) print("Physical meaning: the braid is a ZERO-FREQUENCY mode (static envelope).")
+Physical meaning: the braid is a ZERO-FREQUENCY mode (static envelope). 
+(%i27) print("At k = m, the carrier wave is at the mass threshold, so the")
+At k = m, the carrier wave is at the mass threshold, so the 
+(%i28) print("envelope sees no net dispersion from the C4 corrections.")
+envelope sees no net dispersion from the C4 corrections. 
+(%i29) print("")
+ 
+(%i30) print("=== Correction for k ≠ m ===")
+=== Correction for k ≠ m === 
+(%i31) correction:ratsimp(((Gamma*(m2-k^2))/2)/(1-Gamma/2))
+(%i32) print("m_eff² = k²+m² + Γ(m²-k²)/2 / (1-Γ/2)")
+m_eff² = k²+m² + Γ(m²-k²)/2 / (1-Γ/2) 
+(%i33) print("       = k²+m² + δm² where δm² = ",correction)
+       = k²+m² + δm² where δm² =  
+               2          2        2           2            2
+- ((4 alpha eta  + 8 alpha  eta - S  alpha beta  - 4 S alpha  beta) m2
+                  2           2        2           2            2        2
+ + ((- 4 alpha eta ) - 8 alpha  eta + S  alpha beta  + 4 S alpha  beta) k )
+             2          2            2             2      2
+/(4 alpha eta  + 8 alpha  eta + ((- S  alpha) - 4 S ) beta
+                2                               2
+ + ((- 4 S alpha ) - 16 S alpha) beta - 16 alpha ) 
+(%i34) print("")
+ 
+(%i35) print("When m² = k²: δm² = 0 (our case)")
+When m² = k²: δm² = 0 (our case) 
+(%i36) print("When m² > k² (softer wave): δm² > 0 at small S (Γ>0) → stiffer core")
+When m² > k² (softer wave): δm² > 0 at small S (Γ>0) → stiffer core 
+(%i37) print("When m² < k² (harder wave): δm² < 0 at small S → softer core")
+When m² < k² (harder wave): δm² < 0 at small S → softer core 
+(%i38) print("")
+ 
+(%i39) print("=== MAJOR SIMPLIFICATION (k=m case) ===")
+=== MAJOR SIMPLIFICATION (k=m case) === 
+(%i40) print("")
+ 
+(%i41) print("When k² = m² (our parameter choice), the radial ODE simplifies to:")
+When k² = m² (our parameter choice), the radial ODE simplifies to: 
+(%i42) print("")
+ 
+(%i43) print("  f'' + f'/r - (k²+m²)f = 2·N_V(f) / (1 - Γ(S)/2)")
+  f'' + f'/r - (k²+m²)f = 2·N_V(f) / (1 - Γ(S)/2) 
+(%i44) print("")
+ 
+(%i45) print("The LINEAR part (Laplacian + mass) is IDENTICAL to the bare equation!")
+The LINEAR part (Laplacian + mass) is IDENTICAL to the bare equation! 
+(%i46) print("The C4 corrections only appear as a RESCALING of the nonlinear potential.")
+The C4 corrections only appear as a RESCALING of the nonlinear potential. 
+(%i47) print("")
+ 
+(%i48) print("In the core (S→0, Γ→1.75):")
+In the core (S→0, Γ→1.75): 
+(%i49) print("  N_V_eff = N_V / (1-0.875) = 8 × N_V  (8× stronger binding!)")
+  N_V_eff = N_V / (1-0.875) = 8 × N_V  (8× stronger binding!) 
+(%i50) print("")
+ 
+(%i51) print("At the shell (S≈2, Γ≈0):")
+At the shell (S≈2, Γ≈0): 
+(%i52) print("  N_V_eff = N_V  (standard)")
+  N_V_eff = N_V  (standard) 
+(%i53) print("")
+ 
+(%i54) print("In the tail (S→0 again, Γ→1.75):")
+In the tail (S→0 again, Γ→1.75): 
+(%i55) print("  N_V_eff = 8 × N_V  (but N_V is tiny here → negligible)")
+  N_V_eff = 8 × N_V  (but N_V is tiny here → negligible) 
+(%i56) print("")
+ 
+(%i57) print("=== Effective potential enhancement factor 1/(1-Γ/2) ===")
+=== Effective potential enhancement factor 1/(1-Γ/2) === 
+(%i58) print("")
+ 
+(%i59) alpha_val:0.1
+(%i60) eta_val:0.5
+(%i61) beta_val:0.5
+(%i62) k_val:1.5
+(%i63) Gamma_num(SS):=
+                 ((alpha_val+eta_val)^2*2*alpha_val)
+                  /(2*alpha_val+beta_val*SS)^2-alpha_val/2
+(%i64) enhance(SS):=1.0/(1.0-Gamma_num(SS)/2)
+(%i65) print("  S        Γ        1/(1-Γ/2)    Interpretation")
+  S        Γ        1/(1-Γ/2)    Interpretation 
+(%i66) for SS in [0,0.1,0.2,0.5,1.0,1.5,2.0,3.0,5.0,10.0] do
+           (G:float(Gamma_num(SS)),E:float(enhance(SS)),
+            printf(true,"  ~5,2f    ~7,4f    ~7,3f        ~a~%",SS,G,E,
+                   if SS < 0.3 then "core (enhanced binding)"
+                       else (if SS < 1.5 then "transition"
+                                 else (if SS < 2.5 then "shell (standard)"
+                                           else "outer (slightly reduced)"))))
+   0.00     1.7500      8.000        core (enhanced binding)
+   0.10     1.1020      2.227        core (enhanced binding)
+   0.20     0.7500      1.600        core (enhanced binding)
+   0.50     0.3056      1.180        transition
+   1.00     0.0969      1.051        transition
+   1.50     0.0298      1.015        shell (standard)
+   2.00    -0.0000      1.000        shell (standard)
+   3.00    -0.0251      0.988        outer (slightly reduced)
+   5.00    -0.0401      0.980        outer (slightly reduced)
+  10.00    -0.0473      0.977        outer (slightly reduced)
+(%i67) print("")
+ 
+(%i68) print("=== PRACTICAL SEED FORMULAS ===")
+=== PRACTICAL SEED FORMULAS === 
+(%i69) print("")
+ 
+(%i70) meff:float(sqrt(k_val^2+2.25))
+(%i71) print("Decay parameter: m_eff = √(k²+m²) = ",meff)
+Decay parameter: m_eff = √(k²+m²) =  2.121320343559643 
+(%i72) print("")
+ 
+(%i73) print("Profile 1 (sech): f(r) = A × sech(m_eff × r)")
+Profile 1 (sech): f(r) = A × sech(m_eff × r) 
+(%i74) r_half_sech:float(log(2+sqrt(3))/meff)
+(%i75) print("  Half-amplitude radius: ",r_half_sech)
+  Half-amplitude radius:  0.6208199063018082 
+(%i76) print("  Exponential tail: f ~ 2A exp(-m_eff r)")
+  Exponential tail: f ~ 2A exp(-m_eff r) 
+(%i77) print("")
+ 
+(%i78) print("Profile 2 (Bessel): f(r) = A × K₀(m_eff × max(r,ε)) / K₀(m_eff × ε)")
+Profile 2 (Bessel): f(r) = A × K₀(m_eff × max(r,ε)) / K₀(m_eff × ε) 
+(%i79) print("  with ε ~ 0.5 (regularization)")
+  with ε ~ 0.5 (regularization) 
+(%i80) print("  Exactly solves the linear equation for r > ε")
+  Exactly solves the linear equation for r > ε 
+(%i81) print("  Core is flat (f ≈ A for r < ε)")
+  Core is flat (f ≈ A for r < ε) 
+(%i82) print("")
+ 
+(%i83) print("Profile 3 (corrected Gaussian): f(r) = A × exp(-m_eff × r) × (1 + m_eff×r)")
+Profile 3 (corrected Gaussian): f(r) = A × exp(-m_eff × r) × (1 + m_eff×r) 
+(%i84) print("  This is r×K₁(m_eff r) asymptotically")
+  This is r×K₁(m_eff r) asymptotically 
+(%i85) print("  Smooth at r=0, correct exponential tail")
+  Smooth at r=0, correct exponential tail 
+(%i86) r_half_3:float(log(2)/meff)
+(%i87) print("  Half-amplitude radius (approx): ",r_half_3)
+  Half-amplitude radius (approx):  0.3267527144895158 
+(%i88) print("")
+ 
+(%i89) print("=== THETA INITIALIZATION ===")
+=== THETA INITIALIZATION === 
+(%i90) print("")
+ 
+(%i91) print("The most important improvement is in θ, not in f(r).")
+The most important improvement is in θ, not in f(r). 
+(%i92) print("")
+ 
+(%i93) print("Current gen_phase_confined.c uses:")
+Current gen_phase_confined.c uses: 
+(%i94) print("  θ_a = theta_init_frac × η × braid_env × 0.1 × trig")
+  θ_a = theta_init_frac × η × braid_env × 0.1 × trig 
+(%i95) print("  ≈ 0.5 × 0.5 × 0.3 × 0.1 = 0.0075 at center")
+  ≈ 0.5 × 0.5 × 0.3 × 0.1 = 0.0075 at center 
+(%i96) print("")
+ 
+(%i97) print("The correct algebraic equilibrium is:")
+The correct algebraic equilibrium is: 
+(%i98) print("  θ = G(S) × curl(φ)")
+  θ = G(S) × curl(φ) 
+(%i99) print("  G(S) = (α+η) / (2α + β|∇×φ|²)")
+  G(S) = (α+η) / (2α + β|∇×φ|²) 
+(%i100) print("")
+ 
+(%i101) print("At the braid center (A=0.8):")
+At the braid center (A=0.8): 
+(%i102) A_test:0.8
+(%i103) S0:float(k_val^2*A_test^2)
+(%i104) G0:float((alpha_val+eta_val)/(2*alpha_val+beta_val*S0))
+(%i105) theta_correct:float(G0*A_test*k_val)
+(%i106) theta_old:0.0075
+(%i107) print("  S(0) = ",S0)
+  S(0) =  1.440000000000001 
+(%i108) print("  G(0) = ",G0)
+  G(0) =  0.6521739130434782 
+(%i109) print("  |θ| at center ≈ G × A × k = ",theta_correct)
+  |θ| at center ≈ G × A × k =  0.7826086956521738 
+(%i110) print("  Ratio to old: ",float(theta_correct/theta_old),"×")
+  Ratio to old:  104.3478260869565 × 
+(%i111) print("")
+ 
+(%i112) print("The old initialization has θ that is ~100× TOO SMALL.")
+The old initialization has θ that is ~100× TOO SMALL. 
+(%i113) print("This means the simulation spends hundreds of timesteps just growing θ")
+This means the simulation spends hundreds of timesteps just growing θ 
+(%i114) print("to its equilibrium value, during which the braid structure destabilizes.")
+to its equilibrium value, during which the braid structure destabilizes. 
+(%i115) print("")
+ 
+(%i116) print("======= COMPLETE IMPROVED SEED PRESCRIPTION =======")
+======= COMPLETE IMPROVED SEED PRESCRIPTION ======= 
+(%i117) print("")
+ 
+(%i118) print("For each braid b along axis_b:")
+For each braid b along axis_b: 
+(%i119) print("")
+ 
+(%i120) print("  φ_a(x) = f(r_perp) × cos(χ_b × k × coord_b + δ_a + Δ_b)")
+  φ_a(x) = f(r_perp) × cos(χ_b × k × coord_b + δ_a + Δ_b) 
+(%i121) print("")
+ 
+(%i122) print("where:")
+where: 
+(%i123) print("  f(r) = A × sech(m_eff × r)   [m_eff = √(k²+m²) ≈ 2.12]")
+  f(r) = A × sech(m_eff × r)   [m_eff = √(k²+m²) ≈ 2.12] 
+(%i124) print("  A ≥ 0.5 (above shell threshold)")
+  A ≥ 0.5 (above shell threshold) 
+(%i125) print("  r_perp = perpendicular distance to braid axis")
+  r_perp = perpendicular distance to braid axis 
+(%i126) print("")
+ 
+(%i127) print("  θ_a(x) = G(S) × curl(φ)_a   [algebraic equilibrium]")
+  θ_a(x) = G(S) × curl(φ)_a   [algebraic equilibrium] 
+(%i128) print("  G(S) = (α+η) / (2α + β × S)")
+  G(S) = (α+η) / (2α + β × S) 
+(%i129) print("  S = |∇×φ|² = locally computed curl magnitude squared")
+  S = |∇×φ|² = locally computed curl magnitude squared 
+(%i130) print("")
+ 
+(%i131) print("  Velocity: φ_vel = 0 (static equilibrium)")
+  Velocity: φ_vel = 0 (static equilibrium) 
+(%i132) print("  θ_vel: 0 or small inward contraction")
+  θ_vel: 0 or small inward contraction 
+(%i133) print("")
+ 
+(%i134) print("Key differences from gen_phase_confined.c:")
+Key differences from gen_phase_confined.c: 
+(%i135) print("  1. Profile: sech(2.12r) instead of Gaussian exp(-r²/(2×4.5²))")
+  1. Profile: sech(2.12r) instead of Gaussian exp(-r²/(2×4.5²)) 
+(%i136) print("     → Core width: 0.62 vs ~4.5 (7× more compact!)")
+     → Core width: 0.62 vs ~4.5 (7× more compact!) 
+(%i137) print("     → Correct exponential tail")
+     → Correct exponential tail 
+(%i138) print("  2. Theta: equilibrium G(S)×curl(φ) instead of 0.0075×trig")
+  2. Theta: equilibrium G(S)×curl(φ) instead of 0.0075×trig 
+(%i139) print("     → 100× larger θ amplitude")
+     → 100× larger θ amplitude 
+(%i140) print("     → Eliminates transient mismatch growth")
+     → Eliminates transient mismatch growth 
+(%i141) print("  3. Amplitude: A=0.8 (above shell threshold) vs A=0.3")
+  3. Amplitude: A=0.8 (above shell threshold) vs A=0.3 
+(%i142) print("  4. Velocity: zero (equilibrium) vs finite oscillation+contraction")
+  4. Velocity: zero (equilibrium) vs finite oscillation+contraction 
+(%o143)          /home/d/code/scp/v52/verify_cancellation.mac

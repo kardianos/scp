@@ -82,8 +82,16 @@ type sfaL2Entry struct {
 	offset         uint64
 	compressedSize uint64
 	checksum       uint32
-	reserved       uint32
+	frameType      uint32 // 0=voxel(FRMD), 1=vec_I(FRVD), 2=vec_P(FRVD)
 }
+
+const (
+	sfaFrameVoxel = 0
+	sfaFrameVecI  = 1
+	sfaFrameVecP  = 2
+	sfaFrameVecK  = 3
+	sfaChunkFRVD  = 0x44565246 // "FRVD" little-endian
+)
 
 type sfaFile struct {
 	fp *os.File
@@ -118,6 +126,20 @@ type sfaFile struct {
 	absPBuf  []float32 // |P| per voxel (cached between passes)
 	phi2Buf  []float32 // Σφ² per voxel
 	theta2Buf []float32 // Σθ² per voxel
+
+	// Vector frame state
+	vecCoeffs   []float32 // n_patches × nCoeffs: current patch coefficients
+	vecOrigins  [][3]int16 // n_patches × (ox,oy,oz)
+	vecNPatches uint32
+	vecNCoeffs  uint16
+	vecBS       int
+	vecOrder    int
+	// Temporal model for P-frame prediction
+	vecTempMean  []float32
+	vecTempAmp   []float32
+	vecTempPhase []float32
+	vecTempOmega float32
+	vecTempValid bool
 }
 
 func sfaOpen(path string) (*sfaFile, error) {
@@ -315,7 +337,7 @@ func (s *sfaFile) findFrame(frameIdx uint32) (*sfaL2Entry, error) {
 			binary.Read(s.fp, binary.LittleEndian, &entry.offset)
 			binary.Read(s.fp, binary.LittleEndian, &entry.compressedSize)
 			binary.Read(s.fp, binary.LittleEndian, &entry.checksum)
-			binary.Read(s.fp, binary.LittleEndian, &entry.reserved)
+			binary.Read(s.fp, binary.LittleEndian, &entry.frameType)
 			return &entry, nil
 		}
 
@@ -355,6 +377,11 @@ func (s *sfaFile) readFrame(frameIdx uint32) (float64, error) {
 	entry, err := s.findFrame(frameIdx)
 	if err != nil {
 		return 0, err
+	}
+
+	// Vector frame: decompress FRVD payload, evaluate patches to voxels
+	if entry.frameType == sfaFrameVecI || entry.frameType == sfaFrameVecP {
+		return s.readVecFrame(*entry)
 	}
 
 	// Get compressed data: mmap (zero-copy) or fallback to read
@@ -416,6 +443,249 @@ func (s *sfaFile) readFrame(frameIdx uint32) (float64, error) {
 	}
 
 	return entry.time, nil
+}
+
+// readVecFrame reads an FRVD vector frame (I or P), maintains patch state,
+// evaluates patches to voxels, and fills rawBuf for the rendering pipeline.
+func (s *sfaFile) readVecFrame(entry sfaL2Entry) (float64, error) {
+	// Read and decompress payload
+	// FRVD layout: chunk_header(12) + time(8) + compressed_data
+	dataOff := entry.offset + 12 + 8 // skip chunk header + embedded time
+	var compressed []byte
+	if s.mmapData != nil && dataOff+entry.compressedSize <= uint64(len(s.mmapData)) {
+		compressed = s.mmapData[dataOff : dataOff+entry.compressedSize]
+	} else {
+		compressed = make([]byte, entry.compressedSize)
+		s.fp.Seek(int64(dataOff), io.SeekStart)
+		if _, err := io.ReadFull(s.fp, compressed); err != nil {
+			return 0, fmt.Errorf("read FRVD: %w", err)
+		}
+	}
+	payload, err := zstdDecoder.DecodeAll(compressed, nil)
+	if err != nil {
+		return 0, fmt.Errorf("decompress FRVD: %w", err)
+	}
+
+	if entry.frameType == sfaFrameVecI {
+		// I-frame: [n_patches(4)][bs(1)][nc(2)][flags(1)][origins(n*6)][coeffs(n*nc*4)]
+		// If flags & 1: [omega(4)][mean(n*nc*4)][amp(n*nc*4)][phase(n*nc*4)]
+		if len(payload) < 8 {
+			return 0, fmt.Errorf("FRVD I-frame too short")
+		}
+		np := binary.LittleEndian.Uint32(payload[0:4])
+		bs := int(payload[4])
+		nc := int(binary.LittleEndian.Uint16(payload[5:7]))
+		flags := payload[7]
+
+		originOff := 8
+		coeffOff := originOff + int(np)*6
+		if len(payload) < coeffOff+int(np)*nc*4 {
+			return 0, fmt.Errorf("FRVD I-frame truncated")
+		}
+
+		s.vecNPatches = np
+		s.vecNCoeffs = uint16(nc)
+		s.vecBS = bs
+		s.vecOrder = 3
+		if nc <= 27 { s.vecOrder = 2 }
+		if nc <= 8 { s.vecOrder = 1 }
+
+		s.vecOrigins = make([][3]int16, np)
+		for p := uint32(0); p < np; p++ {
+			off := originOff + int(p)*6
+			s.vecOrigins[p][0] = int16(binary.LittleEndian.Uint16(payload[off:]))
+			s.vecOrigins[p][1] = int16(binary.LittleEndian.Uint16(payload[off+2:]))
+			s.vecOrigins[p][2] = int16(binary.LittleEndian.Uint16(payload[off+4:]))
+		}
+
+		nTotal := int(np) * nc
+		s.vecCoeffs = make([]float32, nTotal)
+		for i := range s.vecCoeffs {
+			s.vecCoeffs[i] = math.Float32frombits(binary.LittleEndian.Uint32(payload[coeffOff+i*4:]))
+		}
+
+		// Parse temporal model if present
+		modelOff := coeffOff + nTotal*4
+		if flags&0x01 != 0 && len(payload) >= modelOff+4+nTotal*4*3 {
+			s.vecTempOmega = math.Float32frombits(binary.LittleEndian.Uint32(payload[modelOff:]))
+			modelOff += 4
+			s.vecTempMean = make([]float32, nTotal)
+			s.vecTempAmp = make([]float32, nTotal)
+			s.vecTempPhase = make([]float32, nTotal)
+			for i := 0; i < nTotal; i++ {
+				s.vecTempMean[i] = math.Float32frombits(binary.LittleEndian.Uint32(payload[modelOff+i*4:]))
+			}
+			modelOff += nTotal * 4
+			for i := 0; i < nTotal; i++ {
+				s.vecTempAmp[i] = math.Float32frombits(binary.LittleEndian.Uint32(payload[modelOff+i*4:]))
+			}
+			modelOff += nTotal * 4
+			for i := 0; i < nTotal; i++ {
+				s.vecTempPhase[i] = math.Float32frombits(binary.LittleEndian.Uint32(payload[modelOff+i*4:]))
+			}
+			s.vecTempValid = true
+		} else {
+			s.vecTempValid = false
+		}
+
+	} else if entry.frameType == sfaFrameVecP {
+		// P-frame: [n_deltas(4)][n_coeffs(2)][pad(2)][indices(n*4)][delta_coeffs(n*nc*4)]
+		if len(payload) < 8 {
+			return 0, fmt.Errorf("FRVD P-frame too short")
+		}
+		nd := binary.LittleEndian.Uint32(payload[0:4])
+		nc := int(binary.LittleEndian.Uint16(payload[4:6]))
+
+		if s.vecCoeffs == nil {
+			return entry.time, nil
+		}
+
+		nTotal := len(s.vecCoeffs)
+
+		// Start from temporal prediction or previous coefficients
+		if s.vecTempValid && len(s.vecTempMean) == nTotal {
+			t := float32(entry.time)
+			for i := 0; i < nTotal; i++ {
+				s.vecCoeffs[i] = s.vecTempMean[i] +
+					s.vecTempAmp[i]*float32(math.Cos(float64(s.vecTempOmega*t+s.vecTempPhase[i])))
+			}
+		}
+		// If no temporal model, vecCoeffs already holds previous frame state
+
+		idxOff := 8
+		coeffOff := idxOff + int(nd)*4
+
+		for d := uint32(0); d < nd; d++ {
+			patchIdx := binary.LittleEndian.Uint32(payload[idxOff+int(d)*4:])
+			if int(patchIdx) >= nTotal/nc {
+				continue
+			}
+			base := int(patchIdx) * nc
+			dOff := coeffOff + int(d)*nc*4
+			for c := 0; c < nc; c++ {
+				delta := math.Float32frombits(binary.LittleEndian.Uint32(payload[dOff+c*4:]))
+				s.vecCoeffs[base+c] += delta
+			}
+		}
+	}
+
+	// Evaluate current patch state to voxels in rawBuf
+	s.vecPatchesToRawBuf()
+	return entry.time, nil
+}
+
+// vecPatchesToRawBuf evaluates all stored patches into rawBuf for rendering.
+func (s *sfaFile) vecPatchesToRawBuf() {
+	if s.vecCoeffs == nil || s.vecNPatches == 0 {
+		return
+	}
+
+	// Clear rawBuf
+	for i := range s.rawBuf {
+		s.rawBuf[i] = 0
+	}
+
+	nx := int(s.Nx)
+	ny := int(s.Ny)
+	nz := int(s.Nz)
+	nc := int(s.vecNCoeffs)
+	bs := s.vecBS
+	o1 := s.vecOrder + 1
+
+	// Detect multi-field layout
+	pfNC := nc    // per-field coefficients
+	nFields := 1
+	if nc > 64 {
+		if nc%64 == 0 { nFields = nc / 64; pfNC = 64 } else if nc%27 == 0 { nFields = nc / 27; pfNC = 27 } else if nc%8 == 0 { nFields = nc / 8; pfNC = 8 }
+	}
+	pfOrder := 3
+	if pfNC <= 27 { pfOrder = 2 }
+	if pfNC <= 8 { pfOrder = 1 }
+	pfO1 := pfOrder + 1
+	_ = o1 // use pfO1 instead
+
+	// Precompute column byte offsets
+	colOffsets := make([]uint64, s.nColumns)
+	{ off := uint64(0)
+	  for cc := uint32(0); cc < s.nColumns; cc++ {
+		  colOffsets[cc] = off
+		  off += s.nTotal * uint64(sfaDtypeSize[s.columns[cc].dtype])
+	  }
+	}
+
+	for pi := uint32(0); pi < s.vecNPatches; pi++ {
+		ox := int(s.vecOrigins[pi][0])
+		oy := int(s.vecOrigins[pi][1])
+		oz := int(s.vecOrigins[pi][2])
+		cBase := int(pi) * nc
+
+		for di := 0; di < bs; di++ {
+			gi := ox + di
+			if gi < 0 || gi >= nx { continue }
+			var tx float64
+			if bs > 1 { tx = float64(di) / float64(bs-1) }
+			txa := [4]float64{1, tx, tx * tx, tx * tx * tx}
+
+			for dj := 0; dj < bs; dj++ {
+				gj := oy + dj
+				if gj < 0 || gj >= ny { continue }
+				var ty float64
+				if bs > 1 { ty = float64(dj) / float64(bs-1) }
+				tya := [4]float64{1, ty, ty * ty, ty * ty * ty}
+
+				for dk := 0; dk < bs; dk++ {
+					gk := oz + dk
+					if gk < 0 || gk >= nz { continue }
+					var tz float64
+					if bs > 1 { tz = float64(dk) / float64(bs-1) }
+					tza := [4]float64{1, tz, tz * tz, tz * tz * tz}
+
+					idx := int64(gi)*int64(ny)*int64(nz) + int64(gj)*int64(nz) + int64(gk)
+
+					// Evaluate each field separately
+					for field := 0; field < nFields && field < int(s.nColumns); field++ {
+						fcBase := cBase + field*pfNC
+						var val float64
+						for a := 0; a < pfO1; a++ {
+							for b := 0; b < pfO1; b++ {
+								ab := txa[a] * tya[b]
+								for c := 0; c < pfO1; c++ {
+									ci := a*pfO1*pfO1 + b*pfO1 + c
+									val += float64(s.vecCoeffs[fcBase+ci]) * ab * tza[c]
+								}
+							}
+						}
+
+						col := uint32(field)
+						es := sfaDtypeSize[s.columns[col].dtype]
+						f := float32(val)
+						if s.columns[col].dtype == sfaDtypeF16 {
+							bits := math.Float32bits(f)
+							sign := uint16((bits >> 16) & 0x8000)
+							exp := int((bits>>23)&0xFF) - 127 + 15
+							mant := uint16((bits >> 13) & 0x3FF)
+							var h uint16
+							if exp <= 0 { h = sign } else if exp >= 31 { h = sign | 0x7C00 } else { h = sign | uint16(exp)<<10 | mant }
+							off := colOffsets[col] + uint64(idx)*uint64(es)
+							if off+1 < uint64(len(s.rawBuf)) {
+								s.rawBuf[off] = byte(h)
+								s.rawBuf[off+1] = byte(h >> 8)
+							}
+						} else if s.columns[col].dtype == sfaDtypeF32 {
+							bits := math.Float32bits(f)
+							off := colOffsets[col] + uint64(idx)*4
+							if off+3 < uint64(len(s.rawBuf)) {
+								s.rawBuf[off] = byte(bits)
+								s.rawBuf[off+1] = byte(bits >> 8)
+								s.rawBuf[off+2] = byte(bits >> 16)
+								s.rawBuf[off+3] = byte(bits >> 24)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 // readFrameColZstdInto decompresses COLZSTD with parallel goroutines.
@@ -623,6 +893,765 @@ func zstdDecompressInto(src []byte, dst []byte) error {
 		return fmt.Errorf("decompressed %d bytes, expected %d", len(result), len(dst))
 	}
 	return nil
+}
+
+// ============================================================
+// Vec3D file reader
+// ============================================================
+
+type vec3dPatch struct {
+	fitType   uint8
+	fieldTerm uint8
+	nCoeffs   uint16
+	bx, by, bz int16
+	sx, sy, sz int16
+	order     uint8
+	maxError  float32
+	rmsError  float32
+	coeffs    []float32
+}
+
+type vec3dField struct {
+	fieldTerm uint8
+	patches   []vec3dPatch
+}
+
+type vec3dFile struct {
+	version        uint32
+	nFields        uint32
+	Nx, Ny, Nz     uint32
+	fields         []vec3dField
+}
+
+// Field term names: 0=phi_x, 1=phi_y, 2=phi_z, 3=theta_x, 4=theta_y, 5=theta_z
+var fieldTermColors = [][3]float32{
+	{1.0, 0.0, 0.0}, // phi_x = red
+	{0.0, 1.0, 0.0}, // phi_y = green
+	{0.0, 0.0, 1.0}, // phi_z = blue
+	{0.0, 1.0, 1.0}, // theta_x = cyan
+	{1.0, 0.0, 1.0}, // theta_y = magenta
+	{1.0, 1.0, 0.0}, // theta_z = yellow
+}
+
+func vec3dOpen(path string) (*vec3dFile, error) {
+	fp, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer fp.Close()
+
+	// Read magic
+	var magic [8]byte
+	if _, err := io.ReadFull(fp, magic[:]); err != nil {
+		return nil, fmt.Errorf("read magic: %w", err)
+	}
+	if string(magic[:5]) != "VEC3D" {
+		return nil, fmt.Errorf("not a VEC3D file (got %q)", magic)
+	}
+
+	v := &vec3dFile{}
+	binary.Read(fp, binary.LittleEndian, &v.version)
+	binary.Read(fp, binary.LittleEndian, &v.nFields)
+	binary.Read(fp, binary.LittleEndian, &v.Nx)
+	binary.Read(fp, binary.LittleEndian, &v.Ny)
+	binary.Read(fp, binary.LittleEndian, &v.Nz)
+
+	v.fields = make([]vec3dField, v.nFields)
+	totalPatches := 0
+	for f := uint32(0); f < v.nFields; f++ {
+		// VecFrameHeader: magic(4) + n_patches(4) + field_term(1) + reserved(3) = 12 bytes
+		var frameMagic uint32
+		var nPatches uint32
+		var fieldTerm uint8
+		var reserved [3]byte
+		binary.Read(fp, binary.LittleEndian, &frameMagic)
+		binary.Read(fp, binary.LittleEndian, &nPatches)
+		binary.Read(fp, binary.LittleEndian, &fieldTerm)
+		fp.Read(reserved[:])
+
+		if frameMagic != 0x56454333 { // "VEC3"
+			return nil, fmt.Errorf("field %d: bad VEC3 magic 0x%08x", f, frameMagic)
+		}
+
+		v.fields[f].fieldTerm = fieldTerm
+		v.fields[f].patches = make([]vec3dPatch, nPatches)
+		totalPatches += int(nPatches)
+
+		for i := uint32(0); i < nPatches; i++ {
+			p := &v.fields[f].patches[i]
+			// VecPatchHeader: 28 bytes total (C struct with float alignment padding)
+			// Layout: fit_type(1) field_term(1) n_coeffs(2) bx(2) by(2) bz(2)
+			//         sx(2) sy(2) sz(2) order(1) reserved(1) pad(2) max_error(4) rms_error(4)
+			binary.Read(fp, binary.LittleEndian, &p.fitType)
+			binary.Read(fp, binary.LittleEndian, &p.fieldTerm)
+			binary.Read(fp, binary.LittleEndian, &p.nCoeffs)
+			binary.Read(fp, binary.LittleEndian, &p.bx)
+			binary.Read(fp, binary.LittleEndian, &p.by)
+			binary.Read(fp, binary.LittleEndian, &p.bz)
+			binary.Read(fp, binary.LittleEndian, &p.sx)
+			binary.Read(fp, binary.LittleEndian, &p.sy)
+			binary.Read(fp, binary.LittleEndian, &p.sz)
+			binary.Read(fp, binary.LittleEndian, &p.order)
+			var pad [3]byte // 1 byte reserved + 2 bytes alignment padding before float
+			fp.Read(pad[:])
+			binary.Read(fp, binary.LittleEndian, &p.maxError)
+			binary.Read(fp, binary.LittleEndian, &p.rmsError)
+
+			p.coeffs = make([]float32, p.nCoeffs)
+			for c := uint16(0); c < p.nCoeffs; c++ {
+				binary.Read(fp, binary.LittleEndian, &p.coeffs[c])
+			}
+		}
+	}
+
+	fmt.Printf("VEC3D: %dx%dx%d, %d fields, %d total patches\n",
+		v.Nx, v.Ny, v.Nz, v.nFields, totalPatches)
+	return v, nil
+}
+
+// buildWireframeData generates line vertices for all patches as wireframe boxes.
+// Returns interleaved [x,y,z, r,g,b,a] float32 arrays and vertex count.
+// Positions are normalized to [0,1]^3.
+func (v *vec3dFile) buildWireframeData() ([]float32, int) {
+	// Count total patches
+	totalPatches := 0
+	for _, f := range v.fields {
+		totalPatches += len(f.patches)
+	}
+
+	// 12 edges per box, 2 vertices per edge = 24 vertices per box
+	// 7 floats per vertex (x,y,z, r,g,b,a)
+	data := make([]float32, 0, totalPatches*24*7)
+
+	invNx := float32(1.0) / float32(v.Nx)
+	invNy := float32(1.0) / float32(v.Ny)
+	invNz := float32(1.0) / float32(v.Nz)
+
+	for _, field := range v.fields {
+		// Get color for this field term
+		ft := int(field.fieldTerm)
+		var cr, cg, cb float32
+		if ft < len(fieldTermColors) {
+			cr = fieldTermColors[ft][0]
+			cg = fieldTermColors[ft][1]
+			cb = fieldTermColors[ft][2]
+		} else {
+			cr, cg, cb = 1.0, 1.0, 1.0
+		}
+
+		for _, p := range field.patches {
+			// Find max absolute coefficient for opacity
+			var maxCoeff float32
+			for _, c := range p.coeffs {
+				ac := f32abs(c)
+				if ac > maxCoeff {
+					maxCoeff = ac
+				}
+			}
+
+			// Box corners in normalized [0,1] space
+			x0 := float32(p.bx) * invNx
+			y0 := float32(p.by) * invNy
+			z0 := float32(p.bz) * invNz
+			x1 := float32(int(p.bx)+int(p.sx)) * invNx
+			y1 := float32(int(p.by)+int(p.sy)) * invNy
+			z1 := float32(int(p.bz)+int(p.sz)) * invNz
+
+			// Alpha proportional to max coefficient magnitude
+			// Use sqrt for perceptual scaling, clamp to [0.05, 1.0]
+			alpha := float32(math.Sqrt(float64(maxCoeff)))
+			if alpha > 1.0 {
+				alpha = 1.0
+			}
+			if alpha < 0.05 {
+				alpha = 0.05
+			}
+
+			// 8 corners of the box
+			corners := [8][3]float32{
+				{x0, y0, z0}, {x1, y0, z0}, {x1, y1, z0}, {x0, y1, z0},
+				{x0, y0, z1}, {x1, y0, z1}, {x1, y1, z1}, {x0, y1, z1},
+			}
+
+			// 12 edges: bottom face(4), top face(4), verticals(4)
+			edges := [12][2]int{
+				{0, 1}, {1, 2}, {2, 3}, {3, 0}, // bottom
+				{4, 5}, {5, 6}, {6, 7}, {7, 4}, // top
+				{0, 4}, {1, 5}, {2, 6}, {3, 7}, // verticals
+			}
+
+			for _, e := range edges {
+				c0 := corners[e[0]]
+				c1 := corners[e[1]]
+				data = append(data, c0[0], c0[1], c0[2], cr, cg, cb, alpha)
+				data = append(data, c1[0], c1[1], c1[2], cr, cg, cb, alpha)
+			}
+		}
+	}
+
+	return data, totalPatches * 24
+}
+
+// ============================================================
+// VecStream file reader (pure Go, no CGO)
+// ============================================================
+
+const (
+	vsMaxOrder = 3
+	vsNCoeffs  = 64 // (vsMaxOrder+1)^3
+
+	vsFrameI = 0
+	vsFrameP = 1
+	vsFrameK = 2
+)
+
+type vsPatch struct {
+	originX, originY, originZ int16
+	sizeX, sizeY, sizeZ       uint8
+	order                      uint8
+	nCoeffs                    uint16
+	coeffs                     [vsNCoeffs]float32
+}
+
+type vsIndexEntry struct {
+	time      float64
+	offset    uint64
+	frameType uint8
+	fieldIdx  uint8
+}
+
+type vecstreamFile struct {
+	fp *os.File
+
+	// Header
+	version              uint32
+	Nx, Ny, Nz           uint32
+	Lx, Ly, Lz, dt      float64
+	nFields              uint16
+	blockSize            uint16
+	nFrames              uint32
+	flags                uint32
+
+	// Derived
+	blocksX, blocksY, blocksZ uint32
+	totalPatches              uint32
+
+	// Index
+	index []vsIndexEntry
+
+	// Reconstruction state: cached patches per field
+	// fieldPatches[fieldIdx] holds the current accumulated patch state
+	fieldPatches [][]vsPatch
+	// fieldBase[fieldIdx] = index entry of last loaded I/K-frame
+	fieldBase []int
+	// fieldApplied[fieldIdx] = index entry of last applied P-frame
+	fieldApplied []int
+
+	// Pre-allocated voxel buffer for reconstruction
+	voxelBuf []float32
+}
+
+func vecstreamOpen(path string) (*vecstreamFile, error) {
+	fp, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+
+	vs := &vecstreamFile{fp: fp}
+
+	// Read 64-byte file header
+	var hdr [64]byte
+	if _, err := io.ReadFull(fp, hdr[:]); err != nil {
+		fp.Close()
+		return nil, fmt.Errorf("read header: %w", err)
+	}
+	if string(hdr[0:4]) != "VECS" {
+		fp.Close()
+		return nil, fmt.Errorf("not a vecstream file (got %q)", hdr[0:4])
+	}
+
+	vs.version = binary.LittleEndian.Uint32(hdr[4:8])
+	vs.Nx = binary.LittleEndian.Uint32(hdr[8:12])
+	vs.Ny = binary.LittleEndian.Uint32(hdr[12:16])
+	vs.Nz = binary.LittleEndian.Uint32(hdr[16:20])
+	vs.Lx = math.Float64frombits(binary.LittleEndian.Uint64(hdr[20:28]))
+	vs.Ly = math.Float64frombits(binary.LittleEndian.Uint64(hdr[28:36]))
+	vs.Lz = math.Float64frombits(binary.LittleEndian.Uint64(hdr[36:44]))
+	vs.dt = math.Float64frombits(binary.LittleEndian.Uint64(hdr[44:52]))
+	vs.nFields = binary.LittleEndian.Uint16(hdr[52:54])
+	vs.blockSize = binary.LittleEndian.Uint16(hdr[54:56])
+	vs.nFrames = binary.LittleEndian.Uint32(hdr[56:60])
+	vs.flags = binary.LittleEndian.Uint32(hdr[60:64])
+
+	bs := uint32(vs.blockSize)
+	vs.blocksX = (vs.Nx + bs - 1) / bs
+	vs.blocksY = (vs.Ny + bs - 1) / bs
+	vs.blocksZ = (vs.Nz + bs - 1) / bs
+	vs.totalPatches = vs.blocksX * vs.blocksY * vs.blocksZ
+
+	// Read footer (last 16 bytes) to find index
+	if _, err := fp.Seek(-16, io.SeekEnd); err != nil {
+		fp.Close()
+		return nil, fmt.Errorf("seek footer: %w", err)
+	}
+	var footer [16]byte
+	if _, err := io.ReadFull(fp, footer[:]); err != nil {
+		fp.Close()
+		return nil, fmt.Errorf("read footer: %w", err)
+	}
+	if string(footer[12:16]) != "VSND" {
+		fp.Close()
+		return nil, fmt.Errorf("bad footer magic (got %q)", footer[12:16])
+	}
+
+	indexOffset := binary.LittleEndian.Uint64(footer[0:8])
+
+	// Read index header (16 bytes)
+	if _, err := fp.Seek(int64(indexOffset), io.SeekStart); err != nil {
+		fp.Close()
+		return nil, fmt.Errorf("seek index: %w", err)
+	}
+	var ixHdr [16]byte
+	if _, err := io.ReadFull(fp, ixHdr[:]); err != nil {
+		fp.Close()
+		return nil, fmt.Errorf("read index header: %w", err)
+	}
+	if string(ixHdr[0:4]) != "IXVS" {
+		fp.Close()
+		return nil, fmt.Errorf("bad index magic (got %q)", ixHdr[0:4])
+	}
+
+	nEntries := binary.LittleEndian.Uint32(ixHdr[4:8])
+	vs.index = make([]vsIndexEntry, nEntries)
+
+	// Read index entries (24 bytes each)
+	for i := uint32(0); i < nEntries; i++ {
+		var entry [24]byte
+		if _, err := io.ReadFull(fp, entry[:]); err != nil {
+			break
+		}
+		vs.index[i].time = math.Float64frombits(binary.LittleEndian.Uint64(entry[0:8]))
+		vs.index[i].offset = binary.LittleEndian.Uint64(entry[8:16])
+		vs.index[i].frameType = entry[16]
+		vs.index[i].fieldIdx = entry[17]
+	}
+
+	// Initialize per-field reconstruction state
+	nf := int(vs.nFields)
+	vs.fieldPatches = make([][]vsPatch, nf)
+	vs.fieldBase = make([]int, nf)
+	vs.fieldApplied = make([]int, nf)
+	for i := 0; i < nf; i++ {
+		vs.fieldPatches[i] = make([]vsPatch, vs.totalPatches)
+		vs.fieldBase[i] = -1
+		vs.fieldApplied[i] = -1
+	}
+
+	// Pre-allocate voxel buffer
+	vs.voxelBuf = make([]float32, uint64(vs.Nx)*uint64(vs.Ny)*uint64(vs.Nz))
+
+	fmt.Printf("VecStream: %dx%dx%d, %d fields, block=%d, %d index entries, %d total patches\n",
+		vs.Nx, vs.Ny, vs.Nz, vs.nFields, vs.blockSize, nEntries, vs.totalPatches)
+	return vs, nil
+}
+
+func (vs *vecstreamFile) close() {
+	if vs.fp != nil {
+		vs.fp.Close()
+	}
+}
+
+// readFramePayload reads and decompresses a frame payload at the given index entry.
+func (vs *vecstreamFile) readFramePayload(idx int) ([]byte, error) {
+	entry := vs.index[idx]
+
+	// Seek to frame header
+	if _, err := vs.fp.Seek(int64(entry.offset), io.SeekStart); err != nil {
+		return nil, fmt.Errorf("seek frame %d: %w", idx, err)
+	}
+
+	// Read 32-byte frame header
+	var hdr [32]byte
+	if _, err := io.ReadFull(vs.fp, hdr[:]); err != nil {
+		return nil, fmt.Errorf("read frame header %d: %w", idx, err)
+	}
+	if string(hdr[0:4]) != "FRVS" {
+		return nil, fmt.Errorf("bad frame magic at index %d (got %q)", idx, hdr[0:4])
+	}
+
+	compSize := binary.LittleEndian.Uint64(hdr[16:24])
+	// uncompSize := binary.LittleEndian.Uint64(hdr[24:32])
+
+	// Read compressed data
+	comp := make([]byte, compSize)
+	if _, err := io.ReadFull(vs.fp, comp); err != nil {
+		return nil, fmt.Errorf("read frame payload %d: %w", idx, err)
+	}
+
+	// Decompress
+	data, err := zstdDecoder.DecodeAll(comp, nil)
+	if err != nil {
+		return nil, fmt.Errorf("zstd decompress frame %d: %w", idx, err)
+	}
+	return data, nil
+}
+
+// parseIframe parses decompressed I-frame payload into patches.
+func parseIframe(data []byte, patches []vsPatch) (uint32, error) {
+	if len(data) < 4 {
+		return 0, fmt.Errorf("I-frame data too short")
+	}
+	np := binary.LittleEndian.Uint32(data[0:4])
+	p := data[4:]
+
+	for i := uint32(0); i < np; i++ {
+		if len(p) < 16 {
+			return 0, fmt.Errorf("I-frame truncated at patch %d", i)
+		}
+		if int(i) >= len(patches) {
+			// skip extra patches beyond our capacity
+			nc := binary.LittleEndian.Uint16(p[10:12])
+			p = p[16+int(nc)*4:]
+			continue
+		}
+		vp := &patches[i]
+		vp.originX = int16(binary.LittleEndian.Uint16(p[0:2]))
+		vp.originY = int16(binary.LittleEndian.Uint16(p[2:4]))
+		vp.originZ = int16(binary.LittleEndian.Uint16(p[4:6]))
+		vp.sizeX = p[6]
+		vp.sizeY = p[7]
+		vp.sizeZ = p[8]
+		vp.order = p[9]
+		vp.nCoeffs = binary.LittleEndian.Uint16(p[10:12])
+		// skip max_err_f16 and rms_err_f16 (bytes 12-15) -- not needed for reconstruction
+		p = p[16:]
+
+		nc := int(vp.nCoeffs)
+		if nc > vsNCoeffs {
+			nc = vsNCoeffs
+		}
+		// Clear all coefficients first
+		vp.coeffs = [vsNCoeffs]float32{}
+		for c := 0; c < nc; c++ {
+			vp.coeffs[c] = math.Float32frombits(binary.LittleEndian.Uint32(p[c*4 : c*4+4]))
+		}
+		p = p[int(vp.nCoeffs)*4:]
+	}
+	return np, nil
+}
+
+// applyPframe applies P-frame deltas to existing patches.
+func applyPframe(data []byte, patches []vsPatch) error {
+	if len(data) < 8 {
+		return fmt.Errorf("P-frame data too short")
+	}
+	nd := binary.LittleEndian.Uint32(data[0:4])
+	cpp := int(binary.LittleEndian.Uint16(data[4:6]))
+	// 2 bytes padding
+	p := data[8:]
+
+	for i := uint32(0); i < nd; i++ {
+		if len(p) < 4+cpp*4 {
+			return fmt.Errorf("P-frame truncated at delta %d", i)
+		}
+		pidx := binary.LittleEndian.Uint32(p[0:4])
+		p = p[4:]
+
+		if int(pidx) < len(patches) {
+			nc := int(patches[pidx].nCoeffs)
+			if nc > cpp {
+				nc = cpp
+			}
+			for c := 0; c < nc; c++ {
+				delta := math.Float32frombits(binary.LittleEndian.Uint32(p[c*4 : c*4+4]))
+				patches[pidx].coeffs[c] += delta
+			}
+		}
+		p = p[cpp*4:]
+	}
+	return nil
+}
+
+// parseKframe parses K-frame raw voxels into the output buffer.
+func (vs *vecstreamFile) parseKframe(data []byte, output []float32) error {
+	n3 := uint64(vs.Nx) * uint64(vs.Ny) * uint64(vs.Nz)
+	expected := n3 * 4
+	if uint64(len(data)) < expected {
+		return fmt.Errorf("K-frame data too small (%d < %d)", len(data), expected)
+	}
+	for i := uint64(0); i < n3; i++ {
+		output[i] = math.Float32frombits(binary.LittleEndian.Uint32(data[i*4 : i*4+4]))
+	}
+	return nil
+}
+
+// evalPatch evaluates a tensor-product polynomial patch at local grid point (di,dj,dk).
+func evalPatch(p *vsPatch, di, dj, dk int) float32 {
+	o1 := int(p.order) + 1
+
+	bsx := int(p.sizeX)
+	bsy := int(p.sizeY)
+	bsz := int(p.sizeZ)
+
+	var tx, ty, tz float64
+	if bsx > 1 {
+		tx = float64(di) / float64(bsx-1)
+	}
+	if bsy > 1 {
+		ty = float64(dj) / float64(bsy-1)
+	}
+	if bsz > 1 {
+		tz = float64(dk) / float64(bsz-1)
+	}
+
+	// Precompute powers (up to order 3)
+	txa := [4]float64{1, tx, tx * tx, tx * tx * tx}
+	tya := [4]float64{1, ty, ty * ty, ty * ty * ty}
+	tza := [4]float64{1, tz, tz * tz, tz * tz * tz}
+
+	var val float64
+	for a := 0; a < o1; a++ {
+		for b := 0; b < o1; b++ {
+			ab := txa[a] * tya[b]
+			base := a*o1*o1 + b*o1
+			for c := 0; c < o1; c++ {
+				val += float64(p.coeffs[base+c]) * ab * tza[c]
+			}
+		}
+	}
+	return float32(val)
+}
+
+// patchesToVoxels reconstructs a full voxel grid from patches.
+func (vs *vecstreamFile) patchesToVoxels(patches []vsPatch, output []float32) {
+	n3 := int(vs.Nx) * int(vs.Ny) * int(vs.Nz)
+	for i := 0; i < n3; i++ {
+		output[i] = 0
+	}
+
+	ny := int(vs.Ny)
+	nz := int(vs.Nz)
+	nx := int(vs.Nx)
+
+	nWorkers := runtime.GOMAXPROCS(0)
+	if nWorkers < 1 {
+		nWorkers = 1
+	}
+	np := len(patches)
+	chunkSize := (np + nWorkers - 1) / nWorkers
+
+	var wg sync.WaitGroup
+	for w := 0; w < nWorkers; w++ {
+		wg.Add(1)
+		go func(w int) {
+			defer wg.Done()
+			start := w * chunkSize
+			end := start + chunkSize
+			if end > np {
+				end = np
+			}
+			for pi := start; pi < end; pi++ {
+				p := &patches[pi]
+				ox := int(p.originX)
+				oy := int(p.originY)
+				oz := int(p.originZ)
+				bsx := int(p.sizeX)
+				bsy := int(p.sizeY)
+				bsz := int(p.sizeZ)
+
+				for di := 0; di < bsx; di++ {
+					gi := ox + di
+					if gi < 0 || gi >= nx {
+						continue
+					}
+					for dj := 0; dj < bsy; dj++ {
+						gj := oy + dj
+						if gj < 0 || gj >= ny {
+							continue
+						}
+						for dk := 0; dk < bsz; dk++ {
+							gk := oz + dk
+							if gk < 0 || gk >= nz {
+								continue
+							}
+							idx := gi*ny*nz + gj*nz + gk
+							output[idx] = evalPatch(p, di, dj, dk)
+						}
+					}
+				}
+			}
+		}(w)
+	}
+	wg.Wait()
+}
+
+// vsTimestampFrames returns the list of unique simulation times (deduplicated across fields).
+// It also returns for each unique time the list of index entries.
+func (vs *vecstreamFile) uniqueTimes() []float64 {
+	seen := make(map[float64]bool)
+	var times []float64
+	for _, e := range vs.index {
+		if !seen[e.time] {
+			seen[e.time] = true
+			times = append(times, e.time)
+		}
+	}
+	return times
+}
+
+// reconstruct reconstructs field fieldIdx at the given index entry position.
+// It uses cached patches when possible (incremental P-frame application).
+func (vs *vecstreamFile) reconstruct(targetIdx int, fieldIdx int) ([]float32, error) {
+	fi := fieldIdx
+
+	// Find the most recent I-frame or K-frame for this field at or before targetIdx
+	baseIdx := -1
+	for i := targetIdx; i >= 0; i-- {
+		e := vs.index[i]
+		if int(e.fieldIdx) != fi {
+			continue
+		}
+		if e.frameType == vsFrameI || e.frameType == vsFrameK {
+			baseIdx = i
+			break
+		}
+	}
+	if baseIdx < 0 {
+		return nil, fmt.Errorf("no I/K-frame found for field %d at or before index %d", fi, targetIdx)
+	}
+
+	// Check if we can reuse cached patches
+	patches := vs.fieldPatches[fi]
+	needBase := true
+	if vs.fieldBase[fi] == baseIdx {
+		// Same base -- can we just apply new P-frames?
+		needBase = false
+	}
+
+	if needBase {
+		entry := vs.index[baseIdx]
+		if entry.frameType == vsFrameK {
+			// K-frame: decompress raw voxels directly
+			data, err := vs.readFramePayload(baseIdx)
+			if err != nil {
+				return nil, fmt.Errorf("read K-frame: %w", err)
+			}
+			if err := vs.parseKframe(data, vs.voxelBuf); err != nil {
+				return nil, fmt.Errorf("parse K-frame: %w", err)
+			}
+			// If target is the K-frame itself, return voxels directly
+			if baseIdx == targetIdx {
+				vs.fieldBase[fi] = baseIdx
+				vs.fieldApplied[fi] = baseIdx
+				return vs.voxelBuf, nil
+			}
+			// Need to re-vectorize the K-frame into patches for P-frame application
+			// For simplicity, just read the I-frame and P-frames starting fresh
+			// Actually, for K-frames followed by P-frames, we need patches.
+			// Re-fit from raw voxels (expensive). Better: just recompute from voxels directly.
+			// For now: return the K-frame voxels as-is and warn if P-frames follow.
+			// In practice, K-frames are usually standalone or at the end.
+			vs.fieldBase[fi] = baseIdx
+			vs.fieldApplied[fi] = baseIdx
+			// We'll skip P-frames after K-frames for now -- reconstruct from voxels directly
+			return vs.voxelBuf, nil
+		}
+
+		// I-frame: load patches
+		data, err := vs.readFramePayload(baseIdx)
+		if err != nil {
+			return nil, fmt.Errorf("read I-frame: %w", err)
+		}
+		if _, err := parseIframe(data, patches); err != nil {
+			return nil, fmt.Errorf("parse I-frame: %w", err)
+		}
+		vs.fieldBase[fi] = baseIdx
+		vs.fieldApplied[fi] = baseIdx
+	}
+
+	// Apply P-frames from after the last applied frame to targetIdx
+	startFrom := vs.fieldApplied[fi] + 1
+	for i := startFrom; i <= targetIdx; i++ {
+		e := vs.index[i]
+		if int(e.fieldIdx) != fi {
+			continue
+		}
+		if e.frameType != vsFrameP {
+			continue
+		}
+		data, err := vs.readFramePayload(i)
+		if err != nil {
+			return nil, fmt.Errorf("read P-frame %d: %w", i, err)
+		}
+		if err := applyPframe(data, patches); err != nil {
+			return nil, fmt.Errorf("apply P-frame %d: %w", i, err)
+		}
+	}
+	vs.fieldApplied[fi] = targetIdx
+
+	// Evaluate patches to voxels
+	vs.patchesToVoxels(patches, vs.voxelBuf)
+	return vs.voxelBuf, nil
+}
+
+// findDisplayFrames returns the list of logical "display frames" for a vecstream file.
+// A display frame is a time step where we can show reconstructed data.
+// We group index entries by time and return the unique times in order.
+// For each logical frame, we pick the first index entry at that time for field 0.
+type vsDisplayFrame struct {
+	time     float64
+	indexIdx int   // index of the entry for the primary field (field 0) at this time
+	entryIdx []int // all index entries at this time
+}
+
+func (vs *vecstreamFile) buildDisplayFrames() []vsDisplayFrame {
+	// Group entries by time
+	type timeGroup struct {
+		time    float64
+		entries []int
+	}
+	var groups []timeGroup
+	timeMap := make(map[float64]int) // time -> index in groups
+
+	for i, e := range vs.index {
+		gi, ok := timeMap[e.time]
+		if !ok {
+			gi = len(groups)
+			timeMap[e.time] = gi
+			groups = append(groups, timeGroup{time: e.time})
+		}
+		groups[gi].entries = append(groups[gi].entries, i)
+	}
+
+	// Build display frames
+	frames := make([]vsDisplayFrame, len(groups))
+	for i, g := range groups {
+		frames[i].time = g.time
+		frames[i].entryIdx = g.entries
+		// Pick the entry for field 0 (or the first entry if field 0 not present)
+		frames[i].indexIdx = g.entries[0]
+		for _, ei := range g.entries {
+			if vs.index[ei].fieldIdx == 0 {
+				frames[i].indexIdx = ei
+				break
+			}
+		}
+	}
+	return frames
+}
+
+// frameTypeName returns "I", "P", or "K" for display.
+func vsFrameTypeName(ft uint8) string {
+	switch ft {
+	case vsFrameI:
+		return "I"
+	case vsFrameP:
+		return "P"
+	case vsFrameK:
+		return "K"
+	default:
+		return "?"
+	}
 }
 
 // ============================================================
@@ -1280,6 +2309,60 @@ void main() {
 ` + "\x00"
 
 // ============================================================
+// GLSL 430 line shaders (for wireframe overlay)
+// ============================================================
+
+const lineVertexShaderSource = `#version 430
+
+layout(location = 0) in vec3 inPos;    // position in [0,1]^3
+layout(location = 1) in vec4 inColor;  // RGBA
+
+uniform vec3 camPos;
+uniform vec3 camTarget;
+uniform vec2 winSize;
+uniform float fov;
+
+out vec4 vColor;
+
+void main() {
+    float aspect = winSize.x / winSize.y;
+
+    // Camera setup (same as volume shader)
+    vec3 fwd = normalize(camTarget - camPos);
+    vec3 worldUp = vec3(0.0, 0.0, 1.0);
+    if (abs(dot(fwd, worldUp)) > 0.999) {
+        worldUp = vec3(0.0, 1.0, 0.0);
+    }
+    vec3 right = normalize(cross(fwd, worldUp));
+    vec3 up = cross(right, fwd);
+
+    // View-space position
+    vec3 p = inPos - camPos;
+    float z = dot(p, fwd);
+    float x = dot(p, right);
+    float y = dot(p, up);
+
+    // Perspective projection
+    float invZ = 1.0 / max(z, 0.001);
+    float px = x * invZ / (fov * aspect);
+    float py = y * invZ / (fov);
+
+    gl_Position = vec4(px, py, -1.0/max(z, 0.001), 1.0);
+    vColor = inColor;
+}
+` + "\x00"
+
+const lineFragmentShaderSource = `#version 430
+
+in vec4 vColor;
+out vec4 fragColor;
+
+void main() {
+    fragColor = vColor;
+}
+` + "\x00"
+
+// ============================================================
 // Camera / view state
 // ============================================================
 
@@ -1305,6 +2388,9 @@ type viewParams struct {
 	fixedScale    bool    // true = use fixedScaleVal instead of auto-ranging
 	fixedScaleVal float32 // the fixed max value for color mapping
 
+	// Vec3d overlay
+	showVec bool // toggle wireframe overlay
+
 	// State
 	viewMode   int
 	curFrame   int
@@ -1312,6 +2398,9 @@ type viewParams struct {
 	dragging   bool
 	lastMouseX float64
 	lastMouseY float64
+
+	// Vecstream field cycling
+	vsFieldIdx int
 }
 
 func newViewParams() *viewParams {
@@ -1328,6 +2417,7 @@ func newViewParams() *viewParams {
 		showB:      true,
 		fixedScale:    false,
 		fixedScaleVal: 0.01,
+		showVec:       true,
 	}
 	p.updateCamera()
 	return p
@@ -1536,6 +2626,98 @@ func (g *gpuResources) render() {
 }
 
 // ============================================================
+// Line rendering GPU resources (wireframe overlay)
+// ============================================================
+
+type lineGPUResources struct {
+	program uint32
+	vao     uint32
+	vbo     uint32
+	nVerts  int32
+
+	// Uniform locations
+	locCamPos    int32
+	locCamTarget int32
+	locWinSize   int32
+	locFov       int32
+}
+
+func initLineGPUResources() (*lineGPUResources, error) {
+	lg := &lineGPUResources{}
+
+	vertShader, err := compileShader(lineVertexShaderSource, gl.VERTEX_SHADER)
+	if err != nil {
+		return nil, fmt.Errorf("line vertex shader: %w", err)
+	}
+	fragShader, err := compileShader(lineFragmentShaderSource, gl.FRAGMENT_SHADER)
+	if err != nil {
+		return nil, fmt.Errorf("line fragment shader: %w", err)
+	}
+	lg.program, err = linkProgram(vertShader, fragShader)
+	if err != nil {
+		return nil, fmt.Errorf("line program link: %w", err)
+	}
+	gl.DeleteShader(vertShader)
+	gl.DeleteShader(fragShader)
+
+	gl.UseProgram(lg.program)
+	lg.locCamPos = gl.GetUniformLocation(lg.program, gl.Str("camPos\x00"))
+	lg.locCamTarget = gl.GetUniformLocation(lg.program, gl.Str("camTarget\x00"))
+	lg.locWinSize = gl.GetUniformLocation(lg.program, gl.Str("winSize\x00"))
+	lg.locFov = gl.GetUniformLocation(lg.program, gl.Str("fov\x00"))
+
+	gl.GenVertexArrays(1, &lg.vao)
+	gl.GenBuffers(1, &lg.vbo)
+
+	return lg, nil
+}
+
+func (lg *lineGPUResources) uploadWireframe(data []float32, nVerts int) {
+	lg.nVerts = int32(nVerts)
+
+	gl.BindVertexArray(lg.vao)
+	gl.BindBuffer(gl.ARRAY_BUFFER, lg.vbo)
+	gl.BufferData(gl.ARRAY_BUFFER, len(data)*4, unsafe.Pointer(&data[0]), gl.STATIC_DRAW)
+
+	// Stride = 7 floats (pos xyz + color rgba) = 28 bytes
+	stride := int32(7 * 4)
+
+	// Attribute 0: position (vec3)
+	gl.EnableVertexAttribArray(0)
+	gl.VertexAttribPointerWithOffset(0, 3, gl.FLOAT, false, stride, 0)
+
+	// Attribute 1: color (vec4)
+	gl.EnableVertexAttribArray(1)
+	gl.VertexAttribPointerWithOffset(1, 4, gl.FLOAT, false, stride, uintptr(3*4))
+
+	gl.BindVertexArray(0)
+}
+
+func (lg *lineGPUResources) render(p *viewParams, winW, winH float32) {
+	if lg.nVerts == 0 {
+		return
+	}
+
+	gl.UseProgram(lg.program)
+	gl.Uniform3f(lg.locCamPos, p.camPos[0], p.camPos[1], p.camPos[2])
+	gl.Uniform3f(lg.locCamTarget, p.camTarget[0], p.camTarget[1], p.camTarget[2])
+	gl.Uniform2f(lg.locWinSize, winW, winH)
+	gl.Uniform1f(lg.locFov, p.fov)
+
+	gl.Enable(gl.BLEND)
+	gl.BlendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA)
+	gl.Enable(gl.LINE_SMOOTH)
+	gl.LineWidth(1.0)
+
+	gl.BindVertexArray(lg.vao)
+	gl.DrawArrays(gl.LINES, 0, lg.nVerts)
+	gl.BindVertexArray(0)
+
+	gl.Disable(gl.BLEND)
+	gl.Disable(gl.LINE_SMOOTH)
+}
+
+// ============================================================
 // Async frame loader (copied from volview2)
 // ============================================================
 
@@ -1710,6 +2892,168 @@ func loadSFAFrame(fl *frameLoader, params *viewParams) {
 		fl.fixedMax = 0
 	}
 	fl.startLoad(params.curFrame)
+}
+
+// ============================================================
+// VecStream frame loader (async, similar to SFA frameLoader)
+// ============================================================
+
+type vsFrameLoader struct {
+	vs            *vecstreamFile
+	displayFrames []vsDisplayFrame
+	volN          int
+	fieldIdx      int        // which field to reconstruct
+	mu            sync.Mutex
+	ready         *volumeData
+	readyT        float64
+	readyF        int
+	readyFType    uint8 // frame type of the loaded frame
+	busy          atomic.Bool
+	workVol       volumeData
+}
+
+func (vfl *vsFrameLoader) isLoading() bool {
+	return vfl.busy.Load()
+}
+
+func (vfl *vsFrameLoader) startLoad(frameIdx int) {
+	if vfl.busy.Load() {
+		return
+	}
+	vfl.busy.Store(true)
+	fi := vfl.fieldIdx
+	fmt.Printf("Loading vecstream frame %d/%d (field %d)...\n", frameIdx+1, len(vfl.displayFrames), fi)
+	go func() {
+		defer vfl.busy.Store(false)
+
+		if frameIdx < 0 || frameIdx >= len(vfl.displayFrames) {
+			fmt.Printf("Frame %d out of range\n", frameIdx)
+			return
+		}
+		df := vfl.displayFrames[frameIdx]
+
+		// Find the index entry for the requested field at this display frame
+		targetIdx := df.indexIdx // default: primary field
+		for _, ei := range df.entryIdx {
+			if int(vfl.vs.index[ei].fieldIdx) == fi {
+				targetIdx = ei
+				break
+			}
+		}
+
+		t0 := time.Now()
+		voxels, err := vfl.vs.reconstruct(targetIdx, fi)
+		if err != nil {
+			fmt.Printf("Reconstruct error: %v\n", err)
+			return
+		}
+		dt := time.Since(t0)
+
+		// Convert single-field voxels to RGBA volume for display
+		// R = value, G = |value|, B = 0 (single field mode)
+		n := vfl.volN
+		nn := n * n * n
+		vol := &vfl.workVol
+		vol.n = n
+		vol.loaded = true
+		if len(vol.rgba) != nn*4 {
+			vol.rgba = make([]float32, nn*4)
+		}
+
+		// Find max for normalization
+		var maxVal float32
+		for i := 0; i < nn; i++ {
+			av := f32abs(voxels[i])
+			if av > maxVal {
+				maxVal = av
+			}
+		}
+		invMax := float32(1)
+		if maxVal*0.3 > 1e-20 {
+			invMax = 1.0 / (maxVal * 0.3)
+		}
+
+		// Map to RGBA: R=positive, G=|value|, B=negative
+		for i := 0; i < nn; i++ {
+			v := voxels[i]
+			av := f32abs(v) * invMax
+
+			var rv, bv float32
+			if v > 0 {
+				rv = av
+			} else {
+				bv = av
+			}
+			gv := av * 0.3 // dim |value| for context
+
+			j := i * 4
+			vol.rgba[j+0] = rv
+			vol.rgba[j+1] = gv
+			vol.rgba[j+2] = bv
+			vol.rgba[j+3] = 1.0
+		}
+
+		fType := vfl.vs.index[targetIdx].frameType
+		fmt.Printf("  Reconstructed in %v (max=%.4g, type=%s)\n", dt, maxVal, vsFrameTypeName(fType))
+
+		vfl.mu.Lock()
+		vfl.ready = vol
+		vfl.readyT = df.time
+		vfl.readyF = frameIdx
+		vfl.readyFType = fType
+		vfl.mu.Unlock()
+	}()
+}
+
+func (vfl *vsFrameLoader) consume() (*volumeData, float64, int, uint8, bool) {
+	vfl.mu.Lock()
+	defer vfl.mu.Unlock()
+	if vfl.ready == nil {
+		return nil, 0, 0, 0, false
+	}
+	v := vfl.ready
+	t := vfl.readyT
+	f := vfl.readyF
+	ft := vfl.readyFType
+	vfl.ready = nil
+	return v, t, f, ft, true
+}
+
+func navigateVSFrame(vfl *vsFrameLoader, params *viewParams, delta int) {
+	if vfl.isLoading() {
+		return
+	}
+	nFrames := len(vfl.displayFrames)
+	if nFrames == 0 {
+		return
+	}
+	next := params.curFrame + delta
+	if next < 0 {
+		next = 0
+	}
+	if next >= nFrames {
+		next = nFrames - 1
+	}
+	if next == params.curFrame {
+		return
+	}
+	params.curFrame = next
+	vfl.startLoad(next)
+}
+
+func loadVSFrame(vfl *vsFrameLoader, params *viewParams) {
+	nFrames := len(vfl.displayFrames)
+	if nFrames == 0 {
+		return
+	}
+	if params.curFrame >= nFrames {
+		params.curFrame = nFrames - 1
+	}
+	if params.curFrame < 0 {
+		params.curFrame = 0
+	}
+	vfl.fieldIdx = params.vsFieldIdx
+	vfl.startLoad(params.curFrame)
 }
 
 // ============================================================
@@ -1931,11 +3275,13 @@ func printHelp() {
 	fmt.Println("  4              Field view  (R=|P|, G=phi^2, B=theta^2)")
 	fmt.Println("  5              Velocity view (R=|v|, G=|vx|, B=|vy|)")
 	fmt.Println("  6              Accel view  (R=cbrt|P|, G=theta^2, B=|v|)")
+	fmt.Println("  V              Toggle vec3d wireframe overlay")
 	fmt.Println("  + / -          Brightness up/down")
 	fmt.Println("  O / P          Opacity down/up")
 	fmt.Println("  B              Toggle white/dark background")
 	fmt.Println("  S              Save screenshot (WebP)")
 	fmt.Println("  Shift+A        Export animated WebP (2x2 composite)")
+	fmt.Println("  7              Cycle vecstream field (when .vecstream loaded)")
 	fmt.Println("  R              Reset view")
 	fmt.Println("  Escape / Q     Quit")
 	fmt.Println()
@@ -1946,6 +3292,19 @@ func main() {
 
 	// Parse flags (before positional args)
 	cpuprofile := flag.String("cpuprofile", "", "write CPU profile to file")
+	snapshot := flag.String("snapshot", "", "Save snapshot(s) and exit. Modes: 'all' (all frames to dir), 'N' (single frame), 'N,M,...' (specific frames), 'animation' (animated webp)")
+	outdir := flag.String("outdir", ".", "Output directory for snapshots")
+	outfile := flag.String("out", "", "Output file path (for single frame or animation)")
+	azimuthFlag := flag.Float64("azimuth", 0.8, "Camera azimuth in radians")
+	elevationFlag := flag.Float64("elevation", 1.2, "Camera elevation in radians")
+	distanceFlag := flag.Float64("distance", 2.8, "Camera distance")
+	brightnessFlag := flag.Float64("brightness", 1.0, "Render brightness")
+	opacityFlag := flag.Float64("opacity", 3.0, "Render opacity")
+	widthFlag := flag.Int("width", 900, "Render width in pixels")
+	heightFlag := flag.Int("height", 700, "Render height in pixels")
+	bgWhiteFlag := flag.Bool("bg-white", false, "Use white background")
+	compositeFlag := flag.Bool("composite", false, "Render 2x2 composite (4 views)")
+	vecFlag := flag.String("vec", "", "Vec3D wireframe overlay file (.vec3d)")
 	flag.Parse()
 
 	// CPU profiling to file
@@ -1970,11 +3329,26 @@ func main() {
 
 	initZstd()
 
-	// Parse positional arg (SFA path) from remaining args after flags
+	// Parse positional args (SFA, VEC3D, or VecStream path) from remaining args after flags
 	args := flag.Args()
 	var sfaPath string
-	if len(args) > 0 {
-		sfaPath = args[0]
+	var vecPath string
+	var vecstreamPath string
+	if *vecFlag != "" {
+		vecPath = *vecFlag
+	}
+	for _, arg := range args {
+		if strings.HasSuffix(arg, ".vec3d") {
+			if vecPath == "" {
+				vecPath = arg
+			}
+		} else if strings.HasSuffix(arg, ".vecstream") {
+			if vecstreamPath == "" {
+				vecstreamPath = arg
+			}
+		} else if sfaPath == "" {
+			sfaPath = arg
+		}
 	}
 
 	// Load SFA if provided
@@ -1993,12 +3367,43 @@ func main() {
 		}
 	}
 
-	if sfa == nil {
-		fmt.Fprintf(os.Stderr, "Usage: volview3 [-cpuprofile file] <file.sfa>\n")
+	// Load VecStream if provided
+	var vstream *vecstreamFile
+	var vsDisplayFrames []vsDisplayFrame
+	if vecstreamPath != "" {
+		var err error
+		vstream, err = vecstreamOpen(vecstreamPath)
+		if err != nil {
+			log.Fatalf("Failed to open VecStream: %v", err)
+		}
+		defer vstream.close()
+		vsDisplayFrames = vstream.buildDisplayFrames()
+		fmt.Printf("VecStream: %d display frames, %d fields\n", len(vsDisplayFrames), vstream.nFields)
+	}
+
+	// Load Vec3D if provided
+	var vec *vec3dFile
+	if vecPath != "" {
+		var err error
+		vec, err = vec3dOpen(vecPath)
+		if err != nil {
+			log.Fatalf("Failed to open VEC3D: %v", err)
+		}
+	}
+
+	if sfa == nil && vec == nil && vstream == nil {
+		fmt.Fprintf(os.Stderr, "Usage: volview3 [-cpuprofile file] [-vec file.vec3d] <file.sfa|file.vec3d|file.vecstream>\n")
 		os.Exit(1)
 	}
 
-	volN := int(sfa.Nx)
+	var volN int
+	if sfa != nil {
+		volN = int(sfa.Nx)
+	} else if vstream != nil {
+		volN = int(vstream.Nx)
+	} else if vec != nil {
+		volN = int(vec.Nx)
+	}
 	vol := &volumeData{n: volN, rgba: make([]float32, volN*volN*volN*4)}
 
 	// Initialize GLFW
@@ -2012,8 +3417,15 @@ func main() {
 	glfw.WindowHint(glfw.ContextVersionMinor, 3)
 	glfw.WindowHint(glfw.OpenGLProfile, glfw.OpenGLCoreProfile)
 	glfw.WindowHint(glfw.OpenGLForwardCompatible, glfw.True)
+	if *snapshot != "" {
+		glfw.WindowHint(glfw.Visible, glfw.False)
+	}
 
-	window, err := glfw.CreateWindow(defaultWinW, defaultWinH, "volview3 -- GPU Volume Viewer", nil, nil)
+	winW, winH := defaultWinW, defaultWinH
+	if *snapshot != "" {
+		winW, winH = *widthFlag, *heightFlag
+	}
+	window, err := glfw.CreateWindow(winW, winH, "volview3 -- GPU Volume Viewer", nil, nil)
 	if err != nil {
 		log.Fatalf("Create window: %v", err)
 	}
@@ -2037,14 +3449,191 @@ func main() {
 	gpu.createVolumeTexture(volN)
 	gpu.uploadVolume(vol)
 
+	// Initialize line GPU resources for vec3d wireframe
+	var lineGPU *lineGPUResources
+	if vec != nil {
+		var err error
+		lineGPU, err = initLineGPUResources()
+		if err != nil {
+			log.Fatalf("Init line GPU: %v", err)
+		}
+		wireData, nVerts := vec.buildWireframeData()
+		lineGPU.uploadWireframe(wireData, nVerts)
+		fmt.Printf("Wireframe: %d vertices uploaded\n", nVerts)
+	}
+
 	fmt.Printf("Volume: %dx%dx%d loaded\n", volN, volN, volN)
 	printHelp()
 
 	params := newViewParams()
 
-	// Start async frame loader
-	var fl *frameLoader
-	if sfa != nil {
+	// Apply CLI camera overrides
+	params.azimuth = float32(*azimuthFlag)
+	params.elevation = float32(*elevationFlag)
+	params.distance = float32(*distanceFlag)
+	params.brightness = float32(*brightnessFlag)
+	params.opacity = float32(*opacityFlag)
+	params.bgWhite = *bgWhiteFlag
+	params.updateCamera()
+
+	var fl *frameLoader // declared early for callbacks; initialized after snapshot block
+
+	// === Headless snapshot mode (runs before async loader) ===
+	if *snapshot != "" && sfa != nil {
+		renderW := *widthFlag
+		renderH := *heightFlag
+
+		os.MkdirAll(*outdir, 0755)
+
+		// Parse frame list
+		var frameList []int
+		if *snapshot == "all" {
+			for i := 0; i < int(sfa.totalFrames); i++ {
+				frameList = append(frameList, i)
+			}
+		} else if *snapshot == "animation" {
+			for i := 0; i < int(sfa.totalFrames); i++ {
+				frameList = append(frameList, i)
+			}
+		} else {
+			// Parse comma-separated frame indices
+			for _, s := range strings.Split(*snapshot, ",") {
+				s = strings.TrimSpace(s)
+				if s == "" {
+					continue
+				}
+				var n int
+				fmt.Sscanf(s, "%d", &n)
+				if n >= 0 && n < int(sfa.totalFrames) {
+					frameList = append(frameList, n)
+				}
+			}
+		}
+
+		if len(frameList) == 0 {
+			fmt.Fprintf(os.Stderr, "No valid frames to render\n")
+			os.Exit(1)
+		}
+
+		// Create offscreen FBO
+		var fbo, fboTex uint32
+		fboW, fboH := renderW, renderH
+		if *compositeFlag {
+			fboW, fboH = renderW*2, renderH*2
+		}
+		gl.GenFramebuffers(1, &fbo)
+		gl.BindFramebuffer(gl.FRAMEBUFFER, fbo)
+		gl.GenTextures(1, &fboTex)
+		gl.BindTexture(gl.TEXTURE_2D, fboTex)
+		gl.TexImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, int32(fboW), int32(fboH), 0, gl.RGBA, gl.UNSIGNED_BYTE, nil)
+		gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR)
+		gl.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR)
+		gl.FramebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, fboTex, 0)
+
+		if gl.CheckFramebufferStatus(gl.FRAMEBUFFER) != gl.FRAMEBUFFER_COMPLETE {
+			log.Fatalf("FBO not complete")
+		}
+
+		gl.ActiveTexture(gl.TEXTURE0)
+		gl.BindTexture(gl.TEXTURE_3D, gpu.volTexture)
+
+		var animImages []image.Image
+		var animDurations []uint
+		var animDisposals []uint
+
+		for _, fi := range frameList {
+			frameTime, err := sfa.readFrame(uint32(fi))
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Frame %d error: %v\n", fi, err)
+				continue
+			}
+
+			phi0 := sfa.extractColumnF32(0)
+			phi1 := sfa.extractColumnF32(1)
+			phi2 := sfa.extractColumnF32(2)
+			var theta0, theta1, theta2 []float32
+			if sfa.nColumns >= 6 {
+				theta0 = sfa.extractColumnF32(3)
+				theta1 = sfa.extractColumnF32(4)
+				theta2 = sfa.extractColumnF32(5)
+			}
+			computeFieldView(int(sfa.Nx), phi0, phi1, phi2, theta0, theta1, theta2, vol, 0)
+			gpu.uploadVolume(vol)
+
+			gl.BindFramebuffer(gl.FRAMEBUFFER, fbo)
+			gl.Clear(gl.COLOR_BUFFER_BIT)
+
+			if *compositeFlag {
+				halfW, halfH := renderW, renderH
+				renderQuadrant(gpu, params, 0, halfH, halfW, halfH, 1, 1, 1, false)
+				renderQuadrant(gpu, params, halfW, halfH, halfW, halfH, 1, 0, 1, false)
+				renderQuadrant(gpu, params, 0, 0, halfW, halfH, 1, 1, 1, true)
+				renderQuadrant(gpu, params, halfW, 0, halfW, halfH, 0, 1, 0, false)
+			} else {
+				mr, mg, mb := float32(1), float32(1), float32(1)
+				renderQuadrant(gpu, params, 0, 0, fboW, fboH, mr, mg, mb, params.bgWhite)
+			}
+
+			img := readFramebuffer(0, 0, fboW, fboH)
+
+			if *snapshot == "animation" {
+				animImages = append(animImages, img)
+				animDurations = append(animDurations, 200)
+				animDisposals = append(animDisposals, 1)
+				fmt.Printf("  Frame %d/%d t=%.3f\n", fi+1, int(sfa.totalFrames), frameTime)
+			} else {
+				// Save individual image
+				outPath := *outfile
+				if outPath == "" {
+					outPath = fmt.Sprintf("%s/frame_%04d_t%.3f.webp", *outdir, fi, frameTime)
+				}
+				f, err := os.Create(outPath)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Create %s: %v\n", outPath, err)
+					continue
+				}
+				if err := nativewebp.Encode(f, img, nil); err != nil {
+					fmt.Fprintf(os.Stderr, "Encode %s: %v\n", outPath, err)
+				}
+				f.Close()
+				fmt.Printf("Saved %s (frame %d, t=%.3f, %dx%d)\n", outPath, fi, frameTime, fboW, fboH)
+			}
+		}
+
+		// Save animation if in animation mode
+		if *snapshot == "animation" && len(animImages) > 0 {
+			outPath := *outfile
+			if outPath == "" {
+				outPath = fmt.Sprintf("%s/animation.webp", *outdir)
+			}
+			f, err := os.Create(outPath)
+			if err != nil {
+				log.Fatalf("Create animation: %v", err)
+			}
+			ani := &nativewebp.Animation{
+				Images:          animImages,
+				Durations:       animDurations,
+				Disposals:       animDisposals,
+				LoopCount:       0,
+				BackgroundColor: 0xFF0D0D12,
+			}
+			if err := nativewebp.EncodeAll(f, ani, nil); err != nil {
+				log.Fatalf("Encode animation: %v", err)
+			}
+			f.Close()
+			fmt.Printf("Animation saved: %s (%dx%d, %d frames)\n", outPath, fboW, fboH, len(animImages))
+		}
+
+		gl.BindFramebuffer(gl.FRAMEBUFFER, 0)
+		gl.DeleteTextures(1, &fboTex)
+		gl.DeleteFramebuffers(1, &fbo)
+		fmt.Println("Snapshot mode complete")
+		os.Exit(0)
+	}
+
+	// Start async frame loader (only for interactive mode — snapshot exits above)
+	var vfl *vsFrameLoader // vecstream frame loader
+	if sfa != nil && fl == nil {
 		total := volN * volN * volN
 		fl = &frameLoader{sfa: sfa, volN: volN}
 		fl.workVol.absPBuf = make([]float32, total)
@@ -2052,6 +3641,15 @@ func main() {
 		fl.workVol.theta2Buf = make([]float32, total)
 		fl.workVol.rgba = make([]float32, total*4)
 		loadSFAFrame(fl, params)
+	} else if vstream != nil {
+		total := volN * volN * volN
+		vfl = &vsFrameLoader{
+			vs:            vstream,
+			displayFrames: vsDisplayFrames,
+			volN:          volN,
+		}
+		vfl.workVol.rgba = make([]float32, total*4)
+		loadVSFrame(vfl, params)
 	}
 
 	lastAnimTime := time.Now()
@@ -2120,6 +3718,13 @@ func main() {
 			w.SetShouldClose(true)
 		case glfw.KeyR:
 			params.reset()
+		case glfw.KeyV:
+			params.showVec = !params.showVec
+			if params.showVec {
+				fmt.Println("Vec3D overlay: ON")
+			} else {
+				fmt.Println("Vec3D overlay: OFF")
+			}
 		case glfw.KeyB:
 			params.bgWhite = !params.bgWhite
 			if params.bgWhite {
@@ -2220,6 +3825,8 @@ func main() {
 		case glfw.KeyLeft:
 			if fl != nil {
 				navigateFrame(fl, params, -1)
+			} else if vfl != nil {
+				navigateVSFrame(vfl, params, -1)
 			}
 		case glfw.KeyA:
 			if mods&glfw.ModShift != 0 {
@@ -2234,21 +3841,39 @@ func main() {
 				// Plain A: previous frame
 				if fl != nil {
 					navigateFrame(fl, params, -1)
+				} else if vfl != nil {
+					navigateVSFrame(vfl, params, -1)
 				}
 			}
 		case glfw.KeyRight, glfw.KeyD:
 			if fl != nil {
 				navigateFrame(fl, params, 1)
+			} else if vfl != nil {
+				navigateVSFrame(vfl, params, 1)
 			}
 		case glfw.KeyHome:
 			if fl != nil {
 				params.curFrame = 0
 				loadSFAFrame(fl, params)
+			} else if vfl != nil {
+				params.curFrame = 0
+				loadVSFrame(vfl, params)
 			}
 		case glfw.KeyEnd:
 			if fl != nil {
 				params.curFrame = int(sfa.totalFrames) - 1
 				loadSFAFrame(fl, params)
+			} else if vfl != nil {
+				params.curFrame = len(vfl.displayFrames) - 1
+				loadVSFrame(vfl, params)
+			}
+		// Vecstream field cycling
+		case glfw.Key7:
+			if vfl != nil {
+				params.vsFieldIdx = (params.vsFieldIdx + 1) % int(vstream.nFields)
+				fmt.Printf("VecStream field: %d/%d\n", params.vsFieldIdx, vstream.nFields)
+				// Reset reconstruction cache for new field
+				loadVSFrame(vfl, params)
 			}
 		}
 	})
@@ -2257,7 +3882,7 @@ func main() {
 	for !window.ShouldClose() {
 		glfw.PollEvents()
 
-		// Check async frame loader
+		// Check async frame loader (SFA)
 		if fl != nil {
 			if newVol, frameTime, frameIdx, ok := fl.consume(); ok {
 				// Recreate texture if size changed
@@ -2269,7 +3894,20 @@ func main() {
 			}
 		}
 
-		// Animation
+		// Check async frame loader (VecStream)
+		if vfl != nil {
+			if newVol, frameTime, frameIdx, fType, ok := vfl.consume(); ok {
+				if newVol.n != gpu.volSize {
+					gpu.createVolumeTexture(newVol.n)
+				}
+				gpu.uploadVolume(newVol)
+				fmt.Printf("Frame %d/%d t=%.3f [%s] field=%d (ready)\n",
+					frameIdx+1, len(vfl.displayFrames), frameTime,
+					vsFrameTypeName(fType), vfl.fieldIdx)
+			}
+		}
+
+		// Animation (SFA)
 		if params.playing && fl != nil && !fl.isLoading() {
 			now := time.Now()
 			if now.Sub(lastAnimTime) > animInterval {
@@ -2283,13 +3921,41 @@ func main() {
 			}
 		}
 
+		// Animation (VecStream)
+		if params.playing && vfl != nil && !vfl.isLoading() {
+			now := time.Now()
+			if now.Sub(lastAnimTime) > animInterval {
+				nextFrame := params.curFrame + 1
+				if nextFrame >= len(vfl.displayFrames) {
+					nextFrame = 0
+				}
+				params.curFrame = nextFrame
+				loadVSFrame(vfl, params)
+				lastAnimTime = now
+			}
+		}
+
 		// Render
 		w, h := window.GetFramebufferSize()
 		gl.Viewport(0, 0, int32(w), int32(h))
-		gl.Clear(gl.COLOR_BUFFER_BIT)
+		gl.Clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
 
-		gpu.updateUniforms(params, float32(w), float32(h))
-		gpu.render()
+		if sfa != nil || vstream != nil {
+			gpu.updateUniforms(params, float32(w), float32(h))
+			gpu.render()
+		} else if !params.bgWhite {
+			// Vec3d-only mode: clear to dark background
+			gl.ClearColor(0.05, 0.05, 0.07, 1.0)
+			gl.Clear(gl.COLOR_BUFFER_BIT)
+		} else {
+			gl.ClearColor(1.0, 1.0, 1.0, 1.0)
+			gl.Clear(gl.COLOR_BUFFER_BIT)
+		}
+
+		// Wireframe overlay
+		if lineGPU != nil && params.showVec {
+			lineGPU.render(params, float32(w), float32(h))
+		}
 
 		window.SwapBuffers()
 	}

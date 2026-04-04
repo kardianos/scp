@@ -1,0 +1,280 @@
+/* chiral_quark.mac — Level 0: Single chiral excitation in 3D
+ *
+ * Goal: Find the simplest self-consistent localized excitation of a single
+ * scalar field component phi_a under the static Cosserat equations.
+ *
+ * Equations at stationarity:
+ *   0 = Lap(phi_a) - m^2 phi_a - V'(P) dP/dphi_a + eta*curl(theta)_a - ...
+ *   0 = Lap(theta_a) - (2*alpha + beta*|curl(phi)|^2)*theta_a + (alpha+eta)*curl(phi)_a
+ *
+ * For a SINGLE component (say a=0), with the other two zero:
+ *   P = phi_0 * phi_1 * phi_2 = 0  (since phi_1 = phi_2 = 0)
+ *   So the potential term VANISHES for a single quark.
+ *
+ * Parameters: m^2=2.25, eta=0.5, alpha=0.1, beta=0.5
+ */
+
+kill(all)$
+load(vect)$
+
+print("============================================================")$
+print("  LEVEL 0: SINGLE CHIRAL QUARK -- ANGULAR STRUCTURE")$
+print("============================================================")$
+print("")$
+
+alpha_val : 0.1$
+eta_val : 0.5$
+beta_val : 0.5$
+m2_val : 2.25$
+k_val : 1.5$
+mu_val : -41.345$
+kappa_val : 50.0$
+d1 : 3.0005$
+d2 : 4.4325$
+
+/* ================================================================
+   RESULT 1: Single quark is deconfined (P=0)
+   ================================================================ */
+
+print("RESULT 1: Single quark has P=0 -- no binding potential")$
+print("  P = phi_0 * phi_1 * phi_2 = 0 when any component is zero.")$
+print("  A single quark is DECONFINED (no self-binding force).")$
+print("")$
+
+/* ================================================================
+   SECTION 2: Spherical carrier wave ansatz
+   ================================================================ */
+
+print("SECTION 2: Spherical carrier wave")$
+print("  phi_a(r) = g(r) * cos(k*r + delta_a)")$
+print("  k = 1.5, delta = {0, 3.0005, 4.4325}")$
+print("")$
+
+/* ================================================================
+   SECTION 3: Radial ODE (spherical)
+   ================================================================
+   Lap(phi_a) in spherical coords for phi = g(r)*cos(kr+d):
+   = [g'' + 2g'/r - k^2*g] cos(kr+d) - 2k[g' + g/r] sin(kr+d)
+
+   Projecting onto cos(kr+d) (radial average):
+   g'' + 2g'/r - k^2*g - m^2*g = 0
+   g'' + 2g'/r - kappa^2*g = 0  where kappa^2 = k^2 + m^2 = 4.5
+   ================================================================ */
+
+kappa2 : k_val^2 + m2_val$
+kappa_eff : float(sqrt(kappa2))$
+
+print("SECTION 3: Radial ODE for single spherical quark")$
+print("  g'' + 2g'/r - kappa^2 * g = 0")$
+print("  kappa^2 = k^2 + m^2 = ", kappa2)$
+print("  kappa = ", kappa_eff)$
+print("")$
+
+print("Regular solution near r=0:")$
+print("  g(r) = g0 * (1 - kappa^2*r^2/6 + ...)")$
+print("Far field: g(r) ~ A * exp(-kappa*r)/r")$
+print("")$
+
+/* Verify near-origin expansion */
+print("Check near-origin Taylor:")$
+print("  g = g0(1 - kappa^2*r^2/6)")$
+print("  g' = -kappa^2*g0*r/3")$
+print("  g'' = -kappa^2*g0/3")$
+print("  g'' + 2g'/r = -kappa^2*g0/3 - 2*kappa^2*g0/3 = -kappa^2*g0 CHECK")$
+print("")$
+
+/* ================================================================
+   SECTION 4: Curl structure for spherical fields
+   ================================================================
+   For phi_a = g(r)*cos(kr + delta_a), each component is spherically symmetric.
+
+   d(phi_a)/dx_j = (x_j/r) * [g'*cos(kr+da) - g*k*sin(kr+da)]
+                 = (x_j/r) * h_a(r)
+
+   curl(phi)_i = sum_{j,k} eps_{ijk} (x_j/r) h_k(r)
+
+   Angular average over unit sphere:
+   <|curl(phi)|^2>_Omega = (2/3) * sum_a h_a^2(r)
+
+   Radial average of h_a^2:
+   <h_a^2>_r = (g'^2 + g^2*k^2)/2
+
+   Total: <|curl(phi)|^2> = g'^2 + k^2*g^2 = S
+   Same as cylindrical case!
+   ================================================================ */
+
+print("SECTION 4: Curl magnitude (angular + radial average)")$
+print("  S = <|curl(phi)|^2> = g'^2 + k^2*g^2")$
+print("  Identical to the cylindrical braid result.")$
+print("")$
+
+/* ================================================================
+   SECTION 5: Cosserat correction -- Gamma function
+   ================================================================ */
+
+Gamma_func(SS) := float(
+    (alpha_val+eta_val)^2 * 2*alpha_val / (2*alpha_val + beta_val*SS)^2
+    - alpha_val/2
+)$
+
+print("SECTION 5: Cosserat coupling coefficient")$
+print("  Gamma(S) = (alpha+eta)^2 * 2*alpha / (2*alpha + beta*S)^2 - alpha/2")$
+print("")$
+
+S_list : [0.0, 0.5, 1.0, 2.0, 5.0, 10.0]$
+for ii : 1 thru length(S_list) do block([SS, GG, meff2],
+    SS : S_list[ii],
+    GG : Gamma_func(SS),
+    meff2 : (k_val^2*(1-GG) + m2_val) / (1-GG/2),
+    print("  S =", SS, " Gamma =", GG, " m_eff^2 =", meff2)
+)$
+print("")$
+
+print("At S=0: m_eff^2 = 4.5 (same as bare -- corrections cancel)")$
+print("At S=2: Gamma=0 -- zero mismatch point")$
+print("At large S: Gamma -> -0.05 -- slight hardening")$
+print("")$
+
+/* ================================================================
+   SECTION 6: Chirality = phase reflection
+   ================================================================ */
+
+print("SECTION 6: Chirality")$
+print("  Chirality +1: phi_a = g(r) * cos(+k*r + delta_a)")$
+print("  Chirality -1: phi_a = g(r) * cos(-k*r + delta_a) = g(r)*cos(k*r - delta_a)")$
+print("  Flipping chirality: delta_a -> -delta_a")$
+print("")$
+
+/* Check P^2 averages for both chiralities */
+I_Psq_plus : float(integrate(cos(u)^2*cos(u+d1)^2*cos(u+d2)^2, u, 0, 2*%pi)/(2*%pi))$
+I_Psq_minus : float(integrate(cos(u)^2*cos(u-d1)^2*cos(u-d2)^2, u, 0, 2*%pi)/(2*%pi))$
+
+print("  <P^2> chirality +1: ", I_Psq_plus)$
+print("  <P^2> chirality -1: ", I_Psq_minus)$
+print("  (Equal by symmetry)")$
+print("")$
+
+/* Mean of P (should be zero due to oscillation) */
+I_P_plus : float(integrate(cos(u)*cos(u+d1)*cos(u+d2), u, 0, 2*%pi)/(2*%pi))$
+
+print("  <P> chirality +1: ", I_P_plus, " (zero -- P oscillates)")$
+print("")$
+
+/* ================================================================
+   SECTION 7: Triple product decomposition
+   ================================================================ */
+
+print("SECTION 7: Triple product cos(u)*cos(u+d1)*cos(u+d2)")$
+print("")$
+
+/* cos(A)*cos(B)*cos(C) = (1/4)[cos(A+B+C) + cos(A+B-C) + cos(A-B+C) + cos(-A+B+C)] */
+print("  = (1/4)[cos(3u+d1+d2) + cos(u+d1-d2) + cos(u-d1+d2) + cos(-u+d1+d2)]")$
+print("  d1+d2 =", float(d1+d2))$
+print("  d1-d2 =", float(d1-d2))$
+print("  cos(d1-d2) =", float(cos(d1-d2)))$
+print("  cos(d1+d2) =", float(cos(d1+d2)))$
+print("")$
+
+print("  ALL four terms oscillate in u -> <P> = 0")$
+print("  But <P^2> =", I_Psq_plus, "!= 0")$
+print("  P_rms = g^3 * sqrt(<P^2>) = g^3 *", float(sqrt(I_Psq_plus)))$
+print("")$
+
+/* ================================================================
+   SECTION 8: Binding force (numerical)
+   ================================================================ */
+
+print("SECTION 8: Projected binding force F_V(g)")$
+print("  F_V = <-V'(P) * g^2 * cos(u+d1)*cos(u+d2) * cos(u)>_u")$
+print("  V'(P) = mu*P/(1+kappa*P^2)^2")$
+print("")$
+
+/* Compute F_V for various amplitudes g */
+F_binding(gg) := block([npts, fsum, u_i, c0, c1, c2, PP, Vp],
+    npts : 500,
+    fsum : 0.0,
+    for ii : 0 thru npts-1 do (
+        u_i : 2.0*%pi*ii/npts,
+        c0 : float(cos(u_i)),
+        c1 : float(cos(u_i + d1)),
+        c2 : float(cos(u_i + d2)),
+        PP : gg^3 * c0 * c1 * c2,
+        Vp : mu_val * PP / (1 + kappa_val*PP^2)^2,
+        fsum : fsum + (-Vp) * gg^2 * c1 * c2 * c0
+    ),
+    float(fsum / npts)
+)$
+
+g_list : [0.01, 0.05, 0.1, 0.15, 0.2, 0.3, 0.5, 0.8, 1.0]$
+for ii : 1 thru length(g_list) do block([gg, fv],
+    gg : g_list[ii],
+    fv : F_binding(gg),
+    print("  g =", gg, " F_V =", fv)
+)$
+print("")$
+
+/* ================================================================
+   SECTION 9: Shooting method for self-consistent profile
+   ================================================================ */
+
+print("SECTION 9: Numerical shooting for g(r)")$
+print("  ODE: g'' + 2g'/r - kappa^2*g + F_V(g) = 0")$
+print("  BC: g(0) = g0, g'(0) = 0, g(inf) = 0")$
+print("")$
+
+/* Simple Euler integration */
+dr_shoot : 0.05$
+rmax_shoot : 12.0$
+nsteps_shoot : 240$
+
+shoot(g0) := block([y1, y2, r_cur, rhs2, crossed, r_zero, ss],
+    y1 : float(g0),
+    y2 : 0.0,
+    crossed : false,
+    r_zero : 0.0,
+    y2 : float(dr_shoot * (kappa2*g0 - F_binding(g0))/3.0),
+    for ss : 1 thru nsteps_shoot do (
+        r_cur : 0.5*dr_shoot + ss*dr_shoot,
+        rhs2 : float(-2.0*y2/r_cur + kappa2*y1 - F_binding(y1)),
+        y1 : y1 + dr_shoot*y2,
+        y2 : y2 + dr_shoot*rhs2,
+        if (not crossed) and (y1 < 0) then (
+            crossed : true,
+            r_zero : r_cur
+        )
+    ),
+    if crossed then r_zero else -y1
+)$
+
+g0_list : [0.1, 0.15, 0.2, 0.25, 0.3]$
+for jj : 1 thru length(g0_list) do block([g0, result],
+    g0 : g0_list[jj],
+    result : shoot(g0),
+    if result > 0 then
+        print("  g0 =", g0, " crosses zero at r =", result)
+    else
+        print("  g0 =", g0, " g(rmax) =", -result, " (no zero crossing)")
+)$
+print("")$
+
+/* ================================================================
+   SUMMARY
+   ================================================================ */
+
+print("============================================================")$
+print("  LEVEL 0 SUMMARY")$
+print("============================================================")$
+print("")$
+print("1. A single quark (one phi_a nonzero) has NO binding potential (P=0).")$
+print("   ODE: g'' + 2g'/r - 4.5*g = 0 (modified spherical Bessel)")$
+print("   Regular solution: g(r) = g0*(1 - 0.75*r^2 + ...)")$
+print("   Far field: g ~ exp(-2.12*r)/r")$
+print("")$
+print("2. Cosserat corrections: <5% change to effective mass.")$
+print("   Shell structure comes from DYNAMIC relaxation, not equilibrium.")$
+print("")$
+print("3. Chirality chi=+/-1 flips the phase: delta_a -> -delta_a.")$
+print("   This flips the sign pattern of P (triple product).")$
+print("")$
+print("4. Single quark CANNOT self-bind. Need all 3 components for P != 0.")$
+print("   -> Proceed to Level 1 (three-component spherical composite).")$

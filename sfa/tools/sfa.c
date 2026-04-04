@@ -34,10 +34,7 @@ static inline double sfa_f16_to_f64(uint16_t h) {
     memcpy(&fv, &x, 4); return (double)fv;
 }
 
-/* Shared helper: f16 → f32 conversion */
-static inline float sfa_f16_to_f32(uint16_t h) {
-    return (float)sfa_f16_to_f64(h);
-}
+/* sfa_f16_to_f32 now provided by sfa.h — no local definition needed */
 
 /* ================================================================
    preview — Convert full SFA to uint8 preview
@@ -184,6 +181,15 @@ static int cmd_preview(int argc, char **argv) {
     for (int s = 0; s < n_scan; s++) {
         int fi = scan_frames[s];
         if (fi < 0 || fi >= (int)n_frames) continue;
+        /* Only scan voxel frames for quantization ranges */
+        if (sfa_frame_type(src, fi) != SFA_FRAME_VOXEL) {
+            /* Find nearest voxel frame */
+            for (int d = 1; d < (int)n_frames; d++) {
+                if (fi - d >= 0 && sfa_frame_type(src, fi - d) == SFA_FRAME_VOXEL) { fi = fi - d; break; }
+                if (fi + d < (int)n_frames && sfa_frame_type(src, fi + d) == SFA_FRAME_VOXEL) { fi = fi + d; break; }
+            }
+            if (sfa_frame_type(src, fi) != SFA_FRAME_VOXEL) continue;
+        }
         if (sfa_read_frame(src, fi, frame_buf) < 0) continue;
 
         for (long i = 0; i < src_N3; i++) {
@@ -271,6 +277,8 @@ static int cmd_preview(int argc, char **argv) {
     double wall0 = omp_get_wtime();
 
     for (uint32_t fi = 0; fi < n_frames; fi += sample_every) {
+        /* Skip non-voxel frames entirely */
+        if (sfa_frame_type(src, fi) != SFA_FRAME_VOXEL) continue;
         if (sfa_read_frame(src, fi, frame_buf) < 0) {
             fprintf(stderr, "  Warning: cannot read frame %d, skipping\n", fi);
             continue;

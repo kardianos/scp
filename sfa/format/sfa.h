@@ -63,6 +63,13 @@
 #define SFA_CHUNK_FRMD  0x444D5246  /* "FRMD" */
 #define SFA_CHUNK_KVMD  0x444D564B  /* "KVMD" */
 #define SFA_CHUNK_GDEF  0x46454447  /* "GDEF" */
+#define SFA_CHUNK_FRVD  0x44565246  /* "FRVD" — vector frame data */
+
+/* Frame type codes (stored in SFA_L2Entry.reserved, now frame_type) */
+#define SFA_FRAME_VOXEL  0   /* standard voxel data (FRMD chunk) */
+#define SFA_FRAME_VEC_I  1   /* vector I-frame: full polynomial patches (FRVD chunk) */
+#define SFA_FRAME_VEC_P  2   /* vector P-frame: sparse delta patches (FRVD chunk) */
+#define SFA_FRAME_VEC_K  3   /* vector K-frame: raw voxel keyframe for verification (FRMD chunk) */
 
 /* dtype codes */
 enum {
@@ -79,6 +86,26 @@ enum {
 };
 
 static const int sfa_dtype_size[] = {2,4,8,16, 1,2,4,8, 1,2,4,8};
+
+/* ---- Common helpers (used by analysis tools — avoids copy-paste) ---- */
+
+/* Convert f16 (IEEE 754 half) to f32. Handles zero/inf, no denormals. */
+#ifndef SFA_F16_TO_F32_DEFINED
+#define SFA_F16_TO_F32_DEFINED
+static inline float sfa_f16_to_f32(uint16_t h) {
+    uint16_t s = h & 0x8000; int e = (h >> 10) & 0x1F; uint16_t m = h & 0x3FF;
+    if (e == 0) return 0;
+    if (e == 31) return s ? -1e30f : 1e30f;
+    union { uint32_t u; float f; } conv;
+    conv.u = ((uint32_t)s << 16) | ((uint32_t)(e-15+127) << 23) | ((uint32_t)m << 13);
+    return conv.f;
+}
+#endif
+
+/* Read a single voxel from a frame buffer as float.
+ * Declared here, defined after SFA struct (needs SFA* for column info).
+ * Usage: sfa_read_voxel_f32(buf, sfa, col, idx) */
+/* Full signature declared after SFA struct definition below */
 
 /* ---- Structures ---- */
 
@@ -99,7 +126,7 @@ typedef struct {
     uint64_t offset;
     uint64_t compressed_size;
     uint32_t checksum;
-    uint32_t reserved;
+    uint32_t frame_type;  /* SFA_FRAME_VOXEL=0, SFA_FRAME_VEC_I=1, VEC_P=2, VEC_K=3 */
 } SFA_L2Entry;
 
 /* Multi-grid: per-grid definition (stored in GDEF chunk) */
@@ -157,7 +184,29 @@ typedef struct {
     /* GDEF multi-grid (optional, written between CDEF and KVMD) */
     int n_grids;
     SFA_GridDef grids[SFA_MAX_GRIDS];
+
+    /* Temporal model for FRVD P-frame reconstruction */
+    float *vec_temporal_mean;   /* n_patches × n_coeffs */
+    float *vec_temporal_amp;
+    float *vec_temporal_phase;
+    float vec_temporal_omega;
+    int vec_temporal_valid;     /* nonzero if temporal model loaded */
+    float *vec_prev_coeffs;    /* fallback: previous frame coefficients */
+    uint32_t vec_n_patches;
+    uint16_t vec_n_coeffs;
 } SFA;
+
+/* Implementation of sfa_read_voxel_f32 (declared above, needs SFA) */
+static inline float sfa_read_voxel_f32(const void *buf, const SFA *sfa, int col, long idx) {
+    uint64_t off = 0;
+    for (int c = 0; c < col; c++) off += sfa->N_total * sfa_dtype_size[sfa->columns[c].dtype];
+    int dt = sfa->columns[col].dtype;
+    const uint8_t *src = (const uint8_t*)buf + off;
+    if (dt == SFA_F16) return sfa_f16_to_f32(((const uint16_t*)src)[idx]);
+    if (dt == SFA_F32) return ((const float*)src)[idx];
+    if (dt == SFA_F64) return (float)((const double*)src)[idx];
+    return 0;
+}
 
 /* KVMD: key-value metadata associated with a range of frames.
  * Multiple KVMD chunks support multi-resolution / multi-parameter runs.
@@ -200,6 +249,40 @@ int  sfa_write_frame(SFA *s, double time, void **column_data);
 int  sfa_write_frame_ex(SFA *s, double time, void **column_data,
                         uint32_t grid_id, uint64_t frame_bytes_override);
 void sfa_close(SFA *s);
+
+/* Vector frame types for polynomial patch data.
+ * These share the same file, index, and compression as voxel frames.
+ * The frame_type field in the JMPF index distinguishes them. */
+
+/* Write a vector I-frame: full set of polynomial patches.
+ * Payload: [n_patches(u32)][block_size(u8)][n_coeffs(u16)][pad(u8)]
+ *          [origins(i16×3 × n_patches)][coeffs(f32 × n_patches × n_coeffs)] */
+int sfa_write_vec_iframe(SFA *s, double time,
+                         uint32_t n_patches, uint8_t block_size, uint16_t n_coeffs,
+                         const int16_t *origins,  /* n_patches × 3 */
+                         const float *coeffs);    /* n_patches × n_coeffs */
+
+/* Write a vector I-frame with temporal model for P-frame prediction.
+ * flags byte bit 0 = temporal model present.
+ * After coefficients: [omega(f32)][mean(f32×n)][amp(f32×n)][phase(f32×n)]
+ * where n = n_patches × n_coeffs.
+ * P-frame deltas are then: actual - (mean + amp*cos(omega*t + phase)). */
+int sfa_write_vec_iframe_temporal(SFA *s, double time,
+                         uint32_t n_patches, uint8_t block_size, uint16_t n_coeffs,
+                         const int16_t *origins, const float *coeffs,
+                         float omega, const float *temp_mean,
+                         const float *temp_amp, const float *temp_phase);
+
+/* Write a vector P-frame: sparse delta patches.
+ * Payload: [n_deltas(u32)][n_coeffs(u16)][pad(u16)]
+ *          [indices(u32 × n_deltas)][delta_coeffs(f32 × n_deltas × n_coeffs)] */
+int sfa_write_vec_pframe(SFA *s, double time,
+                         uint32_t n_deltas, uint16_t n_coeffs,
+                         const uint32_t *indices,
+                         const float *delta_coeffs);
+
+/* Get the frame type for an indexed frame */
+uint32_t sfa_frame_type(SFA *s, uint32_t frame_idx);
 
 /* Streaming support:
  *
@@ -817,6 +900,146 @@ int sfa_write_frame_ex(SFA *s, double time, void **column_data,
     return 0;
 }
 
+/* ---- Vector frame writers ---- */
+
+/* Internal: write a FRVD chunk with the given payload and frame_type */
+static int sfa_write_vec_chunk(SFA *s, double time, uint32_t frame_type,
+                                const void *payload, uint64_t payload_size) {
+    FILE *fp = s->fp;
+    if (!fp || s->mode != 1) return -1;
+
+    /* Zstd compress the payload */
+    size_t bound = ZSTD_compressBound(payload_size);
+    void *comp = malloc(bound);
+    size_t comp_size = ZSTD_compress(comp, bound, payload, payload_size, 3);
+    if (ZSTD_isError(comp_size)) { free(comp); return -1; }
+
+    /* Write FRVD chunk: type(4) + size(8) + time(8) + compressed_data */
+    fseek(fp, 0, SEEK_END);
+    uint64_t frame_offset = ftell(fp);
+
+    uint32_t chunk_type = SFA_CHUNK_FRVD;
+    uint64_t chunk_size = 8 + comp_size;  /* time(8) + compressed data */
+    fwrite(&chunk_type, 4, 1, fp);
+    fwrite(&chunk_size, 8, 1, fp);
+    fwrite(&time, 8, 1, fp);
+    fwrite(comp, 1, comp_size, fp);
+    free(comp);
+
+    /* Update JMPF index (same as voxel frames) */
+    uint32_t checksum = sfa_crc32(payload, payload_size);
+    if (s->cur_jmpf_offset) {
+        /* JMPF layout: chunk_header(12) + max_entries(4) + current_entries(4) + entries... */
+        long jmpf_entry = (long)s->cur_jmpf_offset + 12 + 8 + (long)s->cur_jmpf_entries * 32;
+        fseek(fp, jmpf_entry, SEEK_SET);
+        fwrite(&time, 8, 1, fp);
+        fwrite(&frame_offset, 8, 1, fp);
+        fwrite(&comp_size, 8, 1, fp);
+        fwrite(&checksum, 4, 1, fp);
+        fwrite(&frame_type, 4, 1, fp);
+        s->cur_jmpf_entries++;
+        /* Update current_entries in JMPF header */
+        fseek(fp, (long)s->cur_jmpf_offset + 12 + 4, SEEK_SET);
+        fwrite(&s->cur_jmpf_entries, 4, 1, fp);
+
+        /* Update JTOP frame_count */
+        long jtop_fc = (long)s->cur_jtop_offset + 12 + 16 + s->cur_l1_index * 16 + 12;
+        fseek(fp, jtop_fc, SEEK_SET);
+        fwrite(&s->cur_jmpf_entries, 4, 1, fp);
+
+        s->total_frames++;
+        fseek(fp, 0, SEEK_END);
+    }
+    return 0;
+}
+
+int sfa_write_vec_iframe(SFA *s, double time,
+                         uint32_t n_patches, uint8_t block_size, uint16_t n_coeffs,
+                         const int16_t *origins, const float *coeffs) {
+    /* Build payload: header + origins + coefficients */
+    uint8_t pad = 0;
+    uint64_t origin_bytes = (uint64_t)n_patches * 6;  /* 3 × int16 */
+    uint64_t coeff_bytes = (uint64_t)n_patches * n_coeffs * 4;
+    uint64_t payload_size = 8 + origin_bytes + coeff_bytes;  /* header(8) + data */
+
+    uint8_t *payload = (uint8_t*)malloc(payload_size);
+    uint64_t off = 0;
+
+    memcpy(payload + off, &n_patches, 4); off += 4;
+    memcpy(payload + off, &block_size, 1); off += 1;
+    memcpy(payload + off, &n_coeffs, 2); off += 2;
+    memcpy(payload + off, &pad, 1); off += 1;
+    memcpy(payload + off, origins, origin_bytes); off += origin_bytes;
+    memcpy(payload + off, coeffs, coeff_bytes); off += coeff_bytes;
+
+    int ret = sfa_write_vec_chunk(s, time, SFA_FRAME_VEC_I, payload, payload_size);
+    free(payload);
+    return ret;
+}
+
+int sfa_write_vec_iframe_temporal(SFA *s, double time,
+                         uint32_t n_patches, uint8_t block_size, uint16_t n_coeffs,
+                         const int16_t *origins, const float *coeffs,
+                         float omega, const float *temp_mean,
+                         const float *temp_amp, const float *temp_phase) {
+    uint8_t flags = 0x01;  /* bit 0 = has temporal model */
+    uint64_t n_total = (uint64_t)n_patches * n_coeffs;
+    uint64_t origin_bytes = (uint64_t)n_patches * 6;
+    uint64_t coeff_bytes = n_total * 4;
+    uint64_t model_bytes = 4 + n_total * 4 * 3;  /* omega + mean + amp + phase */
+    uint64_t payload_size = 8 + origin_bytes + coeff_bytes + model_bytes;
+
+    uint8_t *payload = (uint8_t*)malloc(payload_size);
+    uint64_t off = 0;
+
+    memcpy(payload + off, &n_patches, 4); off += 4;
+    memcpy(payload + off, &block_size, 1); off += 1;
+    memcpy(payload + off, &n_coeffs, 2); off += 2;
+    memcpy(payload + off, &flags, 1); off += 1;
+    memcpy(payload + off, origins, origin_bytes); off += origin_bytes;
+    memcpy(payload + off, coeffs, coeff_bytes); off += coeff_bytes;
+    memcpy(payload + off, &omega, 4); off += 4;
+    memcpy(payload + off, temp_mean, n_total * 4); off += n_total * 4;
+    memcpy(payload + off, temp_amp, n_total * 4); off += n_total * 4;
+    memcpy(payload + off, temp_phase, n_total * 4); off += n_total * 4;
+
+    int ret = sfa_write_vec_chunk(s, time, SFA_FRAME_VEC_I, payload, payload_size);
+    free(payload);
+    return ret;
+}
+
+int sfa_write_vec_pframe(SFA *s, double time,
+                         uint32_t n_deltas, uint16_t n_coeffs,
+                         const uint32_t *indices, const float *delta_coeffs) {
+    uint16_t pad = 0;
+    uint64_t idx_bytes = (uint64_t)n_deltas * 4;
+    uint64_t coeff_bytes = (uint64_t)n_deltas * n_coeffs * 4;
+    uint64_t payload_size = 8 + idx_bytes + coeff_bytes;
+
+    uint8_t *payload = (uint8_t*)malloc(payload_size);
+    uint64_t off = 0;
+
+    memcpy(payload + off, &n_deltas, 4); off += 4;
+    memcpy(payload + off, &n_coeffs, 2); off += 2;
+    memcpy(payload + off, &pad, 2); off += 2;
+    if (n_deltas > 0 && indices && delta_coeffs) {
+        memcpy(payload + off, indices, idx_bytes); off += idx_bytes;
+        memcpy(payload + off, delta_coeffs, coeff_bytes); off += coeff_bytes;
+    }
+
+    int ret = sfa_write_vec_chunk(s, time, SFA_FRAME_VEC_P, payload, payload_size);
+    free(payload);
+    return ret;
+}
+
+static int sfa_find_frame(SFA *s, uint32_t frame_idx, SFA_L2Entry *out);  /* forward decl */
+
+uint32_t sfa_frame_type(SFA *s, uint32_t frame_idx) {
+    SFA_L2Entry entry;
+    if (sfa_find_frame(s, frame_idx, &entry) != 0) return SFA_FRAME_VOXEL;
+    return entry.frame_type;
+}
+
 void sfa_enable_split(SFA *s) {
     s->split_output = 1;
     /* The caller must set split_base before calling finalize_header.
@@ -982,7 +1205,7 @@ static int sfa_find_frame(SFA *s, uint32_t frame_idx, SFA_L2Entry *out) {
             fread(&out->offset, 8, 1, fp);
             fread(&out->compressed_size, 8, 1, fp);
             fread(&out->checksum, 4, 1, fp);
-            fread(&out->reserved, 4, 1, fp);
+            fread(&out->frame_type, 4, 1, fp);
             return 0;
         }
 
@@ -996,6 +1219,261 @@ static int sfa_find_frame(SFA *s, uint32_t frame_idx, SFA_L2Entry *out) {
 int sfa_read_frame(SFA *s, uint32_t frame_idx, void *buf) {
     SFA_L2Entry entry;
     if (sfa_find_frame(s, frame_idx, &entry) < 0) return -1;
+
+    /* FRVD vector frame: decompress, evaluate patches into buf as if it were voxel data */
+    if (entry.frame_type == SFA_FRAME_VEC_I || entry.frame_type == SFA_FRAME_VEC_P) {
+        /* Read compressed payload (skip chunk header + time) */
+        fseek(s->fp, (long)entry.offset + 20, SEEK_SET);
+        void *comp = malloc(entry.compressed_size);
+        if (!comp) return -1;
+        if (fread(comp, 1, entry.compressed_size, s->fp) != entry.compressed_size) {
+            free(comp); return -1;
+        }
+        /* Decompress */
+        size_t bound = entry.compressed_size * 20; /* estimate */
+        void *payload = malloc(bound);
+        size_t dec = ZSTD_decompress(payload, bound, comp, entry.compressed_size);
+        free(comp);
+        if (ZSTD_isError(dec)) {
+            /* Try larger bound */
+            free(payload);
+            bound = entry.compressed_size * 100;
+            payload = malloc(bound);
+            fseek(s->fp, (long)entry.offset + 20, SEEK_SET);
+            comp = malloc(entry.compressed_size);
+            fread(comp, 1, entry.compressed_size, s->fp);
+            dec = ZSTD_decompress(payload, bound, comp, entry.compressed_size);
+            free(comp);
+            if (ZSTD_isError(dec)) { free(payload); return -1; }
+        }
+
+        /* Parse header (shared by I and P frames) */
+        uint8_t *p = (uint8_t*)payload;
+
+        if (entry.frame_type == SFA_FRAME_VEC_I) {
+            /* I-frame: [n_patches(4)][bs(1)][nc(2)][flags(1)][origins(n*6)][coeffs(n*nc*4)]
+             * If flags & 1: [omega(4)][mean(n*nc*4)][amp(n*nc*4)][phase(n*nc*4)] */
+            uint32_t np; memcpy(&np, p, 4); p += 4;
+            int bs = p[0]; p++;
+            uint16_t nc; memcpy(&nc, p, 2); p += 2;
+            uint8_t flags = p[0]; p++;
+
+            int16_t *origins = (int16_t*)p;
+            p += np * 6;
+            float *coeffs = (float*)p;
+            p += (long)np * nc * 4;
+
+            /* Store coefficients for P-frame reconstruction */
+            long n_total = (long)np * nc;
+            s->vec_n_patches = np;
+            s->vec_n_coeffs = nc;
+            free(s->vec_prev_coeffs);
+            s->vec_prev_coeffs = (float*)malloc(n_total * sizeof(float));
+            memcpy(s->vec_prev_coeffs, coeffs, n_total * sizeof(float));
+
+            /* Parse temporal model if present */
+            if (flags & 0x01) {
+                float omega; memcpy(&omega, p, 4); p += 4;
+                s->vec_temporal_omega = omega;
+                free(s->vec_temporal_mean); free(s->vec_temporal_amp); free(s->vec_temporal_phase);
+                s->vec_temporal_mean  = (float*)malloc(n_total * sizeof(float));
+                s->vec_temporal_amp   = (float*)malloc(n_total * sizeof(float));
+                s->vec_temporal_phase = (float*)malloc(n_total * sizeof(float));
+                memcpy(s->vec_temporal_mean, p, n_total * 4); p += n_total * 4;
+                memcpy(s->vec_temporal_amp, p, n_total * 4); p += n_total * 4;
+                memcpy(s->vec_temporal_phase, p, n_total * 4); p += n_total * 4;
+                s->vec_temporal_valid = 1;
+            } else {
+                s->vec_temporal_valid = 0;
+            }
+
+            /* Evaluate coefficients to voxel buffer */
+            int n_fields = 1, pf_nc = nc;
+            if (nc > 64) {
+                if (nc % 64 == 0) { n_fields = nc / 64; pf_nc = 64; }
+                else if (nc % 27 == 0) { n_fields = nc / 27; pf_nc = 27; }
+                else if (nc % 8 == 0)  { n_fields = nc / 8;  pf_nc = 8; }
+            }
+            int order = 3;
+            if (pf_nc <= 27) order = 2;
+            if (pf_nc <= 8) order = 1;
+            int o1 = order + 1;
+
+            uint64_t col_offsets[64];
+            { uint64_t off2 = 0;
+              for (uint32_t cc = 0; cc < s->n_columns; cc++) {
+                  col_offsets[cc] = off2;
+                  off2 += s->N_total * sfa_dtype_size[s->columns[cc].dtype];
+              }
+            }
+            memset(buf, 0, s->frame_bytes);
+            int N = s->Nx;
+            #ifdef _OPENMP
+            #pragma omp parallel for schedule(dynamic)
+            #endif
+            for (uint32_t pi = 0; pi < np; pi++) {
+                int ox = origins[pi*3], oy = origins[pi*3+1], oz = origins[pi*3+2];
+                float *pc = coeffs + (long)pi * nc;
+                for (int di = 0; di < bs; di++) {
+                    int gi = ox + di; if (gi < 0 || gi >= N) continue;
+                    double tx = (bs>1) ? (double)di/(bs-1) : 0;
+                    double txa[4] = {1, tx, tx*tx, tx*tx*tx};
+                    for (int dj = 0; dj < bs; dj++) {
+                        int gj = oy + dj; if (gj < 0 || gj >= N) continue;
+                        double ty = (bs>1) ? (double)dj/(bs-1) : 0;
+                        double tya[4] = {1, ty, ty*ty, ty*ty*ty};
+                        for (int dk = 0; dk < bs; dk++) {
+                            int gk = oz + dk; if (gk < 0 || gk >= N) continue;
+                            double tz = (bs>1) ? (double)dk/(bs-1) : 0;
+                            double tza[4] = {1, tz, tz*tz, tz*tz*tz};
+                            long idx = (long)gi*N*N + gj*N + gk;
+                            for (int f = 0; f < n_fields && f < (int)s->n_columns; f++) {
+                                float *fc = pc + f * pf_nc;
+                                double val = 0;
+                                for (int a = 0; a < o1; a++)
+                                for (int b = 0; b < o1; b++) {
+                                    double ab = txa[a]*tya[b];
+                                    int base2 = a*o1*o1 + b*o1;
+                                    for (int c = 0; c < o1; c++)
+                                        val += fc[base2+c] * ab * tza[c];
+                                }
+                                float fv = (float)val;
+                                int es = sfa_dtype_size[s->columns[f].dtype];
+                                uint8_t *dst = (uint8_t*)buf + col_offsets[f] + idx * es;
+                                if (es == 4) memcpy(dst, &fv, 4);
+                                else if (es == 2) {
+                                    uint32_t bits; memcpy(&bits, &fv, 4);
+                                    uint16_t sign = (bits >> 16) & 0x8000;
+                                    int exp2 = ((bits>>23)&0xFF) - 127 + 15;
+                                    uint16_t mant = (bits >> 13) & 0x3FF;
+                                    uint16_t h = (exp2<=0)?sign:(exp2>=31)?(sign|0x7C00):(sign|(exp2<<10)|mant);
+                                    memcpy(dst, &h, 2);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } else {
+            /* P-frame: [n_deltas(4)][n_coeffs(2)][pad(2)][indices(n*4)][deltas(n*nc*4)]
+             * Reconstruct: if temporal model, actual = predicted(t) + delta
+             *              else actual = prev + delta */
+            uint32_t nd; memcpy(&nd, p, 4); p += 4;
+            uint16_t nc; memcpy(&nc, p, 2); p += 4; /* nc + pad */
+
+            if (!s->vec_prev_coeffs || s->vec_n_coeffs != nc) {
+                /* No baseline — can't reconstruct */
+                free(payload);
+                memset(buf, 0, s->frame_bytes);
+                return 0;
+            }
+
+            long n_total = (long)s->vec_n_patches * nc;
+
+            /* Build reconstructed coefficients */
+            float *recon = (float*)malloc(n_total * sizeof(float));
+
+            if (s->vec_temporal_valid) {
+                /* predicted = mean + amp*cos(omega*t + phase) */
+                float omega = s->vec_temporal_omega;
+                for (long i = 0; i < n_total; i++)
+                    recon[i] = s->vec_temporal_mean[i]
+                             + s->vec_temporal_amp[i]
+                             * cosf(omega * (float)entry.time + s->vec_temporal_phase[i]);
+            } else {
+                memcpy(recon, s->vec_prev_coeffs, n_total * sizeof(float));
+            }
+
+            /* Apply sparse deltas */
+            uint32_t *indices = (uint32_t*)p;
+            p += nd * 4;
+            float *deltas = (float*)p;
+            for (uint32_t d = 0; d < nd; d++) {
+                uint32_t pi = indices[d];
+                if (pi >= s->vec_n_patches) continue;
+                long base2 = (long)pi * nc;
+                for (int c = 0; c < nc; c++)
+                    recon[base2 + c] += deltas[(long)d * nc + c];
+            }
+
+            /* Save as prev for next frame */
+            memcpy(s->vec_prev_coeffs, recon, n_total * sizeof(float));
+
+            /* Evaluate to voxels (same logic as I-frame) */
+            int n_fields = 1, pf_nc = nc;
+            if (nc > 64) {
+                if (nc % 64 == 0) { n_fields = nc / 64; pf_nc = 64; }
+                else if (nc % 27 == 0) { n_fields = nc / 27; pf_nc = 27; }
+                else if (nc % 8 == 0)  { n_fields = nc / 8;  pf_nc = 8; }
+            }
+            int order = 3;
+            if (pf_nc <= 27) order = 2;
+            if (pf_nc <= 8) order = 1;
+            int o1 = order + 1;
+            int bs = 8;  /* block size from I-frame — TODO: store in SFA state */
+
+            uint64_t col_offsets[64];
+            { uint64_t off2 = 0;
+              for (uint32_t cc = 0; cc < s->n_columns; cc++) {
+                  col_offsets[cc] = off2;
+                  off2 += s->N_total * sfa_dtype_size[s->columns[cc].dtype];
+              }
+            }
+            memset(buf, 0, s->frame_bytes);
+            int N = s->Nx;
+            int BN = N / bs;
+            #ifdef _OPENMP
+            #pragma omp parallel for schedule(dynamic)
+            #endif
+            for (uint32_t pi = 0; pi < s->vec_n_patches; pi++) {
+                int bk = pi % BN, bj = (pi / BN) % BN, bi = pi / (BN * BN);
+                int ox = bi * bs, oy = bj * bs, oz = bk * bs;
+                float *pc = recon + (long)pi * nc;
+                for (int di = 0; di < bs; di++) {
+                    int gi = ox + di; if (gi >= N) continue;
+                    double tx = (bs>1) ? (double)di/(bs-1) : 0;
+                    double txa[4] = {1, tx, tx*tx, tx*tx*tx};
+                    for (int dj = 0; dj < bs; dj++) {
+                        int gj = oy + dj; if (gj >= N) continue;
+                        double ty = (bs>1) ? (double)dj/(bs-1) : 0;
+                        double tya[4] = {1, ty, ty*ty, ty*ty*ty};
+                        for (int dk = 0; dk < bs; dk++) {
+                            int gk = oz + dk; if (gk >= N) continue;
+                            double tz = (bs>1) ? (double)dk/(bs-1) : 0;
+                            double tza[4] = {1, tz, tz*tz, tz*tz*tz};
+                            long idx = (long)gi*N*N + gj*N + gk;
+                            for (int f = 0; f < n_fields && f < (int)s->n_columns; f++) {
+                                float *fc = pc + f * pf_nc;
+                                double val = 0;
+                                for (int a = 0; a < o1; a++)
+                                for (int b = 0; b < o1; b++) {
+                                    double ab = txa[a]*tya[b];
+                                    int base2 = a*o1*o1 + b*o1;
+                                    for (int c = 0; c < o1; c++)
+                                        val += fc[base2+c] * ab * tza[c];
+                                }
+                                float fv = (float)val;
+                                int es = sfa_dtype_size[s->columns[f].dtype];
+                                uint8_t *dst = (uint8_t*)buf + col_offsets[f] + idx * es;
+                                if (es == 4) memcpy(dst, &fv, 4);
+                                else if (es == 2) {
+                                    uint32_t bits; memcpy(&bits, &fv, 4);
+                                    uint16_t sign = (bits >> 16) & 0x8000;
+                                    int exp2 = ((bits>>23)&0xFF) - 127 + 15;
+                                    uint16_t mant = (bits >> 13) & 0x3FF;
+                                    uint16_t h = (exp2<=0)?sign:(exp2>=31)?(sign|0x7C00):(sign|(exp2<<10)|mant);
+                                    memcpy(dst, &h, 2);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            free(recon);
+        }
+        free(payload);
+        return 0;
+    }
 
     int codec = s->flags & 0xF;
 
@@ -1333,19 +1811,35 @@ int sfa_fixup_index(const char *path) {
         if (fread(&chunk_size, 8, 1, fp) != 1) break;
         if (chunk_size < 12 || chunk_size > (uint64_t)file_size) break;
 
-        if (memcmp(chunk_type, "FRMD", 4) == 0) {
-            uint64_t comp_size = chunk_size - 12;
+        int is_frmd = (memcmp(chunk_type, "FRMD", 4) == 0);
+        int is_frvd = (memcmp(chunk_type, "FRVD", 4) == 0);
 
-            /* Read compressed data */
-            void *comp = malloc(comp_size);
-            fread(comp, 1, comp_size, fp);
+        if (is_frmd || is_frvd) {
+            /* FRMD: chunk_size = 12 + compressed_data_size (includes chunk header)
+             * FRVD: chunk_size = time(8) + compressed_data_size */
+            double embedded_time = 0;
+            uint64_t comp_size;
+            if (is_frvd) {
+                fread(&embedded_time, 8, 1, fp);
+                comp_size = chunk_size - 8;
+            } else {
+                comp_size = chunk_size - 12;
+            }
 
-            /* Decompress to compute real CRC32 */
+            /* Read compressed data (skip decompression for FRVD — just index it) */
+            void *comp = NULL;
+            if (is_frmd) {
+                comp = malloc(comp_size);
+                fread(comp, 1, comp_size, fp);
+            }
+
+            uint32_t checksum = 0;
+            if (is_frmd && comp) {
+            /* Decompress to compute real CRC32 (FRMD only) */
             uint8_t *target = (codec == SFA_CODEC_BSS) ? bss_temp : decomp;
             size_t dec_size = ZSTD_decompress(target, frame_bytes, comp, comp_size);
             free(comp);
 
-            uint32_t checksum = 0;
             if (!ZSTD_isError(dec_size)) {
                 if (codec == SFA_CODEC_BSS && bss_temp) {
                     /* Reverse BSS to get original data for CRC */
@@ -1364,14 +1858,20 @@ int sfa_fixup_index(const char *path) {
                 }
                 checksum = sfa_crc32(decomp, frame_bytes);
             }
+            } /* end if (is_frmd && comp) */
 
             /* Determine which JMPF slot this frame goes in */
             uint32_t slot = frame_count % jmpf_max;
 
-            /* Recover time: use saved JMPF time if nonzero, else use dt*frame */
-            double time_val = saved_times[slot];
-            if (time_val == 0.0 && frame_count > 0)
-                time_val = dt_hdr * frame_count;
+            /* Recover time: FRVD has embedded time, FRMD uses saved or computed */
+            double time_val;
+            if (is_frvd) {
+                time_val = embedded_time;
+            } else {
+                time_val = saved_times[slot];
+                if (time_val == 0.0 && frame_count > 0)
+                    time_val = dt_hdr * frame_count;
+            }
 
             /* Write the JMPF entry */
             long slot_off = (long)jmpf_offset + 12 + 8 + (long)slot * 32;
@@ -1380,8 +1880,21 @@ int sfa_fixup_index(const char *path) {
             fwrite(&pos, 8, 1, fp);          /* FRMD chunk offset */
             fwrite(&comp_size, 8, 1, fp);    /* compressed size */
             fwrite(&checksum, 4, 1, fp);
-            uint32_t zero = 0;
-            fwrite(&zero, 4, 1, fp);
+            uint32_t ftype = SFA_FRAME_VOXEL;
+            if (is_frvd) {
+                /* Read existing frame_type from JMPF if slot was previously written.
+                 * The vec writers store the correct I/P type when writing.
+                 * Only fall back to heuristic if the slot is empty (0). */
+                fseek(fp, slot_off + 28, SEEK_SET);  /* frame_type is at offset 28 in JMPF entry */
+                uint32_t existing_ftype = 0;
+                fread(&existing_ftype, 4, 1, fp);
+                if (existing_ftype == SFA_FRAME_VEC_I || existing_ftype == SFA_FRAME_VEC_P) {
+                    ftype = existing_ftype;
+                } else {
+                    ftype = SFA_FRAME_VEC_I;  /* default for uninitialized entries */
+                }
+            }
+            fwrite(&ftype, 4, 1, fp);
 
             frame_count++;
 
@@ -1393,7 +1906,11 @@ int sfa_fixup_index(const char *path) {
             }
         }
 
-        pos += chunk_size;
+        /* FRMD chunk_size includes the 12-byte header; FRVD chunk_size is payload only */
+        if (is_frvd)
+            pos += 12 + chunk_size;
+        else
+            pos += chunk_size;
     }
 
     free(decomp);

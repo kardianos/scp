@@ -9,52 +9,21 @@
 
 #define SFA_IMPLEMENTATION
 #include "../format/sfa.h"
+#include "scp_config.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
 #include <sys/stat.h>
-#include <unistd.h>
 #include <pthread.h>
-
-#define NFIELDS 3
-#define PI 3.14159265358979323846
 #define THREADS_PER_BLOCK 256
 
 /* ================================================================
    Configuration — identical to scp_sim.c
    ================================================================ */
 
-typedef struct {
-    int N;
-    double L, T, dt_factor;
-    double m2, mtheta2, eta, mu, kappa;
-    double kappa_h;             /* chiral helicity coupling */
-    double alpha_cs;            /* Cosserat strain */
-    double beta_h;              /* curl-squared hardening */
-    int mode;
-    double inv_alpha, inv_beta, kappa_gamma;
-    int bc_type;                /* 0=absorb_sphere, 1=gradient_pinned */
-    double damp_width, damp_rate;
-    double bc_switch_time;      /* switch absorb->periodic at this sim time (0=never) */
-    double gradient_A_high, gradient_A_low;
-    int gradient_margin;
-    char init[32];
-    double A, sigma, A_bg, ellip, R_tube;
-    double delta[3];
-    char init_sfa[512];
-    int init_frame;
-    char init_exec[1024];
-    char output[512];
-    char diag_file[512];
-    int precision;
-    int output_split;
-    double snap_dt, diag_dt;
-    double burst_start, burst_end, burst_every;
-} Config;
+/* Config struct defined in scp_config.h */
 
-static Config cfg_defaults(void) {
+/* cfg_defaults through f16 helpers now in scp_config.h */
+#if 0  /* deleted — see scp_config.h */
+static Config DELETED_cfg_defaults(void) {
     Config c = {};
     c.N = 128;  c.L = 10.0;  c.T = 200.0;  c.dt_factor = 0.025;
     c.m2 = 2.25;  c.mtheta2 = 0.0;  c.eta = 0.5;
@@ -74,6 +43,9 @@ static Config cfg_defaults(void) {
     c.output_split = 0;
     c.snap_dt = 5.0;  c.diag_dt = 2.0;
     c.burst_start = 0;  c.burst_end = 0;  c.burst_every = 0;
+    c.vec_snap_dt = 0;
+    c.vec_iframe_interval = 100;
+    c.vec_delta_tol = 0.01;  c.vec_block_size = 8;
     return c;
 }
 
@@ -121,6 +93,13 @@ static void cfg_set(Config *c, const char *key, const char *val) {
         else if (!strcmp(val,"f64")) c->precision = 2;
     }
     else if (!strcmp(key,"output_split")) c->output_split = atoi(val);
+    else if (!strcmp(key,"vec_snap_dt"))        c->vec_snap_dt = atof(val);
+    else if (!strcmp(key,"vec_iframe_interval")) c->vec_iframe_interval = atoi(val);
+    else if (!strcmp(key,"vec_delta_tol"))      c->vec_delta_tol = atof(val);
+    else if (!strcmp(key,"vec_block_size"))     c->vec_block_size = atoi(val);
+    else if (!strcmp(key,"vec_output")) {} /* deprecated, ignored */
+    else if (!strcmp(key,"vec_kframe_interval")) {} /* deprecated */
+    else if (!strcmp(key,"vec_n_fields")) {} /* deprecated */
     else if (!strcmp(key,"burst_start")) c->burst_start = atof(val);
     else if (!strcmp(key,"burst_end"))   c->burst_end = atof(val);
     else if (!strcmp(key,"burst_every")) c->burst_every = atof(val);
@@ -201,6 +180,7 @@ static inline double f16_to_f64(uint16_t h) {
     float f; uint32_t x = ((uint32_t)sign << 16) | ((uint32_t)(exp-15+127) << 23) | ((uint32_t)mant << 13);
     memcpy(&f, &x, 4); return (double)f;
 }
+#endif /* deleted config/f16 block */
 
 /* ================================================================
    Hook-based async pipeline — FieldState, hooks, contexts
@@ -214,7 +194,7 @@ typedef struct {
     double L, dx, dt;
 } FieldState;
 
-#define MAX_HOOKS 4
+#define MAX_HOOKS 8
 
 typedef void (*HookFn)(int step, double t, const FieldState *state, void *ctx);
 
@@ -234,9 +214,12 @@ static void register_hook(HookFn fn, void *ctx) {
     }
 }
 
+/* Forward declare — defined before snap_hook implementation */
+typedef struct FrameWriter_ FrameWriter;
+
 /* Snapshot hook context — async f16 conversion + DMA + compress/write */
 typedef struct {
-    SFA *sfa;
+    FrameWriter *fw;  /* shared frame writer (thread-safe) */
     int precision;        /* 0=f16, 1=f32, 2=f64 */
     int snap_every;
 
@@ -324,6 +307,10 @@ static void grid_free(Grid *g) {
     free(g->mem); free(g);
 }
 
+/* Initialization from shared header */
+#include "scp_init.h"
+
+#if 0 /* deleted — now in scp_init.h */
 /* ================================================================
    Initialization (host-side, identical to scp_sim.c)
    ================================================================ */
@@ -538,6 +525,7 @@ static void do_init(Grid *g, const Config *c) {
     else if (!strcmp(c->init, "template")) init_template(g, c);
     else { fprintf(stderr, "FATAL: unknown init '%s'\n", c->init); exit(1); }
 }
+#endif /* deleted init block */
 
 /* ================================================================
    GPU constant memory
@@ -1246,6 +1234,210 @@ static void gpu_apply_gradient_bc(Grid *g, const Config *c) {
 }
 
 /* ================================================================
+   FrameWriter — thread-safe wrapper for SFA writes.
+   Both snap_hook (async writer thread) and vec_hook (main thread)
+   write through this. The mutex serializes all writes to one file.
+   ================================================================ */
+
+typedef struct FrameWriter_ {
+    SFA *sfa;
+    pthread_mutex_t mutex;  /* only held during fseek+fwrite+index — NOT during compression */
+} FrameWriter;
+
+static void fw_init(FrameWriter *fw, SFA *sfa) {
+    fw->sfa = sfa;
+    pthread_mutex_init(&fw->mutex, NULL);
+}
+
+static void fw_destroy(FrameWriter *fw) {
+    pthread_mutex_destroy(&fw->mutex);
+}
+
+/* Write a pre-compressed chunk to the SFA file under lock.
+ * chunk_type: SFA_CHUNK_FRMD or SFA_CHUNK_FRVD
+ * frame_type: SFA_FRAME_VOXEL, SFA_FRAME_VEC_I, SFA_FRAME_VEC_P
+ * The caller is responsible for compression — this only does file I/O. */
+static int fw_write_raw(FrameWriter *fw, uint32_t chunk_type, uint32_t frame_type,
+                         double time, const void *compressed, uint64_t comp_size,
+                         uint32_t checksum) {
+    pthread_mutex_lock(&fw->mutex);
+
+    SFA *s = fw->sfa;
+    FILE *fp = s->fp;
+
+    /* Append chunk: FRMD = type(4)+size(8)+data; FRVD = type(4)+size(8)+time(8)+data */
+    fseek(fp, 0, SEEK_END);
+    uint64_t frame_offset = ftell(fp);
+    if (chunk_type == SFA_CHUNK_FRVD) {
+        uint64_t chunk_size = 8 + comp_size;  /* time + data */
+        fwrite(&chunk_type, 4, 1, fp);
+        fwrite(&chunk_size, 8, 1, fp);
+        fwrite(&time, 8, 1, fp);
+        fwrite(compressed, 1, comp_size, fp);
+    } else {
+        uint64_t chunk_size = 12 + comp_size;  /* FRMD includes header in size */
+        fwrite(&chunk_type, 4, 1, fp);
+        fwrite(&chunk_size, 8, 1, fp);
+        fwrite(compressed, 1, comp_size, fp);
+    }
+
+    /* Update JMPF index */
+    if (s->cur_jmpf_offset) {
+        long jmpf_entry = (long)s->cur_jmpf_offset + 12 + 8 + s->cur_jmpf_entries * 32;
+        fseek(fp, jmpf_entry, SEEK_SET);
+        fwrite(&time, 8, 1, fp);
+        fwrite(&frame_offset, 8, 1, fp);
+        fwrite(&comp_size, 8, 1, fp);
+        fwrite(&checksum, 4, 1, fp);
+        fwrite(&frame_type, 4, 1, fp);
+
+        s->cur_jmpf_entries++;
+        fseek(fp, (long)s->cur_jmpf_offset + 12 + 4, SEEK_SET);
+        fwrite(&s->cur_jmpf_entries, 4, 1, fp);
+
+        long jtop_fc = (long)s->cur_jtop_offset + 12 + 16 + s->cur_l1_index * 16 + 12;
+        fseek(fp, jtop_fc, SEEK_SET);
+        fwrite(&s->cur_jmpf_entries, 4, 1, fp);
+
+        s->total_frames++;
+        fseek(fp, 0, SEEK_END);
+    }
+
+    pthread_mutex_unlock(&fw->mutex);
+    return 0;
+}
+
+/* High-level: compress + write a voxel frame.
+ * Compression happens OUTSIDE the lock — only fwrite under lock. */
+static int fw_write_voxel(FrameWriter *fw, double time, void **cols) {
+    SFA *s = fw->sfa;
+
+    /* Phase 1: Assemble + compress OUTSIDE the lock */
+    uint8_t *raw = (uint8_t*)malloc(s->frame_bytes);
+    uint64_t off = 0;
+    for (uint32_t c = 0; c < s->n_columns; c++) {
+        uint64_t col_bytes = s->N_total * sfa_dtype_size[s->columns[c].dtype];
+        memcpy(raw + off, cols[c], col_bytes);
+        off += col_bytes;
+    }
+    uint32_t checksum = sfa_crc32(raw, s->frame_bytes);
+
+    /* Per-column BSS+zstd compression (parallel, no lock) */
+    uint32_t nc = s->n_columns;
+    uint64_t *col_comp_sizes = (uint64_t*)calloc(nc, sizeof(uint64_t));
+    uint8_t **col_comp_data = (uint8_t**)calloc(nc, sizeof(uint8_t*));
+    uint64_t *col_offsets = (uint64_t*)calloc(nc, sizeof(uint64_t));
+    uint64_t *col_bytesv = (uint64_t*)calloc(nc, sizeof(uint64_t));
+    { uint64_t o2 = 0; for (uint32_t c = 0; c < nc; c++) {
+        col_offsets[c] = o2; col_bytesv[c] = s->N_total * sfa_dtype_size[s->columns[c].dtype]; o2 += col_bytesv[c];
+    }}
+
+    #ifdef _OPENMP
+    #pragma omp parallel for schedule(dynamic)
+    #endif
+    for (uint32_t c = 0; c < nc; c++) {
+        int es = sfa_dtype_size[s->columns[c].dtype];
+        uint64_t col_bytes = col_bytesv[c];
+        uint8_t *bss_col = (uint8_t*)malloc(col_bytes);
+        uint8_t *src_col = raw + col_offsets[c];
+        for (int b = 0; b < es; b++)
+            for (uint64_t v = 0; v < s->N_total; v++)
+                bss_col[b * s->N_total + v] = src_col[v * es + b];
+        size_t bound = ZSTD_compressBound(col_bytes);
+        col_comp_data[c] = (uint8_t*)malloc(bound);
+        col_comp_sizes[c] = ZSTD_compress(col_comp_data[c], bound, bss_col, col_bytes, 3);
+        free(bss_col);
+    }
+    free(col_offsets); free(col_bytesv);
+
+    /* Assemble compressed payload */
+    uint64_t total_comp = 4 + nc * 8;
+    for (uint32_t c = 0; c < nc; c++) total_comp += col_comp_sizes[c];
+    void *comp = malloc(total_comp);
+    uint8_t *p = (uint8_t*)comp;
+    memcpy(p, &nc, 4); p += 4;
+    memcpy(p, col_comp_sizes, nc * 8); p += nc * 8;
+    for (uint32_t c = 0; c < nc; c++) {
+        memcpy(p, col_comp_data[c], col_comp_sizes[c]); p += col_comp_sizes[c];
+        free(col_comp_data[c]);
+    }
+    free(col_comp_sizes); free(col_comp_data); free(raw);
+
+    /* Phase 2: Write under lock — just fseek + fwrite + index update */
+    int ret = fw_write_raw(fw, SFA_CHUNK_FRMD, SFA_FRAME_VOXEL, time, comp, total_comp, checksum);
+    free(comp);
+    return ret;
+}
+
+/* High-level: compress + write a vector I-frame.
+ * Compression happens OUTSIDE the lock, only fwrite under lock. */
+static int fw_write_vec_iframe(FrameWriter *fw, double time,
+                                uint32_t n_patches, uint8_t block_size, uint16_t n_coeffs,
+                                const int16_t *origins, const float *coeffs) {
+    /* Build payload */
+    uint8_t pad = 0;
+    uint64_t origin_bytes = (uint64_t)n_patches * 6;
+    uint64_t coeff_bytes = (uint64_t)n_patches * n_coeffs * 4;
+    uint64_t payload_size = 8 + origin_bytes + coeff_bytes;
+
+    uint8_t *payload = (uint8_t*)malloc(payload_size);
+    uint64_t off = 0;
+    memcpy(payload + off, &n_patches, 4); off += 4;
+    memcpy(payload + off, &block_size, 1); off += 1;
+    memcpy(payload + off, &n_coeffs, 2); off += 2;
+    memcpy(payload + off, &pad, 1); off += 1;
+    memcpy(payload + off, origins, origin_bytes); off += origin_bytes;
+    memcpy(payload + off, coeffs, coeff_bytes);
+
+    /* Compress OUTSIDE the lock */
+    uint32_t checksum = sfa_crc32(payload, payload_size);
+    size_t bound = ZSTD_compressBound(payload_size);
+    void *comp = malloc(bound);
+    size_t comp_size = ZSTD_compress(comp, bound, payload, payload_size, 3);
+    free(payload);
+
+    if (ZSTD_isError(comp_size)) { free(comp); return -1; }
+
+    /* Only the write is under lock */
+    int ret = fw_write_raw(fw, SFA_CHUNK_FRVD, SFA_FRAME_VEC_I, time, comp, comp_size, checksum);
+    free(comp);
+    return ret;
+}
+
+/* High-level: compress + write a vector P-frame.
+ * Compression OUTSIDE lock. */
+static int fw_write_vec_pframe(FrameWriter *fw, double time,
+                                uint32_t n_deltas, uint16_t n_coeffs,
+                                const uint32_t *indices, const float *delta_coeffs) {
+    uint16_t pad = 0;
+    uint64_t idx_bytes = (uint64_t)n_deltas * 4;
+    uint64_t coeff_bytes = (uint64_t)n_deltas * n_coeffs * 4;
+    uint64_t payload_size = 8 + idx_bytes + coeff_bytes;
+
+    uint8_t *payload = (uint8_t*)malloc(payload_size);
+    uint64_t off = 0;
+    memcpy(payload + off, &n_deltas, 4); off += 4;
+    memcpy(payload + off, &n_coeffs, 2); off += 2;
+    memcpy(payload + off, &pad, 2); off += 2;
+    if (n_deltas > 0 && indices && delta_coeffs) {
+        memcpy(payload + off, indices, idx_bytes); off += idx_bytes;
+        memcpy(payload + off, delta_coeffs, coeff_bytes);
+    }
+
+    uint32_t checksum = sfa_crc32(payload, payload_size);
+    size_t bound = ZSTD_compressBound(payload_size);
+    void *comp = malloc(bound);
+    size_t comp_size = ZSTD_compress(comp, bound, payload, payload_size, 3);
+    free(payload);
+
+    if (ZSTD_isError(comp_size)) { free(comp); return -1; }
+
+    int ret = fw_write_raw(fw, SFA_CHUNK_FRVD, SFA_FRAME_VEC_P, time, comp, comp_size, checksum);
+    free(comp);
+    return ret;
+}
+
+/* ================================================================
    Snapshot hook — async f16/f32 conversion + DMA + compress/write
    ================================================================ */
 
@@ -1279,7 +1471,7 @@ static void *snap_writer_thread(void *arg) {
             for (int c = 0; c < 12; c++)
                 cols[c] = base + c * N3;
         }
-        sfa_write_frame(ctx->sfa, ctx->frame_time, cols);
+        fw_write_voxel(ctx->fw, ctx->frame_time, cols);
 
         pthread_mutex_lock(&ctx->mutex);
         ctx->writer_busy = 0;
@@ -1289,10 +1481,10 @@ static void *snap_writer_thread(void *arg) {
     return NULL;
 }
 
-static SnapHookCtx create_snap_hook(SFA *sfa, int precision, int snap_every, long N3) {
+static SnapHookCtx create_snap_hook(FrameWriter *fw, int precision, int snap_every, long N3) {
     SnapHookCtx ctx;
     memset(&ctx, 0, sizeof(ctx));
-    ctx.sfa = sfa;
+    ctx.fw = fw;
     ctx.precision = precision;
     ctx.snap_every = snap_every;
     ctx.N3 = N3;
@@ -1631,6 +1823,274 @@ static void sfa_snap_gpu(SFA *sfa, Grid *g, double t, int precision) {
 }
 
 /* ================================================================
+   Vecstream output hook
+   ================================================================ */
+
+/* Vector frame output uses SFA's native FRVD chunks — no separate vecstream format */
+#include "vecstream_gpu_v2.cuh"
+
+typedef struct {
+    /* Config */
+    float delta_tol;
+    int iframe_interval;
+    int block_size;
+    int refit_interval;   /* refit temporal model every N frames */
+    float omega;          /* breathing frequency for temporal model */
+    /* State */
+    FrameWriter  *fw;    /* shared frame writer (same file as voxel frames) */
+    int           enabled;
+    int           N;
+    long          N3;
+    int           BN, n_patches;
+    int           vec_frame;
+    int           vec_snap_every;
+    int           cpp;            /* coefficients per patch (VS2_MULTI_TOTAL) */
+    long          n_total;        /* n_patches × cpp */
+    /* GPU buffers */
+    float        *d_coeffs;       /* n_patches × cpp (current frame) */
+    float        *d_prev_coeffs;  /* n_patches × cpp (previous frame for fallback) */
+    float        *d_predicted;    /* n_patches × cpp (temporal prediction) */
+    float        *d_residual;     /* n_patches × cpp (actual - predicted) */
+    uint32_t     *d_nz_patches;   /* nonzero patch indices */
+    uint32_t     *d_n_nonzero;    /* atomic counter */
+    /* Temporal model on GPU */
+    float        *d_temp_mean;    /* n_total */
+    float        *d_temp_amp;     /* n_total */
+    float        *d_temp_phase;   /* n_total */
+    float        *d_sum_cos;      /* n_total accumulators */
+    float        *d_sum_sin;
+    float        *d_sum_mean;
+    int           temporal_count; /* frames since last refit */
+    /* Host pinned buffers */
+    float        *h_coeffs;       /* n_total pinned */
+    float        *h_residual;     /* n_total pinned */
+    uint32_t     *h_nz_patches;   /* n_patches pinned */
+    float        *h_gather_buf;   /* n_total pinned — pre-allocated gather buffer */
+    cudaStream_t  stream;
+} VecHookCtx;
+
+static VecHookCtx create_vec_hook(const Config *c, double dt, int N3, FrameWriter *fw) {
+    VecHookCtx vh = {};
+    if (c->vec_snap_dt <= 0) { vh.enabled = 0; return vh; }
+
+    vh.enabled = 1;
+    vh.N = c->N;
+    vh.N3 = N3;
+    int BS = c->vec_block_size > 0 ? c->vec_block_size : 8;
+    vh.BN = c->N / BS;
+    vh.n_patches = vh.BN * vh.BN * vh.BN;
+    vh.delta_tol = c->vec_delta_tol > 0 ? c->vec_delta_tol : 0.01f;
+    vh.iframe_interval = c->vec_iframe_interval > 0 ? c->vec_iframe_interval : 100;
+    vh.block_size = BS;
+    vh.cpp = VS2_MULTI_TOTAL;  /* 6 × 64 = 384 coefficients per patch */
+    vh.n_total = (long)vh.n_patches * vh.cpp;
+    vh.omega = 2.0 * 3.14159265358979 / 2.2;  /* breathing frequency */
+    vh.refit_interval = 50;  /* refit temporal model every 50 vec frames */
+
+    double snap_dt = c->vec_snap_dt > 0 ? c->vec_snap_dt : c->snap_dt;
+    vh.vec_snap_every = (int)lround(snap_dt / dt);
+    if (vh.vec_snap_every < 1) vh.vec_snap_every = 1;
+
+    /* Use the shared FrameWriter — vector frames interleave with voxel frames in one file */
+    vh.fw = fw;
+    if (!vh.fw) {
+        fprintf(stderr, "vecstream: no frame writer provided\n");
+        vh.enabled = 0;
+        return vh;
+    }
+
+    /* GPU buffers — check each allocation */
+    long total_bytes = vh.n_total * sizeof(float);
+    cudaError_t err;
+    size_t free_mem, total_mem;
+    cudaMemGetInfo(&free_mem, &total_mem);
+    fprintf(stderr, "Vecstream: need %.0f MB GPU, %.0f MB free / %.0f MB total\n",
+            total_bytes * 3.0 / 1e6, free_mem / 1e6, total_mem / 1e6);
+
+    err = cudaMalloc(&vh.d_coeffs, total_bytes);       if (err) { fprintf(stderr, "vec cudaMalloc: %s\n", cudaGetErrorString(err)); vh.enabled=0; return vh; }
+    err = cudaMalloc(&vh.d_prev_coeffs, total_bytes);   if (err) { vh.enabled=0; return vh; }
+    err = cudaMalloc(&vh.d_predicted, total_bytes);     if (err) { vh.enabled=0; return vh; }
+    err = cudaMalloc(&vh.d_residual, total_bytes);      if (err) { vh.enabled=0; return vh; }
+    err = cudaMalloc(&vh.d_nz_patches, vh.n_patches * sizeof(uint32_t)); if (err) { vh.enabled=0; return vh; }
+    err = cudaMalloc(&vh.d_n_nonzero, sizeof(uint32_t)); if (err) { vh.enabled=0; return vh; }
+    err = cudaMalloc(&vh.d_temp_mean, total_bytes);     if (err) { vh.enabled=0; return vh; }
+    err = cudaMalloc(&vh.d_temp_amp, total_bytes);      if (err) { vh.enabled=0; return vh; }
+    err = cudaMalloc(&vh.d_temp_phase, total_bytes);    if (err) { vh.enabled=0; return vh; }
+    err = cudaMalloc(&vh.d_sum_cos, total_bytes);       if (err) { vh.enabled=0; return vh; }
+    err = cudaMalloc(&vh.d_sum_sin, total_bytes);       if (err) { vh.enabled=0; return vh; }
+    err = cudaMalloc(&vh.d_sum_mean, total_bytes);      if (err) { vh.enabled=0; return vh; }
+    cudaMemset(vh.d_prev_coeffs, 0, total_bytes);
+    cudaMemset(vh.d_temp_mean, 0, total_bytes);
+    cudaMemset(vh.d_temp_amp, 0, total_bytes);
+    cudaMemset(vh.d_temp_phase, 0, total_bytes);
+    cudaMemset(vh.d_sum_cos, 0, total_bytes);
+    cudaMemset(vh.d_sum_sin, 0, total_bytes);
+    cudaMemset(vh.d_sum_mean, 0, total_bytes);
+    vh.temporal_count = 0;
+
+    cudaMallocHost(&vh.h_coeffs, total_bytes);
+    cudaMallocHost(&vh.h_residual, total_bytes);
+    cudaMallocHost(&vh.h_nz_patches, vh.n_patches * sizeof(uint32_t));
+    cudaMallocHost(&vh.h_gather_buf, total_bytes);
+    cudaStreamCreate(&vh.stream);
+
+    vs2_gpu_init_projection();
+
+    vh.vec_frame = 0;
+    printf("Vec frames: BS=%d, %d patches, %d coeffs/patch, snap every %d steps\n",
+           BS, vh.n_patches, vh.cpp, vh.vec_snap_every);
+    return vh;
+}
+
+/* Vector frame hook: fit patches, temporal model, I/P frames */
+static void vec_hook(int step, double t, const FieldState *state, void *vctx) {
+    VecHookCtx *vh = (VecHookCtx*)vctx;
+    if (!vh->enabled) return;
+    if (step % vh->vec_snap_every != 0) return;
+
+    int np = vh->n_patches;
+    int BN = vh->BN;
+    long n_total = vh->n_total;
+    int blk256 = (int)((n_total + 255) / 256);
+
+    /* Fit all 6 fields into d_coeffs */
+    vs2_fit_multi_patches<<<np, 512, 0, vh->stream>>>(
+        state->phi[0], state->phi[1], state->phi[2],
+        state->theta[0], state->theta[1], state->theta[2],
+        vh->N, BN, vh->d_coeffs);
+
+    /* Update temporal accumulators */
+    float cos_wt = cosf(vh->omega * (float)t);
+    float sin_wt = sinf(vh->omega * (float)t);
+    vs2_temporal_update<<<blk256, 256, 0, vh->stream>>>(
+        vh->d_coeffs, vh->d_sum_cos, vh->d_sum_sin, vh->d_sum_mean,
+        cos_wt, sin_wt, (int)n_total);
+    vh->temporal_count++;
+
+    /* Refit model periodically */
+    if (vh->temporal_count >= vh->refit_interval && vh->temporal_count > 2) {
+        vs2_temporal_refit<<<blk256, 256, 0, vh->stream>>>(
+            vh->d_sum_cos, vh->d_sum_sin, vh->d_sum_mean,
+            vh->temporal_count,
+            vh->d_temp_mean, vh->d_temp_amp, vh->d_temp_phase, (int)n_total);
+        cudaMemsetAsync(vh->d_sum_cos, 0, n_total * sizeof(float), vh->stream);
+        cudaMemsetAsync(vh->d_sum_sin, 0, n_total * sizeof(float), vh->stream);
+        cudaMemsetAsync(vh->d_sum_mean, 0, n_total * sizeof(float), vh->stream);
+        vh->temporal_count = 0;
+    }
+
+    int is_iframe = (vh->vec_frame == 0) || (vh->vec_frame % vh->iframe_interval == 0);
+
+    if (is_iframe) {
+        /* Download coefficients + temporal model */
+        cudaMemcpyAsync(vh->h_coeffs, vh->d_coeffs, n_total * sizeof(float),
+                        cudaMemcpyDeviceToHost, vh->stream);
+        cudaStreamSynchronize(vh->stream);
+
+        int16_t *origins = (int16_t*)vh->h_gather_buf;
+        for (int p = 0; p < np; p++) {
+            int bk = p % BN, bj = (p / BN) % BN, bi = p / (BN * BN);
+            origins[p*3 + 0] = (int16_t)(bi * vh->block_size);
+            origins[p*3 + 1] = (int16_t)(bj * vh->block_size);
+            origins[p*3 + 2] = (int16_t)(bk * vh->block_size);
+        }
+
+        /* Download temporal model for embedding */
+        float *h_mean = (float*)malloc(n_total * sizeof(float));
+        float *h_amp  = (float*)malloc(n_total * sizeof(float));
+        float *h_phase = (float*)malloc(n_total * sizeof(float));
+        cudaMemcpy(h_mean, vh->d_temp_mean, n_total * sizeof(float), cudaMemcpyDeviceToHost);
+        cudaMemcpy(h_amp, vh->d_temp_amp, n_total * sizeof(float), cudaMemcpyDeviceToHost);
+        cudaMemcpy(h_phase, vh->d_temp_phase, n_total * sizeof(float), cudaMemcpyDeviceToHost);
+
+        /* Write I-frame with temporal model via FrameWriter */
+        {
+            uint8_t flags = 0x01;
+            uint64_t origin_bytes = (uint64_t)np * 6;
+            uint64_t coeff_bytes = n_total * 4;
+            uint64_t model_bytes = 4 + n_total * 4 * 3;
+            uint64_t payload_size = 8 + origin_bytes + coeff_bytes + model_bytes;
+            uint8_t *pl = (uint8_t*)malloc(payload_size);
+            uint64_t off = 0;
+            uint32_t np32 = np; uint8_t bs8 = vh->block_size; uint16_t nc16 = vh->cpp;
+            memcpy(pl+off, &np32, 4); off += 4;
+            memcpy(pl+off, &bs8, 1); off += 1;
+            memcpy(pl+off, &nc16, 2); off += 2;
+            memcpy(pl+off, &flags, 1); off += 1;
+            memcpy(pl+off, origins, origin_bytes); off += origin_bytes;
+            memcpy(pl+off, vh->h_coeffs, coeff_bytes); off += coeff_bytes;
+            memcpy(pl+off, &vh->omega, 4); off += 4;
+            memcpy(pl+off, h_mean, n_total * 4); off += n_total * 4;
+            memcpy(pl+off, h_amp, n_total * 4); off += n_total * 4;
+            memcpy(pl+off, h_phase, n_total * 4); off += n_total * 4;
+
+            size_t bound = ZSTD_compressBound(payload_size);
+            void *comp = malloc(bound);
+            size_t comp_size = ZSTD_compress(comp, bound, pl, payload_size, 3);
+            uint32_t checksum = sfa_crc32(pl, payload_size);
+            fw_write_raw(vh->fw, SFA_CHUNK_FRVD, SFA_FRAME_VEC_I, t, comp, comp_size, checksum);
+            free(comp); free(pl);
+        }
+        free(h_mean); free(h_amp); free(h_phase);
+
+        cudaMemcpyAsync(vh->d_prev_coeffs, vh->d_coeffs, n_total * sizeof(float),
+                        cudaMemcpyDeviceToDevice, vh->stream);
+    } else {
+        /* P-frame: delta = actual - predicted(t) */
+        vs2_temporal_predict<<<blk256, 256, 0, vh->stream>>>(
+            vh->d_temp_mean, vh->d_temp_amp, vh->d_temp_phase,
+            vh->omega, (float)t, vh->d_predicted, (int)n_total);
+
+        uint32_t zero = 0;
+        cudaMemcpyAsync(vh->d_n_nonzero, &zero, sizeof(uint32_t),
+                        cudaMemcpyHostToDevice, vh->stream);
+        vs2_temporal_residual<<<(np+255)/256, 256, 0, vh->stream>>>(
+            vh->d_coeffs, vh->d_predicted, vh->d_residual,
+            vh->delta_tol, vh->d_nz_patches, vh->d_n_nonzero,
+            np, vh->cpp);
+        uint32_t h_nnz;
+        cudaMemcpyAsync(&h_nnz, vh->d_n_nonzero, sizeof(uint32_t),
+                        cudaMemcpyDeviceToHost, vh->stream);
+        cudaStreamSynchronize(vh->stream);
+
+        if (h_nnz > 0 && h_nnz <= (uint32_t)np) {
+            cudaMemcpyAsync(vh->h_nz_patches, vh->d_nz_patches,
+                            h_nnz * sizeof(uint32_t), cudaMemcpyDeviceToHost, vh->stream);
+            cudaMemcpyAsync(vh->h_residual, vh->d_residual, n_total * sizeof(float),
+                            cudaMemcpyDeviceToHost, vh->stream);
+            cudaStreamSynchronize(vh->stream);
+
+            for (uint32_t i = 0; i < h_nnz; i++)
+                memcpy(vh->h_gather_buf + (long)i * vh->cpp,
+                       vh->h_residual + (long)vh->h_nz_patches[i] * vh->cpp,
+                       vh->cpp * sizeof(float));
+
+            fw_write_vec_pframe(vh->fw, t, h_nnz, vh->cpp,
+                                vh->h_nz_patches, vh->h_gather_buf);
+        } else {
+            fw_write_vec_pframe(vh->fw, t, 0, vh->cpp, NULL, NULL);
+        }
+        cudaMemcpyAsync(vh->d_prev_coeffs, vh->d_coeffs, n_total * sizeof(float),
+                        cudaMemcpyDeviceToDevice, vh->stream);
+    }
+    vh->vec_frame++;
+}
+
+static void destroy_vec_hook(VecHookCtx *vh) {
+    if (!vh->enabled || !vh->fw) return;
+    vh->fw = NULL;
+    cudaFree(vh->d_coeffs); cudaFree(vh->d_prev_coeffs);
+    cudaFree(vh->d_predicted); cudaFree(vh->d_residual);
+    cudaFree(vh->d_nz_patches); cudaFree(vh->d_n_nonzero);
+    cudaFree(vh->d_temp_mean); cudaFree(vh->d_temp_amp); cudaFree(vh->d_temp_phase);
+    cudaFree(vh->d_sum_cos); cudaFree(vh->d_sum_sin); cudaFree(vh->d_sum_mean);
+    cudaFreeHost(vh->h_coeffs); cudaFreeHost(vh->h_residual);
+    cudaFreeHost(vh->h_nz_patches); cudaFreeHost(vh->h_gather_buf);
+    cudaStreamDestroy(vh->stream);
+    fprintf(stderr, "Vecstream v2: %d frames written\n", vh->vec_frame);
+}
+
+/* ================================================================
    Main
    ================================================================ */
 
@@ -1728,38 +2188,7 @@ int main(int argc, char **argv) {
         char *ext = strrchr(sfa->split_base, '.');
         if (ext && !strcmp(ext, ".sfa")) *ext = '\0';
     }
-    {
-        char vN[32],vL[32],vT[32],vdt[32],vm[32],vmt[32],veta[32],vmu[32],vkappa[32],vkh[32],vacs[32],vbh[32];
-        char vmode[32],via[32],vib[32],vkg[32],vdw[32],vdr[32],vprec[32],vdelta[64],vbcsw[32];
-        snprintf(vN,32,"%d",c.N); snprintf(vL,32,"%.6f",c.L); snprintf(vT,32,"%.6f",c.T);
-        snprintf(vdt,32,"%.6f",c.dt_factor);
-        snprintf(vm,32,"%.6f",sqrt(c.m2)); snprintf(vmt,32,"%.6f",sqrt(c.mtheta2));
-        snprintf(veta,32,"%.6f",c.eta); snprintf(vmu,32,"%.6f",c.mu);
-        snprintf(vkappa,32,"%.6f",c.kappa); snprintf(vkh,32,"%.6f",c.kappa_h);
-        snprintf(vacs,32,"%.6f",c.alpha_cs); snprintf(vbh,32,"%.6f",c.beta_h);
-        snprintf(vmode,32,"%d",c.mode);
-        snprintf(via,32,"%.6f",c.inv_alpha); snprintf(vib,32,"%.6f",c.inv_beta);
-        snprintf(vkg,32,"%.6f",c.kappa_gamma);
-        snprintf(vdw,32,"%.6f",c.damp_width); snprintf(vdr,32,"%.6f",c.damp_rate);
-        snprintf(vprec,32,"%s",(const char*[]){"f16","f32","f64"}[c.precision]);
-        snprintf(vdelta,64,"%.6f,%.6f,%.6f",c.delta[0],c.delta[1],c.delta[2]);
-        snprintf(vbcsw,32,"%.6f",c.bc_switch_time);
-        char vbc[32], vgah[32], vgal[32], vgm[32];
-        snprintf(vbc,32,"%d",c.bc_type);
-        snprintf(vgah,32,"%.6f",c.gradient_A_high);
-        snprintf(vgal,32,"%.6f",c.gradient_A_low);
-        snprintf(vgm,32,"%d",c.gradient_margin);
-        const char *keys[]={"N","L","T","dt_factor","m","m_theta","eta","mu","kappa",
-                            "kappa_h","alpha_cs","beta_h","bc_switch_time",
-                            "mode","inv_alpha","inv_beta","kappa_gamma",
-                            "damp_width","damp_rate","precision","delta",
-                            "bc_type","gradient_A_high","gradient_A_low","gradient_margin"};
-        const char *vals[]={vN,vL,vT,vdt,vm,vmt,veta,vmu,vkappa,
-                            vkh,vacs,vbh,vbcsw,
-                            vmode,via,vib,vkg,vdw,vdr,vprec,vdelta,
-                            vbc,vgah,vgal,vgm};
-        sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 25);
-    }
+    sfa_embed_kvmd(sfa, &c);
     sfa_add_column(sfa,"phi_x",sfa_dtype,SFA_POSITION,0);
     sfa_add_column(sfa,"phi_y",sfa_dtype,SFA_POSITION,1);
     sfa_add_column(sfa,"phi_z",sfa_dtype,SFA_POSITION,2);
@@ -1793,8 +2222,12 @@ int main(int argc, char **argv) {
     fstate.N3 = g->N3; fstate.N = g->N;
     fstate.L = g->L; fstate.dx = g->dx; fstate.dt = g->dt;
 
+    /* Create shared frame writer — one file, both hooks write through this */
+    FrameWriter frame_writer;
+    fw_init(&frame_writer, sfa);
+
     /* Create hooks */
-    SnapHookCtx snap_ctx = create_snap_hook(sfa, c.precision, snap_every, g->N3);
+    SnapHookCtx snap_ctx = create_snap_hook(&frame_writer, c.precision, snap_every, g->N3);
     start_snap_writer(&snap_ctx);
     register_hook(snap_hook, &snap_ctx);
 
@@ -1809,6 +2242,11 @@ int main(int argc, char **argv) {
 
     DiagHookCtx diag_ctx = create_diag_hook(fp, diag_every, major, g->N3, g->dx, n_steps, t_start, &c);
     register_hook(diag_hook, &diag_ctx);
+
+    /* Vector output hook (optional) — uses same FrameWriter */
+    VecHookCtx vec_ctx = create_vec_hook(&c, g->dt, g->N3, &frame_writer);
+    if (vec_ctx.enabled)
+        register_hook(vec_hook, &vec_ctx);
 
     /* Initial diagnostics (GPU-side reduction, no full download) */
     run_gpu_diagnostics(&fstate, &diag_ctx);
@@ -1894,8 +2332,10 @@ int main(int argc, char **argv) {
         }
     }
 
-    /* Wait for writer to finish, then destroy snap hook */
+    /* Wait for writer to finish, then destroy hooks and frame writer */
     destroy_snap_hook(&snap_ctx);
+    destroy_vec_hook(&vec_ctx);
+    fw_destroy(&frame_writer);
     uint32_t nf = sfa->total_frames;
     sfa_close(sfa);
 

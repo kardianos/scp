@@ -1,0 +1,488 @@
+
+Maxima 5.46.0 https://maxima.sourceforge.io
+using Lisp GNU Common Lisp (GCL) GCL 2.6.14 git tag Version_2_6_15pre7
+Distributed under the GNU Public License. See the file COPYING.
+Dedicated to the memory of William Schelter.
+The function bug_report() provides bug reporting information.
+(%i1) batch("v52/equilibrium_seed.mac")
+
+read and interpret /home/d/code/scp/v52/equilibrium_seed.mac
+(%i2) kill(all)
+(%i1) load(vect)
+(%i2) print("===== SINGLE BRAID EQUILIBRIUM (CYLINDRICAL SYMMETRY) =====")
+===== SINGLE BRAID EQUILIBRIUM (CYLINDRICAL SYMMETRY) ===== 
+(%i3) print("")
+ 
+(%i4) declare([r,z,k,m2,eta,alpha,beta,mu,kappa,A0],real)
+(%i5) assume(r > 0,k > 0,A0 > 0,alpha > 0,beta > 0)
+(%i6) depends(f,r)
+(%i7) print("STEP 1: Curl of braid ansatz φ_a = f(r)cos(kz + δ_a)")
+STEP 1: Curl of braid ansatz φ_a = f(r)cos(kz + δ_a) 
+(%i8) print("")
+ 
+(%i9) curl_sq_avg:('diff(f,r))^2+f^2*k^2
+(%i10) print("⟨|curl(φ)|²⟩ averaged over z and azimuth = ",curl_sq_avg)
+                                                   2  2    df 2
+⟨|curl(φ)|²⟩ averaged over z and azimuth =  f  k  + (--)  
+                                                           dr
+(%i11) print("")
+ 
+(%i12) print("STEP 2: θ equilibrium equation")
+STEP 2: θ equilibrium equation 
+(%i13) print("0 = ∇²θ + (α + η)·curl(φ) - (2α + β|∇×φ|²)·θ")
+0 = ∇²θ + (α + η)·curl(φ) - (2α + β|∇×φ|²)·θ 
+(%i14) print("")
+ 
+(%i15) print("Algebraic approximation (∇²θ ≈ 0):")
+Algebraic approximation (∇²θ ≈ 0): 
+(%i16) print("  θ ≈ (α + η) × curl(φ) / (2α + β|∇×φ|²)")
+  θ ≈ (α + η) × curl(φ) / (2α + β|∇×φ|²) 
+(%i17) print("")
+ 
+(%i18) alpha_val:0.1
+(%i19) eta_val:0.5
+(%i20) beta_val:0.5
+(%i21) m2_val:2.25
+(%i22) mu_val:-41.345
+(%i23) kappa_val:50.0
+(%i24) k_val:1.5
+(%i25) coeff_top:alpha_val+eta_val
+(%i26) coeff_bot_const:2*alpha_val
+(%i27) coeff_bot_beta:beta_val
+(%i28) print("Numerical: θ ≈ ",coeff_top," × curl(φ) / (",
+             coeff_bot_const," + ",coeff_bot_beta,"|∇×φ|²)")
+Numerical: θ ≈  0.6  × curl(φ) / ( 0.2  +  0.5 |∇×φ|²) 
+(%i29) print("")
+ 
+(%i30) print("STEP 3: φ equilibrium with θ substituted")
+STEP 3: φ equilibrium with θ substituted 
+(%i31) print("")
+ 
+(%i32) lap_phi:'diff(f,r,2)+'diff(f,r)/r+(-k^2)*f
+(%i33) print("∇²φ_a / cos(kz+δ_a) = f'' + f'/r - k²f = ",lap_phi)
+                                                df
+                                                --           2
+                                                dr      2   d f
+∇²φ_a / cos(kz+δ_a) = f'' + f'/r - k²f =  -- - f k  + --- 
+                                                r             2
+                                                            dr
+(%i34) print("")
+ 
+(%i35) print("Linear part of φ_a equation:")
+Linear part of φ_a equation: 
+(%i36) print("  (f'' + f'/r - (k²+m²)f) cos(kz+δ_a)")
+  (f'' + f'/r - (k²+m²)f) cos(kz+δ_a) 
+(%i37) print("  With k=1.5, m²=2.25: k²+m² = ",k_val^2+m2_val," = 4.5")
+  With k=1.5, m²=2.25: k²+m² =  4.5  = 4.5 
+(%i38) print("")
+ 
+(%i39) print("STEP 4: Full radial ODE via z-averaging")
+STEP 4: Full radial ODE via z-averaging 
+(%i40) print("")
+ 
+(%i41) print("Computing z-averaged nonlinear potential term...")
+Computing z-averaged nonlinear potential term... 
+(%i42) print("")
+ 
+(%i43) d1:3.0005
+(%i44) d2:4.4325
+(%i45) I222:float(integrate(cos(u)^2*cos(u+d1)^2*cos(u+d2)^2,u,0,2*%pi)
+                   /(2*%pi))
+
+rat: replaced 4.4325 by 1773/400 = 4.4325
+
+rat: replaced 3.0005 by 6001/2000 = 3.0005
+
+rat: replaced -3.0005 by -6001/2000 = -3.0005
+
+rat: replaced -4.4325 by -1773/400 = -4.4325
+
+rat: replaced 4.4325 by 1773/400 = 4.4325
+
+rat: replaced 3.0005 by 6001/2000 = 3.0005
+
+rat: replaced 3.0005 by 6001/2000 = 3.0005
+
+rat: replaced 4.4325 by 1773/400 = 4.4325
+(%i46) print("⟨cos²(u)cos²(u+d1)cos²(u+d2)⟩ = ",I222)
+⟨cos²(u)cos²(u+d1)cos²(u+d2)⟩ =  0.07195989069234238 
+(%i47) print("")
+ 
+(%i48) print("For WEAK binding (small f): potential force ≈ μ f⁵ × I222")
+For WEAK binding (small f): potential force ≈ μ f⁵ × I222 
+(%i49) print("For STRONG binding (large f): potential saturates, force ≈ (μ/κ) × f³ × ...")
+For STRONG binding (large f): potential saturates, force ≈ (μ/κ) × f³ ×\
+ ... 
+(%i50) print("")
+ 
+(%i51) print("STEP 5: Curl coupling contributions to radial ODE")
+STEP 5: Curl coupling contributions to radial ODE 
+(%i52) print("")
+ 
+(%i53) S:fp^2+k^2*f^2
+(%i54) M_factor:((beta*S)/2-eta)/(2*alpha+beta*S)
+(%i55) print("Mismatch factor (algebraic approx):")
+Mismatch factor (algebraic approx): 
+(%i56) print("  M = curl(φ) × [β·S/2 - η] / [2α + β·S]")
+  M = curl(φ) × [β·S/2 - η] / [2α + β·S] 
+(%i57) print("  where S = f'² + k²f²")
+  where S = f'² + k²f² 
+(%i58) print("")
+ 
+(%i59) S_zero:(2*eta)/beta
+(%i60) print("M = 0 when |∇×φ|² = 2η/β = ",S_zero)
+                                   2 eta
+M = 0 when |∇×φ|² = 2η/β =  ----- 
+                                   beta
+(%i61) print("  With η=0.5, β=0.5: S₀ = 2.0")
+  With η=0.5, β=0.5: S₀ = 2.0 
+(%i62) print("  This means f'² + k²f² = 2.0 at the zero-mismatch radius")
+  This means f'² + k²f² = 2.0 at the zero-mismatch radius 
+(%i63) print("")
+ 
+(%i64) print("For Gaussian profile f = A exp(-r²/(2R²)):")
+For Gaussian profile f = A exp(-r²/(2R²)): 
+(%i65) A_val:0.3
+(%i66) R_val:4.5
+(%i67) S_at_0:float(k_val^2*A_val^2)
+(%i68) print("  S(r=0) = k²A² = ",S_at_0," (< 2.0, so M < 0 at center)")
+  S(r=0) = k²A² =  0.2025  (< 2.0, so M < 0 at center) 
+(%i69) S_peak_r:float(R_val*sqrt(2))
+(%i70) S_peak_val:float(A_val^2*(2/R_val^2+k_val^2)*exp(-1))
+(%i71) print("  S peaks at r ≈ ",S_peak_r)
+  S peaks at r ≈  6.363961030678929 
+(%i72) print("  S_peak ≈ ",S_peak_val)
+  S_peak ≈  0.07776562631429655 
+(%i73) print("")
+ 
+(%i74) print("STEP 6: Systematic collection of curl coupling terms")
+STEP 6: Systematic collection of curl coupling terms 
+(%i75) print("")
+ 
+(%i76) print("Computing curl(curl(φ)) for braid ansatz directly...")
+Computing curl(curl(φ)) for braid ansatz directly... 
+(%i77) print("")
+ 
+(%i78) cos_d1:float(cos(d1))
+(%i79) sin_d2:float(sin(d2))
+(%i80) cos_d12:float(cos(d1-d2))
+(%i81) print("Phase coupling constants:")
+Phase coupling constants: 
+(%i82) print("  cos(δ₁) = ",cos_d1)
+  cos(δ₁) =  - 0.9900629328524759 
+(%i83) print("  sin(δ₂) = ",sin_d2)
+  sin(δ₂) =  - 0.9610861132858256 
+(%i84) print("  cos(δ₁-δ₂) = ",cos_d12)
+  cos(δ₁-δ₂) =  0.1383511173830834 
+(%i85) print("")
+ 
+(%i86) print("Z-and-azimuth-averaged curl(curl(φ))_a projected onto cos(kz+δ_a):")
+Z-and-azimuth-averaged curl(curl(φ))_a projected onto cos(kz+δ_a): 
+(%i87) print("  = -(1/4)(f''+f'/r) + (1/2)k²f")
+  = -(1/4)(f''+f'/r) + (1/2)k²f 
+(%i88) print("")
+ 
+(%i89) print("STEP 7: Assembling the radial ODE")
+STEP 7: Assembling the radial ODE 
+(%i90) print("")
+ 
+(%i91) print("Total curl(curl) coefficient:")
+Total curl(curl) coefficient: 
+(%i92) print("  Γ = (α+η)²·2α / (2α+βS)² - α/2")
+  Γ = (α+η)²·2α / (2α+βS)² - α/2 
+(%i93) print("")
+ 
+(%i94) Gamma_func(SS):=float(
+                  ((alpha_val+eta_val)^2*2*alpha_val)
+                   /(2*alpha_val+beta_val*SS)^2
+                   -alpha_val/2)
+(%i95) print("Γ(S) values:")
+Γ(S) values: 
+(%i96) for SS in [0,0.5,1.0,2.0,3.0,5.0,10.0] do
+           printf(true,"  S = ~4,1f:  Γ = ~8,4f~%",SS,Gamma_func(SS))
+  S =  0.0:  Γ =   1.7500
+  S =  0.5:  Γ =   0.3056
+  S =  1.0:  Γ =   0.0969
+  S =  2.0:  Γ =  -0.0000
+  S =  3.0:  Γ =  -0.0251
+  S =  5.0:  Γ =  -0.0401
+  S = 10.0:  Γ =  -0.0473
+(%i97) print("")
+ 
+(%i98) print("KEY RESULT: Γ(S) = 0 at S = 2η/β = 2.0 exactly.")
+KEY RESULT: Γ(S) = 0 at S = 2η/β = 2.0 exactly. 
+(%i99) print("  S > 2 (shell): Γ < 0 → curl coupling stabilizes (hardening)")
+  S > 2 (shell): Γ < 0 → curl coupling stabilizes (hardening) 
+(%i100) print("  S < 2 (core):  Γ > 0 → curl coupling destabilizes (softening)")
+  S < 2 (core):  Γ > 0 → curl coupling destabilizes (softening) 
+(%i101) print("")
+ 
+(%i102) print("STEP 8: The radial ODE for the braid profile")
+STEP 8: The radial ODE for the braid profile 
+(%i103) print("")
+ 
+(%i104) print("0 = f'' + f'/r - (k²+m²)f")
+0 = f'' + f'/r - (k²+m²)f 
+(%i105) print("  + Γ(S)·[-(f''+f'/r)/2 + k²f]")
+  + Γ(S)·[-(f''+f'/r)/2 + k²f] 
+(%i106) print("  - 2·N_V(f)")
+  - 2·N_V(f) 
+(%i107) print("  + [gradient correction terms ∝ G'(r)]")
+  + [gradient correction terms ∝ G'(r)] 
+(%i108) print("")
+ 
+(%i109) print("Rearranged:")
+Rearranged: 
+(%i110) print("  [1 - Γ(S)/2]·(f'' + f'/r) - [k²(1-Γ(S)) + m²]·f - 2·N_V(f) = 0")
+  [1 - Γ(S)/2]·(f'' + f'/r) - [k²(1-Γ(S)) + m²]·f - 2·N_V(f) = 0 
+(%i111) print("")
+ 
+(%i112) print("Physical interpretation:")
+Physical interpretation: 
+(%i113) print("  The C4 terms create a POSITION-DEPENDENT effective mass:")
+  The C4 terms create a POSITION-DEPENDENT effective mass: 
+(%i114) print("  m_eff²(r) = [k²(1-Γ) + m²] / [1-Γ/2]")
+  m_eff²(r) = [k²(1-Γ) + m²] / [1-Γ/2] 
+(%i115) print("")
+ 
+(%i116) for SS in [0,0.5,1.0,2.0,3.0,5.0,10.0] do
+            (GG:Gamma_func(SS),meff2:(k_val^2*(1-GG)+m2_val)/(1-GG/2),
+             printf(true,
+                    "  S = ~4,1f:  Γ = ~7,3f  m_eff² = ~7,3f  (cf. bare = ~5,2f)~%",
+                    SS,GG,meff2,k_val^2+m2_val))
+  S =  0.0:  Γ =   1.750  m_eff² =   4.500  (cf. bare =  4.50)
+  S =  0.5:  Γ =   0.306  m_eff² =   4.500  (cf. bare =  4.50)
+  S =  1.0:  Γ =   0.097  m_eff² =   4.500  (cf. bare =  4.50)
+  S =  2.0:  Γ =  -0.000  m_eff² =   4.500  (cf. bare =  4.50)
+  S =  3.0:  Γ =  -0.025  m_eff² =   4.500  (cf. bare =  4.50)
+  S =  5.0:  Γ =  -0.040  m_eff² =   4.500  (cf. bare =  4.50)
+  S = 10.0:  Γ =  -0.047  m_eff² =   4.500  (cf. bare =  4.50)
+(%i117) print("")
+ 
+(%i118) print("STEP 9: Looking for analytic profile solutions")
+STEP 9: Looking for analytic profile solutions 
+(%i119) print("")
+ 
+(%i120) meff2_far:float((k_val^2*(1-Gamma_func(0))+m2_val)
+                         /(1-Gamma_func(0)/2))
+(%i121) print("Far-field m_eff² (S→0) = ",meff2_far," = k²+m² (same as bare)")
+Far-field m_eff² (S→0) =  4.499999999999999  = k²+m² (same as bare) 
+(%i122) print("Far-field decay: f ~ K₀(√4.5 · r) ~ exp(-",
+              float(sqrt(meff2_far)),"r)/√r")
+Far-field decay: f ~ K₀(√4.5 · r) ~ exp(- 2.121320343559643 r)/√r 
+(%i123) print("")
+ 
+(%i124) print("STEP 10: Profile analysis for different amplitudes")
+STEP 10: Profile analysis for different amplitudes 
+(%i125) print("")
+ 
+(%i126) for AA in [0.1,0.3,0.5,0.8,1.0,1.5] do
+            (S0:float(k_val^2*AA^2),G0:Gamma_func(S0),
+             meff:float((k_val^2*(1-G0)+m2_val)/(1-G0/2)),
+             printf(true,
+                    "  A = ~4,1f:  S(0) = ~5,3f  Γ(0) = ~6,3f  m_eff²(0) = ~6,2f~%",
+                    AA,S0,G0,meff))
+  A =  0.1:  S(0) = 0.023  Γ(0) =  1.563  m_eff²(0) =   4.50
+  A =  0.3:  S(0) = 0.202  Γ(0) =  0.743  m_eff²(0) =   4.50
+  A =  0.5:  S(0) = 0.563  Γ(0) =  0.261  m_eff²(0) =   4.50
+  A =  0.8:  S(0) = 1.440  Γ(0) =  0.035  m_eff²(0) =   4.50
+  A =  1.0:  S(0) = 2.250  Γ(0) = -0.009  m_eff²(0) =   4.50
+  A =  1.5:  S(0) = 5.063  Γ(0) = -0.040  m_eff²(0) =   4.50
+(%i127) print("")
+ 
+(%i128) print("IMPORTANT: The algebraic equilibrium gives SMALL corrections to f(r)")
+IMPORTANT: The algebraic equilibrium gives SMALL corrections to f(r) 
+(%i129) print("because Γ ≈ const across the profile (S varies less than the dynamic range).")
+because Γ ≈ const across the profile (S varies less than the dynamic range).
+                                                                               
+(%i130) print("")
+ 
+(%i131) print("The SHELL STRUCTURE seen in simulations likely comes from:")
+The SHELL STRUCTURE seen in simulations likely comes from: 
+(%i132) print("  1. Dynamic relaxation: the transient mismatch M creates outward-propagating")
+  1. Dynamic relaxation: the transient mismatch M creates outward-propagating 
+(%i133) print("     theta waves that reflect and form standing-wave shells.")
+     theta waves that reflect and form standing-wave shells. 
+(%i134) print("  2. Gradient terms ∝ dΓ/dr × curl(φ): these create forces at the")
+  2. Gradient terms ∝ dΓ/dr × curl(φ): these create forces at the 
+(%i135) print("     boundary of the braid core where S changes rapidly.")
+     boundary of the braid core where S changes rapidly. 
+(%i136) print("  3. Nonlinear saturation of V(P): the potential saturates at large P,")
+  3. Nonlinear saturation of V(P): the potential saturates at large P, 
+(%i137) print("     creating a flat core + steep decay.")
+     creating a flat core + steep decay. 
+(%i138) print("")
+ 
+(%i139) print("STEP 11: Theta shell structure")
+STEP 11: Theta shell structure 
+(%i140) print("")
+ 
+(%i141) S_theta_peak:float((2*alpha_val)/beta_val)
+(%i142) print("|θ|² peaks at S = 2α/β = ",S_theta_peak)
+|θ|² peaks at S = 2α/β =  0.4 
+(%i143) print("")
+ 
+(%i144) print("Shell radius R_shell for different A (Gaussian profile, R=4.5):")
+Shell radius R_shell for different A (Gaussian profile, R=4.5): 
+(%i145) for AA in [0.3,0.5,0.7,0.9,1.2] do
+            block(S0:float(k_val^2*AA^2),
+                  if S0 > S_theta_peak
+                      then (r_lo:0.0,r_hi:3*R_val,
+                            for iter thru 50 do
+                                (r_mid:(r_lo+r_hi)/2,
+                                 S_mid:AA^2*(r_mid^2/R_val^4+k_val^2)
+                                           *exp((-r_mid^2)/R_val^2),
+                                 if S_mid > S_theta_peak then r_lo:r_mid
+                                     else r_hi:r_mid),R_shell:(r_lo+r_hi)/2,
+                            printf(true,
+                                   "  A = ~4,2f:  S(0) = ~5,3f  R_shell = ~5,2f~%",
+                                   AA,S0,R_shell))
+                      else printf(true,
+                                  "  A = ~4,2f:  S(0) = ~5,3f  (S < S_peak everywhere → no shell)~%",
+                                  AA,S0))
+  A = 0.30:  S(0) = 0.202  (S < S_peak everywhere → no shell)
+  A = 0.50:  S(0) = 0.563  R_shell =  2.66
+  A = 0.70:  S(0) = 1.102  R_shell =  4.58
+  A = 0.90:  S(0) = 1.823  R_shell =  5.60
+  A = 1.20:  S(0) = 3.240  R_shell =  6.58
+(%i146) print("")
+ 
+(%i147) print("======= IMPROVED SEED FORMULA =======")
+======= IMPROVED SEED FORMULA ======= 
+(%i148) print("")
+ 
+(%i149) A_min_shell:float(sqrt(S_theta_peak/k_val^2))
+(%i150) print("Minimum amplitude for θ-shell: A_min = √(2α/(βk²)) = ",
+              A_min_shell)
+Minimum amplitude for θ-shell: A_min = √(2α/(βk²)) =  0.4216370213557839 
+(%i151) print("  (Current gen_phase_confined uses A=0.3, which is below threshold)")
+  (Current gen_phase_confined uses A=0.3, which is below threshold) 
+(%i152) print("  (Need A ≥ 0.42 for shell formation)")
+  (Need A ≥ 0.42 for shell formation) 
+(%i153) print("")
+ 
+(%i154) decay_length:float(1.0/sqrt(k_val^2+m2_val))
+(%i155) print("Far-field decay length: 1/√(k²+m²) = ",decay_length," code units")
+Far-field decay length: 1/√(k²+m²) =  0.4714045207910318  code units 
+(%i156) print("  (cf. Gaussian R_tube = 4.5 in gen_phase_confined → WAY too wide)")
+  (cf. Gaussian R_tube = 4.5 in gen_phase_confined → WAY too wide) 
+(%i157) print("  (The 'correct' R is ~",decay_length,", not 4.5)")
+  (The 'correct' R is ~ 0.4714045207910318 , not 4.5) 
+(%i158) print("")
+ 
+(%i159) meff_decay:float(sqrt(k_val^2+m2_val))
+(%i160) print("Effective mass for exponential decay: m_eff = √(k²+m²) = ",
+              meff_decay)
+Effective mass for exponential decay: m_eff = √(k²+m²) =  2.121320343559643
+                                                                               
+(%i161) print("")
+ 
+(%i162) print("PROPOSED IMPROVED PROFILE:")
+PROPOSED IMPROVED PROFILE: 
+(%i163) print("  f(r) = A × sech(m_eff × r)")
+  f(r) = A × sech(m_eff × r) 
+(%i164) print("  with m_eff = √(k²+m²) = ",meff_decay)
+  with m_eff = √(k²+m²) =  2.121320343559643 
+(%i165) print("")
+ 
+(%i166) print("  At center: f(0) = A")
+  At center: f(0) = A 
+(%i167) print("  Core radius (f = A/2): r_half = acosh(2)/m_eff = ",
+              float(log(2+sqrt(3))/meff_decay))
+  Core radius (f = A/2): r_half = acosh(2)/m_eff =  0.6208199063018082 
+(%i168) print("  1/e radius: r_1e = acosh(e)/m_eff = ",
+              float(log(exp(1)+sqrt(exp(2)-1))/meff_decay))
+  1/e radius: r_1e = acosh(e)/m_eff =  0.7813315226929924 
+(%i169) print("")
+ 
+(%i170) print("THETA INITIALIZATION (algebraic equilibrium):")
+THETA INITIALIZATION (algebraic equilibrium): 
+(%i171) print("  θ_a = G(S) × curl(φ)_a")
+  θ_a = G(S) × curl(φ)_a 
+(%i172) print("  G(S) = (α+η)/(2α+β×S) = 0.6/(0.2+0.5×S)")
+  G(S) = (α+η)/(2α+β×S) = 0.6/(0.2+0.5×S) 
+(%i173) print("  where S = |∇×φ|² computed at each point")
+  where S = |∇×φ|² computed at each point 
+(%i174) print("")
+ 
+(%i175) print("Example: A=0.8 braid center:")
+Example: A=0.8 braid center: 
+(%i176) S0_ex:float(k_val^2*0.8^2)
+(%i177) G0_ex:float(coeff_top/(coeff_bot_const+coeff_bot_beta*S0_ex))
+(%i178) print("  S(0) = ",S0_ex,"  G(0) = ",G0_ex)
+  S(0) =  1.440000000000001   G(0) =  0.6521739130434782 
+(%i179) print("  θ ≈ ",G0_ex," × curl(φ)")
+  θ ≈  0.6521739130434782  × curl(φ) 
+(%i180) print("  |θ| ≈ ",float(G0_ex*sqrt(S0_ex)))
+  |θ| ≈  0.782608695652174 
+(%i181) print("")
+ 
+(%i182) theta_old:float(0.5*0.5*0.3*0.1)
+(%i183) print("  Old gen_phase_confined θ amplitude: ~",theta_old)
+  Old gen_phase_confined θ amplitude: ~ 0.0075 
+(%i184) print("  Correct equilibrium θ amplitude: ~",float(
+                                                       G0_ex*sqrt(S0_ex)))
+  Correct equilibrium θ amplitude: ~ 0.782608695652174 
+(%i185) print("  Ratio: ",float((G0_ex*sqrt(S0_ex))/theta_old),"× larger!")
+  Ratio:  104.3478260869565 × larger! 
+(%i186) print("")
+ 
+(%i187) print("======= SUMMARY: RADIAL ODE FOR f(r) =======")
+======= SUMMARY: RADIAL ODE FOR f(r) ======= 
+(%i188) print("")
+ 
+(%i189) print("The z-averaged, azimuth-averaged equilibrium ODE for the braid")
+The z-averaged, azimuth-averaged equilibrium ODE for the braid 
+(%i190) print("radial profile f(r), INCLUDING the C4 Cosserat+hardening terms:")
+radial profile f(r), INCLUDING the C4 Cosserat+hardening terms: 
+(%i191) print("")
+ 
+(%i192) print("  [1 - Γ(S)/2]·(f'' + f'/r) - [k²(1-Γ(S)) + m²]·f = 2·N_V(f)")
+  [1 - Γ(S)/2]·(f'' + f'/r) - [k²(1-Γ(S)) + m²]·f = 2·N_V(f) 
+(%i193) print("")
+ 
+(%i194) print("where:")
+where: 
+(%i195) print("  S(r) = f'(r)² + k²f(r)²")
+  S(r) = f'(r)² + k²f(r)² 
+(%i196) print("  Γ(S) = (α+η)²·2α/(2α+βS)² - α/2")
+  Γ(S) = (α+η)²·2α/(2α+βS)² - α/2 
+(%i197) print("  N_V(f) = z-averaged nonlinear potential (≈ μf⁵I₂₂₂ for small f)")
+  N_V(f) = z-averaged nonlinear potential (≈ μf⁵I₂₂₂ for small f) 
+(%i198) print("  I₂₂₂ = ",I222," (phase-averaged triple product)")
+  I₂₂₂ =  0.07195989069234238  (phase-averaged triple product) 
+(%i199) print("")
+ 
+(%i200) print("Boundary conditions: f(0) finite, f'(0) = 0, f(∞) = 0")
+Boundary conditions: f(0) finite, f'(0) = 0, f(∞) = 0 
+(%i201) print("")
+ 
+(%i202) print("The theta field at equilibrium:")
+The theta field at equilibrium: 
+(%i203) print("  θ = G(S) × curl(φ)")
+  θ = G(S) × curl(φ) 
+(%i204) print("  G(S) = (α+η)/(2α+βS)")
+  G(S) = (α+η)/(2α+βS) 
+(%i205) print("")
+ 
+(%i206) print("Parameters:")
+Parameters: 
+(%i207) printf(true,"  m² = ~,3f~%",m2_val)
+  m² = 2.250
+(%i208) printf(true,"  k = ~,3f  (k² = ~,3f)~%",k_val,k_val^2)
+  k = 1.500  (k² = 2.250)
+(%i209) printf(true,"  α = ~,3f  (Cosserat strain)~%",alpha_val)
+  α = 0.100  (Cosserat strain)
+(%i210) printf(true,"  β = ~,3f  (curl² hardening)~%",beta_val)
+  β = 0.500  (curl² hardening)
+(%i211) printf(true,"  η = ~,3f  (torsion coupling)~%",eta_val)
+  η = 0.500  (torsion coupling)
+(%i212) printf(true,"  μ = ~,3f, κ = ~,3f  (triple product potential)~%",
+               mu_val,kappa_val)
+  μ = -41.345, κ = 50.000  (triple product potential)
+(%i213) print("")
+ 
+(%i214) printf(true,"  Far-field decay: f ~ exp(-~,3f × r)/√r~%",meff_decay)
+`printf': arguments exhausted.
+ -- an error.
+(%o215)            /home/d/code/scp/v52/equilibrium_seed.mac

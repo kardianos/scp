@@ -1,0 +1,118 @@
+/* equation_vectors.mac — Evaluate equation-based compression of proton fields
+ *
+ * The proton template has known functional structure:
+ *   φ_a(x,y,z) ≈ A(r) × cos(k×z + δ_a + Δ_a) + perturbation
+ *   θ_a ≈ G(r) × curl(φ)_a
+ *
+ * If we decompose into: carrier wave + radial envelope + residual,
+ * how many parameters do we need vs generic tricubic (64 coefficients
+ * per 8³ block)?
+ *
+ * Carrier wave: cos(k×z + δ_a + Δ_a) — 3 params per component (k, δ, Δ)
+ * Envelope: A(r) — radial profile, maybe 4-6 params (Gaussian + correction)
+ * Total per field: ~10 params vs 512 × 64 = 32,768 generic coefficients
+ *
+ * That's 3000× better IF the functional form captures the data.
+ */
+
+kill(all)$
+
+k : 1.5$
+delta : [0, 3.0005, 4.4325]$
+Delta : [0, 2*%pi/3, 4*%pi/3]$
+
+print("=== Equation-based decomposition ===")$
+print("")$
+
+/* The carrier wave along z: cos(k*z + δ_a + Δ_a) */
+/* This is exact for the background. The proton adds a radial modulation. */
+
+/* For a single 8³ block centered at (x0,y0,z0):
+ *
+ * Generic tricubic: 64 coefficients, captures anything
+ *
+ * Equation-based:
+ *   φ_a(x,y,z) = [A_bg + Σ_{n=0}^{N} a_n × r^n] × cos(k*z + δ_a + Δ_a)
+ *              + [Σ_{n=0}^{M} b_n × r^n] × sin(k*z + δ_a + Δ_a)
+ *
+ * The cos term captures the in-phase carrier modulation.
+ * The sin term captures the out-of-phase component (phase shift).
+ *
+ * With N=M=3 (cubic radial): 8 coefficients per block per component.
+ * vs 64 for generic tricubic.
+ * Compression improvement: 8× better.
+ *
+ * But: r = sqrt((x-x0)² + (y-y0)² + (z-z0)²) — the radial coordinate
+ * needs to be computed relative to the PROTON CENTER, not the block center.
+ * This means the equation needs to know the proton center as a parameter.
+ */
+
+print("For blocks near the proton center:")$
+print("  Carrier: cos(kz + δ + Δ) — 3 params, EXACT for background")$
+print("  Envelope: A(r) = A_bg + a1*r + a2*r² + a3*r³ — 4 params")$
+print("  Phase shift: δA(r) × sin(kz + ...) — 4 params")$
+print("  Total: 11 params per block per component")$
+print("  vs 64 for generic tricubic")$
+print("  Improvement: 5.8× fewer parameters")$
+print("")$
+
+print("For blocks far from the proton (pure background):")$
+print("  φ_a = A_bg × cos(kz + δ_a + Δ_a)")$
+print("  Only 3 params: A_bg, k, δ_a+Δ_a")$
+print("  vs 64 for tricubic (wasteful!)")$
+print("  Improvement: 21× fewer parameters")$
+print("")$
+
+print("For the ENTIRE proton (global equation, not per-block):")$
+print("  φ_a = [A_bg + f(r)] × cos(kz + δ_a + Δ_a + g(r))")$
+print("  f(r) = radial envelope perturbation (Gaussian: 2 params)")$
+print("  g(r) = radial phase shift (Gaussian: 2 params)")$
+print("  Total per component: 3 (carrier) + 2 (envelope) + 2 (phase) = 7")$
+print("  For all 3 φ components: 7 × 3 = 21 params")$
+print("  For θ (derived from curl(φ)): 0 additional params")$
+print("  TOTAL PROTON: 21 parameters")$
+print("")$
+print("  vs 512 blocks × 64 coeffs × 6 fields = 196,608 generic params")$
+print("  Compression: 9,362×")$
+print("")$
+
+print("The question: what is the ERROR at 21 parameters?")$
+print("This depends on how well the Gaussian envelope + phase shift")$
+print("approximates the actual proton profile.")$
+print("")$
+print("From V43 analysis: the proton is well-described by a spherical")$
+print("envelope with radial modulation. The breathing mode adds a")$
+print("time-dependent amplitude oscillation, but at any single frame")$
+print("the spatial structure is smooth and nearly spherical.")$
+print("")$
+
+/* Optimal parameter set for a single proton:
+ *
+ * Global parameters (shared across components):
+ *   x_c, y_c, z_c     — proton center (3 params)
+ *   A_bg               — background amplitude (1 param)
+ *   k                  — carrier wavenumber (1 param)
+ *   dA, R_A            — envelope: A(r) = A_bg + dA*exp(-r²/2R²) (2 params)
+ *   dpsi, R_psi        — phase: ψ(r) = dpsi*exp(-r²/2R²) (2 params)
+ *
+ * Per-component parameters:
+ *   δ_a, Δ_a           — phase offsets (2 per component, 6 total)
+ *   χ_a                — chirality (1 per component, but discrete: ±1)
+ *
+ * Total: 9 global + 6 per-component + 3 chirality = 18 continuous params
+ * Plus 3 discrete chirality bits.
+ *
+ * For θ: θ = G(|curl(φ)|²) × curl(φ), derived from φ.
+ *   G = (α+η)/(2α + β|curl|²) — no extra parameters.
+ *
+ * TOTAL: 18 continuous parameters describe the ENTIRE proton
+ * (all 6 fields, 262,144 voxels per field).
+ */
+
+print("=== Optimal parameter count ===")$
+print("")$
+print("18 continuous parameters + 3 chirality bits")$
+print("describe the entire proton (6 fields × 64³ voxels = 1,572,864 values)")$
+print("")$
+print("Compression ratio: 87,381× (if the model is exact)")$
+print("Even with 1% error, this is ~10,000× compression")$

@@ -231,6 +231,70 @@ previous FUTURE.md for full discussion of MOND-like behavior, Cherenkov
 radiation limit, chromatic micro-lensing smoking gun, and heliospheric
 implications.
 
+### Speculative: Higgs as Vacuum Void, Goldstone as Carrier Phase
+
+**The vacuum is not empty.** The background φ field oscillates at
+amplitude A_bg with carrier wave cos(k·z + δ + Δ). This nonzero
+vacuum state is the analog of the Higgs VEV in the Standard Model.
+
+**Higgs boson as absence of field.** A point-like region where A_bg → 0
+would be:
+- **Massive**: the surrounding field pushes inward to fill the void.
+  The restoration force (from V(P) wanting the vacuum to remain at
+  A_bg) gives it an effective mass m²_H ~ V''(P_bg).
+- **Scalar (spin-0)**: no angular structure, no chirality, no carrier
+  phase. Just an amplitude zero.
+- **Unstable**: the void fills in as surrounding field radiates inward.
+  Short lifetime — analogous to the Higgs boson's ~10⁻²² s.
+- **Point-like**: unlike a proton (extended composite with internal
+  structure), the void is a localized deficiency.
+
+Contrast with the proton's depletion zone, which is a PARTIAL absence
+(A_bg reduced ~2%) and is long-range. The Higgs would be TOTAL absence
+— much more energetic, much more localized.
+
+**Goldstone boson as carrier phase mode.** The carrier wave phase
+can shift uniformly at zero energy cost — this is the spontaneous
+breaking of translational symmetry. Long-wavelength phase fluctuations
+are massless excitations: Goldstone bosons.
+
+**Goldstone eaten by gauge coupling.** The η×curl term mixes the φ
+phase mode (Goldstone) with the θ field (gauge analog). The resulting
+polariton has a mass gap (v = 0.94c, not c). This mirrors the Higgs
+mechanism: the Goldstone is "eaten" to give mass to the gauge boson.
+
+Mapping:
+- Higgs VEV → A_bg (nonzero vacuum amplitude)
+- Higgs boson → point-like void where A_bg → 0
+- Goldstone boson → carrier wave phase mode
+- Goldstone eaten → polariton mass gap from η coupling
+- W/Z bosons → θ field (massive through φ-θ mixing)
+
+**The V(P) potential supports this.** V(P) = (μ/2)P²/(1+κP²) with
+μ < 0 has nontrivial curvature at the background. The κ parameter
+breaks scale invariance (analog of the trace anomaly in QCD). Without
+κ, V is scale-free; with κ, there's a preferred scale at κP² ≈ 1.
+
+**Proton mass decomposition analog** (cf. Ji decomposition in QCD):
+- Quark kinetic energy (~32%) → φ breathing kinetic energy ½|∂φ/∂t|²
+- Gluon field energy (~36%) → θ field energy ½|∂θ/∂t|² + ½|∇θ|²
+- Trace anomaly (~23%) → V(P) saturation (κ breaks scale symmetry)
+- Quark condensate (~9%) → background amplitude A_bg
+
+~91% of the proton mass is energy, not Higgs mechanism — in our theory,
+~91% would be breathing + θ radiation + V(P) binding, with only ~9%
+from the background field (A_bg coupling).
+
+**Testable in simulation:**
+1. Punch a hole in the background (set A_bg → 0 in a small region)
+   and measure the decay time and products.
+2. Measure the radial mode frequency — excite a uniform δA perturbation
+   and FFT the response. The frequency is the Higgs mass analog.
+3. Measure long-wavelength phase fluctuations to confirm they're
+   massless (Goldstone).
+4. Verify the polariton mass gap matches η×curl prediction (already
+   done: v = 0.94c in V50).
+
 ---
 
 ## Resolved / Abandoned

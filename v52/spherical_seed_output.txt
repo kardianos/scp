@@ -1,0 +1,459 @@
+
+Maxima 5.46.0 https://maxima.sourceforge.io
+using Lisp GNU Common Lisp (GCL) GCL 2.6.14 git tag Version_2_6_15pre7
+Distributed under the GNU Public License. See the file COPYING.
+Dedicated to the memory of William Schelter.
+The function bug_report() provides bug reporting information.
+(%i1) batch("v52/spherical_seed.mac")
+
+read and interpret /home/d/code/scp/v52/spherical_seed.mac
+(%i2) kill(all)
+(%i1) print("============================================================")
+============================================================ 
+(%i2) print("  LEVEL 1: THREE-COMPONENT SPHERICAL COMPOSITE")
+  LEVEL 1: THREE-COMPONENT SPHERICAL COMPOSITE 
+(%i3) print("============================================================")
+============================================================ 
+(%i4) print("")
+ 
+(%i5) alpha_val:0.1
+(%i6) eta_val:0.5
+(%i7) beta_val:0.5
+(%i8) m2_val:2.25
+(%i9) mu_val:-41.345
+(%i10) kappa_val:50.0
+(%i11) A_bg:0.1
+(%i12) d0:0.0
+(%i13) d1:3.0005
+(%i14) d2:4.4325
+(%i15) k_val:1.5
+(%i16) print("SECTION 1: Background field")
+SECTION 1: Background field 
+(%i17) print("")
+ 
+(%i18) c0:float(cos(d0))
+(%i19) c1:float(cos(d1))
+(%i20) c2:float(cos(d2))
+(%i21) s0:float(sin(d0))
+(%i22) s1:float(sin(d1))
+(%i23) s2:float(sin(d2))
+(%i24) P_bg:float(A_bg^3*c0*c1*c2)
+(%i25) print("  Background: phi_a = A_bg * cos(delta_a)")
+  Background: phi_a = A_bg * cos(delta_a) 
+(%i26) print("  cos(d0) =",c0," cos(d1) =",c1," cos(d2) =",c2)
+  cos(d0) = 1.0  cos(d1) = - 0.9900629328524759  cos(d2) = - 0.2762489508561891
+                                                                               
+(%i27) print("  sin(d0) =",s0," sin(d1) =",s1," sin(d2) =",s2)
+  sin(d0) = 0.0  sin(d1) = 0.1406249941921911  sin(d2) = - 0.9610861132858256 
+(%i28) print("  P_bg =",P_bg)
+  P_bg = 2.735038464820982E-4 
+(%i29) print("")
+ 
+(%i30) Vprime_bg:float((mu_val*P_bg)/(1+kappa_val*P_bg^2)^2)
+(%i31) print("  V'(P_bg) =",Vprime_bg)
+  V'(P_bg) = - 0.0113079319443897 
+(%i32) print("")
+ 
+(%i33) print("SECTION 2: Proton as phase rotation")
+SECTION 2: Proton as phase rotation 
+(%i34) print("")
+ 
+(%i35) print("  UUD: phi_a = [A_bg + f(r)] * cos(delta_a + chi_a * psi(r))")
+  UUD: phi_a = [A_bg + f(r)] * cos(delta_a + chi_a * psi(r)) 
+(%i36) print("  chi = (+1, +1, -1) for proton (UUD)")
+  chi = (+1, +1, -1) for proton (UUD) 
+(%i37) print("  chi = (+1, -1, -1) for neutron (UDD)")
+  chi = (+1, -1, -1) for neutron (UDD) 
+(%i38) print("")
+ 
+(%i39) print("Triple product for UUD(psi) with f=0, A=A_bg:")
+Triple product for UUD(psi) with f=0, A=A_bg: 
+(%i40) for psi_deg in [0,10,20,30,45,60,90,120,180] do
+           block([psi,p_uud,p_udd],psi:float((psi_deg*%pi)/180),
+                 p_uud:A_bg^3*cos(d0+psi)*cos(d1+psi)*cos(d2-psi),
+                 p_udd:A_bg^3*cos(d0+psi)*cos(d1-psi)*cos(d2-psi),
+                 print("  psi =",psi_deg,"deg: P_UUD =",float(p_uud),
+                       " P_UDD =",float(p_udd)))
+  psi = 0 deg: P_UUD = 2.735038464820982E-4  P_UDD = 2.735038464820982E-4 
+  psi = 10 deg: P_UUD = 4.320327575444899E-4  P_UDD = 4.109211020253341E-4 
+  psi = 20 deg: P_UUD = 5.40908571654036E-4  P_UDD = 4.877309638319479E-4 
+  psi = 30 deg: P_UUD = 5.783010996948161E-4  P_UDD = 4.906426209672319E-4 
+  psi = 45 deg: P_UUD = 4.946352714885516E-4  P_UDD = 3.715985245372727E-4 
+  psi = 60 deg: P_UUD = 2.992945162356879E-4  P_UDD = 1.811085053960567E-4 
+  psi = 90 deg: P_UUD = 8.275717854356862E-21  P_UDD = - 8.275717854356882E-21 
+  psi = 120 deg: P_UUD = 1.295540077909022E-4  P_UDD = 2.14097090599793E-4 
+  psi = 180 deg: P_UUD = - 2.735038464820981E-4  P_UDD = - 2.735038464820981E-4
+                                                                               
+(%i41) print("")
+ 
+(%i42) print("SECTION 3: Optimal phase psi for maximum |P|")
+SECTION 3: Optimal phase psi for maximum |P| 
+(%i43) print("")
+ 
+(%i44) best_psi:0
+(%i45) best_P:0
+(%i46) for nn from 0 thru 359 do
+           block([psi,pp],psi:float((nn*%pi)/180),
+                 pp:abs(cos(d0+psi)*cos(d1+psi)*cos(d2-psi)),
+                 if pp > best_P then (best_psi:psi,best_P:pp))
+(%i47) print("  Maximum |cos product| for UUD =",float(best_P))
+  Maximum |cos product| for UUD = 0.5783010996948161 
+(%i48) print("  At psi =",float(best_psi)," rad =",float((best_psi*180)/%pi)," deg")
+  At psi = 3.665191429188092  rad = 210.0  deg 
+(%i49) print("")
+ 
+(%i50) best_psi_udd:0
+(%i51) best_P_udd:0
+(%i52) for nn from 0 thru 359 do
+           block([psi,pp],psi:float((nn*%pi)/180),
+                 pp:abs(cos(d0+psi)*cos(d1-psi)*cos(d2-psi)),
+                 if pp > best_P_udd then (best_psi_udd:psi,best_P_udd:pp))
+(%i53) print("  Maximum |cos product| for UDD =",float(best_P_udd))
+  Maximum |cos product| for UDD = 0.4985554939747681 
+(%i54) print("  At psi =",float(best_psi_udd)," rad =",
+             float((best_psi_udd*180)/%pi)," deg")
+  At psi = 3.577924966588376  rad = 205.0  deg 
+(%i55) print("")
+ 
+(%i56) P_cos_bg:abs(float(c0*c1*c2))
+(%i57) print("  Background |cos product| (psi=0) =",P_cos_bg)
+  Background |cos product| (psi=0) = 0.2735038464820981 
+(%i58) print("  Enhancement factor (UUD) =",float(best_P/P_cos_bg))
+  Enhancement factor (UUD) = 2.114416696997599 
+(%i59) print("  Enhancement factor (UDD) =",float(best_P_udd/P_cos_bg))
+  Enhancement factor (UDD) = 1.822846370854973 
+(%i60) print("")
+ 
+(%i61) print("SECTION 4: Curl of phase-modulated spherical field")
+SECTION 4: Curl of phase-modulated spherical field 
+(%i62) print("")
+ 
+(%i63) print("  For spherically symmetric phi_a(r):")
+  For spherically symmetric phi_a(r): 
+(%i64) print("  curl_x = (y/r)*phi_2' - (z/r)*phi_1'")
+  curl_x = (y/r)*phi_2' - (z/r)*phi_1' 
+(%i65) print("  curl_y = (z/r)*phi_0' - (x/r)*phi_2'")
+  curl_y = (z/r)*phi_0' - (x/r)*phi_2' 
+(%i66) print("  curl_z = (x/r)*phi_1' - (y/r)*phi_0'")
+  curl_z = (x/r)*phi_1' - (y/r)*phi_0' 
+(%i67) print("")
+ 
+(%i68) print("  <|curl(phi)|^2>_Omega = (2/3) * sum_a phi_a'^2")
+  <|curl(phi)|^2>_Omega = (2/3) * sum_a phi_a'^2 
+(%i69) print("")
+ 
+(%i70) print("Computing UUD curl coefficients as function of psi:")
+Computing UUD curl coefficients as function of psi: 
+(%i71) print("")
+ 
+(%i72) for psi_deg in [0,30,60,90,120,150,180] do
+           block([psi,chi0,chi1,chi2,ca0,ca1,ca2,sa0,sa1,sa2,C2,S2,CS,PP],
+                 psi:float((psi_deg*%pi)/180),chi0:1,chi1:1,chi2:-1,
+                 ca0:float(cos(d0+chi0*psi)),sa0:float(sin(d0+chi0*psi)),
+                 ca1:float(cos(d1+chi1*psi)),sa1:float(sin(d1+chi1*psi)),
+                 ca2:float(cos(d2+chi2*psi)),sa2:float(sin(d2+chi2*psi)),
+                 C2:ca0^2+ca1^2+ca2^2,S2:sa0^2+sa1^2+sa2^2,
+                 CS:chi0*ca0*sa0+chi1*ca1*sa1+chi2*ca2*sa2,PP:ca0*ca1*ca2,
+                 print("  psi =",psi_deg,"deg: C2 =",float(C2)," S2 =",
+                       float(S2)," CS =",float(CS)," |P_cos| =",
+                       float(abs(PP))))
+  psi = 0 deg: C2 = 2.056538093857592  S2 = 0.9434619061424086  CS = 
+                            - 0.4047266246599449  |P_cos| = 0.2735038464820981 
+  psi = 30 deg: C2 = 2.128772585472238  S2 = 0.8712274145277625  CS = 
+                               0.2796128151244699  |P_cos| = 0.578301099694816 
+  psi = 60 deg: C2 = 1.572234491614646  S2 = 1.427765508385354  CS = 
+                              0.6843394397844146  |P_cos| = 0.2992945162356878 
+  psi = 90 deg: C2 = 0.9434619061424084  S2 = 2.056538093857591  CS = 
+                           0.4047266246599445  |P_cos| = 8.275717854356863E-18 
+  psi = 120 deg: C2 = 0.8712274145277625  S2 = 2.128772585472238  CS = 
+                            - 0.2796128151244696  |P_cos| = 0.1295540077909022 
+  psi = 150 deg: C2 = 1.427765508385354  S2 = 1.572234491614646  CS = 
+                            - 0.6843394397844148  |P_cos| = 0.1644863326701604 
+  psi = 180 deg: C2 = 2.056538093857591  S2 = 0.9434619061424084  CS = 
+                             - 0.4047266246599446  |P_cos| = 0.273503846482098 
+(%i73) print("")
+ 
+(%i74) print("SECTION 5: Curl(curl(phi)) for spherically symmetric fields")
+SECTION 5: Curl(curl(phi)) for spherically symmetric fields 
+(%i75) print("")
+ 
+(%i76) print("  curl(curl(phi))_a = grad(div phi)_a - Lap(phi_a)")
+  curl(curl(phi))_a = grad(div phi)_a - Lap(phi_a) 
+(%i77) print("")
+ 
+(%i78) print("  Angular average over unit sphere:")
+  Angular average over unit sphere: 
+(%i79) print("  <grad(div phi)_a> = (1/3)*Lap(phi_a)")
+  <grad(div phi)_a> = (1/3)*Lap(phi_a) 
+(%i80) print("  <curl(curl(phi))_a> = -(2/3)*Lap(phi_a)")
+  <curl(curl(phi))_a> = -(2/3)*Lap(phi_a) 
+(%i81) print("")
+ 
+(%i82) print("  KEY RESULT: curl(curl) is proportional to the Laplacian!")
+  KEY RESULT: curl(curl) is proportional to the Laplacian! 
+(%i83) print("  This is specific to SPHERICALLY SYMMETRIC fields.")
+  This is specific to SPHERICALLY SYMMETRIC fields. 
+(%i84) print("")
+ 
+(%i85) print("SECTION 6: Full radial ODE system")
+SECTION 6: Full radial ODE system 
+(%i86) print("")
+ 
+(%i87) print("The ODE system separates into amplitude (A) and phase (psi) equations:")
+The ODE system separates into amplitude (A) and phase (psi) equations: 
+(%i88) print("")
+ 
+(%i89) print("EQ1 (amplitude): [1-2G/3]*(A''+2A'/r-A*psi'^2) - m^2*A = F_bind")
+EQ1 (amplitude): [1-2G/3]*(A''+2A'/r-A*psi'^2) - m^2*A = F_bind 
+(%i90) print("EQ2 (phase):     [1-2G/3]*(A*psi''+2A'*psi'+2A*psi'/r) = F_phase")
+EQ2 (phase):     [1-2G/3]*(A*psi''+2A'*psi'+2A*psi'/r) = F_phase 
+(%i91) print("")
+ 
+(%i92) print("SECTION 7: Binding force (amplitude equation)")
+SECTION 7: Binding force (amplitude equation) 
+(%i93) print("")
+ 
+(%i94) print("  F_bind = -mu * A^5 * C_P^2 / (1+kappa*A^6*C_P^2)^2")
+  F_bind = -mu * A^5 * C_P^2 / (1+kappa*A^6*C_P^2)^2 
+(%i95) print("  mu < 0 => F_bind > 0 (attractive)")
+  mu < 0 => F_bind > 0 (attractive) 
+(%i96) print("")
+ 
+(%i97) print("  F_bind(A, psi) for UUD chirality:")
+  F_bind(A, psi) for UUD chirality: 
+(%i98) print("")
+ 
+(%i99) chi:[1,1,-1]
+(%i100) dd:[d0,d1,d2]
+(%i101) for A_test in [0.1,0.2,0.3,0.5,0.8] do
+            block([],print("  A =",A_test,":"),
+                  for psi_deg in [0,30,60,90] do
+                      block([psi,CP,fb],psi:float((psi_deg*%pi)/180),
+                            CP:float(cos(dd[1]+chi[1]*psi)
+                                      *cos(dd[2]+chi[2]*psi)
+                                      *cos(dd[3]+chi[3]*psi)),
+                            fb:float(((-mu_val)*A_test^5*CP^2)
+                                      /(1+kappa_val*A_test^6*CP^2)^2),
+                            print("    psi =",psi_deg,"deg: C_P =",CP,
+                                  " F_bind =",fb)))
+  A = 0.1 : 
+    psi = 0 deg: C_P = 0.2735038464820981  F_bind = 3.092762882548373E-5 
+    psi = 30 deg: C_P = 0.578301099694816  F_bind = 1.382663532307553E-4 
+    psi = 60 deg: C_P = 0.2992945162356878  F_bind = 3.703536466649023E-5 
+    psi = 90 deg: C_P = 8.275717854356863E-18  F_bind = 2.831615935773459E-38 
+  A = 0.2 : 
+    psi = 0 deg: C_P = 0.2735038464820981  F_bind = 9.892178830650195E-4 
+    psi = 30 deg: C_P = 0.578301099694816  F_bind = 0.004415216040628531 
+    psi = 60 deg: C_P = 0.2992945162356878  F_bind = 0.001184463142342814 
+    psi = 90 deg: C_P = 8.275717854356863E-18  F_bind = 9.061170994475067E-37 
+  A = 0.3 : 
+    psi = 0 deg: C_P = 0.2735038464820981  F_bind = 0.007474653393820909 
+    psi = 30 deg: C_P = 0.578301099694816  F_bind = 0.03279541844847916 
+    psi = 60 deg: C_P = 0.2992945162356878  F_bind = 0.008941191334932474 
+    psi = 90 deg: C_P = 8.275717854356863E-18  F_bind = 6.8808267239295E-36 
+  A = 0.5 : 
+    psi = 0 deg: C_P = 0.2735038464820981  F_bind = 0.0862713644608673 
+    psi = 30 deg: C_P = 0.578301099694816  F_bind = 0.2716197793017261 
+    psi = 60 deg: C_P = 0.2992945162356878  F_bind = 0.1010921508664124 
+    psi = 90 deg: C_P = 8.275717854356863E-18  F_bind = 8.848799799292052E-35 
+  A = 0.8 : 
+    psi = 0 deg: C_P = 0.2735038464820981  F_bind = 0.2583811358722552 
+    psi = 30 deg: C_P = 0.578301099694816  F_bind = 0.1563351003983628 
+    psi = 60 deg: C_P = 0.2992945162356878  F_bind = 0.2567490658369805 
+    psi = 90 deg: C_P = 8.275717854356863E-18  F_bind = 9.278639098342469E-34 
+(%i102) print("")
+ 
+(%i103) print("SECTION 8: Phase dynamics dP/dpsi")
+SECTION 8: Phase dynamics dP/dpsi 
+(%i104) print("")
+ 
+(%i105) print("  dP/dpsi for UUD as function of psi:")
+  dP/dpsi for UUD as function of psi: 
+(%i106) for psi_deg in [0,30,60,90,120,150,180] do
+            block([psi,dPdpsi,PP],psi:float((psi_deg*%pi)/180),
+                  PP:float(cos(d0+psi)*cos(d1+psi)*cos(d2-psi)),
+                  dPdpsi:float((-sin(d0+psi))*cos(d1+psi)*cos(d2-psi)
+                                -cos(d0+psi)*sin(d1+psi)*cos(d2-psi)
+                                +cos(d0+psi)*cos(d1+psi)*sin(d2-psi)),
+                  print("    psi =",psi_deg,"deg: P =",PP," dP/dpsi =",
+                        dPdpsi))
+    psi = 0 deg: P = 0.2735038464820981  dP/dpsi = 0.990383243153302 
+    psi = 30 deg: P = 0.578301099694816  dP/dpsi = - 0.008797109592180719 
+    psi = 60 deg: P = 0.2992945162356878  dP/dpsi = - 0.8258969104831415 
+    psi = 90 deg: P = 8.275717854356863E-18  dP/dpsi = - 0.1351527290990144 
+    psi = 120 deg: P = 0.1295540077909022  dP/dpsi = 0.4120821434584859 
+    psi = 150 deg: P = 0.1644863326701604  dP/dpsi = - 0.4376456336187713 
+    psi = 180 deg: P = - 0.273503846482098  dP/dpsi = - 0.9903832431533018 
+(%i107) print("")
+ 
+(%i108) print("SECTION 9: Constant-phase ODE for amplitude A(r)")
+SECTION 9: Constant-phase ODE for amplitude A(r) 
+(%i109) print("")
+ 
+(%i110) psi0:best_psi
+(%i111) CP0:float(cos(d0+chi[1]*psi0)*cos(d1+chi[2]*psi0)*cos(d2+chi[3]*psi0))
+(%i112) print("  Using psi_0 =",float(psi0)," rad (optimal for UUD)")
+  Using psi_0 = 3.665191429188092  rad (optimal for UUD) 
+(%i113) print("  C_P(psi_0) =",CP0)
+  C_P(psi_0) = - 0.5783010996948161 
+(%i114) print("")
+ 
+(%i115) fb_bg:float(((-mu_val)*A_bg^5*CP0^2)/(1+kappa_val*A_bg^6*CP0^2)^2)
+(%i116) print("  F_bind(A_bg) =",fb_bg)
+  F_bind(A_bg) = 1.382663532307553E-4 
+(%i117) print("  m^2*A_bg =",float(m2_val*A_bg))
+  m^2*A_bg = 0.225 
+(%i118) print("  Ratio F_bind/m^2*A_bg =",float(fb_bg/(m2_val*A_bg)))
+  Ratio F_bind/m^2*A_bg = 6.145171254700235E-4 
+(%i119) print("")
+ 
+(%i120) kAC2:float(kappa_val*A_bg^6*CP0^2)
+(%i121) dfb_dA:float(((-mu_val)*CP0^2*A_bg^4*(5-7*kAC2))/(1+kAC2)^3)
+(%i122) print("  kappa*A^6*C_P^2 =",kAC2," (very small)")
+  kappa*A^6*C_P^2 = 1.672160809541169E-5  (very small) 
+(%i123) print("  dF_bind/dA at A_bg =",dfb_dA)
+  dF_bind/dA at A_bg = 0.006913040221884419 
+(%i124) print("")
+ 
+(%i125) meff2_inf:float(m2_val-dfb_dA)
+(%i126) print("  m_eff^2(infinity) = m^2 - dF/dA =",meff2_inf)
+  m_eff^2(infinity) = m^2 - dF/dA = 2.243086959778116 
+(%i127) print("  Decay length = 1/sqrt(m_eff^2) =",float(
+                                                    1.0/sqrt(abs(meff2_inf))))
+  Decay length = 1/sqrt(m_eff^2) = 0.6676931868386056 
+(%i128) print("")
+ 
+(%i129) print("SECTION 10: Numerical shooting for A(r)")
+SECTION 10: Numerical shooting for A(r) 
+(%i130) print("")
+ 
+(%i131) CP2:float(CP0^2)
+(%i132) F_A(AA):=float(((-mu_val)*AA^5*CP2)/(1+kappa_val*AA^6*CP2)^2)
+(%i133) print("  F_bind for different A values (with C_P^2 =",CP2,"):")
+  F_bind for different A values (with C_P^2 = 0.3344321619082337 ): 
+(%i134) for AA in [0.1,0.2,0.3,0.5,0.8,1.0] do print("    A =",AA," F =",
+                                                     F_A(AA))
+    A = 0.1  F = 1.382663532307553E-4 
+    A = 0.2  F = 0.004415216040628531 
+    A = 0.3  F = 0.03279541844847916 
+    A = 0.5  F = 0.2716197793017262 
+    A = 0.8  F = 0.1563351003983627 
+    A = 1.0  F = 0.04402757609272643 
+(%i135) print("")
+ 
+(%i136) dr_s:0.02
+(%i137) nsteps_s:500
+(%i138) shoot_A(A0):=block([y1,y2,r_c,rhs,ss],y1:float(A0),y2:0.0,
+                y2:float((dr_s*(m2_val*A0-F_A(A0)))/3.0),
+                for ss thru nsteps_s do
+                    (r_c:0.5*dr_s+ss*dr_s,
+                     rhs:float(((-2.0)*y2)/r_c+m2_val*y1-F_A(y1)),
+                     y1:y1+dr_s*y2,y2:y2+dr_s*rhs),y1)
+(%i139) print("  Shooting results (target A(inf) = 0.1):")
+  Shooting results (target A(inf) = 0.1): 
+(%i140) for A0 in [0.1,0.15,0.2,0.25,0.3,0.4,0.5,0.7,1.0] do
+            block([result],result:shoot_A(A0),
+                  print("    A(0) =",A0," A(rmax=10) =",result))
+    A(0) = 0.1  A(rmax=10) = 8356.788467017188 
+    A(0) = 0.15  A(rmax=10) = 12375.78148962665 
+    A(0) = 0.2  A(rmax=10) = 16274.44617759423 
+    A(0) = 0.25  A(rmax=10) = 20054.19397705338 
+    A(0) = 0.3  A(rmax=10) = 23745.70721894182 
+    A(0) = 0.4  A(rmax=10) = 31244.79909493411 
+    A(0) = 0.5  A(rmax=10) = 40188.52082602723 
+    A(0) = 0.7  A(rmax=10) = 64191.77764424632 
+    A(0) = 1.0  A(rmax=10) = 96335.87464054906 
+(%i141) print("")
+ 
+(%i142) print("SECTION 11: Phase winding and topology")
+SECTION 11: Phase winding and topology 
+(%i143) print("")
+ 
+(%i144) print("  At the proton center: psi = psi_0 (phase shifted for max binding)")
+  At the proton center: psi = psi_0 (phase shifted for max binding) 
+(%i145) print("  At infinity: psi = 0 (background)")
+  At infinity: psi = 0 (background) 
+(%i146) print("  Phase gradient psi'(r) at the 'shell' creates curl(phi).")
+  Phase gradient psi'(r) at the 'shell' creates curl(phi). 
+(%i147) print("  This is the SOURCE of the Cosserat torsion!")
+  This is the SOURCE of the Cosserat torsion! 
+(%i148) print("")
+ 
+(%i149) print("  Curl magnitude at the shell (psi' >> A'):")
+  Curl magnitude at the shell (psi' >> A'): 
+(%i150) print("  <|curl|^2> ~ (2/3) * A^2 * psi'^2 * S2(psi)")
+  <|curl|^2> ~ (2/3) * A^2 * psi'^2 * S2(psi) 
+(%i151) print("")
+ 
+(%i152) S2_best:0
+(%i153) for aa thru 3 do S2_best:S2_best+float(sin(dd[aa]+chi[aa]*psi0)^2)
+(%i154) print("  S2 at psi=psi_0:",S2_best)
+  S2 at psi=psi_0: 0.8712274145277623 
+(%i155) print("  For A=0.2, psi'=0.3: <|curl|^2> ~",
+              float((2.0/3)*0.2^2*0.3^2*S2_best))
+  For A=0.2, psi'=0.3: <|curl|^2> ~ 0.00209094579486663 
+(%i156) print("")
+ 
+(%i157) print("============================================================")
+============================================================ 
+(%i158) print("  LEVEL 1 SUMMARY")
+  LEVEL 1 SUMMARY 
+(%i159) print("============================================================")
+============================================================ 
+(%i160) print("")
+ 
+(%i161) print("1. The proton seed is characterized by TWO radial functions:")
+1. The proton seed is characterized by TWO radial functions: 
+(%i162) print("   A(r) = amplitude envelope (A_bg -> A_0 at center)")
+   A(r) = amplitude envelope (A_bg -> A_0 at center) 
+(%i163) print("   psi(r) = phase shift (0 at infinity -> psi_0 at center)")
+   psi(r) = phase shift (0 at infinity -> psi_0 at center) 
+(%i164) print("")
+ 
+(%i165) print("2. The field is: phi_a(r) = A(r) * cos(delta_a + chi_a * psi(r))")
+2. The field is: phi_a(r) = A(r) * cos(delta_a + chi_a * psi(r)) 
+(%i166) print("   UUD: chi = (+1, +1, -1)")
+   UUD: chi = (+1, +1, -1) 
+(%i167) print("   UDD: chi = (+1, -1, -1)")
+   UDD: chi = (+1, -1, -1) 
+(%i168) print("")
+ 
+(%i169) print("3. Optimal phase for max |P|:")
+3. Optimal phase for max |P|: 
+(%i170) print("   UUD: psi_0 =",float((best_psi*180)/%pi)," degrees")
+   UUD: psi_0 = 210.0  degrees 
+(%i171) print("   UDD: psi_0 =",float((best_psi_udd*180)/%pi)," degrees")
+   UDD: psi_0 = 205.0  degrees 
+(%i172) print("   Max |C_P| (UUD) =",float(best_P))
+   Max |C_P| (UUD) = 0.5783010996948161 
+(%i173) print("   Max |C_P| (UDD) =",float(best_P_udd))
+   Max |C_P| (UDD) = 0.4985554939747681 
+(%i174) print("")
+ 
+(%i175) print("4. The binding force F = -mu*A^5*C_P^2/(1+kappa*A^6*C_P^2)^2")
+4. The binding force F = -mu*A^5*C_P^2/(1+kappa*A^6*C_P^2)^2 
+(%i176) print("   is POSITIVE (attractive) since mu=-41.3 < 0")
+   is POSITIVE (attractive) since mu=-41.3 < 0 
+(%i177) print("   Both chiralities give SAME binding (depends on C_P^2)")
+   Both chiralities give SAME binding (depends on C_P^2) 
+(%i178) print("")
+ 
+(%i179) print("5. The phase gradient psi'(r) at the shell creates the curl")
+5. The phase gradient psi'(r) at the shell creates the curl 
+(%i180) print("   (torsion) that drives the Cosserat hardening barrier.")
+   (torsion) that drives the Cosserat hardening barrier. 
+(%i181) print("   This is what makes the proton a STABLE localized object.")
+   This is what makes the proton a STABLE localized object. 
+(%i182) print("")
+ 
+(%i183) print("6. The shell radius is where psi transitions from psi_0 to 0.")
+6. The shell radius is where psi transitions from psi_0 to 0. 
+(%i184) print("   R_shell ~ 1/sqrt(m^2) ~ 1/1.5 ~ 0.67 code units for the")
+   R_shell ~ 1/sqrt(m^2) ~ 1/1.5 ~ 0.67 code units for the 
+(%i185) print("   phase domain wall width.")
+   phase domain wall width. 
+(%i186) print("")
+ 
+(%i187) print("-> Proceed to Level 2: self-consistent theta and seed generator.")
+-> Proceed to Level 2: self-consistent theta and seed generator. 
+(%o188)             /home/d/code/scp/v52/spherical_seed.mac

@@ -1,0 +1,116 @@
+
+Maxima 5.46.0 https://maxima.sourceforge.io
+using Lisp GNU Common Lisp (GCL) GCL 2.6.14 git tag Version_2_6_15pre7
+Distributed under the GNU Public License. See the file COPYING.
+Dedicated to the memory of William Schelter.
+The function bug_report() provides bug reporting information.
+(%i1) batch("v52/hedgehog_seed.mac")
+
+read and interpret /home/d/code/scp/v52/hedgehog_seed.mac
+(%i2) kill(all)
+(%i1) declare([A,k,x,y,z,r],real)
+(%i2) assume(A > 0,k > 0)
+(%i3) d0:0
+(%i4) d1:3.0005
+(%i5) d2:4.4325
+(%i6) D0:0
+(%i7) D1:(2*%pi)/3
+(%i8) D2:(4*%pi)/3
+(%i9) chi_UUD:[1,1,-1]
+(%i10) print("=== HEDGEHOG ENCODING ===")
+=== HEDGEHOG ENCODING === 
+(%i11) print("φ_a(x,y,z) = A(r) × cos(χ_a × k × coord_a + δ_a + Δ_a)")
+φ_a(x,y,z) = A(r) × cos(χ_a × k × coord_a + δ_a + Δ_a) 
+(%i12) print("")
+ 
+(%i13) phi_0:A*cos(chi_UUD[1]*k*x+d0+D0)
+(%i14) phi_1:A*cos(chi_UUD[2]*k*y+d1+D1)
+(%i15) phi_2:A*cos(chi_UUD[3]*k*z+d2+D2)
+(%i16) P_general:trigreduce(expand(phi_0*phi_1*phi_2))
+(%i17) print("P(x,y,z) = ",P_general)
+P(x,y,z) =  
+ 3
+A  cos(1.0 k z + 1.0 k y + 1.0 k x - 0.6666666666666666 %pi - 1.432)
+--------------------------------------------------------------------
+                                 4
+    3
+   A  cos(1.0 k z + 1.0 k y - 1.0 k x - 0.6666666666666666 %pi - 1.432)
+ + --------------------------------------------------------------------
+                                    4
+    3
+   A  cos(1.0 k z - 1.0 k y + 1.0 k x - 7.433)
+ + -------------------------------------------
+                        4
+    3
+   A  cos(1.0 k z - 1.0 k y - 1.0 k x - 7.433)
+ + ------------------------------------------- 
+                        4
+(%i18) print("")
+ 
+(%i19) P_center:subst([x = 0,y = 0,z = 0],phi_0*phi_1*phi_2)
+(%i20) print("P(0,0,0) = ",float(P_center))
+                                  3
+P(0,0,0) =  - 0.2591080155818043 A  
+(%i21) print("")
+ 
+(%i22) P_xaxis:subst([y = 0,z = 0],phi_0*phi_1*phi_2)
+(%i23) P_xaxis_simp:trigreduce(expand(P_xaxis))
+(%i24) print("P(x,0,0) = ",P_xaxis_simp)
+                  3
+P(x,0,0) =  0.25 A  cos(1.0 k x + 0.6666666666666666 %pi + 1.432)
+         3
+ + 0.25 A  cos(1.0 k x - 0.6666666666666666 %pi - 1.432)
+                       3
+ + 0.2043282877905566 A  cos(k x) 
+(%i25) print("  = A³ × cos(kx+δ₀) × cos(δ₁+Δ₁) × cos(δ₂+Δ₂)")
+  = A³ × cos(kx+δ₀) × cos(δ₁+Δ₁) × cos(δ₂+Δ₂) 
+(%i26) c1_at0:float(cos(d1+D1))
+(%i27) c2_at0:float(cos(d2+D2))
+(%i28) printf(true,"  cos(δ₁+Δ₁) = ~,6f~%",c1_at0)
+  cos(δ₁+Δ₁) = 0.373247
+(%i29) printf(true,"  cos(δ₂+Δ₂) = ~,6f~%",c2_at0)
+  cos(δ₂+Δ₂) = -0.694201
+(%i30) printf(true,"  Product = ~,6f~%",c1_at0*c2_at0)
+  Product = -0.259108
+(%i31) print("")
+ 
+(%i32) print("=== CONFINEMENT CHECK ===")
+=== CONFINEMENT CHECK === 
+(%i33) print("For P to be confined, we need P → 0 on a boundary surface.")
+For P to be confined, we need P → 0 on a boundary surface. 
+(%i34) print("")
+ 
+(%i35) P_small_r:float(cos(d0)*cos(d1+D1)*cos(d2+D2))
+(%i36) printf(true,"P at r→0: A³ × ~,6f~%",P_small_r)
+P at r→0: A³ × -0.259108
+(%i37) print("")
+ 
+(%i38) print("P angular average: <P> ∝ (sin(kr)/(kr))³ → 0 as 1/r³")
+P angular average: <P> ∝ (sin(kr)/(kr))³ → 0 as 1/r³ 
+(%i39) print("P IS naturally confined without an explicit boundary!")
+P IS naturally confined without an explicit boundary! 
+(%i40) print("")
+ 
+(%i41) print("=== CARRIER PHASE CANCELLATION ===")
+=== CARRIER PHASE CANCELLATION === 
+(%i42) print("Unlike the 3-braid seed, the hedgehog encodes phases in SPACE,")
+Unlike the 3-braid seed, the hedgehog encodes phases in SPACE, 
+(%i43) print("not in a sum. There is no Σcos(δ+Δ_b) = 0 identity.")
+not in a sum. There is no Σcos(δ+Δ_b) = 0 identity. 
+(%i44) print("Instead, the cancellation is GEOMETRIC: averaging P over angles")
+Instead, the cancellation is GEOMETRIC: averaging P over angles 
+(%i45) print("at fixed r gives zero because independent cosines average out.")
+at fixed r gives zero because independent cosines average out. 
+(%i46) print("")
+ 
+(%i47) y_max:float((-(d1+D1))/1.5)
+(%i48) z_max:float((d2+D2)/1.5)
+(%i49) printf(true,"P maximum near: (0, ~,2f, ~,2f)~%",y_max,z_max)
+P maximum near: (0, -3.40, 5.75)
+(%i50) P_at_max:float(subst([x = 0,y = y_max,z = z_max],phi_0*phi_1*phi_2))
+(%i51) printf(true,"P at maximum: A³ × ~,6f~%",P_at_max/A^3)
+`printf': argument can't be supplied to f-directive: 
+cos(3.396596734928797 k - 5.094895102393195)
+ cos(5.747526803190927 k - 8.62129020478639)
+ -- an error.
+(%o52)              /home/d/code/scp/v52/hedgehog_seed.mac

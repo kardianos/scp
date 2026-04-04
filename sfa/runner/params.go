@@ -10,6 +10,7 @@ import (
 // --- Tool parameter and result structs ---
 
 type SimSetupParams struct {
+	Name      string            `json:"name" desc:"Instance name/ID (e.g. 'gpu1', 'local_test')" required:"true"`
 	Executor  string            `json:"executor" desc:"Execution type: local or remote" required:"true"`
 	Host      string            `json:"host" desc:"SSH host for existing remote instance"`
 	Port      int               `json:"port" desc:"SSH port for existing remote instance"`
@@ -20,6 +21,7 @@ type SimSetupParams struct {
 
 type SimSetupResult struct {
 	Status     string `json:"status"`
+	Name       string `json:"name"`
 	Type       string `json:"type"`
 	WorkDir    string `json:"work_dir,omitempty"`
 	Host       string `json:"host,omitempty"`
@@ -28,21 +30,26 @@ type SimSetupResult struct {
 	InstanceID int    `json:"instance_id,omitempty"`
 }
 
-type SimStatusParams struct{}
+type SimStatusParams struct {
+	Name string `json:"name" desc:"Instance name (omit to list all instances)"`
+}
 
 type SimTeardownParams struct {
-	Force bool `json:"force" desc:"Force teardown even if output files have not been downloaded"`
+	Name  string `json:"name" desc:"Instance name to teardown" required:"true"`
+	Force bool   `json:"force" desc:"Force teardown even if output files have not been downloaded"`
 }
 type SimTeardownResult struct {
 	Status string `json:"status"`
 }
 
 type SimBuildParams struct {
+	Name    string   `json:"name" desc:"Instance name" required:"true"`
 	Sources []string `json:"sources" desc:"Source file paths" required:"true"`
 	Cmd     string   `json:"cmd" desc:"Build command (optional, auto-detected if omitted)"`
 }
 
 type SimRunParams struct {
+	Name           string  `json:"name" desc:"Instance name" required:"true"`
 	Config         string  `json:"config" desc:"Simulation config content (inline)" required:"true"`
 	ID             string  `json:"id" desc:"Run identifier" required:"true"`
 	NotifyInterval float64 `json:"notify_interval" desc:"Send progress notifications every N seconds (0=disabled)"`
@@ -53,6 +60,7 @@ type SimRunParams struct {
 type SimRunResult struct {
 	RunID    string `json:"run_id"`
 	Status   string `json:"status"`
+	Instance string `json:"instance"`
 	Executor string `json:"executor"`
 	Init     string `json:"init,omitempty"`
 	InitSFA  string `json:"init_sfa,omitempty"`
@@ -72,11 +80,13 @@ type TemplateInfo struct {
 }
 
 type SimRunStatusParams struct {
-	ID string `json:"id" desc:"Run identifier" required:"true"`
+	Name string `json:"name" desc:"Instance name" required:"true"`
+	ID   string `json:"id" desc:"Run identifier" required:"true"`
 }
 
 type SimRunCancelParams struct {
-	ID string `json:"id" desc:"Run identifier" required:"true"`
+	Name string `json:"name" desc:"Instance name" required:"true"`
+	ID   string `json:"id" desc:"Run identifier" required:"true"`
 }
 
 type SimRunCancelResult struct {
@@ -84,6 +94,7 @@ type SimRunCancelResult struct {
 }
 
 type SimUploadParams struct {
+	Name       string `json:"name" desc:"Instance name" required:"true"`
 	LocalPath  string `json:"local_path" desc:"Local file path" required:"true"`
 	RemotePath string `json:"remote_path" desc:"Remote destination path" required:"true"`
 }
@@ -93,6 +104,7 @@ type SimUploadResult struct {
 }
 
 type SimDownloadParams struct {
+	Name       string `json:"name" desc:"Instance name" required:"true"`
 	RemotePath string `json:"remote_path" desc:"Remote file path" required:"true"`
 	LocalPath  string `json:"local_path" desc:"Local destination path" required:"true"`
 }
@@ -103,10 +115,12 @@ type SimDownloadResult struct {
 }
 
 type SimDownloadStatusParams struct {
-	ID string `json:"id" desc:"Download identifier" required:"true"`
+	Name string `json:"name" desc:"Instance name" required:"true"`
+	ID   string `json:"id" desc:"Download identifier" required:"true"`
 }
 
 type SimListFilesParams struct {
+	Name    string `json:"name" desc:"Instance name" required:"true"`
 	Pattern string `json:"pattern" desc:"File glob pattern" required:"true"`
 }
 
@@ -115,6 +129,7 @@ type SimListFilesResult struct {
 }
 
 type SimExecParams struct {
+	Name      string `json:"name" desc:"Instance name" required:"true"`
 	Cmd       string `json:"cmd" desc:"Shell command to execute" required:"true"`
 	TimeoutMs int    `json:"timeout_ms" desc:"Timeout in milliseconds (default 30000)"`
 }
@@ -185,8 +200,9 @@ func structToJSONSchema(t reflect.Type) map[string]any {
 // It pre-processes string values that look like JSON arrays or objects, which can
 // happen when MCP clients serialize complex types as strings.
 func unmarshalParams(params map[string]any, target any) error {
-	// Pre-process: if a value is a string that looks like a JSON array or object,
-	// decode it so the round-trip produces the correct Go types.
+	// Pre-process: if a value is a string that looks like a JSON array, object,
+	// boolean, or number, decode it so the round-trip produces the correct Go types.
+	// This handles MCP clients that serialize complex types as strings.
 	for k, v := range params {
 		if s, ok := v.(string); ok {
 			s = strings.TrimSpace(s)
@@ -196,6 +212,10 @@ func unmarshalParams(params map[string]any, target any) error {
 				if err := json.Unmarshal([]byte(s), &decoded); err == nil {
 					params[k] = decoded
 				}
+			} else if s == "true" {
+				params[k] = true
+			} else if s == "false" {
+				params[k] = false
 			}
 		}
 	}

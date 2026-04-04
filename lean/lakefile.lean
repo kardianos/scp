@@ -28,3 +28,7 @@ lean_lib Polariton where
 @[default_target]
 lean_lib SinglePass where
   srcDir := "."
+
+@[default_target]
+lean_lib V52 where
+  srcDir := "."

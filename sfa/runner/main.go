@@ -22,10 +22,10 @@ func main() {
 	state, err := LoadState()
 	if err != nil {
 		log.Printf("scp-runner: warning: load state: %v (starting fresh)", err)
-		state = &RunnerState{Runs: make(map[string]*PersistRun)}
+		state = newEmptyState()
 	}
 
-	// Create MCP server with no executor initially (sim_setup will configure one).
+	// Create MCP server with no executor initially (sim_setup will configure them).
 	server := NewMCPServer(nil)
 	server.state = state
 
@@ -48,26 +48,97 @@ func main() {
 	}
 }
 
-// recoverFromState attempts to reconnect to a previously running remote instance
+// recoverFromState attempts to reconnect to previously running remote instances
 // and resume monitoring of any runs that were in progress.
 func recoverFromState(ctx context.Context, server *MCPServer, state *RunnerState) {
-	if state.Instance == nil {
+	state.mu.Lock()
+	instanceNames := make([]string, 0, len(state.Instances))
+	for name := range state.Instances {
+		instanceNames = append(instanceNames, name)
+	}
+	state.mu.Unlock()
+
+	for _, name := range instanceNames {
+		recoverInstance(ctx, server, state, name)
+	}
+}
+
+// recoverInstance attempts to recover a single named instance.
+func recoverInstance(ctx context.Context, server *MCPServer, state *RunnerState, name string) {
+	pi := state.GetInstance(name)
+	if pi == nil || pi.Connection == nil {
 		return
 	}
 
-	inst := state.Instance
-	log.Printf("scp-runner: recovering instance %d at %s:%d (%s)", inst.ID, inst.Host, inst.Port, inst.GPUName)
+	inst := pi.Connection
+	log.Printf("scp-runner: recovering instance %q (%d at %s:%d, %s)", name, inst.ID, inst.Host, inst.Port, inst.GPUName)
 
-	remote := NewRemoteExecutor(RemoteConfig{WorkDir: "/tmp/scp-runner"})
+	remote := NewRemoteExecutor(RemoteConfig{WorkDir: "/tmp/scp-runner/" + name})
 	if server.monitor != nil {
 		remote.OnRunDone = server.monitor.Wakeup
 	}
 
-	// Initialize the vast client (needed for teardown).
+	instanceName := name // capture for closures
+	remote.OnRunComplete = func(id string, info RunInfo) {
+		server.handleRunDone(instanceName, id, info)
+	}
+	remote.OnDownloadDone = func(id, remotePath, localPath string, err error) {
+		if err != nil {
+			server.sendChannelEvent("download_failed", map[string]string{
+				"instance":    instanceName,
+				"download_id": id,
+				"remote_path": remotePath,
+				"local_path":  localPath,
+				"error":       err.Error(),
+			}, fmt.Sprintf("[%s] Download FAILED: %s -> %s: %v", instanceName, remotePath, localPath, err))
+		} else {
+			server.sendChannelEvent("download_complete", map[string]string{
+				"instance":    instanceName,
+				"download_id": id,
+				"remote_path": remotePath,
+				"local_path":  localPath,
+			}, fmt.Sprintf("[%s] Download complete: %s -> %s", instanceName, remotePath, localPath))
+		}
+	}
+
+	// Initialize the vast client (needed for teardown and instance checks).
 	if err := remote.Setup(ctx); err != nil {
-		log.Printf("scp-runner: recovery: vast setup failed: %v (clearing state)", err)
-		state.ClearInstance()
+		log.Printf("scp-runner: recovery [%s]: vast setup failed: %v (clearing state)", name, err)
+		state.ClearInstance(name)
 		return
+	}
+
+	// Check if the instance is still alive via the Vast API before trying SSH.
+	if remote.vast != nil {
+		instances, err := remote.vast.ShowInstances(ctx)
+		if err != nil {
+			log.Printf("scp-runner: recovery [%s]: cannot list instances: %v (clearing state)", name, err)
+			state.ClearInstance(name)
+			return
+		}
+		found := false
+		for _, vi := range instances {
+			if vi.ID == inst.ID {
+				if vi.Status == "running" {
+					found = true
+					// Update host/port in case they changed
+					if vi.SSHHost != "" && vi.SSHPort > 0 {
+						inst.Host = vi.SSHHost
+						inst.Port = vi.SSHPort
+					}
+				} else {
+					log.Printf("scp-runner: recovery [%s]: instance %d status=%s (not running, clearing state)", name, inst.ID, vi.Status)
+					state.ClearInstance(name)
+					return
+				}
+				break
+			}
+		}
+		if !found {
+			log.Printf("scp-runner: recovery [%s]: instance %d not found in Vast API (destroyed, clearing state)", name, inst.ID)
+			state.ClearInstance(name)
+			return
+		}
 	}
 
 	// Try SSH connect with a short timeout.
@@ -75,8 +146,8 @@ func recoverFromState(ctx context.Context, server *MCPServer, state *RunnerState
 	err := remote.Connect(connectCtx, inst.Host, inst.Port)
 	connectCancel()
 	if err != nil {
-		log.Printf("scp-runner: recovery: SSH connect to %s:%d failed: %v (clearing state)", inst.Host, inst.Port, err)
-		state.ClearInstance()
+		log.Printf("scp-runner: recovery [%s]: SSH connect to %s:%d failed: %v (clearing state)", name, inst.Host, inst.Port, err)
+		state.ClearInstance(name)
 		return
 	}
 
@@ -85,24 +156,22 @@ func recoverFromState(ctx context.Context, server *MCPServer, state *RunnerState
 	remote.gpuName = inst.GPUName
 
 	// Restore the last-built binary path.
-	if state.Binary != "" {
-		remote.lastBinary = state.Binary
+	if pi.Binary != "" {
+		remote.lastBinary = pi.Binary
 	}
 
 	// Set as active executor.
-	server.mu.Lock()
-	server.executor = remote
-	server.mu.Unlock()
+	server.setExecutor(name, remote)
 
-	log.Printf("scp-runner: recovery: connected to instance %d", inst.ID)
+	log.Printf("scp-runner: recovery [%s]: connected to instance %d", name, inst.ID)
 
 	// Check and resume any runs that were in progress.
 	recoveredAny := false
-	for id, run := range state.Runs {
+	for id, run := range pi.Runs {
 		if run.Status != "running" && run.Status != "starting" {
 			continue
 		}
-		recoverRun(ctx, remote, state, id, run)
+		recoverRun(ctx, remote, state, name, id, run)
 		recoveredAny = true
 	}
 
@@ -114,8 +183,8 @@ func recoverFromState(ctx context.Context, server *MCPServer, state *RunnerState
 
 // recoverRun checks if a previously running simulation is still alive on the remote
 // and either resumes monitoring or marks it as complete/failed.
-func recoverRun(ctx context.Context, remote *RemoteExecutor, state *RunnerState, id string, pRun *PersistRun) {
-	log.Printf("scp-runner: recovery: checking run %s", id)
+func recoverRun(ctx context.Context, remote *RemoteExecutor, state *RunnerState, instanceName string, id string, pRun *PersistRun) {
+	log.Printf("scp-runner: recovery [%s]: checking run %s", instanceName, id)
 
 	// Check if the process is still running by looking for the exit file.
 	exitFile := fmt.Sprintf("/root/run_%s.exit", id)
@@ -129,20 +198,20 @@ func recoverRun(ctx context.Context, remote *RemoteExecutor, state *RunnerState,
 		if exitCode != "0" {
 			finalStatus = "failed"
 		}
-		log.Printf("scp-runner: recovery: run %s already finished (exit=%s)", id, exitCode)
+		log.Printf("scp-runner: recovery [%s]: run %s already finished (exit=%s)", instanceName, id, exitCode)
 
 		// Do a final download if auto_download was configured.
 		if pRun.AutoDownload != "" && len(pRun.OutputFiles) > 0 {
-			log.Printf("scp-runner: recovery: doing final download for run %s to %s", id, pRun.AutoDownload)
+			log.Printf("scp-runner: recovery [%s]: doing final download for run %s to %s", instanceName, id, pRun.AutoDownload)
 			for _, f := range pRun.OutputFiles {
 				remotePath := pRun.RemoteDir + "/" + f
 				if err := remote.rsyncFile(ctx, remotePath, pRun.AutoDownload); err != nil {
-					log.Printf("scp-runner: recovery: download %s: %v", f, err)
+					log.Printf("scp-runner: recovery [%s]: download %s: %v", instanceName, f, err)
 				}
 			}
 		}
 
-		state.UpdateRunStatus(id, finalStatus)
+		state.UpdateRunStatus(instanceName, id, finalStatus)
 		// Also store in the executor's run map so RunStatus works.
 		rr := &remoteRun{
 			info: RunInfo{
@@ -162,12 +231,11 @@ func recoverRun(ctx context.Context, remote *RemoteExecutor, state *RunnerState,
 	}
 
 	// No exit file yet. Check if the process is still alive by looking at the log file.
-	// We check if the log file exists and is growing by comparing sizes.
 	sizeOut, err := remote.sshRun(ctx, fmt.Sprintf("stat -c%%s %s 2>/dev/null", logFile))
 	if err != nil {
 		// No log file at all means the process never ran or was cleaned up.
-		log.Printf("scp-runner: recovery: run %s has no log file, marking failed", id)
-		state.UpdateRunStatus(id, "failed")
+		log.Printf("scp-runner: recovery [%s]: run %s has no log file, marking failed", instanceName, id)
+		state.UpdateRunStatus(instanceName, id, "failed")
 		rr := &remoteRun{
 			info: RunInfo{
 				ID:     id,
@@ -180,7 +248,7 @@ func recoverRun(ctx context.Context, remote *RemoteExecutor, state *RunnerState,
 	}
 
 	// Process appears to still be running. Find its PID and resume monitoring.
-	log.Printf("scp-runner: recovery: run %s still alive (log size=%s), resuming monitor", id, strings.TrimSpace(sizeOut))
+	log.Printf("scp-runner: recovery [%s]: run %s still alive (log size=%s), resuming monitor", instanceName, id, strings.TrimSpace(sizeOut))
 
 	runCtx, cancel := context.WithCancel(ctx)
 	adCtx, adCancel := context.WithCancel(context.Background())
@@ -233,7 +301,7 @@ func recoverRun(ctx context.Context, remote *RemoteExecutor, state *RunnerState,
 				rr.info.Status = RunCancelled
 				rr.info.WallSecs = time.Since(startWall).Seconds()
 				rr.mu.Unlock()
-				state.UpdateRunStatus(id, "cancelled")
+				state.UpdateRunStatus(instanceName, id, "cancelled")
 				return
 			case <-ticker.C:
 			}
@@ -274,7 +342,7 @@ func recoverRun(ctx context.Context, remote *RemoteExecutor, state *RunnerState,
 					rr.info.Error = fmt.Sprintf("exit code %s\n%s", exitCode, strings.TrimSpace(tailOut))
 				}
 				rr.mu.Unlock()
-				state.UpdateRunStatus(id, string(rr.info.Status))
+				state.UpdateRunStatus(instanceName, id, string(rr.info.Status))
 				return
 			}
 			rr.mu.Unlock()

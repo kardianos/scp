@@ -13,14 +13,20 @@ import (
 
 // StatusState holds the latest snapshot written to disk.
 type StatusState struct {
+	Instances map[string]*InstanceStatusState `json:"instances,omitempty"`
+	UpdatedAt string                          `json:"updated_at"`
+}
+
+// InstanceStatusState holds status for a single named instance.
+type InstanceStatusState struct {
 	Executor  *ExecutorStatus          `json:"executor,omitempty"`
 	Runs      map[string]*RunInfo      `json:"runs,omitempty"`
 	Downloads map[string]*DownloadInfo `json:"downloads,omitempty"`
-	UpdatedAt string                   `json:"updated_at"`
 }
 
 // ProgressNotification is the payload for notifications/sim_progress.
 type ProgressNotification struct {
+	Instance  string   `json:"instance"`
 	ID        string   `json:"id"`
 	Status    RunState `json:"status"`
 	SimTime   float64  `json:"sim_time"`
@@ -37,22 +43,28 @@ type notifyState struct {
 	doneSent   bool
 }
 
+// notifyKey combines instance name and run ID for notification tracking.
+type notifyKey struct {
+	instance string
+	runID    string
+}
+
 // Monitor writes periodic status snapshots and manages background tasks.
 type Monitor struct {
 	server  *MCPServer
 	dir     string
 	mu      sync.Mutex
 	latest  StatusState
-	notify  map[string]*notifyState // per-run notification tracking
-	wakeup  chan struct{}           // signal for immediate notification check
-	state   *RunnerState           // persistent state (shared with server)
+	notify  map[notifyKey]*notifyState // per-run notification tracking
+	wakeup  chan struct{}              // signal for immediate notification check
+	state   *RunnerState              // persistent state (shared with server)
 }
 
 func NewMonitor(server *MCPServer, dir string) *Monitor {
 	return &Monitor{
 		server: server,
 		dir:    dir,
-		notify: make(map[string]*notifyState),
+		notify: make(map[notifyKey]*notifyState),
 		wakeup: make(chan struct{}, 4),
 	}
 }
@@ -89,24 +101,31 @@ func (m *Monitor) Run(ctx context.Context) {
 
 func (m *Monitor) snapshot(ctx context.Context) {
 	state := StatusState{
-		Runs:      make(map[string]*RunInfo),
-		Downloads: make(map[string]*DownloadInfo),
+		Instances: make(map[string]*InstanceStatusState),
 		UpdatedAt: time.Now().Format(time.RFC3339),
 	}
 
-	ex, err := m.server.getExecutor()
-	if err == nil {
+	// Iterate over all executors.
+	allExecs := m.server.getAllExecutors()
+	for name, ex := range allExecs {
+		instState := &InstanceStatusState{
+			Runs:      make(map[string]*RunInfo),
+			Downloads: make(map[string]*DownloadInfo),
+		}
+
 		status, err := ex.Status(ctx)
 		if err == nil {
-			state.Executor = status
+			instState.Executor = status
 		}
 
 		// Collect run states and send notifications.
-		collectRuns(ex, state.Runs)
-		m.sendRunNotifications(ex, state.Runs)
+		collectRuns(ex, instState.Runs)
+		m.sendRunNotifications(name, ex, instState.Runs)
 
 		// Collect download states.
-		collectDownloads(ex, state.Downloads)
+		collectDownloads(ex, instState.Downloads)
+
+		state.Instances[name] = instState
 	}
 
 	data, err := json.MarshalIndent(state, "", "  ")
@@ -126,7 +145,7 @@ func (m *Monitor) snapshot(ctx context.Context) {
 }
 
 // sendRunNotifications checks each run and emits progress notifications as needed.
-func (m *Monitor) sendRunNotifications(ex Executor, runs map[string]*RunInfo) {
+func (m *Monitor) sendRunNotifications(instanceName string, ex Executor, runs map[string]*RunInfo) {
 	now := time.Now()
 
 	for id, info := range runs {
@@ -135,10 +154,11 @@ func (m *Monitor) sendRunNotifications(ex Executor, runs map[string]*RunInfo) {
 			continue
 		}
 
-		ns, ok := m.notify[id]
+		nk := notifyKey{instance: instanceName, runID: id}
+		ns, ok := m.notify[nk]
 		if !ok {
 			ns = &notifyState{}
-			m.notify[id] = ns
+			m.notify[nk] = ns
 		}
 
 		done := info.Status == RunComplete || info.Status == RunFailed || info.Status == RunCancelled
@@ -146,6 +166,7 @@ func (m *Monitor) sendRunNotifications(ex Executor, runs map[string]*RunInfo) {
 		if done {
 			if !ns.doneSent {
 				pn := ProgressNotification{
+					Instance:  instanceName,
 					ID:        id,
 					Status:    info.Status,
 					SimTime:   info.SimTime,
@@ -158,15 +179,15 @@ func (m *Monitor) sendRunNotifications(ex Executor, runs map[string]*RunInfo) {
 				m.server.sendNotification("notifications/sim_progress", pn)
 				// Also send standard MCP log message so clients surface it.
 				level := "info"
-				msg := fmt.Sprintf("[%s] %s — sim_time=%.1f/%.1f wall=%.1fs",
-					id, info.Status, info.SimTime, info.TotalTime, info.WallSecs)
+				msg := fmt.Sprintf("[%s/%s] %s — sim_time=%.1f/%.1f wall=%.1fs",
+					instanceName, id, info.Status, info.SimTime, info.TotalTime, info.WallSecs)
 				if info.Status == RunFailed {
 					level = "error"
-					msg = fmt.Sprintf("[%s] FAILED (%.1fs): %s", id, info.WallSecs, info.Error)
+					msg = fmt.Sprintf("[%s/%s] FAILED (%.1fs): %s", instanceName, id, info.WallSecs, info.Error)
 				} else if info.Status == RunCancelled {
 					level = "warning"
-					msg = fmt.Sprintf("[%s] cancelled at sim_time=%.1f/%.1f (%.1fs)",
-						id, info.SimTime, info.TotalTime, info.WallSecs)
+					msg = fmt.Sprintf("[%s/%s] cancelled at sim_time=%.1f/%.1f (%.1fs)",
+						instanceName, id, info.SimTime, info.TotalTime, info.WallSecs)
 				}
 				m.server.sendLogMessage(level, msg)
 
@@ -174,25 +195,28 @@ func (m *Monitor) sendRunNotifications(ex Executor, runs map[string]*RunInfo) {
 				switch info.Status {
 				case RunComplete:
 					m.server.sendChannelEvent("run_complete", map[string]string{
-						"run_id":    id,
+						"instance": instanceName,
+						"run_id":   id,
 						"sim_time":  fmt.Sprintf("%.1f", info.SimTime),
 						"wall_secs": fmt.Sprintf("%.1f", info.WallSecs),
 					}, msg)
 				case RunFailed:
 					m.server.sendChannelEvent("run_failed", map[string]string{
-						"run_id": id,
-						"error":  info.Error,
+						"instance": instanceName,
+						"run_id":   id,
+						"error":    info.Error,
 					}, msg)
 				case RunCancelled:
 					m.server.sendChannelEvent("run_cancelled", map[string]string{
-						"run_id": id,
+						"instance": instanceName,
+						"run_id":   id,
 					}, msg)
 				}
 
 				ns.doneSent = true
 				// Persist run completion to state file.
 				if m.state != nil {
-					m.state.UpdateRunStatus(id, string(info.Status))
+					m.state.UpdateRunStatus(instanceName, id, string(info.Status))
 				}
 			}
 			continue
@@ -201,6 +225,7 @@ func (m *Monitor) sendRunNotifications(ex Executor, runs map[string]*RunInfo) {
 		// Running — check if enough time has elapsed.
 		if now.Sub(ns.lastNotify) >= interval {
 			pn := ProgressNotification{
+				Instance:  instanceName,
 				ID:        id,
 				Status:    info.Status,
 				SimTime:   info.SimTime,
@@ -215,8 +240,8 @@ func (m *Monitor) sendRunNotifications(ex Executor, runs map[string]*RunInfo) {
 			if info.TotalTime > 0 {
 				pct = 100 * info.SimTime / info.TotalTime
 			}
-			m.server.sendLogMessage("info", fmt.Sprintf("[%s] running — sim_time=%.1f/%.1f (%.0f%%) wall=%.1fs",
-				id, info.SimTime, info.TotalTime, pct, info.WallSecs))
+			m.server.sendLogMessage("info", fmt.Sprintf("[%s/%s] running — sim_time=%.1f/%.1f (%.0f%%) wall=%.1fs",
+				instanceName, id, info.SimTime, info.TotalTime, pct, info.WallSecs))
 			ns.lastNotify = now
 		}
 	}

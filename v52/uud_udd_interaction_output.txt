@@ -1,0 +1,298 @@
+
+Maxima 5.46.0 https://maxima.sourceforge.io
+using Lisp GNU Common Lisp (GCL) GCL 2.6.14 git tag Version_2_6_15pre7
+Distributed under the GNU Public License. See the file COPYING.
+Dedicated to the memory of William Schelter.
+The function bug_report() provides bug reporting information.
+(%i1) batch("v52/uud_udd_interaction.mac")
+
+read and interpret /home/d/code/scp/v52/uud_udd_interaction.mac
+(%i2) kill(all)
+(%i1) declare([A,k,D],real)
+(%i2) assume(A > 0,k > 0,D > 0)
+(%i3) delta:[0,d1,d2]
+(%i4) Delta:[0,(2*%pi)/3,(4*%pi)/3]
+(%i5) chi_UUD:[1,1,-1]
+(%i6) chi_UDD:[1,-1,-1]
+(%i7) d1_val:3.0005
+(%i8) d2_val:4.4325
+(%i9) phi_at_x(a,x,chi):=A
+               *(cos(chi[1]*k*x+delta[a+1]+Delta[1])
+                +cos(delta[a+1]+Delta[2])+cos(delta[a+1]+Delta[3]))
+(%i10) phi_pair(a,chi_L,chi_R):=phi_at_x(a,D/2,chi_L)+phi_at_x(a,(-D)/2,chi_R)
+(%i11) P_UUD_UUD:trigreduce(expand(phi_pair(0,chi_UUD,chi_UUD)
+                                    *phi_pair(1,chi_UUD,chi_UUD)
+                                    *phi_pair(2,chi_UUD,chi_UUD)))
+(%i12) P_UUD_UDD:trigreduce(expand(phi_pair(0,chi_UUD,chi_UDD)
+                                    *phi_pair(1,chi_UUD,chi_UDD)
+                                    *phi_pair(2,chi_UUD,chi_UDD)))
+(%i13) print("=== P at midpoint vs D ===")
+=== P at midpoint vs D === 
+(%i14) print("  D       P(UUD+UUD)     P(UUD+UDD)     ratio UDD/UUD")
+  D       P(UUD+UUD)     P(UUD+UDD)     ratio UDD/UUD 
+(%i15) for DD in [50,30,25,20,15,12,10,8,6,4,2,1] do
+           (p_uu:float(subst([d1 = d1_val,d2 = d2_val,A = 0.1,k = 1.5,D = DD],
+                             P_UUD_UUD)),
+            p_ud:float(subst([d1 = d1_val,d2 = d2_val,A = 0.1,k = 1.5,D = DD],
+                             P_UUD_UDD)),
+            ratio:if abs(p_uu) > 1.0E-15 then p_ud/p_uu else 0,
+            printf(true,"  ~4,1f   ~14,6e   ~14,6e   ~8,3f~%",DD,p_uu,p_ud,
+                   ratio))
+  50.0     -1.687486E-8     -1.687486E-8      1.000
+  30.0     -1.438397E-2     -1.438397E-2      1.000
+  25.0    -2.656377E-10    -2.656377E-10      1.000
+  20.0     -1.192231E-2     -1.192231E-2      1.000
+  15.0     -9.168508E-4     -9.168508E-4      1.000
+  12.0     -1.527300E-2     -1.527300E-2      1.000
+  10.0     -6.102677E-4     -6.102677E-4      1.000
+   8.0     -1.382531E-7     -1.382531E-7      1.000
+   6.0     -3.883883E-3     -3.883883E-3      1.000
+   4.0     -1.724280E-2     -1.724280E-2      1.000
+   2.0     -1.755776E-3     -1.755776E-3      1.000
+   1.0     -4.226389E-5     -4.226389E-5      1.000
+(%i16) print("")
+ 
+(%i17) curl_x_single(chi):=(-A)*chi[2]*k*sin(delta[3]+Delta[2])
+                     -(-A)*chi[3]*k*sin(delta[2]+Delta[3])
+(%i18) curl_x_UUD:trigreduce(curl_x_single(chi_UUD))
+(%i19) curl_x_UDD:trigreduce(curl_x_single(chi_UDD))
+(%i20) print("=== curl(φ)_x for single composite (x-independent!) ===")
+=== curl(φ)_x for single composite (x-independent!) === 
+(%i21) print("UUD: ",curl_x_UUD)
+                    2 %pi                  4 %pi
+UUD:  (- A sin(d2 + -----) k) - A sin(d1 + -----) k 
+                      3                      3
+(%i22) print("UDD: ",curl_x_UDD)
+                 2 %pi                 4 %pi
+UDD:  A sin(d2 + -----) k - A sin(d1 + -----) k 
+                   3                     3
+(%i23) curl_x_UUD_num:float(subst([d1 = d1_val,d2 = d2_val,A = 0.1,k = 1.5],
+                                  curl_x_UUD))
+(%i24) curl_x_UDD_num:float(subst([d1 = d1_val,d2 = d2_val,A = 0.1,k = 1.5],
+                                  curl_x_UDD))
+(%i25) printf(true,"UUD numerical: ~12,6e~%",curl_x_UUD_num)
+UUD numerical: -1.542617E-1
+(%i26) printf(true,"UDD numerical: ~12,6e~%",curl_x_UDD_num)
+UDD numerical: -8.187041E-2
+(%i27) printf(true,"Ratio UDD/UUD: ~8,4f~%",curl_x_UDD_num/curl_x_UUD_num)
+Ratio UDD/UUD:   0.5307
+(%i28) print("")
+ 
+(%i29) dphi_x_dz_single(chi):=(-A)*chi[3]*k*sin(delta[1]+Delta[3])
+(%i30) dphi_z_dx_at_mid_L(chi):=(-A)*chi[1]*k*sin(
+                                              (chi[1]*k*D)/2+delta[3]
+                                                            +Delta[1])
+(%i31) dphi_z_dx_at_mid_R(chi):=(-A)*chi[1]*k
+                          *sin(((-chi[1])*k*D)/2+delta[3]+Delta[1])
+(%i32) curl_y_pair(chi_L,chi_R):=
+                   (dphi_x_dz_single(chi_L)+dphi_x_dz_single(chi_R))
+                   -(dphi_z_dx_at_mid_L(chi_L)+dphi_z_dx_at_mid_R(chi_R))
+(%i33) dphi_x_dy_single(chi):=(-A)*chi[2]*k*sin(delta[1]+Delta[2])
+(%i34) dphi_y_dx_at_mid_L(chi):=(-A)*chi[1]*k*sin(
+                                              (chi[1]*k*D)/2+delta[2]
+                                                            +Delta[1])
+(%i35) dphi_y_dx_at_mid_R(chi):=(-A)*chi[1]*k
+                          *sin(((-chi[1])*k*D)/2+delta[2]+Delta[1])
+(%i36) curl_z_pair(chi_L,chi_R):=
+                   (dphi_y_dx_at_mid_L(chi_L)+dphi_y_dx_at_mid_R(chi_R))
+                   -(dphi_x_dy_single(chi_L)+dphi_x_dy_single(chi_R))
+(%i37) curl_sq_UU(DD):=block([cx,cy,cz],
+                  cx:float(subst([d1 = d1_val,d2 = d2_val,A = 0.1,k = 1.5,
+                                  D = DD],trigreduce(2*curl_x_UUD))),
+                  cy:float(subst([d1 = d1_val,d2 = d2_val,A = 0.1,k = 1.5,
+                                  D = DD],
+                                 trigreduce(curl_y_pair(chi_UUD,chi_UUD)))),
+                  cz:float(subst([d1 = d1_val,d2 = d2_val,A = 0.1,k = 1.5,
+                                  D = DD],
+                                 trigreduce(curl_z_pair(chi_UUD,chi_UUD)))),
+                  [cx*cx+cy*cy+cz*cz,cx,cy,cz])
+(%i38) curl_sq_UD(DD):=block([cx,cy,cz],
+                  cx:float(subst([d1 = d1_val,d2 = d2_val,A = 0.1,k = 1.5,
+                                  D = DD],trigreduce(curl_x_UUD+curl_x_UDD))),
+                  cy:float(subst([d1 = d1_val,d2 = d2_val,A = 0.1,k = 1.5,
+                                  D = DD],
+                                 trigreduce(curl_y_pair(chi_UUD,chi_UDD)))),
+                  cz:float(subst([d1 = d1_val,d2 = d2_val,A = 0.1,k = 1.5,
+                                  D = DD],
+                                 trigreduce(curl_z_pair(chi_UUD,chi_UDD)))),
+                  [cx*cx+cy*cy+cz*cz,cx,cy,cz])
+(%i39) print("=== |curl(φ)|² at midpoint vs D ===")
+=== |curl(φ)|² at midpoint vs D === 
+(%i40) print("  D     |curl|²(UU)  |curl|²(UD)  ratio UD/UU   cx_UU    cx_UD")
+  D     |curl|²(UU)  |curl|²(UD)  ratio UD/UU   cx_UU    cx_UD 
+(%i41) for DD in [50,30,25,20,15,12,10,8,6,4,2] do
+           (uu:curl_sq_UU(DD),ud:curl_sq_UD(DD),
+            ratio:if abs(uu[1]) > 1.0E-20 then ud[1]/uu[1] else 0,
+            printf(true,"  ~4,1f  ~12,4e  ~12,4e  ~8,4f  ~8,4e ~8,4e~%",DD,
+                   uu[1],ud[1],ratio,uu[2],ud[2]))
+  50.0     4.3715E-1     3.5171E-1    0.8046  -3.0852E-1 -2.3613E-1
+  30.0     1.8325E-1     5.7180E-2    0.3120  -3.0852E-1 -2.3613E-1
+  25.0     4.4152E-1     3.5641E-1    0.8072  -3.0852E-1 -2.3613E-1
+  20.0     1.8203E-1     5.8448E-2    0.3211  -3.0852E-1 -2.3613E-1
+  15.0     2.6776E-1     1.6635E-1    0.6213  -3.0852E-1 -2.3613E-1
+  12.0     1.8415E-1     5.7244E-2    0.3109  -3.0852E-1 -2.3613E-1
+  10.0     2.8472E-1     1.8539E-1    0.6511  -3.0852E-1 -2.3613E-1
+   8.0     4.3127E-1     3.4539E-1    0.8009  -3.0852E-1 -2.3613E-1
+   6.0     2.0700E-1     9.5450E-2    0.4611  -3.0852E-1 -2.3613E-1
+   4.0     1.8679E-1     5.8160E-2    0.3114  -3.0852E-1 -2.3613E-1
+   2.0     2.3966E-1     1.3428E-1    0.5603  -3.0852E-1 -2.3613E-1
+(%i42) print("")
+ 
+(%i43) print("=== Hardening analysis ===")
+=== Hardening analysis === 
+(%i44) print("")
+ 
+(%i45) print("curl_x components (x-independent, constant everywhere on x-axis):")
+curl_x components (x-independent, constant everywhere on x-axis): 
+(%i46) printf(true,"  UUD single: ~12,6e~%",curl_x_UUD_num)
+  UUD single: -1.542617E-1
+(%i47) printf(true,"  UDD single: ~12,6e~%",curl_x_UDD_num)
+  UDD single: -8.187041E-2
+(%i48) printf(true,"  UU pair:    ~12,6e  (2 × UUD)~%",2*curl_x_UUD_num)
+  UU pair:    -3.085235E-1  (2 × UUD)
+(%i49) printf(true,"  UD pair:    ~12,6e  (UUD + UDD)~%",
+              curl_x_UUD_num+curl_x_UDD_num)
+  UD pair:    -2.361321E-1  (UUD + UDD)
+(%i50) print("")
+ 
+(%i51) uu_curl_x_sq:(2*curl_x_UUD_num)^2
+(%i52) ud_curl_x_sq:(curl_x_UUD_num+curl_x_UDD_num)^2
+(%i53) printf(true,"curl_x² for UU pair: ~12,6e~%",uu_curl_x_sq)
+curl_x² for UU pair:  9.518674E-2
+(%i54) printf(true,"curl_x² for UD pair: ~12,6e~%",ud_curl_x_sq)
+curl_x² for UD pair:  5.575839E-2
+(%i55) printf(true,"Ratio UD/UU (curl_x² only): ~8,4f~%",ud_curl_x_sq
+                                                           /uu_curl_x_sq)
+Ratio UD/UU (curl_x² only):   0.5858
+(%i56) print("")
+ 
+(%i57) print("=== Mismatch from D-dependent curl components ===")
+=== Mismatch from D-dependent curl components === 
+(%i58) print("")
+ 
+(%i59) print("The x-component of M is zero for both UU and UD (algebraic identity).")
+The x-component of M is zero for both UU and UD (algebraic identity). 
+(%i60) print("The mismatch comes from curl_y and curl_z, which are D-dependent")
+The mismatch comes from curl_y and curl_z, which are D-dependent 
+(%i61) print("through braid 0's ∂φ/∂x contribution.")
+through braid 0's ∂φ/∂x contribution. 
+(%i62) print("")
+ 
+(%i63) print("=== THE KEY DIFFERENCE ===")
+=== THE KEY DIFFERENCE === 
+(%i64) print("")
+ 
+(%i65) print("Braid 1 (y-axis) has OPPOSITE chirality in UUD vs UDD:")
+Braid 1 (y-axis) has OPPOSITE chirality in UUD vs UDD: 
+(%i66) print("  UUD braid 1: chi = +1  → ∂φ_x/∂y = -Ak sin(δ₀ + Δ₁)")
+  UUD braid 1: chi = +1  → ∂φ_x/∂y = -Ak sin(δ₀ + Δ₁) 
+(%i67) print("  UDD braid 1: chi = -1  → ∂φ_x/∂y = +Ak sin(δ₀ + Δ₁)")
+  UDD braid 1: chi = -1  → ∂φ_x/∂y = +Ak sin(δ₀ + Δ₁) 
+(%i68) print("")
+ 
+(%i69) print("This means curl_z = ∂φ_y/∂x - ∂φ_x/∂y differs between UU and UD:")
+This means curl_z = ∂φ_y/∂x - ∂φ_x/∂y differs between UU and UD: 
+(%i70) print("")
+ 
+(%i71) dphi_x_dy_UUD:(-A)*chi_UUD[2]*k*sin(delta[1]+Delta[2])
+(%i72) dphi_x_dy_UDD:(-A)*chi_UDD[2]*k*sin(delta[1]+Delta[2])
+(%i73) dphi_x_dy_UUD_num:float(subst([d1 = d1_val,d2 = d2_val,A = 0.1,
+                                      k = 1.5],dphi_x_dy_UUD))
+(%i74) dphi_x_dy_UDD_num:float(subst([d1 = d1_val,d2 = d2_val,A = 0.1,
+                                      k = 1.5],dphi_x_dy_UDD))
+(%i75) printf(true,"∂φ_x/∂y from UUD braid 1: ~12,6e~%",dphi_x_dy_UUD_num)
+∂φ_x/∂y from UUD braid 1: -1.299038E-1
+(%i76) printf(true,"∂φ_x/∂y from UDD braid 1: ~12,6e~%",dphi_x_dy_UDD_num)
+∂φ_x/∂y from UDD braid 1:  1.299038E-1
+(%i77) printf(true,"Sum for UU pair (2 × UUD):   ~12,6e~%",2
+                                                             *dphi_x_dy_UUD_num)
+Sum for UU pair (2 × UUD):   -2.598076E-1
+(%i78) printf(true,"Sum for UD pair (UUD + UDD): ~12,6e~%",
+              dphi_x_dy_UUD_num+dphi_x_dy_UDD_num)
+Sum for UD pair (UUD + UDD):  0.000000E+0
+(%i79) print("")
+ 
+(%i80) print("=== curl_z contribution from ∂φ_x/∂y ===")
+=== curl_z contribution from ∂φ_x/∂y === 
+(%i81) print("UU pair: 2 × (-Ak sin(δ₀ + Δ₁))  [both Up, constructive]")
+UU pair: 2 × (-Ak sin(δ₀ + Δ₁))  [both Up, constructive] 
+(%i82) print("UD pair: -Ak sin(δ₀ + Δ₁) + Ak sin(δ₀ + Δ₁) = 0  [CANCELS!]")
+UD pair: -Ak sin(δ₀ + Δ₁) + Ak sin(δ₀ + Δ₁) = 0  [CANCELS!] 
+(%i83) print("")
+ 
+(%i84) print("The y-derivative of φ_x from braid 1 CANCELS in the UD pair")
+The y-derivative of φ_x from braid 1 CANCELS in the UD pair 
+(%i85) print("because opposite chiralities produce opposite derivatives.")
+because opposite chiralities produce opposite derivatives. 
+(%i86) print("")
+ 
+(%i87) print("=== Full curl_z at midpoint vs D ===")
+=== Full curl_z at midpoint vs D === 
+(%i88) print("  D      curl_z(UU)     curl_z(UD)     ratio")
+  D      curl_z(UU)     curl_z(UD)     ratio 
+(%i89) for DD in [50,25,15,10,6,4,2] do
+           (cz_uu:float(subst([d1 = d1_val,d2 = d2_val,A = 0.1,k = 1.5,
+                               D = DD],
+                              trigreduce(curl_z_pair(chi_UUD,chi_UUD)))),
+            cz_ud:float(subst([d1 = d1_val,d2 = d2_val,A = 0.1,k = 1.5,
+                               D = DD],
+                              trigreduce(curl_z_pair(chi_UUD,chi_UDD)))),
+            ratio:if abs(cz_uu) > 1.0E-15 then cz_ud/cz_uu else 0,
+            printf(true,"  ~4,1f  ~14,6e  ~14,6e  ~8,4f~%",DD,cz_uu,cz_ud,
+                   ratio))
+  50.0     2.184536E-1    -4.135398E-2   -0.1893
+  25.0     2.178290E-1    -4.197860E-2   -0.1927
+  15.0     2.491895E-1    -1.061816E-2   -0.0426
+  10.0     2.451839E-1    -1.462368E-2   -0.0596
+   6.0     2.687006E-1     8.892947E-3    0.0331
+   4.0     3.015729E-1     4.176531E-2    0.1385
+   2.0     2.568234E-1    -2.984226E-3   -0.0116
+(%i90) print("")
+ 
+(%i91) print("=== PREDICTED HARDENING ENERGY RATIO ===")
+=== PREDICTED HARDENING ENERGY RATIO === 
+(%i92) print("")
+ 
+(%i93) print("  D     E_hard(UU)   E_hard(UD)   ratio UD/UU   Δ%")
+  D     E_hard(UU)   E_hard(UD)   ratio UD/UU   Δ% 
+(%i94) for DD in [50,25,20,15,12,10,8,6,4,2] do
+           (uu:curl_sq_UU(DD),ud:curl_sq_UD(DD),
+            ratio:if abs(uu[1]) > 1.0E-20 then ud[1]/uu[1] else 0,
+            pct:(ratio-1.0)*100,
+            printf(true,"  ~4,1f  ~12,4e  ~12,4e   ~8,4f   ~+6,1f%%~%",DD,
+                   uu[1],ud[1],ratio,pct))
+  50.0     4.3715E-1     3.5171E-1     0.8046    -19.5%%
+  25.0     4.4152E-1     3.5641E-1     0.8072    -19.3%%
+  20.0     1.8203E-1     5.8448E-2     0.3211    -67.9%%
+  15.0     2.6776E-1     1.6635E-1     0.6213    -37.9%%
+  12.0     1.8415E-1     5.7244E-2     0.3109    -68.9%%
+  10.0     2.8472E-1     1.8539E-1     0.6511    -34.9%%
+   8.0     4.3127E-1     3.4539E-1     0.8009    -19.9%%
+   6.0     2.0700E-1     9.5450E-2     0.4611    -53.9%%
+   4.0     1.8679E-1     5.8160E-2     0.3114    -68.9%%
+   2.0     2.3966E-1     1.3428E-1     0.5603    -44.0%%
+(%i95) print("")
+ 
+(%i96) print("=== PHYSICAL INTERPRETATION ===")
+=== PHYSICAL INTERPRETATION === 
+(%i97) print("")
+ 
+(%i98) print("If UD/UU ratio < 1: UDD+UUD has LESS hardening → EASIER to approach")
+If UD/UU ratio < 1: UDD+UUD has LESS hardening → EASIER to approach 
+(%i99) print("  → Proton-neutron can get closer → STRONGER binding → deuterium")
+  → Proton-neutron can get closer → STRONGER binding → deuterium 
+(%i100) print("")
+ 
+(%i101) print("If UD/UU ratio > 1: UDD+UUD has MORE hardening → HARDER to approach")
+If UD/UU ratio > 1: UDD+UUD has MORE hardening → HARDER to approach 
+(%i102) print("  → This would be wrong (contradicts real physics)")
+  → This would be wrong (contradicts real physics) 
+(%i103) print("")
+ 
+(%i104) print("The key mechanism: braid 1's chirality flip in UDD cancels the")
+The key mechanism: braid 1's chirality flip in UDD cancels the 
+(%i105) print("∂φ_x/∂y contribution to curl_z. This REDUCES |curl|² for the UD")
+∂φ_x/∂y contribution to curl_z. This REDUCES |curl|² for the UD 
+(%i106) print("pair compared to UU, lowering the hardening barrier.")
+pair compared to UU, lowering the hardening barrier. 
+(%o107)          /home/d/code/scp/v52/uud_udd_interaction.mac
