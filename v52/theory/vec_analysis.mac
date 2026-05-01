@@ -1,0 +1,519 @@
+/* vec_analysis.mac — Analytical verification of polynomial vectorization
+ *
+ * Verifies the tricubic polynomial fitting used in the SCP simulation kernel.
+ * Grid: N^3 voxels divided into 8^3 blocks, each fit to a tricubic polynomial
+ *   f(x,y,z) = sum_{a,b,c=0}^{3} C_{abc} x^a y^b z^c
+ * with x,y,z in [0,1] (normalized: x = di/7, di=0..7).
+ *
+ * Fitting via normal equations: C = (V^T V)^{-1} V^T f
+ *   V: 8x4 1D Vandermonde, V[i][a] = (i/7)^a
+ *   Full 3D: tensor product V_x kron V_y kron V_z (512x64)
+ *   Factored: P = (V^T V)^{-1} V^T computed once as 8x4, applied per axis.
+ *
+ * Six analyses:
+ *   1. Condition number of V^T V
+ *   2. Projection error bound (O(h^4) scaling)
+ *   3. Orthogonality of polynomial basis on 8-point grid
+ *   4. Temporal model variance capture
+ *   5. Reconstruction exactness (P-frame lossless guarantee)
+ *   6. Alternative bases: monomial vs Chebyshev vs Legendre
+ */
+
+kill(all)$
+ratprint: false$
+
+print("================================================================")$
+print("  SCP Vectorization Analysis")$
+print("================================================================")$
+print("")$
+
+/* ================================================================
+   1. Condition number of V^T V
+   ================================================================ */
+
+print("--- 1. Condition number of V^T V ---")$
+print("")$
+
+/* Build the 1D Vandermonde matrix V: 8 x 4
+ * V[i][a] = (i/7)^a  for i=0..7, a=0..3
+ * Using exact rationals: grid point i has coordinate i/7 */
+BS : 8$
+NC : 4$
+
+/* Build V as exact rational matrix.
+ * V[i][a] = t_i^(a-1) where t_i = (i-1)/7.
+ * Handle 0^0 = 1 explicitly (Maxima treats it as undefined). */
+V : zeromatrix(BS, NC)$
+for i:1 thru BS do block([t],
+  t : (i-1)/7,
+  for a:1 thru NC do
+    V[i][a] : if a = 1 then 1 else t^(a-1)
+)$
+
+/* V^T V: 4x4 Gram matrix (exact) */
+VtV : transpose(V) . V$
+
+print("V^T V (4x4 Gram matrix, exact rationals):")$
+for i:1 thru NC do (
+  row : makelist(VtV[i][j], j, 1, NC),
+  print("  ", row)
+)$
+print("")$
+print("V^T V (floating point):")$
+for i:1 thru NC do (
+  row : makelist(float(VtV[i][j]), j, 1, NC),
+  print("  ", row)
+)$
+print("")$
+
+/* Eigenvalues: compute characteristic polynomial and solve */
+print("Computing eigenvalues of V^T V...")$
+cp : expand(charpoly(VtV, x))$
+print("Characteristic polynomial: ", cp)$
+print("")$
+
+/* Solve numerically */
+evals_VtV : map(rhs, bfloat(allroots(cp)))$
+evals_VtV : sort(evals_VtV)$
+print("Eigenvalues of V^T V (sorted):")$
+for i:1 thru length(evals_VtV) do
+  print("  lambda_", i, " = ", evals_VtV[i])$
+print("")$
+
+lambda_max : evals_VtV[length(evals_VtV)]$
+lambda_min : evals_VtV[1]$
+cond_VtV : float(lambda_max / lambda_min)$
+cond_V : float(sqrt(abs(cond_VtV)))$
+print("Condition number kappa(V^T V) = ", cond_VtV)$
+print("Condition number kappa(V) = sqrt(kappa) = ", cond_V)$
+print("")$
+
+/* Compute the inverse and projection matrix */
+VtV_inv : invert(VtV)$
+P_proj : VtV_inv . transpose(V)$
+
+print("Projection matrix P = (V^T V)^{-1} V^T  [4 x 8]:")$
+for i:1 thru NC do (
+  row : makelist(float(P_proj[i][j]), j, 1, BS),
+  print("  row ", i, ": ", row)
+)$
+print("")$
+
+/* Verify: P . V = I */
+PV : P_proj . V$
+print("Verification P . V = I_4:")$
+for i:1 thru NC do (
+  row : makelist(float(PV[i][j]), j, 1, NC),
+  print("  ", row)
+)$
+print("")$
+
+/* Hat matrix H = V . P */
+H : V . P_proj$
+diag_H : makelist(float(H[i][i]), i, 1, BS)$
+print("Hat matrix diagonal: ", diag_H)$
+print("trace(H) = ", float(apply("+", diag_H)), " (should = NC = 4)")$
+print("")$
+
+/* ================================================================
+   2. Projection error bound
+   ================================================================ */
+
+print("--- 2. Projection error bound ---")$
+print("")$
+
+print("Grid spacing h = 1/7 =", float(1/7))$
+print("")$
+
+/* Test: sin(2*pi*x) */
+print("Test function: f(x) = sin(2*pi*x)")$
+samples_sin : genmatrix(lambda([i,j], sin(2*%pi*(i-1)/7)), BS, 1)$
+coeffs_sin : P_proj . samples_sin$
+recon_sin : V . coeffs_sin$
+resid_sin : float(samples_sin - recon_sin)$
+
+max_resid_grid : 0$
+for i:1 thru BS do (
+  v : abs(resid_sin[i][1]),
+  if v > max_resid_grid then max_resid_grid : v
+)$
+print("  max |residual| at grid points: ", max_resid_grid)$
+
+/* Midpoint errors: evaluate polynomial at midpoints between grid points */
+max_resid_mid : 0$
+for i:0 thru 6 do (
+  xmid : (2*i+1)/14,
+  fexact : float(sin(2*%pi*xmid)),
+  fpoly : float(sum(coeffs_sin[a+1][1] * xmid^a, a, 0, 3)),
+  err : abs(fexact - fpoly),
+  if err > max_resid_mid then max_resid_mid : err
+)$
+print("  max |residual| at midpoints:   ", max_resid_mid)$
+print("")$
+
+/* Test: exp(-3x^2) */
+print("Test function: f(x) = exp(-3*x^2)")$
+samples_exp : genmatrix(lambda([i,j], exp(-3*((i-1)/7)^2)), BS, 1)$
+coeffs_exp : P_proj . samples_exp$
+max_resid_mid_exp : 0$
+for i:0 thru 6 do (
+  xmid : (2*i+1)/14,
+  fexact : float(exp(-3*xmid^2)),
+  fpoly : float(sum(coeffs_exp[a+1][1] * xmid^a, a, 0, 3)),
+  err : abs(fexact - fpoly),
+  if err > max_resid_mid_exp then max_resid_mid_exp : err
+)$
+print("  max |residual| at midpoints:   ", max_resid_mid_exp)$
+print("")$
+
+/* Test: x^5 (degree 5, NOT in cubic span) */
+print("Test function: f(x) = x^5 (not in span of degree-3)")$
+samples_x5 : genmatrix(lambda([i,j], ((i-1)/7)^5), BS, 1)$
+coeffs_x5 : P_proj . samples_x5$
+max_resid_mid_x5 : 0$
+for i:0 thru 6 do (
+  xmid : (2*i+1)/14,
+  fexact : float(xmid^5),
+  fpoly : float(sum(coeffs_x5[a+1][1] * xmid^a, a, 0, 3)),
+  err : abs(fexact - fpoly),
+  if err > max_resid_mid_x5 then max_resid_mid_x5 : err
+)$
+print("  max |residual| at midpoints:   ", max_resid_mid_x5)$
+print("")$
+
+/* h^4 scaling test.
+ * The O(h^4) bound applies when the physical interval shrinks (h -> 0)
+ * and the function is fixed. We fit f(x) = exp(x) on [0, L] for
+ * decreasing L, using 8 points with spacing h = L/7.
+ * f''''(x) = e^x, so |f''''| ~ 1 near x=0, giving err ~ h^4/384.
+ *
+ * With 8 equispaced points and degree-3 fit, the projection leaves
+ * a degree-4+ residual. For exp(x): f(x) = 1+x+x^2/2+x^3/6+x^4/24+...
+ * The degree-4 term x^4/24 on interval [0,L] scales as L^4/24. */
+print("h^4 scaling test (f(x) = exp(x) on [0,L], 8 points):")$
+print("  (h = L/7, err should scale as h^4)")$
+for L_test in [1, 1/2, 1/4, 1/8, 1/16] do (
+  h_test : L_test / 7,
+  /* Sample exp(x) at 8 equispaced points on [0, L] */
+  samples_t : genmatrix(lambda([i,j], exp(L_test*(i-1)/7)), BS, 1),
+  /* Fit on [0,1] grid as usual, then evaluate polynomial with rescaled arg */
+  co_t : P_proj . samples_t,
+  /* Evaluate at midpoints in [0, L] */
+  max_err : 0,
+  for i:0 thru 6 do (
+    xmid_01 : (2*i+1)/14,  /* midpoint in [0,1] */
+    xmid_phys : L_test * xmid_01,  /* physical coordinate */
+    fexact : float(exp(xmid_phys)),
+    fpoly : float(sum(co_t[a+1][1] * xmid_01^a, a, 0, 3)),
+    err : abs(fexact - fpoly),
+    if err > max_err then max_err : err
+  ),
+  print("  L=", float(L_test), " h=", float(h_test),
+        " max_err=", float(max_err),
+        " err/h^4=", float(max_err / h_test^4))
+)$
+print("")$
+
+/* ================================================================
+   3. Orthogonality of basis on 8-point grid
+   ================================================================ */
+
+print("--- 3. Orthogonality of polynomial basis ---")$
+print("")$
+
+/* Normalized Gram matrix: correlation between basis columns */
+diag_vals : makelist(VtV[i][i], i, 1, NC)$
+print("Normalized Gram matrix (correlation coefficients):")$
+print("         1        x       x^2      x^3")$
+basis_labels : ["1   ", "x   ", "x^2 ", "x^3 "]$
+for i:1 thru NC do (
+  row : makelist(float(VtV[i][j] / sqrt(diag_vals[i] * diag_vals[j])), j, 1, NC),
+  print("  ", basis_labels[i], row)
+)$
+print("")$
+
+max_offdiag : 0$
+for i:1 thru NC do
+  for j:1 thru NC do
+    if i # j then (
+      v : abs(float(VtV[i][j] / sqrt(diag_vals[i] * diag_vals[j]))),
+      if v > max_offdiag then max_offdiag : v
+    )$
+print("Maximum off-diagonal correlation: ", max_offdiag)$
+print("(1.0 = perfectly correlated, 0.0 = orthogonal)")$
+print("")$
+
+/* ================================================================
+   4. Temporal model variance capture
+   ================================================================ */
+
+print("--- 4. Temporal model optimality ---")$
+print("")$
+
+print("Signal: s(t) = A1*cos(w0*t) + A2*cos(2*w0*t) + A3*cos(3*w0*t)")$
+print("Temporal model: mean + amp*cos(w0*t + phi)")$
+print("Variance captured = A1^2 / (A1^2 + A2^2 + A3^2)")$
+print("")$
+
+print("Case 1: Equal harmonics A1=A2=A3=1")$
+print("  Variance captured: ", float(1/3), " (33.3%)")$
+print("")$
+
+print("Case 2: 1/n decay  A1=1, A2=1/2, A3=1/3")$
+vt_1n : 1 + 1/4 + 1/9$
+print("  Variance captured: ", float(1/vt_1n),
+      " (", float(100/vt_1n), "%)")$
+print("")$
+
+print("Case 3: 1/n^2 decay  A1=1, A2=1/4, A3=1/9 (typical nonlinear oscillator)")$
+vt_1n2 : 1 + 1/16 + 1/81$
+print("  Variance captured: ", float(1/vt_1n2),
+      " (", float(100/vt_1n2), "%)")$
+print("")$
+
+print("Case 4: Exponential decay A_n = exp(-n)")$
+vt_exp : float(exp(-2) + exp(-4) + exp(-6))$
+vc_exp : float(exp(-2) / vt_exp)$
+print("  Variance captured: ", vc_exp,
+      " (", float(vc_exp * 100), "%)")$
+print("")$
+
+/* Detuning */
+print("Detuning: model omega vs true omega*(1+eps), over 5 full cycles:")$
+for eps in [1/100, 1/20, 1/10, 1/5] do (
+  arg : float(eps * 5 * %pi),
+  sinc_val : float(sin(arg) / arg),
+  R : sinc_val^2,
+  print("  eps=", float(eps), ": R = ", R, " (", float(R*100), "%)")
+)$
+print("")$
+
+/* ================================================================
+   5. Reconstruction exactness (P-frame scheme)
+   ================================================================ */
+
+print("--- 5. Reconstruction exactness ---")$
+print("")$
+
+u32 : float(2^(-24))$
+print("Float32 unit roundoff u = 2^{-24} = ", u32)$
+print("")$
+
+print("P-frame identity (exact arithmetic):")$
+print("  delta(t) := actual(t) - predicted(t)")$
+print("  reconstructed(t) := predicted(t) + delta(t)")$
+print("  => reconstructed(t) = predicted(t) + actual(t) - predicted(t) = actual(t)  QED")$
+print("")$
+
+print("Floating-point error per frame:")$
+print("  delta_fl = fl(actual - predicted) = (actual - predicted)(1 + eps1)")$
+print("  recon_fl = fl(predicted + delta_fl) = (predicted + delta_fl)(1 + eps2)")$
+print("  error = recon_fl - actual")$
+print("        = actual*eps2 + (actual-predicted)*eps1*(1+eps2)")$
+print("  |error| <= u*(|actual| + |delta|)")$
+print("")$
+print("  Typical: |actual| ~ 1, |delta| ~ 0.01")$
+print("  |error| <= ", float(u32 * 1.01))$
+print("")$
+
+print("Accumulation: NONE. Each frame is independent.")$
+print("  predicted(t) is recomputed from (mean, amp, phase, omega, t) each frame.")$
+print("  delta(t) is stored per frame. No sequential dependence.")$
+print("")$
+
+print("Temporal refit stability:")$
+print("  sum_mean, sum_cos, sum_sin accumulate over N_refit ~ 100 frames.")$
+print("  Division by N_refit rescales: relative error of mean ~ u, not N*u.")$
+print("  amp = 2*sqrt(rc^2 + rs^2): 3 more ops, error ~ 3u.")$
+print("  Net: model parameters accurate to ~ 6e-8 (float32 floor).")$
+print("")$
+
+/* ================================================================
+   6. Alternative bases: monomial vs Chebyshev vs Legendre
+   ================================================================ */
+
+print("--- 6. Alternative bases ---")$
+print("")$
+
+/* Helper: build Vandermonde for a given basis and grid, compute condition number.
+ * We compute charpoly -> allroots to get numeric eigenvalues reliably. */
+
+/* --- Monomial on [0,1], equispaced (same as V above) --- */
+print("Monomial basis {1, x, x^2, x^3} on [0,1]:")$
+print("  (This is the current implementation)")$
+cp_mono : expand(charpoly(VtV, x))$
+ev_mono : sort(map(rhs, bfloat(allroots(cp_mono))))$
+print("  Eigenvalues: ", ev_mono)$
+cond_mono : float(ev_mono[4] / ev_mono[1])$
+print("  kappa(V^T V) = ", cond_mono)$
+print("  kappa(V)     = ", float(sqrt(abs(cond_mono))))$
+print("")$
+
+/* --- Chebyshev basis {T_0, T_1, T_2, T_3} on equispaced grid mapped to [-1,1] --- */
+/* Grid: s_i = 2*(i/7) - 1 = (2i-7)/7 for i=0..7 */
+V_cheb : zeromatrix(BS, NC)$
+for i:1 thru BS do block([s],
+  s : (2*(i-1) - 7)/7,
+  V_cheb[i][1] : 1,
+  V_cheb[i][2] : s,
+  V_cheb[i][3] : 2*s^2 - 1,
+  V_cheb[i][4] : 4*s^3 - 3*s
+)$
+VtV_cheb : transpose(V_cheb) . V_cheb$
+
+print("Chebyshev basis {T_0, T_1, T_2, T_3} on [-1,1], equispaced grid:")$
+cp_cheb : expand(charpoly(VtV_cheb, x))$
+ev_cheb : sort(map(rhs, bfloat(allroots(cp_cheb))))$
+print("  Eigenvalues: ", ev_cheb)$
+cond_cheb : float(ev_cheb[4] / ev_cheb[1])$
+print("  kappa(V^T V) = ", cond_cheb)$
+print("  kappa(V)     = ", float(sqrt(abs(cond_cheb))))$
+print("")$
+
+/* Normalized Gram for Chebyshev */
+diag_cheb : makelist(VtV_cheb[i][i], i, 1, NC)$
+print("  Normalized Gram (Chebyshev):")$
+print("         T_0      T_1      T_2      T_3")$
+labels_c : ["T_0 ", "T_1 ", "T_2 ", "T_3 "]$
+for i:1 thru NC do (
+  row : makelist(float(VtV_cheb[i][j] / sqrt(diag_cheb[i] * diag_cheb[j])), j, 1, NC),
+  print("  ", labels_c[i], row)
+)$
+print("")$
+
+/* --- Legendre basis {P_0, P_1, P_2, P_3} on equispaced grid mapped to [-1,1] --- */
+V_leg : zeromatrix(BS, NC)$
+for i:1 thru BS do block([s],
+  s : (2*(i-1) - 7)/7,
+  V_leg[i][1] : 1,
+  V_leg[i][2] : s,
+  V_leg[i][3] : (3*s^2 - 1)/2,
+  V_leg[i][4] : (5*s^3 - 3*s)/2
+)$
+VtV_leg : transpose(V_leg) . V_leg$
+
+print("Legendre basis {P_0, P_1, P_2, P_3} on [-1,1], equispaced grid:")$
+cp_leg : expand(charpoly(VtV_leg, x))$
+ev_leg : sort(map(rhs, bfloat(allroots(cp_leg))))$
+print("  Eigenvalues: ", ev_leg)$
+cond_leg : float(ev_leg[4] / ev_leg[1])$
+print("  kappa(V^T V) = ", cond_leg)$
+print("  kappa(V)     = ", float(sqrt(abs(cond_leg))))$
+print("")$
+
+/* Normalized Gram for Legendre */
+diag_leg : makelist(VtV_leg[i][i], i, 1, NC)$
+print("  Normalized Gram (Legendre):")$
+print("         P_0      P_1      P_2      P_3")$
+labels_l : ["P_0 ", "P_1 ", "P_2 ", "P_3 "]$
+for i:1 thru NC do (
+  row : makelist(float(VtV_leg[i][j] / sqrt(diag_leg[i] * diag_leg[j])), j, 1, NC),
+  print("  ", labels_l[i], row)
+)$
+print("")$
+
+/* --- Monomial basis on Chebyshev nodes --- */
+print("Monomial basis on Chebyshev nodes (for reference):")$
+V_cheb_nodes : zeromatrix(BS, NC)$
+for i:1 thru BS do block([s],
+  s : float(cos((2*i-1)*%pi/16)),
+  V_cheb_nodes[i][1] : 1,
+  V_cheb_nodes[i][2] : s,
+  V_cheb_nodes[i][3] : s^2,
+  V_cheb_nodes[i][4] : s^3
+)$
+VtV_cn : transpose(V_cheb_nodes) . V_cheb_nodes$
+print("  Chebyshev nodes on [-1,1]:")$
+for i:1 thru BS do print("    s_", i, " = ", float(cos((2*i-1)*%pi/16)))$
+/* For Chebyshev nodes, use float eigenvalues directly since entries are irrational */
+cp_cn : expand(charpoly(VtV_cn, x))$
+ev_cn : sort(map(rhs, bfloat(allroots(cp_cn))))$
+print("  Eigenvalues: ", ev_cn)$
+cond_cn : float(ev_cn[4] / ev_cn[1])$
+print("  kappa(V^T V) = ", cond_cn)$
+print("  kappa(V)     = ", float(sqrt(abs(cond_cn))))$
+print("")$
+
+/* ================================================================
+   Summary table
+   ================================================================ */
+
+print("================================================================")$
+print("  SUMMARY: Condition numbers")$
+print("================================================================")$
+print("")$
+print("  Basis / Grid                          kappa(VtV)    kappa(V)")$
+print("  -------------------------------------------------------------------")$
+print("  Monomial {1,x,x^2,x^3}, equispaced   ", cond_mono,
+      "   ", float(sqrt(abs(cond_mono))))$
+print("  Chebyshev {T0..T3}, equispaced        ", cond_cheb,
+      "   ", float(sqrt(abs(cond_cheb))))$
+print("  Legendre {P0..P3}, equispaced         ", cond_leg,
+      "   ", float(sqrt(abs(cond_leg))))$
+print("  Monomial on Chebyshev nodes           ", cond_cn,
+      "   ", float(sqrt(abs(cond_cn))))$
+print("")$
+
+/* 3D tensor product */
+print("  3D tensor product: kappa_3D = kappa_1D^3")$
+print("  Monomial 3D:  kappa(V) = ", float(sqrt(abs(cond_mono))^3))$
+print("  Chebyshev 3D: kappa(V) = ", float(sqrt(abs(cond_cheb))^3))$
+print("  Legendre 3D:  kappa(V) = ", float(sqrt(abs(cond_leg))^3))$
+print("")$
+
+print("  Float32 precision: ~7.2 decimal digits")$
+print("  Digits lost (monomial 3D): ",
+      float(log(sqrt(abs(cond_mono))^3) / log(10)))$
+print("  Digits lost (Chebyshev 3D): ",
+      float(log(sqrt(abs(cond_cheb))^3) / log(10)))$
+print("  Digits lost (Legendre 3D): ",
+      float(log(sqrt(abs(cond_leg))^3) / log(10)))$
+print("")$
+
+/* ================================================================
+   Conclusions
+   ================================================================ */
+
+print("================================================================")$
+print("  CONCLUSIONS")$
+print("================================================================")$
+print("")$
+print("1. CONDITION NUMBER: Monomial basis has kappa(V) = 95.4 (1D),")$
+print("   giving kappa_3D ~ 869,000. This loses ~5.9 of 7.2 decimal")$
+print("   digits in float32 -- only ~1.3 digits survive.")$
+print("   Chebyshev basis: kappa(V)=1.56 (1D), kappa_3D=3.8 (0.6 digits lost).")$
+print("   Legendre basis:  kappa(V)=2.28 (1D), kappa_3D=11.9 (1.1 digits lost).")$
+print("   ** Chebyshev is 230,000x better conditioned in 3D. **")$
+print("")$
+print("2. PROJECTION ERROR: The fit is exact for degree <= 3 polynomials.")$
+print("   For smooth functions on short intervals, error scales as O(h^4).")$
+print("   For oscillatory functions spanning a full period (like the SCP")$
+print("   background cos(kz)), the cubic is a poor model -- midpoint error")$
+print("   can be 10-13%. This is acceptable because the temporal model")$
+print("   captures what the spatial polynomial misses (and vice versa).")$
+print("")$
+print("3. ORTHOGONALITY: Monomial basis has correlation 0.987 between")$
+print("   x^2 and x^3. Chebyshev basis: max off-diagonal 0.188.")$
+print("   Legendre basis: max off-diagonal 0.451.")$
+print("   The Chebyshev Gram matrix is nearly diagonal (even/odd decouple).")$
+print("")$
+print("4. TEMPORAL MODEL: For 1/n^2 harmonic decay (typical breathing),")$
+print("   the single-frequency model captures 93% of variance.")$
+print("   For 1/n decay: 73%. For equal harmonics: 33%.")$
+print("   Detuning of 1% costs <1%; detuning of 5% costs 19%.")$
+print("")$
+print("5. RECONSTRUCTION: P-frame is algebraically lossless (QED).")$
+print("   Float32 error ~ 6e-8 per frame, non-accumulating.")$
+print("")$
+print("6. ACTIONABLE RECOMMENDATION:")$
+print("   The monomial basis loses nearly 6 of 7.2 float32 digits to")$
+print("   conditioning. The fit WORKS because the CPU code uses double")$
+print("   for the normal equations (AtA, Atb), but the GPU code uses")$
+print("   float32 throughout. Switching to Chebyshev basis requires ONLY")$
+print("   changing the V matrix construction:")$
+print("     V[i][0]=1, V[i][1]=s, V[i][2]=2s^2-1, V[i][3]=4s^3-3s")$
+print("   where s = 2*(i/7)-1. Same fitting, same storage, same decoder.")$
+print("   This is a 1-line change in vs2_gpu_init_projection().")$
+print("")$
+
+print("Done.")$

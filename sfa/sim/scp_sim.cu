@@ -534,6 +534,9 @@ static void do_init(Grid *g, const Config *c) {
 __constant__ double d_MU, d_KAPPA, d_MASS2, d_MTHETA2, d_ETA;
 __constant__ double d_KAPPA_H, d_ALPHA_CS, d_BETA_H;
 __constant__ double d_inv_alpha, d_inv_beta, d_kappa_gamma;
+__constant__ double d_THETA_SAT, d_GAMMA_CONV;
+__constant__ double d_SIGMA_GRAD, d_CHI_CHIRAL, d_SIGMA_CUBIC, d_SIGMA_FREQ;
+__constant__ double d_SIGMA_CROSS, d_LAMBDA_SELF;
 __constant__ double d_idx2, d_idx1;
 __constant__ double d_L, d_dx, d_DAMP_WIDTH, d_DAMP_RATE;
 __constant__ int d_N, d_NN, d_MODE;
@@ -591,6 +594,7 @@ __global__ void compute_intermediates_kernel(
 __global__ void compute_forces_kernel(
     const double *phi0, const double *phi1, const double *phi2,
     const double *theta0, const double *theta1, const double *theta2,
+    const double *tvel0, const double *tvel1, const double *tvel2,
     double *acc_phi0, double *acc_phi1, double *acc_phi2,
     double *acc_theta0, double *acc_theta1, double *acc_theta2,
     const double *mis0, const double *mis1, const double *mis2,
@@ -719,6 +723,112 @@ __global__ void compute_forces_kernel(
 
         acc_t[a] = lapt - d_MTHETA2*th[a][idx] + d_ETA*cp
                  + cosserat_theta + harden_theta;
+    }
+
+    /* --- Theta saturation → phi conversion --- */
+    if (d_THETA_SAT > 0 && d_GAMMA_CONV > 0) {
+        double th2 = th[0][idx]*th[0][idx] + th[1][idx]*th[1][idx] + th[2][idx]*th[2][idx];
+        double excess = th2 - d_THETA_SAT * d_THETA_SAT;
+        if (excess > 0) {
+            /* curl(theta) at this voxel */
+            double ct_sat[3];
+            ct_sat[0] = (th[2][n_jp]-th[2][n_jm]-th[1][n_kp]+th[1][n_km])*d_idx1;
+            ct_sat[1] = (th[0][n_kp]-th[0][n_km]-th[2][n_ip]+th[2][n_im])*d_idx1;
+            ct_sat[2] = (th[1][n_ip]-th[1][n_im]-th[0][n_jp]+th[0][n_jm])*d_idx1;
+            for (int a = 0; a < 3; a++) {
+                /* Drain theta: -γ·excess·θ_a */
+                acc_t[a] -= d_GAMMA_CONV * excess * th[a][idx];
+                /* Source phi from curl(theta): +γ·excess·curl(θ)_a */
+                acc_p[a] += d_GAMMA_CONV * excess * ct_sat[a];
+            }
+        }
+    }
+
+    /* --- Test A: Gradient-based theta self-interaction --- */
+    if (d_SIGMA_GRAD > 0) {
+        /* |∇θ|² = sum over components of |grad(theta_a)|² */
+        double grad_th_sq = 0;
+        double ct_g[3];  /* curl(theta) for conversion */
+        ct_g[0] = (th[2][n_jp]-th[2][n_jm]-th[1][n_kp]+th[1][n_km])*d_idx1;
+        ct_g[1] = (th[0][n_kp]-th[0][n_km]-th[2][n_ip]+th[2][n_im])*d_idx1;
+        ct_g[2] = (th[1][n_ip]-th[1][n_im]-th[0][n_jp]+th[0][n_jm])*d_idx1;
+        for (int a = 0; a < 3; a++) {
+            double dtdx = (th[a][n_ip]-th[a][n_im])*d_idx1;
+            double dtdy = (th[a][n_jp]-th[a][n_jm])*d_idx1;
+            double dtdz = (th[a][n_kp]-th[a][n_km])*d_idx1;
+            grad_th_sq += dtdx*dtdx + dtdy*dtdy + dtdz*dtdz;
+        }
+        /* Chirality bias: h = θ·curl(θ) */
+        double th2_g = th[0][idx]*th[0][idx]+th[1][idx]*th[1][idx]+th[2][idx]*th[2][idx];
+        double h = th[0][idx]*ct_g[0]+th[1][idx]*ct_g[1]+th[2][idx]*ct_g[2];
+        double sigma_eff = d_SIGMA_GRAD * (1.0 + d_CHI_CHIRAL * h / (th2_g + 0.01));
+        if (sigma_eff < 0) sigma_eff = 0;
+        for (int a = 0; a < 3; a++) {
+            acc_t[a] -= sigma_eff * grad_th_sq * th[a][idx];
+            acc_p[a] += sigma_eff * grad_th_sq * ct_g[a];
+        }
+    }
+
+    /* --- Test B: Cubic theta self-interaction --- */
+    if (d_SIGMA_CUBIC > 0) {
+        double th2_c = th[0][idx]*th[0][idx]+th[1][idx]*th[1][idx]+th[2][idx]*th[2][idx];
+        double ct_c[3];
+        ct_c[0] = (th[2][n_jp]-th[2][n_jm]-th[1][n_kp]+th[1][n_km])*d_idx1;
+        ct_c[1] = (th[0][n_kp]-th[0][n_km]-th[2][n_ip]+th[2][n_im])*d_idx1;
+        ct_c[2] = (th[1][n_ip]-th[1][n_im]-th[0][n_jp]+th[0][n_jm])*d_idx1;
+        for (int a = 0; a < 3; a++) {
+            acc_t[a] -= d_SIGMA_CUBIC * th2_c * th[a][idx];
+            acc_p[a] += d_SIGMA_CUBIC * th2_c * ct_c[a];
+        }
+    }
+
+    /* --- Test C: Frequency-mismatch conversion --- */
+    if (d_SIGMA_FREQ > 0) {
+        /* Local omega at center: |theta_vel| / (|theta| + eps) */
+        double tv_sq = tvel0[idx]*tvel0[idx]+tvel1[idx]*tvel1[idx]+tvel2[idx]*tvel2[idx];
+        double th2_f = th[0][idx]*th[0][idx]+th[1][idx]*th[1][idx]+th[2][idx]*th[2][idx];
+        double omega_c = sqrt(tv_sq) / (sqrt(th2_f) + 0.01);
+
+        /* Average omega of 6 neighbors */
+        double dw_sum = 0;
+        int nn = 0;
+        long nbrs[6] = {n_ip, n_im, n_jp, n_jm, n_kp, n_km};
+        for (int nb = 0; nb < 6; nb++) {
+            long nidx = nbrs[nb];
+            double tv_n = tvel0[nidx]*tvel0[nidx]+tvel1[nidx]*tvel1[nidx]+tvel2[nidx]*tvel2[nidx];
+            double th_n = th[0][nidx]*th[0][nidx]+th[1][nidx]*th[1][nidx]+th[2][nidx]*th[2][nidx];
+            double omega_n = sqrt(tv_n) / (sqrt(th_n) + 0.01);
+            dw_sum += fabs(omega_c - omega_n);
+            nn++;
+        }
+        double dw_avg = dw_sum / nn;
+
+        double ct_f[3];
+        ct_f[0] = (th[2][n_jp]-th[2][n_jm]-th[1][n_kp]+th[1][n_km])*d_idx1;
+        ct_f[1] = (th[0][n_kp]-th[0][n_km]-th[2][n_ip]+th[2][n_im])*d_idx1;
+        ct_f[2] = (th[1][n_ip]-th[1][n_im]-th[0][n_jp]+th[0][n_jm])*d_idx1;
+        for (int a = 0; a < 3; a++) {
+            acc_t[a] -= d_SIGMA_FREQ * dw_avg * th[a][idx];
+            acc_p[a] += d_SIGMA_FREQ * dw_avg * ct_f[a];
+        }
+    }
+
+    /* --- Lagrangian cross-potential: -(sigma/2)|θ|²|φ|² --- */
+    if (d_SIGMA_CROSS > 0) {
+        double th2_x = th[0][idx]*th[0][idx]+th[1][idx]*th[1][idx]+th[2][idx]*th[2][idx];
+        double ph2_x = phi[0][idx]*phi[0][idx]+phi[1][idx]*phi[1][idx]+phi[2][idx]*phi[2][idx];
+        for (int a = 0; a < 3; a++) {
+            acc_p[a] -= d_SIGMA_CROSS * th2_x * phi[a][idx];
+            acc_t[a] -= d_SIGMA_CROSS * ph2_x * th[a][idx];
+        }
+    }
+
+    /* --- Lagrangian theta self-potential: -(lambda/4)|θ|⁴ --- */
+    if (d_LAMBDA_SELF > 0) {
+        double th2_l = th[0][idx]*th[0][idx]+th[1][idx]*th[1][idx]+th[2][idx]*th[2][idx];
+        for (int a = 0; a < 3; a++) {
+            acc_t[a] -= d_LAMBDA_SELF * th2_l * th[a][idx];
+        }
     }
 
     acc_phi0[idx]=acc_p[0]; acc_phi1[idx]=acc_p[1]; acc_phi2[idx]=acc_p[2];
@@ -1100,6 +1210,14 @@ static void gpu_set_constants(const Config *c, double dx) {
     cudaMemcpyToSymbol(d_inv_alpha, &c->inv_alpha, sizeof(double));
     cudaMemcpyToSymbol(d_inv_beta, &c->inv_beta, sizeof(double));
     cudaMemcpyToSymbol(d_kappa_gamma, &c->kappa_gamma, sizeof(double));
+    cudaMemcpyToSymbol(d_THETA_SAT, &c->theta_sat, sizeof(double));
+    cudaMemcpyToSymbol(d_GAMMA_CONV, &c->gamma_conv, sizeof(double));
+    cudaMemcpyToSymbol(d_SIGMA_GRAD, &c->sigma_grad, sizeof(double));
+    cudaMemcpyToSymbol(d_CHI_CHIRAL, &c->chi_chiral, sizeof(double));
+    cudaMemcpyToSymbol(d_SIGMA_CUBIC, &c->sigma_cubic, sizeof(double));
+    cudaMemcpyToSymbol(d_SIGMA_FREQ, &c->sigma_freq, sizeof(double));
+    cudaMemcpyToSymbol(d_SIGMA_CROSS, &c->sigma_cross, sizeof(double));
+    cudaMemcpyToSymbol(d_LAMBDA_SELF, &c->lambda_self, sizeof(double));
     cudaMemcpyToSymbol(d_idx2, &idx2, sizeof(double));
     cudaMemcpyToSymbol(d_idx1, &idx1, sizeof(double));
     cudaMemcpyToSymbol(d_L, &c->L, sizeof(double));
@@ -1139,6 +1257,7 @@ static void gpu_verlet_step(double dt) {
     compute_forces_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_phi[0], d_phi[1], d_phi[2],
         d_theta[0], d_theta[1], d_theta[2],
+        d_vel_theta[0], d_vel_theta[1], d_vel_theta[2],
         d_acc_phi[0], d_acc_phi[1], d_acc_phi[2],
         d_acc_theta[0], d_acc_theta[1], d_acc_theta[2],
         d_mismatch[0], d_mismatch[1], d_mismatch[2],
@@ -1953,6 +2072,9 @@ static void vec_hook(int step, double t, const FieldState *state, void *vctx) {
     long n_total = vh->n_total;
     int blk256 = (int)((n_total + 255) / 256);
 
+    /* Ensure physics kernels on default stream are complete before reading fields */
+    cudaDeviceSynchronize();
+
     /* Fit all 6 fields into d_coeffs */
     vs2_fit_multi_patches<<<np, 512, 0, vh->stream>>>(
         state->phi[0], state->phi[1], state->phi[2],
@@ -1967,8 +2089,18 @@ static void vec_hook(int step, double t, const FieldState *state, void *vctx) {
         cos_wt, sin_wt, (int)n_total);
     vh->temporal_count++;
 
-    /* Refit model periodically */
-    if (vh->temporal_count >= vh->refit_interval && vh->temporal_count > 2) {
+    int is_iframe = (vh->vec_frame == 0) || (vh->vec_frame % vh->iframe_interval == 0);
+
+    /* Bootstrap: on first frame, set mean = actual coefficients */
+    if (vh->vec_frame == 0) {
+        cudaMemcpyAsync(vh->d_temp_mean, vh->d_coeffs, n_total * sizeof(float),
+                        cudaMemcpyDeviceToDevice, vh->stream);
+        cudaMemsetAsync(vh->d_temp_amp, 0, n_total * sizeof(float), vh->stream);
+        cudaMemsetAsync(vh->d_temp_phase, 0, n_total * sizeof(float), vh->stream);
+    }
+
+    /* Refit at every I-frame boundary or periodically */
+    if ((is_iframe || vh->temporal_count >= vh->refit_interval) && vh->temporal_count > 2) {
         vs2_temporal_refit<<<blk256, 256, 0, vh->stream>>>(
             vh->d_sum_cos, vh->d_sum_sin, vh->d_sum_mean,
             vh->temporal_count,
@@ -1978,8 +2110,6 @@ static void vec_hook(int step, double t, const FieldState *state, void *vctx) {
         cudaMemsetAsync(vh->d_sum_mean, 0, n_total * sizeof(float), vh->stream);
         vh->temporal_count = 0;
     }
-
-    int is_iframe = (vh->vec_frame == 0) || (vh->vec_frame % vh->iframe_interval == 0);
 
     if (is_iframe) {
         /* Download coefficients + temporal model */
@@ -2091,6 +2221,656 @@ static void destroy_vec_hook(VecHookCtx *vh) {
 }
 
 /* ================================================================
+   Inline cluster analysis + parameter tuning
+   ================================================================ */
+
+static void inline_cluster_analysis(Config *c, int N, long N3, double L, double dx,
+                                     double t, int step) {
+    /* Download phi fields from GPU to temporary host buffer */
+    double *h_phi[3];
+    for (int a = 0; a < 3; a++) {
+        h_phi[a] = (double*)malloc(N3 * sizeof(double));
+        cudaMemcpy(h_phi[a], d_phi[a], N3*sizeof(double), cudaMemcpyDeviceToHost);
+    }
+
+    /* Compute |phi|^2 and P = phi0*phi1*phi2 at each voxel */
+    double phi2_max = 0, phi2_mean = 0, P_max = 0, P_mean = 0;
+    int NN = N*N;
+    for (long idx = 0; idx < N3; idx++) {
+        double p2 = h_phi[0][idx]*h_phi[0][idx] + h_phi[1][idx]*h_phi[1][idx]
+                   + h_phi[2][idx]*h_phi[2][idx];
+        double P = fabs(h_phi[0][idx] * h_phi[1][idx] * h_phi[2][idx]);
+        if (p2 > phi2_max) phi2_max = p2;
+        phi2_mean += p2;
+        if (P > P_max) P_max = P;
+        P_mean += P;
+    }
+    phi2_mean /= N3;
+    P_mean /= N3;
+
+    /* Flood-fill cluster detection on |phi|^2 > threshold */
+    /* Threshold: 3x the mean — anything above is "concentrated" */
+    double threshold = 3.0 * phi2_mean;
+    if (threshold < 0.01) threshold = 0.01;
+
+    int *label = (int*)calloc(N3, sizeof(int));  /* 0 = unlabeled */
+    int *stack = (int*)malloc(N3 * sizeof(int));
+    int n_clusters = 0;
+    double best_mass = 0, best_rms = 0, best_cx = 0, best_cy = 0, best_cz = 0;
+    int best_nvox = 0;
+
+    for (long seed = 0; seed < N3; seed++) {
+        double p2 = h_phi[0][seed]*h_phi[0][seed] + h_phi[1][seed]*h_phi[1][seed]
+                   + h_phi[2][seed]*h_phi[2][seed];
+        if (p2 < threshold || label[seed] != 0) continue;
+
+        /* New cluster */
+        n_clusters++;
+        int cid = n_clusters;
+        int sp = 0;
+        stack[sp++] = (int)seed;
+        label[seed] = cid;
+
+        double mass = 0, cx = 0, cy = 0, cz = 0;
+        int nvox = 0;
+
+        while (sp > 0) {
+            int idx = stack[--sp];
+            int i = idx / NN, j = (idx / N) % N, k = idx % N;
+            double p2v = h_phi[0][idx]*h_phi[0][idx] + h_phi[1][idx]*h_phi[1][idx]
+                       + h_phi[2][idx]*h_phi[2][idx];
+            double w = p2v * dx*dx*dx;
+            mass += w;
+            cx += (-L + i*dx) * w;
+            cy += (-L + j*dx) * w;
+            cz += (-L + k*dx) * w;
+            nvox++;
+
+            /* 6-connected neighbors (periodic) */
+            int nbrs[6] = {
+                ((i+1)%N)*NN+j*N+k, ((i-1+N)%N)*NN+j*N+k,
+                i*NN+((j+1)%N)*N+k, i*NN+((j-1+N)%N)*N+k,
+                i*NN+j*N+((k+1)%N), i*NN+j*N+((k-1+N)%N)
+            };
+            for (int n = 0; n < 6; n++) {
+                int ni = nbrs[n];
+                if (label[ni] != 0) continue;
+                double np2 = h_phi[0][ni]*h_phi[0][ni] + h_phi[1][ni]*h_phi[1][ni]
+                            + h_phi[2][ni]*h_phi[2][ni];
+                if (np2 >= threshold) {
+                    label[ni] = cid;
+                    stack[sp++] = ni;
+                }
+            }
+        }
+
+        if (mass > 0) { cx /= mass; cy /= mass; cz /= mass; }
+
+        /* Compute rms_r for this cluster */
+        double r2_sum = 0;
+        for (long idx2 = 0; idx2 < N3; idx2++) {
+            if (label[idx2] != cid) continue;
+            int i2 = (int)(idx2 / NN), j2 = (int)((idx2 / N) % N), k2 = (int)(idx2 % N);
+            double xi = -L+i2*dx-cx, yi = -L+j2*dx-cy, zi = -L+k2*dx-cz;
+            double p2v = h_phi[0][idx2]*h_phi[0][idx2]+h_phi[1][idx2]*h_phi[1][idx2]
+                        +h_phi[2][idx2]*h_phi[2][idx2];
+            r2_sum += (xi*xi+yi*yi+zi*zi) * p2v * dx*dx*dx;
+        }
+        double rms_r = (mass > 0) ? sqrt(r2_sum / mass) : L;
+
+        if (mass > best_mass) {
+            best_mass = mass; best_rms = rms_r; best_nvox = nvox;
+            best_cx = cx; best_cy = cy; best_cz = cz;
+        }
+    }
+
+    /* Metrics */
+    double box_rms = L * sqrt(3.0/5.0);
+    double compactness = (best_rms < box_rms) ? 1.0 - best_rms/box_rms : 0.0;
+    double density_contrast = (phi2_mean > 0) ? phi2_max / phi2_mean : 0;
+    double vox_frac = (double)best_nvox / N3;
+    int has_particle = (best_nvox > 0 && best_nvox < N3/2 && best_rms < L*0.7);
+
+    printf("\n[TUNE t=%.0f] clusters=%d top_mass=%.1f top_rms=%.2f top_nvox=%d(%.1f%%) "
+           "compact=%.3f contrast=%.1f particle=%s\n",
+           t, n_clusters, best_mass, best_rms, best_nvox, vox_frac*100,
+           compactness, density_contrast, has_particle ? "YES" : "NO");
+
+    /* === Parameter tuning === */
+    int changed = 0;
+    static int tune_count = 0;
+    tune_count++;
+
+    if (!has_particle) {
+        /* No particle detected — nudge toward binding */
+        if (fabs(c->mu) < 300) {
+            c->mu -= 1.0;  /* more negative = stronger binding */
+            printf("  TUNE: mu -> %.2f (no particle)\n", c->mu);
+            changed = 1;
+        }
+    } else {
+        /* Have particle — enlarge and harden */
+
+        /* Tighten: if compactness < 0.5, increase m2 */
+        if (compactness < 0.5) {
+            c->m2 += 0.1;
+            printf("  TUNE: m2 -> %.2f (compact=%.3f, tighten)\n", c->m2, compactness);
+            changed = 1;
+        }
+
+        /* Harden: if density contrast < 50, strengthen binding */
+        if (density_contrast < 50) {
+            c->mu -= 0.5;
+            printf("  TUNE: mu -> %.2f (contrast=%.1f, harden)\n", c->mu, density_contrast);
+            changed = 1;
+        }
+
+        /* Enlarge: if top cluster rms_r < 3, boost eta to spread structure */
+        if (best_rms < 3.0) {
+            c->eta += 0.01;
+            printf("  TUNE: eta -> %.3f (rms=%.2f, enlarge)\n", c->eta, best_rms);
+            changed = 1;
+        }
+
+        /* If too many clusters, strengthen kappa to merge */
+        if (n_clusters > 10) {
+            c->kappa += 1.0;
+            printf("  TUNE: kappa -> %.1f (%d clusters, merge)\n", c->kappa, n_clusters);
+            changed = 1;
+        }
+
+        /* Report particle health */
+        printf("  PARTICLE: mass=%.1f rms=%.2f nvox=%d contrast=%.0f compact=%.3f\n",
+               best_mass, best_rms, best_nvox, density_contrast, compactness);
+    }
+
+    if (changed) {
+        gpu_set_constants(c, dx);
+        printf("  -> constants uploaded\n");
+    }
+
+    fflush(stdout);
+
+    free(label); free(stack);
+    for (int a = 0; a < 3; a++) free(h_phi[a]);
+}
+
+/* ================================================================
+   Parameter sweep — runs entirely on GPU
+   ================================================================ */
+
+typedef struct {
+    double mu, eta, m2, kappa, sigma_cross, lambda_self;
+    double score;         /* higher = better particle */
+    double phi_max, P_max, compactness, density_contrast;
+    int n_clusters, best_nvox;
+    double best_rms, best_mass;
+} SweepResult;
+
+static void run_sweep(Config *c, Grid *g) {
+    int N = g->N;
+    long N3 = g->N3;
+    double dx = g->dx, dt = g->dt;
+
+    /* Save initial field state */
+    size_t field_bytes = N3 * sizeof(double);
+    double *save_phi[3], *save_vel[3], *save_theta[3], *save_tvel[3];
+    for (int a = 0; a < 3; a++) {
+        save_phi[a] = (double*)malloc(field_bytes);
+        save_vel[a] = (double*)malloc(field_bytes);
+        save_theta[a] = (double*)malloc(field_bytes);
+        save_tvel[a] = (double*)malloc(field_bytes);
+        cudaMemcpy(save_phi[a], d_phi[a], field_bytes, cudaMemcpyDeviceToHost);
+        cudaMemcpy(save_vel[a], d_vel_phi[a], field_bytes, cudaMemcpyDeviceToHost);
+        cudaMemcpy(save_theta[a], d_theta[a], field_bytes, cudaMemcpyDeviceToHost);
+        cudaMemcpy(save_tvel[a], d_vel_theta[a], field_bytes, cudaMemcpyDeviceToHost);
+    }
+
+    /* Parameter grid */
+    double mu_vals[]    = {-20, -30, -41.345, -60, -80, -100};
+    double eta_vals[]   = {0.2, 0.35, 0.5, 0.7, 1.0};
+    double m2_vals[]    = {1.5, 2.25, 4.0, 6.25, 9.0};
+    double kappa_vals[] = {20, 35, 50, 75, 100};
+    int n_mu = sizeof(mu_vals)/sizeof(double);
+    int n_eta = sizeof(eta_vals)/sizeof(double);
+    int n_m2 = sizeof(m2_vals)/sizeof(double);
+    int n_kappa = sizeof(kappa_vals)/sizeof(double);
+    int total = n_mu * n_eta * n_m2 * n_kappa;
+
+    printf("\n=== PARAMETER SWEEP: %d combinations, T=%.0f each ===\n", total, c->sweep_T);
+    printf("  mu: "); for(int i=0;i<n_mu;i++) printf("%.1f ",mu_vals[i]); printf("\n");
+    printf("  eta: "); for(int i=0;i<n_eta;i++) printf("%.2f ",eta_vals[i]); printf("\n");
+    printf("  m2: "); for(int i=0;i<n_m2;i++) printf("%.2f ",m2_vals[i]); printf("\n");
+    printf("  kappa: "); for(int i=0;i<n_kappa;i++) printf("%.0f ",kappa_vals[i]); printf("\n\n");
+    fflush(stdout);
+
+    int sweep_steps = (int)lround(c->sweep_T / dt);
+
+    SweepResult *results = (SweepResult*)calloc(total, sizeof(SweepResult));
+    int trial = 0;
+    double best_score = -1;
+    int best_trial = -1;
+
+    for (int im = 0; im < n_mu; im++)
+    for (int ie = 0; ie < n_eta; ie++)
+    for (int i2 = 0; i2 < n_m2; i2++)
+    for (int ik = 0; ik < n_kappa; ik++) {
+        /* Set parameters */
+        c->mu = mu_vals[im];
+        c->eta = eta_vals[ie];
+        c->m2 = m2_vals[i2];
+        c->kappa = kappa_vals[ik];
+
+        /* Restore initial field */
+        for (int a = 0; a < 3; a++) {
+            cudaMemcpy(d_phi[a], save_phi[a], field_bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_vel_phi[a], save_vel[a], field_bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_theta[a], save_theta[a], field_bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_vel_theta[a], save_tvel[a], field_bytes, cudaMemcpyHostToDevice);
+        }
+
+        /* Upload new constants */
+        gpu_set_constants(c, dx);
+
+        /* Run for sweep_steps */
+        /* Need initial force computation */
+        if (gpu_has_intermediates) {
+            compute_intermediates_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                d_phi[0],d_phi[1],d_phi[2], d_theta[0],d_theta[1],d_theta[2],
+                d_mismatch[0],d_mismatch[1],d_mismatch[2],
+                d_harden_Q[0],d_harden_Q[1],d_harden_Q[2]);
+        }
+        compute_forces_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_phi[0],d_phi[1],d_phi[2], d_theta[0],d_theta[1],d_theta[2],
+            d_vel_theta[0],d_vel_theta[1],d_vel_theta[2],
+            d_acc_phi[0],d_acc_phi[1],d_acc_phi[2],
+            d_acc_theta[0],d_acc_theta[1],d_acc_theta[2],
+            d_mismatch[0],d_mismatch[1],d_mismatch[2],
+            d_harden_Q[0],d_harden_Q[1],d_harden_Q[2]);
+
+        for (int s = 0; s < sweep_steps; s++)
+            gpu_verlet_step(dt);
+
+        cudaDeviceSynchronize();
+
+        /* Analyze — download phi, flood fill */
+        double *h_phi[3];
+        for (int a = 0; a < 3; a++) {
+            h_phi[a] = (double*)malloc(field_bytes);
+            cudaMemcpy(h_phi[a], d_phi[a], field_bytes, cudaMemcpyDeviceToHost);
+        }
+
+        int NN = N*N;
+        double phi2_max = 0, phi2_mean = 0, P_abs_max = 0;
+        for (long idx = 0; idx < N3; idx++) {
+            double p2 = h_phi[0][idx]*h_phi[0][idx]+h_phi[1][idx]*h_phi[1][idx]+h_phi[2][idx]*h_phi[2][idx];
+            if (p2 > phi2_max) phi2_max = p2;
+            phi2_mean += p2;
+            double P = fabs(h_phi[0][idx]*h_phi[1][idx]*h_phi[2][idx]);
+            if (P > P_abs_max) P_abs_max = P;
+        }
+        phi2_mean /= N3;
+
+        double threshold = 3.0 * phi2_mean;
+        if (threshold < 0.001) threshold = 0.001;
+
+        int *label = (int*)calloc(N3, sizeof(int));
+        int *stack = (int*)malloc(N3 * sizeof(int));
+        int n_clusters = 0;
+        double best_mass = 0, best_rms = 999;
+        int best_nvox = 0;
+
+        for (long seed = 0; seed < N3; seed++) {
+            double p2 = h_phi[0][seed]*h_phi[0][seed]+h_phi[1][seed]*h_phi[1][seed]+h_phi[2][seed]*h_phi[2][seed];
+            if (p2 < threshold || label[seed] != 0) continue;
+            n_clusters++;
+            int cid = n_clusters;
+            int sp = 0;
+            stack[sp++] = (int)seed;
+            label[seed] = cid;
+            double mass = 0, cx=0,cy=0,cz=0;
+            int nvox = 0;
+            while (sp > 0) {
+                int idx = stack[--sp];
+                int i=idx/NN, j=(idx/N)%N, k=idx%N;
+                double p2v = h_phi[0][idx]*h_phi[0][idx]+h_phi[1][idx]*h_phi[1][idx]+h_phi[2][idx]*h_phi[2][idx];
+                double w = p2v*dx*dx*dx;
+                mass += w; cx+=(-g->L+i*dx)*w; cy+=(-g->L+j*dx)*w; cz+=(-g->L+k*dx)*w;
+                nvox++;
+                int nbrs[6]={((i+1)%N)*NN+j*N+k,((i-1+N)%N)*NN+j*N+k,
+                             i*NN+((j+1)%N)*N+k,i*NN+((j-1+N)%N)*N+k,
+                             i*NN+j*N+((k+1)%N),i*NN+j*N+((k-1+N)%N)};
+                for(int n=0;n<6;n++){
+                    int ni=nbrs[n];
+                    if(label[ni]!=0) continue;
+                    double np2=h_phi[0][ni]*h_phi[0][ni]+h_phi[1][ni]*h_phi[1][ni]+h_phi[2][ni]*h_phi[2][ni];
+                    if(np2>=threshold){label[ni]=cid;stack[sp++]=ni;}
+                }
+            }
+            if(mass>0){cx/=mass;cy/=mass;cz/=mass;}
+            double r2s=0;
+            for(long ii=0;ii<N3;ii++){
+                if(label[ii]!=cid) continue;
+                int i2=ii/NN,j2=(ii/N)%N,k2=ii%N;
+                double xi=-g->L+i2*dx-cx,yi=-g->L+j2*dx-cy,zi=-g->L+k2*dx-cz;
+                double p2v=h_phi[0][ii]*h_phi[0][ii]+h_phi[1][ii]*h_phi[1][ii]+h_phi[2][ii]*h_phi[2][ii];
+                r2s+=(xi*xi+yi*yi+zi*zi)*p2v*dx*dx*dx;
+            }
+            double rms=(mass>0)?sqrt(r2s/mass):g->L;
+            if(mass>best_mass){best_mass=mass;best_rms=rms;best_nvox=nvox;}
+        }
+
+        double box_rms = g->L*sqrt(3.0/5.0);
+        double compactness = (best_rms<box_rms)?1.0-best_rms/box_rms:0.0;
+        double contrast = (phi2_mean>0)?phi2_max/phi2_mean:0;
+        int has_particle = (best_nvox>0 && best_nvox<N3/2 && best_rms<g->L*0.7);
+
+        /* Score: compactness × contrast × P_max — rewards tight, dense, bound clusters */
+        double score = compactness * contrast * sqrt(P_abs_max + 0.001);
+        if (!has_particle) score = 0;
+
+        results[trial].mu = c->mu;
+        results[trial].eta = c->eta;
+        results[trial].m2 = c->m2;
+        results[trial].kappa = c->kappa;
+        results[trial].score = score;
+        results[trial].phi_max = sqrt(phi2_max);
+        results[trial].P_max = P_abs_max;
+        results[trial].compactness = compactness;
+        results[trial].density_contrast = contrast;
+        results[trial].n_clusters = n_clusters;
+        results[trial].best_nvox = best_nvox;
+        results[trial].best_rms = best_rms;
+        results[trial].best_mass = best_mass;
+
+        if (score > best_score) { best_score = score; best_trial = trial; }
+
+        if (trial % 25 == 0 || score > 0) {
+            printf("[%4d/%d] mu=%6.1f eta=%.2f m2=%.2f k=%3.0f | clust=%2d mass=%6.1f rms=%5.2f "
+                   "compact=%.3f contrast=%5.1f P=%.4f %s score=%.2f\n",
+                   trial+1, total, c->mu, c->eta, c->m2, c->kappa,
+                   n_clusters, best_mass, best_rms, compactness, contrast,
+                   P_abs_max, has_particle?"YES":"no ", score);
+            fflush(stdout);
+        }
+
+        free(label); free(stack);
+        for (int a=0;a<3;a++) free(h_phi[a]);
+        trial++;
+    }
+
+    /* Report top 20 */
+    printf("\n=== TOP 20 RESULTS ===\n");
+    printf("rank  score    mu     eta    m2    kappa  clust  mass    rms   compact contrast P_max\n");
+    for (int rank = 0; rank < 20 && rank < total; rank++) {
+        /* Find rank-th best */
+        int bi = -1; double bs = -1;
+        for (int i = 0; i < total; i++) {
+            if (results[i].score > bs) {
+                /* Check not already printed */
+                int used = 0;
+                for (int r2 = 0; r2 < rank; r2++) {
+                    /* Simple: just zero out score after printing */
+                }
+                if (!used) { bs = results[i].score; bi = i; }
+            }
+        }
+        if (bi < 0) break;
+        SweepResult *r = &results[bi];
+        printf("%4d  %6.2f  %6.1f  %.2f  %5.2f  %5.0f  %4d  %6.1f  %5.2f  %.3f   %5.1f   %.4f\n",
+               rank+1, r->score, r->mu, r->eta, r->m2, r->kappa,
+               r->n_clusters, r->best_mass, r->best_rms, r->compactness,
+               r->density_contrast, r->P_max);
+        r->score = -999;  /* mark as printed */
+        fflush(stdout);
+    }
+
+    if (best_trial >= 0) {
+        SweepResult *b = &results[best_trial];
+        printf("\n=== BEST: mu=%.1f eta=%.2f m2=%.2f kappa=%.0f (score=%.2f) ===\n",
+               b->mu, b->eta, b->m2, b->kappa, best_score);
+        /* Set config to best parameters for subsequent run */
+        c->mu = b->mu; c->eta = b->eta; c->m2 = b->m2; c->kappa = b->kappa;
+    }
+
+    /* Cleanup */
+    for (int a=0;a<3;a++){free(save_phi[a]);free(save_vel[a]);free(save_theta[a]);free(save_tvel[a]);}
+    free(results);
+}
+
+/* ================================================================
+   Chirality pair sweep
+   ================================================================ */
+
+static void init_braid_at(Grid *g, const Config *c,
+                           double cx, double cy, double cz,
+                           double d0, double d1, double d2,
+                           double theta_sign, int add) {
+    /* Place a braid centered at (cx,cy,cz) with phase offsets (d0,d1,d2).
+     * theta_sign: +1 or -1 for chirality.
+     * add=0: overwrite, add=1: add to existing field. */
+    int N = g->N, NN = N*N;
+    double L = g->L, dx = g->dx;
+    double kw = PI/L, omega = sqrt(kw*kw + c->m2);
+    double sx = 1+c->ellip, sy = 1-c->ellip;
+    double inv2R2 = 1.0/(2*c->R_tube*c->R_tube);
+    double k_bg = PI/L;
+    double delta[3] = {d0, d1, d2};
+
+    for (int i = 0; i < N; i++) { double x = -L + i*dx - cx;
+    for (int j = 0; j < N; j++) { double y = -L + j*dx - cy;
+    for (int k = 0; k < N; k++) { double z = -L + k*dx - cz;
+        long idx = (long)i*NN + j*N + k;
+        double r2e = x*x/(sx*sx) + y*y/(sy*sy);
+        double env = exp(-r2e * inv2R2);
+        for (int a = 0; a < 3; a++) {
+            double ph = kw*z + delta[a];
+            double val = c->A * env * cos(ph);
+            if (add) g->phi[a][idx] += val;
+            else     g->phi[a][idx] = val;
+            double vval = omega * c->A * env * sin(ph);
+            if (add) g->phi_vel[a][idx] += vval;
+            else     g->phi_vel[a][idx] = vval;
+        }
+    }}}
+
+    /* Set theta = theta_sign * gain * curl(phi) */
+    double gain = 2.5 * theta_sign;
+    double idx2 = 1.0 / (2.0 * dx);
+    for (long vi = 0; vi < g->N3; vi++) {
+        int i = (int)(vi/NN), j = (int)((vi/N)%N), k = (int)(vi%N);
+        int ip=(i+1)%N, im=(i-1+N)%N, jp=(j+1)%N, jm=(j-1+N)%N, kp=(k+1)%N, km=(k-1+N)%N;
+        double cx_ = (g->phi[2][(long)i*NN+jp*N+k]-g->phi[2][(long)i*NN+jm*N+k])*idx2
+                   - (g->phi[1][(long)i*NN+j*N+kp]-g->phi[1][(long)i*NN+j*N+km])*idx2;
+        double cy_ = (g->phi[0][(long)i*NN+j*N+kp]-g->phi[0][(long)i*NN+j*N+km])*idx2
+                   - (g->phi[2][(long)ip*NN+j*N+k]-g->phi[2][(long)im*NN+j*N+k])*idx2;
+        double cz_ = (g->phi[1][(long)ip*NN+j*N+k]-g->phi[1][(long)im*NN+j*N+k])*idx2
+                   - (g->phi[0][(long)i*NN+jp*N+k]-g->phi[0][(long)i*NN+jm*N+k])*idx2;
+        if (add) {
+            g->theta[0][vi] += gain * cx_;
+            g->theta[1][vi] += gain * cy_;
+            g->theta[2][vi] += gain * cz_;
+        } else {
+            g->theta[0][vi] = gain * cx_;
+            g->theta[1][vi] = gain * cy_;
+            g->theta[2][vi] = gain * cz_;
+        }
+    }
+}
+
+static void run_chiral_sweep(Config *c, Grid *g) {
+    int N = g->N;
+    long N3 = g->N3;
+    double dx = g->dx, dt = g->dt, L = g->L;
+    int NN = N*N;
+    size_t fb = N3 * sizeof(double);
+
+    int sweep_steps = (int)lround(c->sweep_T / dt);
+
+    /* Chirality methods for particle B (particle A is always standard) */
+    /* Standard: delta=(0, 3.0005, 4.4325), theta_sign=-1 */
+    double std_d[3] = {0, 3.0005, 4.4325};
+
+    typedef struct {
+        const char *name;
+        double d[3];          /* phase offsets */
+        double theta_sign;    /* +1 or -1 */
+        double ellip_mult;    /* multiply ellip by this */
+    } ChiralMethod;
+
+    ChiralMethod methods[] = {
+        {"same (control)",        {0, 3.0005, 4.4325},       -1,  1},
+        {"flip_theta",            {0, 3.0005, 4.4325},       +1,  1},
+        {"reverse_delta",         {4.4325, 3.0005, 0},       -1,  1},
+        {"negate_delta",          {0, -3.0005, -4.4325},     -1,  1},
+        {"flip_theta+rev_delta",  {4.4325, 3.0005, 0},       +1,  1},
+        {"flip_theta+neg_delta",  {0, -3.0005, -4.4325},     +1,  1},
+        {"flip_ellip",            {0, 3.0005, 4.4325},       -1, -1},
+        {"flip_all",              {0, -3.0005, -4.4325},     +1, -1},
+        {"pi_shift",              {PI, 3.0005+PI, 4.4325+PI},-1,  1},
+        {"pi_shift+flip_theta",   {PI, 3.0005+PI, 4.4325+PI},+1,  1},
+    };
+    int n_methods = sizeof(methods) / sizeof(methods[0]);
+
+    /* Separation distances to test */
+    double separations[] = {6, 8, 10};
+    int n_sep = sizeof(separations) / sizeof(double);
+
+    int total = n_methods * n_sep;
+    printf("\n=== CHIRALITY PAIR SWEEP: %d methods × %d separations = %d trials ===\n\n",
+           n_methods, n_sep, total);
+    printf("Particle A (standard): delta=(0, 3.0005, 4.4325), theta_sign=-1\n");
+    printf("Sweep T=%.0f, params: mu=%.1f eta=%.2f m2=%.2f kappa=%.0f\n\n",
+           c->sweep_T, c->mu, c->eta, c->m2, c->kappa);
+    printf("%-25s  sep  clustA  clustB  H_A      H_B      same?  both_alive?\n",
+           "method");
+    printf("---------------------------------------------------------------------------------\n");
+    fflush(stdout);
+
+    double orig_ellip = c->ellip;
+
+    for (int im = 0; im < n_methods; im++)
+    for (int is = 0; is < n_sep; is++) {
+        double D = separations[is];
+        ChiralMethod *m = &methods[im];
+
+        /* Clear grid */
+        for (int a = 0; a < 3; a++) {
+            memset(g->phi[a], 0, fb);
+            memset(g->phi_vel[a], 0, fb);
+            memset(g->theta[a], 0, fb);
+            memset(g->theta_vel[a], 0, fb);
+        }
+
+        /* Add background */
+        double k_bg = PI/L, omega_bg = sqrt(k_bg*k_bg + c->m2);
+        for (int i=0;i<N;i++) for (int j=0;j<N;j++) for (int k_=0;k_<N;k_++) {
+            long idx = (long)i*NN+j*N+k_;
+            double z = -L + k_*dx;
+            for (int a=0;a<3;a++) {
+                double ph = k_bg*z + 2*PI*a/3.0;
+                g->phi[a][idx] += c->A_bg * cos(ph);
+                g->phi_vel[a][idx] += omega_bg * c->A_bg * sin(ph);
+            }
+        }
+
+        /* Place braid A (standard) at (-D/2, 0, 0) */
+        c->ellip = orig_ellip;
+        init_braid_at(g, c, -D/2, 0, 0, std_d[0], std_d[1], std_d[2], -1, 1);
+
+        /* Place braid B (test chirality) at (+D/2, 0, 0) */
+        c->ellip = orig_ellip * m->ellip_mult;
+        init_braid_at(g, c, D/2, 0, 0, m->d[0], m->d[1], m->d[2], m->theta_sign, 1);
+        c->ellip = orig_ellip;
+
+        /* Upload and run */
+        gpu_upload(g);
+        gpu_set_constants(c, dx);
+        if (gpu_has_intermediates) {
+            compute_intermediates_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                d_phi[0],d_phi[1],d_phi[2], d_theta[0],d_theta[1],d_theta[2],
+                d_mismatch[0],d_mismatch[1],d_mismatch[2],
+                d_harden_Q[0],d_harden_Q[1],d_harden_Q[2]);
+        }
+        compute_forces_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_phi[0],d_phi[1],d_phi[2], d_theta[0],d_theta[1],d_theta[2],
+            d_vel_theta[0],d_vel_theta[1],d_vel_theta[2],
+            d_acc_phi[0],d_acc_phi[1],d_acc_phi[2],
+            d_acc_theta[0],d_acc_theta[1],d_acc_theta[2],
+            d_mismatch[0],d_mismatch[1],d_mismatch[2],
+            d_harden_Q[0],d_harden_Q[1],d_harden_Q[2]);
+
+        for (int s = 0; s < sweep_steps; s++)
+            gpu_verlet_step(dt);
+        cudaDeviceSynchronize();
+
+        /* Download phi and theta for analysis */
+        double *h_phi[3], *h_theta[3];
+        for (int a=0;a<3;a++) {
+            h_phi[a] = (double*)malloc(fb);
+            h_theta[a] = (double*)malloc(fb);
+            cudaMemcpy(h_phi[a], d_phi[a], fb, cudaMemcpyDeviceToHost);
+            cudaMemcpy(h_theta[a], d_theta[a], fb, cudaMemcpyDeviceToHost);
+        }
+
+        /* Find clusters and compute H_cross for left (x<0) and right (x>0) halves */
+        double H_left = 0, H_right = 0;
+        double mass_left = 0, mass_right = 0;
+        double phi_max_left = 0, phi_max_right = 0;
+        double idx1 = 1.0 / (2.0*dx);
+
+        for (long vi = 0; vi < N3; vi++) {
+            int i=(int)(vi/NN), j=(int)((vi/N)%N), k_=(int)(vi%N);
+            double x = -L + i*dx;
+            int ip=(i+1)%N, im=(i-1+N)%N, jp=(j+1)%N, jm=(j-1+N)%N, kp=(k_+1)%N, km=(k_-1+N)%N;
+
+            double p2 = h_phi[0][vi]*h_phi[0][vi]+h_phi[1][vi]*h_phi[1][vi]+h_phi[2][vi]*h_phi[2][vi];
+            double dV = dx*dx*dx;
+
+            /* curl(phi) */
+            double cp0 = (h_phi[2][(long)i*NN+jp*N+k_]-h_phi[2][(long)i*NN+jm*N+k_])*idx1
+                       - (h_phi[1][(long)i*NN+j*N+kp]-h_phi[1][(long)i*NN+j*N+km])*idx1;
+            double cp1 = (h_phi[0][(long)i*NN+j*N+kp]-h_phi[0][(long)i*NN+j*N+km])*idx1
+                       - (h_phi[2][(long)ip*NN+j*N+k_]-h_phi[2][(long)im*NN+j*N+k_])*idx1;
+            double cp2 = (h_phi[1][(long)ip*NN+j*N+k_]-h_phi[1][(long)im*NN+j*N+k_])*idx1
+                       - (h_phi[0][(long)i*NN+jp*N+k_]-h_phi[0][(long)i*NN+jm*N+k_])*idx1;
+
+            /* H_cross = theta · curl(phi) */
+            double hc = (h_theta[0][vi]*cp0 + h_theta[1][vi]*cp1 + h_theta[2][vi]*cp2) * dV;
+
+            if (x < 0) {
+                H_left += hc;
+                mass_left += p2 * dV;
+                if (sqrt(p2) > phi_max_left) phi_max_left = sqrt(p2);
+            } else {
+                H_right += hc;
+                mass_right += p2 * dV;
+                if (sqrt(p2) > phi_max_right) phi_max_right = sqrt(p2);
+            }
+        }
+
+        int A_alive = (phi_max_left > 0.3);
+        int B_alive = (phi_max_right > 0.3);
+        int same_sign = ((H_left < 0) == (H_right < 0));
+
+        printf("%-25s  %3.0f   %5.1f/%c  %5.1f/%c  %+8.1f %+8.1f  %s    %s\n",
+               m->name, D,
+               phi_max_left, A_alive?'Y':'n',
+               phi_max_right, B_alive?'Y':'n',
+               H_left, H_right,
+               same_sign ? "SAME" : "DIFF",
+               (A_alive && B_alive) ? "BOTH" : (A_alive || B_alive) ? "ONE " : "NONE");
+        fflush(stdout);
+
+        for (int a=0;a<3;a++) { free(h_phi[a]); free(h_theta[a]); }
+    }
+
+    c->ellip = orig_ellip;
+    printf("\nChirality sweep complete.\n");
+    fflush(stdout);
+}
+
+/* ================================================================
    Main
    ================================================================ */
 
@@ -2172,11 +2952,41 @@ int main(int argc, char **argv) {
     }
     compute_forces_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_phi[0],d_phi[1],d_phi[2], d_theta[0],d_theta[1],d_theta[2],
+        d_vel_theta[0],d_vel_theta[1],d_vel_theta[2],
         d_acc_phi[0],d_acc_phi[1],d_acc_phi[2],
         d_acc_theta[0],d_acc_theta[1],d_acc_theta[2],
         d_mismatch[0],d_mismatch[1],d_mismatch[2],
         d_harden_Q[0],d_harden_Q[1],d_harden_Q[2]);
     cudaDeviceSynchronize();
+
+    /* Parameter sweep mode */
+    if (c.sweep == 2) {
+        run_chiral_sweep(&c, g);
+        printf("\nChiral sweep done. Exiting.\n");
+        return 0;
+    }
+    if (c.sweep == 1) {
+        run_sweep(&c, g);
+        printf("\nSweep complete. Best params set in config. Continuing with normal run...\n\n");
+        /* Re-init with best params and re-upload */
+        do_init(g, &c);
+        gpu_upload(g);
+        gpu_set_constants(&c, g->dx);
+        if (gpu_has_intermediates) {
+            compute_intermediates_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                d_phi[0],d_phi[1],d_phi[2], d_theta[0],d_theta[1],d_theta[2],
+                d_mismatch[0],d_mismatch[1],d_mismatch[2],
+                d_harden_Q[0],d_harden_Q[1],d_harden_Q[2]);
+        }
+        compute_forces_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_phi[0],d_phi[1],d_phi[2], d_theta[0],d_theta[1],d_theta[2],
+            d_vel_theta[0],d_vel_theta[1],d_vel_theta[2],
+            d_acc_phi[0],d_acc_phi[1],d_acc_phi[2],
+            d_acc_theta[0],d_acc_theta[1],d_acc_theta[2],
+            d_mismatch[0],d_mismatch[1],d_mismatch[2],
+            d_harden_Q[0],d_harden_Q[1],d_harden_Q[2]);
+        cudaDeviceSynchronize();
+    }
 
     /* SFA archive with KVMD */
     uint8_t sfa_dtype = (c.precision==0)?SFA_F16:(c.precision==1)?SFA_F32:SFA_F64;
@@ -2261,8 +3071,17 @@ int main(int argc, char **argv) {
         fflush(fp);
     }
 
-    /* t=0 snapshot via hook */
+    /* t=0 snapshot — wait for voxel write to complete before vec frame */
     snap_hook(0, 0.0, &fstate, &snap_ctx);
+    /* Block until the snap writer thread finishes the voxel frame */
+    {
+        pthread_mutex_lock(&snap_ctx.mutex);
+        while (snap_ctx.writer_busy || snap_ctx.writer_has_data)
+            pthread_cond_wait(&snap_ctx.cond, &snap_ctx.mutex);
+        pthread_mutex_unlock(&snap_ctx.mutex);
+    }
+    if (vec_ctx.enabled)
+        vec_hook(0, 0.0, &fstate, &vec_ctx);
 
     printf("Async pipeline: snap every %d steps, diag every %d steps, %d total\n\n",
            snap_every, diag_every, n_steps);
@@ -2270,6 +3089,11 @@ int main(int argc, char **argv) {
     /* BC switch: absorb -> periodic at bc_switch_time */
     int bc_switched = 0;
     int bc_switch_step = (c.bc_switch_time > 0) ? (int)lround(c.bc_switch_time / g->dt) : 0;
+
+    /* Auto-tune interval */
+    int tune_every = (c.tune_dt > 0) ? (int)lround(c.tune_dt / g->dt) : 0;
+    if (tune_every > 0)
+        printf("Auto-tune: every %d steps (%.1f time units)\n\n", tune_every, c.tune_dt);
 
     /* ===== Main loop ===== */
     for (int step = 1; step <= n_steps; step++) {
@@ -2282,6 +3106,12 @@ int main(int argc, char **argv) {
         }
 
         gpu_verlet_step(g->dt);
+
+        /* Auto-tune: cluster analysis + parameter adjustment */
+        if (tune_every > 0 && step % tune_every == 0) {
+            cudaDeviceSynchronize();
+            inline_cluster_analysis(&c, g->N, g->N3, g->L, g->dx, step * g->dt, step);
+        }
 
         if (c.bc_type == 1) {
             gradient_bc_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
@@ -2315,8 +3145,19 @@ int main(int argc, char **argv) {
                 if (hooks[h].fn != snap_hook)
                     hooks[h].fn(step, t, &fstate, hooks[h].ctx);
         } else {
+            /* Dispatch snap hook first */
+            snap_hook(step, t, &fstate, &snap_ctx);
+            /* If snap fired, wait for writer to finish before vec writes */
+            if (step % snap_ctx.snap_every == 0) {
+                pthread_mutex_lock(&snap_ctx.mutex);
+                while (snap_ctx.writer_busy || snap_ctx.writer_has_data)
+                    pthread_cond_wait(&snap_ctx.cond, &snap_ctx.mutex);
+                pthread_mutex_unlock(&snap_ctx.mutex);
+            }
+            /* Now dispatch remaining hooks (diag, vec) */
             for (int h = 0; h < n_hooks; h++)
-                hooks[h].fn(step, t, &fstate, hooks[h].ctx);
+                if (hooks[h].fn != snap_hook)
+                    hooks[h].fn(step, t, &fstate, hooks[h].ctx);
         }
     }
 

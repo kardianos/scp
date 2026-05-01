@@ -32,3 +32,11 @@ lean_lib SinglePass where
 @[default_target]
 lean_lib V52 where
   srcDir := "."
+
+@[default_target]
+lean_lib VecStream where
+  srcDir := "."
+
+@[default_target]
+lean_lib StabilityCondition where
+  srcDir := "."

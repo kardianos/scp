@@ -1,0 +1,22 @@
+
+DISSIPATIVE:
+  RMS radius: init=7.667  final=7.977  min=7.665  max=8.270
+  Bulk-breathing dominant freq: f=0.00250  (omega=0.0157, period=400.00)
+  Top 5 bulk peaks:
+    f=0.00250  (period=400.00)  power=3.192e+04
+    f=0.00500  (period=200.00)  power=3.716e+03
+    f=0.01750  (period=57.14)  power=2.909e+03
+    f=0.01500  (period=66.67)  power=1.622e+03
+    f=0.02000  (period=50.00)  power=8.879e+02
+  Contact pairs at t=0: 10, still close at T=400: 2
+
+CONSERVATIVE:
+  RMS radius: init=7.667  final=9.103  min=7.664  max=9.308
+  Bulk-breathing dominant freq: f=0.00250  (omega=0.0157, period=400.00)
+  Top 5 bulk peaks:
+    f=0.00250  (period=400.00)  power=2.411e+05
+    f=0.02500  (period=40.00)  power=2.240e+05
+    f=0.00750  (period=133.33)  power=2.008e+05
+    f=0.02750  (period=36.36)  power=1.263e+05
+    f=0.02250  (period=44.44)  power=9.597e+04
+  Contact pairs at t=0: 10, still close at T=400: 0

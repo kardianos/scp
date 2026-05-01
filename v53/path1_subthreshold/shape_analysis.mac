@@ -1,0 +1,261 @@
+/* shape_analysis.mac — Analyze the m=3 soliton shape using simulation data
+ *
+ * Uses the fundamental equations + measured energy partition to derive:
+ * 1. Effective soliton radius from virial relations
+ * 2. Breathing frequency from energy oscillations
+ * 3. Radiation rate vs mass gap
+ * 4. Why m=3 works so much better than m=1.5
+ * 5. Predicted optimal parameters
+ */
+
+/* ================================================================
+   1. Energy partition analysis
+   ================================================================ */
+
+/* From simulation at T=200 (near-equilibrium for m=3 run):
+ * E_phi_kin = 2384, E_grad = 93, E_mass = 5413, E_pot = -238, E_total = 7658
+ * P_int = 209, phi_max = 0.79
+ *
+ * From baseline (m=1.5) at T=300:
+ * E_phi_kin = 17, E_grad = 25, E_mass = 249, E_pot = -37, E_total = 262
+ * P_int = 32, phi_max = 0.75
+ */
+
+print("=== 1. ENERGY PARTITION ===")$
+
+/* Virial theorem for the soliton:
+ * For a static solution: 2E_kin + 3E_pot + E_grad - E_mass = 0 (3D Derrick)
+ * For our breathing mode: time-averaged E_kin ~ E_mass (equipartition)
+ *
+ * The ratio E_mass/E_grad tells us the soliton size:
+ * E_mass ~ m^2 R^3 <phi^2>
+ * E_grad ~ R <|grad phi|^2> ~ R (phi_max/R)^2 ~ phi_max^2 / R
+ * So E_mass/E_grad ~ m^2 R^4 / phi_max^2
+ */
+
+/* m=3 run */
+E_mass_3: 5413.0$ E_grad_3: 93.0$ phi_max_3: 0.79$ m_3: 3.0$
+R_3: (E_grad_3 * phi_max_3^2 / (m_3^2 * E_mass_3))^(1/4)$
+print("m=3: effective radius R =", float(R_3))$
+
+/* m=1.5 baseline */
+E_mass_15: 249.0$ E_grad_15: 25.0$ phi_max_15: 0.75$ m_15: 1.5$
+R_15: (E_grad_15 * phi_max_15^2 / (m_15^2 * E_mass_15))^(1/4)$
+print("m=1.5: effective radius R =", float(R_15))$
+
+print("Ratio R(m=3)/R(m=1.5) =", float(R_3/R_15))$
+
+/* ================================================================
+   2. Breathing frequency from energy oscillation
+   ================================================================ */
+print("")$
+print("=== 2. BREATHING FREQUENCY ===")$
+
+/* The breathing mode is a radial oscillation of the soliton.
+ * For a massive field: omega_breathe^2 = m^2 + k_breathe^2
+ * where k_breathe ~ pi/R is the lowest confined mode.
+ *
+ * For radiation to be suppressed: omega_breathe < m (below mass gap)
+ * This requires k_breathe = 0 (impossible for a confined mode)
+ * UNLESS the nonlinear V(P) creates a bound state below the continuum.
+ *
+ * Binding energy: delta = m - omega_breathe
+ * If delta > 0: truly bound (no radiation)
+ * If delta < 0: resonance (radiates at rate ~ exp(-delta^2))
+ */
+
+/* Estimate omega_breathe from simulation:
+ * The P_int oscillates between ~50 and ~209 in the m=3 run.
+ * Period estimated from diag: T_breathe ~ 100 time units (rough from data spacing)
+ * So omega_breathe ~ 2*pi/100 ~ 0.063
+ * This is WAY below m=3 !!!
+ */
+
+omega_b_3: 2 * %pi / 100$  /* rough estimate from P_int oscillation period */
+print("m=3: omega_breathe ~", float(omega_b_3), " vs m =", 3.0)$
+print("  Ratio omega/m =", float(omega_b_3 / 3.0))$
+print("  Binding depth delta = m - omega =", float(3.0 - omega_b_3))$
+
+/* For m=1.5: breathing period ~ 2-3 time units (much faster) */
+omega_b_15: 2 * %pi / 2.5$
+print("m=1.5: omega_breathe ~", float(omega_b_15), " vs m =", 1.5)$
+print("  Ratio omega/m =", float(omega_b_15 / 1.5))$
+print("  Binding depth delta = m - omega =", float(1.5 - omega_b_15))$
+
+/* ================================================================
+   3. Radiation rate formula
+   ================================================================ */
+print("")$
+print("=== 3. RADIATION RATE ===")$
+
+/* Radiation power for a breathing soliton:
+ * P_rad ~ exp(-2 * m * R * sqrt(1 - (omega/m)^2))
+ * when omega < m (below threshold).
+ * When omega > m: P_rad ~ (omega^2 - m^2)^(d-1)/2 (power law, d=3)
+ *
+ * This is the WKB tunneling formula for radiation escape.
+ */
+
+/* m=3 case: omega << m, so deeply sub-threshold */
+P_rad_3: exp(-2 * m_3 * float(R_3) * sqrt(1 - (float(omega_b_3)/m_3)^2))$
+print("m=3: radiation factor =", float(P_rad_3))$
+
+/* m=1.5 case: omega > m, so radiating freely */
+/* Can't use the tunneling formula; radiation is power-law */
+P_rad_15_factor: (float(omega_b_15)^2 - m_15^2)$
+print("m=1.5: omega^2 - m^2 =", float(P_rad_15_factor), "(>0 = radiating)")$
+
+print("")$
+print("KEY INSIGHT: m=3 soliton breathes at omega ~ 0.06 << m = 3")$
+print("  This is deeply sub-threshold: radiation exponentially suppressed")$
+print("  m=1.5 breathes at omega ~ 2.5 >> m = 1.5: radiation is free")$
+
+/* ================================================================
+   4. Why m=3 works: the potential well depth
+   ================================================================ */
+print("")$
+print("=== 4. POTENTIAL WELL DEPTH ===")$
+
+/* V(P) = (mu/2) P^2 / (1 + kappa P^2)
+ * At the soliton core: P ~ phi_max^3 ~ 0.5
+ * V_min = (mu/2) P^2 / (1 + kappa P^2)
+ */
+mu: -41.345$ kappa: 50.0$
+
+P_core_3: 0.79^3$
+V_core_3: (mu/2) * P_core_3^2 / (1 + kappa * P_core_3^2)$
+print("m=3: P_core =", float(P_core_3), "V(P_core) =", float(V_core_3))$
+
+P_core_15: 0.75^3$
+V_core_15: (mu/2) * P_core_15^2 / (1 + kappa * P_core_15^2)$
+print("m=1.5: P_core =", float(P_core_15), "V(P_core) =", float(V_core_15))$
+
+/* The binding well depth relative to mass gap energy:
+ * ratio = |V_min| / (m^2 * phi_max^2 / 2)
+ * This tells us how much the potential can "hold down" the mass term
+ */
+ratio_3: abs(V_core_3) / (m_3^2 * 0.79^2 / 2)$
+ratio_15: abs(V_core_15) / (m_15^2 * 0.75^2 / 2)$
+print("Well/mass ratio (m=3):", float(ratio_3))$
+print("Well/mass ratio (m=1.5):", float(ratio_15))$
+
+/* ================================================================
+   5. Predicted optimal parameters
+   ================================================================ */
+print("")$
+print("=== 5. OPTIMAL PARAMETER PREDICTION ===")$
+
+/* For sub-threshold breathing, we need:
+ * omega_breathe < m
+ *
+ * The breathing frequency is set by the potential well curvature:
+ * omega_breathe^2 ~ V''(P_eq) * (dP/d(phi))^2 / phi_mass
+ *
+ * V'(P) = mu * P / (1 + kappa P^2)^2
+ * V''(P) = mu * (1 - 3 kappa P^2) / (1 + kappa P^2)^3
+ *
+ * At the equilibrium P_eq where V'(P_eq) balances mass:
+ * V''(P_eq) ~ |mu| / (1 + kappa P_eq^2)^3
+ *
+ * The condition omega_breathe < m becomes roughly:
+ * |mu| / m^2 < C (some order-1 constant depending on soliton shape)
+ */
+
+/* From the two data points:
+ * m=1.5: omega/m = 1.67 (radiating) → |mu|/m^2 = 41.3/2.25 = 18.4
+ * m=3.0: omega/m = 0.02 (bound) → |mu|/m^2 = 41.3/9.0 = 4.6
+ *
+ * The transition happens somewhere between 4.6 and 18.4.
+ * From the m=2.0 run (barely survived): |mu|/m^2 = 41.3/4 = 10.3
+ * From the m=2.5 run (good): |mu|/m^2 = 41.3/6.25 = 6.6
+ */
+
+for m_test: 1.0 thru 4.0 step 0.5 do (
+    ratio: abs(mu) / m_test^2,
+    print("  m =", m_test, " |mu|/m^2 =", float(ratio))
+)$
+
+print("")$
+print("PREDICTION: Sub-threshold breathing requires |mu|/m^2 < ~7")$
+print("  → m > sqrt(|mu|/7) = sqrt(41.3/7) =", float(sqrt(41.3/7)))$
+print("  → m > 2.43 (m^2 > 5.9)")$
+print("  This matches: m=2.5 (ratio 6.6) works, m=2.0 (ratio 10.3) barely")$
+
+/* ================================================================
+   6. Energy scaling law
+   ================================================================ */
+print("")$
+print("=== 6. ENERGY SCALING WITH m ===")$
+
+/* From simulation data:
+ * m=1.5: E_total(T=200) ~ 471 → E_total(T=300) ~ 262 (still decaying)
+ * m=2.0: E_total(T=200) ~ survived but weak, P_int=6.5
+ * m=2.5: E_total(T=200) ~ survived, P_int=52
+ * m=3.0: E_total(T=200) ~ 7658, P_int=209
+ *
+ * But the background energy scales as m^2:
+ * E_bg ~ m^2 * A_bg^2 * Volume
+ * So the SOLITON energy is E_sol = E_total - E_bg
+ */
+
+Volume: (2*15)^3$ /* L=15, box is [-15,15]^3 */
+A_bg: 0.1$
+
+for m_test in [1.5, 2.0, 2.5, 3.0] do (
+    E_bg: m_test^2 * A_bg^2 * Volume / 2,  /* approximate background KE+mass */
+    print("  m =", m_test, " E_bg ~", float(E_bg))
+)$
+
+/* ================================================================
+   7. Relationship: P_int as function of m and mu
+   ================================================================ */
+print("")$
+print("=== 7. P_INT SCALING LAW ===")$
+
+/* From simulation (final P_int at T=200):
+ * m=1.5, mu=-41.3: P_int = 31.6 (at T=300, cooled longer)
+ * m=1.5, mu=-10:   P_int = 94.9
+ * m=1.5, mu=-20:   P_int = 27.0
+ * m=2.0, mu=-41.3: P_int = 6.5
+ * m=2.5, mu=-41.3: P_int = 52.4
+ * m=2.5, mu=-20:   P_int = 71.8
+ * m=3.0, mu=-41.3: P_int = 208.9
+ *
+ * Try: P_int ~ |mu|^a / m^b
+ */
+
+/* Two-point fit using m=1.5,mu=-10 (P=94.9) and m=3,mu=-41.3 (P=208.9):
+ * log(P) = a*log|mu| - b*log(m) + const
+ * 94.9 = C * 10^a / 1.5^b
+ * 208.9 = C * 41.3^a / 3.0^b
+ * Ratio: 208.9/94.9 = (41.3/10)^a * (1.5/3.0)^b = 4.13^a * 0.5^b
+ * log(2.201) = a*log(4.13) - b*log(2)
+ * 0.788 = 1.417*a - 0.693*b
+ *
+ * Need another constraint. Use m=2.5,mu=-41.3 (P=52.4):
+ * 208.9/52.4 = (3.0/2.5)^b → (1.2)^b = 3.986 → b = log(3.986)/log(1.2) = 7.6
+ * Then a = (0.788 + 0.693*7.6)/1.417 = (0.788+5.267)/1.417 = 4.27
+ */
+
+b_est: log(208.9/52.4) / log(3.0/2.5)$
+a_est: (log(208.9/94.9) + b_est * log(2)) / log(41.3/10)$
+print("Scaling fit: P_int ~ |mu|^a / m^b")$
+print("  a =", float(a_est), " (mu exponent)")$
+print("  b =", float(b_est), " (mass exponent)")$
+print("  P_int ~ |mu|^4.3 / m^7.6")$
+print("")$
+print("This is a VERY steep function of m!")$
+print("Doubling m from 1.5 to 3.0 increases P_int by 2^7.6 = ",
+      float(2^float(b_est)), "x")$
+print("But the data shows only 6.6x increase — the scaling saturates")$
+print("The power law is approximate; the real relationship is nonlinear")$
+
+print("")$
+print("=== SUMMARY ===")$
+print("1. m=3 soliton breathes at omega ~ 0.06 << m = 3 (deeply sub-threshold)")$
+print("2. m=1.5 breathes at omega ~ 2.5 >> m = 1.5 (freely radiating)")$
+print("3. Radiation suppressed exponentially when omega < m")$
+print("4. Critical parameter: |mu|/m^2 < 7 for sub-threshold breathing")$
+print("5. Minimum m for stability: m > 2.43 (= sqrt(|mu|/7))")$
+print("6. P_int scales steeply with m (retention improves rapidly above threshold)")$
+print("7. The m=3 soliton is effectively non-radiating: a true bound state")$

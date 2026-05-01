@@ -33,6 +33,23 @@ typedef struct {
     /* Mass coupling mode */
     int mode;
     double inv_alpha, inv_beta, kappa_gamma;
+    double gamma_conf;          /* mismatch confining potential: γ|M|²|φ|² (Path 7) */
+    double theta_sat;           /* theta saturation threshold (0=disabled) */
+    double gamma_conv;          /* theta→phi conversion rate at saturation */
+
+    /* V54 theta self-interaction modes (0=off) */
+    double sigma_grad;          /* Test A: gradient-based |∇θ|² conversion */
+    double chi_chiral;          /* Test A: chirality bias for gradient mode */
+    double sigma_cubic;         /* Test B: cubic self-interaction |θ|²·θ */
+    double sigma_freq;          /* Test C: frequency-mismatch conversion */
+
+    /* V54 Lagrangian-derived couplings (energy-conserving) */
+    double sigma_cross;         /* Cross-potential: -(σ/2)|θ|²|φ|² */
+    double lambda_self;         /* Theta self-potential: -(λ/4)|θ|⁴ */
+    double theta_vev;           /* Theta VEV: V = (λ/4)(|θ|²-v²)², 0=standard */
+    double tune_dt;             /* Auto-tune interval (0=disabled) */
+    int sweep;                  /* Sweep mode: 0=off, 1=parameter sweep */
+    double sweep_T;             /* Time per sweep trial (default 50) */
 
     /* Boundary */
     int bc_type;                /* 0=absorb_sphere, 1=gradient_pinned, 2=periodic */
@@ -71,7 +88,11 @@ static Config cfg_defaults(void) {
     c.N = 128;  c.L = 10.0;  c.T = 200.0;  c.dt_factor = 0.025;
     c.m2 = 2.25;  c.mtheta2 = 0.0;  c.eta = 0.5;
     c.mu = -41.345;  c.kappa = 50.0;  c.kappa_h = 0.0;  c.alpha_cs = 0.0;  c.beta_h = 0.0;
-    c.mode = 0;  c.inv_alpha = 2.25;  c.inv_beta = 5.0;  c.kappa_gamma = 2.0;
+    c.mode = 0;  c.inv_alpha = 2.25;  c.inv_beta = 5.0;  c.kappa_gamma = 2.0;  c.gamma_conf = 0;
+    c.theta_sat = 0;  c.gamma_conv = 0;
+    c.sigma_grad = 0;  c.chi_chiral = 0;  c.sigma_cubic = 0;  c.sigma_freq = 0;
+    c.sigma_cross = 0;  c.lambda_self = 0;  c.theta_vev = 0;  c.tune_dt = 0;
+    c.sweep = 0;  c.sweep_T = 50;
     c.bc_type = 0;
     c.damp_width = 3.0;  c.damp_rate = 0.01;  c.bc_switch_time = 0.0;
     c.gradient_A_high = 0.15;  c.gradient_A_low = 0.05;  c.gradient_margin = 3;
@@ -109,6 +130,19 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"inv_alpha"))   c->inv_alpha = atof(val);
     else if (!strcmp(key,"inv_beta"))    c->inv_beta = atof(val);
     else if (!strcmp(key,"kappa_gamma")) c->kappa_gamma = atof(val);
+    else if (!strcmp(key,"gamma_conf")) c->gamma_conf = atof(val);
+    else if (!strcmp(key,"theta_sat"))  c->theta_sat = atof(val);
+    else if (!strcmp(key,"gamma_conv")) c->gamma_conv = atof(val);
+    else if (!strcmp(key,"sigma_grad"))  c->sigma_grad = atof(val);
+    else if (!strcmp(key,"chi_chiral")) c->chi_chiral = atof(val);
+    else if (!strcmp(key,"sigma_cubic")) c->sigma_cubic = atof(val);
+    else if (!strcmp(key,"sigma_freq")) c->sigma_freq = atof(val);
+    else if (!strcmp(key,"sigma_cross")) c->sigma_cross = atof(val);
+    else if (!strcmp(key,"lambda_self")) c->lambda_self = atof(val);
+    else if (!strcmp(key,"theta_vev"))  c->theta_vev = atof(val);
+    else if (!strcmp(key,"tune_dt"))    c->tune_dt = atof(val);
+    else if (!strcmp(key,"sweep"))      c->sweep = atoi(val);
+    else if (!strcmp(key,"sweep_T"))    c->sweep_T = atof(val);
     else if (!strcmp(key,"bc_type"))      c->bc_type = atoi(val);
     else if (!strcmp(key,"damp_width"))  c->damp_width = atof(val);
     else if (!strcmp(key,"bc_switch_time")) c->bc_switch_time = atof(val);

@@ -1,0 +1,48 @@
+Loaded traj.bin:
+  n_total       = 14613
+  n_tracked     = 200
+  n_samples     = 20000
+  dt            = 0.002
+  steps_per_samp= 10
+  dt_sample     = 0.02
+  T_total       = 400.0
+  Nyquist       = 25.000  (freq),  157.080 (omega)
+  df            = 0.00250
+  r_touch       = 1.2   L = 10.0
+
+Dominant-frequency statistics (per-particle; n=200):
+  median f    : 0.0025   omega=0.016
+  mean   f    : 0.0025    std=0.0000
+  range  f    : [0.0025, 0.0025]
+  unique bins : 1
+
+Pearson r(mean_neighbors, f_dom) = -0.0000
+Pearson r(sqrt(mean_neighbors), f_dom) = -0.0000
+
+Stratified by mean neighbor count:
+    nn_bin  count     med_f     std_f    med_om
+  [16,20)    30    0.0025    0.0000     0.016
+  [20,24)    22    0.0025    0.0000     0.016
+  [24,28)    85    0.0025    0.0000     0.016
+  [28,40)    63    0.0025    0.0000     0.016
+
+Histogram of dominant frequency  (bin width = 0.0250):
+  f=[-0.497,-0.472)  n=   0 
+  f=[-0.022,0.003)  n= 200 ############################################################
+  f=[0.003,0.028)  n=   0 
+
+Frequency coherence vs distance:
+      dist_bin    pairs    med_|df|   mean_|df|
+  [ 0.0, 1.2)       21     0.00000     0.00000
+  [ 1.2, 2.4)      143     0.00000     0.00000
+  [ 2.4, 4.0)      688     0.00000     0.00000
+  [ 4.0, 6.0)     1770     0.00000     0.00000
+  [ 6.0, 9.0)     4372     0.00000     0.00000
+  [ 9.0,14.0)     8662     0.00000     0.00000
+  [14.0,25.0)     4244     0.00000     0.00000
+
+Wrote:
+  ./freq_per_particle.tsv
+  ./ensemble_psd.tsv
+  ./ensemble_psd_stratified.tsv
+  ./freq_analysis.png

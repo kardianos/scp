@@ -751,15 +751,18 @@ static void fit_patch(const float *field, int N, int ox, int oy, int oz,
     for (int di = 0; di < bs; di++) {
         int gi = ox + di; if (gi >= N) gi = N-1;
         double tx = (bs > 1) ? (double)di / (bs - 1) : 0;
-        double txi[4] = {1, tx, tx*tx, tx*tx*tx};
+        double sx = 2*tx - 1;  /* Chebyshev: map [0,1] -> [-1,1] */
+        double txi[4] = {1, sx, 2*sx*sx-1, 4*sx*sx*sx-3*sx};
         for (int dj = 0; dj < bs; dj++) {
             int gj = oy + dj; if (gj >= N) gj = N-1;
             double ty = (bs > 1) ? (double)dj / (bs - 1) : 0;
-            double tyj[4] = {1, ty, ty*ty, ty*ty*ty};
+            double sy = 2*ty - 1;
+            double tyj[4] = {1, sy, 2*sy*sy-1, 4*sy*sy*sy-3*sy};
             for (int dk = 0; dk < bs; dk++) {
                 int gk = oz + dk; if (gk >= N) gk = N-1;
                 double tz = (bs > 1) ? (double)dk / (bs - 1) : 0;
-                double tzk[4] = {1, tz, tz*tz, tz*tz*tz};
+                double sz = 2*tz - 1;
+                double tzk[4] = {1, sz, 2*sz*sz-1, 4*sz*sz*sz-3*sz};
 
                 /* Compute basis values */
                 double basis[64];
@@ -1093,8 +1096,18 @@ int main(int argc, char **argv) {
                 }
                 vec_temporal_count++;
 
-                /* Refit model periodically */
-                if (vec_temporal_count >= vec_refit_interval && vec_temporal_count > 2) {
+                /* Bootstrap: on first frame, set mean = actual so P-frames
+                 * predict the real initial state instead of zero */
+                if (vec_frame == 0) {
+                    for (long i = 0; i < vnt; i++) {
+                        vec_temp_mean[i] = all_coeffs[i];
+                        vec_temp_amp[i] = 0;
+                        vec_temp_phase[i] = 0;
+                    }
+                }
+
+                /* Refit at every I-frame boundary (not just every N frames) */
+                if ((is_iframe || vec_temporal_count >= vec_refit_interval) && vec_temporal_count > 2) {
                     float inv_n = 1.0f / vec_temporal_count;
                     for (long i = 0; i < vnt; i++) {
                         vec_temp_mean[i] = vec_sum_mean[i] * inv_n;

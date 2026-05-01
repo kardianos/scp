@@ -11,7 +11,7 @@ BINDIR = ../bin
 
 ANALYSIS_TOOLS = analyze_sfa spatial_analysis cluster_profile stable_vs_unstable \
                  shell_analysis modify_sfa freq_phase accel_analysis breathing \
-                 sfa_vectorize3d vecstream_verify
+                 sfa_vectorize3d vecstream_verify sfa_particle_track
 
 ANALYSIS_BINS = $(addprefix analysis/, $(ANALYSIS_TOOLS))
 
@@ -20,7 +20,7 @@ analysis/%: analysis/%.c format/sfa.h format/vecstream.h
 
 # ---- Seed generators ----
 
-SEED_TOOLS = gen_braid gen_oscillon gen_phase_confined gen_proton_analytical gen_composite
+SEED_TOOLS = gen_braid gen_oscillon gen_phase_confined gen_proton_analytical gen_composite gen_temporal_seed
 SEED_BINS = $(addprefix seed/, $(SEED_TOOLS))
 
 seed/%: seed/%.c format/sfa.h

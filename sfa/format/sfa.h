@@ -64,12 +64,20 @@
 #define SFA_CHUNK_KVMD  0x444D564B  /* "KVMD" */
 #define SFA_CHUNK_GDEF  0x46454447  /* "GDEF" */
 #define SFA_CHUNK_FRVD  0x44565246  /* "FRVD" — vector frame data */
+#define SFA_CHUNK_FMSH  0x48534D46  /* "FMSH" — Voronoi mesh frame */
+#define SFA_CHUNK_FCEL  0x4C454346  /* "FCEL" — cell-data frame    */
+#define SFA_CHUNK_FCEP  0x50454346  /* "FCEP" — cell-data P-frame  */
+#define SFA_CHUNK_FMTL  0x4C544D46  /* "FMTL" — per-cell temporal model frame */
 
-/* Frame type codes (stored in SFA_L2Entry.reserved, now frame_type) */
+/* Frame type codes (stored in SFA_L2Entry.frame_type) */
 #define SFA_FRAME_VOXEL  0   /* standard voxel data (FRMD chunk) */
 #define SFA_FRAME_VEC_I  1   /* vector I-frame: full polynomial patches (FRVD chunk) */
 #define SFA_FRAME_VEC_P  2   /* vector P-frame: sparse delta patches (FRVD chunk) */
 #define SFA_FRAME_VEC_K  3   /* vector K-frame: raw voxel keyframe for verification (FRMD chunk) */
+#define SFA_FRAME_MESH   4   /* Voronoi mesh frame (FMSH chunk) — cell positions for cell-native data */
+#define SFA_FRAME_CELL   5   /* per-cell field values (FCEL chunk) — uses most recently-seen FMSH */
+#define SFA_FRAME_CELL_P 6   /* sparse cell delta (FCEP chunk) — applied on top of latest temporal model */
+#define SFA_FRAME_TEMPORAL_MODEL 7 /* per-cell Fourier model (FMTL chunk) — supersedes earlier model in stream */
 
 /* dtype codes */
 enum {
@@ -248,6 +256,121 @@ int  sfa_finalize_header(SFA *s);
 int  sfa_write_frame(SFA *s, double time, void **column_data);
 int  sfa_write_frame_ex(SFA *s, double time, void **column_data,
                         uint32_t grid_id, uint64_t frame_bytes_override);
+
+/* ---- Cell-native frames (Voronoi foam) ----
+ * sfa_write_mesh_frame writes an FMSH chunk carrying cell positions +
+ *   volumes (and optionally faces/CSR) for the Voronoi cells.
+ * sfa_write_cell_frame writes an FCEL chunk with per-cell column data.
+ *   Subsequent FCEL frames are interpreted relative to the most recent
+ *   FMSH frame in the file, allowing multi-resolution sequences.
+ *
+ * flags: bit0=has_faces, bit1=has_csr, bit2=pos_f64 (default f32). */
+int sfa_write_mesh_frame(SFA *s, double time,
+                         uint32_t N_cells, uint32_t N_faces,
+                         double L,
+                         const double *cell_pos,
+                         const double *cell_vol,
+                         const void *face_records,
+                         const uint32_t *csr_off,
+                         const uint32_t *csr_idx,
+                         uint8_t flags);
+int sfa_write_cell_frame(SFA *s, double time,
+                         uint32_t N_cells, uint32_t n_columns,
+                         uint8_t dtype, void * const *column_data);
+
+typedef struct {
+    uint32_t N_cells;
+    uint32_t N_faces;
+    double   L;
+    double  *cell_pos;          /* 3 × N_cells */
+    double  *cell_vol;          /* N_cells */
+    void    *face_records;      /* N_faces × 40 bytes (NULL if absent) */
+    uint32_t *csr_off;
+    uint32_t *csr_idx;
+    uint8_t  flags;
+} SFA_Mesh;
+
+int sfa_read_mesh_frame(SFA *s, uint32_t frame_idx, SFA_Mesh *out);
+int sfa_read_cell_frame(SFA *s, uint32_t frame_idx,
+                        uint32_t *out_N_cells, uint32_t *out_n_columns,
+                        uint8_t *out_dtype, void **out_data);
+void sfa_mesh_free(SFA_Mesh *m);
+
+/* ---- Cell I-frame with temporal model + sparse P-frame ----
+ * Pattern matches the FRVD I/P-frame format. The I-frame embeds a
+ * Fourier model (mean + amp·cos(ω·t + phase)) per cell per column. The
+ * P-frame stores only cells whose actual value departs from the model
+ * prediction by more than the writer's threshold.
+ *
+ * mean, amp, phase: each n_columns × N_cells f32 arrays, column-major.
+ * column_data: same layout as sfa_write_cell_frame (n_columns pointers
+ *              to N_cells × dtype-size byte buffers).
+ *
+ * For the P-frame: cell_ids[n_changed] is a sorted list of cell indices
+ * with significant residual; delta_values is n_changed × n_columns f32
+ * residuals (column-major). The reader reconstructs the full state via
+ *     state[c, k] = mean[c, k] + amp[c, k]·cos(ω·t + phase[c, k]) + delta_or_zero
+ * where delta_or_zero is 0 unless c appears in cell_ids. */
+int sfa_write_cell_iframe_temporal(SFA *s, double time,
+                                    uint32_t N_cells, uint32_t n_columns,
+                                    uint8_t dtype, void * const *column_data,
+                                    float omega,
+                                    const float *mean,
+                                    const float *amp,
+                                    const float *phase);
+int sfa_write_cell_pframe(SFA *s, double time,
+                          uint32_t N_cells, uint32_t n_columns,
+                          uint32_t n_changed,
+                          const uint32_t *cell_ids,
+                          const float *delta_values);
+
+/* Reader returns: n_changed, allocated cell_ids (4 × n_changed bytes),
+ * allocated delta_values (4 × n_changed × n_columns bytes). Caller frees. */
+int sfa_read_cell_pframe(SFA *s, uint32_t frame_idx,
+                         uint32_t *out_N_cells, uint32_t *out_n_columns,
+                         uint32_t *out_n_changed,
+                         uint32_t **out_cell_ids,
+                         float **out_delta_values);
+
+/* Reader for the temporal-model fields embedded in an FCEL v2 I-frame.
+ * Returns -1 if the frame doesn't carry a temporal model (flags bit2=0).
+ * out_omega, out_mean/amp/phase are caller-owned (free after use). */
+int sfa_read_cell_iframe_temporal(SFA *s, uint32_t frame_idx,
+                                   float *out_omega,
+                                   uint32_t *out_N_cells,
+                                   uint32_t *out_n_columns,
+                                   float **out_mean,
+                                   float **out_amp,
+                                   float **out_phase);
+
+/* ---- Standalone temporal-model frame (FMTL) ----
+ * Stores a per-cell Fourier model as its own frame, separate from any
+ * particular FCEL I-frame. Once written, every subsequent FCEP frame
+ * uses this model for prediction. A new FMTL supersedes the old.
+ *
+ * Use this when the model is nearly stationary and you don't want to
+ * embed it in every I-frame — typical compression win is 5×–10× for
+ * dense temporal captures with many I-frames.
+ *
+ * Layout: header (28 bytes) + omega (4) + mean (n_columns × N_cells × 4)
+ *                          + amp (same)  + phase (same).
+ * Total compressed size ≈ 50–100 MB for L=40 / 3.26M cells / 6 columns.
+ */
+int sfa_write_temporal_model_frame(SFA *s, double time,
+                                    uint32_t N_cells, uint32_t n_columns,
+                                    float omega,
+                                    const float *mean,
+                                    const float *amp,
+                                    const float *phase);
+
+int sfa_read_temporal_model_frame(SFA *s, uint32_t frame_idx,
+                                   float *out_omega,
+                                   uint32_t *out_N_cells,
+                                   uint32_t *out_n_columns,
+                                   float **out_mean,
+                                   float **out_amp,
+                                   float **out_phase);
+
 void sfa_close(SFA *s);
 
 /* Vector frame types for polynomial patch data.
@@ -903,6 +1026,539 @@ int sfa_write_frame_ex(SFA *s, double time, void **column_data,
 /* ---- Vector frame writers ---- */
 
 /* Internal: write a FRVD chunk with the given payload and frame_type */
+/* Generalized chunk writer: zstd-compress payload, write a chunk of the
+ * given fourcc with [time(8)|compressed_data] body, and append a JMPF entry
+ * with the requested frame_type. Used by FMSH and FCEL writers. */
+static int sfa_write_typed_chunk(SFA *s, double time,
+                                  uint32_t chunk_type, uint32_t frame_type,
+                                  const void *payload, uint64_t payload_size) {
+    FILE *fp = s->fp;
+    if (!fp || s->mode != 1) return -1;
+
+    size_t bound = ZSTD_compressBound(payload_size);
+    void *comp = malloc(bound);
+    size_t comp_size = ZSTD_compress(comp, bound, payload, payload_size, 3);
+    if (ZSTD_isError(comp_size)) { free(comp); return -1; }
+
+    fseek(fp, 0, SEEK_END);
+    uint64_t frame_offset = ftell(fp);
+    uint64_t chunk_size = 8 + comp_size;
+    fwrite(&chunk_type, 4, 1, fp);
+    fwrite(&chunk_size, 8, 1, fp);
+    fwrite(&time, 8, 1, fp);
+    fwrite(comp, 1, comp_size, fp);
+    free(comp);
+
+    uint32_t checksum = sfa_crc32(payload, payload_size);
+    if (s->cur_jmpf_offset) {
+        /* JMPF overflow handling */
+        if (s->cur_jmpf_entries >= s->jmpf_max) {
+            fseek(fp, 0, SEEK_END);
+            uint64_t new_jmpf = (uint64_t)ftell(fp);
+            uint64_t jmpf_size = 12 + 8 + (uint64_t)s->jmpf_max * 32;
+            sfa_write_chunk_header(fp, "JMPF", jmpf_size);
+            fwrite(&s->jmpf_max, 4, 1, fp);
+            uint32_t zero32 = 0;
+            fwrite(&zero32, 4, 1, fp);
+            uint64_t zero64 = 0; double zt = 0;
+            for (uint32_t i = 0; i < s->jmpf_max; i++) {
+                fwrite(&zt, 8, 1, fp); fwrite(&zero64, 8, 1, fp);
+                fwrite(&zero64, 8, 1, fp); fwrite(&zero32, 4, 1, fp);
+                fwrite(&zero32, 4, 1, fp);
+            }
+            s->cur_l1_index++;
+            long jtop_entry = (long)s->cur_jtop_offset + 12 + 16 + s->cur_l1_index * 16;
+            fseek(fp, jtop_entry, SEEK_SET);
+            fwrite(&new_jmpf, 8, 1, fp);
+            uint32_t first_frame = s->total_frames;
+            fwrite(&first_frame, 4, 1, fp);
+            fwrite(&zero32, 4, 1, fp);
+            fseek(fp, (long)s->cur_jtop_offset + 12 + 4, SEEK_SET);
+            uint32_t new_cur = s->cur_l1_index + 1;
+            fwrite(&new_cur, 4, 1, fp);
+            s->cur_jmpf_offset = new_jmpf;
+            s->cur_jmpf_entries = 0;
+            fseek(fp, 0, SEEK_END);
+        }
+        long jmpf_entry = (long)s->cur_jmpf_offset + 12 + 8 + (long)s->cur_jmpf_entries * 32;
+        fseek(fp, jmpf_entry, SEEK_SET);
+        fwrite(&time, 8, 1, fp);
+        fwrite(&frame_offset, 8, 1, fp);
+        fwrite(&comp_size, 8, 1, fp);
+        fwrite(&checksum, 4, 1, fp);
+        fwrite(&frame_type, 4, 1, fp);
+        s->cur_jmpf_entries++;
+        fseek(fp, (long)s->cur_jmpf_offset + 12 + 4, SEEK_SET);
+        fwrite(&s->cur_jmpf_entries, 4, 1, fp);
+        long jtop_fc = (long)s->cur_jtop_offset + 12 + 16 + s->cur_l1_index * 16 + 12;
+        fseek(fp, jtop_fc, SEEK_SET);
+        fwrite(&s->cur_jmpf_entries, 4, 1, fp);
+        s->total_frames++;
+        fseek(fp, 0, SEEK_END);
+    }
+    return 0;
+}
+
+/* ---- FMSH (Voronoi mesh frame) ---- */
+int sfa_write_mesh_frame(SFA *s, double time,
+                         uint32_t N_cells, uint32_t N_faces,
+                         double L,
+                         const double *cell_pos,
+                         const double *cell_vol,
+                         const void *face_records,
+                         const uint32_t *csr_off,
+                         const uint32_t *csr_idx,
+                         uint8_t flags) {
+    int has_faces = (flags & 0x01) ? 1 : 0;
+    int has_csr   = (flags & 0x02) ? 1 : 0;
+    int pos_f64   = (flags & 0x04) ? 1 : 0;
+    int pos_size  = pos_f64 ? 8 : 4;
+
+    if (has_faces && !face_records) return -1;
+    if (has_csr && (!csr_off || !csr_idx)) return -1;
+    if (has_csr && !has_faces) return -1;  /* CSR meaningless without faces */
+
+    uint64_t header_size = 28;     /* magic(4)+version(4)+N_cells(4)+N_faces(4)+flags(1)+resv(3)+L(8) */
+    uint64_t pos_bytes  = (uint64_t)N_cells * 3 * pos_size;
+    uint64_t vol_bytes  = (uint64_t)N_cells * pos_size;
+    uint64_t face_bytes = has_faces ? (uint64_t)N_faces * 40 : 0;
+    uint64_t csr_off_bytes = has_csr ? ((uint64_t)N_cells + 1) * 4 : 0;
+    uint64_t csr_idx_total = has_csr ? csr_off[N_cells] : 0;
+    uint64_t csr_idx_bytes = has_csr ? csr_idx_total * 4 : 0;
+    uint64_t payload_size = header_size + pos_bytes + vol_bytes
+                          + face_bytes + csr_off_bytes + csr_idx_bytes;
+
+    uint8_t *payload = (uint8_t*)malloc(payload_size);
+    if (!payload) return -1;
+    uint64_t off = 0;
+    uint32_t magic   = SFA_CHUNK_FMSH;
+    uint32_t version = 1;
+    uint8_t  resv[3] = {0,0,0};
+    memcpy(payload + off, &magic, 4);     off += 4;
+    memcpy(payload + off, &version, 4);   off += 4;
+    memcpy(payload + off, &N_cells, 4);   off += 4;
+    memcpy(payload + off, &N_faces, 4);   off += 4;
+    memcpy(payload + off, &flags, 1);     off += 1;
+    memcpy(payload + off, resv, 3);       off += 3;
+    memcpy(payload + off, &L, 8);         off += 8;
+
+    if (pos_f64) {
+        memcpy(payload + off, cell_pos, pos_bytes); off += pos_bytes;
+        memcpy(payload + off, cell_vol, vol_bytes); off += vol_bytes;
+    } else {
+        float *fpos = (float*)(payload + off);
+        for (uint64_t i = 0; i < (uint64_t)N_cells * 3; i++) fpos[i] = (float)cell_pos[i];
+        off += pos_bytes;
+        float *fvol = (float*)(payload + off);
+        for (uint64_t i = 0; i < N_cells; i++) fvol[i] = (float)cell_vol[i];
+        off += vol_bytes;
+    }
+    if (has_faces) {
+        memcpy(payload + off, face_records, face_bytes); off += face_bytes;
+    }
+    if (has_csr) {
+        memcpy(payload + off, csr_off, csr_off_bytes); off += csr_off_bytes;
+        memcpy(payload + off, csr_idx, csr_idx_bytes); off += csr_idx_bytes;
+    }
+
+    int ret = sfa_write_typed_chunk(s, time, SFA_CHUNK_FMSH,
+                                     SFA_FRAME_MESH, payload, payload_size);
+    free(payload);
+    return ret;
+}
+
+/* ---- FCEL (cell-data frame) ---- */
+int sfa_write_cell_frame(SFA *s, double time,
+                         uint32_t N_cells, uint32_t n_columns,
+                         uint8_t dtype, void * const *column_data) {
+    if (dtype > SFA_F128) return -1;
+    int es = sfa_dtype_size[dtype];
+    uint64_t header_size = 20;     /* magic(4)+version(4)+N_cells(4)+n_columns(4)+dtype(1)+flags(1)+resv(2) */
+    uint64_t col_bytes   = (uint64_t)N_cells * es;
+    uint64_t payload_size = header_size + (uint64_t)n_columns * col_bytes;
+
+    uint8_t *payload = (uint8_t*)malloc(payload_size);
+    if (!payload) return -1;
+    uint64_t off = 0;
+    uint32_t magic   = SFA_CHUNK_FCEL;
+    uint32_t version = 1;
+    uint8_t  flags   = 0;
+    uint8_t  resv[2] = {0,0};
+    memcpy(payload + off, &magic, 4);       off += 4;
+    memcpy(payload + off, &version, 4);     off += 4;
+    memcpy(payload + off, &N_cells, 4);     off += 4;
+    memcpy(payload + off, &n_columns, 4);   off += 4;
+    memcpy(payload + off, &dtype, 1);       off += 1;
+    memcpy(payload + off, &flags, 1);       off += 1;
+    memcpy(payload + off, resv, 2);         off += 2;
+
+    for (uint32_t c = 0; c < n_columns; c++) {
+        memcpy(payload + off, column_data[c], col_bytes);
+        off += col_bytes;
+    }
+
+    int ret = sfa_write_typed_chunk(s, time, SFA_CHUNK_FCEL,
+                                     SFA_FRAME_CELL, payload, payload_size);
+    free(payload);
+    return ret;
+}
+
+/* ---- Reading FMSH / FCEL frames ----
+ * Both follow the same flow as sfa_read_frame: locate the JMPF entry via
+ * sfa_find_frame, read the compressed payload, decompress, parse. We
+ * bypass the voxel frame_bytes machinery since cell/mesh frames carry
+ * their own size headers. */
+static int sfa_find_frame(SFA *s, uint32_t frame_idx, SFA_L2Entry *out);  /* forward decl */
+
+static int sfa_read_typed_chunk(SFA *s, uint32_t frame_idx,
+                                 void **out_payload, uint64_t *out_size,
+                                 uint32_t *out_frame_type) {
+    if (s->mode != 0) return -1;
+    SFA_L2Entry e;
+    if (sfa_find_frame(s, frame_idx, &e) < 0) return -1;
+    *out_frame_type = e.frame_type;
+
+    /* Chunk layout: type(4) + size(8) + time(8) + compressed_data */
+    fseek(s->fp, (long)e.offset + 12 + 8, SEEK_SET);
+    uint8_t *comp = (uint8_t*)malloc(e.compressed_size);
+    if (!comp) return -1;
+    if (fread(comp, 1, e.compressed_size, s->fp) != e.compressed_size) {
+        free(comp); return -1;
+    }
+    unsigned long long content = ZSTD_getFrameContentSize(comp, e.compressed_size);
+    if (content == ZSTD_CONTENTSIZE_ERROR || content == ZSTD_CONTENTSIZE_UNKNOWN) {
+        content = (unsigned long long)e.compressed_size * 200 + 1024;
+    }
+    uint8_t *payload = (uint8_t*)malloc(content);
+    if (!payload) { free(comp); return -1; }
+    size_t got = ZSTD_decompress(payload, content, comp, e.compressed_size);
+    free(comp);
+    if (ZSTD_isError(got)) { free(payload); return -1; }
+    *out_payload = payload;
+    *out_size = got;
+    return 0;
+}
+
+int sfa_read_mesh_frame(SFA *s, uint32_t frame_idx, SFA_Mesh *out) {
+    void *payload = NULL; uint64_t psize = 0; uint32_t ftype = 0;
+    if (sfa_read_typed_chunk(s, frame_idx, &payload, &psize, &ftype) != 0) return -1;
+    if (ftype != SFA_FRAME_MESH) { free(payload); return -1; }
+    uint8_t *p = (uint8_t*)payload;
+    uint64_t off = 0;
+    uint32_t magic, version;
+    memcpy(&magic, p + off, 4);   off += 4;
+    if (magic != SFA_CHUNK_FMSH) { free(payload); return -1; }
+    memcpy(&version, p + off, 4); off += 4;
+    memcpy(&out->N_cells, p + off, 4); off += 4;
+    memcpy(&out->N_faces, p + off, 4); off += 4;
+    memcpy(&out->flags, p + off, 1);   off += 1;
+    off += 3;
+    memcpy(&out->L, p + off, 8); off += 8;
+
+    int has_faces = (out->flags & 0x01) ? 1 : 0;
+    int has_csr   = (out->flags & 0x02) ? 1 : 0;
+    int pos_f64   = (out->flags & 0x04) ? 1 : 0;
+    int pos_size  = pos_f64 ? 8 : 4;
+
+    out->cell_pos = (double*)malloc(sizeof(double) * 3 * out->N_cells);
+    out->cell_vol = (double*)malloc(sizeof(double) * out->N_cells);
+    if (pos_f64) {
+        memcpy(out->cell_pos, p + off, 3 * out->N_cells * 8);
+        off += 3 * out->N_cells * 8;
+        memcpy(out->cell_vol, p + off, out->N_cells * 8);
+        off += out->N_cells * 8;
+    } else {
+        const float *fp_pos = (const float*)(p + off);
+        for (uint64_t i = 0; i < (uint64_t)3 * out->N_cells; i++)
+            out->cell_pos[i] = (double)fp_pos[i];
+        off += 3 * out->N_cells * 4;
+        const float *fp_vol = (const float*)(p + off);
+        for (uint64_t i = 0; i < out->N_cells; i++)
+            out->cell_vol[i] = (double)fp_vol[i];
+        off += out->N_cells * 4;
+    }
+    if (has_faces) {
+        out->face_records = malloc((uint64_t)out->N_faces * 40);
+        memcpy(out->face_records, p + off, (uint64_t)out->N_faces * 40);
+        off += (uint64_t)out->N_faces * 40;
+    } else { out->face_records = NULL; }
+    if (has_csr) {
+        out->csr_off = (uint32_t*)malloc(((uint64_t)out->N_cells + 1) * 4);
+        memcpy(out->csr_off, p + off, ((uint64_t)out->N_cells + 1) * 4);
+        off += ((uint64_t)out->N_cells + 1) * 4;
+        uint32_t total = out->csr_off[out->N_cells];
+        out->csr_idx = (uint32_t*)malloc((uint64_t)total * 4);
+        memcpy(out->csr_idx, p + off, (uint64_t)total * 4);
+        off += (uint64_t)total * 4;
+    } else { out->csr_off = NULL; out->csr_idx = NULL; }
+    free(payload);
+    return 0;
+}
+
+int sfa_read_cell_frame(SFA *s, uint32_t frame_idx,
+                        uint32_t *out_N_cells, uint32_t *out_n_columns,
+                        uint8_t *out_dtype, void **out_data) {
+    void *payload = NULL; uint64_t psize = 0; uint32_t ftype = 0;
+    if (sfa_read_typed_chunk(s, frame_idx, &payload, &psize, &ftype) != 0) return -1;
+    if (ftype != SFA_FRAME_CELL) { free(payload); return -1; }
+    uint8_t *p = (uint8_t*)payload;
+    uint64_t off = 0;
+    uint32_t magic;
+    memcpy(&magic, p + off, 4); off += 4;
+    if (magic != SFA_CHUNK_FCEL) { free(payload); return -1; }
+    off += 4;   /* version */
+    memcpy(out_N_cells, p + off, 4);    off += 4;
+    memcpy(out_n_columns, p + off, 4);  off += 4;
+    memcpy(out_dtype, p + off, 1);      off += 1;
+    off += 3;   /* flags + reserved */
+    int es = sfa_dtype_size[*out_dtype];
+    uint64_t data_bytes = (uint64_t)*out_N_cells * *out_n_columns * es;
+    *out_data = malloc(data_bytes);
+    memcpy(*out_data, p + off, data_bytes);
+    free(payload);
+    return 0;
+}
+
+void sfa_mesh_free(SFA_Mesh *m) {
+    if (!m) return;
+    free(m->cell_pos); free(m->cell_vol);
+    free(m->face_records);
+    free(m->csr_off); free(m->csr_idx);
+    memset(m, 0, sizeof(*m));
+}
+
+/* ---- Cell I-frame with temporal model (FCEL v2) ---- */
+int sfa_write_cell_iframe_temporal(SFA *s, double time,
+                                    uint32_t N_cells, uint32_t n_columns,
+                                    uint8_t dtype, void * const *column_data,
+                                    float omega,
+                                    const float *mean,
+                                    const float *amp,
+                                    const float *phase) {
+    if (dtype > SFA_F128) return -1;
+    int es = sfa_dtype_size[dtype];
+    uint64_t header_size = 20;
+    uint64_t col_bytes   = (uint64_t)N_cells * es;
+    uint64_t cells_bytes = (uint64_t)n_columns * col_bytes;
+    uint64_t model_bytes = 4 + 3 * (uint64_t)n_columns * (uint64_t)N_cells * 4;
+    uint64_t payload_size = header_size + cells_bytes + model_bytes;
+
+    uint8_t *payload = (uint8_t*)malloc(payload_size);
+    if (!payload) return -1;
+    uint64_t off = 0;
+    uint32_t magic   = SFA_CHUNK_FCEL;
+    uint32_t version = 2;     /* version 2: with temporal model */
+    uint8_t  flags   = 0x04;  /* bit2 = has temporal model */
+    uint8_t  resv[2] = {0,0};
+    memcpy(payload + off, &magic, 4);     off += 4;
+    memcpy(payload + off, &version, 4);   off += 4;
+    memcpy(payload + off, &N_cells, 4);   off += 4;
+    memcpy(payload + off, &n_columns, 4); off += 4;
+    memcpy(payload + off, &dtype, 1);     off += 1;
+    memcpy(payload + off, &flags, 1);     off += 1;
+    memcpy(payload + off, resv, 2);       off += 2;
+
+    for (uint32_t c = 0; c < n_columns; c++) {
+        memcpy(payload + off, column_data[c], col_bytes);
+        off += col_bytes;
+    }
+    memcpy(payload + off, &omega, 4); off += 4;
+    uint64_t mb = (uint64_t)n_columns * N_cells * 4;
+    memcpy(payload + off, mean,  mb); off += mb;
+    memcpy(payload + off, amp,   mb); off += mb;
+    memcpy(payload + off, phase, mb); off += mb;
+
+    int ret = sfa_write_typed_chunk(s, time, SFA_CHUNK_FCEL,
+                                     SFA_FRAME_CELL, payload, payload_size);
+    free(payload);
+    return ret;
+}
+
+/* ---- Cell P-frame (FCEP, sparse delta) ---- */
+int sfa_write_cell_pframe(SFA *s, double time,
+                          uint32_t N_cells, uint32_t n_columns,
+                          uint32_t n_changed,
+                          const uint32_t *cell_ids,
+                          const float *delta_values) {
+    /* Header: magic(4)+ver(4)+N_cells(4)+n_cols(4)+n_changed(4)+dtype(1)+flags(1)+resv(2) = 24 */
+    uint64_t header_size = 24;
+    uint64_t ids_bytes   = (uint64_t)n_changed * 4;
+    uint64_t delta_bytes = (uint64_t)n_changed * n_columns * 4;
+    uint64_t payload_size = header_size + ids_bytes + delta_bytes;
+
+    uint8_t *payload = (uint8_t*)malloc(payload_size);
+    if (!payload) return -1;
+    uint64_t off = 0;
+    uint32_t magic   = SFA_CHUNK_FCEP;
+    uint32_t version = 1;
+    uint8_t  dtype   = SFA_F32;  /* deltas always f32 */
+    uint8_t  flags   = 0;
+    uint8_t  resv[2] = {0,0};
+    memcpy(payload + off, &magic, 4);      off += 4;
+    memcpy(payload + off, &version, 4);    off += 4;
+    memcpy(payload + off, &N_cells, 4);    off += 4;
+    memcpy(payload + off, &n_columns, 4);  off += 4;
+    memcpy(payload + off, &n_changed, 4);  off += 4;
+    memcpy(payload + off, &dtype, 1);      off += 1;
+    memcpy(payload + off, &flags, 1);      off += 1;
+    memcpy(payload + off, resv, 2);        off += 2;
+    if (n_changed > 0) {
+        memcpy(payload + off, cell_ids, ids_bytes);   off += ids_bytes;
+        memcpy(payload + off, delta_values, delta_bytes); off += delta_bytes;
+    }
+
+    int ret = sfa_write_typed_chunk(s, time, SFA_CHUNK_FCEP,
+                                     SFA_FRAME_CELL_P, payload, payload_size);
+    free(payload);
+    return ret;
+}
+
+/* Reader for FCEP. Caller frees out_cell_ids and out_delta_values. */
+int sfa_read_cell_pframe(SFA *s, uint32_t frame_idx,
+                         uint32_t *out_N_cells, uint32_t *out_n_columns,
+                         uint32_t *out_n_changed,
+                         uint32_t **out_cell_ids,
+                         float **out_delta_values) {
+    void *payload = NULL; uint64_t psize = 0; uint32_t ftype = 0;
+    if (sfa_read_typed_chunk(s, frame_idx, &payload, &psize, &ftype) != 0) return -1;
+    if (ftype != SFA_FRAME_CELL_P) { free(payload); return -1; }
+    uint8_t *p = (uint8_t*)payload;
+    uint64_t off = 0;
+    uint32_t magic;
+    memcpy(&magic, p + off, 4); off += 4;
+    if (magic != SFA_CHUNK_FCEP) { free(payload); return -1; }
+    off += 4;   /* version */
+    memcpy(out_N_cells,    p + off, 4); off += 4;
+    memcpy(out_n_columns,  p + off, 4); off += 4;
+    memcpy(out_n_changed,  p + off, 4); off += 4;
+    /* dtype + flags + reserved skipped; we always read F32 */
+    off += 4;
+    uint32_t nc = *out_n_changed;
+    *out_cell_ids = NULL;
+    *out_delta_values = NULL;
+    if (nc > 0) {
+        *out_cell_ids = (uint32_t*)malloc((uint64_t)nc * 4);
+        memcpy(*out_cell_ids, p + off, (uint64_t)nc * 4);
+        off += (uint64_t)nc * 4;
+        *out_delta_values = (float*)malloc((uint64_t)nc * (*out_n_columns) * 4);
+        memcpy(*out_delta_values, p + off,
+               (uint64_t)nc * (*out_n_columns) * 4);
+    }
+    free(payload);
+    return 0;
+}
+
+/* ---- FMTL: standalone temporal-model frame ---- */
+int sfa_write_temporal_model_frame(SFA *s, double time,
+                                    uint32_t N_cells, uint32_t n_columns,
+                                    float omega,
+                                    const float *mean,
+                                    const float *amp,
+                                    const float *phase) {
+    /* Header: magic(4)+ver(4)+N_cells(4)+n_cols(4)+flags(1)+resv(3)+omega(4)+pad(4) = 28 */
+    uint64_t header_size = 28;
+    uint64_t mb = (uint64_t)n_columns * N_cells * 4;
+    uint64_t payload_size = header_size + 3 * mb;
+
+    uint8_t *payload = (uint8_t*)malloc(payload_size);
+    if (!payload) return -1;
+    uint64_t off = 0;
+    uint32_t magic = SFA_CHUNK_FMTL;
+    uint32_t version = 1;
+    uint8_t  flags = 0;
+    uint8_t  resv[3] = {0,0,0};
+    uint32_t pad = 0;
+    memcpy(payload + off, &magic, 4);     off += 4;
+    memcpy(payload + off, &version, 4);   off += 4;
+    memcpy(payload + off, &N_cells, 4);   off += 4;
+    memcpy(payload + off, &n_columns, 4); off += 4;
+    memcpy(payload + off, &flags, 1);     off += 1;
+    memcpy(payload + off, resv, 3);       off += 3;
+    memcpy(payload + off, &omega, 4);     off += 4;
+    memcpy(payload + off, &pad, 4);       off += 4;
+    memcpy(payload + off, mean,  mb);     off += mb;
+    memcpy(payload + off, amp,   mb);     off += mb;
+    memcpy(payload + off, phase, mb);     off += mb;
+
+    int ret = sfa_write_typed_chunk(s, time, SFA_CHUNK_FMTL,
+                                     SFA_FRAME_TEMPORAL_MODEL,
+                                     payload, payload_size);
+    free(payload);
+    return ret;
+}
+
+int sfa_read_temporal_model_frame(SFA *s, uint32_t frame_idx,
+                                   float *out_omega,
+                                   uint32_t *out_N_cells,
+                                   uint32_t *out_n_columns,
+                                   float **out_mean,
+                                   float **out_amp,
+                                   float **out_phase) {
+    void *payload = NULL; uint64_t psize = 0; uint32_t ftype = 0;
+    if (sfa_read_typed_chunk(s, frame_idx, &payload, &psize, &ftype) != 0) return -1;
+    if (ftype != SFA_FRAME_TEMPORAL_MODEL) { free(payload); return -1; }
+    uint8_t *p = (uint8_t*)payload;
+    uint32_t magic;
+    memcpy(&magic, p, 4);
+    if (magic != SFA_CHUNK_FMTL) { free(payload); return -1; }
+    uint32_t Nc, ncols;
+    memcpy(&Nc, p + 8, 4);
+    memcpy(&ncols, p + 12, 4);
+    /* flags p[16], resv p[17..19] */
+    memcpy(out_omega, p + 20, 4);
+    /* pad p[24..27] */
+    *out_N_cells = Nc;
+    *out_n_columns = ncols;
+    uint64_t mb = (uint64_t)ncols * Nc * 4;
+    if (28 + 3 * mb > psize) { free(payload); return -1; }
+    *out_mean  = (float*)malloc(mb); memcpy(*out_mean,  p + 28,        mb);
+    *out_amp   = (float*)malloc(mb); memcpy(*out_amp,   p + 28 + mb,   mb);
+    *out_phase = (float*)malloc(mb); memcpy(*out_phase, p + 28 + 2*mb, mb);
+    free(payload);
+    return 0;
+}
+
+/* Reader for the temporal model embedded in an FCEL v2 I-frame. */
+int sfa_read_cell_iframe_temporal(SFA *s, uint32_t frame_idx,
+                                   float *out_omega,
+                                   uint32_t *out_N_cells,
+                                   uint32_t *out_n_columns,
+                                   float **out_mean,
+                                   float **out_amp,
+                                   float **out_phase) {
+    void *payload = NULL; uint64_t psize = 0; uint32_t ftype = 0;
+    if (sfa_read_typed_chunk(s, frame_idx, &payload, &psize, &ftype) != 0) return -1;
+    if (ftype != SFA_FRAME_CELL) { free(payload); return -1; }
+    uint8_t *p = (uint8_t*)payload;
+    uint64_t off = 0;
+    uint32_t magic, version;
+    memcpy(&magic, p + off, 4); off += 4;
+    if (magic != SFA_CHUNK_FCEL) { free(payload); return -1; }
+    memcpy(&version, p + off, 4); off += 4;
+    uint32_t Nc, ncols;
+    memcpy(&Nc, p + off, 4);    off += 4;
+    memcpy(&ncols, p + off, 4); off += 4;
+    uint8_t dtype = p[off]; off += 1;
+    uint8_t flags = p[off]; off += 1;
+    off += 2;   /* reserved */
+    if (version < 2 || (flags & 0x04) == 0) { free(payload); return -1; }
+    int es = sfa_dtype_size[dtype];
+    /* Skip cell values */
+    off += (uint64_t)ncols * Nc * es;
+    /* Read model */
+    if (off + 4 > psize) { free(payload); return -1; }
+    memcpy(out_omega, p + off, 4); off += 4;
+    *out_N_cells   = Nc;
+    *out_n_columns = ncols;
+    uint64_t mb = (uint64_t)ncols * Nc * 4;
+    if (off + 3*mb > psize) { free(payload); return -1; }
+    *out_mean  = (float*)malloc(mb); memcpy(*out_mean,  p + off, mb); off += mb;
+    *out_amp   = (float*)malloc(mb); memcpy(*out_amp,   p + off, mb); off += mb;
+    *out_phase = (float*)malloc(mb); memcpy(*out_phase, p + off, mb); off += mb;
+    free(payload);
+    return 0;
+}
+
 static int sfa_write_vec_chunk(SFA *s, double time, uint32_t frame_type,
                                 const void *payload, uint64_t payload_size) {
     FILE *fp = s->fp;
@@ -929,6 +1585,36 @@ static int sfa_write_vec_chunk(SFA *s, double time, uint32_t frame_type,
     /* Update JMPF index (same as voxel frames) */
     uint32_t checksum = sfa_crc32(payload, payload_size);
     if (s->cur_jmpf_offset) {
+        /* Handle JMPF overflow — allocate new JMPF if full */
+        if (s->cur_jmpf_entries >= s->jmpf_max) {
+            fseek(fp, 0, SEEK_END);
+            uint64_t new_jmpf = (uint64_t)ftell(fp);
+            uint64_t jmpf_size = 12 + 8 + (uint64_t)s->jmpf_max * 32;
+            sfa_write_chunk_header(fp, "JMPF", jmpf_size);
+            fwrite(&s->jmpf_max, 4, 1, fp);
+            uint32_t zero32 = 0;
+            fwrite(&zero32, 4, 1, fp);
+            uint64_t zero64 = 0; double zt = 0;
+            for (uint32_t i = 0; i < s->jmpf_max; i++) {
+                fwrite(&zt, 8, 1, fp); fwrite(&zero64, 8, 1, fp);
+                fwrite(&zero64, 8, 1, fp); fwrite(&zero32, 4, 1, fp);
+                fwrite(&zero32, 4, 1, fp);
+            }
+            s->cur_l1_index++;
+            long jtop_entry = (long)s->cur_jtop_offset + 12 + 16 + s->cur_l1_index * 16;
+            fseek(fp, jtop_entry, SEEK_SET);
+            fwrite(&new_jmpf, 8, 1, fp);
+            uint32_t first_frame = s->total_frames;
+            fwrite(&first_frame, 4, 1, fp);
+            fwrite(&zero32, 4, 1, fp);
+            fseek(fp, (long)s->cur_jtop_offset + 12 + 4, SEEK_SET);
+            uint32_t new_cur = s->cur_l1_index + 1;
+            fwrite(&new_cur, 4, 1, fp);
+            s->cur_jmpf_offset = new_jmpf;
+            s->cur_jmpf_entries = 0;
+            fseek(fp, 0, SEEK_END);
+        }
+
         /* JMPF layout: chunk_header(12) + max_entries(4) + current_entries(4) + entries... */
         long jmpf_entry = (long)s->cur_jmpf_offset + 12 + 8 + (long)s->cur_jmpf_entries * 32;
         fseek(fp, jmpf_entry, SEEK_SET);
@@ -1229,23 +1915,20 @@ int sfa_read_frame(SFA *s, uint32_t frame_idx, void *buf) {
         if (fread(comp, 1, entry.compressed_size, s->fp) != entry.compressed_size) {
             free(comp); return -1;
         }
-        /* Decompress */
-        size_t bound = entry.compressed_size * 20; /* estimate */
+        /* Decompress — use ZSTD content size hint, fallback to generous estimate */
+        unsigned long long content_size = ZSTD_getFrameContentSize(comp, entry.compressed_size);
+        size_t bound;
+        if (content_size != ZSTD_CONTENTSIZE_UNKNOWN && content_size != ZSTD_CONTENTSIZE_ERROR)
+            bound = (size_t)content_size;
+        else
+            bound = s->frame_bytes > entry.compressed_size * 20 ? s->frame_bytes : entry.compressed_size * 20;
+        /* For vec frames with temporal model, payload can be 4x frame_bytes */
+        if (bound < s->frame_bytes * 4) bound = s->frame_bytes * 4;
         void *payload = malloc(bound);
+        if (!payload) { free(comp); return -1; }
         size_t dec = ZSTD_decompress(payload, bound, comp, entry.compressed_size);
         free(comp);
-        if (ZSTD_isError(dec)) {
-            /* Try larger bound */
-            free(payload);
-            bound = entry.compressed_size * 100;
-            payload = malloc(bound);
-            fseek(s->fp, (long)entry.offset + 20, SEEK_SET);
-            comp = malloc(entry.compressed_size);
-            fread(comp, 1, entry.compressed_size, s->fp);
-            dec = ZSTD_decompress(payload, bound, comp, entry.compressed_size);
-            free(comp);
-            if (ZSTD_isError(dec)) { free(payload); return -1; }
-        }
+        if (ZSTD_isError(dec)) { free(payload); return -1; }
 
         /* Parse header (shared by I and P frames) */
         uint8_t *p = (uint8_t*)payload;
@@ -1317,15 +2000,18 @@ int sfa_read_frame(SFA *s, uint32_t frame_idx, void *buf) {
                 for (int di = 0; di < bs; di++) {
                     int gi = ox + di; if (gi < 0 || gi >= N) continue;
                     double tx = (bs>1) ? (double)di/(bs-1) : 0;
-                    double txa[4] = {1, tx, tx*tx, tx*tx*tx};
+                    double sx = 2*tx-1;
+                    double txa[4] = {1, sx, 2*sx*sx-1, 4*sx*sx*sx-3*sx};
                     for (int dj = 0; dj < bs; dj++) {
                         int gj = oy + dj; if (gj < 0 || gj >= N) continue;
                         double ty = (bs>1) ? (double)dj/(bs-1) : 0;
-                        double tya[4] = {1, ty, ty*ty, ty*ty*ty};
+                        double sy = 2*ty-1;
+                        double tya[4] = {1, sy, 2*sy*sy-1, 4*sy*sy*sy-3*sy};
                         for (int dk = 0; dk < bs; dk++) {
                             int gk = oz + dk; if (gk < 0 || gk >= N) continue;
                             double tz = (bs>1) ? (double)dk/(bs-1) : 0;
-                            double tza[4] = {1, tz, tz*tz, tz*tz*tz};
+                            double sz = 2*tz-1;
+                            double tza[4] = {1, sz, 2*sz*sz-1, 4*sz*sz*sz-3*sz};
                             long idx = (long)gi*N*N + gj*N + gk;
                             for (int f = 0; f < n_fields && f < (int)s->n_columns; f++) {
                                 float *fc = pc + f * pf_nc;
@@ -1432,15 +2118,18 @@ int sfa_read_frame(SFA *s, uint32_t frame_idx, void *buf) {
                 for (int di = 0; di < bs; di++) {
                     int gi = ox + di; if (gi >= N) continue;
                     double tx = (bs>1) ? (double)di/(bs-1) : 0;
-                    double txa[4] = {1, tx, tx*tx, tx*tx*tx};
+                    double sx = 2*tx-1;
+                    double txa[4] = {1, sx, 2*sx*sx-1, 4*sx*sx*sx-3*sx};
                     for (int dj = 0; dj < bs; dj++) {
                         int gj = oy + dj; if (gj >= N) continue;
                         double ty = (bs>1) ? (double)dj/(bs-1) : 0;
-                        double tya[4] = {1, ty, ty*ty, ty*ty*ty};
+                        double sy = 2*ty-1;
+                        double tya[4] = {1, sy, 2*sy*sy-1, 4*sy*sy*sy-3*sy};
                         for (int dk = 0; dk < bs; dk++) {
                             int gk = oz + dk; if (gk >= N) continue;
                             double tz = (bs>1) ? (double)dk/(bs-1) : 0;
-                            double tza[4] = {1, tz, tz*tz, tz*tz*tz};
+                            double sz = 2*tz-1;
+                            double tza[4] = {1, sz, 2*sz*sz-1, 4*sz*sz*sz-3*sz};
                             long idx = (long)gi*N*N + gj*N + gk;
                             for (int f = 0; f < n_fields && f < (int)s->n_columns; f++) {
                                 float *fc = pc + f * pf_nc;

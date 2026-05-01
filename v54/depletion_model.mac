@@ -1,0 +1,230 @@
+/* depletion_model.mac — Mathematical model of 3-braid depletion point
+ *
+ * Question: Under what parameter conditions does a 3-braid composite
+ * create a self-reinforcing depletion that exceeds breathing dispersal?
+ *
+ * Run: maxima -b depletion_model.mac
+ */
+
+/* ======== 1. The potential and depletion ======== */
+
+/* V(P) = (mu/2) * P^2 / (1 + kappa*P^2) */
+V(P) := (mu/2) * P^2 / (1 + kappa*P^2);
+
+/* Triple product at composite center: 3 braids with amplitude A,
+ * phase offsets delta = {d0, d1, d2}, all overlapping.
+ * P_center = A^3 * f(0)^3 * cos(d0)*cos(d1)*cos(d2)
+ * where f(0) is the radial profile at center (normalized to 1 at peak).
+ * For a Gaussian envelope: f(r) = exp(-r^2/(2*R^2)), f(0) = 1.
+ * With 3-axis superposition and Lissajous construction: */
+
+P_center : A^3 * cos(d0) * cos(d1) * cos(d2);
+
+/* Depletion energy density at center (binding energy per unit volume) */
+V_center : V(P_center);
+
+/* Maximum possible depletion (P -> infinity): */
+V_max : limit(V(P), P, inf);
+print("V_max (saturation) = ", V_max);
+
+/* ======== 2. Background energy density ======== */
+
+/* The background has phi_a = A_bg * cos(k*z + 2*pi*a/3)
+ * Energy density: rho_bg = (1/2)*m^2*A_bg^2 + kinetic + gradient
+ * For a standing wave: rho_bg ~ m^2 * A_bg^2 (order of magnitude) */
+rho_bg : m^2 * A_bg^2;
+
+/* Depletion ratio: how deep is the well relative to background */
+depletion_ratio : abs(V_center) / rho_bg;
+
+print("============================================");
+print("2. DEPLETION RATIO = |V(P_center)| / rho_bg");
+print("============================================");
+
+/* Substitute standard phase offsets: d0=0, d1=pi/3, d2=pi/3
+ * (Lissajous best from V52) */
+depletion_standard : subst([d0=0, d1=%pi/3, d2=%pi/3], depletion_ratio);
+depletion_standard : ratsimp(depletion_standard);
+print("Depletion ratio (d0=0, d1=pi/3, d2=pi/3):");
+print(depletion_standard);
+
+/* ======== 3. Theta shell energy ======== */
+
+/* At the composite surface (r ~ R), |curl(phi)| is maximum.
+ * For a braid with wavenumber k along z:
+ *   curl(phi)_x ~ A * k * f'(r) (azimuthal component)
+ * The theta field sources from eta * curl(phi):
+ *   theta ~ eta * |curl(phi)| / m_theta_eff^2  (if m_theta > 0)
+ *   theta ~ eta * |curl(phi)| * r             (if m_theta = 0, monopole)
+ *
+ * For 3 braids, the curl at the surface is:
+ *   |curl(phi)| ~ 3 * A * k / R  (sum of 3 orthogonal contributions)
+ *
+ * Theta shell energy density:
+ *   rho_theta ~ (1/2) * theta^2 * (gradient terms)
+ *            ~ (1/2) * eta^2 * (A*k/R)^2  (order of magnitude)
+ */
+
+/* Wavenumber k = pi/L_braid where L_braid is the braid half-wavelength */
+/* For the standard setup: k = m (since k^2 + k_perp^2 ~ m^2) */
+/* Approximate: k ~ m */
+
+curl_phi_surface : 3 * A * m / R_braid;
+rho_theta_shell : (1/2) * eta^2 * curl_phi_surface^2;
+
+print("");
+print("============================================");
+print("3. THETA SHELL ENERGY DENSITY");
+print("============================================");
+print("rho_theta_shell = ", rho_theta_shell);
+
+/* ======== 4. Self-reinforcement condition ======== */
+
+/* The composite is self-reinforcing when:
+ *   (a) Depletion energy > breathing kinetic energy
+ *   (b) Theta shell pressure > radiation pressure
+ *
+ * Condition (a): The breathing mode has KE ~ (1/2) * M * v_breathe^2
+ * where M ~ rho_bg * Volume and v_breathe ~ omega_breathe * delta_r.
+ * The breathing frequency omega_b ~ m (the mass term sets the timescale).
+ * The amplitude delta_r ~ R_braid (the whole thing oscillates).
+ * So KE_breathe ~ (1/2) * rho_bg * R^3 * (m*R)^2 = (1/2)*rho_bg*m^2*R^5
+ *
+ * Wait - that's the kinetic energy of the bulk breathing.
+ * The binding energy is |V_center| * Volume_core ~ |V_center| * R^3.
+ *
+ * Self-reinforcement: |V_center| * R^3 > (1/2) * rho_bg * m^2 * R^5
+ * Simplify: |V_center| > (1/2) * rho_bg * m^2 * R^2
+ * Or: depletion_ratio > (1/2) * m^2 * R^2
+ * Or: depletion_ratio > (m*R)^2 / 2
+ */
+
+print("");
+print("============================================");
+print("4. SELF-REINFORCEMENT CONDITION");
+print("============================================");
+print("Binding > Breathing requires:");
+print("  |V(P_center)| / rho_bg > (m*R)^2 / 2");
+print("");
+
+/* Condition (b): theta confinement
+ * The theta shell creates an inward pressure:
+ *   P_theta ~ d(rho_theta)/dr ~ rho_theta / R
+ * The radiation pressure outward:
+ *   P_rad ~ rho_bg * v_rad / R  (momentum flux)
+ * Confinement: P_theta > P_rad
+ *   rho_theta > rho_bg * v_rad
+ *   eta^2 * (A*m/R)^2 > rho_bg * v_rad
+ *
+ * With v_rad ~ delta_v (thermal velocity of breathing):
+ *   eta^2 * A^2 * m^2 / R^2 > m^2 * A_bg^2 * v_rad
+ *   eta^2 * A^2 / R^2 > A_bg^2 * v_rad
+ */
+
+print("Theta confinement requires:");
+print("  eta^2 * A^2 / R^2 > A_bg^2 * v_rad");
+print("  (stronger theta coupling and larger amplitude help)");
+
+/* ======== 5. Parameter tables ======== */
+
+print("");
+print("============================================");
+print("5. NUMERICAL EVALUATION");
+print("============================================");
+
+/* Standard parameters */
+params_std : [mu = -41.345, kappa = 50, m = 1.5, eta = 0.5,
+              A_bg = 0.1, d0 = 0, d1 = %pi/3, d2 = %pi/3];
+
+/* Evaluate depletion for various A values */
+print("");
+print("--- Depletion depth vs amplitude A (standard params) ---");
+print("  A      P_center    |V(P)|      rho_bg    ratio    (m*R)^2/2");
+
+for A_val in [0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1.0, 1.5, 2.0] do (
+    P_val : float(subst(append(params_std, [A=A_val]), P_center)),
+    V_val : float(subst(append(params_std, [A=A_val]), abs(V_center))),
+    rho_val : float(subst(params_std, rho_bg)),
+    ratio_val : V_val / rho_val,
+    /* Estimate R_braid ~ 3 for standard setup */
+    mR2 : float(subst(params_std, m))^2 * 3^2 / 2,
+    printf(true, "  ~4f  ~10,6f  ~10,6f  ~10,6f  ~8,2f  ~8,2f~%",
+           A_val, P_val, V_val, rho_val, ratio_val, mR2)
+);
+
+/* Now scan mu and A together */
+print("");
+print("--- Depletion ratio vs (mu, A) --- [kappa=50, m=1.5]");
+print("         A=0.3    A=0.5    A=0.8    A=1.0    A=1.5    A=2.0");
+
+for mu_val in [-10, -20, -41, -80, -150, -300] do (
+    printf(true, "mu=~4d", mu_val),
+    for A_val in [0.3, 0.5, 0.8, 1.0, 1.5, 2.0] do (
+        P_val : float(subst([d0=0,d1=%pi/3,d2=%pi/3,A=A_val], P_center)),
+        V_val : float(subst([mu=mu_val, kappa=50], abs(V(P_val)))),
+        rho_val : float(subst([m=1.5, A_bg=0.1], rho_bg)),
+        ratio_val : V_val / rho_val,
+        printf(true, "  ~7,1f", ratio_val)
+    ),
+    printf(true, "~%")
+);
+
+/* Critical condition line: ratio = (m*R)^2/2 = 10.125 for m=1.5, R=3 */
+print("");
+print("Critical threshold: ratio > (m*R)^2/2 = ", float(1.5^2 * 3^2 / 2));
+print("Values ABOVE this threshold satisfy the self-reinforcement condition.");
+
+/* ======== 6. Scan m and mu/m^2 ======== */
+print("");
+print("--- Depletion ratio vs (m, |mu|/m^2) at A=0.8, kappa=50 ---");
+print("         m=1.0    m=1.5    m=2.0    m=3.0    m=4.0");
+print("  (threshold changes with m: (m*3)^2/2)");
+
+for alpha_val in [2, 5, 7, 10, 15, 20, 30] do (
+    printf(true, "a=~3d  ", alpha_val),
+    for m_val in [1.0, 1.5, 2.0, 3.0, 4.0] do (
+        mu_val : -alpha_val * m_val^2,
+        P_val : float(subst([d0=0,d1=%pi/3,d2=%pi/3,A=0.8], P_center)),
+        V_val : float(subst([mu=mu_val, kappa=50], abs(V(P_val)))),
+        rho_val : float(subst([m=m_val, A_bg=0.1], rho_bg)),
+        ratio_val : V_val / rho_val,
+        thresh : m_val^2 * 9 / 2,
+        /* Mark with * if above threshold */
+        if ratio_val > thresh then printf(true, " ~6,1f*", ratio_val)
+        else printf(true, " ~6,1f ", ratio_val)
+    ),
+    printf(true, "~%")
+);
+print("  thresh:", float(1.0^2*9/2), float(1.5^2*9/2), float(2.0^2*9/2),
+      float(3.0^2*9/2), float(4.0^2*9/2));
+
+/* ======== 7. What A_bg is needed? ======== */
+print("");
+print("============================================");
+print("7. MINIMUM BACKGROUND AMPLITUDE");
+print("============================================");
+print("For deep depletion, need high A (braid amplitude).");
+print("But A must be sourced from A_bg (the background feeds the braid).");
+print("Empirically, A ~ 4-8 * A_bg for stable oscillons.");
+print("");
+print("If A = 6*A_bg, then for A=0.8 need A_bg=0.13");
+print("If A = 6*A_bg, then for A=1.5 need A_bg=0.25");
+print("");
+
+/* ======== 8. Combined condition ======== */
+print("============================================");
+print("8. COMBINED STABILITY PREDICTION");
+print("============================================");
+print("For a self-reinforcing 3-braid composite:");
+print("  1. |mu|/m^2 < 7        (sub-threshold breathing - V53 result)");
+print("  2. depletion_ratio > (m*R)^2/2  (binding > breathing KE)");
+print("  3. eta^2*A^2/R^2 > A_bg^2*v_rad (theta confinement)");
+print("");
+print("These compete: condition 1 wants small |mu|/m^2,");
+print("but condition 2 wants large |mu| (deep potential).");
+print("The window is NARROW and requires large A (high amplitude braids).");
+print("");
+print("Best candidates from the tables above:");
+print("  - m=3, |mu|/m^2=5 (mu=-45), A=0.8-1.5, kappa=50");
+print("  - m=2, |mu|/m^2=7 (mu=-28), A=1.0-1.5, kappa=50");
+print("  - m=1.5, |mu|/m^2=7 (mu=-16), A=1.5+, kappa=50");

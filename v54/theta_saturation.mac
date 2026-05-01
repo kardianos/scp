@@ -1,0 +1,225 @@
+/* theta_saturation.mac — Model theta→rho conversion at saturation
+ *
+ * When |θ| exceeds θ_sat, excess theta drains and converts to phi via curl(θ).
+ * What θ_sat and γ values produce stable equilibrium?
+ *
+ * Run: maxima --very-quiet -b theta_saturation.mac
+ */
+
+/* ======== 1. The modified equations (schematic) ========
+ *
+ * φ_tt = ∇²φ - m²φ - V'(P) + η·curl(θ) + γ·max(0,|θ|²-θs²)·curl(θ)
+ * θ_tt = ∇²θ           + η·curl(φ) - γ·max(0,|θ|²-θs²)·θ
+ *
+ * The new terms only activate when |θ| > θ_sat.
+ * Below θ_sat: standard Cosserat equations.
+ * Above θ_sat: theta is drained, phi is sourced.
+ */
+
+print("==========================================================");
+print("THETA SATURATION MODEL");
+print("==========================================================");
+
+/* ======== 2. Equilibrium analysis ========
+ *
+ * At equilibrium, the phi→theta pump rate equals the theta drain rate.
+ *
+ * Pump: phi sources theta at rate ~ η × |curl(φ)| × Volume
+ *   For a localized phi structure of size R with amplitude A:
+ *   |curl(φ)| ~ A/R (gradient scale)
+ *   pump_rate ~ η × A/R × R³ = η × A × R²
+ *
+ * Drain: theta saturates and converts back at rate ~ γ × excess × |θ| × Volume
+ *   excess = |θ|² - θs²  (only when |θ| > θs)
+ *   drain_rate ~ γ × (θ_eq² - θs²) × θ_eq × R_theta³
+ *
+ * At equilibrium: pump = drain
+ *   η × A × R² = γ × (θ_eq² - θs²) × θ_eq × R_theta³
+ *
+ * If θ is massless (m_theta=0), R_theta → ∞ (fills box).
+ * With the saturation term, theta is effectively confined because
+ * it can't grow past θ_sat — the excess gets converted.
+ * So R_theta ~ R_phi (theta is localized near its source).
+ *
+ * Simplify: R_theta ~ R (same scale as phi structure)
+ *   η × A × R² = γ × (θ_eq² - θs²) × θ_eq × R³
+ *   η × A / R = γ × (θ_eq² - θs²) × θ_eq
+ *
+ * For small excess: θ_eq ≈ θs + δ, δ << θs
+ *   θ_eq² - θs² ≈ 2·θs·δ
+ *   η·A/R ≈ γ × 2·θs·δ × θs = 2·γ·θs²·δ
+ *   δ ≈ η·A / (2·γ·θs²·R)
+ *
+ * The equilibrium excess is small when γ·θs²·R is large.
+ */
+
+print("");
+print("2. EQUILIBRIUM THETA LEVEL");
+print("   theta_eq ≈ theta_sat + eta*A / (2*gamma*theta_sat^2*R)");
+print("   Small excess when gamma*theta_sat^2*R >> eta*A");
+print("");
+
+/* ======== 3. Conversion power ========
+ *
+ * The power transferred from theta back to phi:
+ *   P_convert = γ × excess × |curl(θ)| × Volume
+ *             ~ γ × 2·θs·δ × (θ_eq/R) × R³
+ *             ~ γ × 2·θs·δ × θs × R²   (since θ_eq ≈ θs)
+ *             = 2·γ·θs² × δ × R²
+ *
+ * Substituting δ:
+ *   P_convert = 2·γ·θs² × [η·A/(2·γ·θs²·R)] × R²
+ *             = η × A × R
+ *
+ * The conversion power equals the pump power! (η·A·R²/R = η·A·R)
+ * This is self-consistent: at equilibrium, what phi pumps into theta
+ * equals what gets converted back. Energy cycles.
+ */
+
+print("3. CONVERSION POWER AT EQUILIBRIUM");
+print("   P_convert = eta * A * R  (matches pump rate — self-consistent!)");
+print("   Energy cycles: phi → theta → phi, no net drain.");
+print("");
+
+/* ======== 4. Stability condition ========
+ *
+ * The conversion must be fast enough to prevent theta runaway.
+ * Theta growth rate (without saturation): ~ η·|curl(φ)| ~ η·A/R
+ * Theta drain rate at saturation: ~ γ·(θ²-θs²)·θ ~ γ·θs³ (at θ~θs)
+ *
+ * For drain to keep up with pump:
+ *   γ·θs³ > η·A/R
+ *   γ > η·A / (θs³·R)
+ *
+ * This gives the MINIMUM conversion rate for stability.
+ */
+
+print("4. MINIMUM CONVERSION RATE");
+print("   gamma > eta * A / (theta_sat^3 * R)");
+print("");
+
+/* ======== 5. Parameter tables ======== */
+
+print("==========================================================");
+print("5. PARAMETER TABLES");
+print("==========================================================");
+
+/* Given our V54 parameters: eta=0.3, A=1.5, R=3 */
+eta_val : 0.3;
+A_val : 1.5;
+R_val : 3.0;
+
+print("");
+printf(true, "Fixed: eta=~4,2f  A=~4,2f  R=~4,2f~%", eta_val, A_val, R_val);
+print("");
+
+/* Table: gamma_min vs theta_sat */
+print("--- Minimum gamma for stability ---");
+print("  theta_sat   gamma_min    delta(excess)   theta_eq");
+
+for ts in [0.1, 0.2, 0.3, 0.5, 0.8, 1.0, 1.5, 2.0] do (
+    gmin : float(eta_val * A_val / (ts^3 * R_val)),
+    /* Use gamma = 2 * gmin for safety margin */
+    g_use : 2 * gmin,
+    delta : float(eta_val * A_val / (2 * g_use * ts^2 * R_val)),
+    teq : ts + delta,
+    printf(true, "  ~8,3f    ~8,4f      ~8,5f      ~8,4f~%", ts, gmin, delta, teq)
+);
+
+/* ======== 6. Energy budget ======== */
+print("");
+print("==========================================================");
+print("6. ENERGY BUDGET");
+print("==========================================================");
+print("");
+
+/* With our parameters, what fraction of total energy is in theta at saturation? */
+/* E_theta ~ (1/2)·θs²·Volume ~ (1/2)·θs²·(4/3)·π·R³  (localized theta) */
+/* E_phi ~ (1/2)·m²·A²·Volume ~ (1/2)·m²·A²·(4/3)·π·R³ */
+/* Ratio: E_theta/E_phi ~ θs²/(m²·A²) */
+
+m_val : 3.0;
+print("--- Energy fraction in theta at saturation ---");
+print("  theta_sat   E_theta/E_phi   theta_KE_frac");
+
+for ts in [0.1, 0.2, 0.3, 0.5, 0.8, 1.0, 1.5, 2.0] do (
+    ratio : float(ts^2 / (m_val^2 * A_val^2)),
+    /* Theta kinetic fraction of total energy (rough) */
+    ke_frac : float(ratio / (1 + ratio)),
+    printf(true, "  ~8,3f      ~8,4f        ~8,4f~%", ts, ratio, ke_frac)
+);
+
+/* ======== 7. What theta_sat should be? ======== */
+print("");
+print("==========================================================");
+print("7. CHOOSING THETA_SAT");
+print("==========================================================");
+print("");
+print("Physical reasoning:");
+print("  - theta_sat should be the maximum rotation the medium supports");
+print("  - In our previous runs, theta_rms grew to ~1.7 before phi died");
+print("  - A reasonable theta_sat: 0.3-0.5 (catches theta early)");
+print("  - Too small (0.1): theta saturates immediately, conversion too aggressive");
+print("  - Too large (2.0): theta grows too much before conversion kicks in");
+print("");
+
+/* Recommended test matrix */
+print("==========================================================");
+print("8. RECOMMENDED TEST MATRIX");
+print("==========================================================");
+print("");
+print("Base: m=3, mu=-90, kappa=50, eta=0.3, A=1.5, A_bg=0.1, R~3");
+print("");
+print("  Test   theta_sat   gamma    gamma/gmin   Expected behavior");
+print("  ----   ---------   -----    ----------   -----------------");
+
+for params in [
+    [0.3, 0.0, "A"],
+    [0.3, 5.6, "B"],
+    [0.3, 16.7, "C"],
+    [0.5, 0.0, "D"],
+    [0.5, 1.2, "E"],
+    [0.5, 3.6, "F"],
+    [1.0, 0.0, "G"],
+    [1.0, 0.15, "H"],
+    [1.0, 0.45, "I"]
+] do (
+    ts : params[1],
+    g : params[2],
+    label : params[3],
+    gmin : float(eta_val * A_val / (ts^3 * R_val)),
+    ratio : if gmin > 0 then float(g / gmin) else 0,
+    behavior : if g < gmin and g > 0 then "underdamped (theta may still grow)"
+               else if g = 0 then "baseline (no conversion)"
+               else if ratio < 3 then "moderate conversion"
+               else "strong conversion (theta tightly capped)",
+    printf(true, "  ~a      ~8,3f    ~6,3f     ~6,1f      ~a~%",
+           label, ts, g, ratio, behavior)
+);
+
+print("");
+print("Start with tests E and F (theta_sat=0.5, moderate gamma).");
+print("If theta saturates cleanly, the phi-theta cycle is established.");
+print("Then test with three composite particles to see if the cycle");
+print("creates self-reinforcing density depletion at the center.");
+
+/* ======== 9. What does the converted phi look like? ======== */
+print("");
+print("==========================================================");
+print("9. NATURE OF THE CONVERTED PHI");
+print("==========================================================");
+print("");
+print("The conversion term in phi: +gamma*(|theta|^2 - theta_sat^2)*curl(theta)");
+print("");
+print("This sources phi proportional to curl(theta). The curl of theta");
+print("is strongest where theta has spatial structure (gradients, vortices).");
+print("So the converted phi appears at the BOUNDARIES of theta domains —");
+print("where theta direction changes rapidly.");
+print("");
+print("This means: a region of aligned theta (uniform direction) does NOT");
+print("produce phi. But the INTERFACE between two theta domains does.");
+print("The conversion creates phi structure at theta domain walls.");
+print("");
+print("Implication: a particle would be a theta domain wall — a region");
+print("where theta rotates rapidly, creating a persistent phi density");
+print("concentration at the wall. The 'mass' is the domain wall energy.");

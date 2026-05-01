@@ -90,8 +90,20 @@ const (
 	sfaFrameVecI  = 1
 	sfaFrameVecP  = 2
 	sfaFrameVecK  = 3
+	sfaFrameMesh  = 4 // Voronoi mesh frame (FMSH chunk)
+	sfaFrameCell  = 5 // per-cell field values (FCEL chunk)
+	sfaFrameCellP = 6 // sparse delta on cells (FCEP chunk)
+	sfaFrameTemporalModel = 7 // standalone Fourier model (FMTL chunk)
 	sfaChunkFRVD  = 0x44565246 // "FRVD" little-endian
+	sfaChunkFMSH  = 0x48534D46 // "FMSH"
+	sfaChunkFCEL  = 0x4C454346 // "FCEL"
+	sfaChunkFCEP  = 0x50454346 // "FCEP"
+	sfaChunkFMTL  = 0x4C544D46 // "FMTL"
 )
+
+// Default rendering resolution when displaying a cell-native (FMSH/FCEL) SFA.
+// Can be overridden with the -cell-voxel-N CLI flag.
+const defaultCellVoxelN = 192
 
 type sfaFile struct {
 	fp *os.File
@@ -135,11 +147,32 @@ type sfaFile struct {
 	vecBS       int
 	vecOrder    int
 	// Temporal model for P-frame prediction
-	vecTempMean  []float32
-	vecTempAmp   []float32
-	vecTempPhase []float32
-	vecTempOmega float32
-	vecTempValid bool
+	vecTempMean     []float32
+	vecTempAmp      []float32
+	vecTempPhase    []float32
+	vecTempOmega    float32
+	vecTempValid    bool
+	vecTempIFrameIdx int32 // which I-frame loaded the current model (-1 = none)
+
+	// Cell-native (FMSH + FCEL[+FCEP]) state
+	cellNative      bool      // file contains FMSH/FCEL/FCEP frames (auto-detected)
+	cellVoxelN      int       // rendering-grid resolution
+	meshNCells      uint32    // current mesh cell count
+	meshL           float64   // current mesh box half-extent
+	meshCellPos     []float64 // 3 × N_cells (interleaved x,y,z)
+	meshCellVol     []float64 // N_cells
+	voxelToCell     []int32   // cellVoxelN^3 → cell index (precomputed nearest-neighbour)
+	cellDataBuf     []byte    // per-cell raw payload buffer (parsed FCEL)
+	cellLoadedMesh  int32     // index of mesh frame whose voxelToCell is current (-1 = none)
+	// Per-cell state buffer (column-major, n_columns × N_cells f32). Updated
+	// by FCEL frames (full state) and FCEP frames (sparse delta from model).
+	cellState       []float32
+	// Temporal model loaded from an FCEL v2 I-frame; reused by FCEP frames.
+	cellTOmega      float32
+	cellTMean       []float32 // n_columns × N_cells
+	cellTAmp        []float32
+	cellTPhase      []float32
+	cellTValid      bool
 }
 
 func sfaOpen(path string) (*sfaFile, error) {
@@ -232,6 +265,24 @@ func sfaOpen(path string) (*sfaFile, error) {
 		}
 	}
 
+	// Cell-native auto-detection: scan JMPF for any FMSH frame.
+	s.cellLoadedMesh = -1
+	if s.detectCellNative() {
+		s.cellNative = true
+		s.cellVoxelN = defaultCellVoxelN
+		// Override the SFA's "voxel grid" with our rendering resolution.
+		// The recorded Nx/Ny/Nz (= N_cells, 1, 1) was a placeholder.
+		s.Nx = uint32(s.cellVoxelN)
+		s.Ny = uint32(s.cellVoxelN)
+		s.Nz = uint32(s.cellVoxelN)
+		s.nTotal = uint64(s.Nx) * uint64(s.Ny) * uint64(s.Nz)
+		s.frameBytes = 0
+		for c := uint32(0); c < s.nColumns; c++ {
+			s.frameBytes += s.nTotal * uint64(sfaDtypeSize[s.columns[c].dtype])
+		}
+		fmt.Printf("  cell-native (FMSH+FCEL) — rendering at %d^3 voxels\n", s.cellVoxelN)
+	}
+
 	// Pre-allocate reusable buffers
 	s.rawBuf = make([]byte, s.frameBytes)
 	s.colF32Bufs = make([][]float32, s.nColumns)
@@ -300,6 +351,492 @@ func (s *sfaFile) close() {
 		s.fp.Close()
 	}
 }
+
+// detectCellNative scans the JMPF index for any FMSH frame; returns true
+// if found. The file is then handled in cell-native mode.
+func (s *sfaFile) detectCellNative() bool {
+	// JTOP → first L1 entry → JMPF offset
+	s.fp.Seek(int64(s.firstJtopOff)+12+4+4+8, io.SeekStart)
+	var jmpfOff uint64
+	if err := binary.Read(s.fp, binary.LittleEndian, &jmpfOff); err != nil {
+		return false
+	}
+	s.fp.Seek(int64(jmpfOff)+12, io.SeekStart)
+	var jmpfMax, jmpfCur uint32
+	binary.Read(s.fp, binary.LittleEndian, &jmpfMax)
+	binary.Read(s.fp, binary.LittleEndian, &jmpfCur)
+	limit := jmpfMax
+	if jmpfCur > 0 && jmpfCur < limit {
+		limit = jmpfCur
+	}
+	for i := uint32(0); i < limit; i++ {
+		var ftime float64
+		var foffset, fcompSize uint64
+		var fcrc, ftype uint32
+		binary.Read(s.fp, binary.LittleEndian, &ftime)
+		binary.Read(s.fp, binary.LittleEndian, &foffset)
+		binary.Read(s.fp, binary.LittleEndian, &fcompSize)
+		binary.Read(s.fp, binary.LittleEndian, &fcrc)
+		binary.Read(s.fp, binary.LittleEndian, &ftype)
+		if foffset == 0 && fcompSize == 0 && i > 0 {
+			break
+		}
+		if ftype == sfaFrameMesh || ftype == sfaFrameCell ||
+			ftype == sfaFrameCellP || ftype == sfaFrameTemporalModel {
+			return true
+		}
+	}
+	return false
+}
+
+// readMeshPayload decompresses a FMSH chunk and parses cell positions/volumes.
+func (s *sfaFile) readMeshPayload(entry sfaL2Entry) error {
+	dataOff := entry.offset + 12 + 8 // skip chunk header (12) + time (8)
+	var compressed []byte
+	if s.mmapData != nil && dataOff+entry.compressedSize <= uint64(len(s.mmapData)) {
+		compressed = s.mmapData[dataOff : dataOff+entry.compressedSize]
+	} else {
+		if uint64(cap(s.compBuf)) < entry.compressedSize {
+			s.compBuf = make([]byte, entry.compressedSize)
+		}
+		compressed = s.compBuf[:entry.compressedSize]
+		s.fp.Seek(int64(dataOff), io.SeekStart)
+		if _, err := io.ReadFull(s.fp, compressed); err != nil {
+			return fmt.Errorf("read FMSH: %w", err)
+		}
+	}
+	// Decompress to a fresh buffer (mesh payload may be large; allocate once)
+	dec, err := zstdDecompress(compressed, uint64(len(compressed)*4))
+	if err != nil {
+		return fmt.Errorf("decompress FMSH: %w", err)
+	}
+	if len(dec) < 28 {
+		return fmt.Errorf("FMSH payload too short")
+	}
+	magic := binary.LittleEndian.Uint32(dec[0:4])
+	if magic != sfaChunkFMSH {
+		return fmt.Errorf("FMSH bad magic 0x%X", magic)
+	}
+	// version dec[4:8]
+	nCells := binary.LittleEndian.Uint32(dec[8:12])
+	nFaces := binary.LittleEndian.Uint32(dec[12:16])
+	flags := dec[16]
+	// reserved dec[17:20]
+	L := math.Float64frombits(binary.LittleEndian.Uint64(dec[20:28]))
+	posF64 := (flags & 0x04) != 0
+	posSize := 4
+	if posF64 {
+		posSize = 8
+	}
+	off := 28
+	posBytes := int(nCells) * 3 * posSize
+	volBytes := int(nCells) * posSize
+	if len(dec) < off+posBytes+volBytes {
+		return fmt.Errorf("FMSH payload truncated (cells=%d)", nCells)
+	}
+	pos := make([]float64, 3*int(nCells))
+	vol := make([]float64, int(nCells))
+	if posF64 {
+		for i := 0; i < 3*int(nCells); i++ {
+			pos[i] = math.Float64frombits(binary.LittleEndian.Uint64(dec[off : off+8]))
+			off += 8
+		}
+		for i := 0; i < int(nCells); i++ {
+			vol[i] = math.Float64frombits(binary.LittleEndian.Uint64(dec[off : off+8]))
+			off += 8
+		}
+	} else {
+		for i := 0; i < 3*int(nCells); i++ {
+			pos[i] = float64(math.Float32frombits(binary.LittleEndian.Uint32(dec[off : off+4])))
+			off += 4
+		}
+		for i := 0; i < int(nCells); i++ {
+			vol[i] = float64(math.Float32frombits(binary.LittleEndian.Uint32(dec[off : off+4])))
+			off += 4
+		}
+	}
+	_ = nFaces // we ignore faces/CSR for visualization
+
+	s.meshNCells = nCells
+	s.meshL = L
+	s.meshCellPos = pos
+	s.meshCellVol = vol
+	// Reset state buffer; size computed from the file's actual column count.
+	N := int(nCells) * int(s.nColumns)
+	if cap(s.cellState) < N {
+		s.cellState = make([]float32, N)
+	} else {
+		s.cellState = s.cellState[:N]
+		for i := range s.cellState {
+			s.cellState[i] = 0
+		}
+	}
+	s.cellTValid = false
+	s.cellTMean = nil
+	s.cellTAmp = nil
+	s.cellTPhase = nil
+	return nil
+}
+
+// resampleCellStateToRawBuf takes the current per-cell state buffer
+// (column-major, cellState[col*nCells + cell]) and writes the voxel-grid
+// equivalent into rawBuf via the precomputed voxelToCell map.
+func (s *sfaFile) resampleCellStateToRawBuf() {
+	N3 := int(s.nTotal)
+	nCells := int(s.meshNCells)
+	for col := 0; col < int(s.nColumns); col++ {
+		colSrc := s.cellState[col*nCells : (col+1)*nCells]
+		dstOff := col * N3 * 4
+		for v := 0; v < N3; v++ {
+			c := s.voxelToCell[v]
+			var val float32
+			if c >= 0 {
+				val = colSrc[c]
+			}
+			binary.LittleEndian.PutUint32(s.rawBuf[dstOff+v*4:dstOff+v*4+4], math.Float32bits(val))
+		}
+	}
+}
+
+// buildVoxelToCell precomputes the nearest-cell map for the rendering grid.
+// Uses a uniform spatial bin index, identical pattern to foam_to_voxel.
+func (s *sfaFile) buildVoxelToCell() {
+	N := int(s.cellVoxelN)
+	N3 := int64(N) * int64(N) * int64(N)
+	if int64(len(s.voxelToCell)) != N3 {
+		s.voxelToCell = make([]int32, N3)
+	}
+	nCells := int(s.meshNCells)
+	L := s.meshL
+	boxVol := math.Pow(2.0*L, 3.0)
+	cellVolAvg := boxVol / float64(nCells)
+	binSize := math.Pow(cellVolAvg, 1.0/3.0) * 1.5
+	Ng := int(math.Ceil(2.0 * L / binSize))
+	binSize = 2.0 * L / float64(Ng)
+	Ng3 := Ng * Ng * Ng
+
+	binCount := make([]int32, Ng3)
+	binOff := make([]int32, Ng3)
+	cellsByBin := make([]int32, nCells)
+	for i := 0; i < nCells; i++ {
+		bx := int((s.meshCellPos[3*i+0] + L) / binSize)
+		by := int((s.meshCellPos[3*i+1] + L) / binSize)
+		bz := int((s.meshCellPos[3*i+2] + L) / binSize)
+		if bx < 0 { bx = 0 }; if bx >= Ng { bx = Ng - 1 }
+		if by < 0 { by = 0 }; if by >= Ng { by = Ng - 1 }
+		if bz < 0 { bz = 0 }; if bz >= Ng { bz = Ng - 1 }
+		binCount[bx*Ng*Ng+by*Ng+bz]++
+	}
+	total := int32(0)
+	for b := 0; b < Ng3; b++ {
+		binOff[b] = total
+		total += binCount[b]
+	}
+	cursor := make([]int32, Ng3)
+	copy(cursor, binOff)
+	for i := 0; i < nCells; i++ {
+		bx := int((s.meshCellPos[3*i+0] + L) / binSize)
+		by := int((s.meshCellPos[3*i+1] + L) / binSize)
+		bz := int((s.meshCellPos[3*i+2] + L) / binSize)
+		if bx < 0 { bx = 0 }; if bx >= Ng { bx = Ng - 1 }
+		if by < 0 { by = 0 }; if by >= Ng { by = Ng - 1 }
+		if bz < 0 { bz = 0 }; if bz >= Ng { bz = Ng - 1 }
+		cellsByBin[cursor[bx*Ng*Ng+by*Ng+bz]] = int32(i)
+		cursor[bx*Ng*Ng+by*Ng+bz]++
+	}
+
+	dx := 2.0 * L / float64(N-1)
+	S := 2.0 * L
+	wrap := func(v int) int {
+		v = v % Ng
+		if v < 0 {
+			v += Ng
+		}
+		return v
+	}
+
+	// Parallelise over i (outer voxel index) with goroutines
+	work := make(chan int, 8)
+	done := make(chan struct{})
+	worker := func() {
+		for i := range work {
+			x := -L + float64(i)*dx
+			bx0 := wrap(int((x + L) / binSize))
+			for j := 0; j < N; j++ {
+				y := -L + float64(j)*dx
+				by0 := wrap(int((y + L) / binSize))
+				for k := 0; k < N; k++ {
+					z := -L + float64(k)*dx
+					bz0 := wrap(int((z + L) / binSize))
+					best := int32(-1)
+					bestD2 := 1e30
+					for di := -1; di <= 1; di++ {
+						gi := wrap(bx0 + di)
+						for dj := -1; dj <= 1; dj++ {
+							gj := wrap(by0 + dj)
+							for dk := -1; dk <= 1; dk++ {
+								gk := wrap(bz0 + dk)
+								b := gi*Ng*Ng + gj*Ng + gk
+								n := int(binCount[b])
+								o := int(binOff[b])
+								for q := 0; q < n; q++ {
+									c := int(cellsByBin[o+q])
+									cdx := s.meshCellPos[3*c+0] - x
+									cdy := s.meshCellPos[3*c+1] - y
+									cdz := s.meshCellPos[3*c+2] - z
+									if cdx > 0.5*S { cdx -= S }
+									if cdx < -0.5*S { cdx += S }
+									if cdy > 0.5*S { cdy -= S }
+									if cdy < -0.5*S { cdy += S }
+									if cdz > 0.5*S { cdz -= S }
+									if cdz < -0.5*S { cdz += S }
+									d2 := cdx*cdx + cdy*cdy + cdz*cdz
+									if d2 < bestD2 {
+										bestD2 = d2
+										best = int32(c)
+									}
+								}
+							}
+						}
+					}
+					s.voxelToCell[int64(i)*int64(N)*int64(N)+int64(j)*int64(N)+int64(k)] = best
+				}
+			}
+		}
+		done <- struct{}{}
+	}
+	const nWorkers = 8
+	for w := 0; w < nWorkers; w++ {
+		go worker()
+	}
+	for i := 0; i < N; i++ {
+		work <- i
+	}
+	close(work)
+	for w := 0; w < nWorkers; w++ {
+		<-done
+	}
+}
+
+// readCellPayload decompresses an FCEL chunk, copies cell values into the
+// per-cell state buffer, and (for v2 with bit2 flag) loads the temporal
+// model. Then resamples state to rawBuf for the rendering pipeline.
+func (s *sfaFile) readCellPayload(entry sfaL2Entry) error {
+	dataOff := entry.offset + 12 + 8
+	var compressed []byte
+	if s.mmapData != nil && dataOff+entry.compressedSize <= uint64(len(s.mmapData)) {
+		compressed = s.mmapData[dataOff : dataOff+entry.compressedSize]
+	} else {
+		if uint64(cap(s.compBuf)) < entry.compressedSize {
+			s.compBuf = make([]byte, entry.compressedSize)
+		}
+		compressed = s.compBuf[:entry.compressedSize]
+		s.fp.Seek(int64(dataOff), io.SeekStart)
+		if _, err := io.ReadFull(s.fp, compressed); err != nil {
+			return fmt.Errorf("read FCEL: %w", err)
+		}
+	}
+	dec, err := zstdDecompress(compressed, uint64(len(compressed)*4))
+	if err != nil {
+		return fmt.Errorf("decompress FCEL: %w", err)
+	}
+	if len(dec) < 20 {
+		return fmt.Errorf("FCEL payload too short")
+	}
+	magic := binary.LittleEndian.Uint32(dec[0:4])
+	if magic != sfaChunkFCEL {
+		return fmt.Errorf("FCEL bad magic")
+	}
+	version := binary.LittleEndian.Uint32(dec[4:8])
+	nCells := binary.LittleEndian.Uint32(dec[8:12])
+	nCols := binary.LittleEndian.Uint32(dec[12:16])
+	dtype := dec[16]
+	flags := dec[17]
+	if nCells != s.meshNCells {
+		return fmt.Errorf("FCEL N_cells=%d != mesh N_cells=%d", nCells, s.meshNCells)
+	}
+	es := sfaDtypeSize[dtype]
+	off := 20
+	colBytes := int(nCells) * es
+	if len(dec) < off+int(nCols)*colBytes {
+		return fmt.Errorf("FCEL payload truncated")
+	}
+
+	// Copy each column into cellState (column-major)
+	stateNeeded := int(s.nColumns) * int(nCells)
+	if cap(s.cellState) < stateNeeded {
+		s.cellState = make([]float32, stateNeeded)
+	} else {
+		s.cellState = s.cellState[:stateNeeded]
+	}
+	for col := uint32(0); col < nCols && col < s.nColumns; col++ {
+		colStart := off + int(col)*colBytes
+		dst := s.cellState[int(col)*int(nCells) : int(col+1)*int(nCells)]
+		for c := uint32(0); c < nCells; c++ {
+			switch dtype {
+			case sfaDtypeF32:
+				dst[c] = math.Float32frombits(binary.LittleEndian.Uint32(dec[colStart+int(c)*4 : colStart+int(c)*4+4]))
+			case sfaDtypeF64:
+				dst[c] = float32(math.Float64frombits(binary.LittleEndian.Uint64(dec[colStart+int(c)*8 : colStart+int(c)*8+8])))
+			case sfaDtypeF16:
+				dst[c] = f16ToF32(binary.LittleEndian.Uint16(dec[colStart+int(c)*2 : colStart+int(c)*2+2]))
+			}
+		}
+	}
+
+	// Optional v2: temporal model
+	if version >= 2 && (flags&0x04) != 0 {
+		modelOff := off + int(nCols)*colBytes
+		if modelOff+4 > len(dec) {
+			return fmt.Errorf("FCEL v2 missing model header")
+		}
+		s.cellTOmega = math.Float32frombits(binary.LittleEndian.Uint32(dec[modelOff : modelOff+4]))
+		modelOff += 4
+		mb := int(nCols) * int(nCells) * 4
+		if modelOff+3*mb > len(dec) {
+			return fmt.Errorf("FCEL v2 model truncated")
+		}
+		// Read mean / amp / phase
+		s.cellTMean = make([]float32, int(nCols)*int(nCells))
+		s.cellTAmp = make([]float32, int(nCols)*int(nCells))
+		s.cellTPhase = make([]float32, int(nCols)*int(nCells))
+		for i := 0; i < int(nCols)*int(nCells); i++ {
+			s.cellTMean[i] = math.Float32frombits(binary.LittleEndian.Uint32(dec[modelOff+i*4 : modelOff+i*4+4]))
+			s.cellTAmp[i] = math.Float32frombits(binary.LittleEndian.Uint32(dec[modelOff+mb+i*4 : modelOff+mb+i*4+4]))
+			s.cellTPhase[i] = math.Float32frombits(binary.LittleEndian.Uint32(dec[modelOff+2*mb+i*4 : modelOff+2*mb+i*4+4]))
+		}
+		s.cellTValid = true
+	}
+
+	if len(s.rawBuf) < int(s.nColumns)*int(s.nTotal)*4 {
+		s.rawBuf = make([]byte, int(s.nColumns)*int(s.nTotal)*4)
+	}
+	s.resampleCellStateToRawBuf()
+	return nil
+}
+
+// readTemporalModelPayload decompresses a FMTL chunk and stores the
+// per-cell Fourier model parameters. Subsequent FCEP frames use this
+// model for prediction.
+func (s *sfaFile) readTemporalModelPayload(entry sfaL2Entry) error {
+	dataOff := entry.offset + 12 + 8
+	var compressed []byte
+	if s.mmapData != nil && dataOff+entry.compressedSize <= uint64(len(s.mmapData)) {
+		compressed = s.mmapData[dataOff : dataOff+entry.compressedSize]
+	} else {
+		if uint64(cap(s.compBuf)) < entry.compressedSize {
+			s.compBuf = make([]byte, entry.compressedSize)
+		}
+		compressed = s.compBuf[:entry.compressedSize]
+		s.fp.Seek(int64(dataOff), io.SeekStart)
+		if _, err := io.ReadFull(s.fp, compressed); err != nil {
+			return fmt.Errorf("read FMTL: %w", err)
+		}
+	}
+	dec, err := zstdDecompress(compressed, uint64(len(compressed)*4))
+	if err != nil {
+		return fmt.Errorf("decompress FMTL: %w", err)
+	}
+	if len(dec) < 28 {
+		return fmt.Errorf("FMTL payload too short")
+	}
+	magic := binary.LittleEndian.Uint32(dec[0:4])
+	if magic != sfaChunkFMTL {
+		return fmt.Errorf("FMTL bad magic")
+	}
+	nCells := binary.LittleEndian.Uint32(dec[8:12])
+	nCols := binary.LittleEndian.Uint32(dec[12:16])
+	// flags dec[16], reserved dec[17:20]
+	s.cellTOmega = math.Float32frombits(binary.LittleEndian.Uint32(dec[20:24]))
+	// pad dec[24:28]
+	mb := int(nCols) * int(nCells) * 4
+	if 28+3*mb > len(dec) {
+		return fmt.Errorf("FMTL truncated")
+	}
+	s.cellTMean = make([]float32, int(nCols)*int(nCells))
+	s.cellTAmp = make([]float32, int(nCols)*int(nCells))
+	s.cellTPhase = make([]float32, int(nCols)*int(nCells))
+	for i := 0; i < int(nCols)*int(nCells); i++ {
+		s.cellTMean[i] = math.Float32frombits(binary.LittleEndian.Uint32(dec[28+i*4 : 28+i*4+4]))
+		s.cellTAmp[i] = math.Float32frombits(binary.LittleEndian.Uint32(dec[28+mb+i*4 : 28+mb+i*4+4]))
+		s.cellTPhase[i] = math.Float32frombits(binary.LittleEndian.Uint32(dec[28+2*mb+i*4 : 28+2*mb+i*4+4]))
+	}
+	s.cellTValid = true
+	return nil
+}
+
+// readCellPPayload decompresses an FCEP chunk: applies sparse delta on
+// top of model prediction at this frame's time t. Updates cellState
+// and rawBuf.
+func (s *sfaFile) readCellPPayload(entry sfaL2Entry) error {
+	if !s.cellTValid {
+		return fmt.Errorf("FCEP frame without valid temporal model")
+	}
+	dataOff := entry.offset + 12 + 8
+	var compressed []byte
+	if s.mmapData != nil && dataOff+entry.compressedSize <= uint64(len(s.mmapData)) {
+		compressed = s.mmapData[dataOff : dataOff+entry.compressedSize]
+	} else {
+		if uint64(cap(s.compBuf)) < entry.compressedSize {
+			s.compBuf = make([]byte, entry.compressedSize)
+		}
+		compressed = s.compBuf[:entry.compressedSize]
+		s.fp.Seek(int64(dataOff), io.SeekStart)
+		if _, err := io.ReadFull(s.fp, compressed); err != nil {
+			return fmt.Errorf("read FCEP: %w", err)
+		}
+	}
+	dec, err := zstdDecompress(compressed, uint64(len(compressed)*4))
+	if err != nil {
+		return fmt.Errorf("decompress FCEP: %w", err)
+	}
+	if len(dec) < 24 {
+		return fmt.Errorf("FCEP payload too short")
+	}
+	magic := binary.LittleEndian.Uint32(dec[0:4])
+	if magic != sfaChunkFCEP {
+		return fmt.Errorf("FCEP bad magic")
+	}
+	nCells := binary.LittleEndian.Uint32(dec[8:12])
+	nCols := binary.LittleEndian.Uint32(dec[12:16])
+	nChanged := binary.LittleEndian.Uint32(dec[16:20])
+	if nCells != s.meshNCells {
+		return fmt.Errorf("FCEP N_cells mismatch")
+	}
+	off := 24
+
+	// Reconstruct state from temporal model.
+	// Model storage (writer side) is CELL-major: t_mean[c*6 + col].
+	// State storage is COLUMN-major: cellState[col*N_cells + c].
+	t := float32(entry.time)
+	for c := 0; c < int(nCells); c++ {
+		mbase := c * int(nCols)        // model index base
+		for col := 0; col < int(nCols); col++ {
+			pred := s.cellTMean[mbase+col] +
+				s.cellTAmp[mbase+col]*float32(math.Cos(float64(s.cellTOmega*t+s.cellTPhase[mbase+col])))
+			s.cellState[col*int(nCells)+c] = pred
+		}
+	}
+	// Apply sparse deltas. Delta layout in payload: per cell record,
+	// n_columns floats column-major within that record.
+	idsOff := off
+	deltasOff := off + int(nChanged)*4
+	for i := uint32(0); i < nChanged; i++ {
+		c := binary.LittleEndian.Uint32(dec[idsOff+int(i)*4 : idsOff+int(i)*4+4])
+		for col := uint32(0); col < nCols; col++ {
+			d := math.Float32frombits(binary.LittleEndian.Uint32(
+				dec[deltasOff+int(i)*int(nCols)*4+int(col)*4 : deltasOff+int(i)*int(nCols)*4+int(col)*4+4]))
+			s.cellState[int(col)*int(nCells)+int(c)] += d
+		}
+	}
+
+	if len(s.rawBuf) < int(s.nColumns)*int(s.nTotal)*4 {
+		s.rawBuf = make([]byte, int(s.nColumns)*int(s.nTotal)*4)
+	}
+	s.resampleCellStateToRawBuf()
+	return nil
+}
+
 
 // findFrame locates a frame's L2 entry in the two-level index
 func (s *sfaFile) findFrame(frameIdx uint32) (*sfaL2Entry, error) {
@@ -381,7 +918,120 @@ func (s *sfaFile) readFrame(frameIdx uint32) (float64, error) {
 
 	// Vector frame: decompress FRVD payload, evaluate patches to voxels
 	if entry.frameType == sfaFrameVecI || entry.frameType == sfaFrameVecP {
-		return s.readVecFrame(*entry)
+		return s.readVecFrame(frameIdx, *entry)
+	}
+
+	// Mesh frame (FMSH): parse cell positions, build voxel-to-cell map.
+	// No voxel data is produced — caller should advance to the next frame
+	// (a subsequent FCEL).
+	if entry.frameType == sfaFrameMesh {
+		if err := s.readMeshPayload(*entry); err != nil {
+			return 0, err
+		}
+		s.buildVoxelToCell()
+		s.cellLoadedMesh = int32(frameIdx)
+		// Zero rawBuf so any consumer that reads voxels gets a clean slate.
+		for i := range s.rawBuf {
+			s.rawBuf[i] = 0
+		}
+		return entry.time, nil
+	}
+
+	// Standalone temporal-model frame (FMTL): just load the model.
+	if entry.frameType == sfaFrameTemporalModel {
+		if err := s.readTemporalModelPayload(*entry); err != nil {
+			return 0, err
+		}
+		return entry.time, nil
+	}
+
+	// Cell P-frame (FCEP): needs the most recent FMSH AND a valid
+	// temporal model (from either an FCEL v2 I-frame or an FMTL frame).
+	if entry.frameType == sfaFrameCellP {
+		if !s.cellTValid || s.cellLoadedMesh < 0 {
+			// Locate prior FMSH
+			meshIdx := int32(-1)
+			for back := int32(frameIdx) - 1; back >= 0; back-- {
+				e2, err := s.findFrame(uint32(back))
+				if err != nil {
+					continue
+				}
+				if e2.frameType == sfaFrameMesh && meshIdx < 0 {
+					if err := s.readMeshPayload(*e2); err == nil {
+						s.buildVoxelToCell()
+						s.cellLoadedMesh = back
+						meshIdx = back
+						break
+					}
+				}
+			}
+			if meshIdx < 0 {
+				return 0, fmt.Errorf("FCEP %d: no FMSH found", frameIdx)
+			}
+			// Locate most recent model source (FMTL or FCEL v2)
+			// at or before frameIdx, plus the most recent FCEL (data).
+			modelLoaded := false
+			cellLoaded := false
+			for back := int32(frameIdx) - 1; back >= meshIdx; back-- {
+				e2, err := s.findFrame(uint32(back))
+				if err != nil {
+					continue
+				}
+				if !modelLoaded && e2.frameType == sfaFrameTemporalModel {
+					if err := s.readTemporalModelPayload(*e2); err == nil {
+						modelLoaded = true
+					}
+				}
+				if !cellLoaded && e2.frameType == sfaFrameCell {
+					if err := s.readCellPayload(*e2); err == nil {
+						cellLoaded = true
+						if s.cellTValid {
+							modelLoaded = true
+						}
+					}
+				}
+				if modelLoaded && cellLoaded {
+					break
+				}
+			}
+			if !modelLoaded {
+				return 0, fmt.Errorf("FCEP %d: no temporal model found (FMTL or FCEL v2)", frameIdx)
+			}
+		}
+		if err := s.readCellPPayload(*entry); err != nil {
+			return 0, err
+		}
+		return entry.time, nil
+	}
+
+	// Cell-data frame (FCEL): resample current mesh's cell values to the
+	// voxel rendering grid.
+	if entry.frameType == sfaFrameCell {
+		if s.cellLoadedMesh < 0 || s.voxelToCell == nil {
+			// Find the most-recent FMSH frame at or before frameIdx and load it.
+			loaded := false
+			for back := int32(frameIdx); back >= 0; back-- {
+				e2, err := s.findFrame(uint32(back))
+				if err != nil {
+					continue
+				}
+				if e2.frameType == sfaFrameMesh {
+					if err := s.readMeshPayload(*e2); err == nil {
+						s.buildVoxelToCell()
+						s.cellLoadedMesh = back
+						loaded = true
+					}
+					break
+				}
+			}
+			if !loaded {
+				return 0, fmt.Errorf("FCEL frame %d with no preceding mesh", frameIdx)
+			}
+		}
+		if err := s.readCellPayload(*entry); err != nil {
+			return 0, err
+		}
+		return entry.time, nil
 	}
 
 	// Get compressed data: mmap (zero-copy) or fallback to read
@@ -447,7 +1097,34 @@ func (s *sfaFile) readFrame(frameIdx uint32) (float64, error) {
 
 // readVecFrame reads an FRVD vector frame (I or P), maintains patch state,
 // evaluates patches to voxels, and fills rawBuf for the rendering pipeline.
-func (s *sfaFile) readVecFrame(entry sfaL2Entry) (float64, error) {
+func (s *sfaFile) readVecFrame(frameIdx uint32, entry sfaL2Entry) (float64, error) {
+	// For P-frames: ensure the correct temporal model is loaded.
+	// Find the preceding I-frame and load its model if needed.
+	if entry.frameType == sfaFrameVecP {
+		// Search backward for the I-frame that covers this P-frame
+		needIFrame := int32(-1)
+		for search := int(frameIdx) - 1; search >= 0; search-- {
+			e, err := s.findFrame(uint32(search))
+			if err != nil {
+				continue
+			}
+			if e.frameType == sfaFrameVecI {
+				needIFrame = int32(search)
+				break
+			}
+			if e.frameType == sfaFrameVoxel {
+				break // crossed a voxel frame boundary — no I-frame before us
+			}
+		}
+		if needIFrame >= 0 && needIFrame != s.vecTempIFrameIdx {
+			// Load the correct I-frame to get its temporal model
+			iEntry, err := s.findFrame(uint32(needIFrame))
+			if err == nil && iEntry.frameType == sfaFrameVecI {
+				s.readVecFrame(uint32(needIFrame), *iEntry)
+				// Now the temporal model is loaded from the correct I-frame
+			}
+		}
+	}
 	// Read and decompress payload
 	// FRVD layout: chunk_header(12) + time(8) + compressed_data
 	dataOff := entry.offset + 12 + 8 // skip chunk header + embedded time
@@ -524,8 +1201,10 @@ func (s *sfaFile) readVecFrame(entry sfaL2Entry) (float64, error) {
 				s.vecTempPhase[i] = math.Float32frombits(binary.LittleEndian.Uint32(payload[modelOff+i*4:]))
 			}
 			s.vecTempValid = true
+			s.vecTempIFrameIdx = int32(frameIdx)
 		} else {
 			s.vecTempValid = false
+			s.vecTempIFrameIdx = int32(frameIdx)
 		}
 
 	} else if entry.frameType == sfaFrameVecP {
@@ -624,21 +1303,24 @@ func (s *sfaFile) vecPatchesToRawBuf() {
 			if gi < 0 || gi >= nx { continue }
 			var tx float64
 			if bs > 1 { tx = float64(di) / float64(bs-1) }
-			txa := [4]float64{1, tx, tx * tx, tx * tx * tx}
+			sx := 2*tx - 1
+			txa := [4]float64{1, sx, 2*sx*sx - 1, 4*sx*sx*sx - 3*sx}
 
 			for dj := 0; dj < bs; dj++ {
 				gj := oy + dj
 				if gj < 0 || gj >= ny { continue }
 				var ty float64
 				if bs > 1 { ty = float64(dj) / float64(bs-1) }
-				tya := [4]float64{1, ty, ty * ty, ty * ty * ty}
+				sy := 2*ty - 1
+				tya := [4]float64{1, sy, 2*sy*sy - 1, 4*sy*sy*sy - 3*sy}
 
 				for dk := 0; dk < bs; dk++ {
 					gk := oz + dk
 					if gk < 0 || gk >= nz { continue }
 					var tz float64
 					if bs > 1 { tz = float64(dk) / float64(bs-1) }
-					tza := [4]float64{1, tz, tz * tz, tz * tz * tz}
+					sz := 2*tz - 1
+					tza := [4]float64{1, sz, 2*sz*sz - 1, 4*sz*sz*sz - 3*sz}
 
 					idx := int64(gi)*int64(ny)*int64(nz) + int64(gj)*int64(nz) + int64(gk)
 

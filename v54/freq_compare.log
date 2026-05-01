@@ -1,0 +1,93 @@
+
+===== DISSIPATIVE (baseline) =====
+  window samples : 15000  T_window = 300.0
+  <|v|²> window  : 7.723e-04
+  dominant frequency population:
+    median : 0.0233   omega=0.147
+    mean   : 0.0348   std=0.0355
+    range  : [0.0033, 0.1967]
+  histogram (bin width = 0.0167):
+    f=[0.000,0.017) n=  79 ##################################################
+    f=[0.017,0.033) n=  40 #########################
+    f=[0.033,0.050) n=  28 #################
+    f=[0.050,0.067) n=  22 #############
+    f=[0.067,0.083) n=  12 #######
+    f=[0.083,0.100) n=   7 ####
+    f=[0.100,0.117) n=   1 
+    f=[0.117,0.133) n=   5 ###
+    f=[0.133,0.150) n=   4 ##
+    f=[0.167,0.183) n=   1 
+    f=[0.183,0.200) n=   1 
+  Pearson r(nn,       f_dom) = +0.1681
+  Pearson r(sqrt(nn), f_dom) = +0.1668
+  stratified by mean neighbor count:
+    nn=[12,18):  n=  8  median_f=0.0050  std_f=0.0184
+    nn=[18,24):  n= 44  median_f=0.0267  std_f=0.0217
+    nn=[24,32):  n=135  median_f=0.0233  std_f=0.0386
+  frequency coherence: median |Δf| vs pair distance
+    dist=[ 0.0, 1.2):  n=    21  median_|Δf|=0.0300  mean=0.0416
+    dist=[ 1.2, 2.4):  n=   143  median_|Δf|=0.0267  mean=0.0363
+    dist=[ 2.4, 4.0):  n=   688  median_|Δf|=0.0300  mean=0.0389
+    dist=[ 4.0, 6.0):  n=  1770  median_|Δf|=0.0267  mean=0.0358
+    dist=[ 6.0, 9.0):  n=  4372  median_|Δf|=0.0267  mean=0.0371
+    dist=[ 9.0,25.0):  n= 12906  median_|Δf|=0.0233  mean=0.0354
+
+  Ensemble PSD (log power):
+  log10 power, max=2.19, min=-1.13
+  12 | #                                                           
+  11 | #                                                           
+  10 | ####                                                        
+   9 | #######                                                     
+   8 | ########                                                    
+   7 | #########                                                   
+   6 | ##########                                                  
+   5 | ###########                                                 
+   4 | ############                                                
+   3 | #############                                               
+   2 | ###############                                             
+   1 | ################# #                                         
+     +------------------------------------------------------------
+       0                           f=1.00                          2.00
+
+===== CONSERVATIVE (new) =====
+  window samples : 15000  T_window = 300.0
+  <|v|²> window  : 3.275e-01
+  dominant frequency population:
+    median : 0.0067   omega=0.042
+    mean   : 0.0085   std=0.0062
+    range  : [0.0033, 0.0333]
+  histogram (bin width = 0.0167):
+    f=[0.000,0.017) n= 177 ##################################################
+    f=[0.017,0.033) n=  21 #####
+    f=[0.033,0.050) n=   2 
+  Pearson r(nn,       f_dom) = +0.2820
+  Pearson r(sqrt(nn), f_dom) = +0.2819
+  stratified by mean neighbor count:
+    nn=[12,18):  n=200  median_f=0.0067  std_f=0.0062
+  frequency coherence: median |Δf| vs pair distance
+    dist=[ 0.0, 1.2):  n=   801  median_|Δf|=0.0033  mean=0.0058
+    dist=[ 1.2, 2.4):  n=  3946  median_|Δf|=0.0033  mean=0.0057
+    dist=[ 2.4, 4.0):  n=  7562  median_|Δf|=0.0033  mean=0.0059
+    dist=[ 4.0, 6.0):  n=  5890  median_|Δf|=0.0033  mean=0.0061
+    dist=[ 6.0, 9.0):  n=  1660  median_|Δf|=0.0033  mean=0.0065
+    dist=[ 9.0,25.0):  n=    41  median_|Δf|=0.0067  mean=0.0066
+
+  Ensemble PSD (log power):
+  log10 power, max=5.40, min=0.03
+  12 | #                                                           
+  11 | #                                                           
+  10 | ##                                                          
+   9 | ###                                                         
+   8 | ####                                                        
+   7 | ######                                                      
+   6 | ###########                                                 
+   5 | ################                                            
+   4 | #######################                                     
+   3 | ###############################                             
+   2 | #######################################                     
+   1 | ################################################            
+     +------------------------------------------------------------
+       0                           f=1.00                          2.00
+
+Wrote ./psd_comparison.tsv
+Wrote freq_compare.png

@@ -1,0 +1,1085 @@
+/* self_wrap_analysis.mac — Does the Cosserat system admit zero-radiation solitons?
+ *
+ * Investigates whether phi and theta can curl completely into each other
+ * so that energy circulates internally with no outward radiation.
+ *
+ * Equations (V50/C4 static Cosserat equilibrium, d^2/dt^2 = 0):
+ *   Lap(phi_a) - m^2 phi_a - V'(P) dP/dphi_a + eta curl(theta)_a = 0
+ *   Lap(theta_a) + eta curl(phi)_a = 0     (m_theta = 0)
+ *
+ *   V(P) = (mu/2) P^2 / (1 + kappa P^2)
+ *   P = phi_0 phi_1 phi_2
+ *   mu = -41.345, kappa = 50, m^2 = 2.25, eta = 0.5
+ *
+ * Parameters (standard SCP):
+ */
+
+kill(all)$
+ratprint: false$
+numer: false$
+
+mu_val   : -41.345$
+kappa_val: 50$
+m2_val   : 2.25$
+eta_val  : 0.5$
+
+print("================================================================")$
+print("  SELF-WRAPPING ANALYSIS: Can phi-theta curl form")$
+print("  a perfectly self-contained soliton?")$
+print("================================================================")$
+print("")$
+
+
+/* ================================================================
+   ANALYSIS 1: Self-wrapping condition in Fourier space
+
+   For a plane-wave mode phi(x) = phi_hat exp(ik.x):
+     curl(phi) = ik x phi_hat
+     Lap^{-1} curl(phi) = -1/k^2 (ik x phi_hat)
+     curl(Lap^{-1} curl(phi)) = ik x (-1/k^2)(ik x phi_hat)
+       = -1/k^2 (ik) x (ik x phi_hat)
+       = -1/k^2 [k(k.phi_hat) - k^2 phi_hat]   (BAC-CAB)
+       = phi_hat - k_hat(k_hat.phi_hat)
+       = phi_hat_perp  (transverse projection)
+
+   The theta equation (static): Lap(theta) = -eta curl(phi)
+     => theta = -eta Lap^{-1} curl(phi) = eta/(k^2) (ik x phi_hat)
+
+   Back-reaction: eta curl(theta) = eta curl(eta/(k^2) ik x phi_hat)
+     = eta^2/k^2 ik x (ik x phi_hat)
+     = -eta^2 [phi_hat - k_hat(k_hat.phi_hat)]
+     = -eta^2 phi_hat_perp
+
+   So the self-wrapping adds -eta^2 phi_perp to the phi equation.
+   ================================================================ */
+
+print("================================================================")$
+print("  ANALYSIS 1: Fourier-space self-wrapping")$
+print("================================================================")$
+print("")$
+
+/* Effective phi equation for a transverse mode (k.phi_hat = 0):
+ * -k^2 phi - m^2 phi - V'(P) ... - eta^2 phi = 0
+ * => (-k^2 - m^2 - eta^2) phi = V'(P) contribution
+ *
+ * For the linear part (V' = 0 in vacuum):
+ * -k^2 - m^2 - eta^2 = 0  =>  k^2 = -(m^2 + eta^2)
+ */
+
+m2_eff_trans : m2_val + eta_val^2$
+print("Transverse mode: effective mass^2 = m^2 + eta^2 =",
+      m2_val, "+", eta_val^2, "=", float(m2_eff_trans))$
+print("  k^2 = -", float(m2_eff_trans), " => k is IMAGINARY (evanescent)")$
+print("")$
+
+/* For a longitudinal mode (k || phi_hat): phi_perp = 0 so no self-wrapping */
+print("Longitudinal mode: k || phi_hat => phi_perp = 0")$
+print("  No self-wrapping contribution.  k^2 = -m^2 =", float(-m2_val))$
+print("  Also evanescent.")$
+print("")$
+
+/* Interpretation */
+print("INTERPRETATION:")$
+print("  The self-wrapping term -eta^2 phi_perp INCREASES the effective mass")$
+print("  for transverse modes by eta^2 =", float(eta_val^2))$
+print("  This is 11% above the bare mass m^2 =", float(m2_val))$
+print("")$
+print("  A purely transverse plane wave cannot propagate (k^2 < 0).")$
+print("  This means transverse phi modes are MORE confined than longitudinal.")$
+print("  Self-wrapping is STABILIZING: it makes transverse modes heavier,")$
+print("  hence harder to radiate away.")$
+print("")$
+print("  BUT: this does not by itself create a soliton.")$
+print("  The mass term makes ALL linear modes evanescent.")$
+print("  Soliton formation requires the NONLINEAR V(P) binding.")$
+print("")$
+
+/* Dispersion relation including V'(P) linearized about background */
+/* P_bg = A_bg^3 * C_P where C_P = cos(d0)cos(d1)cos(d2) */
+A_bg : 0.1$
+d0 : 0.0$ d1 : 3.0005$ d2 : 4.4325$
+C_P : float(cos(d0)*cos(d1)*cos(d2))$
+P_bg : float(A_bg^3 * C_P)$
+print("Background: A_bg =", A_bg, ", C_P =", C_P, ", P_bg =", P_bg)$
+
+/* V'(P) = mu P / (1+kappa P^2)^2 (derivative of (mu/2)P^2/(1+kappa P^2)) */
+Vprime_bg : float(mu_val * P_bg / (1 + kappa_val*P_bg^2)^2)$
+print("V'(P_bg) =", Vprime_bg)$
+print("V'(P) is negligible at background (|P_bg| ~ 10^{-4}).")$
+print("")$
+
+/* Critical result: radiation threshold */
+omega_trans : float(sqrt(m2_eff_trans))$
+omega_long : float(sqrt(m2_val))$
+print("Radiation thresholds (minimum frequency to propagate):")$
+print("  Transverse: omega_min = sqrt(m^2+eta^2) =", omega_trans)$
+print("  Longitudinal: omega_min = sqrt(m^2)     =", omega_long)$
+print("")$
+print("  A breathing mode with frequency omega < ", omega_long,
+      " CANNOT radiate")$
+print("  at all.  Between", omega_long, "and", omega_trans,
+      "only longitudinal")$
+print("  radiation is possible (transverse still trapped).")$
+print("")$
+print("  RESULT 1: Self-wrapping opens a TRANSVERSE GAP of",
+      float(omega_trans - omega_long))$
+print("  above the longitudinal threshold.  This is a partial shield")$
+print("  but not a complete one -- longitudinal radiation can still escape.")$
+print("")$
+
+
+/* ================================================================
+   ANALYSIS 2: Radial self-wrapping on a hedgehog
+
+   Consider phi_a = f(r) x_hat_a (radial hedgehog, like a monopole).
+   curl(f(r) r_hat)_i = eps_{ijk} d_j(f(r) x_k/r)
+     = eps_{ijk} [f'(r) x_j x_k / r^2 + f(r)(delta_{jk}/r - x_j x_k/r^3)]
+     = f(r)/r eps_{ijk} delta_{jk} - ... hmm, this needs care.
+
+   Actually for a pure radial field:
+   curl(f(r) r_hat) = 0   (curl of a gradient-like field vanishes)
+
+   This is the fundamental obstruction: a spherically symmetric scalar-valued
+   radial field has ZERO curl.  Let's verify and then consider alternatives.
+   ================================================================ */
+
+print("================================================================")$
+print("  ANALYSIS 2: Radial self-wrapping")$
+print("================================================================")$
+print("")$
+
+print("Consider phi_a(x) = f(r) * x_a / r  (hedgehog)")$
+print("")$
+
+/* Explicit computation: phi_a = f(r) n_a where n = x/r */
+/* d_j phi_a = f'(r) n_j n_a + f(r)/r (delta_{ja} - n_j n_a) */
+/* curl(phi)_i = eps_{ijk} d_j phi_k
+ *            = eps_{ijk} [f' n_j n_k + (f/r)(delta_{jk} - n_j n_k)]
+ *            = f' eps_{ijk} n_j n_k + (f/r)[eps_{ijk} delta_{jk} - eps_{ijk} n_j n_k]
+ *            = f' * 0  +  (f/r)[0 - 0]
+ *            = 0
+ * because eps_{ijk} n_j n_k = 0 (symmetric in jk contracted with antisymmetric)
+ * and eps_{ijk} delta_{jk} = 0 (trace of antisymmetric tensor)
+ */
+
+print("ANALYTIC PROOF: curl(f(r) r_hat) = 0")$
+print("")$
+print("  d_j phi_a = f'(r) n_j n_a + (f/r)(delta_{ja} - n_j n_a)")$
+print("  curl(phi)_i = eps_{ijk} d_j phi_k")$
+print("    = f'(r) eps_{ijk} n_j n_k  +  (f/r)(eps_{ijk} delta_{jk} - eps_{ijk} n_j n_k)")$
+print("    = 0 + 0 - 0 = 0")$
+print("")$
+print("  Reason: eps_{ijk} S_{jk} = 0 for any symmetric S_{jk}.")$
+print("  Both n_j n_k and delta_{jk} are symmetric in (j,k).")$
+print("")$
+
+print("CONSEQUENCE: A purely radial hedgehog phi generates NO curl.")$
+print("  Therefore NO theta, and NO self-wrapping.")$
+print("  A self-wrapping soliton MUST have non-radial structure")$
+print("  (angular dependence, multi-component, or topological winding).")$
+print("")$
+
+/* What DOES have non-zero curl? A toroidal or poloidal field. */
+print("Fields with non-zero curl (candidates for self-wrapping):")$
+print("  1. Toroidal: phi = g(r) z_hat x r_hat  (curl in r-z plane)")$
+print("  2. Poloidal: phi = curl(h(r) r_hat)     (angular winding)")$
+print("  3. Beltrami: curl(phi) = lambda phi      (eigen-curl field)")$
+print("  4. SCP braid: phi_a = A(r)cos(d_a + chi_a psi(r))  (phase winding)")$
+print("")$
+print("  The SCP braid (option 4) has curl from the phase gradient.")$
+print("  Let's compute it explicitly.")$
+print("")$
+
+/* SCP braid curl */
+/* phi_a(r) = A(r) cos(d_a + chi_a psi(r)) */
+/* This is spherically symmetric in r but has 3 different field components. */
+/* phi_a'(r) = A' cos_a - A chi_a psi' sin_a  where cos_a = cos(d_a + chi_a psi) */
+/* As shown in theta_equilibrium.mac:
+ * curl(phi)_i = eps_{ijk} n_j phi_k'(r)   at point (r, n_hat)
+ * |curl(phi)|^2 = |phi'|^2 - (n.phi')^2  (transverse part of phi')
+ */
+
+print("SCP braid curl (from theta_equilibrium.mac):")$
+print("  phi_a(r) = A(r) cos(delta_a + chi_a psi(r))")$
+print("  curl(phi)_i = eps_{ijk} n_j phi_k'")$
+print("  |curl|^2 = |phi'|^2 - (n_hat . phi')^2")$
+print("  = (transverse component of phi' w.r.t. radius)")$
+print("")$
+print("  The curl is nonzero whenever phi' has components")$
+print("  not aligned with the radius -- i.e., whenever the 3")$
+print("  field derivatives phi_0', phi_1', phi_2' are not")$
+print("  proportional to x_0, x_1, x_2.")$
+print("  With different phase offsets d_a, this is generically true.")$
+print("")$
+
+/* Back-reaction for the braid */
+/* theta = -eta Lap^{-1} curl(phi) from static theta equation */
+/* curl(theta) contributes to phi force */
+/* The self-wrapping contribution: eta curl(theta) = -eta^2 curl(Lap^{-1}(curl(phi))) */
+/* In the angular-averaged approximation: */
+/* S = (2/3)|phi'|^2 */
+/* theta_rms = G * sqrt(S/3) where G = (alpha+eta)/(2*alpha + beta*S) */
+/* With alpha=0.1, eta=0.5, beta=0.5 (V50/C3 values) */
+
+/* But for the pure V44 equations (no Cosserat strain), theta eq is simpler:
+ * Lap(theta) = -eta curl(phi)
+ * theta = eta G_0(r) where G_0 = Green's function solution
+ */
+
+print("For the V44 equation set (no Cosserat strain alpha, beta terms):")$
+print("  Lap(theta_a) + eta curl(phi)_a = 0")$
+print("  theta = -eta Lap^{-1}(curl phi)")$
+print("")$
+print("  Self-wrapping: eta curl(theta) = -eta^2 curl(Lap^{-1} curl phi)")$
+print("  For mode k: = -eta^2 (phi - k_hat(k_hat.phi)/k^2)... no,")$
+print("  = -eta^2 phi_perp  (as derived in Analysis 1)")$
+print("")$
+print("  For the SCP braid: phi_perp is the part of phi' orthogonal to r_hat.")$
+print("  Since phi_a = A cos(d_a + chi_a psi), the radial derivative")$
+print("  phi_a' generally has components in all 3 directions.")$
+print("  The transverse part (perp to r_hat) drives the self-wrapping.")$
+print("")$
+
+/* Compute the fractional transverse content for the braid at specific r */
+print("Transverse fraction |phi'_perp|^2/|phi'|^2 along the z-axis (n=z_hat):")$
+for r_test in [0.5, 1.0, 2.0, 3.0, 5.0] do block(
+  [psi_test, A_test, phip, dp2_sum, nphip, trans_frac],
+  /* Gaussian profiles as in theta_equilibrium.mac */
+  psi_test : 3.665 * exp(-r_test^2/18),
+  A_test : A_bg + 0.1*exp(-r_test^2/18),
+  /* phi_a' = A' cos_a - A chi_a psi' sin_a  where chi=[1,1,-1] */
+  /* A' = -0.1 * r * exp(-r^2/18) * 2/(2*9) = -0.1*r/9*exp(...) */
+  /* psi' = -3.665*r/9*exp(-r^2/18) */
+  Ap : float(-0.1 * r_test/9 * exp(-r_test^2/18)),
+  psip: float(-3.665 * r_test/9 * exp(-r_test^2/18)),
+  chi : [1, 1, -1],
+  dp2_sum : 0,
+  nphip : 0,
+  for aa : 1 thru 3 do block([da, ca, cosa, sina, dpa],
+    da : [d0, d1, d2][aa],
+    ca : chi[aa],
+    cosa : float(cos(da + ca*psi_test)),
+    sina : float(sin(da + ca*psi_test)),
+    dpa : float(Ap*cosa - A_test*ca*psip*sina),
+    dp2_sum : dp2_sum + dpa^2,
+    /* n_hat = z_hat = (0,0,1), so n.phi' = phi_2' */
+    if aa = 3 then nphip : dpa
+  ),
+  trans_frac : if dp2_sum > 0 then float(1 - nphip^2/dp2_sum) else 0,
+  print("  r =", r_test, ": |phi'|^2 =", float(dp2_sum),
+        ", |phi'_perp|^2/|phi'|^2 =", trans_frac)
+)$
+print("")$
+
+print("RESULT 2: The SCP braid has 50-70% transverse content.")$
+print("  Self-wrapping acts on this fraction, reinforcing the")$
+print("  non-radial structure.  The back-reaction is ATTRACTIVE")$
+print("  (makes m_eff larger, tighter confinement).")$
+print("")$
+
+
+/* ================================================================
+   ANALYSIS 3: Beltrami fields and topological self-trapping
+
+   A Beltrami field satisfies: curl(F) = lambda F
+   If phi and theta are both Beltrami fields with the SAME lambda:
+     curl(phi) = lambda phi
+     curl(theta) = lambda theta
+
+   Then the coupling closes perfectly:
+     theta eq: Lap(theta) + eta curl(phi) = 0
+           => Lap(theta) = -eta lambda phi
+     phi eq: Lap(phi) - m^2 phi - V' + eta curl(theta) = 0
+           => Lap(phi) + eta lambda theta = m^2 phi + V'
+
+   With theta = c phi (proportional Beltrami):
+     Lap(theta) = -eta lambda phi  =>  c Lap(phi) = -eta lambda phi
+     Lap(phi) + eta lambda c phi = m^2 phi + V'
+     => Lap(phi) = (m^2 - eta lambda c) phi + V'
+     But also Lap(phi) = (-eta lambda / c) phi from theta eq
+     => (-eta lambda / c) = m^2 - eta lambda c
+     => -eta lambda / c - m^2 + eta lambda c = 0
+     => eta lambda (c - 1/c) = m^2
+     => eta lambda (c^2 - 1)/c = m^2
+   ================================================================ */
+
+print("================================================================")$
+print("  ANALYSIS 3: Beltrami self-trapping")$
+print("================================================================")$
+print("")$
+
+print("Beltrami condition: curl(F) = lambda F")$
+print("")$
+print("If phi and theta are both Beltrami with eigenvalue lambda,")$
+print("and theta = c phi (proportional), the consistency condition is:")$
+print("")$
+print("  eta lambda (c^2 - 1) / c = m^2")$
+print("")$
+
+/* Solve for c given lambda */
+print("Solving for c as a function of lambda:")$
+print("  eta lambda c^2 - m^2 c - eta lambda = 0")$
+print("")$
+
+/* Quadratic in c */
+c_sol : solve(eta_val * lambda * c^2 - m2_val * c - eta_val * lambda = 0, c)$
+print("  c = ", c_sol)$
+print("")$
+
+/* For real c, discriminant >= 0 */
+disc : m2_val^2 + 4*eta_val^2*lambda^2$
+print("  Discriminant = m^4 + 4 eta^2 lambda^2 =", m2_val^2, "+ 4*",
+      eta_val^2, "*lambda^2")$
+print("  = ", float(m2_val^2), " + ", float(4*eta_val^2), " lambda^2")$
+print("  This is ALWAYS POSITIVE => real c exists for ALL lambda != 0.")$
+print("")$
+
+/* Evaluate c for specific lambda values */
+print("c values for specific lambda (using + root):")$
+for lam in [0.5, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0] do block([c_plus, c_minus, disc_v],
+  disc_v : float(m2_val^2 + 4*eta_val^2*lam^2),
+  c_plus : float((m2_val + sqrt(disc_v)) / (2*eta_val*lam)),
+  c_minus: float((m2_val - sqrt(disc_v)) / (2*eta_val*lam)),
+  print("  lambda =", lam, ": c+ =", c_plus, ", c- =", c_minus)
+)$
+print("")$
+
+/* Now: what Beltrami eigenvalues are allowed in a finite domain? */
+print("Beltrami eigenvalues in a ball of radius R:")$
+print("  curl(F) = lambda F on B(0,R) with F.n = 0 on boundary")$
+print("")$
+print("  The smallest Beltrami eigenvalue in a ball of radius R is:")$
+print("  lambda_1 = 4.493 / R   (first zero of j_1, the spherical Bessel)")$
+print("")$
+print("  This is a DISCRETE spectrum.  Only specific lambda values work.")$
+print("")$
+
+/* The Beltrami field in a ball is the Chandrasekhar-Kendall field:
+ * F = curl(psi r_hat) + (1/lambda) curl(curl(psi r_hat))
+ * where psi = j_l(lambda r) Y_l^m(theta,phi)
+ *
+ * For l=1 (dipole): psi = j_1(lambda r) Y_1^m
+ * Boundary: j_1(lambda R) = 0  =>  lambda R = 4.493, 7.725, ...
+ */
+
+j1_zeros : [4.49341, 7.72525, 10.9041, 14.0662]$
+print("First zeros of j_1 (spherical Bessel):", j1_zeros)$
+print("")$
+
+/* For soliton radius R ~ 5 (typical SCP proton): */
+R_sol : 5.0$
+print("For soliton radius R =", R_sol, ":")$
+for n : 1 thru 4 do block([lam_n, c_plus_n, c_minus_n, disc_n],
+  lam_n : j1_zeros[n] / R_sol,
+  disc_n : float(m2_val^2 + 4*eta_val^2*lam_n^2),
+  c_plus_n : float((m2_val + sqrt(disc_n)) / (2*eta_val*lam_n)),
+  c_minus_n: float((m2_val - sqrt(disc_n)) / (2*eta_val*lam_n)),
+  print("  n =", n, ": lambda =", float(lam_n),
+        ", c+ =", c_plus_n, ", c- =", c_minus_n)
+)$
+print("")$
+
+/* Nodal surfaces of Beltrami fields */
+print("Nodal structure of Beltrami eigenfunctions:")$
+print("  The n-th eigenfunction j_1(lambda_n r) has (n-1) interior zeros.")$
+print("  n=1: lambda_1 R = 4.493 -> 0 nodal spheres (field is single-lobe)")$
+print("  n=2: lambda_2 R = 7.725 -> 1 nodal sphere at r/R =", float(j1_zeros[1]/j1_zeros[2]))$
+print("  n=3: lambda_3 R = 10.904 -> 2 nodal spheres")$
+print("  n=4: lambda_4 R = 14.066 -> 3 nodal spheres")$
+print("")$
+
+print("CRITICAL CHECK: Is the Beltrami condition compatible with V(P) binding?")$
+print("")$
+print("  Beltrami requires curl(phi) = lambda phi everywhere.")$
+print("  This means div(phi) = 0 (divergence of a curl vanishes).")$
+print("  But the SCP braid has div(phi) != 0 in general")$
+print("  (the mass and potential terms source longitudinal phi).")$
+print("")$
+print("  The FULL equation is:")$
+print("    Lap(phi) = m^2 phi + V'(P) dP/dphi - eta curl(theta)")$
+print("  For Beltrami phi: Lap(phi) = curl(curl(phi)) - grad(div(phi))")$
+print("    = lambda^2 phi - grad(div(phi))")$
+print("  But div(phi) = 0 for Beltrami, so Lap(phi) = -lambda^2 phi")$
+print("  (Note: Lap in physics convention has negative eigenvalues)")$
+print("")$
+print("  Wait -- Maxima convention: Lap(phi) = d^2 phi/dx^2 + ...")$
+print("  For Beltrami in a ball: Lap(F) = -lambda^2 F  (vector Laplacian)")$
+print("  So: -lambda^2 phi = m^2 phi + V'(P) dP/dphi - eta lambda c phi")$
+print("  => (-lambda^2 - m^2 + eta lambda c) phi = V'(P) dP/dphi")$
+print("")$
+
+/* Using the consistency relation eta lambda (c^2-1)/c = m^2: */
+/* -lambda^2 - m^2 + eta lambda c = -lambda^2 - eta lambda(c^2-1)/c + eta lambda c */
+/* = -lambda^2 + eta lambda [-( c^2-1)/c + c] */
+/* = -lambda^2 + eta lambda [(-c^2+1+c^2)/c] */
+/* = -lambda^2 + eta lambda / c */
+
+coeff_lhs : -lambda^2 + eta_val*lambda/c$
+print("  LHS coefficient: -lambda^2 + eta*lambda/c")$
+print("")$
+
+/* For the n=1 mode at R=5: */
+lam1 : float(j1_zeros[1]/R_sol)$
+disc1: float(m2_val^2 + 4*eta_val^2*lam1^2)$
+c_plus_1 : float((m2_val + sqrt(disc1)) / (2*eta_val*lam1))$
+c_minus_1: float((m2_val - sqrt(disc1)) / (2*eta_val*lam1))$
+coeff_plus : float(-lam1^2 + eta_val*lam1/c_plus_1)$
+coeff_minus: float(-lam1^2 + eta_val*lam1/c_minus_1)$
+print("  n=1 (lambda=", lam1, "):")$
+print("    c+ =", c_plus_1, ": (-lambda^2 + eta*lambda/c) =", coeff_plus)$
+print("    c- =", c_minus_1, ": (-lambda^2 + eta*lambda/c) =", coeff_minus)$
+print("")$
+
+/* So the equation becomes: coeff * phi = V'(P) dP/dphi */
+/* This is consistent if V'(P) dP/dphi is proportional to phi at every point */
+/* V'(P) = mu P / (1 + kappa P^2)^2, P = phi_0 phi_1 phi_2 */
+/* dP/dphi_a = phi_b phi_c  (product of the other two) */
+/* So V'(P) dP/dphi_a = mu phi_0 phi_1 phi_2 / (1+kappa(phi_0 phi_1 phi_2)^2)^2 * phi_b phi_c */
+/*                     = mu phi_b^2 phi_c^2 phi_a / (1 + kappa phi_a^2 phi_b^2 phi_c^2)^2 */
+/* This is proportional to phi_a ONLY if phi_b^2 phi_c^2 is constant (same for all a). */
+/* For a Beltrami field with div(phi)=0, this is NOT generally true. */
+
+print("COMPATIBILITY TEST: V'(P) dP/dphi_a proportional to phi_a?")$
+print("")$
+print("  V'(P) dP/dphi_a = mu (phi_b phi_c)^2 phi_a / (1+kappa P^2)^2")$
+print("  This is proportional to phi_a iff phi_b^2 phi_c^2 = const for all a.")$
+print("  For phi_b^2 phi_c^2 = phi_1^2 phi_2^2 (when a=0), etc.")$
+print("  This requires |phi_0|=|phi_1|=|phi_2| everywhere -- i.e.,")$
+print("  all three field components must have the same magnitude at every point.")$
+print("")$
+print("  A general Beltrami field in a ball does NOT satisfy this.")$
+print("  The l=1 mode has different angular dependence for each component.")$
+print("")$
+print("  HOWEVER: a SPECIAL Beltrami field could be constructed where")$
+print("  the three components are related by 120-degree phase rotations.")$
+print("  The SCP phase offsets delta = (0, 3.0005, 4.4325) approximate")$
+print("  a 3-fold symmetric arrangement (120 deg = 2.094 rad).")$
+print("  The actual offsets differ from perfect 120-deg symmetry.")$
+print("")$
+
+/* Check: do the SCP phase offsets give equal component magnitudes? */
+print("Phase check: do delta = (0, 3.0005, 4.4325) give |phi_a| ~ equal?")$
+for psi_test in [0.0, 1.0, 2.0, 3.665] do block([c0, c1, c2],
+  c0 : float(cos(d0 + psi_test)^2),
+  c1 : float(cos(d1 + psi_test)^2),
+  c2 : float(cos(d2 + psi_test)^2),
+  print("  psi =", psi_test, ": cos^2 = (", c0, ",", c1, ",", c2, ")",
+        "  ratio max/min =", float(max(c0,c1,c2)/max(min(c0,c1,c2), 1e-10)))
+)$
+print("")$
+print("  The component magnitudes vary by large factors.")$
+print("  Perfect Beltrami self-trapping is NOT compatible with V(P) binding")$
+print("  for the SCP phase offsets.")$
+print("")$
+
+print("RESULT 3: Pure Beltrami self-trapping is INCOMPATIBLE with V(P).")$
+print("  The Beltrami condition (div(phi)=0, curl(phi)=lambda*phi)")$
+print("  requires all components equal, which conflicts with")$
+print("  the asymmetric phase structure that V(P) needs for binding.")$
+print("  A self-wrapping soliton must be an APPROXIMATE Beltrami field")$
+print("  -- mostly transverse, but with longitudinal corrections from V(P).")$
+print("")$
+
+
+/* ================================================================
+   ANALYSIS 4: Multi-node geometry and linked vortex topology
+
+   Consider N curl-vortex centers arranged symmetrically.
+   Each vortex has curl(phi) concentrated along a loop.
+   If the loops are linked (like a chain or Hopf link), the
+   topology prevents unwinding.
+
+   Key question: does the Cosserat equation preserve linking number?
+   ================================================================ */
+
+print("================================================================")$
+print("  ANALYSIS 4: Multi-node linked vortices")$
+print("================================================================")$
+print("")$
+
+/* The linking number of two closed curves C1, C2 is:
+ * Link(C1,C2) = (1/4pi) oint oint (dr1 x dr2).(r1-r2)/|r1-r2|^3
+ *
+ * For continuous fields, the analog is the helicity:
+ * H = integral phi . curl(phi) d^3x
+ *
+ * The helicity is conserved if the field satisfies:
+ * d(phi)/dt = curl(phi x v) for some velocity v (frozen-in condition)
+ */
+
+print("HELICITY: H = integral phi . curl(phi) d^3x")$
+print("")$
+
+/* Compute dH/dt for the Cosserat equations */
+/* phi_tt = Lap(phi) - m^2 phi - V' dP/dphi + eta curl(theta) */
+/* dH/dt = 2 integral phi_t . curl(phi) d^3x  (integrating by parts) */
+/* Wait, actually: */
+/* H = int phi . curl(phi) */
+/* dH/dt = int [phi_t . curl(phi) + phi . curl(phi_t)] */
+/*       = int [phi_t . curl(phi) + curl(phi) . phi_t]  (curl is self-adjoint with BC) */
+/*       = 2 int phi_t . curl(phi) */
+
+/* Now phi_t is a velocity field. The helicity rate depends on the forces: */
+/* In a Hamiltonian system, phi_t = pi (conjugate momentum) */
+/* dH/dt = 2 int pi . curl(phi) */
+/* d^2 H/dt^2 = 2 int [pi_t . curl(phi) + pi . curl(pi)] */
+/*            = 2 int [F . curl(phi) + pi . curl(pi)] */
+/* where F = phi_tt = Lap(phi) - m^2 phi - V' + eta curl(theta) */
+
+print("Helicity rate:")$
+print("  dH/dt = 2 integral phi_t . curl(phi) d^3x")$
+print("")$
+print("  For the STATIC case (phi_t = 0): dH/dt = 0 trivially.")$
+print("  For the DYNAMIC case, dH/dt depends on initial conditions.")$
+print("")$
+
+/* Is helicity conserved? Check if the forces preserve it. */
+/* The Lap and m^2 terms: */
+/* int Lap(phi).curl(phi) = -int grad(phi):grad(curl(phi)) */
+/* = -int grad(phi):curl(grad(phi)) + boundary = 0 (curl of gradient = 0) */
+/* Wait, grad(curl(phi)) != curl(grad(phi)). Let me be more careful. */
+
+/* int Lap(phi_a) (curl phi)_a = int Lap(phi_a) eps_{abc} d_b phi_c */
+/* Integrating by parts twice: */
+/* = int phi_a Lap(eps_{abc} d_b phi_c)  (if BCs vanish) */
+/* = int phi_a eps_{abc} d_b Lap(phi_c) */
+/* = int phi_a (curl(Lap phi))_a */
+/* So: int Lap(phi).curl(phi) = int phi.curl(Lap(phi)) */
+
+/* Similarly for the mass term: */
+/* int (-m^2 phi).curl(phi) = -m^2 int phi.curl(phi) = -m^2 H */
+
+/* For the potential term: */
+/* int V'(P)(dP/dphi).curl(phi) -- this is NOT generally a curl, so */
+/* it contributes to dH/dt generically. */
+
+/* For the eta curl(theta) term: */
+/* int eta curl(theta).curl(phi) = eta int theta.curl(curl(phi)) */
+/* = eta int theta.(-Lap(phi) + grad(div(phi))) */
+
+print("Helicity conservation analysis:")$
+print("")$
+print("  d^2H/dt^2 = 2 int F.curl(phi) + 2 int pi.curl(pi)")$
+print("  where F = Lap(phi) - m^2 phi - V' dP/dphi + eta curl(theta)")$
+print("")$
+print("  The Lap(phi) term: int Lap(phi).curl(phi) = int phi.curl(Lap(phi))")$
+print("  Since Lap and curl commute: curl(Lap(phi)) = Lap(curl(phi))")$
+print("  So: int Lap(phi).curl(phi) = int phi.Lap(curl(phi))")$
+print("  Integrating by parts: = int Lap(phi).curl(phi)")$
+print("  This is self-consistent but does not vanish.")$
+print("")$
+print("  The mass term: int m^2 phi.curl(phi) = m^2 H")$
+print("  This is proportional to H itself (not independently zero).")$
+print("")$
+print("  The potential term: int V'(P)(dP/dphi).curl(phi)")$
+print("  dP/dphi_a = phi_b phi_c (other two components)")$
+print("  curl(phi)_a = eps_{aij} d_i phi_j")$
+print("  So: V' sum_a (phi_b phi_c)(eps_{aij} d_i phi_j)")$
+print("  This is V' times a cross-product-like expression.")$
+print("  It does NOT vanish identically.")$
+print("")$
+print("  The coupling term: int eta curl(theta).curl(phi)")$
+print("  Using theta = -eta Lap^{-1} curl(phi):")$
+print("  = -eta^2 int curl(Lap^{-1}curl(phi)).curl(phi)")$
+print("  = -eta^2 int phi_perp . curl(phi)")$
+print("  This also does not vanish.")$
+print("")$
+print("RESULT 4a: Helicity H = int phi.curl(phi) is NOT conserved")$
+print("  by the Cosserat equations.  Both V(P) and the self-wrapping")$
+print("  terms break helicity conservation.")$
+print("")$
+
+/* However: LINKING NUMBER may still be approximately preserved */
+/* if the vortex lines evolve slowly compared to field oscillations. */
+
+print("Linking number vs helicity:")$
+print("  For vortex tubes with small cross-section delta:")$
+print("    H ~ Gamma^2 * Link + Gamma * Writhe + Gamma * Twist")$
+print("  where Gamma = circulation integral.")$
+print("")$
+print("  The Cosserat equations are NOT a vorticity equation")$
+print("  (phi is not a velocity field). The linking number of")$
+print("  iso-surfaces of |phi| or |curl(phi)| is a topological")$
+print("  invariant ONLY if the iso-surfaces don't cross zero.")$
+print("")$
+print("  If the soliton has N nodal points where |phi| = 0,")$
+print("  and these form closed loops, their linking is preserved")$
+print("  as long as the loops don't intersect or annihilate.")$
+print("  But the Cosserat equations can drive loop shrinkage")$
+print("  (like a cosmic string network) -- no topological protection.")$
+print("")$
+print("RESULT 4b: Linking number of vortex lines is NOT topologically")$
+print("  protected in the Cosserat system.  Vortex reconnection CAN")$
+print("  occur, unlike in ideal MHD or superfluid vortices.")$
+print("  There is no topological barrier to soliton decay.")$
+print("")$
+
+
+/* ================================================================
+   ANALYSIS 5: Gradient hole and effective mass enhancement
+
+   Near a point where phi -> 0 (a node), the effective mass
+   from the self-wrapping term is:
+   m_eff^2 = m^2 + eta^2 |curl|^2 / |phi|^2 (if curl stays finite)
+
+   Does this create a trapping potential?
+   ================================================================ */
+
+print("================================================================")$
+print("  ANALYSIS 5: Gradient hole / mass enhancement at nodes")$
+print("================================================================")$
+print("")$
+
+/* Consider two opposing vortex lines at x = +d and x = -d.
+ * Near the midpoint (x=0), by symmetry, phi ~ 0 (destructive interference)
+ * but curl(phi) can remain finite (the curls ADD constructively if the
+ * vortices have the same chirality).
+ *
+ * Model: phi ~ phi_1 + phi_2 where
+ *   phi_1(x) = A * exp(-|x-d|^2/sigma^2) * e_1(x-d)
+ *   phi_2(x) = A * exp(-|x+d|^2/sigma^2) * e_2(x+d)
+ * with e_1, e_2 being local curl directions.
+ *
+ * At x=0: phi_1 ~ A exp(-d^2/sigma^2) e_1(-d)
+ *         phi_2 ~ A exp(-d^2/sigma^2) e_2(d)
+ * If e_1(-d) = -e_2(d) (anti-aligned): phi(0) ~ 0
+ * But curl(phi_1) and curl(phi_2) may add.
+ */
+
+/* Simple 1D model: two Gaussians with opposite sign */
+/* phi(x) = A[exp(-(x-d)^2/s^2) - exp(-(x+d)^2/s^2)] */
+/* phi(0) = 0 exactly (antisymmetric) */
+/* phi'(0) = A * [2d/s^2 exp(-d^2/s^2) + 2d/s^2 exp(-d^2/s^2)] */
+/*         = 4Ad/s^2 exp(-d^2/s^2) */
+
+/* The "curl" analog in 1D is the derivative phi'(x). */
+/* At x=0: phi=0 but phi' is maximum. */
+
+print("1D model: phi(x) = A[exp(-(x-d)^2/s^2) - exp(-(x+d)^2/s^2)]")$
+print("  phi(0) = 0 (node)")$
+print("  phi'(0) = 4Ad/s^2 exp(-d^2/s^2) (maximum gradient)")$
+print("")$
+
+d_sep : 2.0$
+sigma : 1.5$
+A_node : 0.2$
+
+/* Profile near x=0 */
+print("Profile for A=0.2, d=2, sigma=1.5:")$
+for x_pt in [-3, -2, -1, -0.5, 0, 0.5, 1, 2, 3] do block([phi_v, phip_v, ratio],
+  phi_v : float(A_node*(exp(-(x_pt-d_sep)^2/sigma^2) - exp(-(x_pt+d_sep)^2/sigma^2))),
+  phip_v: float(A_node*(
+    -2*(x_pt-d_sep)/sigma^2*exp(-(x_pt-d_sep)^2/sigma^2)
+    +2*(x_pt+d_sep)/sigma^2*exp(-(x_pt+d_sep)^2/sigma^2))),
+  ratio : if abs(phi_v) > 1e-10 then float(phip_v^2/phi_v^2) else 999999,
+  print("  x=", x_pt, ": phi=", phi_v, " phi'=", phip_v,
+        " (phi'/phi)^2=", ratio)
+)$
+print("")$
+
+print("Effective mass at the node (x=0):")$
+print("  m_eff^2 = m^2 + eta^2 (phi'/phi)^2 -> INFINITY as x->0")$
+print("  (because phi->0 while phi' stays finite)")$
+print("")$
+
+/* But this is misleading. The self-wrapping term is -eta^2 phi_perp,
+ * NOT -eta^2 (curl/phi)^2 phi. The actual force is:
+ *   F_selfwrap = -eta^2 phi_perp
+ * which goes to zero as phi -> 0 (since phi_perp <= |phi|).
+ * There is NO mass enhancement -- the force simply vanishes at the node.
+ */
+
+print("CORRECTION: The self-wrapping force is F = -eta^2 phi_perp,")$
+print("  NOT -eta^2 (|curl|^2/|phi|^2) phi.")$
+print("  At a node where phi->0: phi_perp -> 0 as well.")$
+print("  The 'effective mass' divergence is an artifact of writing")$
+print("  the force as m_eff^2 phi -- the actual force stays finite.")$
+print("")$
+
+/* The relevant question is whether small perturbations around the node
+ * are trapped. Consider phi = epsilon * g(x) near x=0 where phi_bg ~ 0.
+ * The linearized equation for g:
+ *   g'' - m^2 g - V''(P_bg) g + self_wrap = 0
+ * With P_bg ~ 0 at the node, V''(P_bg) ~ mu (from V = mu/2 P^2 + ...)
+ * So V''(P_bg) ~ mu < 0 (since mu = -41.345)
+ *
+ * This means: g'' - (m^2 + mu) g = 0 at the node
+ * m^2 + mu = 2.25 + (-41.345) = -39.095
+ * => g'' + 39.095 g = 0
+ * => g oscillates with wavenumber k = sqrt(39.095) = 6.25
+ *
+ * Wait -- V'' at P=0:
+ * V(P) = mu/2 P^2 / (1+kappa P^2)
+ * V'(P) = mu P (1+kappa P^2 - kappa P^2) / (1+kappa P^2)^2
+ *       = mu P / (1+kappa P^2)^2
+ * V''(P) = mu [1 - 3 kappa P^2] / (1+kappa P^2)^3
+ * V''(0) = mu = -41.345
+ *
+ * But V'' acts on P, not on phi_a directly.
+ * The force on phi_a from V is: -V'(P) dP/dphi_a = -V'(P) phi_b phi_c
+ * Linearizing around phi=0: this is ZERO to leading order (cubic in phi).
+ * The potential force vanishes quadratically at a node!
+ */
+
+print("Linearized dynamics near a node (phi ~ 0):")$
+print("")$
+print("  V'(P) dP/dphi_a = V'(phi_0 phi_1 phi_2) phi_b phi_c")$
+print("  Near phi=0: this is O(|phi|^3) -- VANISHES to leading order.")$
+print("  The potential force does NOT act on small perturbations at a node.")$
+print("")$
+print("  The effective equation near a node is:")$
+print("    g_tt = Lap(g) - m^2 g + eta curl(theta_g)")$
+print("  where theta_g = -eta Lap^{-1}(curl g).")$
+print("  => g_tt = Lap(g) - m^2 g - eta^2 g_perp")$
+print("")$
+print("  For a transverse perturbation: g_tt = Lap(g) - (m^2+eta^2) g")$
+print("  Dispersion: omega^2 = k^2 + m^2 + eta^2 =", float(m2_val + eta_val^2))$
+print("  All modes with k > 0 propagate: the node does NOT trap them.")$
+print("  (m_eff^2 > 0 means the mass gap prevents low-k radiation,")$
+print("   but high-k modes escape freely.)")$
+print("")$
+
+/* What about the CURVATURE of the potential landscape? */
+/* Near the background (not a node), phi ~ A_bg cos(d_a + ...) */
+/* The potential V(P) creates an attractive well for P. */
+/* The gradient of V' provides a restoring force. */
+
+print("Potential well near the background (phi ~ A_bg):")$
+P_bg2 : float(A_bg^3 * cos(d0)*cos(d1)*cos(d2))$
+Vpp_bg : float(mu_val * (1 - 3*kappa_val*P_bg2^2) / (1+kappa_val*P_bg2^2)^3)$
+print("  P_bg =", P_bg2)$
+print("  V''(P_bg) =", Vpp_bg)$
+print("  At the background, V'' ~ mu = -41.345 (strongly negative)")$
+print("  This provides an ATTRACTIVE force toward P != 0.")$
+print("")$
+
+/* The question for trapping is whether the well is deep enough
+ * to bind modes below the radiation threshold omega_min. */
+/* Bound state condition: E_binding > 0 where */
+/* E_binding = int [|grad phi|^2 + m^2 |phi|^2 + V(P)] d^3x */
+/* A bound soliton has E_binding < 0 (total energy less than vacuum). */
+
+V_at_Pbg : float(mu_val/2 * P_bg2^2 / (1 + kappa_val*P_bg2^2))$
+print("  V(P_bg) =", V_at_Pbg, " (tiny -- background binding is negligible)")$
+print("")$
+
+/* For a large amplitude: P ~ 0.01 (proton core) */
+P_core : 0.01$
+V_at_core : float(mu_val/2 * P_core^2 / (1 + kappa_val*P_core^2))$
+print("  V(P_core=0.01) =", V_at_core)$
+print("  This is the proton core binding energy density.")$
+print("  It must exceed the mass + gradient energy to form a soliton.")$
+print("")$
+
+print("RESULT 5: Nodes do NOT create enhanced trapping.")$
+print("  The potential force V(P) is cubic in phi and vanishes at nodes.")$
+print("  Small oscillations near a node see only the mass gap m^2 + eta^2.")$
+print("  The 'gradient hole' intuition is incorrect: the divergent")$
+print("  m_eff^2 ratio is an artifact, not a physical effect.")$
+print("")$
+
+
+/* ================================================================
+   ANALYSIS 6: Energy balance for zero-radiation condition
+
+   For a soliton to have ZERO radiation, the oscillation frequency
+   must be BELOW the radiation threshold for ALL channels.
+
+   Transverse threshold: omega_trans = sqrt(m^2 + eta^2) = 1.581
+   Longitudinal threshold: omega_long = sqrt(m^2) = 1.5
+
+   A breathing soliton oscillates at some frequency omega_breath.
+   If omega_breath < omega_long, NO channel can radiate.
+   ================================================================ */
+
+print("================================================================")$
+print("  ANALYSIS 6: Radiation threshold and breathing frequency")$
+print("================================================================")$
+print("")$
+
+print("Radiation thresholds:")$
+print("  Transverse: omega_T = sqrt(m^2 + eta^2) =", float(sqrt(m2_val + eta_val^2)))$
+print("  Longitudinal: omega_L = sqrt(m^2) =", float(sqrt(m2_val)))$
+print("")$
+
+/* Can a soliton breathe at omega < omega_L = 1.5? */
+/* The breathing frequency depends on the soliton profile. */
+/* For a Gaussian-like soliton of radius R, the fundamental */
+/* oscillation frequency is roughly: omega ~ pi/R */
+/* (standing wave within the soliton) */
+
+/* From simulation data, proton solitons have R ~ 5 lattice units */
+/* and breathing frequency ~ 1.2 (measured in theta_equilibrium.mac analysis) */
+
+print("Breathing frequency estimates:")$
+print("  Standing wave: omega ~ pi/R_sol")$
+for R_est in [2, 3, 4, 5, 7, 10] do
+  print("    R =", R_est, ": omega ~", float(%pi/R_est))$
+print("")$
+
+print("  For R = 3-5, omega ~ 0.63-1.05, which is BELOW omega_L = 1.5")$
+print("  This means a breathing soliton CAN be sub-threshold!")$
+print("")$
+
+/* But the breathing mode has HARMONICS. Even if the fundamental */
+/* omega_1 < omega_L, the 2nd harmonic 2*omega_1 may exceed omega_L. */
+
+print("Harmonic radiation:")$
+print("  If omega_breath < omega_L but 2*omega_breath > omega_L,")$
+print("  the 2nd harmonic radiates.  Condition for no 2nd harmonic:")$
+print("    2*omega_breath < omega_L => omega_breath < omega_L/2 =", float(sqrt(m2_val)/2))$
+print("")$
+print("  For omega_breath < 0.75, even the 2nd harmonic doesn't radiate.")$
+print("  This requires R > pi/0.75 =", float(%pi/0.75))$
+print("  A soliton of radius R > 4.19 could have a non-radiating")$
+print("  fundamental with non-radiating 2nd harmonic.")$
+print("")$
+print("  For n-th harmonic: n*omega < omega_L => omega < omega_L/n")$
+print("  ALL harmonics sub-threshold: omega -> 0, meaning R -> infinity.")$
+print("  A FINITE soliton always has some harmonic above threshold.")$
+print("")$
+
+/* However: nonlinear effects suppress high harmonics. */
+/* The amplitude of the n-th harmonic scales as A_n ~ A_1^n for weak nonlinearity. */
+/* If A_1 is small (weakly breathing), higher harmonics are exponentially suppressed. */
+
+print("Harmonic suppression (weak breathing, amplitude epsilon):")$
+print("  A_n ~ epsilon^n (from perturbation theory)")$
+print("  Power radiated by n-th harmonic: P_n ~ A_n^2 ~ epsilon^{2n}")$
+print("")$
+
+/* Radiation power for a multipole oscillating at frequency omega > omega_L: */
+/* P ~ (omega^2 - omega_L^2)^{l+1/2} * A^2 for multipole order l */
+/* For a breathing mode (monopole, l=0): P ~ sqrt(omega^2 - omega_L^2) * A^2 */
+
+/* Let omega_1 = fundamental breathing frequency */
+/* n-th harmonic frequency: n*omega_1 */
+/* Radiation only if n*omega_1 > omega_L, i.e., n > omega_L/omega_1 */
+/* n_min = ceil(omega_L / omega_1) */
+
+print("For omega_1 = 1.0 (fundamental breathing):")$
+omega_1 : 1.0$
+n_min_1 : ceiling(sqrt(m2_val) / omega_1)$
+print("  n_min (longitudinal) = ceil(1.5/1.0) =", n_min_1)$
+print("  2nd harmonic at 2.0 > 1.5: radiates")$
+print("  Radiation power: P_2 ~ epsilon^4 * sqrt(4 - 2.25)")$
+print("    = epsilon^4 *", float(sqrt(4-2.25)))$
+print("")$
+
+print("For omega_1 = 0.5:")$
+omega_1b : 0.5$
+n_min_b : ceiling(sqrt(m2_val) / omega_1b)$
+print("  n_min (longitudinal) = ceil(1.5/0.5) =", n_min_b)$
+print("  3rd harmonic at 1.5 = omega_L: right at threshold (P ~ 0)")$
+print("  4th harmonic at 2.0: radiates with P_4 ~ epsilon^8 *", float(sqrt(4-2.25)))$
+print("  Radiation is VERY weak (epsilon^8).")$
+print("")$
+
+/* Can the soliton be engineered to have omega_1 = omega_L / n for integer n? */
+/* Then the n-th harmonic is exactly at threshold (group velocity = 0) */
+/* and radiation power is zero at that harmonic. */
+/* The (n+1)-th harmonic has power ~ epsilon^{2(n+1)}. */
+
+print("Optimal breathing frequency for minimal radiation:")$
+for n_target : 2 thru 8 do block([omega_opt, R_opt, n_first_rad, power_scaling],
+  omega_opt : float(sqrt(m2_val) / n_target),
+  R_opt : float(%pi / omega_opt),
+  n_first_rad : n_target + 1,
+  power_scaling : 2*n_first_rad,
+  print("  n =", n_target, ": omega =", omega_opt,
+        ", R ~", R_opt,
+        ", first radiating harmonic:", n_first_rad,
+        ", P ~ eps^", power_scaling)
+)$
+print("")$
+
+print("RESULT 6: Zero radiation is IMPOSSIBLE for a finite soliton,")$
+print("  but radiation can be made EXPONENTIALLY SMALL.")$
+print("  A large soliton (R >> 1/m) with weak breathing (epsilon << 1)")$
+print("  radiates at rate P ~ epsilon^{2n} where n = ceil(m R / pi).")$
+print("  For R = 10, n = 5, epsilon = 0.1: P ~ 10^{-10}.")$
+print("  The soliton is effectively stable on any practical timescale.")$
+print("")$
+
+
+/* ================================================================
+   ANALYSIS 7: The self-wrapping eigenvalue problem
+
+   Can we find a STATIC (non-breathing) solution where the
+   self-wrapping exactly balances all other forces?
+
+   Static equation:
+     Lap(phi) - m^2 phi - V'(P) dP/dphi - eta^2 phi_perp = 0
+
+   Decompose phi = phi_L + phi_T (longitudinal + transverse):
+     Lap(phi_L) - m^2 phi_L - [V'(P) dP/dphi]_L = 0
+     Lap(phi_T) - (m^2 + eta^2) phi_T - [V'(P) dP/dphi]_T = 0
+
+   The transverse part sees an enhanced mass.
+   For a soliton where most of phi is transverse:
+     The binding from V(P) must overcome m^2 + eta^2 instead of m^2.
+   ================================================================ */
+
+print("================================================================")$
+print("  ANALYSIS 7: Static self-wrapping eigenvalue problem")$
+print("================================================================")$
+print("")$
+
+print("Decomposition: phi = phi_L + phi_T  (Helmholtz)")$
+print("  phi_L: curl-free (longitudinal)")$
+print("  phi_T: divergence-free (transverse)")$
+print("")$
+print("  Longitudinal: Lap(phi_L) - m^2 phi_L = [V' dP/dphi]_L")$
+print("  Transverse:   Lap(phi_T) - (m^2+eta^2) phi_T = [V' dP/dphi]_T")$
+print("")$
+
+/* The transverse equation has an enhanced mass gap.
+ * For binding to occur, V(P) must provide enough attraction.
+ * V(P) = (mu/2)P^2/(1+kappa P^2) with mu<0 is attractive.
+ *
+ * For the SCP braid, P = phi_0 phi_1 phi_2.
+ * The peak |P| occurs at the core where all phases align.
+ * V(P_peak) provides the binding well depth.
+ */
+
+/* How much of the SCP braid is transverse vs longitudinal? */
+/* div(phi) = sum_a d_a phi_a */
+/* For phi_a = A(r) cos(d_a + chi_a psi(r)): */
+/* d_a phi_a = n_a phi_a'(r) (chain rule, spherical symmetry) */
+/* div(phi) = (1/r^2) d/dr(r^2 sum_a n_a^2 ... ) -- this gets complicated */
+/* Angular average: <div(phi)> = (1/3) sum_a phi_a' = ... */
+
+/* Instead, use the Fourier result: for a mode with wavevector k, */
+/* the longitudinal fraction is (k.phi_hat)^2 / |phi_hat|^2. */
+/* For the braid, this depends on the alignment of phi and its gradient. */
+
+/* At the braid core: phi is dominated by the phase winding. */
+/* phi_a' ~ -A chi_a psi' sin(d_a + chi_a psi) */
+/* The derivative vector is NOT parallel to phi (it's shifted by pi/2 in phase). */
+/* So phi has significant transverse content -- consistent with Analysis 2. */
+
+/* Energy comparison: */
+/* Transverse binding: m_T^2 = m^2 + eta^2 = 2.50 */
+/* Longitudinal binding: m_L^2 = m^2 = 2.25 */
+/* Additional binding cost for transverse component: delta_m^2 = eta^2 = 0.25 */
+/* Fractional increase: eta^2/m^2 = 0.111 (11%) */
+
+print("Binding cost comparison:")$
+print("  m_L^2 = m^2 =", float(m2_val))$
+print("  m_T^2 = m^2 + eta^2 =", float(m2_val + eta_val^2))$
+print("  Fractional increase: eta^2/m^2 =", float(eta_val^2/m2_val), "(11%)")$
+print("")$
+print("  The self-wrapping makes transverse modes 11% harder to bind.")$
+print("  This is a modest cost.  The potential V(P) with |mu|=41.345")$
+print("  provides binding strength >> m^2, so the extra eta^2 is small.")$
+print("")$
+
+/* Binding ratio: |V''(0)| / m_T^2 */
+binding_ratio_T : float(abs(mu_val) / (m2_val + eta_val^2))$
+binding_ratio_L : float(abs(mu_val) / m2_val)$
+print("  Binding ratio |mu|/m_T^2 =", binding_ratio_T, "(transverse)")$
+print("  Binding ratio |mu|/m_L^2 =", binding_ratio_L, "(longitudinal)")$
+print("  Both >> 1, so binding is robust against the self-wrapping cost.")$
+print("")$
+
+print("RESULT 7: Self-wrapping costs 11% extra mass gap for transverse modes.")$
+print("  This is easily overcome by the strong V(P) binding (|mu|/m^2 = 18.4).")$
+print("  Static self-wrapped solitons exist if the bare soliton exists.")$
+print("  The self-wrapping HELPS stability by raising the radiation threshold.")$
+print("")$
+
+
+/* ================================================================
+   SUMMARY AND CONCLUSIONS
+   ================================================================ */
+
+print("================================================================")$
+print("  SUMMARY: Self-wrapping analysis results")$
+print("================================================================")$
+print("")$
+
+print("Q: Can the Cosserat system support a zero-radiation soliton?")$
+print("")$
+print("A: ALMOST -- but not exactly.  Here is the complete picture:")$
+print("")$
+
+print("1. FOURIER ANALYSIS (Analysis 1):")$
+print("   Self-wrapping adds eta^2 to the transverse mass gap.")$
+print("   Effective masses: m_T =", float(sqrt(m2_val + eta_val^2)),
+      ", m_L =", float(sqrt(m2_val)))$
+print("   Transverse modes are 5.4% harder to radiate than longitudinal.")$
+print("   This is STABILIZING but not sufficient for zero radiation.")$
+print("")$
+
+print("2. RADIAL OBSTRUCTION (Analysis 2):")$
+print("   A purely radial hedgehog has zero curl => no self-wrapping.")$
+print("   Self-wrapping requires non-radial structure (phase winding).")$
+print("   The SCP braid has 50-70% transverse content => significant")$
+print("   self-wrapping.  The back-reaction is ATTRACTIVE.")$
+print("")$
+
+print("3. BELTRAMI INCOMPATIBILITY (Analysis 3):")$
+print("   Perfect self-trapping (curl(phi) = lambda phi) requires")$
+print("   div(phi) = 0 and equal component magnitudes.")$
+print("   The V(P) potential requires asymmetric components.")$
+print("   CONCLUSION: Pure Beltrami self-trapping is INCOMPATIBLE")$
+print("   with V(P) binding.  Only approximate Beltrami possible.")$
+print("")$
+
+print("4. NO TOPOLOGICAL PROTECTION (Analysis 4):")$
+print("   Helicity H = int phi.curl(phi) is NOT conserved.")$
+print("   Linking number of vortex lines is NOT topologically protected.")$
+print("   The Cosserat system has no topological barrier to soliton decay.")$
+print("")$
+
+print("5. NO NODE TRAPPING (Analysis 5):")$
+print("   The apparent m_eff^2 divergence at nodes is an artifact.")$
+print("   The actual self-wrapping force vanishes at nodes (F ~ phi_perp).")$
+print("   Nodes do not create enhanced trapping potential.")$
+print("")$
+
+print("6. EXPONENTIALLY SMALL RADIATION (Analysis 6):")$
+print("   A finite soliton ALWAYS radiates, but the rate can be")$
+print("   made exponentially small: P ~ epsilon^{2n} where")$
+print("   n = ceil(omega_L / omega_breath).")$
+print("   For R=10 soliton with 10% breathing: P ~ 10^{-10}.")$
+print("   PRACTICALLY ZERO on simulation timescales.")$
+print("")$
+
+print("7. SELF-WRAPPING COST IS SMALL (Analysis 7):")$
+print("   The extra mass gap eta^2 = 0.25 on transverse modes is only")$
+print("   11% of the bare m^2 = 2.25.  The strong V(P) binding (|mu|=41)")$
+print("   easily overcomes this.  Self-wrapping HELPS stability by")$
+print("   raising the minimum frequency for transverse radiation.")$
+print("")$
+
+print("================================================================")$
+print("  BOTTOM LINE")$
+print("================================================================")$
+print("")$
+print("A perfectly zero-radiation soliton does NOT exist in the Cosserat")$
+print("system, for three independent reasons:")$
+print("  (a) No topological protection (Analysis 4)")$
+print("  (b) Beltrami incompatible with V(P) (Analysis 3)")$
+print("  (c) Finite soliton always has harmonics above threshold (Analysis 6)")$
+print("")$
+print("HOWEVER: an EFFECTIVELY non-radiating soliton DOES exist:")$
+print("  - Large enough that fundamental omega < omega_L / n for large n")$
+print("  - Weakly breathing (small epsilon)")$
+print("  - Self-wrapping provides additional transverse confinement")$
+print("  - Radiation rate: P ~ epsilon^{2n}, exponentially suppressed")$
+print("")$
+print("The multi-node structure intuition is PARTIALLY correct:")$
+print("  - Multiple nodes CAN reduce the effective breathing amplitude")$
+print("    (distributed oscillation instead of single-mode breathing)")$
+print("  - More nodes => more internal degrees of freedom => energy")$
+print("    distributes among modes rather than concentrating in one")$
+print("  - BUT: nodes do not create mass holes (Analysis 5)")$
+print("  - AND: there is no topological protection (Analysis 4)")$
+print("")$
+print("The path to a long-lived soliton is NOT topological closure")$
+print("but rather SPECTRAL ENGINEERING: tuning the soliton size and")$
+print("breathing amplitude so that all radiating harmonics are")$
+print("exponentially suppressed.")$
+print("")$
+print("Done.")$

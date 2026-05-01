@@ -44,37 +44,43 @@ typedef struct {
 __device__ __constant__ float d_vs2_P[VS2_BS][VS2_NC];      /* cubic: 8×4 */
 
 static void vs2_gpu_init_projection(void) {
-    float V[VS2_BS][VS2_NC];
+    /* Chebyshev basis: T0(s)=1, T1(s)=s, T2(s)=2s²-1, T3(s)=4s³-3s
+     * where s = 2*t - 1 maps [0,1] -> [-1,1].
+     * Condition number ~3.8 in 3D vs ~870k for monomials. */
+    double V[VS2_BS][VS2_NC];
     for (int i = 0; i < VS2_BS; i++) {
-        float t = (float)i / (VS2_BS - 1);
-        V[i][0]=1; V[i][1]=t; V[i][2]=t*t; V[i][3]=t*t*t;
+        double t = (double)i / (VS2_BS - 1);
+        double s = 2*t - 1;
+        V[i][0]=1; V[i][1]=s; V[i][2]=2*s*s-1; V[i][3]=4*s*s*s-3*s;
     }
-    float VtV[VS2_NC][VS2_NC] = {};
+    double VtV[VS2_NC][VS2_NC] = {};
     for (int a = 0; a < VS2_NC; a++)
         for (int b = 0; b < VS2_NC; b++)
             for (int i = 0; i < VS2_BS; i++) VtV[a][b] += V[i][a]*V[i][b];
 
-    float aug[VS2_NC][2*VS2_NC];
+    double aug[VS2_NC][2*VS2_NC];
     for (int a = 0; a < VS2_NC; a++) {
         for (int b = 0; b < VS2_NC; b++) {
             aug[a][b] = VtV[a][b];
-            aug[a][VS2_NC+b] = (a==b)?1.0f:0.0f;
+            aug[a][VS2_NC+b] = (a==b)?1.0:0.0;
         }
     }
     for (int col = 0; col < VS2_NC; col++) {
-        float d = aug[col][col];
+        double d = aug[col][col];
         for (int j = 0; j < 2*VS2_NC; j++) aug[col][j] /= d;
         for (int row = 0; row < VS2_NC; row++) {
             if (row==col) continue;
-            float f = aug[row][col];
+            double f = aug[row][col];
             for (int j = 0; j < 2*VS2_NC; j++) aug[row][j] -= f*aug[col][j];
         }
     }
+    /* Projection matrix P = (V^T V)^{-1} V^T — computed in double, stored as float */
     float P[VS2_BS][VS2_NC];
     for (int i = 0; i < VS2_BS; i++)
         for (int a = 0; a < VS2_NC; a++) {
-            P[i][a] = 0;
-            for (int m = 0; m < VS2_NC; m++) P[i][a] += aug[a][VS2_NC+m]*V[i][m];
+            double sum = 0;
+            for (int m = 0; m < VS2_NC; m++) sum += aug[a][VS2_NC+m]*V[i][m];
+            P[i][a] = (float)sum;
         }
     cudaMemcpyToSymbol(d_vs2_P, P, sizeof(P));
 }
@@ -108,25 +114,26 @@ __global__ void vs2_fit_multi_patches(
     long idx = valid ? (long)gi*N*N + gj*N + gk : 0;
 
     /* Read all 6 fields */
-    float fields[6];
-    fields[0] = valid ? (float)phi0[idx] : 0;
-    fields[1] = valid ? (float)phi1[idx] : 0;
-    fields[2] = valid ? (float)phi2[idx] : 0;
-    fields[3] = valid ? (float)theta0[idx] : 0;
-    fields[4] = valid ? (float)theta1[idx] : 0;
-    fields[5] = valid ? (float)theta2[idx] : 0;
+    double fields[6];
+    fields[0] = valid ? phi0[idx] : 0;
+    fields[1] = valid ? phi1[idx] : 0;
+    fields[2] = valid ? phi2[idx] : 0;
+    fields[3] = valid ? theta0[idx] : 0;
+    fields[4] = valid ? theta1[idx] : 0;
+    fields[5] = valid ? theta2[idx] : 0;
 
-    /* Shared memory: 6 fields × 64 coefficients = 384 floats */
+    /* Shared memory: 6 fields × 64 coefficients — accumulate in float
+     * (double atomicAdd on shared memory may silently fail on some GPUs) */
     __shared__ float s_coeffs[VS2_NFIELDS][VS2_NCOEFFS];
 
-    /* Zero shared memory — each thread zeros part */
+    /* Zero shared memory */
     for (int i = threadIdx.x; i < VS2_NFIELDS * VS2_NCOEFFS; i += blockDim.x)
-        ((float*)s_coeffs)[i] = 0;
+        ((float*)s_coeffs)[i] = 0.0f;
     __syncthreads();
 
-    /* Accumulate tricubic coefficients for each field */
+    /* Chebyshev basis evaluation: P already contains (V^T V)^{-1} V^T */
     for (int f = 0; f < VS2_NFIELDS; f++) {
-        float val = fields[f];
+        float val = (float)fields[f];
         for (int a = 0; a < VS2_NC; a++)
         for (int b = 0; b < VS2_NC; b++)
         for (int c = 0; c < VS2_NC; c++) {
@@ -136,7 +143,7 @@ __global__ void vs2_fit_multi_patches(
     }
     __syncthreads();
 
-    /* Write output: [field0(64) | field1(64) | ... | field5(64)] */
+    /* Write output */
     long base = (long)patch_idx * VS2_MULTI_TOTAL;
     for (int i = threadIdx.x; i < VS2_MULTI_TOTAL; i += blockDim.x)
         out_coeffs[base + i] = ((float*)s_coeffs)[i];

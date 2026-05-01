@@ -194,18 +194,29 @@ static void init_template(Grid *g, const Config *c) {
     }
     free(buf); sfa_close(tmpl);
 
-    int ci = N/2, cj = N/2, ck = N/2, half = TN/2;
+    /* Map template voxels to destination by PHYSICAL coordinate (not index).
+     * Template voxel (ti,tj,tk) is at physical position:
+     *   tx = -TL + ti*Tdx, ty = -TL + tj*Tdx, tz = -TL + tk*Tdx
+     * Find nearest destination voxel:
+     *   gi = round((tx + L) / dx), etc.
+     * This correctly handles different grid resolutions. */
     int placed = 0;
     for (int ti = 0; ti < TN; ti++) {
-        int gi = ci+ti-half; if (gi < 0 || gi >= N) continue;
+        double tx = -TL + ti*Tdx;
+        int gi = (int)((tx + L) / dx + 0.5);
+        if (gi < 0 || gi >= N) continue;
         for (int tj = 0; tj < TN; tj++) {
-            int gj = cj+tj-half; if (gj < 0 || gj >= N) continue;
+            double ty = -TL + tj*Tdx;
+            int gj = (int)((ty + L) / dx + 0.5);
+            if (gj < 0 || gj >= N) continue;
             for (int tk = 0; tk < TN; tk++) {
-                int gk = ck+tk-half; if (gk < 0 || gk >= N) continue;
-                long tidx = (long)ti*TNN + tj*TN + tk, gidx = (long)gi*NN + gj*N + gk;
-                double tz = -TL + tk*Tdx;
+                double tz_phys = -TL + tk*Tdx;
+                int gk = (int)((tz_phys + L) / dx + 0.5);
+                if (gk < 0 || gk >= N) continue;
+                long tidx = (long)ti*TNN + tj*TN + tk;
+                long gidx = (long)gi*NN + gj*N + gk;
                 for (int a = 0; a < NFIELDS; a++) {
-                    double ph_bg_t = k_bg*tz + 2*PI*a/3.0;
+                    double ph_bg_t = k_bg*tz_phys + 2*PI*a/3.0;
                     double bg_phi = c->A_bg*cos(ph_bg_t), bg_vel = omega_bg*c->A_bg*sin(ph_bg_t);
                     g->phi[a][gidx] += tphi[a][tidx] - bg_phi;
                     g->phi_vel[a][gidx] += tvel[a][tidx] - bg_vel;

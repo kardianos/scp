@@ -1,0 +1,164 @@
+/* full_stability.mac — Full parametric stability + depletion analysis
+ *
+ * NO magic constants. Both conditions expressed in terms of
+ * (m, mu, kappa, eta, A, A_bg, R).
+ *
+ * Run: maxima --very-quiet -b full_stability.mac
+ */
+
+/* ======== The two conditions ======== */
+
+/* 1. Sub-threshold breathing (V53, full form):
+ *    alpha * S(xi) + beta^2 < 1
+ *    alpha = |mu| / m^2
+ *    xi = kappa * P_peak^2
+ *    S(xi) = |1 - 3*xi| / (1 + xi)^3
+ *    beta = pi * eta / (m * R)
+ *
+ * P_peak for a 3-axis Lissajous with phases (0, pi/3, pi/3):
+ *    P_peak = A^3 * cos(0)*cos(pi/3)*cos(pi/3) = A^3/4
+ */
+
+P_peak(A) := A^3 / 4;
+xi(A, kappa) := kappa * P_peak(A)^2;
+S(xi_val) := abs(1 - 3*xi_val) / (1 + xi_val)^3;
+alpha(mu, m) := abs(mu) / m^2;
+beta(eta, m, R) := %pi * eta / (m * R);
+
+breathing_LHS(mu, m, kappa, eta, A, R) :=
+    alpha(mu, m) * S(xi(A, kappa)) + beta(eta, m, R)^2;
+
+/* Condition 1: breathing_LHS < 1 */
+
+/* 2. Self-reinforcing depletion:
+ *    |V(P_center)| * R^3 > (1/2) * rho_bg * m^2 * R^5
+ *    Simplifies to: depletion_ratio > (m*R)^2 / 2
+ *
+ *    depletion_ratio = A^6 * |mu| / (2 * A_bg^2 * (A^6*kappa/16 + 1) * m^2)
+ *    (from Lissajous phases 0, pi/3, pi/3)
+ */
+
+V_P(P, mu, kappa) := (mu/2) * P^2 / (1 + kappa * P^2);
+
+depletion_ratio(mu, m, kappa, A, A_bg) :=
+    A^6 * abs(mu) / (2 * A_bg^2 * (A^6 * kappa / 16 + 1) * m^2);
+
+depletion_threshold(m, R) := (m * R)^2 / 2;
+
+/* Condition 2: depletion_ratio > depletion_threshold */
+
+/* ======== Combined: find the feasible region ======== */
+
+print("==========================================================");
+print("FULL PARAMETRIC SCAN — no magic constants");
+print("==========================================================");
+print("");
+print("Condition 1 (breathing): alpha*S(xi) + beta^2 < 1");
+print("Condition 2 (depletion): ratio > (m*R)^2/2");
+print("");
+
+/* Scan over the full 7-parameter space.
+ * For each combo, check if BOTH conditions are met. */
+
+print("--- Parameters scanned ---");
+print("m:     1.0, 1.5, 2.0, 3.0");
+print("mu:    -5 to -300 (via alpha = |mu|/m^2 from 2 to 50)");
+print("kappa: 10, 30, 50, 100");
+print("eta:   0.1, 0.3, 0.5, 0.8, 1.0");
+print("A:     0.5, 0.8, 1.0, 1.5, 2.0");
+print("A_bg:  0.05, 0.10, 0.15, 0.20, 0.30");
+print("R:     2.0, 3.0, 4.0, 5.0");
+print("");
+
+/* Count feasible combinations */
+n_feasible : 0;
+n_total : 0;
+
+/* Store best results */
+best_margin : -1000;
+
+print("  m    mu     kap  eta    A   A_bg   R  | breath  thresh | depl_r  depl_t | OK?");
+print("-------------------------------------------------------------------------------------");
+
+for m_val in [1.0, 1.5, 2.0, 3.0] do
+for alpha_val in [2, 3, 5, 7, 10, 15, 20, 30, 50] do
+for kappa_val in [10, 30, 50, 100] do
+for eta_val in [0.1, 0.3, 0.5, 0.8, 1.0] do
+for A_val in [0.5, 0.8, 1.0, 1.5, 2.0] do
+for A_bg_val in [0.05, 0.10, 0.15, 0.20, 0.30] do
+for R_val in [2.0, 3.0, 4.0, 5.0] do (
+    n_total : n_total + 1,
+    mu_val : -alpha_val * m_val^2,
+
+    /* Condition 1: breathing */
+    xi_val : float(xi(A_val, kappa_val)),
+    S_val : float(S(xi_val)),
+    alpha_v : float(alpha_val),
+    beta_v : float(beta(eta_val, m_val, R_val)),
+    breath_lhs : float(alpha_v * S_val + beta_v^2),
+
+    /* Condition 2: depletion */
+    dr : float(depletion_ratio(mu_val, m_val, kappa_val, A_val, A_bg_val)),
+    dt_val : float(depletion_threshold(m_val, R_val)),
+
+    /* Both conditions met? */
+    if breath_lhs < 1.0 and dr > dt_val then (
+        n_feasible : n_feasible + 1,
+        /* Margin: how far inside both conditions */
+        margin : min(1.0 - breath_lhs, dr - dt_val),
+        if margin > best_margin then (
+            best_margin : margin,
+            best_params : [m_val, mu_val, kappa_val, eta_val, A_val, A_bg_val, R_val,
+                           breath_lhs, dt_val, dr]
+        ),
+        /* Only print the ones with good margin */
+        if margin > 0.5 then
+            printf(true, " ~3,1f ~6,1f  ~4d ~4,2f ~4,1f ~5,2f ~4,1f | ~6,3f  1.000 | ~7,1f ~7,1f | YES~%",
+                   m_val, mu_val, kappa_val, eta_val, A_val, A_bg_val, R_val,
+                   breath_lhs, dr, dt_val)
+    )
+);
+
+printf(true, "~%Feasible: ~d / ~d combinations~%", n_feasible, n_total);
+print("");
+
+if n_feasible > 0 then (
+    print("BEST (largest margin):"),
+    printf(true, "  m=~3,1f mu=~6,1f kappa=~d eta=~4,2f A=~4,1f A_bg=~5,2f R=~4,1f~%",
+           best_params[1], best_params[2], best_params[3], best_params[4],
+           best_params[5], best_params[6], best_params[7]),
+    printf(true, "  breathing_LHS = ~6,3f (need < 1)~%", best_params[8]),
+    printf(true, "  depletion_ratio = ~7,1f (need > ~7,1f)~%", best_params[10], best_params[9])
+);
+
+/* ======== Focused scan around promising region ======== */
+print("");
+print("==========================================================");
+print("FOCUSED SCAN: top candidates with details");
+print("==========================================================");
+print("");
+print("  m    mu     kap  eta    A   A_bg   R  | S(xi)    xi     beta  | breath | depl_r  thresh | margin");
+
+for m_val in [1.0, 1.5, 2.0, 3.0] do
+for alpha_val in [3, 5, 7, 10, 15] do
+for kappa_val in [20, 50, 100] do
+for eta_val in [0.3, 0.5, 0.8] do
+for A_val in [0.8, 1.0, 1.5, 2.0] do
+for A_bg_val in [0.10, 0.15, 0.20] do
+for R_val in [2.0, 3.0] do (
+    mu_val : -alpha_val * m_val^2,
+    xi_val : float(xi(A_val, kappa_val)),
+    S_val : float(S(xi_val)),
+    beta_v : float(beta(eta_val, m_val, R_val)),
+    breath_lhs : float(alpha_val * S_val + beta_v^2),
+    dr : float(depletion_ratio(mu_val, m_val, kappa_val, A_val, A_bg_val)),
+    dt_val : float(depletion_threshold(m_val, R_val)),
+
+    if breath_lhs < 1.0 and dr > dt_val then (
+        margin : min(1.0 - breath_lhs, (dr - dt_val)/dt_val),
+        if margin > 0.3 then
+            printf(true, " ~3,1f ~6,1f  ~4d ~4,2f ~4,1f ~5,2f ~4,1f | ~5,3f ~6,2f ~5,3f | ~5,3f  | ~7,1f ~7,1f | ~5,2f~%",
+                   m_val, mu_val, kappa_val, eta_val, A_val, A_bg_val, R_val,
+                   S_val, xi_val, beta_v, breath_lhs, dr, dt_val, margin)
+    )
+);

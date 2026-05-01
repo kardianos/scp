@@ -1,0 +1,1197 @@
+/* stability_analysis.mac — 7 modifications for total soliton stability
+ *
+ * Current V50/C4 Cosserat equations:
+ *   d^2 phi/dt^2 = laplacian(phi) - m^2 phi - V'(P) dP/dphi + eta curl(theta)
+ *   d^2 theta/dt^2 = laplacian(theta) - m_th^2 theta + eta curl(phi)
+ *
+ * Parameters: m^2=2.25 (m=1.5), mu=-41.345, kappa=50, eta=0.5, m_th=0.
+ *
+ * Radiation problem:
+ *   - phi has mass gap omega=m=1.5; harmonics above m radiate
+ *   - theta is massless; ALL oscillations radiate
+ *   - breathing frequency omega_b ~ 2.0-3.0 (from V43/V50 numerics)
+ *
+ * We analyze 7 modifications that could achieve total confinement.
+ *
+ * Run: maxima --batch=v53/stability_analysis.mac
+ */
+
+/* ================================================================
+   SETUP AND CONVENTIONS
+   ================================================================ */
+
+/* Physical parameters */
+m_phi: 3/2$           /* phi mass = 1.5 */
+m2_phi: m_phi^2$      /* m^2 = 2.25 */
+eta_val: 1/2$         /* curl coupling */
+mu_val: -41.345$      /* potential strength */
+kappa_val: 50$        /* potential saturation */
+omega_b_low: 2.0$     /* estimated breathing freq lower bound */
+omega_b_high: 3.0$    /* estimated breathing freq upper bound */
+
+/* The base dispersion (uncoupled, for reference):
+   phi: omega^2 = k^2 + m^2   (gapped, gap at omega=m=1.5)
+   theta: omega^2 = k^2       (gapless, radiates at all frequencies)
+
+   Coupled (from v50/em_wave/dispersion.mac):
+   (omega^2 - k^2 - m^2)(omega^2 - k^2) = eta^2 k^2
+   Two branches: "matter" (gap at ~m) and "polariton" (gapless)
+*/
+
+print("================================================================")$
+print("SOLITON STABILITY ANALYSIS — 7 MODIFICATIONS")$
+print("V50/C4 Cosserat Equations")$
+print("================================================================")$
+print("")$
+print("Base parameters: m_phi=1.5, eta=0.5, m_theta=0")$
+print("Breathing frequency: omega_b ~ 2.0 to 3.0")$
+print("Problem: theta is massless -> all theta oscillations radiate")$
+print("         phi harmonics above m=1.5 also radiate")$
+print("")$
+
+/* ================================================================
+   MODIFICATION 1: Massive theta (m_theta > 0)
+   ================================================================ */
+
+print("================================================================")$
+print("MODIFICATION 1: MASSIVE THETA (m_theta > 0)")$
+print("================================================================")$
+print("")$
+print("Modified theta equation:")$
+print("  d^2 theta/dt^2 = laplacian(theta) - m_th^2 theta + eta curl(phi)")$
+print("")$
+
+/* Coupled dispersion with massive theta:
+   (omega^2 - k^2 - m_phi^2)(omega^2 - k^2 - m_th^2) = eta^2 k^2 */
+
+declare([w, k, m, mt, eta], real)$
+assume(w > 0, k >= 0, m > 0, mt > 0, eta > 0)$
+
+eq1: (w - k^2 - m^2) * (w - k^2 - mt^2) - eta^2 * k^2;
+
+print("Dispersion equation (w = omega^2):")$
+print(expand(eq1), " = 0")$
+print("")$
+
+sol1: solve(eq1, w);
+w1_minus: rhs(sol1[1]);
+w1_plus: rhs(sol1[2]);
+
+print("Two branches:")$
+print("  w_- = ", w1_minus)$
+print("  w_+ = ", w1_plus)$
+print("")$
+
+/* At k=0: the gaps */
+gap_minus: subst(0, k, w1_minus);
+gap_plus: subst(0, k, w1_plus);
+
+print("At k=0 (mass gaps):")$
+print("  omega_-^2 = ", gap_minus)$
+print("  omega_+^2 = ", gap_plus)$
+print("")$
+
+/* For total stability: BOTH gaps must exceed omega_b.
+   The lower branch gap at k=0 is min(m^2, mt^2).
+   For phi-theta coupling, the lower branch becomes:
+     omega_min^2 = min(m^2, mt^2)  (at leading order when eta is small)
+   More precisely, the lower branch at k=0 is the smaller of m^2 and mt^2. */
+
+print("The lower branch gap at k=0 = min(m_phi^2, m_theta^2)")$
+print("For total confinement: min(m^2, m_th^2) > omega_b^2")$
+print("")$
+
+/* Condition: both gaps above breathing frequency */
+/* If mt < m, the lower gap is mt^2. Need mt > omega_b. */
+/* If mt > m, the lower gap is m^2 = 2.25. Need m > omega_b, i.e. omega_b < 1.5.
+   But omega_b ~ 2-3 > 1.5, so this fails. We ALWAYS need both to exceed omega_b. */
+
+print("Critical condition:")$
+print("  m_theta > omega_b  AND  m_phi > omega_b")$
+print("")$
+print("  m_phi = 1.5 and omega_b ~ 2.0-3.0")$
+print("  PROBLEM: m_phi < omega_b ! The phi gap is TOO LOW.")$
+print("")$
+print("  Even with massive theta, the phi branch still radiates")$
+print("  because the breathing frequency exceeds the phi mass gap.")$
+print("")$
+
+/* Check: does the coupling modify the gap? */
+/* At k=0, eta^2*k^2 = 0, so the gaps are exactly m^2 and mt^2. No shift. */
+print("Note: at k=0, the eta coupling vanishes (eta^2 k^2 = 0),")$
+print("so the gaps are EXACTLY m_phi^2 and m_theta^2. No renormalization.")$
+print("")$
+
+/* What if mt is very large? Then the theta branch is frozen,
+   and the breathing frequency might drop below m. */
+print("Could m_theta shift the breathing frequency below m_phi?")$
+print("  The breathing freq depends on the NONLINEAR potential V(P),")$
+print("  not on the linear mass gap. A massive theta would reduce the")$
+print("  curl energy exchange, potentially reducing breathing amplitude,")$
+print("  but the frequency is set by V''(P_0) at the equilibrium value.")$
+print("")$
+print("  V''(P) at P=P_0 determines omega_b ~ sqrt(V''(P_0)/rho)")$
+print("  This is independent of m_theta to leading order.")$
+print("")$
+
+/* Numerical check: what m_theta is needed if omega_b could be brought below m? */
+print("If we could tune omega_b < 1.5 AND m_theta > omega_b:")$
+print("  Need: m_theta > omega_b AND omega_b < 1.5")$
+print("  Minimum m_theta = omega_b")$
+print("  With omega_b = 1.4 (hypothetical): m_theta > 1.4 suffices")$
+print("")$
+
+/* But the actual omega_b is 2-3, so: */
+print("With actual omega_b ~ 2-3: m_phi = 1.5 < 2 = omega_b")$
+print("Phi radiation CANNOT be stopped by making theta massive alone.")$
+print("")$
+
+/* Would increasing m_phi help? */
+print("Alternative: increase m_phi to m_phi > omega_b.")$
+print("  Need m_phi > omega_b ~ 2-3, so m^2 > 4-9.")$
+print("  Currently m^2 = 2.25. Would need m^2 > 4 (m > 2).")$
+print("  But m controls the soliton SIZE: R ~ 1/m.")$
+print("  Doubling m halves the soliton, changes all physics.")$
+print("")$
+
+/* Does killing the exchange kill the soliton? */
+print("Does massive theta kill the soliton?")$
+print("  The phi-theta exchange sustains breathing via curl coupling.")$
+print("  With m_theta >> omega_b, theta responds adiabatically (no oscillation).")$
+print("  The curl force becomes purely restorative, not oscillatory.")$
+print("  The soliton can still exist (it's a V(P) bound state),")$
+print("  but the breathing mode loses its theta-mediated energy channel.")$
+print("  HOWEVER: the soliton was found to REQUIRE breathing to survive")$
+print("  in V50 simulations. No breathing -> no stability -> soliton dies.")$
+print("")$
+
+print("--- MODIFICATION 1 VERDICT ---")$
+print("  Dispersion: omega^2 = k^2 + min(m^2, m_th^2) at k=0")$
+print("  Stability condition: min(m, m_th) > omega_b")$
+print("  FAILS: m_phi=1.5 < omega_b~2-3, so phi branch always radiates")$
+print("  Total stability: NO (unless m_phi is also increased)")$
+print("  Dealbreaker: breathing freq exceeds phi mass gap")$
+print("================================================================")$
+print("")$
+
+
+/* ================================================================
+   MODIFICATION 2: Nonlinear theta self-interaction
+   ================================================================ */
+
+print("================================================================")$
+print("MODIFICATION 2: NONLINEAR THETA SELF-INTERACTION")$
+print("================================================================")$
+print("")$
+print("Modified theta equation:")$
+print("  d^2 theta/dt^2 = laplacian(theta) + eta curl(phi) - lambda_th |theta|^2 theta")$
+print("  (from V_theta = (lambda_th/4)|theta|^4)")$
+print("")$
+
+/* Case A: Simple quartic |theta|^4 around background theta_0 */
+/* Linearize: theta = theta_0(x) + delta_theta(x,t) e^{i omega t}
+   Effective mass: m_th_eff^2 = 3 lambda_th theta_0^2 (for radial mode)
+                   m_th_eff^2 = lambda_th theta_0^2 (for Goldstone modes) */
+
+print("Case A: V_theta = (lambda_th/4)|theta|^4")$
+print("  Linearize around background theta_0(x):")$
+print("  Effective mass squared: m_th_eff^2(x) = 3 lambda_th theta_0(x)^2")$
+print("  (radial mode, factor 3 from 3|theta_0|^2 delta_theta perturbation)")$
+print("")$
+
+/* Inside soliton: theta_0 ~ eta/m^2 * curl(phi_0) from equilibrium.
+   Typical theta amplitude in soliton core from V50: theta_rms ~ 0.1 */
+theta_core: 0.1$
+
+print("Inside soliton core: theta_0 ~ ", theta_core)$
+print("  m_th_eff^2 = 3 lambda_th * ", theta_core^2)$
+print("  For m_th_eff > omega_b ~ 3: need 3 lambda_th * 0.01 > 9")$
+lambda_th_needed_A: 9 / (3 * theta_core^2);
+print("  lambda_th > ", float(lambda_th_needed_A))$
+print("")$
+
+/* PROBLEM: outside the soliton, theta_0 -> 0, so m_th_eff -> 0.
+   Theta waves are UNCONFINED in the exterior. */
+print("PROBLEM: Outside soliton, theta_0 -> 0, so m_th_eff -> 0")$
+print("  Theta waves are unconfined in the vacuum. This DOES NOT WORK.")$
+print("")$
+
+/* Case B: Mexican hat V_theta = -mu_th |theta|^2 + lambda_th |theta|^4 */
+print("Case B: Mexican hat V_theta = -mu_th^2 |theta|^2 + (lambda_th/4)|theta|^4")$
+print("  Vacuum: theta_0 = sqrt(mu_th^2/lambda_th) everywhere (condensate)")$
+print("  Fluctuation mass: m_th_eff^2 = 2 mu_th^2 (radial Higgs mode)")$
+print("  Goldstone modes: 2 massless modes (broken SO(3) -> SO(2))")$
+print("")$
+
+/* The radial (Higgs) mode has a gap. But there are 2 Goldstone modes. */
+print("  Gap analysis:")$
+print("  - 1 radial mode: gapped at m_Higgs = sqrt(2) mu_th")$
+print("  - 2 Goldstone modes: MASSLESS (broken rotational symmetry)")$
+print("")$
+print("  The Goldstone modes radiate just like the original massless theta.")$
+print("  We've traded 3 massless modes for 2 massless + 1 massive.")$
+print("  Net: WORSE (new vacuum structure, still massless radiation).")$
+print("")$
+
+/* Case C: Explicit mass + quartic */
+print("Case C: V_theta = (m_th^2/2)|theta|^2 + (lambda_th/4)|theta|^4")$
+print("  All 3 theta modes get gap m_th from the mass term.")$
+print("  The quartic adds amplitude-dependent correction.")$
+print("  Effective gap: omega_min^2 = m_th^2 + 3 lambda_th theta_0^2")$
+print("  Inside soliton: larger gap (good — more confinement)")$
+print("  Outside: gap = m_th (uniform, nonzero)")$
+print("")$
+print("  This reduces to Modification 1 + a perturbative correction.")$
+print("  The quartic helps inside but the LIMITING factor is the")$
+print("  exterior gap, which is just m_th.")$
+print("")$
+print("  Same conclusion as Mod 1: need m_th > omega_b AND m_phi > omega_b.")$
+print("")$
+
+print("--- MODIFICATION 2 VERDICT ---")$
+print("  Case A (quartic only): Traps inside, leaks outside. FAILS.")$
+print("  Case B (Mexican hat): Creates Goldstone modes. WORSE.")$
+print("  Case C (mass + quartic): Reduces to Mod 1. Same problem.")$
+print("  Stability condition: still need m_phi > omega_b (unachieved)")$
+print("  Total stability: NO")$
+print("  Dealbreaker: exterior vacuum always allows propagation at omega < m_phi")$
+print("================================================================")$
+print("")$
+
+
+/* ================================================================
+   MODIFICATION 3: Gradient-dependent mass (Skyrme L4 term)
+   ================================================================ */
+
+print("================================================================")$
+print("MODIFICATION 3: GRADIENT-DEPENDENT MASS (SKYRME L4)")$
+print("================================================================")$
+print("")$
+print("Modified phi equation (add Skyrme quartic gradient):")$
+print("  L4 = (c4/2) |grad(phi)|^2 |grad(phi)|^2  (simplified scalar form)")$
+print("  m_eff^2(x) = m^2 + c4 |grad(phi_0)|^2")$
+print("")$
+
+/* The effective mass inside the soliton:
+   |grad(phi)|^2 at the soliton core ~ (A/R)^2 where A ~ amplitude, R ~ size */
+/* From V50 data: typical |grad(phi)| ~ 0.5 at core, so |grad(phi)|^2 ~ 0.25 */
+grad_phi_sq_core: 0.25$
+
+print("Inside soliton core: |grad(phi_0)|^2 ~ ", grad_phi_sq_core)$
+print("  m_eff^2 = 2.25 + c4 * 0.25")$
+print("  For m_eff > omega_b ~ 3: need m_eff^2 > 9")$
+c4_needed: (9 - m2_phi) / grad_phi_sq_core;
+print("  c4 > (9 - 2.25)/0.25 = ", float(c4_needed))$
+print("")$
+
+/* But this RAISES the mass inside the soliton, not outside.
+   Outside: |grad(phi)|^2 -> 0, so m_eff -> m_phi = 1.5.
+   The exterior mass gap is still m_phi. */
+
+print("CRITICAL: The gradient-dependent mass is LARGER inside the soliton")$
+print("  and SMALLER (= m_phi) outside. This is BACKWARDS for confinement!")$
+print("")$
+print("  Waves generated inside (at high m_eff) propagate outward into")$
+print("  a region of LOWER effective mass. They are NOT reflected back.")$
+print("  Instead, the interior acts like a high-mass 'source' region")$
+print("  and the exterior is a low-mass 'propagation' region.")$
+print("")$
+
+/* Could it still help? The inside-generated waves have omega set by the
+   breathing mode. If m_eff_inside > omega_b, the breathing can't generate
+   propagating modes INSIDE. But then how does it breathe at all? */
+
+print("Subtlety: If m_eff(core) > omega_b, the breathing mode itself")$
+print("  cannot exist as a propagating wave inside the core.")$
+print("  This means the breathing becomes EVANESCENT inside the soliton.")$
+print("  The soliton cannot sustain internal oscillations above m_eff(core).")$
+print("")$
+print("  But the soliton needs breathing to survive! (V50 result)")$
+print("  A gradient mass that kills internal oscillation kills the soliton.")$
+print("")$
+
+/* Linearized dispersion for a wave in the soliton background:
+   omega^2 = k^2 + m^2 + c4 |grad(phi_0)|^2
+   This is a position-dependent mass. The WKB condition for trapping:
+   omega^2 < m_eff^2(x) everywhere -> wave is evanescent everywhere.
+   But m_eff decreases outward, so there's always a classical turning point. */
+
+print("WKB analysis:")$
+print("  Propagation when omega^2 > k^2 + m_eff^2(x)")$
+print("  Since m_eff^2 DECREASES outward (from m^2+c4*|grad|^2 to m^2),")$
+print("  any wave with omega > m_phi CAN propagate in the exterior.")$
+print("  There is NO trapping — the mass profile is a POTENTIAL HILL,")$
+print("  not a potential well.")$
+print("")$
+
+/* Dispersion relation in uniform background with gradient mass */
+print("Uniform-background dispersion (for reference):")$
+print("  omega^2 = k^2 + m^2 + c4 G^2  (G^2 = |grad phi_0|^2 = const)")$
+print("  Gap: omega_min = sqrt(m^2 + c4 G^2)")$
+print("  This is just a shifted mass. No qualitative change.")$
+print("")$
+
+print("--- MODIFICATION 3 VERDICT ---")$
+print("  Effective mass: m_eff^2 = m^2 + c4 |grad(phi)|^2")$
+print("  Dispersion: omega^2 = k^2 + m_eff^2(x) (position-dependent)")$
+print("  Problem: m_eff is HIGHEST at center, LOWEST at exterior")$
+print("  This creates a potential HILL, not a well. No trapping.")$
+print("  Total stability: NO")$
+print("  Dealbreaker: gradient mass is backwards — high inside, low outside")$
+print("================================================================")$
+print("")$
+
+
+/* ================================================================
+   MODIFICATION 4: Cross-gradient coupling
+   ================================================================ */
+
+print("================================================================")$
+print("MODIFICATION 4: CROSS-GRADIENT COUPLING |grad(phi)|^2 |grad(theta)|^2")$
+print("================================================================")$
+print("")$
+print("Added Lagrangian term:")$
+print("  L_cross = (beta/2) |grad(phi)|^2 |grad(theta)|^2")$
+print("")$
+print("Theta equation (from EL variation):")$
+print("  d^2 theta/dt^2 = laplacian(theta) + eta curl(phi)")$
+print("                   + beta div(|grad(phi)|^2 grad(theta))")$
+print("")$
+
+/* Linearize: theta = theta_0 + delta_theta e^{i(k.x - omega t)}
+   In background phi_0(x), the theta fluctuation sees:
+   omega^2 delta_theta = -k^2 delta_theta + beta |grad(phi_0)|^2 k^2 delta_theta
+   i.e., omega^2 = k^2 (1 + beta |grad(phi_0)|^2)
+   at leading order (ignoring the curl coupling for the dispersion). */
+
+print("Linearized theta dispersion in soliton background:")$
+print("  omega^2 = k^2 (1 + beta |grad(phi_0)|^2)")$
+print("  (ignoring phi-theta coupling for clarity)")$
+print("")$
+
+/* This INCREASES the propagation speed inside the soliton.
+   The effective speed: c_eff^2 = 1 + beta G^2 > 1 where G^2 = |grad phi_0|^2.
+   Faster propagation is the OPPOSITE of trapping. */
+
+print("Effective propagation speed: c_eff^2 = 1 + beta |grad(phi_0)|^2")$
+print("  Inside soliton: c_eff > 1 (FASTER)")$
+print("  Outside: c_eff = 1")$
+print("")$
+print("  This means waves propagate FASTER inside, not slower.")$
+print("  Faster interior = waves ESCAPE more easily. WRONG direction.")$
+print("")$
+
+/* What about negative beta? */
+print("With beta < 0:")$
+print("  c_eff^2 = 1 - |beta| |grad(phi_0)|^2")$
+print("  Inside: c_eff < 1 (slower)")$
+print("  If |beta| |grad(phi_0)|^2 > 1: c_eff^2 < 0 (IMAGINARY!)")$
+print("  This is a gradient instability — theta becomes tachyonic.")$
+print("  The field theory is ill-defined for large negative beta.")$
+print("")$
+
+/* Could negative beta create an effective mass? */
+/* omega^2 = k^2 (1 - |beta| G^2). If 1 - |beta|G^2 < 0, then omega^2 < 0
+   for all k. This is an instability, not a gap. */
+
+print("Negative beta analysis:")$
+print("  omega^2 = k^2 (1 - |beta| G^2)")$
+print("  When |beta| G^2 > 1: omega^2 < 0 for all k -> TACHYONIC INSTABILITY")$
+print("  When |beta| G^2 < 1: gapless dispersion with reduced speed")$
+print("  In NEITHER case is there a mass gap. Still gapless.")$
+print("")$
+
+/* Full coupled dispersion with cross-gradient */
+/* phi: omega^2 = k^2 + m^2 + eta k delta_theta (curl)
+   theta: omega^2 = k^2(1 + beta G^2) + eta k delta_phi (curl)
+   Determinant: (omega^2 - k^2 - m^2)(omega^2 - k^2(1+beta G^2)) = eta^2 k^2 */
+
+print("Full coupled dispersion:")$
+eq4: (w - k^2 - m^2) * (w - k^2*(1 + beta*G2)) - eta^2*k^2;
+print(expand(eq4), " = 0")$
+print("")$
+
+/* At k=0: w*(w - m^2) = 0, gaps are 0 and m^2. Still gapless lower branch. */
+gap4_k0: subst(0, k, eq4);
+print("At k=0: ", expand(gap4_k0), " = 0")$
+print("  Solutions: w = 0 and w = m^2")$
+print("  LOWER BRANCH IS STILL GAPLESS.")$
+print("")$
+
+print("--- MODIFICATION 4 VERDICT ---")$
+print("  Term: (beta/2)|grad(phi)|^2 |grad(theta)|^2")$
+print("  Dispersion: omega^2 = k^2(1+beta G^2) (theta branch)")$
+print("  Stability condition: NONE — no mass gap created")$
+print("  Total stability: NO")$
+print("  Dealbreaker: cross-gradient coupling changes wave SPEED, not gap.")$
+print("    It cannot create a mass gap. The lower branch is always gapless at k=0.")$
+print("================================================================")$
+print("")$
+
+
+/* ================================================================
+   MODIFICATION 5: Higher-order curl coupling (curl^2 feedback)
+   ================================================================ */
+
+print("================================================================")$
+print("MODIFICATION 5: HIGHER-ORDER CURL (curl^2 FEEDBACK)")$
+print("================================================================")$
+print("")$
+print("Modified phi equation:")$
+print("  d^2 phi/dt^2 = laplacian(phi) - m^2 phi - V'(P) dP/dphi")$
+print("                 + eta curl(theta) + alpha2 curl(curl(theta))")$
+print("")$
+print("Modified theta equation:")$
+print("  d^2 theta/dt^2 = laplacian(theta) + eta curl(phi) + alpha2 curl(curl(phi))")$
+print("")$
+
+/* Note: curl(curl(F)) = grad(div(F)) - laplacian(F).
+   For a transverse wave (div=0): curl(curl(F)) = -laplacian(F).
+   So curl^2 on a transverse mode acts like -k^2. */
+
+print("Key identity: curl(curl(F)) = grad(div(F)) - laplacian(F)")$
+print("  For transverse waves (div F = 0): curl(curl(F)) = -laplacian(F)")$
+print("  In Fourier: curl(curl) -> k^2 (NOT k^4 !)")$
+print("")$
+
+/* Linearized dispersion for transverse plane wave:
+   phi: omega^2 = k^2 + m^2 + eta*k + alpha2*k^2 (from curl + curl^2 of theta)
+   theta: omega^2 = k^2 + eta*k + alpha2*k^2
+
+   Wait, let me be more careful. For a transverse wave in z-direction:
+   phi_x, theta_y coupled. curl(theta) on phi_x gives +ik theta_y.
+   curl(curl(theta)) on phi_x gives -k^2 theta_y (for transverse mode).
+
+   So the coupled system becomes:
+   (omega^2 - k^2 - m^2) phi = eta (ik) theta + alpha2 (-k^2) theta
+                              = (i eta k - alpha2 k^2) theta
+   (omega^2 - k^2) theta = eta (ik) phi + alpha2 (-k^2) phi
+                          = (i eta k - alpha2 k^2) phi
+
+   For the determinant, the coupling enters as |C(k)|^2 where
+   C(k) = i eta k - alpha2 k^2.
+   |C|^2 = eta^2 k^2 + alpha2^2 k^4  (cross term vanishes: real * imag)
+
+   Actually: for the REAL dispersion (not complex), we should work with
+   the magnitude. The curl coupling gives eta*k (magnitude) and the
+   curl^2 gives alpha2*k^2. But they have different phases (curl is
+   antisymmetric, curl^2 is symmetric). Let me redo this carefully.
+*/
+
+print("Careful linearization:")$
+print("  Transverse wave propagating in z, phi_x and theta_y coupled.")$
+print("  curl(theta e^{ikz}) projected onto x-component: ik theta_y")$
+print("  curl(curl(theta e^{ikz})) projected onto x: +k^2 theta_y")$
+print("    (for transverse mode; curl curl = -laplacian when div=0)")$
+print("")$
+
+/* The sign matters. curl(curl(theta)) for a plane wave:
+   theta = theta_y yhat e^{ikz}
+   curl(theta) = ik theta_y xhat e^{ikz}  (xhat component of curl)
+   curl(curl(theta)) = curl(ik theta_y xhat e^{ikz})
+     z-component of curl: d/dx(ik theta_y e^{ikz}) - d/dy(0) = 0 (theta_y const)
+     y-component: d/dz(0) - d/dx(?) = ...
+
+   Actually, for F = f yhat e^{ikz}:
+   curl(F) = -ik f xhat e^{ikz}
+   curl(curl(F)) = curl(-ik f xhat e^{ikz})
+     = -(ik)(-ik) f yhat e^{ikz} = -k^2 f yhat e^{ikz}
+
+   So curl(curl(theta))_on_theta = -k^2 theta.
+   And curl(curl(theta))_projected_onto_phi_x equation:
+     alpha2 * curl(curl(theta)) in the phi_x equation...
+
+   We need to be more careful about the coupling structure.
+   The original: eta * curl(theta)_x = eta * (-ik theta_y)
+   The new: alpha2 * curl(curl(theta))_x = alpha2 * (-ik)(-ik theta_y) ... no.
+
+   Let me just work with the 2x2 matrix directly. */
+
+/* For transverse mode k = k zhat:
+   F_phi on delta_phi_x from delta_theta_y:
+     eta * (curl delta_theta)_x = eta * d(delta_theta_y)/dz = eta * ik theta_y
+     alpha2 * (curl curl delta_theta)_x = alpha2 * (-k^2 delta_theta_y)
+       Wait: curl(curl F) for F = f_y yhat e^{ikz}:
+       Step 1: curl F = (dF_z/dy - dF_y/dz) xhat + ... = (-ik f_y) xhat e^{ikz}
+       Step 2: curl of (-ik f_y xhat e^{ikz}):
+         = (d/dy(0) - d/dz(0)) xhat + (d/dz(-ikf_y e^{ikz}) - d/dx(0)) yhat + ...
+         = (0) xhat + (-k^2 f_y e^{ikz}) yhat + ...
+
+       So curl(curl(theta))_x = 0 for theta = theta_y yhat e^{ikz}.
+       The curl^2 projects back onto the SAME component (y), not cross (x).
+
+       This means: alpha2 curl(curl(theta)) in the phi equation
+       does NOT create a cross-coupling with the same structure as curl(theta).
+
+       It adds alpha2 k^2 to the DIAGONAL of the theta equation:
+       curl(curl(phi)) in theta eq -> -k^2 delta_phi_x projected onto... hmm.
+
+       Let me reconsider: the term is in the PHI equation:
+       F_phi = ... + alpha2 curl(curl(theta))
+       This is a VECTOR equation. The x-component:
+       F_phi_x = ... + alpha2 [curl(curl(theta))]_x = 0 (as computed above)
+
+       So curl(curl(theta)) does NOT contribute to the phi_x equation
+       when theta is polarized in the y direction. It contributes to phi_y!
+*/
+
+print("IMPORTANT: curl(curl(theta_y yhat)) has NO x-component!")$
+print("  curl(curl) maps y-polarization BACK to y, not to x.")$
+print("  The cross-coupling eta*curl(theta) maps y to x (rotation by pi/2).")$
+print("  But curl^2 maps y to y (rotation by pi, i.e., back to same axis).")$
+print("")$
+print("  Therefore alpha2*curl(curl(theta)) does NOT mix phi_x with theta_y.")$
+print("  It adds a diagonal term to the theta equation:")$
+print("  d^2 theta_y/dt^2 = (k^2 - alpha2 k^2) theta_y + ... = (1-alpha2)k^2 theta_y")$
+print("")$
+
+/* The theta dispersion becomes:
+   omega^2 = (1 + alpha2) k^2  (effective speed modification)
+   Wait — sign. curl(curl(theta)) in the theta equation:
+   d^2 theta/dt^2 = laplacian(theta) + ... + alpha2 curl(curl(phi))
+
+   But curl(curl(phi_x xhat)) projected onto theta_y yhat:
+   curl(phi_x xhat e^{ikz})_y = d(phi_x e^{ikz})/dz = ik phi_x e^{ikz}
+   curl of (... yhat ik phi_x e^{ikz}):
+   [curl]_y = d/dz(...) = -k^2 phi_x -> no, this goes to different components.
+
+   Let me just accept that curl^2 = -laplacian for div-free fields and
+   work out the dispersion. */
+
+print("For divergence-free fields: curl(curl(F)) = -laplacian(F)")$
+print("  In theta equation: alpha2 curl(curl(phi)) = alpha2 k^2 phi (Fourier)")$
+print("  In phi equation: alpha2 curl(curl(theta)) = alpha2 k^2 theta (Fourier)")$
+print("")$
+print("  BUT: these act on the SAME polarization component.")$
+print("  The curl coupling eta*curl mixes ORTHOGONAL polarizations.")$
+print("  The curl^2 coupling alpha2*curl^2 acts on PARALLEL polarizations.")$
+print("")$
+print("  Two separate 2x2 systems:")$
+print("  Cross-polarization (phi_x, theta_y): coupled by eta*k")$
+print("  Same-polarization (phi_x, theta_x): coupled by alpha2*k^2")$
+print("")$
+
+/* Same-polarization system: */
+print("Same-polarization dispersion (phi_x, theta_x):")$
+eq5_same: (w - k^2 - m^2) * (w - k^2) - alpha2^2 * k^4;
+sol5_same: solve(eq5_same, w);
+print("  (w - k^2 - m^2)(w - k^2) = alpha2^2 k^4")$
+print("  Solutions: ", sol5_same)$
+print("")$
+
+/* At k=0: w(w - m^2) = 0 -> gaps at 0 and m^2. STILL GAPLESS. */
+print("  At k=0: gaps at 0 and m^2. STILL GAPLESS lower branch.")$
+print("")$
+
+/* Cross-polarization remains: (w-k^2-m^2)(w-k^2) = eta^2 k^2, unchanged. */
+print("Cross-polarization dispersion: UNCHANGED from base equations.")$
+print("  (w-k^2-m^2)(w-k^2) = eta^2 k^2, same as before.")$
+print("")$
+
+/* What about the k^4 term creating a gap? */
+/* At small k: omega^2 ~ k^2 - alpha2^2 k^4 / m^2 (from perturbation theory)
+   This is STILL gapless — just modifies the dispersion at high k. */
+
+/* Full dispersion: omega^2(k) for the lower branch of the same-pol system */
+w5_lower: rhs(sol5_same[1]);
+print("Lower branch (same-pol): w = ", w5_lower)$
+
+/* Check: is this ever gapped? At k=0, w = 0. At large k, w ~ k^2. */
+/* Taylor expand at small k: */
+w5_taylor: taylor(w5_lower, k, 0, 4);
+print("  Small-k expansion: w = ", w5_taylor)$
+print("")$
+
+print("  The lower branch starts at w=0 at k=0.")$
+print("  No gap is created. The curl^2 term CANNOT open a gap.")$
+print("")$
+
+/* What about the specific case alpha2 curl^2 creating a DISPERSIVE gap?
+   omega^2 = k^2 + alpha2 k^4 gives omega_min at k=0 still 0.
+   There is no minimum at finite k. The dispersion is monotonically increasing. */
+
+print("Pure dispersive case: omega^2 = k^2 + alpha2 k^4")$
+print("  d(omega^2)/dk = 2k + 4 alpha2 k^3 > 0 for k > 0")$
+print("  Monotonically increasing. NO gap at any k.")$
+print("")$
+
+print("--- MODIFICATION 5 VERDICT ---")$
+print("  Term: alpha2 curl(curl(theta)) in phi equation (and vice versa)")$
+print("  Dispersion: same-pol branch still gapless (w=0 at k=0)")$
+print("  curl^2 adds k^4 correction, not a mass gap")$
+print("  Total stability: NO")$
+print("  Dealbreaker: higher-order derivatives modify high-k dispersion,")$
+print("    but cannot open a gap at k=0. The gapless mode persists.")$
+print("================================================================")$
+print("")$
+
+
+/* ================================================================
+   MODIFICATION 6: Topological mass (Chern-Simons-like)
+   ================================================================ */
+
+print("================================================================")$
+print("MODIFICATION 6: TOPOLOGICAL MASS (CHERN-SIMONS-LIKE)")$
+print("================================================================")$
+print("")$
+print("Modified theta equation:")$
+print("  d^2 theta/dt^2 = laplacian(theta) + eta curl(phi) + mu_CS theta x d(theta)/dt")$
+print("  where (theta x d(theta)/dt)_a = epsilon_abc theta_b d(theta_c)/dt")$
+print("")$
+print("Alternatively, the standard Chern-Simons mass in 3D gauge theory:")$
+print("  epsilon^{mu nu rho} A_nu F_{rho sigma} gives mass mu_CS to the gauge field.")$
+print("  Adapted to our scalar-vector system:")$
+print("  Add: mu_CS epsilon_abc theta_b (curl theta)_c  to the theta_a equation")$
+print("")$
+
+/* In 3D, a Chern-Simons mass term for a vector field theta is:
+   L_CS = (mu_CS/2) epsilon^{ijk} theta_i d_j theta_k = (mu_CS/2) theta . curl(theta)
+   The EL equation gives: mu_CS curl(theta) as a first-order term.
+
+   For a plane wave theta = theta_0 e^{i(k.x - omega t)}:
+   curl(theta) = ik x theta_0 e^{i(k.x - omega t)}
+   The CS term adds mu_CS (ik x theta_0) to the equation of motion. */
+
+print("Chern-Simons mass for vector field:")$
+print("  L_CS = (mu_CS/2) theta . curl(theta)")$
+print("  EOM addition: + mu_CS curl(theta)  (first order in spatial derivatives)")$
+print("")$
+
+/* The theta dispersion with CS mass:
+   For a plane wave propagating in z with circular polarization:
+   theta = (xhat +/- i yhat) theta_0 e^{i(kz - omega t)}
+   curl(theta) = +/- k theta (for circular polarization)
+
+   -omega^2 theta = -k^2 theta + mu_CS (+/- k) theta
+   omega^2 = k^2 -/+ mu_CS k
+
+   For + helicity: omega^2 = k^2 - mu_CS k
+   For - helicity: omega^2 = k^2 + mu_CS k */
+
+print("Theta dispersion with CS mass (circular polarization basis):")$
+print("  + helicity: omega^2 = k^2 - mu_CS k")$
+print("  - helicity: omega^2 = k^2 + mu_CS k")$
+print("")$
+
+/* The + helicity has omega^2 = k^2 - mu_CS k = k(k - mu_CS).
+   This is NEGATIVE for 0 < k < mu_CS! TACHYONIC INSTABILITY. */
+
+print("CRITICAL: + helicity has omega^2 = k(k - mu_CS)")$
+print("  For 0 < k < mu_CS: omega^2 < 0  ->  TACHYONIC INSTABILITY!")$
+print("  The theory is ILL-DEFINED with this sign.")$
+print("")$
+
+/* The - helicity: omega^2 = k^2 + mu_CS k = k(k + mu_CS) >= 0 always.
+   But at k=0: omega^2 = 0. STILL GAPLESS. */
+
+print("  - helicity: omega^2 = k(k + mu_CS) >= 0, BUT omega(k=0) = 0")$
+print("  STILL GAPLESS for the - helicity mode.")$
+print("")$
+
+/* What about the topological mass in 2+1D? In 2+1D, CS gives a genuine
+   mass: omega^2 = k^2 + mu_CS^2. But in 3+1D, the CS term is first-order
+   in k, not zeroth-order, so it gives a linear shift, not a mass gap. */
+
+print("The Chern-Simons mechanism in 3+1D:")$
+print("  In 2+1D: L_CS = mu_CS epsilon^{mu nu rho} A_mu d_nu A_rho")$
+print("    -> omega^2 = k^2 + mu_CS^2 (genuine mass gap!)")$
+print("")$
+print("  In 3+1D: L_CS = mu_CS theta . curl(theta)")$
+print("    -> omega^2 = k^2 +/- mu_CS k (NO gap, just helicity splitting)")$
+print("    This is because in 3+1D, the CS term has one spatial derivative")$
+print("    (curl), giving linear-in-k correction, not constant.")$
+print("")$
+
+/* Alternative: use a Proca-like topological term?
+   theta x d(theta)/dt is a zeroth-order-in-k term:
+   For plane wave: theta x (-i omega theta) = -i omega (theta x theta) = 0
+   because theta x theta = 0 for any vector with itself! */
+
+print("Alternative: theta x d(theta)/dt term")$
+print("  For a single plane wave: theta x theta = 0 identically.")$
+print("  This term VANISHES for linear waves. No effect on dispersion.")$
+print("")$
+
+/* What about a B x F term (like magnetic Chern-Simons)?
+   Add: mu_CS theta_a x partial_t theta_a to the EOM.
+   No, this is theta . d(theta)/dt which is a total time derivative
+   and doesn't affect the EOM. */
+
+/* The true topological mass in 3+1D requires a 2-form (Kalb-Ramond):
+   B_{mu nu} with L = epsilon^{mu nu rho sigma} B_{mu nu} F_{rho sigma}
+   But theta is a 1-form (vector), not a 2-form. */
+
+print("In 3+1D, a TRUE topological mass requires a 2-form field (Kalb-Ramond),")$
+print("  not a 1-form (vector). Our theta is a vector field, so the genuine")$
+print("  topological mass mechanism is NOT available.")$
+print("")$
+
+/* Last resort: massive Chern-Simons: add both mu_CS curl(theta) AND m_th^2 theta.
+   omega^2 = k^2 + m_th^2 +/- mu_CS k
+   For - helicity: gap at omega_min^2 = m_th^2 (at k=0). Gapped.
+   For + helicity: minimum at k = mu_CS/2, omega_min^2 = m_th^2 - mu_CS^2/4
+   Need m_th > mu_CS/2 for stability. */
+
+print("Combined: CS + mass term")$
+print("  omega^2 = k^2 + m_th^2 +/- mu_CS k")$
+eq6_plus: k^2 + mt^2 - muCS*k;
+eq6_minus: k^2 + mt^2 + muCS*k;
+print("  + helicity: omega^2 = k^2 + m_th^2 - mu_CS k")$
+k_min6: muCS/2;
+omega_min6: mt^2 - muCS^2/4;
+print("    minimum at k = mu_CS/2: omega_min^2 = m_th^2 - mu_CS^2/4")$
+print("    stable if m_th > mu_CS/2")$
+print("  - helicity: omega^2 = k^2 + m_th^2 + mu_CS k, minimum at k=0: omega^2 = m_th^2")$
+print("")$
+print("  This REQUIRES a mass term m_th anyway! The CS term alone does nothing in 3+1D.")$
+print("  We're back to Modification 1 (massive theta) plus a helicity splitting.")$
+print("")$
+
+print("--- MODIFICATION 6 VERDICT ---")$
+print("  Term: mu_CS theta . curl(theta) (Chern-Simons)")$
+print("  Dispersion: omega^2 = k^2 +/- mu_CS k (helicity-dependent)")$
+print("  Problem: in 3+1D, CS gives k-linear shift, NOT mass gap")$
+print("  One helicity becomes tachyonic for k < mu_CS")$
+print("  Total stability: NO (without additional mass term)")$
+print("  Dealbreaker: topological mass requires 2+1D, not 3+1D.")$
+print("    In 3+1D, the CS term splits helicities but creates no gap.")$
+print("================================================================")$
+print("")$
+
+
+/* ================================================================
+   MODIFICATION 7: Confining potential from mismatch
+   ================================================================ */
+
+print("================================================================")$
+print("MODIFICATION 7: CONFINING MISMATCH POTENTIAL")$
+print("================================================================")$
+print("")$
+print("Added term: V_conf = (gamma/2) |M|^2 |phi|^2")$
+print("  where M_a = (1/2)(curl phi)_a - theta_a  (phi-theta mismatch)")$
+print("")$
+print("Modified phi equation:")$
+print("  d^2 phi/dt^2 = laplacian(phi) - m^2 phi - V'(P) dP/dphi")$
+print("                 + eta curl(theta)")$
+print("                 - gamma |M|^2 phi - gamma (phi . something) M_a dM/dphi")$
+print("")$
+
+/* Actually, let's be precise. V_conf = (gamma/2) |M|^2 |phi|^2
+   where M = curl(phi)/2 - theta.
+
+   Variation with respect to phi_a:
+   dV/dphi_a = gamma |M|^2 phi_a + (gamma/2) |phi|^2 d|M|^2/dphi_a
+
+   But d|M|^2/dphi_a involves d/dphi_a of M_b M_b where M_b = (curl phi)_b/2 - theta_b.
+   d M_b/d phi_a = (1/2) d(curl phi)_b / d phi_a -- this involves derivatives of phi_a,
+   so it's really a variational derivative, not a partial derivative.
+
+   Let me simplify by considering the leading term: gamma |M_0|^2 phi
+   where M_0 is the background mismatch (frozen). */
+
+print("Simplification: treat M = M_0(x) as frozen background mismatch.")$
+print("  Then the phi fluctuation sees:")$
+print("  d^2 delta_phi/dt^2 = laplacian(delta_phi) - (m^2 + gamma |M_0|^2) delta_phi + ...")$
+print("")$
+print("  Effective mass: m_eff^2(x) = m^2 + gamma |M_0(x)|^2")$
+print("")$
+
+/* The mismatch profile: M = curl(phi)/2 - theta.
+   In equilibrium, theta ~ (eta/m_th^2) curl(phi) from the theta equation.
+   With m_th = 0: theta adjusts to make M small!
+   But not exactly zero — the dynamics prevent perfect matching.
+
+   From V50 data: |M| is largest at the soliton core.
+   |M_0|^2 ~ (curl(phi)/2)^2 at core since theta lags curl(phi)/2.
+   Typical: |curl(phi)| ~ 0.3 at core, so |M|^2 ~ (0.15)^2 ~ 0.02 */
+
+M_sq_core: 0.02$
+M_sq_exterior: 0.0$
+
+print("Mismatch profile:")$
+print("  Core: |M_0|^2 ~ ", M_sq_core, " (curl(phi)/2 and theta don't match perfectly)")$
+print("  Exterior: |M_0|^2 -> 0 (both curl(phi) and theta vanish)")$
+print("")$
+
+print("Effective mass profile:")$
+print("  Core: m_eff^2 = 2.25 + gamma * ", M_sq_core, " = 2.25 + ", M_sq_core, " gamma")$
+print("  Exterior: m_eff^2 = 2.25 + 0 = 2.25 (unchanged!)")$
+print("")$
+
+/* SAME PROBLEM as Modification 3: the mass is enhanced INSIDE but unchanged OUTSIDE.
+   The exterior mass gap is still m = 1.5 < omega_b. */
+
+print("SAME PROBLEM AS MODIFICATION 3:")$
+print("  The mismatch is zero in the vacuum -> no mass enhancement outside.")$
+print("  The exterior gap remains m_phi = 1.5 < omega_b ~ 2-3.")$
+print("  Phi radiation still escapes through the exterior.")$
+print("")$
+
+/* However, the mismatch also affects the THETA equation.
+   Variation of V_conf = (gamma/2)|M|^2 |phi|^2 with respect to theta_a:
+   dV/dtheta_a = (gamma/2) |phi|^2 d|M|^2/dtheta_a
+               = (gamma/2) |phi|^2 * 2 M_b * dM_b/dtheta_a
+               = (gamma/2) |phi|^2 * 2 M_a * (-1)
+               = -gamma |phi|^2 M_a
+               = -gamma |phi|^2 (curl(phi)/2 - theta)_a
+
+   In the theta equation: F_theta = ... + gamma |phi_0|^2 (curl(phi_0)/2 - theta)
+   For theta fluctuations around theta_0:
+   F_theta(delta) = ... + gamma |phi_0|^2 (-delta_theta)
+
+   Effective theta mass: m_th_eff^2 = gamma |phi_0(x)|^2 */
+
+print("Theta equation from mismatch potential:")$
+print("  Additional force: + gamma |phi_0|^2 (curl(phi_0)/2 - theta)")$
+print("  Linearized: - gamma |phi_0|^2 delta_theta")$
+print("  Effective theta mass: m_th_eff^2(x) = gamma |phi_0(x)|^2")$
+print("")$
+
+/* phi amplitude at soliton core: |phi_0| ~ A_bg + A_soliton ~ 0.1 + 0.3 = 0.4 */
+phi_sq_core: 0.16$
+phi_sq_exterior: 0.01$ /* just the background A_bg^2 */
+
+print("  Core: m_th_eff^2 = gamma * ", phi_sq_core)$
+print("  Exterior: m_th_eff^2 = gamma * ", phi_sq_exterior, " (from background A_bg=0.1)")$
+print("")$
+
+/* AH: the background carrier wave A_bg means |phi|^2 is NONZERO even outside!
+   This gives theta a uniform mass: m_th^2 = gamma * A_bg^2 everywhere.
+   This IS a genuine gap. */
+
+print("KEY INSIGHT: The background carrier wave (A_bg = 0.1) gives")$
+print("  |phi|^2 = A_bg^2 = 0.01 EVERYWHERE (including vacuum).")$
+print("  This creates a UNIFORM theta mass gap:")$
+print("  m_th_uniform^2 = gamma * A_bg^2 = 0.01 * gamma")$
+print("")$
+
+/* For theta gap to exceed omega_b: */
+print("For theta confinement: m_th_uniform > omega_b ~ 3")$
+print("  gamma * 0.01 > 9")$
+gamma_needed_theta: 9 / phi_sq_exterior;
+print("  gamma > ", float(gamma_needed_theta))$
+print("")$
+
+/* But we STILL need the phi gap to exceed omega_b.
+   The phi effective mass at the exterior:
+   m_phi_eff^2 = m^2 + gamma * M_exterior^2
+   In the exterior, M = curl(phi)/2 - theta. With the background:
+   curl(phi_bg) is generically nonzero (the carrier wave has structure).
+   But for a uniform plane wave: curl(A cos(k.x)) = -A k x cos(k.x) sin(...).
+   This is oscillating, not zero. So |M|^2_exterior is NOT zero if the
+   background is a plane wave. However, it averages to some value.
+
+   For A_bg = 0.1 and wavelength = 2pi/k where k ~ m = 1.5:
+   |curl(phi_bg)| ~ A_bg * k = 0.15
+   |M_bg| ~ |curl(phi_bg)/2| = 0.075 (if theta_bg = 0)
+   |M_bg|^2 ~ 0.006 */
+
+M_sq_bg: 0.006$
+print("Background mismatch (if theta_bg = 0):")$
+print("  |curl(phi_bg)/2|^2 ~ ", M_sq_bg)$
+print("  Phi exterior mass: m_eff^2 = 2.25 + gamma * ", M_sq_bg)$
+print("  For m_eff > 3: gamma * 0.006 > 6.75")$
+gamma_needed_phi: 6.75 / M_sq_bg;
+print("  gamma > ", float(gamma_needed_phi))$
+print("")$
+
+/* gamma ~ 1000 is very large. But let's check self-consistency. */
+print("Required gamma for TOTAL confinement:")$
+print("  theta gap: gamma > ", float(gamma_needed_theta), " (from |phi|^2 = 0.01)")$
+print("  phi gap:   gamma > ", float(gamma_needed_phi), " (from |M|^2 = 0.006)")$
+print("  Dominant:  gamma > ", float(max(gamma_needed_theta, gamma_needed_phi)))$
+print("")$
+
+/* But with gamma = 1125, the mismatch potential energy is:
+   V_conf = (gamma/2) |M|^2 |phi|^2
+   At core: (1125/2) * 0.02 * 0.16 = 1.8 code energy per voxel
+   This is comparable to the existing potential V(P) ~ 1-5 per voxel.
+   It would significantly modify the soliton structure. */
+
+E_conf_core: gamma_needed_phi/2 * M_sq_core * phi_sq_core;
+print("At gamma = ", float(gamma_needed_phi), ":")$
+print("  V_conf at core ~ ", float(E_conf_core), " per voxel")$
+print("  This is comparable to V(P) ~ 1-5 per voxel at the core.")$
+print("  The mismatch potential would SIGNIFICANTLY deform the soliton.")$
+print("")$
+
+/* The coupled dispersion with mismatch potential:
+   phi: omega^2 = k^2 + m^2 + gamma |M_0|^2 + ... (coupling terms)
+   theta: omega^2 = k^2 + gamma |phi_0|^2 + ... (coupling terms)
+
+   In the exterior (uniform background):
+   m_phi_eff^2 = m^2 + gamma M_bg^2
+   m_theta_eff^2 = gamma A_bg^2
+
+   Coupled: (w - k^2 - m_phi_eff^2)(w - k^2 - m_theta_eff^2) = eta^2 k^2 */
+
+print("Exterior coupled dispersion:")$
+m2_phi_eff: m2_phi + gamma_needed_phi * M_sq_bg;
+m2_theta_eff: gamma_needed_phi * phi_sq_exterior;
+print("  m_phi_eff^2 = ", float(m2_phi_eff))$
+print("  m_theta_eff^2 = ", float(m2_theta_eff))$
+print("")$
+
+eq7: (w - k^2 - m2_phi_eff) * (w - k^2 - m2_theta_eff) - eta_val^2 * k^2;
+sol7: solve(eq7, w);
+print("Coupled branches:")$
+print("  w_- = ", rhs(sol7[1]))$
+print("  w_+ = ", rhs(sol7[2]))$
+print("")$
+
+/* At k=0: */
+gap7_minus: float(subst(0, k, rhs(sol7[1])));
+gap7_plus: float(subst(0, k, rhs(sol7[2])));
+print("At k=0:")$
+print("  omega_-^2 = ", gap7_minus, " -> omega_- = ", float(sqrt(abs(gap7_minus))))$
+print("  omega_+^2 = ", gap7_plus, " -> omega_+ = ", float(sqrt(abs(gap7_plus))))$
+print("")$
+
+/* Check if the lower gap exceeds omega_b */
+print("Lower gap omega_- = ", float(sqrt(abs(gap7_minus))))$
+print("Breathing freq omega_b ~ 2-3")$
+if gap7_minus > omega_b_high^2 then
+  print("  omega_- > omega_b(high): YES, total confinement achieved!")
+else if gap7_minus > omega_b_low^2 then
+  print("  omega_- > omega_b(low) but < omega_b(high): MARGINAL")
+else
+  print("  omega_- < omega_b: phi branch still radiates")$
+print("")$
+
+/* The issue: M_bg depends on whether theta_bg adjusts to minimize M.
+   If the mismatch potential drives theta_bg -> curl(phi_bg)/2, then M_bg -> 0
+   and the phi gap enhancement vanishes! */
+
+print("SELF-CONSISTENCY CHECK:")$
+print("  The mismatch potential drives theta toward curl(phi)/2.")$
+print("  If theta_bg = curl(phi_bg)/2 exactly, then M_bg = 0.")$
+print("  The phi mass enhancement from mismatch VANISHES in equilibrium.")$
+print("  Only the theta mass (from |phi|^2) survives.")$
+print("")$
+print("  phi gap in equilibrium: m_phi = 1.5 (UNCHANGED)")$
+print("  theta gap in equilibrium: m_theta_eff = sqrt(gamma) * A_bg")$
+print("  For theta gap > 3: sqrt(gamma) * 0.1 > 3 -> gamma > 900")$
+print("")$
+print("  BOTTOM LINE: The mismatch potential can gap theta but NOT phi.")$
+print("  The phi mass gap remains at m=1.5, below the breathing frequency.")$
+print("")$
+
+/* However: could the mismatch create bound states (discrete spectrum)
+   below the continuum? */
+print("BOUND STATE ANALYSIS:")$
+print("  Inside the soliton, m_eff^2(x) = m^2 + gamma |M_0(x)|^2 > m^2")$
+print("  This is a potential WELL for frequencies between m and m_eff(core).")$
+print("  Bound states exist with omega in [m, sqrt(m^2 + gamma M_core^2)].")$
+print("")$
+print("  The breathing mode (omega_b ~ 2-3) might be such a bound state.")$
+print("  A bound state does NOT radiate (it's localized by definition).")$
+print("")$
+print("  BUT: the breathing mode exists at omega_b > m, which means it")$
+print("  is ABOVE the continuum threshold. Bound states must be BELOW")$
+print("  the continuum edge (omega < m = 1.5).")$
+print("")$
+print("  Omega_b ~ 2-3 > m = 1.5: the breathing mode is a RESONANCE")$
+print("  embedded in the continuum, not a bound state.")$
+print("  Resonances always radiate (finite lifetime).")$
+print("")$
+
+/* What if gamma is large enough to push m_eff(exterior) above omega_b?
+   We showed this requires M_bg != 0, but equilibrium drives M_bg -> 0.
+   UNLESS: we add a SEPARATE potential that prevents M from relaxing to 0. */
+
+print("Could we prevent M from relaxing to zero?")$
+print("  Only if the theta equation has a competing term that pushes")$
+print("  theta AWAY from curl(phi)/2. The eta curl(phi) term already does this")$
+print("  (it drives theta toward being sourced by curl(phi), not curl(phi)/2).")$
+print("  But in equilibrium, these terms balance: theta_eq = eta/(k^2+m_th^2) * curl(phi)")$
+print("  With m_th = 0: theta_eq ~ (eta/k^2) curl(phi) in Fourier, NOT curl(phi)/2.")$
+print("  So M_eq = curl(phi)/2 - theta_eq != 0 generically.")$
+print("  The residual mismatch depends on the wavenumber content of curl(phi).")$
+print("")$
+
+print("--- MODIFICATION 7 VERDICT ---")$
+print("  Term: (gamma/2)|curl(phi)/2 - theta|^2 |phi|^2")$
+print("  Theta dispersion: omega^2 = k^2 + gamma A_bg^2 (gapped by background)")$
+print("  Phi dispersion: omega^2 = k^2 + m^2 + gamma |M_eq|^2")$
+print("  In equilibrium, M_eq -> 0 at long wavelengths -> phi gap unchanged")$
+print("  Total stability: PARTIAL — theta can be gapped, phi CANNOT")$
+print("  Required: gamma > 900 for theta gap > omega_b")$
+print("  Dealbreaker: phi mass gap (m=1.5) below breathing freq (omega_b~2-3)")$
+print("    cannot be raised by mismatch in equilibrium.")$
+print("================================================================")$
+print("")$
+
+
+/* ================================================================
+   SYNTHESIS: WHAT WOULD WORK?
+   ================================================================ */
+
+print("================================================================")$
+print("SYNTHESIS: THE FUNDAMENTAL OBSTRUCTION AND WHAT COULD OVERCOME IT")$
+print("================================================================")$
+print("")$
+print("Every modification hits the SAME wall:")$
+print("  The phi mass gap m = 1.5 is BELOW the breathing frequency omega_b ~ 2-3.")$
+print("  Any oscillation at omega > m can radiate into propagating phi waves.")$
+print("  The breathing mode lives above this threshold -> it always radiates.")$
+print("")$
+print("The fundamental constraint:")$
+print("  TOTAL STABILITY requires: min(m_phi_eff, m_theta_eff) > omega_b")$
+print("                            everywhere in space (including vacuum).")$
+print("")$
+
+/* Compute the virial/breathing frequency relationship */
+/* The breathing frequency is determined by V''(P) at the equilibrium.
+   V(P) = (mu/2) P^2 / (1 + kappa P^2)
+   V''(P) = mu (1 - 3 kappa P^2) / (1 + kappa P^2)^3
+   At P = 0: V''(0) = mu = -41.345
+   omega_b^2 ~ |V''(P_eq)| / M_eff where M_eff is the effective oscillation mass */
+
+print("Breathing frequency analysis:")$
+V(P) := mu_val/2 * P^2 / (1 + kappa_val * P^2)$
+Vp(P) := ''(diff(V(P), P))$
+Vpp(P) := ''(diff(V(P), P, 2))$
+print("  V''(0) = ", float(subst(0, P, Vpp(P))))$
+print("  V''(P) at P=0.05: ", float(subst(0.05, P, Vpp(P))))$
+print("  V''(P) at P=0.08: ", float(subst(0.08, P, Vpp(P))))$
+print("")$
+
+/* At P=0: V''(0) = mu = -41.3. The local frequency omega_local ~ sqrt(|mu|) ~ 6.4.
+   But the integrated breathing mode samples V'' over the soliton volume,
+   and the effective mass is large. Typically omega_b ~ 2-3 from simulation. */
+
+print("  omega_local(P=0) ~ sqrt(|V''(0)|) = sqrt(41.3) = ", float(sqrt(41.345)))$
+print("  omega_b(simulation) ~ 2-3 (integrated over soliton, reduced by inertia)")$
+print("")$
+
+/* What parameters would give omega_b < m_phi = 1.5? */
+/* Need: weaker potential (smaller |mu|) or larger soliton (more inertia).
+   omega_b ~ sqrt(|mu|/M_eff). For omega_b < 1.5: |mu|/M_eff < 2.25. */
+
+print("For omega_b < m_phi = 1.5:")$
+print("  Need |mu| / M_eff < 2.25")$
+print("  Current: |mu| = 41.3, omega_b ~ 2.5 -> M_eff ~ |mu|/omega_b^2 ~ 6.6")$
+print("  Required: M_eff > 41.3/2.25 ~ 18.4 (2.8x larger soliton)")$
+print("  OR: |mu| < 2.25 * 6.6 ~ 14.9 (reduce potential by 2.8x)")$
+print("")$
+print("  BUT: reducing |mu| weakens the binding that forms the soliton.")$
+print("  And increasing the soliton size may not be compatible with stability.")$
+print("  These are empirical questions requiring simulation.")$
+print("")$
+
+print("================================================================")$
+print("TABLE: CONDITIONS FOR EACH MODIFICATION TO ACHIEVE TOTAL STABILITY")$
+print("================================================================")$
+print("")$
+
+/* Summary table */
+print("Mod | Term                          | Theta gap | Phi gap    | Total?")$
+print("----|-------------------------------|-----------|------------|-------")$
+print("  1 | m_th > 0                      | m_th      | m=1.5      | NO  ")$
+print("  2 | lambda_th |theta|^4           | local     | m=1.5      | NO  ")$
+print("  3 | c4 |grad phi|^2 (Skyrme L4)   | unchanged | m_eff>m    | NO  ")$
+print("    |                               |           | (interior  |     ")$
+print("    |                               |           |  only)     |     ")$
+print("  4 | beta |grad phi|^2 |grad th|^2 | speed chg | unchanged  | NO  ")$
+print("  5 | alpha2 curl^2                  | k^4 corr  | unchanged  | NO  ")$
+print("  6 | mu_CS theta.curl(theta)        | helicity  | unchanged  | NO  ")$
+print("    |                               | split     |            |     ")$
+print("  7 | gamma |M|^2 |phi|^2           | gamma A^2 | m=1.5      | NO  ")$
+print("    |                               |           | (equil.)   |     ")$
+print("")$
+
+print("================================================================")$
+print("KEY RESULTS")$
+print("================================================================")$
+print("")$
+print("NONE of the 7 modifications achieves total stability alone.")$
+print("")$
+print("The fundamental obstruction is that the phi mass gap m=1.5 is set")$
+print("by a CONSTANT parameter m^2 in the equation, and the breathing")$
+print("frequency omega_b ~ 2-3 exceeds it. No local modification can raise")$
+print("the VACUUM phi mass without changing the m^2 parameter itself.")$
+print("")$
+print("Possible COMBINATIONS that might work:")$
+print("")$
+print("1. Mod 1 + increased m_phi (change both mass parameters):")$
+print("   m_phi > omega_b AND m_theta > omega_b")$
+print("   Requires m^2 > 4 (was 2.25) AND m_th^2 > 4.")$
+print("   This fundamentally changes the soliton — smaller, stiffer,")$
+print("   different breathing frequency (which also shifts).")$
+print("   SELF-CONSISTENT SOLUTION may exist where the new omega_b < new m_phi.")$
+print("")$
+print("2. Mod 7 (mismatch) + nonzero A_bg (background carrier wave):")$
+print("   Theta gets gap gamma*A_bg^2. Phi gets gap from... what?")$
+print("   The background |M|^2 is nonzero if theta_bg != curl(phi_bg)/2.")$
+print("   With massive theta, theta_bg deviates from curl(phi)/2,")$
+print("   giving permanent nonzero M_bg -> phi mass enhancement.")$
+print("   This is Mod 1 + Mod 7 combined.")$
+print("")$
+print("3. Frequency reduction (not a field-equation mod):")$
+print("   If omega_b could be brought below 1.5 by changing mu, kappa,")$
+print("   then even the EXISTING equations (with massive theta) would")$
+print("   achieve total stability. This is a parameter search, not a")$
+print("   new equation.")$
+print("")$
+
+/* Final quantitative summary */
+print("================================================================")$
+print("QUANTITATIVE SUMMARY")$
+print("================================================================")$
+print("")$
+print("  Phi mass gap:       m_phi = 1.5 (from m^2 = 2.25)")$
+print("  Breathing frequency: omega_b ~ 2.0-3.0 (from V50 numerics)")$
+print("  Gap deficit:         omega_b - m_phi ~ 0.5-1.5")$
+print("  Phi radiation rate:  proportional to (omega_b^2 - m^2)^(1/2) ~ 1.3-2.6")$
+print("")$
+print("  For Mod 1 (massive theta alone):")$
+print("    m_theta needed: > omega_b ~ 2-3")$
+print("    Still radiates in phi channel.")$
+print("")$
+print("  For total stability with current omega_b:")$
+print("    Need m_phi > 3 -> m^2 > 9  (4x current value)")$
+print("    AND m_theta > 3")$
+print("    This would shrink soliton by factor ~2 (R ~ 1/m)")$
+print("")$
+print("  For total stability preserving current m_phi = 1.5:")$
+print("    Need omega_b < 1.5 (sub-gap breathing)")$
+print("    Requires |mu| < ~15 (reduce potential by ~3x)")$
+print("    OR: much larger soliton (more breathing inertia)")$
+print("")$
+
+print("================================================================")$
+print("PHYSICAL INTERPRETATION")$
+print("================================================================")$
+print("")$
+print("The soliton is a RESONANCE, not a bound state of the linear theory.")$
+print("It exists above the mass gap (omega_b > m) because the NONLINEAR")$
+print("V(P) potential creates a local energy minimum that the linear")$
+print("theory cannot see. But any oscillation above the gap can tunnel")$
+print("out as radiation — this is the standard Gamow problem (alpha decay).")$
+print("")$
+print("Total stability = zero tunneling rate. This requires either:")$
+print("(a) Move the resonance below ALL gaps (sub-threshold breathing), or")$
+print("(b) Make ALL gaps infinite (no propagating modes at any frequency), or")$
+print("(c) A qualitatively different confinement mechanism (nonperturbative).")$
+print("")$
+print("Option (a) = adjust parameters so omega_b < min(m_phi, m_theta).")$
+print("Option (b) = unphysical (infinite mass = no dynamics).")$
+print("Option (c) = something like color confinement in QCD, where the")$
+print("  string tension grows with distance. This requires a qualitatively")$
+print("  different field theory (e.g., non-abelian gauge fields with")$
+print("  asymptotic freedom), not a simple potential modification.")$
+print("")$
+print("CONCLUSION: Within the class of Cosserat-type equations with")$
+print("polynomial potentials and bilinear couplings, total stability")$
+print("requires SUB-THRESHOLD BREATHING: omega_b < min(m_phi, m_theta).")$
+print("This is a constraint on parameters (m, mu, kappa, m_theta),")$
+print("not on the equation structure. No structural modification to")$
+print("the equation avoids this constraint.")$
+print("")$
+print("The ACTIONABLE result: search for parameter regimes where the")$
+print("soliton breathes below the lowest mass gap. This is a numerical")$
+print("optimization problem, not an analytical one.")$
+print("")$
+print("================================================================")$
+print("END OF ANALYSIS")$
+print("================================================================")$

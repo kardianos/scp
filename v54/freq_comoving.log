@@ -1,0 +1,92 @@
+
+Loading DISSIPATIVE: traj.bin  (N=14613, n_tracked=200, T=400.0)
+  co-moving |v_res|: mean=0.0381, max=0.8398
+
+===== DISSIPATIVE — CO-MOVING FRAME =====
+  f_dom: median=0.0267  mean=0.0395  std=0.0396
+         range=[0.0033, 0.2067]   unique bins=42
+  Pearson r(nn, f_dom)       = +0.1185
+  Pearson r(sqrt(nn), f_dom) = +0.1129
+  stratified by mean neighbor count:
+    nn=[14,18):  n=  8  median_f=0.0100  mean_f=0.0300  std=0.0393
+    nn=[18,22):  n= 31  median_f=0.0267  mean_f=0.0373  std=0.0371
+    nn=[22,26):  n= 49  median_f=0.0200  mean_f=0.0378  std=0.0360
+    nn=[26,32):  n= 99  median_f=0.0233  mean_f=0.0380  std=0.0383
+  Histogram (bin 0.0167):
+    f=[0.000,0.017)  n= 72  ########################################
+    f=[0.017,0.033)  n= 43  #######################
+    f=[0.033,0.050)  n= 22  ############
+    f=[0.050,0.067)  n= 18  ##########
+    f=[0.067,0.083)  n= 14  #######
+    f=[0.083,0.100)  n= 13  #######
+    f=[0.100,0.117)  n=  7  ###
+    f=[0.117,0.133)  n=  5  ##
+    f=[0.133,0.150)  n=  3  #
+    f=[0.167,0.183)  n=  1  
+    f=[0.200,0.217)  n=  2  #
+  Frequency coherence (|Δf| vs pair distance):
+    dist=[ 0.0, 1.2):  n=    21  median_|Δf|=0.0500  mean=0.0511
+    dist=[ 1.2, 2.4):  n=   143  median_|Δf|=0.0333  mean=0.0445
+    dist=[ 2.4, 4.0):  n=   688  median_|Δf|=0.0300  mean=0.0435
+    dist=[ 4.0, 6.0):  n=  1770  median_|Δf|=0.0300  mean=0.0418
+    dist=[ 6.0, 9.0):  n=  4372  median_|Δf|=0.0300  mean=0.0422
+    dist=[ 9.0,25.0):  n= 12906  median_|Δf|=0.0300  mean=0.0405
+
+  Ensemble PSD (log):
+  12 | #                                                           
+  11 | #                                                           
+  10 | #####                                                       
+   9 | #######                                                     
+   8 | ########                                                    
+   7 | #########                                                   
+   6 | ##########                                                  
+   5 | ###########                                                 
+   4 | ############                                                
+   3 | #############                                               
+   2 | ##############                                              
+   1 | ##################                                          
+     +------------------------------------------------------------
+     f=0                         f=1.00                         f=2.00
+  log10 power: max=2.18, min=-1.09
+
+Loading CONSERVATIVE: traj_cons.bin  (N=14613, n_tracked=200, T=400.0)
+  co-moving |v_res|: mean=0.5112, max=1.5347
+
+===== CONSERVATIVE — CO-MOVING FRAME =====
+  f_dom: median=0.0067  mean=0.0101  std=0.0079
+         range=[0.0033, 0.0400]   unique bins=11
+  Pearson r(nn, f_dom)       = +0.1877
+  Pearson r(sqrt(nn), f_dom) = +0.1880
+  stratified by mean neighbor count:
+    nn=[10,14):  n= 10  median_f=0.0033  mean_f=0.0060  std=0.0061
+    nn=[14,18):  n=190  median_f=0.0067  mean_f=0.0103  std=0.0079
+  Histogram (bin 0.0167):
+    f=[0.000,0.017)  n=157  ########################################
+    f=[0.017,0.033)  n= 38  #########
+    f=[0.033,0.050)  n=  5  #
+  Frequency coherence (|Δf| vs pair distance):
+    dist=[ 0.0, 1.2):  n=   801  median_|Δf|=0.0067  mean=0.0076
+    dist=[ 1.2, 2.4):  n=  3946  median_|Δf|=0.0067  mean=0.0080
+    dist=[ 2.4, 4.0):  n=  7562  median_|Δf|=0.0067  mean=0.0078
+    dist=[ 4.0, 6.0):  n=  5890  median_|Δf|=0.0067  mean=0.0080
+    dist=[ 6.0, 9.0):  n=  1660  median_|Δf|=0.0067  mean=0.0094
+    dist=[ 9.0,25.0):  n=    41  median_|Δf|=0.0067  mean=0.0137
+
+  Ensemble PSD (log):
+  12 | #                                                           
+  11 | #                                                           
+  10 | ##                                                          
+   9 | ###                                                         
+   8 | ####                                                        
+   7 | #######                                                     
+   6 | ############                                                
+   5 | ################                                            
+   4 | ########################                                    
+   3 | ###############################                             
+   2 | #######################################                     
+   1 | ################################################            
+     +------------------------------------------------------------
+     f=0                         f=1.00                         f=2.00
+  log10 power: max=5.40, min=0.05
+
+Wrote ./freq_comoving.tsv
