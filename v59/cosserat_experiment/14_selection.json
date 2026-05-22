@@ -1,0 +1,9 @@
+{
+  "hypotheses_tested": 6,
+  "matches_found": 0,
+  "closest_match": "Hypothesis 5 (centralizer)",
+  "closest_match_gap": "34 vs 35 (3% off)",
+  "what_we_confirmed": "Single source Cl(7)_even with 28+35+7=63 decomposition",
+  "what_we_didnt_find": "The Furey-N \u2192 Cl-grade selection mechanism",
+  "next_concrete_step": "Hypothesis 6: SU(3)_c decomposition of Cl(7) grades"
+}

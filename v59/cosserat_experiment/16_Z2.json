@@ -1,0 +1,43 @@
+{
+  "novel_finding": "Z\u2082 \u00d7 Z\u2082 binary structure of Furey-N selection rule",
+  "piece_L": {
+    "description": "Lie algebra content",
+    "grades": [
+      "\u039b\u00b2",
+      "\u039b\u2076"
+    ],
+    "dim": 28
+  },
+  "piece_F": {
+    "description": "G\u2082-form content (coassoc 4-form)",
+    "grades": [
+      "\u039b\u2074"
+    ],
+    "dim": 35
+  },
+  "sector_classification": [
+    {
+      "N": 0,
+      "bit_L": 1,
+      "bit_F": 0,
+      "D": 28,
+      "interpretation": "lepton: gauge only"
+    },
+    {
+      "N": 1,
+      "bit_L": 0,
+      "bit_F": 1,
+      "D": 35,
+      "interpretation": "d-quark: form only"
+    },
+    {
+      "N": 2,
+      "bit_L": 1,
+      "bit_F": 1,
+      "D": 63,
+      "interpretation": "u-quark: both"
+    }
+  ],
+  "additive_identity_explanation": "D_u = D_e + D_d because u-quark sees direct sum L \u2295 F",
+  "physical_interpretation": "L = Spin(7) gauge content; F = octonion color algebra content"
+}

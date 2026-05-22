@@ -1,0 +1,196 @@
+/*
+  v58 ⊕ v59 Synthesis in Maxima — symbolic algebra exploration
+
+  Take the v58 multivector equation
+      M·M̃ - v²,    J_χ = grade-2 of M·M̃
+  substitute the v59 Brannen kernel
+      M = a (I + ξS + ξ̄ S²)
+  and explore the resulting structure.
+
+  We use S as a generator of the 3-cycle: S^3 = 1, conjugate(S) = S^2.
+  In symbolic form, S is a placeholder satisfying S*S = S2, S2*S = 1, S*S2 = 1.
+
+  Run with:  maxima -b v58_v59_synthesis.mac
+*/
+
+/* ─── Setup ─── */
+
+display2d : false$
+print("== v58 + v59 Synthesis Calculation ==")$
+
+/* Define symbolic S with S^3 = 1; carry S, S2 = S^T = S^-1 = S² as separate symbols */
+/* So we have the multiplication:  S * S = S2,  S * S2 = 1,  S2 * S2 = S */
+
+/* Brannen field M = a * (I + xi*S + xibar*S2)
+   The components (xi, xibar) are complex conjugates */
+
+/* We represent M·M̃ symbolically by expanding the product. */
+
+/* Step 1: define ξ and ξ̄ */
+xi: t*exp(%i*phi)$
+xibar: t*exp(-%i*phi)$
+
+/* Step 2: compute M² coefficients on (1, S, S²) */
+/* M = a*1 + a*xi*S + a*xibar*S² */
+/* M² = a²*1·1 + a²·xi·1·S + a²·xibar·1·S²
+       + a²·xi·S·1 + a²·xi²·S·S + a²·xi·xibar·S·S²
+       + a²·xibar·S²·1 + a²·xi·xibar·S²·S + a²·xibar²·S²·S²
+*/
+/* Using S·S = S², S·S² = 1, S²·S = 1, S²·S² = S */
+
+c_1  : a^2 * (1 + xi*xibar + xi*xibar)$           /* 1, plus S·S² and S²·S each give 1 */
+c_S  : a^2 * (xi + xi + xibar^2)$                  /* a·xi·1 (twice) + a·xibar²·S²·S² */
+c_S2 : a^2 * (xibar + xibar + xi^2)$               /* a·xibar·1 (twice) + a·xi²·S·S */
+
+c_1  : ratsimp(c_1)$
+c_S  : ratsimp(c_S)$
+c_S2 : ratsimp(c_S2)$
+
+print("Coefficient of I in M² :", c_1)$
+print("Coefficient of S in M² :", c_S)$
+print("Coefficient of S² in M² :", c_S2)$
+
+/* Step 3: substitute xi*xibar = t² (the magnitude squared) */
+c_1_simplified : trigsimp(c_1)$
+c_S_simplified : trigsimp(c_S)$
+c_S2_simplified : trigsimp(c_S2)$
+
+print("")$
+print("After trig simplification:")$
+print("  c_I  = ", c_1_simplified)$
+print("  c_S  = ", c_S_simplified)$
+print("  c_S² = ", c_S2_simplified)$
+
+/* Step 4: density on identity = scalar part */
+print("")$
+print("== v58 density: rho_M = (1/2)(c_I - v²) ==")$
+print("")$
+
+rho_M : (1/2) * (c_1 - v_sq)$
+print("rho_M = ", rho_M)$
+
+/* Constraint: rho_M = 0 at v59 equilibrium t² = 1/2 */
+v_sq_vacuum : ratsimp(subst(t^2 = 1/2, c_1))$
+print("")$
+print("Vacuum condition (rho_M = 0 at t² = 1/2):")$
+print("  v² = ", v_sq_vacuum)$
+
+/* Step 5: rho_M as a function of |ξ|² with v² fixed */
+print("")$
+print("Substituting v² = 2a² (vacuum value):")$
+rho_M_at_vacuum : ratsimp(subst(v_sq = 2*a^2, rho_M))$
+print("rho_M = ", rho_M_at_vacuum)$
+print("")$
+print("Equivalent form (factor out a²):")$
+print("  rho_M = a² (|ξ|² - 1/2)")$
+print("  Confirmed: rho_M is proportional to deviation from v59 constraint surface.")$
+
+/* Step 6: chiral current = bivector part = S and S² coefficients */
+print("")$
+print("== v58 chiral current: J_chi = c_S * S + c_S² * S² ==")$
+print("")$
+print("|c_S|² (magnitude squared of S-coefficient): ")$
+mag_S_sq : c_S * c_S2$  /* Hermitian conjugate would be c_S2 of c_S */
+mag_S_sq : ratsimp(mag_S_sq)$
+print("  |c_S|² = ", mag_S_sq)$
+
+mag_S_at_vacuum : ratsimp(subst(t=1/sqrt(2), subst(phi=2/9, mag_S_sq)))$
+mag_S_numeric : float(mag_S_at_vacuum)$
+print("  At v59 equilibrium (t=1/√2, φ=2/9):")$
+print("  |c_S|² = ", mag_S_numeric)$
+print("  |c_S| = ", sqrt(mag_S_numeric))$
+
+/* Step 7: explore dynamic ξ - what happens as |ξ|² varies away from 1/2 */
+print("")$
+print("== Dynamic ξ scan: ρ_M as |ξ|² varies ==")$
+print("")$
+print("  |ξ|² | ρ_M / a²        | Q = (1 + 2|ξ|²)/3  | deviation from Q=2/3")$
+print("  -----+-----------------+-------------------+----------------------")$
+for tsq : 0.0 step 0.1 thru 1.0 do
+  block(
+    [rho_val, Q_val, dev_val],
+    rho_val : tsq - 1/2,
+    Q_val   : (1 + 2*tsq) / 3,
+    dev_val : Q_val - 2/3,
+    print(string(float(tsq)), " | ", string(float(rho_val)), " | ",
+          string(float(Q_val)), " | ", string(float(dev_val)))
+  )$
+
+/* Step 8: explore what happens to the off-diagonal couplings as t varies */
+print("")$
+print("== Bivector coefficient (chiral current magnitude) as t varies ==")$
+print("")$
+mag_S_func : (4*t^2 + t^4 + 4*t^3*cos(3*phi))$  /* simplified form */
+print("Formula |c_S|² / a⁴ = 4t² + t⁴ + 4t³ cos(3φ)")$
+print("(derived from c_S · c_S* with c_S = a²(2ξ + ξ̄²))")$
+print("")$
+print("  t² (= |ξ|²) | |c_S|/a²  (at φ=2/9)")$
+print("  -----------+----------")$
+for tsq : 0.1 step 0.1 thru 1.0 do
+  block(
+    [val],
+    val : subst(t = sqrt(tsq), subst(phi = 2/9, mag_S_func)),
+    print(string(float(tsq)), " | ", string(sqrt(float(val))))
+  )$
+
+/* Step 9: check the structural relationship */
+print("")$
+print("== Substituting v59 sector values ==")$
+print("")$
+print("Each fermion sector has |ξ_X|² = 1 - dim G_2 / D_X:")$
+print("  Lepton:  D = 28, |ξ|² = 1 - 14/28 = 1/2")$
+print("  d-quark: D = 35, |ξ|² = 1 - 14/35 = 3/5")$
+print("  u-quark: D = 63, |ξ|² = 1 - 14/63 = 7/9")$
+print("")$
+
+dimG2 : 14$
+D_lepton : 28$
+D_dquark : 35$
+D_uquark : 63$
+
+xi_sq_lepton : 1 - dimG2/D_lepton$
+xi_sq_dquark : 1 - dimG2/D_dquark$
+xi_sq_uquark : 1 - dimG2/D_uquark$
+
+rho_M_lepton : ratsimp(a^2 * (xi_sq_lepton - 1/2))$
+rho_M_dquark : ratsimp(a^2 * (xi_sq_dquark - 1/2))$
+rho_M_uquark : ratsimp(a^2 * (xi_sq_uquark - 1/2))$
+
+print("  Sector  | |ξ|² | ρ_M / a²  | gravity source per flavor")$
+print("  --------+------+-----------+-------------------------")$
+print("  Lepton  | 1/2  |   0       | (constraint surface — vacuum)")$
+print("  d-quark | 3/5  | ", float(xi_sq_dquark - 1/2), " | (off-constraint)")$
+print("  u-quark | 7/9  | ", float(xi_sq_uquark - 1/2), " | (off-constraint)")$
+
+print("")$
+print("=== KEY OBSERVATION ===")$
+print("")$
+print("Leptons sit ON the v59 constraint surface (|ξ|² = 1/2).")$
+print("They are the 'VACUUM' fermions — no v58 gravity source per flavor.")$
+print("")$
+print("Quarks sit OFF the constraint surface.")$
+print("They have NON-ZERO gravity source ρ_M.")$
+print("This explains why quarks are MORE MASSIVE than leptons:")$
+print("they carry inherent 'off-constraint' density.")$
+print("")$
+print("Specifically the d-quark deviation is 3/5 - 1/2 = 1/10.")$
+print("The u-quark deviation is 7/9 - 1/2 = 5/18 ≈ 0.278.")$
+print("")$
+print("Ratio of deviations (u/d): ", float((5/18) / (1/10)))$
+
+/* Step 10: compare ratio to actual quark mass ratios */
+print("")$
+print("Empirical quark mass scale ratios:")$
+print("  (m_t)/(m_b) = ", float(172.69/4.18))$
+print("  (m_c)/(m_s) = ", float(1.27/0.0934))$
+print("  Average ratio u/d (top/bottom mass) ≈ ", float(172.69/4.18))$
+print("")$
+print("Our v58⊕v59 prediction: u/d deviation ratio = 5/18 / (1/10) = 25/9 ≈ 2.78")$
+print("This is NOT the right ratio for top/bottom masses (~40).")$
+print("So the simple 'density deviation = mass scale' identification needs refinement.")$
+print("")$
+print("This is an interesting NULL RESULT — the ratio doesn't directly give mass scales.")$
+print("Suggests additional mechanism needed to translate ρ_M to actual quark masses.")$
+
+print("")$
+print("=== END OF SYNTHESIS RUN ===")$

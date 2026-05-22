@@ -28,6 +28,33 @@ radial_solver
 *.bin
 *.o
 lean/.lake
+# Lean build artifacts anywhere in the tree
+.lake/
+*.olean
+*.olean.trace
+*.olean.lock
+
+# Python bytecode / caches
+__pycache__/
+*.pyc
+*.pyo
+
+# Reference papers (kept local only)
+ref/
+
+# LaTeX/pandoc build artifacts (keep .tex sources, ignore generated)
+*.pdf
+*.aux
+*.bbl
+*.blg
+*.toc
+*.synctex
+*.synctex.gz
+*_build.log
+pandoc_build.log
+
+# Ganja scan output dumps (regeneratable from python scripts)
+ganja_exports_round*/
 
 key.txt
 .claude/worktrees/*

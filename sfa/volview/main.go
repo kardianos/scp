@@ -2414,6 +2414,103 @@ func f32cbrt(x float32) float32 {
 	return float32(math.Cbrt(float64(x)))
 }
 
+// PGA component → hue mapping. 8 components evenly spaced on the
+// color wheel so that even a "soup" of all 8 active still produces a
+// distinguishable RGB. Rotor (M0..M3) skews warm; spatial (M4..M7)
+// skews cool, so the bulk-Higgs vacuum (M[4]≈v, others≈0) reads as
+// cyan and rotor activity reads as warm hues.
+var pgaHueColors = [8][3]float32{
+	{1.00, 0.00, 0.00}, // M0 e₄₁₀  red
+	{1.00, 0.40, 0.00}, // M1 e₄₂₀  orange
+	{1.00, 1.00, 0.00}, // M2 e₄₃₀  yellow
+	{0.30, 1.00, 0.00}, // M3 𝟙     green
+	{0.00, 1.00, 0.80}, // M4 e₁    cyan
+	{0.00, 0.40, 1.00}, // M5 e₂    blue
+	{0.55, 0.10, 1.00}, // M6 e₃    violet
+	{1.00, 0.00, 0.70}, // M7 e₃₂₁  magenta
+}
+
+// computePGAView fills RGBA from the 8 PGA components.
+//
+//	mode 0 (spectrum):  every component contributes |M[k] − mean_k|
+//	                    weighted by its hue color; sum → RGB. Shows
+//	                    DEVIATION from per-frame mean — vacuum-like
+//	                    constant fields contribute nothing, structure
+//	                    in any of the 8 components becomes visible.
+//	mode 1 (rotation):  3-of-8 components mapped 1:1 to RGB, starting
+//	                    at `phase` (cycles M[phase], M[phase+1], M[phase+2]).
+//	                    Also shows |M[k] − mean_k|.
+//
+// Per-component normalisation by max |deviation| so rotor (range ~2)
+// and spatial (range ~v≈0.5) sectors share the same display scale.
+func computePGAView(n int, cols [8][]float32, vol *volumeData, mode int, phase int) {
+	total := n * n * n
+	if len(vol.rgba) != total*4 {
+		vol.rgba = make([]float32, total*4)
+	}
+
+	// Per-component mean and max |deviation|.
+	var mean [8]float32
+	for k := 0; k < 8; k++ {
+		var s float64
+		for i := 0; i < total; i++ {
+			s += float64(cols[k][i])
+		}
+		mean[k] = float32(s / float64(total))
+	}
+	var maxDev [8]float32
+	for k := 0; k < 8; k++ {
+		var m float32
+		mk := mean[k]
+		for i := 0; i < total; i++ {
+			v := f32abs(cols[k][i] - mk)
+			if v > m {
+				m = v
+			}
+		}
+		maxDev[k] = m
+	}
+	var invNorm [8]float32
+	for k := 0; k < 8; k++ {
+		if maxDev[k] > 1e-12 {
+			invNorm[k] = 1.0 / maxDev[k]
+		}
+	}
+
+	if mode == 0 {
+		// Spectrum: weighted sum over all 8 component hues. Factor 0.4
+		// keeps a soup of all 8 active components from blowing out the
+		// shader clamp; single dominant components stay punchy.
+		const scale = float32(0.40)
+		for i := 0; i < total; i++ {
+			var r, g, b float32
+			for k := 0; k < 8; k++ {
+				a := f32abs(cols[k][i]-mean[k]) * invNorm[k]
+				r += a * pgaHueColors[k][0]
+				g += a * pgaHueColors[k][1]
+				b += a * pgaHueColors[k][2]
+			}
+			vol.rgba[i*4+0] = r * scale
+			vol.rgba[i*4+1] = g * scale
+			vol.rgba[i*4+2] = b * scale
+			vol.rgba[i*4+3] = 1.0
+		}
+	} else {
+		// Rotation: select 3 consecutive components (mod 8) → RGB.
+		kr := ((phase % 8) + 8) % 8
+		kg := (kr + 1) % 8
+		kb := (kr + 2) % 8
+		for i := 0; i < total; i++ {
+			vol.rgba[i*4+0] = f32abs(cols[kr][i]-mean[kr]) * invNorm[kr]
+			vol.rgba[i*4+1] = f32abs(cols[kg][i]-mean[kg]) * invNorm[kg]
+			vol.rgba[i*4+2] = f32abs(cols[kb][i]-mean[kb]) * invNorm[kb]
+			vol.rgba[i*4+3] = 1.0
+		}
+	}
+	vol.n = n
+	vol.loaded = true
+}
+
 // computeFieldView fills RGBA volume from SFA column data.
 // Uses pre-allocated intermediate buffers from sfa.absPBuf/phi2Buf/theta2Buf
 // to avoid reading the input arrays twice.
@@ -3075,6 +3172,8 @@ type viewParams struct {
 
 	// State
 	viewMode   int
+	pgaMode    int  // 0=spectrum, 1=rotation (used when v56 PGA 8-comp file detected)
+	pgaPhase   int  // rotation slot (which 3-of-8 components are R/G/B)
 	curFrame   int
 	playing    bool
 	dragging   bool
@@ -3407,6 +3506,8 @@ type frameLoader struct {
 	sfa      *sfaFile
 	volN     int
 	viewMode int        // 0=field, 1=velocity, 2=acceleration
+	pgaMode  int        // 0=spectrum, 1=rotation (used for v56 8-component PGA files)
+	pgaPhase int        // rotation slot (M[phase..phase+2] → R,G,B)
 	fixedMax float32    // >0: fixed color scale; 0: auto-scale from data
 	mu       sync.Mutex
 	ready    *volumeData // non-nil when a new frame is ready for upload
@@ -3443,8 +3544,16 @@ func (fl *frameLoader) startLoad(frameIdx int) {
 		if isPreview {
 			fmt.Printf("  Preview mode: 3 uint8 channels (P_abs, phi_sq, theta_sq)\n")
 		}
+		// Detect v56 PGA file: 8 columns whose first column is named "M0_…".
+		isPGA := fl.sfa.nColumns == 8 && strings.HasPrefix(colName0, "M0")
 
-		if isPreview {
+		if isPGA {
+			var pgaCols [8][]float32
+			for k := 0; k < 8; k++ {
+				pgaCols[k] = fl.sfa.extractColumnF32(k)
+			}
+			computePGAView(fl.volN, pgaCols, &fl.workVol, fl.pgaMode, fl.pgaPhase)
+		} else if isPreview {
 			// Preview mode: columns ARE the pre-computed derived quantities.
 			// Column 0 = |P| (0-1 normalized), Column 1 = |φ|² (0-1), Column 2 = |θ|² (0-1)
 			pAbs := fl.sfa.extractColumnF32(0)
@@ -3957,6 +4066,8 @@ func printHelp() {
 	fmt.Println("  4              Field view  (R=|P|, G=phi^2, B=theta^2)")
 	fmt.Println("  5              Velocity view (R=|v|, G=|vx|, B=|vy|)")
 	fmt.Println("  6              Accel view  (R=cbrt|P|, G=theta^2, B=|v|)")
+	fmt.Println("  M              Toggle PGA mode: spectrum / rotation (8-component v56 files)")
+	fmt.Println("  N              Advance PGA rotation phase (when in rotation mode)")
 	fmt.Println("  V              Toggle vec3d wireframe overlay")
 	fmt.Println("  + / -          Brightness up/down")
 	fmt.Println("  O / P          Opacity down/up")
@@ -3987,6 +4098,8 @@ func main() {
 	bgWhiteFlag := flag.Bool("bg-white", false, "Use white background")
 	compositeFlag := flag.Bool("composite", false, "Render 2x2 composite (4 views)")
 	vecFlag := flag.String("vec", "", "Vec3D wireframe overlay file (.vec3d)")
+	pgaModeFlag := flag.Int("pga-mode", 0, "PGA view mode: 0=spectrum, 1=rotation (8-comp v56 files)")
+	pgaPhaseFlag := flag.Int("pga-phase", 0, "PGA rotation phase (which 3-of-8 components → R,G,B)")
 	flag.Parse()
 
 	// CPU profiling to file
@@ -4154,6 +4267,8 @@ func main() {
 	params.elevation = float32(*elevationFlag)
 	params.distance = float32(*distanceFlag)
 	params.brightness = float32(*brightnessFlag)
+	params.pgaMode = *pgaModeFlag
+	params.pgaPhase = *pgaPhaseFlag
 	params.opacity = float32(*opacityFlag)
 	params.bgWhite = *bgWhiteFlag
 	params.updateCamera()
@@ -4230,16 +4345,27 @@ func main() {
 				continue
 			}
 
-			phi0 := sfa.extractColumnF32(0)
-			phi1 := sfa.extractColumnF32(1)
-			phi2 := sfa.extractColumnF32(2)
-			var theta0, theta1, theta2 []float32
-			if sfa.nColumns >= 6 {
-				theta0 = sfa.extractColumnF32(3)
-				theta1 = sfa.extractColumnF32(4)
-				theta2 = sfa.extractColumnF32(5)
+			// Auto-detect v56 PGA file (8 columns, first named "M0_…").
+			snapColName0 := strings.TrimRight(string(sfa.columns[0].name[:]), "\x00")
+			isPGASnap := sfa.nColumns == 8 && strings.HasPrefix(snapColName0, "M0")
+			if isPGASnap {
+				var pgaCols [8][]float32
+				for k := 0; k < 8; k++ {
+					pgaCols[k] = sfa.extractColumnF32(k)
+				}
+				computePGAView(int(sfa.Nx), pgaCols, vol, params.pgaMode, params.pgaPhase)
+			} else {
+				phi0 := sfa.extractColumnF32(0)
+				phi1 := sfa.extractColumnF32(1)
+				phi2 := sfa.extractColumnF32(2)
+				var theta0, theta1, theta2 []float32
+				if sfa.nColumns >= 6 {
+					theta0 = sfa.extractColumnF32(3)
+					theta1 = sfa.extractColumnF32(4)
+					theta2 = sfa.extractColumnF32(5)
+				}
+				computeFieldView(int(sfa.Nx), phi0, phi1, phi2, theta0, theta1, theta2, vol, 0)
 			}
-			computeFieldView(int(sfa.Nx), phi0, phi1, phi2, theta0, theta1, theta2, vol, 0)
 			gpu.uploadVolume(vol)
 
 			gl.BindFramebuffer(gl.FRAMEBUFFER, fbo)
@@ -4446,6 +4572,30 @@ func main() {
 				params.viewMode = 2
 				fl.viewMode = 2
 				fmt.Println("View: ACCEL (R=cbrt|P|, G=theta^2, B=|v|)")
+				loadSFAFrame(fl, params)
+			}
+		case glfw.KeyM:
+			// Toggle PGA mode (only meaningful for 8-component PGA files).
+			if fl != nil {
+				params.pgaMode = (params.pgaMode + 1) % 2
+				fl.pgaMode = params.pgaMode
+				if params.pgaMode == 0 {
+					fmt.Println("PGA view: SPECTRUM (all 8 components → RGB via hue)")
+				} else {
+					fmt.Printf("PGA view: ROTATION (phase=%d → M[%d,%d,%d] → R,G,B)\n",
+						params.pgaPhase, params.pgaPhase%8,
+						(params.pgaPhase+1)%8, (params.pgaPhase+2)%8)
+				}
+				loadSFAFrame(fl, params)
+			}
+		case glfw.KeyN:
+			// Advance PGA rotation phase.
+			if fl != nil && params.pgaMode == 1 {
+				params.pgaPhase = (params.pgaPhase + 1) % 8
+				fl.pgaPhase = params.pgaPhase
+				fmt.Printf("PGA rotation: phase=%d → M[%d,%d,%d] → R,G,B\n",
+					params.pgaPhase, params.pgaPhase%8,
+					(params.pgaPhase+1)%8, (params.pgaPhase+2)%8)
 				loadSFAFrame(fl, params)
 			}
 		case glfw.KeyF:

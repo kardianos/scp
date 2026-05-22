@@ -1,0 +1,25 @@
+{
+  "coefficients": [
+    -0.9972974961039769,
+    -1.3026933986872358,
+    -1.3246769056989693,
+    0.25656540749372236,
+    -2.2702212646485824,
+    2.123561889212308,
+    1.2088453561948465,
+    0.8293999987827477
+  ],
+  "term_names": [
+    "term_rank_deviation",
+    "term_rank_abs",
+    "term_closure_defect",
+    "term_balance",
+    "term_rho_rank_interaction",
+    "term_rho_closure_interaction",
+    "term_biv_magnitude",
+    "term_rank_biv_interaction"
+  ],
+  "loss": -0.6671636690850681,
+  "popsize": 20,
+  "generations": 12
+}

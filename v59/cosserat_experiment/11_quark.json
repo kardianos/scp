@@ -1,0 +1,16 @@
+{
+  "Q_up_empirical": 0.848980777661061,
+  "Q_down_empirical": 0.731427651432937,
+  "t_sq_up": 0.7734711664915914,
+  "t_sq_down": 0.5971414771494055,
+  "conjecture_t_sq_up": 0.7777777777777778,
+  "conjecture_t_sq_down": 0.6,
+  "conjecture_t_sq_lepton": 0.5,
+  "Q_up_predicted": 0.8518518518518519,
+  "Q_down_predicted": 0.7333333333333333,
+  "gap_Q_up_pct": 0.3381789395397987,
+  "gap_Q_down_pct": 0.26054277503221157,
+  "D_lepton": 28,
+  "D_d_quark": 35,
+  "D_u_quark": 63
+}

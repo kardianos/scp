@@ -1,0 +1,29 @@
+Running PRESSURE experiment in BOTH mode...
+Starting intensive Differential Evolution search...
+Dimensions: 8 | Population: 20 | Generations: 12
+Workers (per evaluation): up to 16
+differential_evolution step 1: f(x)= -0.676983
+differential_evolution step 2: f(x)= -0.676983
+differential_evolution step 3: f(x)= -0.676983
+differential_evolution step 4: f(x)= -0.676983
+differential_evolution step 5: f(x)= -0.676983
+differential_evolution step 6: f(x)= -0.676983
+differential_evolution step 7: f(x)= -0.676983
+differential_evolution step 8: f(x)= -0.676983
+differential_evolution step 9: f(x)= -0.676983
+differential_evolution step 10: f(x)= -0.676983
+differential_evolution step 11: f(x)= -0.676983
+differential_evolution step 12: f(x)= -0.676983
+Polishing solution with 'L-BFGS-B'
+
+=== Best coefficients found ===
+  term_rank_deviation           : -1.6431
+  term_rank_abs                 : -2.2301
+  term_closure_defect           : +2.1799
+  term_balance                  : +0.2605
+  term_rho_rank_interaction     : -1.4308
+  term_rho_closure_interaction  : +1.0083
+  term_biv_magnitude            : +1.0876
+  term_rank_biv_interaction     : -1.4489
+Best loss: -0.6770
+Saved best coefficients to phase6_best_coefficients.json

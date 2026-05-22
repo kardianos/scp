@@ -1,0 +1,58 @@
+{
+  "baseline_loss": -0.588497125073553,
+  "ablations": [
+    {
+      "term": "term_rank_deviation",
+      "zeroed_index": 0,
+      "delta_loss": -0.0024879778917274997
+    },
+    {
+      "term": "term_rank_abs",
+      "zeroed_index": 0,
+      "delta_loss": -0.009849977928024112
+    },
+    {
+      "term": "term_closure_defect",
+      "zeroed_index": 0,
+      "delta_loss": -0.002507247092787601
+    },
+    {
+      "term": "term_balance",
+      "zeroed_index": 0,
+      "delta_loss": 0.0029897367750747472
+    },
+    {
+      "term": "term_rho_rank_interaction",
+      "zeroed_index": 0,
+      "delta_loss": 0.005647888929537492
+    },
+    {
+      "term": "term_rho_closure_interaction",
+      "zeroed_index": 0,
+      "delta_loss": 0.0003687625026331798
+    },
+    {
+      "term": "term_biv_magnitude",
+      "zeroed_index": 0,
+      "delta_loss": -0.006147813083681397
+    },
+    {
+      "term": "term_rank_biv_interaction",
+      "zeroed_index": 0,
+      "delta_loss": -0.005365591696074756
+    },
+    {
+      "term": [
+        7,
+        0,
+        2
+      ],
+      "zeroed_index": [
+        7,
+        0,
+        2
+      ],
+      "delta_loss": -0.0011408412748857844
+    }
+  ]
+}

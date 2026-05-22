@@ -1,0 +1,94 @@
+{
+  "phase": "phase6_rigidity_first_run",
+  "living_candidate": "\u27e8D \u03a9 + \u03bb \u03a9\u00b2 + \u03bc \u27e8\u03a9, \u03a9\u27e9\u27e9_{0,2} = f_g(\u03c1)\u00b7J_\u03c1 + f_em(\u03c1)\u00b7J_\u03c7",
+  "params": {
+    "lambda": 0.001,
+    "mu": 0.0005,
+    "rho_crit": 2.5,
+    "rigidity_weight": 0.9
+  },
+  "final_N": 421,
+  "stats_history": [
+    {
+      "step": 1,
+      "N": 61,
+      "d_eff_proxy": 0.8,
+      "avg_rho": 0.4045,
+      "protected_fraction": 0.426,
+      "avg_rigidity_cost": 3.692,
+      "light_cone_mean_branch": 3.0
+    },
+    {
+      "step": 2,
+      "N": 106,
+      "d_eff_proxy": 0.8,
+      "avg_rho": 0.2717,
+      "protected_fraction": 0.387,
+      "avg_rigidity_cost": 4.567,
+      "light_cone_mean_branch": 2.917
+    },
+    {
+      "step": 3,
+      "N": 151,
+      "d_eff_proxy": 0.8,
+      "avg_rho": 0.2303,
+      "protected_fraction": 0.404,
+      "avg_rigidity_cost": 4.667,
+      "light_cone_mean_branch": 2.417
+    },
+    {
+      "step": 4,
+      "N": 196,
+      "d_eff_proxy": 0.8,
+      "avg_rho": 0.2012,
+      "protected_fraction": 0.408,
+      "avg_rigidity_cost": 4.746,
+      "light_cone_mean_branch": 5.25
+    },
+    {
+      "step": 5,
+      "N": 241,
+      "d_eff_proxy": 0.8,
+      "avg_rho": 0.1807,
+      "protected_fraction": 0.411,
+      "avg_rigidity_cost": 4.799,
+      "light_cone_mean_branch": 2.667
+    },
+    {
+      "step": 6,
+      "N": 286,
+      "d_eff_proxy": 0.8,
+      "avg_rho": 0.1709,
+      "protected_fraction": 0.42,
+      "avg_rigidity_cost": 4.779,
+      "light_cone_mean_branch": 0.833
+    },
+    {
+      "step": 7,
+      "N": 331,
+      "d_eff_proxy": 0.8,
+      "avg_rho": 0.1639,
+      "protected_fraction": 0.426,
+      "avg_rigidity_cost": 4.761,
+      "light_cone_mean_branch": 4.0
+    },
+    {
+      "step": 8,
+      "N": 376,
+      "d_eff_proxy": 0.8,
+      "avg_rho": 0.1574,
+      "protected_fraction": 0.42,
+      "avg_rigidity_cost": 4.837,
+      "light_cone_mean_branch": 0.167
+    },
+    {
+      "step": 9,
+      "N": 421,
+      "d_eff_proxy": 0.942,
+      "avg_rho": 0.1535,
+      "protected_fraction": 0.42,
+      "avg_rigidity_cost": 4.856,
+      "light_cone_mean_branch": 0.333
+    }
+  ]
+}

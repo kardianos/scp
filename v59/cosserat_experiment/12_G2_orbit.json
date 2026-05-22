@@ -1,0 +1,32 @@
+{
+  "dim_G2": 14,
+  "common_orbit_dim": 14,
+  "sectors": [
+    {
+      "N": 0,
+      "name": "lepton",
+      "ambient": "\u039b\u00b2\u211d\u2078",
+      "D": 28,
+      "t_sq": "1/2",
+      "Q": "2/3"
+    },
+    {
+      "N": 1,
+      "name": "d-quark",
+      "ambient": "\u039b\u00b3\u211d\u2077",
+      "D": 35,
+      "t_sq": "3/5",
+      "Q": "11/15"
+    },
+    {
+      "N": 2,
+      "name": "u-quark",
+      "ambient": "Cl(7)_even \u2212 id",
+      "D": 63,
+      "t_sq": "7/9",
+      "Q": "23/27"
+    }
+  ],
+  "additive_identity": "28 + 35 = 63",
+  "interpretation": "G\u2082 orbit (dim 14) embedded in three different ambient Cl-spaces"
+}

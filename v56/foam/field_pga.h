@@ -8,6 +8,8 @@
  *        field_semantic[NCOMP]     SFA semantic codes
  *        field_component[NCOMP]    component index in semantic group
  *        FIELD_NAME                short label printed by the kernel
+ *        N_SKYRME                  number of components with Skyrme L_4
+ *                                  flux (always the first N_SKYRME of M)
  *
  *    Implementation block (when included with #define FIELD_IMPL,
  *    AFTER Sim and Config structs are defined):
@@ -15,8 +17,17 @@
  *                                  by dispatching on s->c.init
  *        field_forces(Sim*, lap[NCOMP], acc[NCOMP])
  *                                  combine Laplacian + self-coupling
- *                                  into the per-component acceleration.
- *                                  May also write s->bulk_norm[].
+ *                                  (potential + sigma constraint) into
+ *                                  acc. Does NOT include Skyrme L_4
+ *                                  divergence — that is added by the
+ *                                  kernel after a face pass on J.
+ *                                  Also writes s->bulk_norm[].
+ *        field_skyrme_J(Sim*, grad_x, grad_y, grad_z, Jx, Jy, Jz)
+ *                                  compute the Skyrme conjugate momentum
+ *                                      J^{a,b} = ∂E_4/∂(∂_b q^a)
+ *                                  per cell from grad_M, for a = 0..N_SKYRME-1
+ *                                  and b = 0,1,2. Returns 1 if active,
+ *                                  0 to skip the divergence pass.
  *
  *  Swap field_pga.h → field_cosserat.h / field_dirac.h to change physics.
  */
@@ -26,7 +37,8 @@
 #define FIELD_PGA_H
 
 #define NCOMP 8
-#define FIELD_NAME "PGA-rel-quat (8-comp Higgs)"
+#define N_SKYRME 4              /* rotor sector M[0..3] carries the Skyrme L_4 */
+#define FIELD_NAME "PGA-rel-quat (8-comp Higgs + Skyrme L_4)"
 
 /* Bulk-norm metric: rotor part (timelike) → −1, spatial part → +1.
  * |M|²_bulk = Σ g_kk M[k]² has Minkowski (−,−,−,−,+,+,+,+) signature. */
@@ -89,14 +101,23 @@ static void field_init_qball(Sim *s) {
     }
 }
 
+/* Skyrme hedgehog: rotor projected onto S³ with winding 1.
+ *
+ *     q(r) = (cos f(r), n̂ · sin f(r))     |q| = 1 everywhere
+ *     f(r) = π · exp(−r/R)               f(0)=π, f(∞)=0
+ *
+ * Bulk-Higgs vacuum: |M|²_bulk = v² with metric (−,−,−,−,+,+,+,+) and
+ * |q|² = 1 → M[4]² = v² + 1. The seed is identically on the bulk-Higgs
+ * vacuum hyperboloid AND on the rotor S³ at every cell, so both
+ * constraints are simultaneously satisfied at t=0. Winding number = 1.
+ */
 static void field_init_skyrme(Sim *s) {
     Mesh *m = s->m;
     Config *c = &s->c;
-    double v = sqrt(c->v2);
-    double v_q = c->A;
+    double v2 = c->v2;
+    double M4 = sqrt(v2 + 1.0);     /* |q|=1 → M[4]² = v² + |q|² */
     double R = c->R_seed;
-    printf("[init] skyrme: vacuum M[4]=%.3f + rotor hedgehog v_q=%.3f R=%.2f\n",
-           v, v_q, R);
+    printf("[init] skyrme: |q|=1 hedgehog winding-1, M[4]=%.4f R=%.2f\n", M4, R);
     #pragma omp parallel for schedule(static)
     for (uint32_t i = 0; i < m->N_cells; i++) {
         double x = m->cell_x[i], y = m->cell_y[i], z = m->cell_z[i];
@@ -108,11 +129,13 @@ static void field_init_skyrme(Sim *s) {
             s->M[k][i] = 0.0;
             s->M_vel[k][i] = 0.0;
         }
-        s->M[3][i] = v_q * cf;
-        s->M[0][i] = v_q * nx * sf;
-        s->M[1][i] = v_q * ny * sf;
-        s->M[2][i] = v_q * nz * sf;
-        s->M[4][i] = v;
+        /* Rotor sphere: (q0, q⃗) = (cos f, n̂ sin f) */
+        s->M[3][i] = cf;
+        s->M[0][i] = nx * sf;
+        s->M[1][i] = ny * sf;
+        s->M[2][i] = nz * sf;
+        /* Spatial vacuum: M[4]² = v² + 1 to satisfy bulk Higgs */
+        s->M[4][i] = M4;
     }
 }
 
@@ -205,13 +228,24 @@ static void field_init(Sim *s) {
     else { fprintf(stderr, "FATAL: unknown init '%s' (vacuum|qball|skyrme|braid_spatial|braid_rotor)\n", s->c.init); exit(1); }
 }
 
-/* Field-specific force assembly: combines the kernel's pre-computed
- * Laplacian with this field's self-coupling. For PGA stage A:
+/* Field-specific local force assembly. For PGA stage A + Stage C (Skyrme):
  *
  *     □ M[k] = lap[k] − m² M[k] − λ (|M|²_bulk − v²) g_kk M[k]
+ *              − (k<4) · sigma_e2 (|q|² − 1) M[k]
+ *              + (k<4) · ∂_b J^{k,b}     ← added by kernel via face pass
+ *              + (k<4) · F_π^k           ← pion mass force, see below
+ *
+ * Pion mass: V_π = m_π² (1 − q₀), q₀ = M[3]. Tangent-projected force
+ * on the rotor S³:
+ *     F_π^k = m_π² (δ_{k3} − q₀ M[k])    for k = 0..3
+ * (k=3: m_π² (1 − q₀²); k=0..2: −m_π² q₀ M[k]).
+ * This penalizes deviations from the q₀=1 vacuum and gives the
+ * Skyrmion a finite preferred size (Compton wavelength of the pion).
  *
  * The acceleration arrays are written; bulk_norm is also updated for
- * downstream diagnostics. */
+ * downstream diagnostics. The Skyrme L_4 divergence is added by the
+ * kernel after this routine returns; here we only cover the local
+ * (no-derivative) drives. */
 static void field_forces(Sim *s,
                          double *const lap[NCOMP],
                          double *acc[NCOMP]) {
@@ -219,6 +253,8 @@ static void field_forces(Sim *s,
     double mass2 = s->c.mass2;
     double lambda = s->c.lambda;
     double v2 = s->c.v2;
+    double sigma_e2 = s->c.sigma_e2;
+    double m_pi2 = s->c.m_pi2;
     #pragma omp parallel for schedule(static)
     for (uint32_t i = 0; i < N; i++) {
         double Mb = 0;
@@ -226,12 +262,74 @@ static void field_forces(Sim *s,
             Mb += g_metric[k] * s->M[k][i] * s->M[k][i];
         s->bulk_norm[i] = Mb;
         double drive = lambda * (Mb - v2);
+        double q2 = 0.0;
+        for (int j = 0; j < N_SKYRME; j++) q2 += s->M[j][i] * s->M[j][i];
+        double q_drive = sigma_e2 * (q2 - 1.0);
+        double q0 = s->M[3][i];
         for (int k = 0; k < NCOMP; k++) {
-            acc[k][i] = lap[k][i]
-                      - mass2 * s->M[k][i]
-                      - drive * g_metric[k] * s->M[k][i];
+            double a = lap[k][i] - mass2 * s->M[k][i] - drive * g_metric[k] * s->M[k][i];
+            if (k < N_SKYRME) a -= q_drive * s->M[k][i];
+            if (m_pi2 > 0 && k < N_SKYRME) {
+                /* Tangent-projected pion-mass force on S³. */
+                if (k == 3) a += m_pi2 * (1.0 - q0 * q0);
+                else        a -= m_pi2 * q0 * s->M[k][i];
+            }
+            acc[k][i] = a;
         }
     }
+}
+
+/* Skyrme conjugate momenta J^{a,b} = ∂E_4/∂(∂_b q^a) on cells.
+ *
+ * Energy density (rotor only, a = 0..N_SKYRME-1):
+ *     e_4 = (c4/2) [ (Tr g)² − ‖g‖²_F ]
+ *     g_ij = Σ_a (∂_i q^a)(∂_j q^a)            (3×3 symmetric)
+ *
+ * Derivative:
+ *     J^{a,b} = c4 [ Tr(g)·(∂_b q^a) − Σ_j g_bj·(∂_j q^a) ]
+ *
+ * The kernel then computes ∂_b J^{a,b} via a face pass and adds it to
+ * acc[a]. Energy-conservative: J on cells + finite-volume divergence
+ * is the discrete adjoint of the cell-centered gradient operator that
+ * defined g_ij in the first place (summation by parts).
+ *
+ * Returns 1 if Skyrme is active (c4 > 0), 0 to skip the divergence
+ * pass entirely. */
+static int field_skyrme_J(Sim *s,
+                          double *const grad_x[NCOMP],
+                          double *const grad_y[NCOMP],
+                          double *const grad_z[NCOMP],
+                          double *Jx[NCOMP],
+                          double *Jy[NCOMP],
+                          double *Jz[NCOMP]) {
+    double c4 = s->c.skyrme_c4;
+    if (c4 <= 0.0) return 0;
+    uint32_t N = s->m->N_cells;
+    #pragma omp parallel for schedule(static)
+    for (uint32_t i = 0; i < N; i++) {
+        /* Build 3×3 symmetric metric on the rotor gradients. */
+        double gxx = 0, gyy = 0, gzz = 0, gxy = 0, gxz = 0, gyz = 0;
+        for (int a = 0; a < N_SKYRME; a++) {
+            double dx = grad_x[a][i], dy = grad_y[a][i], dz = grad_z[a][i];
+            gxx += dx * dx;
+            gyy += dy * dy;
+            gzz += dz * dz;
+            gxy += dx * dy;
+            gxz += dx * dz;
+            gyz += dy * dz;
+        }
+        double trg = gxx + gyy + gzz;
+        double coef = 2.0 * c4;   /* J = 2·c4·[Tr(g)·∂q − g·∂q] from differentiating
+                                   * e_4 = (c4/2)·[(Tr g)² − ‖g‖²_F]; the factor 2 comes
+                                   * from chain rule on the squared trace. */
+        for (int a = 0; a < N_SKYRME; a++) {
+            double dx = grad_x[a][i], dy = grad_y[a][i], dz = grad_z[a][i];
+            Jx[a][i] = coef * (trg * dx - (gxx * dx + gxy * dy + gxz * dz));
+            Jy[a][i] = coef * (trg * dy - (gxy * dx + gyy * dy + gyz * dz));
+            Jz[a][i] = coef * (trg * dz - (gxz * dx + gyz * dy + gzz * dz));
+        }
+    }
+    return 1;
 }
 
 #endif  /* FIELD_IMPL */

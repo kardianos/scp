@@ -1,0 +1,156 @@
+/*
+  xi_dynamics.mac
+
+  Dynamical ξ(x) ∈ ℍ field — Lagrangian, EOM, spectrum around the v59
+  lepton vacuum.
+
+  Setup:
+    ξ(x) = (ξ_0, ξ_1, ξ_2, ξ_3)  ∈ ℍ
+    |ξ|² = ξ_0² + ξ_1² + ξ_2² + ξ_3²
+    V(|ξ|²) = (λ/4) · (|ξ|² − r²)²
+    L = (1/2) (∂μ ξ̄)(∂μ ξ) − V(|ξ|²)
+    EOM: □ξ_a = -λ (|ξ|² - r²) ξ_a  for a = 0, 1, 2, 3
+
+  We compute:
+    1. The mass matrix at the lepton vacuum (r² = 1/2).
+    2. The Goldstone spectrum.
+    3. A test of the EOM for static spherically-symmetric ξ.
+
+  Run: maxima -b xi_dynamics.mac
+*/
+
+display2d : false$
+print("== ξ(x) dynamics: framework exploration ==")$
+
+/* --- Setup symbolic variables --- */
+declare([xi_0, xi_1, xi_2, xi_3, lambda, r_sq, t, x, y, z], scalar)$
+
+/* The four real components of ξ */
+xi_components: [xi_0, xi_1, xi_2, xi_3]$
+
+/* |ξ|² */
+xi_sq: xi_0^2 + xi_1^2 + xi_2^2 + xi_3^2$
+
+/* Potential V = (λ/4)(|ξ|² - r²)² */
+V_xi: (lambda/4) * (xi_sq - r_sq)^2$
+
+/* Gradient (force) */
+print("")$
+print("Potential: V = (λ/4)(|ξ|² - r²)²")$
+print("Where r² is the equilibrium value (1/2 for leptons, 3/5 for d, 7/9 for u)")$
+print("")$
+
+/* dV/dξ_a = λ(|ξ|² - r²) ξ_a */
+for a: 1 thru 4 do
+  print("dV/dξ_", a-1, " = ", diff(V_xi, xi_components[a]))$
+
+/* --- Hessian (mass matrix) at vacuum --- */
+print("")$
+print("== Mass matrix at vacuum ==")$
+print("")$
+
+/* Use the lepton vacuum: r_sq = 1/2 and ξ_vac = (1/√2, 0, 0, 0) */
+vacuum_subs: [xi_0 = 1/sqrt(2), xi_1 = 0, xi_2 = 0, xi_3 = 0, r_sq = 1/2]$
+
+/* Compute the Hessian matrix M²_ab = ∂²V/∂ξ_a∂ξ_b */
+Hessian: zeromatrix(4, 4)$
+for a: 1 thru 4 do
+  for b: 1 thru 4 do
+    Hessian[a, b]: diff(V_xi, xi_components[a], 1, xi_components[b], 1)$
+
+print("Hessian (general):")$
+print(Hessian)$
+
+print("")$
+print("At lepton vacuum (r²=1/2, ξ=(1/√2, 0, 0, 0)):")$
+Hessian_vacuum: subst(vacuum_subs, Hessian)$
+print(Hessian_vacuum)$
+
+print("")$
+print("Eigenvalues of mass matrix:")$
+print(ratsimp(eivals(Hessian_vacuum)))$
+
+print("")$
+print("Interpretation:")$
+print("  - One mode with m² = λ (massive 'radial' / Higgs-like)")$
+print("  - Three modes with m² = 0 (Goldstone bosons)")$
+print("  - These 3 Goldstones are the silent SU(2)/U(1) modes.")$
+print("    Standard Higgs mechanism would absorb them into W± Z⁰.")$
+
+/* --- Static spherically-symmetric solution --- */
+print("")$
+print("== Static spherically-symmetric ξ(r) profile ==")$
+print("")$
+print("For static ξ with only the radial mode excited:")$
+print("  ξ(r) = (φ(r)/√2, 0, 0, 0)  with φ(r) = 1 + δ(r), δ → 0 as r → ∞")$
+print("")$
+print("Then |ξ|² = φ(r)²/2.  EOM:")$
+print("  ∇²φ = -λ (|ξ|² - 1/2) · φ · (∂|ξ|/∂φ · 1/φ_0) [need careful chain rule]")$
+print("")$
+print("Let me redo for δ = φ - 1 small:")$
+print("  |ξ|² = (1+δ)²/2 = 1/2 + δ + δ²/2")$
+print("  (|ξ|² - 1/2) = δ + δ²/2 ≈ δ for small δ")$
+print("")$
+print("Linearized EOM:  ∇²δ = m_δ² · δ  with m_δ² = λ (radial mode mass squared)")$
+print("")$
+print("Static spherically-symmetric solution for massive scalar:")$
+print("  δ(r) ~ exp(-m_δ · r) / r   (Yukawa)")$
+
+/* --- Coupling to v58 ρ_M --- */
+print("")$
+print("== Coupling to v58 density ==")$
+print("")$
+print("From synthesis: ρ_M(x) = a² · (|ξ(x)|² - 1/2)")$
+print("Dynamic EOM in terms of ρ_M:")$
+print("")$
+print("  ∂² ξ = -λ · (|ξ|² - 1/2) · ξ = -λ · (ρ_M / a²) · ξ")$
+print("")$
+print("So ξ feels a 'restoring force' proportional to ρ_M (the v58 gravity source).")$
+print("Localized ρ_M (= particle) creates localized ξ deviation.")$
+print("The mass-density of the particle determines the radial-mode deformation.")$
+
+/* --- Scale of λ from various candidates --- */
+print("")$
+print("== Candidates for λ (the radial mode mass) ==")$
+print("")$
+print("If λ is structural (a function of v59 numbers), candidates:")$
+print("")$
+
+/* Candidate 1: λ = 1 (no structural input) */
+print("(1) λ = 1: radial mode is dimensionless O(1).")$
+
+/* Candidate 2: λ = π² / something */
+print("(2) λ = π²/2 (= v59 S_em): radial mass ~ √(π²/2) ≈ 2.22")$
+
+/* Candidate 3: λ = α (small) */
+print("(3) λ = α ≈ 1/137: radial mass ~ 0.085 (small)")$
+
+/* Candidate 4: λ = (some Brannen-related quantity) */
+print("(4) λ = 1/α ≈ 137: radial mass ~ 11.7 (large)")$
+
+print("")$
+print("If radial mode = empirical Higgs (m_H = 125 GeV) and ξ vacuum scale a:")$
+print("  m_H² / (a²/2) = λ")$
+print("  Need m_H / a to set this.")$
+print("  v59 a ≈ 17.7 √MeV (lepton scale) — but Higgs scale should be ~246 GeV")$
+print("  → Brannen 'a' is NOT the Higgs VEV scale; framework needs more thought")$
+
+/* --- What we don't have yet --- */
+print("")$
+print("== What remains undetermined ==")$
+print("")$
+print("1. SECTOR-SPECIFIC equilibria (1/2, 3/5, 7/9) — how does ONE field accommodate?")$
+print("   Options A-D in DYNAMIC_XI.md: sector-specific fields vs single multi-vacua field")$
+print("")$
+print("2. λ value — set structurally by v59, or empirical/Higgs?")$
+print("")$
+print("3. GAUGING silent SU(2): the 3 Goldstones should be eaten by gauge bosons.")$
+print("   Requires explicit SU(2)_L gauge field A_μ + minimal coupling.")$
+print("")$
+print("4. QUARK COMPOSITE candidate (Option D):")$
+print("   does u-quark = lepton ⊗ d-quark in some explicit composite picture?")$
+print("")$
+print("These are open research directions, NOT solvable in this session.")$
+
+print("")$
+print("=== END OF ξ DYNAMICS EXPLORATION ===")$

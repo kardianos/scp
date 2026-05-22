@@ -1,0 +1,378 @@
+{
+  "phase": 2,
+  "cycle": 1,
+  "map_version": "growth_based_local_d_eff_volume_curvature_v1",
+  "source": "phase1_snapshot_cycle1.json (556-node exact living candidate + \u03a9-feedback)",
+  "living_candidate": "\u27e8D\u03a9 + \u03bb\u03a9\u00b2 + \u03bc\u27e8\u03a9,\u03a9\u27e9\u27e9_{0,2} = f_g(\u03c1)\u00b7J_\u03c1 + f_em(\u03c1)\u00b7J_\u03c7",
+  "params": {
+    "lambda": 0.001,
+    "mu": 0.0005,
+    "f_g": "1/(1+\u03c1/\u03c1_crit)",
+    "rho_crit": 2.5
+  },
+  "graph_summary": {
+    "total_nodes": 556,
+    "max_layer": 7,
+    "protected_fraction": 0.428,
+    "avg_rho": 0.1579
+  },
+  "ensemble_observers": [
+    441,
+    415,
+    306,
+    350,
+    363,
+    379,
+    380,
+    397,
+    413,
+    429,
+    430,
+    436,
+    437,
+    439,
+    242,
+    335,
+    347,
+    383,
+    401,
+    423
+  ],
+  "per_node_emergence": {
+    "441": {
+      "local_d_eff": 1.7565,
+      "volume_proxy_d3": 32,
+      "curvature_proxy": 1.149,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        13,
+        32,
+        42,
+        45
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "415": {
+      "local_d_eff": 1.4492,
+      "volume_proxy_d3": 22,
+      "curvature_proxy": 1.5577,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        13,
+        22,
+        29,
+        31
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "306": {
+      "local_d_eff": 0.989,
+      "volume_proxy_d3": 12,
+      "curvature_proxy": 1.75,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        9,
+        12,
+        16,
+        18
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "350": {
+      "local_d_eff": 1.2324,
+      "volume_proxy_d3": 18,
+      "curvature_proxy": 1.25,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        11,
+        18,
+        21,
+        21
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "363": {
+      "local_d_eff": 1.4736,
+      "volume_proxy_d3": 24,
+      "curvature_proxy": 1.4038,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        13,
+        24,
+        29,
+        30
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "379": {
+      "local_d_eff": 1.1461,
+      "volume_proxy_d3": 17,
+      "curvature_proxy": 1.9423,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        13,
+        17,
+        19,
+        19
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "380": {
+      "local_d_eff": 1.2242,
+      "volume_proxy_d3": 18,
+      "curvature_proxy": 1.5,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        12,
+        18,
+        21,
+        21
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "397": {
+      "local_d_eff": 1.1536,
+      "volume_proxy_d3": 17,
+      "curvature_proxy": 1.5833,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        12,
+        17,
+        19,
+        20
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "413": {
+      "local_d_eff": 1.296,
+      "volume_proxy_d3": 20,
+      "curvature_proxy": 1.7115,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        13,
+        20,
+        23,
+        25
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "429": {
+      "local_d_eff": 1.4545,
+      "volume_proxy_d3": 24,
+      "curvature_proxy": 1.4038,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        13,
+        24,
+        28,
+        28
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "430": {
+      "local_d_eff": 1.4425,
+      "volume_proxy_d3": 23,
+      "curvature_proxy": 1.4808,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        13,
+        23,
+        28,
+        28
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "436": {
+      "local_d_eff": 1.5431,
+      "volume_proxy_d3": 27,
+      "curvature_proxy": 1.1731,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        13,
+        27,
+        31,
+        31
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "437": {
+      "local_d_eff": 1.5431,
+      "volume_proxy_d3": 27,
+      "curvature_proxy": 1.1731,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        13,
+        27,
+        31,
+        31
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "439": {
+      "local_d_eff": 1.5706,
+      "volume_proxy_d3": 28,
+      "curvature_proxy": 1.0962,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        13,
+        28,
+        32,
+        33
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "242": {
+      "local_d_eff": 1.2242,
+      "volume_proxy_d3": 18,
+      "curvature_proxy": 1.5,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        12,
+        18,
+        21,
+        22
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "335": {
+      "local_d_eff": 1.2496,
+      "volume_proxy_d3": 18,
+      "curvature_proxy": 1.5,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        12,
+        18,
+        22,
+        23
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "347": {
+      "local_d_eff": 1.4245,
+      "volume_proxy_d3": 21,
+      "curvature_proxy": 1.25,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        12,
+        21,
+        28,
+        28
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "383": {
+      "local_d_eff": 1.2319,
+      "volume_proxy_d3": 19,
+      "curvature_proxy": 1.7885,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        13,
+        19,
+        21,
+        23
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "401": {
+      "local_d_eff": 1.3227,
+      "volume_proxy_d3": 22,
+      "curvature_proxy": 1.5577,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        13,
+        22,
+        23,
+        23
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    },
+    "423": {
+      "local_d_eff": 1.3682,
+      "volume_proxy_d3": 22,
+      "curvature_proxy": 1.5577,
+      "ball_sizes_0_to_5": [
+        1,
+        4,
+        13,
+        22,
+        25,
+        27
+      ],
+      "retarded_join_depth_to_ref": 0,
+      "max_depth_available": 5
+    }
+  },
+  "error_report": {
+    "num_observers": 20,
+    "d_eff": {
+      "mean": 1.3548,
+      "std": 0.1764,
+      "min": 0.989,
+      "max": 1.7565,
+      "mean_abs_error_vs_3": 1.6452,
+      "fraction_in_[2.7,3.3]": 0.0,
+      "target_band": [
+        2.7,
+        3.3
+      ],
+      "criterion_note": "\u00a73.2 requires d_eff \u2248 3 \u00b1 \u03b4 with \u03b4 < 0.1 (i.e. [2.9,3.1] ideally) inside safe band"
+    },
+    "curvature": {
+      "max_proxy": 1.9423,
+      "mean_proxy": 1.4664,
+      "criterion_note": "\u00a73.3 requires bounded |R_eff| < \u039b (set by largest density gradient scale); here max second-diff of ratios serves as discrete proxy"
+    },
+    "isotropy": {
+      "branching_variation_ratio": 1.0169,
+      "d_eff_variation_ratio": 0.1302,
+      "light_cone": {
+        "mean_branch": 1.417,
+        "std_branch": 1.441,
+        "max_branch": 5
+      },
+      "protected_fraction": 0.428,
+      "criterion_note": "\u00a73.1 requires |c_eff(\u03b81)-c_eff(\u03b82)| / c < \u03b5_iso \u22480.02; branching std/mean and d_eff spread are proxies (current realization shows high variation)"
+    },
+    "stability_note": "All quantities extracted from exact living-candidate evolution (safe band \u03bb=0.001, \u03bc=0.0005, winning f_g). Protected fraction 0.428 provides the <3% leakage regime of \u00a73.4.",
+    "summary": "Current realization: d_eff mean=1.35 (error 1.65 from 3), 0% in target band, high isotropy variation. Quantitative baseline for Phase 2 iteration."
+  },
+  "extraction_note": "Map uses exact causal_past_ball (retarded parent traversal) on real data. d_eff/curvature are first quantitative derivations of \u00a73 quantities. No background coordinates used."
+}

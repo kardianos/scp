@@ -39,8 +39,15 @@
 
 /* Field plug-in: defines NCOMP, g_metric, field_names/semantic/component,
  * and FIELD_NAME. The implementations of field_init() and field_forces()
- * are pulled in below, after Sim/Mesh structs are defined. */
-#include "field_pga.h"
+ * are pulled in below, after Sim/Mesh structs are defined.
+ *
+ * Build switch: -DUSE_FIELD_QBALL → 6-component SO(3)×SO(3) Q-ball plug-in.
+ * Default: 8-component PGA relativistic-quaternion field. */
+#ifdef USE_FIELD_QBALL
+#  include "field_qball.h"
+#else
+#  include "field_pga.h"
+#endif
 
 #define PI 3.14159265358979323846
 
@@ -265,11 +272,42 @@ typedef struct {
     double mass2;       /* squared mass scale (used in linearised regime) */
     double lambda;      /* quartic coupling (Higgs term: λ(|M|²−v²)²) */
     double v2;          /* vacuum norm-squared, |M|²_bulk = v² */
+    double sigma_e2;    /* rotor σ-constraint strength: (e2/4)(|q|²−1)² */
+    double skyrme_c4;   /* Skyrme L_4 coupling: c4 = 1/(2 e²) (standard
+                         * Skyrme convention has L_4 = (1/32 e²) Tr([L_μ,L_ν]²)
+                         * which expands to (c4/2) [(Tr g)² − ‖g‖²_F]) */
+    int skyrme_project; /* 1 → hard-project rotor onto |q|=1 each step
+                         * (with tangent velocity projection). 0 → off
+                         * (rely on soft σ-constraint instead). */
+    double damping;     /* velocity damping rate γ (units of 1/time).
+                         * After each Verlet step, M_vel *= (1 − γ·dt).
+                         * Use to absorb Derrick relaxation kinetic energy
+                         * for an oversized seed without dynamic overshoot.
+                         * Set to 0 for pure energy-conserving dynamics. */
+    double damping_T;   /* time after which damping is disabled (s).
+                         * Useful for a damped initial relaxation followed
+                         * by undamped continuation. 0 → damping always on. */
+    int    damping_sector_size; /* if > 0, tangent-only damping per sector
+                         * of this size. Decomposes velocity into radial
+                         * (along M_sector) and tangent (⊥ M_sector), damps
+                         * ONLY radial — preserves Noether charge of a
+                         * rotating soliton (Q-ball). Use 3 for the 6-comp
+                         * Q-ball (two 3-vec sectors). 0 → full damping. */
+    double m_pi2;       /* pion mass squared. V_π = m_π² (1 − q₀)
+                         * with q₀ = M[3]. Sets a finite preferred
+                         * Skyrmion size (Compton wavelength of the
+                         * pion) — without this term the soliton can
+                         * shrink past lattice resolution and unwind. */
 
     /* Seed knobs (interpretation depends on init type) */
     double A;           /* perturbation amplitude */
     double R_seed;      /* localisation radius */
     double omega_seed;  /* oscillation frequency for time-dependent seeds */
+    double omega_theta; /* (Q-ball) rotation frequency for the θ sector.
+                         * 0 → θ stays static (single-charge Q-ball).
+                         * >0 → θ rotates in (θ_y, θ_z) plane at this rate,
+                         *      giving a two-charge Q-ball with both
+                         *      SO(3)_φ and SO(3)_θ Noether currents active. */
 
     /* Braid-seed knobs (mirror v55) */
     double A_bg;        /* background carrier amplitude */
@@ -302,6 +340,11 @@ typedef struct {
     double *M_acc[NCOMP];
     double *grad_M[NCOMP][3];   /* ∂_b M[i] per cell */
     double *bulk_norm;          /* |M|²_bulk per cell, cached for diagnostics */
+    /* Skyrme L_4 scratch: J^{a,b}(c) on rotor only. Allocated lazily. */
+    double *Jx[NCOMP];
+    double *Jy[NCOMP];
+    double *Jz[NCOMP];
+    double *winding;            /* topological charge density per cell (diag) */
 } Sim;
 
 static double parse_double(const char *v) { return strtod(v, NULL); }
@@ -310,10 +353,18 @@ static void config_default(Config *c) {
     c->mass2 = 0.0;             /* default: pure Higgs dynamics (no bare mass) */
     c->lambda = 5.0;
     c->v2 = 0.25;               /* v = 0.5 → |M|²_bulk = 0.25 at vacuum */
+    c->sigma_e2 = 0.0;          /* default: no σ-constraint */
+    c->skyrme_c4 = 0.0;         /* default: no Skyrme L_4 term */
+    c->skyrme_project = 0;      /* default: no hard S³ projection */
+    c->damping = 0.0;           /* default: no velocity damping */
+    c->damping_T = 0.0;
+    c->damping_sector_size = 0; /* default: full damping (no sector split) */
+    c->m_pi2 = 0.0;             /* default: massless pion (no V_π term) */
 
     c->A = 0.3;
     c->R_seed = 4.0;
     c->omega_seed = 1.0;
+    c->omega_theta = 0.0;       /* default: θ sector static */
 
     /* v55-mirroring defaults */
     c->A_bg = 0.1;
@@ -363,9 +414,19 @@ static void config_load(Config *c, const char *path) {
         else if (!strcmp(key, "lambda"))    c->lambda = parse_double(vs);
         else if (!strcmp(key, "v"))       { double v = parse_double(vs); c->v2 = v*v; }
         else if (!strcmp(key, "v2"))        c->v2 = parse_double(vs);
+        else if (!strcmp(key, "sigma_e2"))  c->sigma_e2 = parse_double(vs);
+        else if (!strcmp(key, "skyrme_e2")) c->sigma_e2 = parse_double(vs);   /* legacy alias */
+        else if (!strcmp(key, "skyrme_c4")) c->skyrme_c4 = parse_double(vs);
+        else if (!strcmp(key, "skyrme_project")) c->skyrme_project = atoi(vs);
+        else if (!strcmp(key, "damping"))   c->damping = parse_double(vs);
+        else if (!strcmp(key, "damping_T")) c->damping_T = parse_double(vs);
+        else if (!strcmp(key, "damping_sector_size")) c->damping_sector_size = atoi(vs);
+        else if (!strcmp(key, "m_pi"))      { double m = parse_double(vs); c->m_pi2 = m*m; }
+        else if (!strcmp(key, "m_pi2"))      c->m_pi2 = parse_double(vs);
         else if (!strcmp(key, "A"))         c->A = parse_double(vs);
         else if (!strcmp(key, "R_seed"))    c->R_seed = parse_double(vs);
         else if (!strcmp(key, "omega_seed")) c->omega_seed = parse_double(vs);
+        else if (!strcmp(key, "omega_theta")) c->omega_theta = parse_double(vs);
         else if (!strcmp(key, "A_bg"))      c->A_bg = parse_double(vs);
         else if (!strcmp(key, "R_tube"))    c->R_tube = parse_double(vs);
         else if (!strcmp(key, "ellip"))     c->ellip = parse_double(vs);
@@ -400,14 +461,22 @@ static void sim_alloc(Sim *s) {
             s->grad_M[k][b] = calloc(N, sizeof(double));
     }
     s->bulk_norm = calloc(N, sizeof(double));
+    /* Skyrme J scratch is allocated lazily inside compute_forces only
+     * when skyrme_c4 > 0 — saves 4*3*8 = 96 bytes/cell on non-Skyrme runs. */
+    for (int k = 0; k < NCOMP; k++) {
+        s->Jx[k] = NULL; s->Jy[k] = NULL; s->Jz[k] = NULL;
+    }
+    s->winding = calloc(N, sizeof(double));
 }
 
 static void sim_free(Sim *s) {
     for (int k = 0; k < NCOMP; k++) {
         free(s->M[k]); free(s->M_vel[k]); free(s->M_acc[k]);
         for (int b = 0; b < 3; b++) free(s->grad_M[k][b]);
+        if (s->Jx[k]) { free(s->Jx[k]); free(s->Jy[k]); free(s->Jz[k]); }
     }
     free(s->bulk_norm);
+    free(s->winding);
 }
 
 /* =====================================================================
@@ -417,7 +486,11 @@ static void sim_free(Sim *s) {
  *  with another header conforming to the same API contract.
  * ===================================================================== */
 #define FIELD_IMPL
-#include "field_pga.h"
+#ifdef USE_FIELD_QBALL
+#  include "field_qball.h"
+#else
+#  include "field_pga.h"
+#endif
 
 /* =====================================================================
  *  Finite-volume operators
@@ -476,7 +549,9 @@ static void compute_grads_and_lap_all(Sim *s,
 /* =====================================================================
  *  Generic force step: kernel computes Laplacian (always the same on
  *  the foam mesh), then delegates the field-specific potential / self-
- *  coupling to field_forces() defined in the field plug-in.
+ *  coupling to field_forces() defined in the field plug-in. If the
+ *  plug-in declares a Skyrme L_4 flux (field_skyrme_J returns 1), the
+ *  kernel applies its discrete divergence via a second face pass.
  * ===================================================================== */
 static void compute_forces(Sim *s) {
     Mesh *m = s->m;
@@ -496,16 +571,91 @@ static void compute_forces(Sim *s) {
     }
     compute_grads_and_lap_all(s, gx_all, gy_all, gz_all, lap_all);
 
-    /* Hand off to the field-specific self-coupling. */
+    /* Local part of forces (lap + potential + σ-constraint). */
     double *acc[NCOMP];
     for (int k = 0; k < NCOMP; k++) acc[k] = s->M_acc[k];
     field_forces(s, (double *const *)lap_all, acc);
+
+    /* Skyrme L_4 contribution: compute J^{a,b}(c) on cells, then add
+     * ∂_b J^{a,b} to acc[a] via face divergence. */
+    if (s->c.skyrme_c4 > 0.0) {
+        if (s->Jx[0] == NULL) {
+            for (int a = 0; a < N_SKYRME; a++) {
+                s->Jx[a] = calloc(N, sizeof(double));
+                s->Jy[a] = calloc(N, sizeof(double));
+                s->Jz[a] = calloc(N, sizeof(double));
+            }
+        }
+        int active = field_skyrme_J(s, gx_all, gy_all, gz_all,
+                                    s->Jx, s->Jy, s->Jz);
+        if (active) {
+            /* Discrete divergence of J on faces:
+             *   acc[a](c) += (1/V_c) Σ_{f∈c} A_f n̂_f^{out} · (J(a)+J(nb))/2
+             * Face stores normal pointing from a→b, so for cell c we
+             * pick sign = +1 if c==a, −1 if c==b. */
+            #pragma omp parallel for schedule(static)
+            for (uint32_t c = 0; c < N; c++) {
+                double inv_V = 1.0 / m->cell_vol[c];
+                double div_acc[N_SKYRME] = {0};
+                uint32_t off0 = m->cell_face_off[c];
+                uint32_t off1 = m->cell_face_off[c+1];
+                for (uint32_t kk = off0; kk < off1; kk++) {
+                    uint32_t fid = m->cell_face_idx[kk];
+                    const Face *F = &m->faces[fid];
+                    uint32_t nb;
+                    double sign;
+                    if (F->a == c) { nb = F->b; sign = +1.0; }
+                    else           { nb = F->a; sign = -1.0; }
+                    double area = F->area;
+                    double nx = sign * F->nx;
+                    double ny = sign * F->ny;
+                    double nz = sign * F->nz;
+                    for (int a = 0; a < N_SKYRME; a++) {
+                        double Jxf = 0.5 * (s->Jx[a][c] + s->Jx[a][nb]);
+                        double Jyf = 0.5 * (s->Jy[a][c] + s->Jy[a][nb]);
+                        double Jzf = 0.5 * (s->Jz[a][c] + s->Jz[a][nb]);
+                        div_acc[a] += area * (nx * Jxf + ny * Jyf + nz * Jzf);
+                    }
+                }
+                for (int a = 0; a < N_SKYRME; a++)
+                    acc[a][c] += div_acc[a] * inv_V;
+            }
+        }
+    }
+}
+
+/* =====================================================================
+ *  Hard S³ projection (option 1 from SCAN_RESULTS.md)
+ *
+ *  Constrains M[0..N_SKYRME-1] to |q|=1 and tangent-projects the
+ *  velocity so that ⟨q, q̇⟩ = 0. Applied after each Verlet step.
+ *  Drift envelope is bounded by O(dt²·|a|) per step — same order as
+ *  the integrator itself. Eliminates the bulk-Higgs scalar branch
+ *  competition that caused the soft σ-constraint to fail in the
+ *  parameter scans (see v56/SCAN_RESULTS.md).
+ * ===================================================================== */
+static void project_rotor_S3(Sim *s) {
+    uint32_t N = s->m->N_cells;
+    #pragma omp parallel for schedule(static)
+    for (uint32_t i = 0; i < N; i++) {
+        double q2 = 0;
+        for (int k = 0; k < N_SKYRME; k++) q2 += s->M[k][i] * s->M[k][i];
+        if (q2 < 1e-30) continue;
+        double inv_qn = 1.0 / sqrt(q2);
+        for (int k = 0; k < N_SKYRME; k++) s->M[k][i] *= inv_qn;
+        /* Tangent project velocity: v ← v − ⟨q, v⟩ q  (with the new |q|=1 q). */
+        double qdotv = 0;
+        for (int k = 0; k < N_SKYRME; k++)
+            qdotv += s->M[k][i] * s->M_vel[k][i];
+        for (int k = 0; k < N_SKYRME; k++)
+            s->M_vel[k][i] -= qdotv * s->M[k][i];
+    }
 }
 
 /* =====================================================================
  *  Velocity Verlet (generic — operates on M[k] components)
  * ===================================================================== */
-static void verlet_step(Sim *s) {
+static void verlet_step(Sim *s, double t_end) {
     uint32_t N = s->m->N_cells;
     double hdt = 0.5 * s->c.dt, dt = s->c.dt;
 
@@ -519,12 +669,58 @@ static void verlet_step(Sim *s) {
         for (int k = 0; k < NCOMP; k++)
             s->M[k][i] += dt * s->M_vel[k][i];
     }
+    if (s->c.skyrme_project) project_rotor_S3(s);
     compute_forces(s);
     #pragma omp parallel for schedule(static)
     for (uint32_t i = 0; i < N; i++) {
         for (int k = 0; k < NCOMP; k++)
             s->M_vel[k][i] += hdt * s->M_acc[k][i];
     }
+    /* Velocity damping. Applied after the second half-kick so projection's
+     * tangent correction still sees the damped velocity.
+     *
+     * Two modes:
+     *   damping_sector_size = 0 → full damping: M_vel *= (1−γ·dt) for all k.
+     *   damping_sector_size = S > 0 → tangent-only damping per sector of
+     *     size S. For each cell and each sector of S consecutive components,
+     *     decompose v into v_radial = (v·M̂)M̂ (along M_sector) and v_tan =
+     *     v − v_radial. Then damp only v_radial:
+     *       v ← v_tan + (1−γ·dt)·v_radial
+     *     This preserves the Noether charge of a rotating soliton (|M_sec|=
+     *     const, motion purely tangent), while absorbing the radial
+     *     breathing mode excited by lattice-discretization mismatch. */
+    if (s->c.damping > 0.0 &&
+        (s->c.damping_T <= 0.0 || t_end < s->c.damping_T)) {
+        double damp = 1.0 - s->c.damping * dt;
+        if (damp < 0.0) damp = 0.0;
+        int S = s->c.damping_sector_size;
+        if (S <= 0) {
+            #pragma omp parallel for schedule(static)
+            for (uint32_t i = 0; i < N; i++) {
+                for (int k = 0; k < NCOMP; k++)
+                    s->M_vel[k][i] *= damp;
+            }
+        } else {
+            double gamma_dt = s->c.damping * dt;
+            #pragma omp parallel for schedule(static)
+            for (uint32_t i = 0; i < N; i++) {
+                for (int sec = 0; sec + S <= NCOMP; sec += S) {
+                    double mag2 = 0;
+                    for (int k = 0; k < S; k++)
+                        mag2 += s->M[sec+k][i] * s->M[sec+k][i];
+                    if (mag2 < 1e-30) continue;
+                    double v_dot_m = 0;
+                    for (int k = 0; k < S; k++)
+                        v_dot_m += s->M_vel[sec+k][i] * s->M[sec+k][i];
+                    double damp_amt = gamma_dt * v_dot_m / mag2;
+                    /* Subtract gamma_dt · (radial component of v) */
+                    for (int k = 0; k < S; k++)
+                        s->M_vel[sec+k][i] -= damp_amt * s->M[sec+k][i];
+                }
+            }
+        }
+    }
+    if (s->c.skyrme_project) project_rotor_S3(s);
 }
 
 /* =====================================================================
@@ -532,14 +728,19 @@ static void verlet_step(Sim *s) {
  * ===================================================================== */
 
 typedef struct {
-    double E_kin;       /* (1/2) Σ V_c (M_vel)² (with metric — see below) */
+    double E_kin;       /* (1/2) Σ V_c (M_vel)² */
     double E_grad;      /* (1/2) Σ_face A_f/d_f (ΔM)²  — discrete face form */
-    double E_mass;      /* (1/2) m² Σ V_c M[k]²·g_kk  (uses metric) */
+    double E_mass;      /* (1/2) m² Σ V_c M[k]² */
     double E_quartic;   /* (λ/4) Σ V_c (|M|²_bulk − v²)² */
+    double E_sigma;     /* (sigma_e2/4) Σ V_c (|q|² − 1)² */
+    double E_skyrme;    /* (skyrme_c4/2) Σ V_c [(Tr g)² − ‖g‖²_F]   (real L_4) */
+    double E_pion;      /* m_π² Σ V_c (1 − M[3])   (pion-mass term) */
     double E_total;
     double bulk_min, bulk_mean, bulk_max;
     double M_max[NCOMP];
     double rotor_rms, spatial_rms;   /* RMS of M[0..3] vs M[4..7] */
+    double B_winding;   /* topological charge ∫ ρ_B d³x = (1/2π²)∫det4(q,∂q,∂q,∂q) */
+    double q_norm_min, q_norm_mean, q_norm_max;  /* |q|² stats */
 } Diag;
 
 static void compute_diag(Sim *s, Diag *d) {
@@ -547,16 +748,26 @@ static void compute_diag(Sim *s, Diag *d) {
     Config *c = &s->c;
     uint32_t N = m->N_cells;
 
-    double E_kin = 0, E_mass = 0, E_quartic = 0;
+    double E_kin = 0, E_mass = 0, E_quartic = 0, E_sigma = 0, E_skyrme = 0, E_pion = 0;
     double bulk_sum = 0, bulk_min = +1e30, bulk_max = -1e30;
     double rotor_sum = 0, spatial_sum = 0;
     double V_total = 0;
     double M_max_local[NCOMP] = {0};
+    double B_winding = 0;
+    double q_sum = 0, q_min = +1e30, q_max = -1e30;
 
-    /* Cell-summed pieces */
-    #pragma omp parallel for reduction(+:E_kin,E_mass,E_quartic,bulk_sum,rotor_sum,spatial_sum,V_total) \
-                             reduction(min:bulk_min) reduction(max:bulk_max) \
-                             schedule(static)
+    /* Cell-summed pieces. Skyrme L_4 and winding both use grad_M which
+     * was computed during the most recent verlet force step. */
+    double *gx[NCOMP], *gy[NCOMP], *gz[NCOMP];
+    for (int k = 0; k < NCOMP; k++) {
+        gx[k] = s->grad_M[k][0];
+        gy[k] = s->grad_M[k][1];
+        gz[k] = s->grad_M[k][2];
+    }
+
+    #pragma omp parallel for reduction(+:E_kin,E_mass,E_quartic,E_sigma,E_skyrme,E_pion,bulk_sum,rotor_sum,spatial_sum,V_total,B_winding,q_sum) \
+                              reduction(min:bulk_min,q_min) reduction(max:bulk_max,q_max) \
+                              schedule(static)
     for (uint32_t i = 0; i < N; i++) {
         double V_c = m->cell_vol[i];
         V_total += V_c;
@@ -566,14 +777,58 @@ static void compute_diag(Sim *s, Diag *d) {
             E_kin  += 0.5 * vv * vv * V_c;
             E_mass += 0.5 * c->mass2 * v * v * V_c;
             Mb += g_metric[k] * v * v;
-            if (k < 4) rotor_sum   += v * v;
-            else       spatial_sum += v * v;
+            if (k < N_SKYRME) rotor_sum   += v * v;
+            else              spatial_sum += v * v;
         }
         bulk_sum += Mb * V_c;
         if (Mb < bulk_min) bulk_min = Mb;
         if (Mb > bulk_max) bulk_max = Mb;
         double dMb = Mb - c->v2;
         E_quartic += 0.25 * c->lambda * dMb * dMb * V_c;
+        double q2 = 0.0;
+        for (int j = 0; j < N_SKYRME; j++) q2 += s->M[j][i] * s->M[j][i];
+        double dq = q2 - 1.0;
+        E_sigma += 0.25 * c->sigma_e2 * dq * dq * V_c;
+        q_sum += q2 * V_c;
+        if (q2 < q_min) q_min = q2;
+        if (q2 > q_max) q_max = q2;
+
+        /* Skyrme L_4 energy density:
+         *   e_4 = (c4/2) [(Tr g)² − ‖g‖²_F]
+         * with g_ij = Σ_a (∂_i q^a)(∂_j q^a) over rotor a = 0..N_SKYRME-1. */
+        double gxx=0,gyy=0,gzz=0,gxy=0,gxz=0,gyz=0;
+        for (int a = 0; a < N_SKYRME; a++) {
+            double dxa = gx[a][i], dya = gy[a][i], dza = gz[a][i];
+            gxx += dxa*dxa; gyy += dya*dya; gzz += dza*dza;
+            gxy += dxa*dya; gxz += dxa*dza; gyz += dya*dza;
+        }
+        double trg = gxx + gyy + gzz;
+        double frob2 = gxx*gxx + gyy*gyy + gzz*gzz
+                     + 2.0*(gxy*gxy + gxz*gxz + gyz*gyz);
+        double tr2 = trg * trg;
+        double e4_density = 0.5 * c->skyrme_c4 * (tr2 - frob2);
+        E_skyrme += e4_density * V_c;
+        E_pion += c->m_pi2 * (1.0 - s->M[3][i]) * V_c;
+
+        /* Winding-number density: ρ_B = (1/2π²) det4(q, ∂_x q, ∂_y q, ∂_z q)
+         * over rotor 4-vector q = (M[0], M[1], M[2], M[3]). */
+        double q0 = s->M[0][i], q1 = s->M[1][i], q2c = s->M[2][i], q3 = s->M[3][i];
+        double dx0=gx[0][i], dx1=gx[1][i], dx2=gx[2][i], dx3=gx[3][i];
+        double dy0=gy[0][i], dy1=gy[1][i], dy2=gy[2][i], dy3=gy[3][i];
+        double dz0=gz[0][i], dz1=gz[1][i], dz2=gz[2][i], dz3=gz[3][i];
+        /* 4×4 determinant via cofactor expansion along first row. */
+        double m00=q0,  m01=q1,  m02=q2c, m03=q3;
+        double m10=dx0, m11=dx1, m12=dx2, m13=dx3;
+        double m20=dy0, m21=dy1, m22=dy2, m23=dy3;
+        double m30=dz0, m31=dz1, m32=dz2, m33=dz3;
+        double c0 =  m11*(m22*m33 - m23*m32) - m12*(m21*m33 - m23*m31) + m13*(m21*m32 - m22*m31);
+        double c1 = -m10*(m22*m33 - m23*m32) + m12*(m20*m33 - m23*m30) - m13*(m20*m32 - m22*m30);
+        double c2 =  m10*(m21*m33 - m23*m31) - m11*(m20*m33 - m23*m30) + m13*(m20*m31 - m21*m30);
+        double c3 = -m10*(m21*m32 - m22*m31) + m11*(m20*m32 - m22*m30) - m12*(m20*m31 - m21*m30);
+        double det4 = m00*c0 + m01*c1 + m02*c2 + m03*c3;
+        double rho_B = det4 / (2.0 * M_PI * M_PI);
+        s->winding[i] = rho_B;
+        B_winding += rho_B * V_c;
     }
 
     /* Per-component max — separate parallel reduction to keep things simple */
@@ -603,13 +858,20 @@ static void compute_diag(Sim *s, Diag *d) {
     d->E_kin = E_kin;
     d->E_mass = E_mass;
     d->E_quartic = E_quartic;
+    d->E_sigma = E_sigma;
+    d->E_skyrme = E_skyrme;
+    d->E_pion = E_pion;
     d->E_grad = E_grad;
-    d->E_total = E_kin + E_mass + E_quartic + E_grad;
+    d->E_total = E_kin + E_mass + E_quartic + E_sigma + E_skyrme + E_pion + E_grad;
     d->bulk_min = bulk_min;
     d->bulk_max = bulk_max;
     d->bulk_mean = bulk_sum / V_total;
     d->rotor_rms = sqrt(rotor_sum / N);
     d->spatial_rms = sqrt(spatial_sum / N);
+    d->B_winding = B_winding;
+    d->q_norm_min = q_min;
+    d->q_norm_max = q_max;
+    d->q_norm_mean = q_sum / V_total;
     for (int k = 0; k < NCOMP; k++) d->M_max[k] = M_max_local[k];
 }
 
@@ -927,10 +1189,40 @@ int main(int argc, char **argv) {
     config_default(&s.c);
     config_load(&s.c, argv[2]);
 
+    /* Auto-enable hard S³ projection for Skyrmion seeds without a σ-penalty.
+     * SCAN_RESULTS.md / PROJECTION_RESULT.md established that the soft
+     * σ-constraint alone cannot hold |q|=1 against the bulk-Higgs scalar
+     * branch; the unwinding is intrinsic, not a coupling-strength issue. */
+    if (!strcmp(s.c.init, "skyrme") && s.c.skyrme_c4 > 0.0 &&
+        !s.c.skyrme_project && s.c.sigma_e2 == 0.0) {
+        printf("[sim] auto-enable skyrme_project=1 (Skyrme seed without σ-penalty needs hard projection)\n");
+        s.c.skyrme_project = 1;
+    }
+
     s.c.dt = s.c.dt_factor * m->dx_min;
+
+    /* Tighten dt for the Skyrme L_4 dispersion. The quartic-gradient term
+     * has ω² ~ c4·k⁴·⟨|∇q|²⟩; in a Skyrmion core ⟨|∇q|²⟩ ~ O(1) and
+     * k_max ~ π/dx, giving ω_L4 ~ √c4·(π/dx)². Stability requires
+     * dt ≲ 2/ω_L4 = (2/π²)·dx²/√c4 ≈ 0.2·dx²/√c4. We use the more
+     * conservative 0.15 prefactor with the user's dt_factor as an upper bound. */
+    if (s.c.skyrme_c4 > 0.0) {
+        double dt_L4 = 0.15 * m->dx_min * m->dx_min / sqrt(s.c.skyrme_c4);
+        if (dt_L4 < s.c.dt) {
+            printf("[sim] CFL: tightening dt %.6f → %.6f for L_4 dispersion (c4=%.3f, dx_min=%.4f)\n",
+                   s.c.dt, dt_L4, s.c.skyrme_c4, m->dx_min);
+            s.c.dt = dt_L4;
+        }
+    }
+
     printf("[sim] field: %s (NCOMP=%d)\n", FIELD_NAME, NCOMP);
-    printf("[sim] m²=%.4f λ=%.3f v²=%.4f (v=%.4f)\n",
-           s.c.mass2, s.c.lambda, s.c.v2, sqrt(s.c.v2));
+    printf("[sim] m²=%.4f λ=%.3f v²=%.4f (v=%.4f) sigma_e2=%.3f skyrme_c4=%.4f m_π²=%.4f project=%d\n",
+           s.c.mass2, s.c.lambda, s.c.v2, sqrt(s.c.v2),
+           s.c.sigma_e2, s.c.skyrme_c4, s.c.m_pi2, s.c.skyrme_project);
+    if (s.c.damping > 0.0)
+        printf("[sim] damping γ=%.4f for t<%.2f (then undamped)  mode=%s\n",
+               s.c.damping, s.c.damping_T > 0.0 ? s.c.damping_T : INFINITY,
+               s.c.damping_sector_size > 0 ? "tangent-only" : "full");
     printf("[sim] dt=%.6f dt_factor=%.4f T=%.1f threads=%d init=%s\n",
            s.c.dt, s.c.dt_factor, s.c.T, nthreads, s.c.init);
 
@@ -991,8 +1283,9 @@ int main(int argc, char **argv) {
     compute_forces(&s);
 
     FILE *dfp = fopen(s.c.diag_file, "w");
-    fprintf(dfp, "t\tE_kin\tE_grad\tE_mass\tE_quartic\tE_total"
+    fprintf(dfp, "t\tE_kin\tE_grad\tE_mass\tE_quartic\tE_sigma\tE_skyrme\tE_pion\tE_total"
                  "\tbulk_min\tbulk_mean\tbulk_max\trotor_rms\tspatial_rms"
+                 "\tB_winding\tq_min\tq_mean\tq_max"
                  "\tM0_max\tM1_max\tM2_max\tM3_max\tM4_max\tM5_max\tM6_max\tM7_max\n");
 
     int n_steps = (int)(s.c.T / s.c.dt);
@@ -1003,14 +1296,17 @@ int main(int argc, char **argv) {
 
     Diag d0, d;
     compute_diag(&s, &d0);
-    printf("[sim] E0=%.4e bulk[%.4f, %.4f, %.4f] rotor=%.4f spatial=%.4f\n",
+    printf("[sim] E0=%.4e bulk[%.4f,%.4f,%.4f] rotor=%.4f spatial=%.4f |q|²[%.4f,%.4f] B=%.4f\n",
            d0.E_total, d0.bulk_min, d0.bulk_mean, d0.bulk_max,
-           d0.rotor_rms, d0.spatial_rms);
+           d0.rotor_rms, d0.spatial_rms,
+           d0.q_norm_min, d0.q_norm_max, d0.B_winding);
     fprintf(dfp,
-        "%.4f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f"
-        "\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\n",
-        0.0, d0.E_kin, d0.E_grad, d0.E_mass, d0.E_quartic, d0.E_total,
+         "%.4f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f"
+         "\t%.6f\t%.6f\t%.6f\t%.6f"
+         "\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\n",
+         0.0, d0.E_kin, d0.E_grad, d0.E_mass, d0.E_quartic, d0.E_sigma, d0.E_skyrme, d0.E_pion, d0.E_total,
         d0.bulk_min, d0.bulk_mean, d0.bulk_max, d0.rotor_rms, d0.spatial_rms,
+        d0.B_winding, d0.q_norm_min, d0.q_norm_mean, d0.q_norm_max,
         d0.M_max[0], d0.M_max[1], d0.M_max[2], d0.M_max[3],
         d0.M_max[4], d0.M_max[5], d0.M_max[6], d0.M_max[7]);
     fflush(dfp);
@@ -1050,24 +1346,26 @@ int main(int argc, char **argv) {
     double wall0 = omp_get_wtime();
 
     for (int step = 1; step <= n_steps; step++) {
-        verlet_step(&s);
         double t = step * s.c.dt;
+        verlet_step(&s, t);
         if (step % diag_every == 0) {
             compute_diag(&s, &d);
             double drift = 100.0 * (d.E_total - d0.E_total) / (fabs(d0.E_total) + 1e-30);
             fprintf(dfp,
-                "%.4f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f"
+                "%.4f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f"
+                "\t%.6f\t%.6f\t%.6f\t%.6f"
                 "\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\n",
-                t, d.E_kin, d.E_grad, d.E_mass, d.E_quartic, d.E_total,
+                t, d.E_kin, d.E_grad, d.E_mass, d.E_quartic, d.E_sigma, d.E_skyrme, d.E_pion, d.E_total,
                 d.bulk_min, d.bulk_mean, d.bulk_max, d.rotor_rms, d.spatial_rms,
+                d.B_winding, d.q_norm_min, d.q_norm_mean, d.q_norm_max,
                 d.M_max[0], d.M_max[1], d.M_max[2], d.M_max[3],
                 d.M_max[4], d.M_max[5], d.M_max[6], d.M_max[7]);
             fflush(dfp);
             if (step % (diag_every * 10) == 0) {
                 double wall = omp_get_wtime() - wall0;
-                printf("t=%7.2f E=%.4e (drift %+.3f%%) bulk=[%.3f,%.3f] rotor=%.3f spatial=%.3f [%.0f%% %.0fs %.1fms/step]\n",
+                printf("t=%7.2f E=%.4e (drift %+.3f%%) bulk=[%.3f,%.3f] rotor=%.3f |q|²=[%.3f,%.3f] B=%.3f [%.0f%% %.0fs %.1fms/step]\n",
                        t, d.E_total, drift, d.bulk_min, d.bulk_max,
-                       d.rotor_rms, d.spatial_rms,
+                       d.rotor_rms, d.q_norm_min, d.q_norm_max, d.B_winding,
                        100.0 * step / n_steps, wall, 1000.0 * wall / step);
                 fflush(stdout);
             }

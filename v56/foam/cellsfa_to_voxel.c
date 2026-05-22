@@ -221,10 +221,17 @@ int main(int argc, char **argv) {
                     vox_buf[k] = malloc(sizeof(float) * N3);
                 }
                 out = sfa_create(out_path, N, N, N, mesh.L, mesh.L, mesh.L, in->dt);
+                /* Preserve column names and semantic codes from the input
+                 * SFA. Earlier versions hardcoded a PGA-style schema
+                 * (cols 0..3 = CUSTOM, 4..7 = POSITION) which silently
+                 * mis-labeled non-PGA fields (e.g. 6-component Q-ball
+                 * fields became "rotor + 2-comp spatial" to the viewer). */
                 for (int k = 0; k < out_ncols; k++) {
-                    char name[16]; snprintf(name, 16, "C%d", k);
-                    sfa_add_column(out, name, SFA_F32,
-                                    (k < 4) ? SFA_CUSTOM : SFA_POSITION, k & 3);
+                    sfa_add_column(out,
+                                   in->columns[k].name,
+                                   SFA_F32,
+                                   in->columns[k].semantic,
+                                   in->columns[k].component);
                 }
                 sfa_finalize_header(out);
                 printf("  output: %d columns × %d^3 voxels\n", out_ncols, N);

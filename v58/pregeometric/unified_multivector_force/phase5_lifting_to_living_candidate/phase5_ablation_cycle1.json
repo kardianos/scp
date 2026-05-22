@@ -1,0 +1,3764 @@
+{
+  "phase": "Phase 5 Cycle 1 \u2014 Lifting to the Living Candidate (Ablation Experiments)",
+  "living_candidate": "\u27e8D \u03a9 + \u03bb \u03a9\u00b2 + \u03bc \u27e8\u03a9, \u03a9\u27e9\u27e9_{0,2} = f_g(\u03c1_ambient) \u00b7 J_\u03c1 + f_em(\u03c1_ambient) \u00b7 J_\u03c7",
+  "ablation_description": {
+    "full": "exact locked (\u03bb=0.001, \u03bc=0.0005, f_g=1/(1+\u03c1/\u03c1_crit) density-dependent)",
+    "no_quad": "quadratic self-interaction disabled (\u03bb=\u03bc=0); f_g density-dependent",
+    "no_fg": "ambient modulation replaced by constant 0.75 (no \u03c1-dependent feedback); \u03bb/\u03bc locked"
+  },
+  "exact_locked_params_full": {
+    "lambda": 0.001,
+    "mu": 0.0005,
+    "f_g": "1/(1 + \u03c1/\u03c1_crit)",
+    "rho_crit": 2.5,
+    "fg_constant_for_no_fg_ablation": 0.75,
+    "safe_band": "|\u03bb| \u2264 0.005, |\u03bc| \u2264 0.001",
+    "note": "All modes used the single canonical implementation from Phase 1. 'full' path is byte-identical to prior phases. Ablations achieved via optional parameters only."
+  },
+  "results_by_mode": {
+    "full": {
+      "mode_desc": {
+        "ablation": "full",
+        "lambda": 0.001,
+        "mu": 0.0005,
+        "fg_override": null,
+        "description": "exact locked living candidate (\u03bb=0.001, \u03bc=0.0005, f_g density-modulated)"
+      },
+      "final_N": 536,
+      "trajectory": [
+        {
+          "N": 56,
+          "rho_avg": 0.64007,
+          "rho_std": 1.07107,
+          "protected_frac": 0.4107,
+          "protected_density_conc": 0.83043,
+          "biv_activity_avg": 0.15856,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 0.0,
+          "light_cone_mean_branch": 0.0,
+          "light_cone_std_branch": 0.0,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 3.1,
+            "2": 3.1,
+            "3": 3.1,
+            "4": 3.1,
+            "5": 3.1,
+            "6": 3.1
+          },
+          "step": 1,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 96,
+          "rho_avg": 0.40998,
+          "rho_std": 0.86232,
+          "protected_frac": 0.3542,
+          "protected_density_conc": 0.61766,
+          "biv_activity_avg": 0.14626,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.4142,
+          "light_cone_mean_branch": 0.667,
+          "light_cone_std_branch": 0.943,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 3.4,
+            "2": 6.8,
+            "3": 6.8,
+            "4": 6.8,
+            "5": 6.8,
+            "6": 6.8
+          },
+          "step": 2,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 136,
+          "rho_avg": 0.31219,
+          "rho_std": 0.74088,
+          "protected_frac": 0.3897,
+          "protected_density_conc": 0.43307,
+          "biv_activity_avg": 0.14118,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.0718,
+          "light_cone_mean_branch": 2.75,
+          "light_cone_std_branch": 2.947,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 7.9,
+            "3": 9.1,
+            "4": 9.1,
+            "5": 9.1,
+            "6": 9.1
+          },
+          "step": 3,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 176,
+          "rho_avg": 0.26078,
+          "rho_std": 0.65912,
+          "protected_frac": 0.3864,
+          "protected_density_conc": 0.37163,
+          "biv_activity_avg": 0.13439,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 2.0,
+          "light_cone_mean_branch": 1.0,
+          "light_cone_std_branch": 2.0,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 3.7,
+            "2": 7.8,
+            "3": 8.1,
+            "4": 8.1,
+            "5": 8.1,
+            "6": 8.1
+          },
+          "step": 4,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 216,
+          "rho_avg": 0.23451,
+          "rho_std": 0.59876,
+          "protected_frac": 0.3935,
+          "protected_density_conc": 0.33603,
+          "biv_activity_avg": 0.13094,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.4142,
+          "light_cone_mean_branch": 1.0,
+          "light_cone_std_branch": 1.414,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 3.7,
+            "2": 7.2,
+            "3": 8.9,
+            "4": 8.9,
+            "5": 8.9,
+            "6": 8.9
+          },
+          "step": 5,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 256,
+          "rho_avg": 0.21413,
+          "rho_std": 0.55363,
+          "protected_frac": 0.4102,
+          "protected_density_conc": 0.30007,
+          "biv_activity_avg": 0.12879,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.6244,
+          "light_cone_mean_branch": 5.375,
+          "light_cone_std_branch": 8.731,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 3.7,
+            "2": 8.6,
+            "3": 9.7,
+            "4": 9.9,
+            "5": 9.9,
+            "6": 9.9
+          },
+          "step": 6,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 296,
+          "rho_avg": 0.19959,
+          "rho_std": 0.51702,
+          "protected_frac": 0.4122,
+          "protected_density_conc": 0.27712,
+          "biv_activity_avg": 0.12723,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.3693,
+          "light_cone_mean_branch": 1.333,
+          "light_cone_std_branch": 1.826,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 11.0,
+            "3": 12.9,
+            "4": 13.3,
+            "5": 13.3,
+            "6": 13.3
+          },
+          "step": 7,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 336,
+          "rho_avg": 0.19037,
+          "rho_std": 0.48679,
+          "protected_frac": 0.4196,
+          "protected_density_conc": 0.25953,
+          "biv_activity_avg": 0.12821,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.8966,
+          "light_cone_mean_branch": 4.4,
+          "light_cone_std_branch": 8.345,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 8.2,
+            "3": 10.1,
+            "4": 10.2,
+            "5": 10.2,
+            "6": 10.2
+          },
+          "step": 8,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 376,
+          "rho_avg": 0.18262,
+          "rho_std": 0.46159,
+          "protected_frac": 0.4122,
+          "protected_density_conc": 0.25182,
+          "biv_activity_avg": 0.12761,
+          "d_eff": 0.8292,
+          "isotropy_branch_var": 1.2149,
+          "light_cone_mean_branch": 5.5,
+          "light_cone_std_branch": 6.682,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 8.5,
+            "3": 13.3,
+            "4": 14.2,
+            "5": 14.2,
+            "6": 14.2
+          },
+          "step": 9,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 416,
+          "rho_avg": 0.17412,
+          "rho_std": 0.44033,
+          "protected_frac": 0.4038,
+          "protected_density_conc": 0.24393,
+          "biv_activity_avg": 0.12654,
+          "d_eff": 0.8398,
+          "isotropy_branch_var": 0.8975,
+          "light_cone_mean_branch": 1.2,
+          "light_cone_std_branch": 1.077,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 11.2,
+            "3": 14.5,
+            "4": 15.2,
+            "5": 15.3,
+            "6": 15.3
+          },
+          "step": 10,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 456,
+          "rho_avg": 0.16737,
+          "rho_std": 0.42248,
+          "protected_frac": 0.3925,
+          "protected_density_conc": 0.24218,
+          "biv_activity_avg": 0.12666,
+          "d_eff": 0.8264,
+          "isotropy_branch_var": 1.3248,
+          "light_cone_mean_branch": 1.4,
+          "light_cone_std_branch": 1.855,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 10.5,
+            "3": 13.8,
+            "4": 14.7,
+            "5": 14.9,
+            "6": 14.9
+          },
+          "step": 11,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 496,
+          "rho_avg": 0.16566,
+          "rho_std": 0.4071,
+          "protected_frac": 0.4052,
+          "protected_density_conc": 0.23961,
+          "biv_activity_avg": 0.12663,
+          "d_eff": 1.1552,
+          "isotropy_branch_var": 1.243,
+          "light_cone_mean_branch": 6.1,
+          "light_cone_std_branch": 7.582,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 11.3,
+            "3": 19.5,
+            "4": 22.8,
+            "5": 24.1,
+            "6": 24.4
+          },
+          "step": 12,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 536,
+          "rho_avg": 0.16109,
+          "rho_std": 0.39283,
+          "protected_frac": 0.4142,
+          "protected_density_conc": 0.22903,
+          "biv_activity_avg": 0.12583,
+          "d_eff": 0.9524,
+          "isotropy_branch_var": 1.6063,
+          "light_cone_mean_branch": 0.9,
+          "light_cone_std_branch": 1.446,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 12.0,
+            "3": 17.2,
+            "4": 17.9,
+            "5": 18.0,
+            "6": 18.0
+          },
+          "step": 13,
+          "nodes_added_this_step": 40
+        }
+      ],
+      "attractor": {
+        "late_d_eff_mean": 0.978,
+        "late_d_eff_std": 0.1659,
+        "late_prot_conc_mean": 0.2369,
+        "mode_desc": {
+          "ablation": "full",
+          "lambda": 0.001,
+          "mu": 0.0005,
+          "fg_override": null,
+          "description": "exact locked living candidate (\u03bb=0.001, \u03bc=0.0005, f_g density-modulated)"
+        }
+      },
+      "recovery_trials": [
+        {
+          "trial": 0,
+          "perturbed_node_count": 7,
+          "pre": {
+            "N": 536,
+            "rho_avg": 0.16109,
+            "rho_std": 0.39283,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22903,
+            "biv_activity_avg": 0.12583,
+            "d_eff": 1.2335,
+            "isotropy_branch_var": 1.1818,
+            "light_cone_mean_branch": 1.1,
+            "light_cone_std_branch": 1.3,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 3.7,
+              "2": 10.8,
+              "3": 19.0,
+              "4": 23.3,
+              "5": 25.4,
+              "6": 26.2
+            }
+          },
+          "immediate_post": {
+            "N": 536,
+            "rho_avg": 0.16092,
+            "rho_std": 0.39276,
+            "protected_frac": 0.4104,
+            "protected_density_conc": 0.22978,
+            "biv_activity_avg": 0.12611,
+            "d_eff": 0.843,
+            "isotropy_branch_var": 1.4021,
+            "light_cone_mean_branch": 5.2,
+            "light_cone_std_branch": 7.291,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 11.1,
+              "3": 14.4,
+              "4": 15.1,
+              "5": 15.4,
+              "6": 15.4
+            }
+          },
+          "final_after_recovery": {
+            "N": 711,
+            "rho_avg": 0.14872,
+            "rho_std": 0.34573,
+            "protected_frac": 0.4262,
+            "protected_density_conc": 0.21129,
+            "biv_activity_avg": 0.1252,
+            "d_eff": 1.7256,
+            "isotropy_branch_var": 1.0533,
+            "light_cone_mean_branch": 1.6,
+            "light_cone_std_branch": 1.685,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 11.9,
+              "3": 25.2,
+              "4": 45.1,
+              "5": 61.0
+            },
+            "recovery_step": 7
+          },
+          "recovery_series": [
+            {
+              "N": 561,
+              "rho_avg": 0.15922,
+              "rho_std": 0.38437,
+              "protected_frac": 0.4171,
+              "protected_density_conc": 0.22494,
+              "biv_activity_avg": 0.12574,
+              "d_eff": 1.2313,
+              "isotropy_branch_var": 1.5433,
+              "light_cone_mean_branch": 3.1,
+              "light_cone_std_branch": 4.784,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 3.6,
+                "2": 10.9,
+                "3": 19.9,
+                "4": 23.6,
+                "5": 24.1
+              },
+              "recovery_step": 1
+            },
+            {
+              "N": 586,
+              "rho_avg": 0.15679,
+              "rho_std": 0.37689,
+              "protected_frac": 0.4181,
+              "protected_density_conc": 0.22124,
+              "biv_activity_avg": 0.12541,
+              "d_eff": 1.3509,
+              "isotropy_branch_var": 1.4179,
+              "light_cone_mean_branch": 3.4,
+              "light_cone_std_branch": 4.821,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 12.2,
+                "3": 24.5,
+                "4": 30.4,
+                "5": 31.9
+              },
+              "recovery_step": 2
+            },
+            {
+              "N": 611,
+              "rho_avg": 0.15604,
+              "rho_std": 0.37004,
+              "protected_frac": 0.4173,
+              "protected_density_conc": 0.22224,
+              "biv_activity_avg": 0.12432,
+              "d_eff": 1.3607,
+              "isotropy_branch_var": 1.5455,
+              "light_cone_mean_branch": 3.3,
+              "light_cone_std_branch": 5.1,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.4,
+                "3": 21.9,
+                "4": 30.0,
+                "5": 32.8
+              },
+              "recovery_step": 3
+            },
+            {
+              "N": 636,
+              "rho_avg": 0.15425,
+              "rho_std": 0.36346,
+              "protected_frac": 0.4167,
+              "protected_density_conc": 0.22118,
+              "biv_activity_avg": 0.12478,
+              "d_eff": 1.2275,
+              "isotropy_branch_var": 1.863,
+              "light_cone_mean_branch": 4.6,
+              "light_cone_std_branch": 8.57,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.2,
+                "3": 18.8,
+                "4": 24.8,
+                "5": 27.5
+              },
+              "recovery_step": 4
+            },
+            {
+              "N": 661,
+              "rho_avg": 0.15131,
+              "rho_std": 0.35707,
+              "protected_frac": 0.4175,
+              "protected_density_conc": 0.21542,
+              "biv_activity_avg": 0.12464,
+              "d_eff": 1.4383,
+              "isotropy_branch_var": 1.0737,
+              "light_cone_mean_branch": 2.4,
+              "light_cone_std_branch": 2.577,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.8,
+                "3": 21.9,
+                "4": 30.2,
+                "5": 40.0
+              },
+              "recovery_step": 5
+            },
+            {
+              "N": 686,
+              "rho_avg": 0.14946,
+              "rho_std": 0.35111,
+              "protected_frac": 0.4213,
+              "protected_density_conc": 0.21198,
+              "biv_activity_avg": 0.12495,
+              "d_eff": 1.676,
+              "isotropy_branch_var": 1.1211,
+              "light_cone_mean_branch": 2.4,
+              "light_cone_std_branch": 2.691,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.1,
+                "3": 22.6,
+                "4": 40.1,
+                "5": 58.1
+              },
+              "recovery_step": 6
+            },
+            {
+              "N": 711,
+              "rho_avg": 0.14872,
+              "rho_std": 0.34573,
+              "protected_frac": 0.4262,
+              "protected_density_conc": 0.21129,
+              "biv_activity_avg": 0.1252,
+              "d_eff": 1.7256,
+              "isotropy_branch_var": 1.0533,
+              "light_cone_mean_branch": 1.6,
+              "light_cone_std_branch": 1.685,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.9,
+                "3": 25.2,
+                "4": 45.1,
+                "5": 61.0
+              },
+              "recovery_step": 7
+            }
+          ],
+          "metrics": {
+            "d_eff_pre": 1.2335,
+            "d_eff_dev_immediate": 0.3905,
+            "d_eff_dev_final": 0.4921,
+            "prot_conc_dev_final": 0.0177,
+            "isotropy_dev_final": 0.1285,
+            "relaxation_steps_to_tolerance": 1,
+            "recovered_within_tolerance": false,
+            "attractor_band_d_eff": 0.26,
+            "attractor_prot_conc_tol": 0.03
+          }
+        },
+        {
+          "trial": 1,
+          "perturbed_node_count": 7,
+          "pre": {
+            "N": 536,
+            "rho_avg": 0.16109,
+            "rho_std": 0.39283,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22903,
+            "biv_activity_avg": 0.12583,
+            "d_eff": 1.2335,
+            "isotropy_branch_var": 1.1818,
+            "light_cone_mean_branch": 1.1,
+            "light_cone_std_branch": 1.3,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 3.7,
+              "2": 10.8,
+              "3": 19.0,
+              "4": 23.3,
+              "5": 25.4,
+              "6": 26.2
+            }
+          },
+          "immediate_post": {
+            "N": 536,
+            "rho_avg": 0.16109,
+            "rho_std": 0.39285,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.2289,
+            "biv_activity_avg": 0.12584,
+            "d_eff": 1.2159,
+            "isotropy_branch_var": 1.2373,
+            "light_cone_mean_branch": 1.8,
+            "light_cone_std_branch": 2.227,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 11.6,
+              "3": 20.4,
+              "4": 25.3,
+              "5": 26.1,
+              "6": 26.7
+            }
+          },
+          "final_after_recovery": {
+            "N": 711,
+            "rho_avg": 0.14835,
+            "rho_std": 0.34564,
+            "protected_frac": 0.4332,
+            "protected_density_conc": 0.20643,
+            "biv_activity_avg": 0.1239,
+            "d_eff": 1.756,
+            "isotropy_branch_var": 0.9961,
+            "light_cone_mean_branch": 3.2,
+            "light_cone_std_branch": 3.187,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 11.1,
+              "3": 23.1,
+              "4": 44.0,
+              "5": 66.4
+            },
+            "recovery_step": 7
+          },
+          "recovery_series": [
+            {
+              "N": 561,
+              "rho_avg": 0.15939,
+              "rho_std": 0.38489,
+              "protected_frac": 0.4189,
+              "protected_density_conc": 0.22637,
+              "biv_activity_avg": 0.12539,
+              "d_eff": 1.0634,
+              "isotropy_branch_var": 1.7807,
+              "light_cone_mean_branch": 3.7,
+              "light_cone_std_branch": 6.589,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 3.6,
+                "2": 9.6,
+                "3": 16.2,
+                "4": 18.2,
+                "5": 18.8
+              },
+              "recovery_step": 1
+            },
+            {
+              "N": 586,
+              "rho_avg": 0.15834,
+              "rho_std": 0.3775,
+              "protected_frac": 0.4232,
+              "protected_density_conc": 0.22446,
+              "biv_activity_avg": 0.12537,
+              "d_eff": 1.5309,
+              "isotropy_branch_var": 1.6963,
+              "light_cone_mean_branch": 0.7,
+              "light_cone_std_branch": 1.187,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.5,
+                "3": 24.8,
+                "4": 37.4,
+                "5": 42.2
+              },
+              "recovery_step": 2
+            },
+            {
+              "N": 611,
+              "rho_avg": 0.1563,
+              "rho_std": 0.37048,
+              "protected_frac": 0.4288,
+              "protected_density_conc": 0.22023,
+              "biv_activity_avg": 0.12501,
+              "d_eff": 1.6112,
+              "isotropy_branch_var": 1.4621,
+              "light_cone_mean_branch": 2.8,
+              "light_cone_std_branch": 4.094,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.9,
+                "3": 25.9,
+                "4": 40.8,
+                "5": 48.9
+              },
+              "recovery_step": 3
+            },
+            {
+              "N": 636,
+              "rho_avg": 0.15318,
+              "rho_std": 0.36359,
+              "protected_frac": 0.4277,
+              "protected_density_conc": 0.21518,
+              "biv_activity_avg": 0.12422,
+              "d_eff": 1.2053,
+              "isotropy_branch_var": 0.8478,
+              "light_cone_mean_branch": 1.6,
+              "light_cone_std_branch": 1.356,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 10.9,
+                "3": 20.1,
+                "4": 24.2,
+                "5": 25.6
+              },
+              "recovery_step": 4
+            },
+            {
+              "N": 661,
+              "rho_avg": 0.15143,
+              "rho_std": 0.3572,
+              "protected_frac": 0.4312,
+              "protected_density_conc": 0.21119,
+              "biv_activity_avg": 0.12385,
+              "d_eff": 1.8536,
+              "isotropy_branch_var": 1.9379,
+              "light_cone_mean_branch": 3.0,
+              "light_cone_std_branch": 5.814,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.0,
+                "3": 25.1,
+                "4": 49.6,
+                "5": 76.4
+              },
+              "recovery_step": 5
+            },
+            {
+              "N": 686,
+              "rho_avg": 0.14859,
+              "rho_std": 0.35118,
+              "protected_frac": 0.4359,
+              "protected_density_conc": 0.2048,
+              "biv_activity_avg": 0.12399,
+              "d_eff": 1.5225,
+              "isotropy_branch_var": 0.8095,
+              "light_cone_mean_branch": 2.1,
+              "light_cone_std_branch": 1.7,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.8,
+                "3": 23.8,
+                "4": 36.4,
+                "5": 42.9
+              },
+              "recovery_step": 6
+            },
+            {
+              "N": 711,
+              "rho_avg": 0.14835,
+              "rho_std": 0.34564,
+              "protected_frac": 0.4332,
+              "protected_density_conc": 0.20643,
+              "biv_activity_avg": 0.1239,
+              "d_eff": 1.756,
+              "isotropy_branch_var": 0.9961,
+              "light_cone_mean_branch": 3.2,
+              "light_cone_std_branch": 3.187,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.1,
+                "3": 23.1,
+                "4": 44.0,
+                "5": 66.4
+              },
+              "recovery_step": 7
+            }
+          ],
+          "metrics": {
+            "d_eff_pre": 1.2335,
+            "d_eff_dev_immediate": 0.0176,
+            "d_eff_dev_final": 0.5225,
+            "prot_conc_dev_final": 0.0226,
+            "isotropy_dev_final": 0.1857,
+            "relaxation_steps_to_tolerance": 1,
+            "recovered_within_tolerance": false,
+            "attractor_band_d_eff": 0.26,
+            "attractor_prot_conc_tol": 0.03
+          }
+        },
+        {
+          "trial": 2,
+          "perturbed_node_count": 7,
+          "pre": {
+            "N": 536,
+            "rho_avg": 0.16109,
+            "rho_std": 0.39283,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22903,
+            "biv_activity_avg": 0.12583,
+            "d_eff": 1.2335,
+            "isotropy_branch_var": 1.1818,
+            "light_cone_mean_branch": 1.1,
+            "light_cone_std_branch": 1.3,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 3.7,
+              "2": 10.8,
+              "3": 19.0,
+              "4": 23.3,
+              "5": 25.4,
+              "6": 26.2
+            }
+          },
+          "immediate_post": {
+            "N": 536,
+            "rho_avg": 0.16123,
+            "rho_std": 0.39287,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22932,
+            "biv_activity_avg": 0.12636,
+            "d_eff": 1.0828,
+            "isotropy_branch_var": 0.9252,
+            "light_cone_mean_branch": 1.9,
+            "light_cone_std_branch": 1.758,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 10.6,
+              "3": 16.3,
+              "4": 20.1,
+              "5": 22.1,
+              "6": 22.4
+            }
+          },
+          "final_after_recovery": {
+            "N": 711,
+            "rho_avg": 0.14668,
+            "rho_std": 0.3465,
+            "protected_frac": 0.4205,
+            "protected_density_conc": 0.20966,
+            "biv_activity_avg": 0.12414,
+            "d_eff": 1.2469,
+            "isotropy_branch_var": 1.1943,
+            "light_cone_mean_branch": 4.2,
+            "light_cone_std_branch": 5.016,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 9.5,
+              "3": 15.9,
+              "4": 24.0,
+              "5": 28.5
+            },
+            "recovery_step": 7
+          },
+          "recovery_series": [
+            {
+              "N": 561,
+              "rho_avg": 0.15799,
+              "rho_std": 0.38483,
+              "protected_frac": 0.4171,
+              "protected_density_conc": 0.22408,
+              "biv_activity_avg": 0.12621,
+              "d_eff": 1.2779,
+              "isotropy_branch_var": 1.2444,
+              "light_cone_mean_branch": 3.8,
+              "light_cone_std_branch": 4.729,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.8,
+                "3": 20.6,
+                "4": 27.1,
+                "5": 29.2
+              },
+              "recovery_step": 1
+            },
+            {
+              "N": 586,
+              "rho_avg": 0.15671,
+              "rho_std": 0.37741,
+              "protected_frac": 0.4215,
+              "protected_density_conc": 0.22098,
+              "biv_activity_avg": 0.12555,
+              "d_eff": 1.6814,
+              "isotropy_branch_var": 1.5523,
+              "light_cone_mean_branch": 5.2,
+              "light_cone_std_branch": 8.072,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 3.6,
+                "2": 11.4,
+                "3": 24.0,
+                "4": 40.6,
+                "5": 50.4
+              },
+              "recovery_step": 2
+            },
+            {
+              "N": 611,
+              "rho_avg": 0.15533,
+              "rho_std": 0.37058,
+              "protected_frac": 0.4206,
+              "protected_density_conc": 0.22125,
+              "biv_activity_avg": 0.12503,
+              "d_eff": 1.3085,
+              "isotropy_branch_var": 1.0646,
+              "light_cone_mean_branch": 3.0,
+              "light_cone_std_branch": 3.194,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 2.9,
+                "2": 7.5,
+                "3": 15.0,
+                "4": 19.8,
+                "5": 21.4
+              },
+              "recovery_step": 3
+            },
+            {
+              "N": 636,
+              "rho_avg": 0.15159,
+              "rho_std": 0.36397,
+              "protected_frac": 0.4182,
+              "protected_density_conc": 0.21668,
+              "biv_activity_avg": 0.12494,
+              "d_eff": 1.4482,
+              "isotropy_branch_var": 1.1547,
+              "light_cone_mean_branch": 3.0,
+              "light_cone_std_branch": 3.464,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 3.6,
+                "2": 10.9,
+                "3": 21.2,
+                "4": 30.4,
+                "5": 34.5
+              },
+              "recovery_step": 4
+            },
+            {
+              "N": 661,
+              "rho_avg": 0.14982,
+              "rho_std": 0.3578,
+              "protected_frac": 0.416,
+              "protected_density_conc": 0.21492,
+              "biv_activity_avg": 0.12453,
+              "d_eff": 1.4809,
+              "isotropy_branch_var": 1.4861,
+              "light_cone_mean_branch": 4.2,
+              "light_cone_std_branch": 6.242,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 12.1,
+                "3": 21.8,
+                "4": 33.4,
+                "5": 42.2
+              },
+              "recovery_step": 5
+            },
+            {
+              "N": 686,
+              "rho_avg": 0.14758,
+              "rho_std": 0.35189,
+              "protected_frac": 0.4125,
+              "protected_density_conc": 0.2124,
+              "biv_activity_avg": 0.1243,
+              "d_eff": 1.6125,
+              "isotropy_branch_var": 1.2202,
+              "light_cone_mean_branch": 6.9,
+              "light_cone_std_branch": 8.42,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 10.9,
+                "3": 22.4,
+                "4": 39.0,
+                "5": 50.2
+              },
+              "recovery_step": 6
+            },
+            {
+              "N": 711,
+              "rho_avg": 0.14668,
+              "rho_std": 0.3465,
+              "protected_frac": 0.4205,
+              "protected_density_conc": 0.20966,
+              "biv_activity_avg": 0.12414,
+              "d_eff": 1.2469,
+              "isotropy_branch_var": 1.1943,
+              "light_cone_mean_branch": 4.2,
+              "light_cone_std_branch": 5.016,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 9.5,
+                "3": 15.9,
+                "4": 24.0,
+                "5": 28.5
+              },
+              "recovery_step": 7
+            }
+          ],
+          "metrics": {
+            "d_eff_pre": 1.2335,
+            "d_eff_dev_immediate": 0.1507,
+            "d_eff_dev_final": 0.0134,
+            "prot_conc_dev_final": 0.0194,
+            "isotropy_dev_final": 0.0125,
+            "relaxation_steps_to_tolerance": 1,
+            "recovered_within_tolerance": true,
+            "attractor_band_d_eff": 0.26,
+            "attractor_prot_conc_tol": 0.03
+          }
+        },
+        {
+          "trial": 3,
+          "perturbed_node_count": 7,
+          "pre": {
+            "N": 536,
+            "rho_avg": 0.16109,
+            "rho_std": 0.39283,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22903,
+            "biv_activity_avg": 0.12583,
+            "d_eff": 1.2335,
+            "isotropy_branch_var": 1.1818,
+            "light_cone_mean_branch": 1.1,
+            "light_cone_std_branch": 1.3,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 3.7,
+              "2": 10.8,
+              "3": 19.0,
+              "4": 23.3,
+              "5": 25.4,
+              "6": 26.2
+            }
+          },
+          "immediate_post": {
+            "N": 536,
+            "rho_avg": 0.16105,
+            "rho_std": 0.39292,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22911,
+            "biv_activity_avg": 0.12543,
+            "d_eff": 0.8743,
+            "isotropy_branch_var": 1.0123,
+            "light_cone_mean_branch": 2.2,
+            "light_cone_std_branch": 2.227,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 3.7,
+              "2": 8.9,
+              "3": 13.1,
+              "4": 14.1,
+              "5": 14.3,
+              "6": 14.4
+            }
+          },
+          "final_after_recovery": {
+            "N": 711,
+            "rho_avg": 0.14958,
+            "rho_std": 0.34667,
+            "protected_frac": 0.4191,
+            "protected_density_conc": 0.21506,
+            "biv_activity_avg": 0.12514,
+            "d_eff": 1.7184,
+            "isotropy_branch_var": 1.7879,
+            "light_cone_mean_branch": 3.8,
+            "light_cone_std_branch": 6.794,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 11.4,
+              "3": 21.6,
+              "4": 40.6,
+              "5": 65.2
+            },
+            "recovery_step": 7
+          },
+          "recovery_series": [
+            {
+              "N": 561,
+              "rho_avg": 0.1588,
+              "rho_std": 0.38526,
+              "protected_frac": 0.41,
+              "protected_density_conc": 0.22889,
+              "biv_activity_avg": 0.12514,
+              "d_eff": 0.8743,
+              "isotropy_branch_var": 1.8297,
+              "light_cone_mean_branch": 4.6,
+              "light_cone_std_branch": 8.417,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 10.1,
+                "3": 13.5,
+                "4": 15.4,
+                "5": 16.1
+              },
+              "recovery_step": 1
+            },
+            {
+              "N": 586,
+              "rho_avg": 0.15791,
+              "rho_std": 0.3777,
+              "protected_frac": 0.4164,
+              "protected_density_conc": 0.22604,
+              "biv_activity_avg": 0.12492,
+              "d_eff": 1.2287,
+              "isotropy_branch_var": 0.8062,
+              "light_cone_mean_branch": 4.0,
+              "light_cone_std_branch": 3.225,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 3.6,
+                "2": 9.5,
+                "3": 15.9,
+                "4": 21.6,
+                "5": 25.2
+              },
+              "recovery_step": 2
+            },
+            {
+              "N": 611,
+              "rho_avg": 0.15836,
+              "rho_std": 0.37107,
+              "protected_frac": 0.4206,
+              "protected_density_conc": 0.22784,
+              "biv_activity_avg": 0.12573,
+              "d_eff": 1.1082,
+              "isotropy_branch_var": 1.6,
+              "light_cone_mean_branch": 5.0,
+              "light_cone_std_branch": 8.0,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.6,
+                "3": 18.9,
+                "4": 22.0,
+                "5": 22.4
+              },
+              "recovery_step": 3
+            },
+            {
+              "N": 636,
+              "rho_avg": 0.15674,
+              "rho_std": 0.36451,
+              "protected_frac": 0.4245,
+              "protected_density_conc": 0.22456,
+              "biv_activity_avg": 0.12549,
+              "d_eff": 1.7316,
+              "isotropy_branch_var": 2.0085,
+              "light_cone_mean_branch": 4.2,
+              "light_cone_std_branch": 8.436,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.4,
+                "3": 25.2,
+                "4": 45.4,
+                "5": 60.6
+              },
+              "recovery_step": 4
+            },
+            {
+              "N": 661,
+              "rho_avg": 0.15379,
+              "rho_std": 0.35812,
+              "protected_frac": 0.4206,
+              "protected_density_conc": 0.22095,
+              "biv_activity_avg": 0.12562,
+              "d_eff": 1.6499,
+              "isotropy_branch_var": 1.3424,
+              "light_cone_mean_branch": 4.1,
+              "light_cone_std_branch": 5.504,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.8,
+                "3": 25.0,
+                "4": 43.8,
+                "5": 51.5
+              },
+              "recovery_step": 5
+            },
+            {
+              "N": 686,
+              "rho_avg": 0.15221,
+              "rho_std": 0.35245,
+              "protected_frac": 0.4242,
+              "protected_density_conc": 0.21812,
+              "biv_activity_avg": 0.12541,
+              "d_eff": 1.6591,
+              "isotropy_branch_var": 1.1962,
+              "light_cone_mean_branch": 4.7,
+              "light_cone_std_branch": 5.622,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.5,
+                "3": 23.1,
+                "4": 40.4,
+                "5": 56.0
+              },
+              "recovery_step": 6
+            },
+            {
+              "N": 711,
+              "rho_avg": 0.14958,
+              "rho_std": 0.34667,
+              "protected_frac": 0.4191,
+              "protected_density_conc": 0.21506,
+              "biv_activity_avg": 0.12514,
+              "d_eff": 1.7184,
+              "isotropy_branch_var": 1.7879,
+              "light_cone_mean_branch": 3.8,
+              "light_cone_std_branch": 6.794,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.4,
+                "3": 21.6,
+                "4": 40.6,
+                "5": 65.2
+              },
+              "recovery_step": 7
+            }
+          ],
+          "metrics": {
+            "d_eff_pre": 1.2335,
+            "d_eff_dev_immediate": 0.3592,
+            "d_eff_dev_final": 0.4849,
+            "prot_conc_dev_final": 0.014,
+            "isotropy_dev_final": 0.6061,
+            "relaxation_steps_to_tolerance": 2,
+            "recovered_within_tolerance": false,
+            "attractor_band_d_eff": 0.26,
+            "attractor_prot_conc_tol": 0.03
+          }
+        }
+      ],
+      "recovery_summary": {
+        "num_trials": 4,
+        "recovered_count": 1,
+        "mean_prot_dev_final": 0.0184,
+        "mean_d_eff_dev_final": 0.3782
+      }
+    },
+    "no_quad": {
+      "mode_desc": {
+        "ablation": "no_quad",
+        "lambda": 0.0,
+        "mu": 0.0,
+        "fg_override": null,
+        "description": "quadratic terms disabled (\u03bb=\u03bc=0); f_g density-modulated"
+      },
+      "final_N": 536,
+      "trajectory": [
+        {
+          "N": 56,
+          "rho_avg": 0.64007,
+          "rho_std": 1.07107,
+          "protected_frac": 0.4107,
+          "protected_density_conc": 0.83043,
+          "biv_activity_avg": 0.15856,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 0.0,
+          "light_cone_mean_branch": 0.0,
+          "light_cone_std_branch": 0.0,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 3.1,
+            "2": 3.1,
+            "3": 3.1,
+            "4": 3.1,
+            "5": 3.1,
+            "6": 3.1
+          },
+          "step": 1,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 96,
+          "rho_avg": 0.40998,
+          "rho_std": 0.86232,
+          "protected_frac": 0.3542,
+          "protected_density_conc": 0.61766,
+          "biv_activity_avg": 0.14626,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.4142,
+          "light_cone_mean_branch": 0.667,
+          "light_cone_std_branch": 0.943,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 3.4,
+            "2": 6.8,
+            "3": 6.8,
+            "4": 6.8,
+            "5": 6.8,
+            "6": 6.8
+          },
+          "step": 2,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 136,
+          "rho_avg": 0.31219,
+          "rho_std": 0.74088,
+          "protected_frac": 0.3897,
+          "protected_density_conc": 0.43307,
+          "biv_activity_avg": 0.14118,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.1489,
+          "light_cone_mean_branch": 2.5,
+          "light_cone_std_branch": 2.872,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 8.0,
+            "3": 9.1,
+            "4": 9.1,
+            "5": 9.1,
+            "6": 9.1
+          },
+          "step": 3,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 176,
+          "rho_avg": 0.26078,
+          "rho_std": 0.65912,
+          "protected_frac": 0.3864,
+          "protected_density_conc": 0.37163,
+          "biv_activity_avg": 0.13439,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 2.0,
+          "light_cone_mean_branch": 1.0,
+          "light_cone_std_branch": 2.0,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 3.7,
+            "2": 7.8,
+            "3": 8.1,
+            "4": 8.1,
+            "5": 8.1,
+            "6": 8.1
+          },
+          "step": 4,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 216,
+          "rho_avg": 0.23451,
+          "rho_std": 0.59876,
+          "protected_frac": 0.3935,
+          "protected_density_conc": 0.33603,
+          "biv_activity_avg": 0.13094,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.4142,
+          "light_cone_mean_branch": 1.0,
+          "light_cone_std_branch": 1.414,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 3.7,
+            "2": 7.3,
+            "3": 9.1,
+            "4": 9.5,
+            "5": 9.6,
+            "6": 9.6
+          },
+          "step": 5,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 256,
+          "rho_avg": 0.21413,
+          "rho_std": 0.55363,
+          "protected_frac": 0.4102,
+          "protected_density_conc": 0.30007,
+          "biv_activity_avg": 0.12879,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.5798,
+          "light_cone_mean_branch": 5.5,
+          "light_cone_std_branch": 8.689,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 3.7,
+            "2": 8.6,
+            "3": 9.7,
+            "4": 9.9,
+            "5": 9.9,
+            "6": 9.9
+          },
+          "step": 6,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 296,
+          "rho_avg": 0.19959,
+          "rho_std": 0.51702,
+          "protected_frac": 0.4122,
+          "protected_density_conc": 0.27712,
+          "biv_activity_avg": 0.12723,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.3787,
+          "light_cone_mean_branch": 1.222,
+          "light_cone_std_branch": 1.685,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 11.0,
+            "3": 13.0,
+            "4": 13.4,
+            "5": 13.4,
+            "6": 13.4
+          },
+          "step": 7,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 336,
+          "rho_avg": 0.19037,
+          "rho_std": 0.48679,
+          "protected_frac": 0.4196,
+          "protected_density_conc": 0.25953,
+          "biv_activity_avg": 0.12821,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.9514,
+          "light_cone_mean_branch": 4.3,
+          "light_cone_std_branch": 8.391,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 8.1,
+            "3": 9.7,
+            "4": 9.7,
+            "5": 9.7,
+            "6": 9.7
+          },
+          "step": 8,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 376,
+          "rho_avg": 0.18262,
+          "rho_std": 0.46159,
+          "protected_frac": 0.4122,
+          "protected_density_conc": 0.25182,
+          "biv_activity_avg": 0.12761,
+          "d_eff": 0.802,
+          "isotropy_branch_var": 1.1797,
+          "light_cone_mean_branch": 5.6,
+          "light_cone_std_branch": 6.606,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 8.6,
+            "3": 13.1,
+            "4": 13.7,
+            "5": 13.7,
+            "6": 13.7
+          },
+          "step": 9,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 416,
+          "rho_avg": 0.17412,
+          "rho_std": 0.44033,
+          "protected_frac": 0.4038,
+          "protected_density_conc": 0.24393,
+          "biv_activity_avg": 0.12654,
+          "d_eff": 0.8386,
+          "isotropy_branch_var": 1.16,
+          "light_cone_mean_branch": 0.9,
+          "light_cone_std_branch": 1.044,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 10.9,
+            "3": 14.3,
+            "4": 15.1,
+            "5": 15.2,
+            "6": 15.2
+          },
+          "step": 10,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 456,
+          "rho_avg": 0.16737,
+          "rho_std": 0.42248,
+          "protected_frac": 0.3925,
+          "protected_density_conc": 0.24218,
+          "biv_activity_avg": 0.12666,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.5051,
+          "light_cone_mean_branch": 1.4,
+          "light_cone_std_branch": 2.107,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 10.5,
+            "3": 13.3,
+            "4": 13.8,
+            "5": 14.1,
+            "6": 14.1
+          },
+          "step": 11,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 496,
+          "rho_avg": 0.16566,
+          "rho_std": 0.4071,
+          "protected_frac": 0.4052,
+          "protected_density_conc": 0.23961,
+          "biv_activity_avg": 0.12663,
+          "d_eff": 1.1842,
+          "isotropy_branch_var": 1.2068,
+          "light_cone_mean_branch": 6.6,
+          "light_cone_std_branch": 7.965,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 11.5,
+            "3": 20.1,
+            "4": 23.5,
+            "5": 25.4,
+            "6": 25.7
+          },
+          "step": 12,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 536,
+          "rho_avg": 0.16109,
+          "rho_std": 0.39283,
+          "protected_frac": 0.4142,
+          "protected_density_conc": 0.22903,
+          "biv_activity_avg": 0.12583,
+          "d_eff": 0.9464,
+          "isotropy_branch_var": 1.8371,
+          "light_cone_mean_branch": 0.8,
+          "light_cone_std_branch": 1.47,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 11.9,
+            "3": 16.8,
+            "4": 17.7,
+            "5": 17.9,
+            "6": 18.0
+          },
+          "step": 13,
+          "nodes_added_this_step": 40
+        }
+      ],
+      "attractor": {
+        "late_d_eff_mean": 0.9769,
+        "late_d_eff_std": 0.1939,
+        "late_prot_conc_mean": 0.2369,
+        "mode_desc": {
+          "ablation": "no_quad",
+          "lambda": 0.0,
+          "mu": 0.0,
+          "fg_override": null,
+          "description": "quadratic terms disabled (\u03bb=\u03bc=0); f_g density-modulated"
+        }
+      },
+      "recovery_trials": [
+        {
+          "trial": 0,
+          "perturbed_node_count": 7,
+          "pre": {
+            "N": 536,
+            "rho_avg": 0.16109,
+            "rho_std": 0.39283,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22903,
+            "biv_activity_avg": 0.12583,
+            "d_eff": 1.2173,
+            "isotropy_branch_var": 1.1055,
+            "light_cone_mean_branch": 1.2,
+            "light_cone_std_branch": 1.327,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 3.7,
+              "2": 10.8,
+              "3": 19.2,
+              "4": 22.8,
+              "5": 24.7,
+              "6": 24.8
+            }
+          },
+          "immediate_post": {
+            "N": 536,
+            "rho_avg": 0.16105,
+            "rho_std": 0.39287,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22905,
+            "biv_activity_avg": 0.12752,
+            "d_eff": 1.3229,
+            "isotropy_branch_var": 1.4587,
+            "light_cone_mean_branch": 4.9,
+            "light_cone_std_branch": 7.148,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 11.4,
+              "3": 20.8,
+              "4": 28.6,
+              "5": 31.2,
+              "6": 31.6
+            }
+          },
+          "final_after_recovery": {
+            "N": 711,
+            "rho_avg": 0.14882,
+            "rho_std": 0.34583,
+            "protected_frac": 0.429,
+            "protected_density_conc": 0.21088,
+            "biv_activity_avg": 0.12623,
+            "d_eff": 1.7251,
+            "isotropy_branch_var": 0.9558,
+            "light_cone_mean_branch": 1.8,
+            "light_cone_std_branch": 1.72,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 11.9,
+              "3": 25.2,
+              "4": 44.6,
+              "5": 61.4
+            },
+            "recovery_step": 7
+          },
+          "recovery_series": [
+            {
+              "N": 561,
+              "rho_avg": 0.15935,
+              "rho_std": 0.38448,
+              "protected_frac": 0.4207,
+              "protected_density_conc": 0.22429,
+              "biv_activity_avg": 0.12707,
+              "d_eff": 1.258,
+              "isotropy_branch_var": 1.8936,
+              "light_cone_mean_branch": 2.6,
+              "light_cone_std_branch": 4.923,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 3.6,
+                "2": 10.9,
+                "3": 19.9,
+                "4": 24.4,
+                "5": 25.2
+              },
+              "recovery_step": 1
+            },
+            {
+              "N": 586,
+              "rho_avg": 0.15691,
+              "rho_std": 0.377,
+              "protected_frac": 0.4215,
+              "protected_density_conc": 0.22065,
+              "biv_activity_avg": 0.12668,
+              "d_eff": 1.3507,
+              "isotropy_branch_var": 1.8072,
+              "light_cone_mean_branch": 2.7,
+              "light_cone_std_branch": 4.88,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 12.2,
+                "3": 23.9,
+                "4": 30.2,
+                "5": 32.1
+              },
+              "recovery_step": 2
+            },
+            {
+              "N": 611,
+              "rho_avg": 0.15616,
+              "rho_std": 0.37015,
+              "protected_frac": 0.4206,
+              "protected_density_conc": 0.22166,
+              "biv_activity_avg": 0.12555,
+              "d_eff": 1.3931,
+              "isotropy_branch_var": 1.635,
+              "light_cone_mean_branch": 3.1,
+              "light_cone_std_branch": 5.069,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.5,
+                "3": 23.0,
+                "4": 30.5,
+                "5": 34.9
+              },
+              "recovery_step": 3
+            },
+            {
+              "N": 636,
+              "rho_avg": 0.15436,
+              "rho_std": 0.36356,
+              "protected_frac": 0.4198,
+              "protected_density_conc": 0.22063,
+              "biv_activity_avg": 0.12596,
+              "d_eff": 1.1983,
+              "isotropy_branch_var": 1.9661,
+              "light_cone_mean_branch": 4.4,
+              "light_cone_std_branch": 8.651,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.2,
+                "3": 18.6,
+                "4": 24.4,
+                "5": 25.9
+              },
+              "recovery_step": 4
+            },
+            {
+              "N": 661,
+              "rho_avg": 0.15142,
+              "rho_std": 0.35718,
+              "protected_frac": 0.4206,
+              "protected_density_conc": 0.21494,
+              "biv_activity_avg": 0.12577,
+              "d_eff": 1.4615,
+              "isotropy_branch_var": 1.3453,
+              "light_cone_mean_branch": 2.2,
+              "light_cone_std_branch": 2.96,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.9,
+                "3": 23.0,
+                "4": 32.4,
+                "5": 40.2
+              },
+              "recovery_step": 5
+            },
+            {
+              "N": 686,
+              "rho_avg": 0.14956,
+              "rho_std": 0.35121,
+              "protected_frac": 0.4242,
+              "protected_density_conc": 0.21155,
+              "biv_activity_avg": 0.12602,
+              "d_eff": 1.6462,
+              "isotropy_branch_var": 0.9806,
+              "light_cone_mean_branch": 2.7,
+              "light_cone_std_branch": 2.648,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.2,
+                "3": 24.1,
+                "4": 40.2,
+                "5": 53.4
+              },
+              "recovery_step": 6
+            },
+            {
+              "N": 711,
+              "rho_avg": 0.14882,
+              "rho_std": 0.34583,
+              "protected_frac": 0.429,
+              "protected_density_conc": 0.21088,
+              "biv_activity_avg": 0.12623,
+              "d_eff": 1.7251,
+              "isotropy_branch_var": 0.9558,
+              "light_cone_mean_branch": 1.8,
+              "light_cone_std_branch": 1.72,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.9,
+                "3": 25.2,
+                "4": 44.6,
+                "5": 61.4
+              },
+              "recovery_step": 7
+            }
+          ],
+          "metrics": {
+            "d_eff_pre": 1.2173,
+            "d_eff_dev_immediate": 0.1056,
+            "d_eff_dev_final": 0.5078,
+            "prot_conc_dev_final": 0.0181,
+            "isotropy_dev_final": 0.1497,
+            "relaxation_steps_to_tolerance": 1,
+            "recovered_within_tolerance": false,
+            "attractor_band_d_eff": 0.26,
+            "attractor_prot_conc_tol": 0.03
+          }
+        },
+        {
+          "trial": 1,
+          "perturbed_node_count": 7,
+          "pre": {
+            "N": 536,
+            "rho_avg": 0.16109,
+            "rho_std": 0.39283,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22903,
+            "biv_activity_avg": 0.12583,
+            "d_eff": 1.2173,
+            "isotropy_branch_var": 1.1055,
+            "light_cone_mean_branch": 1.2,
+            "light_cone_std_branch": 1.327,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 3.7,
+              "2": 10.8,
+              "3": 19.2,
+              "4": 22.8,
+              "5": 24.7,
+              "6": 24.8
+            }
+          },
+          "immediate_post": {
+            "N": 536,
+            "rho_avg": 0.161,
+            "rho_std": 0.39283,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22896,
+            "biv_activity_avg": 0.12674,
+            "d_eff": 1.2497,
+            "isotropy_branch_var": 1.1943,
+            "light_cone_mean_branch": 2.1,
+            "light_cone_std_branch": 2.508,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 11.4,
+              "3": 20.0,
+              "4": 26.2,
+              "5": 27.8,
+              "6": 28.2
+            }
+          },
+          "final_after_recovery": {
+            "N": 711,
+            "rho_avg": 0.14829,
+            "rho_std": 0.34563,
+            "protected_frac": 0.4332,
+            "protected_density_conc": 0.20647,
+            "biv_activity_avg": 0.12455,
+            "d_eff": 1.7006,
+            "isotropy_branch_var": 1.2663,
+            "light_cone_mean_branch": 2.6,
+            "light_cone_std_branch": 3.292,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 11.5,
+              "3": 23.8,
+              "4": 44.5,
+              "5": 57.9
+            },
+            "recovery_step": 7
+          },
+          "recovery_series": [
+            {
+              "N": 561,
+              "rho_avg": 0.15931,
+              "rho_std": 0.38487,
+              "protected_frac": 0.4189,
+              "protected_density_conc": 0.22642,
+              "biv_activity_avg": 0.12624,
+              "d_eff": 1.0136,
+              "isotropy_branch_var": 2.2361,
+              "light_cone_mean_branch": 3.0,
+              "light_cone_std_branch": 6.708,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 3.6,
+                "2": 9.4,
+                "3": 15.2,
+                "4": 16.9,
+                "5": 17.5
+              },
+              "recovery_step": 1
+            },
+            {
+              "N": 586,
+              "rho_avg": 0.15826,
+              "rho_std": 0.37748,
+              "protected_frac": 0.4232,
+              "protected_density_conc": 0.22451,
+              "biv_activity_avg": 0.12617,
+              "d_eff": 1.4477,
+              "isotropy_branch_var": 1.3416,
+              "light_cone_mean_branch": 1.5,
+              "light_cone_std_branch": 2.012,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.4,
+                "3": 24.0,
+                "4": 33.4,
+                "5": 37.1
+              },
+              "recovery_step": 2
+            },
+            {
+              "N": 611,
+              "rho_avg": 0.15622,
+              "rho_std": 0.37047,
+              "protected_frac": 0.4288,
+              "protected_density_conc": 0.22028,
+              "biv_activity_avg": 0.12577,
+              "d_eff": 1.5942,
+              "isotropy_branch_var": 1.0047,
+              "light_cone_mean_branch": 2.9,
+              "light_cone_std_branch": 2.914,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.9,
+                "3": 26.0,
+                "4": 40.5,
+                "5": 47.0
+              },
+              "recovery_step": 3
+            },
+            {
+              "N": 636,
+              "rho_avg": 0.15311,
+              "rho_std": 0.36358,
+              "protected_frac": 0.4277,
+              "protected_density_conc": 0.21522,
+              "biv_activity_avg": 0.12495,
+              "d_eff": 1.249,
+              "isotropy_branch_var": 0.7464,
+              "light_cone_mean_branch": 1.7,
+              "light_cone_std_branch": 1.269,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 10.9,
+                "3": 20.1,
+                "4": 25.5,
+                "5": 27.6
+              },
+              "recovery_step": 4
+            },
+            {
+              "N": 661,
+              "rho_avg": 0.15136,
+              "rho_std": 0.35718,
+              "protected_frac": 0.4312,
+              "protected_density_conc": 0.21124,
+              "biv_activity_avg": 0.12455,
+              "d_eff": 1.7336,
+              "isotropy_branch_var": 2.1056,
+              "light_cone_mean_branch": 2.8,
+              "light_cone_std_branch": 5.896,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 10.9,
+                "3": 24.5,
+                "4": 45.6,
+                "5": 60.0
+              },
+              "recovery_step": 5
+            },
+            {
+              "N": 686,
+              "rho_avg": 0.14852,
+              "rho_std": 0.35117,
+              "protected_frac": 0.4359,
+              "protected_density_conc": 0.20485,
+              "biv_activity_avg": 0.12466,
+              "d_eff": 1.4842,
+              "isotropy_branch_var": 1.3376,
+              "light_cone_mean_branch": 2.1,
+              "light_cone_std_branch": 2.809,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.9,
+                "3": 23.9,
+                "4": 35.0,
+                "5": 40.1
+              },
+              "recovery_step": 6
+            },
+            {
+              "N": 711,
+              "rho_avg": 0.14829,
+              "rho_std": 0.34563,
+              "protected_frac": 0.4332,
+              "protected_density_conc": 0.20647,
+              "biv_activity_avg": 0.12455,
+              "d_eff": 1.7006,
+              "isotropy_branch_var": 1.2663,
+              "light_cone_mean_branch": 2.6,
+              "light_cone_std_branch": 3.292,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.5,
+                "3": 23.8,
+                "4": 44.5,
+                "5": 57.9
+              },
+              "recovery_step": 7
+            }
+          ],
+          "metrics": {
+            "d_eff_pre": 1.2173,
+            "d_eff_dev_immediate": 0.0324,
+            "d_eff_dev_final": 0.4833,
+            "prot_conc_dev_final": 0.0226,
+            "isotropy_dev_final": 0.1608,
+            "relaxation_steps_to_tolerance": 1,
+            "recovered_within_tolerance": false,
+            "attractor_band_d_eff": 0.26,
+            "attractor_prot_conc_tol": 0.03
+          }
+        },
+        {
+          "trial": 2,
+          "perturbed_node_count": 7,
+          "pre": {
+            "N": 536,
+            "rho_avg": 0.16109,
+            "rho_std": 0.39283,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22903,
+            "biv_activity_avg": 0.12583,
+            "d_eff": 1.2173,
+            "isotropy_branch_var": 1.1055,
+            "light_cone_mean_branch": 1.2,
+            "light_cone_std_branch": 1.327,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 3.7,
+              "2": 10.8,
+              "3": 19.2,
+              "4": 22.8,
+              "5": 24.7,
+              "6": 24.8
+            }
+          },
+          "immediate_post": {
+            "N": 536,
+            "rho_avg": 0.16092,
+            "rho_std": 0.39288,
+            "protected_frac": 0.4123,
+            "protected_density_conc": 0.22988,
+            "biv_activity_avg": 0.12694,
+            "d_eff": 1.0709,
+            "isotropy_branch_var": 0.7024,
+            "light_cone_mean_branch": 2.3,
+            "light_cone_std_branch": 1.616,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 10.4,
+              "3": 15.9,
+              "4": 19.9,
+              "5": 21.7,
+              "6": 22.9
+            }
+          },
+          "final_after_recovery": {
+            "N": 711,
+            "rho_avg": 0.14644,
+            "rho_std": 0.3465,
+            "protected_frac": 0.4191,
+            "protected_density_conc": 0.21001,
+            "biv_activity_avg": 0.12457,
+            "d_eff": 1.2984,
+            "isotropy_branch_var": 1.6095,
+            "light_cone_mean_branch": 3.3,
+            "light_cone_std_branch": 5.311,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 9.5,
+              "3": 16.0,
+              "4": 24.4,
+              "5": 32.0
+            },
+            "recovery_step": 7
+          },
+          "recovery_series": [
+            {
+              "N": 561,
+              "rho_avg": 0.1577,
+              "rho_std": 0.38484,
+              "protected_frac": 0.4153,
+              "protected_density_conc": 0.22459,
+              "biv_activity_avg": 0.12677,
+              "d_eff": 1.2449,
+              "isotropy_branch_var": 1.5487,
+              "light_cone_mean_branch": 3.2,
+              "light_cone_std_branch": 4.956,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.8,
+                "3": 20.4,
+                "4": 25.9,
+                "5": 27.9
+              },
+              "recovery_step": 1
+            },
+            {
+              "N": 586,
+              "rho_avg": 0.15643,
+              "rho_std": 0.37742,
+              "protected_frac": 0.4198,
+              "protected_density_conc": 0.22145,
+              "biv_activity_avg": 0.12608,
+              "d_eff": 1.6219,
+              "isotropy_branch_var": 1.5353,
+              "light_cone_mean_branch": 5.3,
+              "light_cone_std_branch": 8.137,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 3.6,
+                "2": 11.4,
+                "3": 23.8,
+                "4": 37.9,
+                "5": 45.6
+              },
+              "recovery_step": 2
+            },
+            {
+              "N": 611,
+              "rho_avg": 0.15506,
+              "rho_std": 0.37059,
+              "protected_frac": 0.419,
+              "protected_density_conc": 0.22171,
+              "biv_activity_avg": 0.12553,
+              "d_eff": 1.3752,
+              "isotropy_branch_var": 1.0809,
+              "light_cone_mean_branch": 2.8,
+              "light_cone_std_branch": 3.027,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 2.9,
+                "2": 7.5,
+                "3": 15.5,
+                "4": 21.8,
+                "5": 23.5
+              },
+              "recovery_step": 3
+            },
+            {
+              "N": 636,
+              "rho_avg": 0.15133,
+              "rho_std": 0.36398,
+              "protected_frac": 0.4167,
+              "protected_density_conc": 0.21711,
+              "biv_activity_avg": 0.12543,
+              "d_eff": 1.4232,
+              "isotropy_branch_var": 0.8802,
+              "light_cone_mean_branch": 3.6,
+              "light_cone_std_branch": 3.169,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 3.6,
+                "2": 10.8,
+                "3": 21.0,
+                "4": 30.0,
+                "5": 32.6
+              },
+              "recovery_step": 4
+            },
+            {
+              "N": 661,
+              "rho_avg": 0.14957,
+              "rho_std": 0.3578,
+              "protected_frac": 0.4145,
+              "protected_density_conc": 0.21532,
+              "biv_activity_avg": 0.12499,
+              "d_eff": 1.4926,
+              "isotropy_branch_var": 1.5082,
+              "light_cone_mean_branch": 4.4,
+              "light_cone_std_branch": 6.636,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 12.2,
+                "3": 22.6,
+                "4": 35.1,
+                "5": 41.9
+              },
+              "recovery_step": 5
+            },
+            {
+              "N": 686,
+              "rho_avg": 0.14734,
+              "rho_std": 0.35189,
+              "protected_frac": 0.4111,
+              "protected_density_conc": 0.21278,
+              "biv_activity_avg": 0.12476,
+              "d_eff": 1.5875,
+              "isotropy_branch_var": 1.2121,
+              "light_cone_mean_branch": 7.2,
+              "light_cone_std_branch": 8.727,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 10.6,
+                "3": 21.5,
+                "4": 37.1,
+                "5": 48.8
+              },
+              "recovery_step": 6
+            },
+            {
+              "N": 711,
+              "rho_avg": 0.14644,
+              "rho_std": 0.3465,
+              "protected_frac": 0.4191,
+              "protected_density_conc": 0.21001,
+              "biv_activity_avg": 0.12457,
+              "d_eff": 1.2984,
+              "isotropy_branch_var": 1.6095,
+              "light_cone_mean_branch": 3.3,
+              "light_cone_std_branch": 5.311,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 9.5,
+                "3": 16.0,
+                "4": 24.4,
+                "5": 32.0
+              },
+              "recovery_step": 7
+            }
+          ],
+          "metrics": {
+            "d_eff_pre": 1.2173,
+            "d_eff_dev_immediate": 0.1464,
+            "d_eff_dev_final": 0.0811,
+            "prot_conc_dev_final": 0.019,
+            "isotropy_dev_final": 0.504,
+            "relaxation_steps_to_tolerance": 1,
+            "recovered_within_tolerance": true,
+            "attractor_band_d_eff": 0.26,
+            "attractor_prot_conc_tol": 0.03
+          }
+        },
+        {
+          "trial": 3,
+          "perturbed_node_count": 7,
+          "pre": {
+            "N": 536,
+            "rho_avg": 0.16109,
+            "rho_std": 0.39283,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22903,
+            "biv_activity_avg": 0.12583,
+            "d_eff": 1.2173,
+            "isotropy_branch_var": 1.1055,
+            "light_cone_mean_branch": 1.2,
+            "light_cone_std_branch": 1.327,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 3.7,
+              "2": 10.8,
+              "3": 19.2,
+              "4": 22.8,
+              "5": 24.7,
+              "6": 24.8
+            }
+          },
+          "immediate_post": {
+            "N": 536,
+            "rho_avg": 0.16092,
+            "rho_std": 0.39283,
+            "protected_frac": 0.4123,
+            "protected_density_conc": 0.22955,
+            "biv_activity_avg": 0.12676,
+            "d_eff": 0.8565,
+            "isotropy_branch_var": 0.8896,
+            "light_cone_mean_branch": 2.1,
+            "light_cone_std_branch": 1.868,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 3.7,
+              "2": 8.8,
+              "3": 13.0,
+              "4": 13.8,
+              "5": 13.9,
+              "6": 13.9
+            }
+          },
+          "final_after_recovery": {
+            "N": 711,
+            "rho_avg": 0.14948,
+            "rho_std": 0.34659,
+            "protected_frac": 0.4177,
+            "protected_density_conc": 0.21534,
+            "biv_activity_avg": 0.12613,
+            "d_eff": 1.7596,
+            "isotropy_branch_var": 1.3327,
+            "light_cone_mean_branch": 5.0,
+            "light_cone_std_branch": 6.663,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 11.6,
+              "3": 22.8,
+              "4": 42.6,
+              "5": 69.9
+            },
+            "recovery_step": 7
+          },
+          "recovery_series": [
+            {
+              "N": 561,
+              "rho_avg": 0.15868,
+              "rho_std": 0.38518,
+              "protected_frac": 0.4082,
+              "protected_density_conc": 0.22932,
+              "biv_activity_avg": 0.12643,
+              "d_eff": 0.8212,
+              "isotropy_branch_var": 1.7574,
+              "light_cone_mean_branch": 4.8,
+              "light_cone_std_branch": 8.436,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 9.9,
+                "3": 13.0,
+                "4": 14.4,
+                "5": 14.8
+              },
+              "recovery_step": 1
+            },
+            {
+              "N": 586,
+              "rho_avg": 0.1578,
+              "rho_std": 0.37762,
+              "protected_frac": 0.4147,
+              "protected_density_conc": 0.22643,
+              "biv_activity_avg": 0.12613,
+              "d_eff": 1.2196,
+              "isotropy_branch_var": 0.866,
+              "light_cone_mean_branch": 4.0,
+              "light_cone_std_branch": 3.464,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 3.6,
+                "2": 9.5,
+                "3": 15.9,
+                "4": 21.4,
+                "5": 24.9
+              },
+              "recovery_step": 2
+            },
+            {
+              "N": 611,
+              "rho_avg": 0.15825,
+              "rho_std": 0.37099,
+              "protected_frac": 0.419,
+              "protected_density_conc": 0.22822,
+              "biv_activity_avg": 0.12688,
+              "d_eff": 1.1337,
+              "isotropy_branch_var": 1.4965,
+              "light_cone_mean_branch": 5.2,
+              "light_cone_std_branch": 7.782,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.6,
+                "3": 19.1,
+                "4": 22.4,
+                "5": 23.5
+              },
+              "recovery_step": 3
+            },
+            {
+              "N": 636,
+              "rho_avg": 0.15663,
+              "rho_std": 0.36443,
+              "protected_frac": 0.423,
+              "protected_density_conc": 0.2249,
+              "biv_activity_avg": 0.12659,
+              "d_eff": 1.7216,
+              "isotropy_branch_var": 1.9403,
+              "light_cone_mean_branch": 4.3,
+              "light_cone_std_branch": 8.343,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.9,
+                "3": 28.4,
+                "4": 46.5,
+                "5": 57.8
+              },
+              "recovery_step": 4
+            },
+            {
+              "N": 661,
+              "rho_avg": 0.15369,
+              "rho_std": 0.35804,
+              "protected_frac": 0.4191,
+              "protected_density_conc": 0.22127,
+              "biv_activity_avg": 0.12668,
+              "d_eff": 1.6128,
+              "isotropy_branch_var": 1.2141,
+              "light_cone_mean_branch": 4.8,
+              "light_cone_std_branch": 5.828,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 12.2,
+                "3": 25.5,
+                "4": 41.5,
+                "5": 49.2
+              },
+              "recovery_step": 5
+            },
+            {
+              "N": 686,
+              "rho_avg": 0.15212,
+              "rho_std": 0.35238,
+              "protected_frac": 0.4227,
+              "protected_density_conc": 0.21842,
+              "biv_activity_avg": 0.12643,
+              "d_eff": 1.6435,
+              "isotropy_branch_var": 1.3231,
+              "light_cone_mean_branch": 4.5,
+              "light_cone_std_branch": 5.954,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.6,
+                "3": 23.6,
+                "4": 40.5,
+                "5": 53.8
+              },
+              "recovery_step": 6
+            },
+            {
+              "N": 711,
+              "rho_avg": 0.14948,
+              "rho_std": 0.34659,
+              "protected_frac": 0.4177,
+              "protected_density_conc": 0.21534,
+              "biv_activity_avg": 0.12613,
+              "d_eff": 1.7596,
+              "isotropy_branch_var": 1.3327,
+              "light_cone_mean_branch": 5.0,
+              "light_cone_std_branch": 6.663,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.6,
+                "3": 22.8,
+                "4": 42.6,
+                "5": 69.9
+              },
+              "recovery_step": 7
+            }
+          ],
+          "metrics": {
+            "d_eff_pre": 1.2173,
+            "d_eff_dev_immediate": 0.3608,
+            "d_eff_dev_final": 0.5423,
+            "prot_conc_dev_final": 0.0137,
+            "isotropy_dev_final": 0.2272,
+            "relaxation_steps_to_tolerance": 2,
+            "recovered_within_tolerance": false,
+            "attractor_band_d_eff": 0.26,
+            "attractor_prot_conc_tol": 0.03
+          }
+        }
+      ],
+      "recovery_summary": {
+        "num_trials": 4,
+        "recovered_count": 1,
+        "mean_prot_dev_final": 0.0183,
+        "mean_d_eff_dev_final": 0.4036
+      }
+    },
+    "no_fg": {
+      "mode_desc": {
+        "ablation": "no_fg",
+        "lambda": 0.001,
+        "mu": 0.0005,
+        "fg_override": 0.75,
+        "description": "ambient f_g replaced by constant 0.75 (no \u03c1-dependent feedback); \u03bb/\u03bc locked"
+      },
+      "final_N": 536,
+      "trajectory": [
+        {
+          "N": 56,
+          "rho_avg": 0.64007,
+          "rho_std": 1.07107,
+          "protected_frac": 0.4107,
+          "protected_density_conc": 0.83043,
+          "biv_activity_avg": 0.15856,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 0.0,
+          "light_cone_mean_branch": 0.0,
+          "light_cone_std_branch": 0.0,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 3.1,
+            "2": 3.1,
+            "3": 3.1,
+            "4": 3.1,
+            "5": 3.1,
+            "6": 3.1
+          },
+          "step": 1,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 96,
+          "rho_avg": 0.40998,
+          "rho_std": 0.86232,
+          "protected_frac": 0.3542,
+          "protected_density_conc": 0.61766,
+          "biv_activity_avg": 0.14626,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 0.8165,
+          "light_cone_mean_branch": 1.0,
+          "light_cone_std_branch": 0.816,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 3.4,
+            "2": 6.9,
+            "3": 6.9,
+            "4": 6.9,
+            "5": 6.9,
+            "6": 6.9
+          },
+          "step": 2,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 136,
+          "rho_avg": 0.31219,
+          "rho_std": 0.74088,
+          "protected_frac": 0.3897,
+          "protected_density_conc": 0.43307,
+          "biv_activity_avg": 0.14118,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.2857,
+          "light_cone_mean_branch": 3.5,
+          "light_cone_std_branch": 4.5,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 8.6,
+            "3": 9.5,
+            "4": 9.5,
+            "5": 9.5,
+            "6": 9.5
+          },
+          "step": 3,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 176,
+          "rho_avg": 0.26078,
+          "rho_std": 0.65912,
+          "protected_frac": 0.3864,
+          "protected_density_conc": 0.37163,
+          "biv_activity_avg": 0.13439,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.4577,
+          "light_cone_mean_branch": 1.6,
+          "light_cone_std_branch": 2.332,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 3.7,
+            "2": 7.6,
+            "3": 7.6,
+            "4": 7.6,
+            "5": 7.6,
+            "6": 7.6
+          },
+          "step": 4,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 216,
+          "rho_avg": 0.23451,
+          "rho_std": 0.59876,
+          "protected_frac": 0.3935,
+          "protected_density_conc": 0.33603,
+          "biv_activity_avg": 0.13094,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 2.0702,
+          "light_cone_mean_branch": 1.0,
+          "light_cone_std_branch": 2.07,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 3.7,
+            "2": 7.9,
+            "3": 9.7,
+            "4": 10.1,
+            "5": 10.1,
+            "6": 10.1
+          },
+          "step": 5,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 256,
+          "rho_avg": 0.21413,
+          "rho_std": 0.55363,
+          "protected_frac": 0.4102,
+          "protected_density_conc": 0.30007,
+          "biv_activity_avg": 0.12879,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.3912,
+          "light_cone_mean_branch": 6.75,
+          "light_cone_std_branch": 9.391,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 3.7,
+            "2": 8.6,
+            "3": 9.8,
+            "4": 9.8,
+            "5": 9.8,
+            "6": 9.8
+          },
+          "step": 6,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 296,
+          "rho_avg": 0.19959,
+          "rho_std": 0.51702,
+          "protected_frac": 0.4122,
+          "protected_density_conc": 0.27712,
+          "biv_activity_avg": 0.12723,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.2329,
+          "light_cone_mean_branch": 1.111,
+          "light_cone_std_branch": 1.37,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 10.6,
+            "3": 13.1,
+            "4": 13.2,
+            "5": 13.2,
+            "6": 13.2
+          },
+          "step": 7,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 336,
+          "rho_avg": 0.19037,
+          "rho_std": 0.48679,
+          "protected_frac": 0.4196,
+          "protected_density_conc": 0.25953,
+          "biv_activity_avg": 0.12821,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 2.1387,
+          "light_cone_mean_branch": 5.7,
+          "light_cone_std_branch": 12.191,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 7.6,
+            "3": 8.5,
+            "4": 8.6,
+            "5": 8.6,
+            "6": 8.6
+          },
+          "step": 8,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 376,
+          "rho_avg": 0.18262,
+          "rho_std": 0.46159,
+          "protected_frac": 0.4122,
+          "protected_density_conc": 0.25182,
+          "biv_activity_avg": 0.12761,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.6,
+          "light_cone_mean_branch": 4.2,
+          "light_cone_std_branch": 6.72,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 8.1,
+            "3": 10.5,
+            "4": 10.7,
+            "5": 10.7,
+            "6": 10.7
+          },
+          "step": 9,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 416,
+          "rho_avg": 0.17412,
+          "rho_std": 0.44033,
+          "protected_frac": 0.4038,
+          "protected_density_conc": 0.24393,
+          "biv_activity_avg": 0.12654,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 1.2247,
+          "light_cone_mean_branch": 0.8,
+          "light_cone_std_branch": 0.98,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 10.0,
+            "3": 12.2,
+            "4": 12.5,
+            "5": 12.5,
+            "6": 12.5
+          },
+          "step": 10,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 456,
+          "rho_avg": 0.16737,
+          "rho_std": 0.42248,
+          "protected_frac": 0.3925,
+          "protected_density_conc": 0.24218,
+          "biv_activity_avg": 0.12666,
+          "d_eff": 0.8,
+          "isotropy_branch_var": 2.4083,
+          "light_cone_mean_branch": 0.5,
+          "light_cone_std_branch": 1.204,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 10.7,
+            "3": 13.1,
+            "4": 13.3,
+            "5": 13.4,
+            "6": 13.4
+          },
+          "step": 11,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 496,
+          "rho_avg": 0.16566,
+          "rho_std": 0.4071,
+          "protected_frac": 0.4052,
+          "protected_density_conc": 0.23961,
+          "biv_activity_avg": 0.12663,
+          "d_eff": 0.9775,
+          "isotropy_branch_var": 1.1405,
+          "light_cone_mean_branch": 5.8,
+          "light_cone_std_branch": 6.615,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 11.1,
+            "3": 16.6,
+            "4": 18.2,
+            "5": 18.5,
+            "6": 18.5
+          },
+          "step": 12,
+          "nodes_added_this_step": 40
+        },
+        {
+          "N": 536,
+          "rho_avg": 0.16109,
+          "rho_std": 0.39283,
+          "protected_frac": 0.4142,
+          "protected_density_conc": 0.22903,
+          "biv_activity_avg": 0.12583,
+          "d_eff": 0.9087,
+          "isotropy_branch_var": 0.8563,
+          "light_cone_mean_branch": 1.5,
+          "light_cone_std_branch": 1.285,
+          "growth_N_tau": {
+            "0": 1.0,
+            "1": 4.0,
+            "2": 11.3,
+            "3": 15.4,
+            "4": 16.7,
+            "5": 16.9,
+            "6": 16.9
+          },
+          "step": 13,
+          "nodes_added_this_step": 40
+        }
+      ],
+      "attractor": {
+        "late_d_eff_mean": 0.8954,
+        "late_d_eff_std": 0.0895,
+        "late_prot_conc_mean": 0.2369,
+        "mode_desc": {
+          "ablation": "no_fg",
+          "lambda": 0.001,
+          "mu": 0.0005,
+          "fg_override": 0.75,
+          "description": "ambient f_g replaced by constant 0.75 (no \u03c1-dependent feedback); \u03bb/\u03bc locked"
+        }
+      },
+      "recovery_trials": [
+        {
+          "trial": 0,
+          "perturbed_node_count": 7,
+          "pre": {
+            "N": 536,
+            "rho_avg": 0.16109,
+            "rho_std": 0.39283,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22903,
+            "biv_activity_avg": 0.12583,
+            "d_eff": 0.848,
+            "isotropy_branch_var": 1.3844,
+            "light_cone_mean_branch": 1.2,
+            "light_cone_std_branch": 1.661,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 3.7,
+              "2": 9.8,
+              "3": 13.4,
+              "4": 14.1,
+              "5": 14.1,
+              "6": 14.1
+            }
+          },
+          "immediate_post": {
+            "N": 536,
+            "rho_avg": 0.16104,
+            "rho_std": 0.39286,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.2291,
+            "biv_activity_avg": 0.12649,
+            "d_eff": 0.8,
+            "isotropy_branch_var": 1.8641,
+            "light_cone_mean_branch": 5.2,
+            "light_cone_std_branch": 9.693,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 3.7,
+              "2": 6.6,
+              "3": 7.6,
+              "4": 7.6,
+              "5": 7.6,
+              "6": 7.6
+            }
+          },
+          "final_after_recovery": {
+            "N": 711,
+            "rho_avg": 0.1488,
+            "rho_std": 0.34582,
+            "protected_frac": 0.429,
+            "protected_density_conc": 0.21091,
+            "biv_activity_avg": 0.12548,
+            "d_eff": 1.4107,
+            "isotropy_branch_var": 0.8745,
+            "light_cone_mean_branch": 1.7,
+            "light_cone_std_branch": 1.487,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 11.8,
+              "3": 22.0,
+              "4": 32.6,
+              "5": 35.5
+            },
+            "recovery_step": 7
+          },
+          "recovery_series": [
+            {
+              "N": 561,
+              "rho_avg": 0.15933,
+              "rho_std": 0.38447,
+              "protected_frac": 0.4207,
+              "protected_density_conc": 0.22433,
+              "biv_activity_avg": 0.1261,
+              "d_eff": 0.8662,
+              "isotropy_branch_var": 1.9263,
+              "light_cone_mean_branch": 3.3,
+              "light_cone_std_branch": 6.357,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 3.6,
+                "2": 10.0,
+                "3": 13.8,
+                "4": 14.2,
+                "5": 14.2
+              },
+              "recovery_step": 1
+            },
+            {
+              "N": 586,
+              "rho_avg": 0.15689,
+              "rho_std": 0.37699,
+              "protected_frac": 0.4215,
+              "protected_density_conc": 0.22069,
+              "biv_activity_avg": 0.12575,
+              "d_eff": 1.0851,
+              "isotropy_branch_var": 1.4014,
+              "light_cone_mean_branch": 3.8,
+              "light_cone_std_branch": 5.325,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.6,
+                "3": 19.9,
+                "4": 21.2,
+                "5": 21.4
+              },
+              "recovery_step": 2
+            },
+            {
+              "N": 611,
+              "rho_avg": 0.15614,
+              "rho_std": 0.37013,
+              "protected_frac": 0.4206,
+              "protected_density_conc": 0.22171,
+              "biv_activity_avg": 0.12466,
+              "d_eff": 1.0013,
+              "isotropy_branch_var": 1.5766,
+              "light_cone_mean_branch": 3.5,
+              "light_cone_std_branch": 5.518,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.0,
+                "3": 17.5,
+                "4": 18.9,
+                "5": 18.9
+              },
+              "recovery_step": 3
+            },
+            {
+              "N": 636,
+              "rho_avg": 0.15434,
+              "rho_std": 0.36355,
+              "protected_frac": 0.4198,
+              "protected_density_conc": 0.22068,
+              "biv_activity_avg": 0.12511,
+              "d_eff": 0.9609,
+              "isotropy_branch_var": 2.0957,
+              "light_cone_mean_branch": 5.0,
+              "light_cone_std_branch": 10.479,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.8,
+                "3": 17.0,
+                "4": 18.1,
+                "5": 18.1
+              },
+              "recovery_step": 4
+            },
+            {
+              "N": 661,
+              "rho_avg": 0.1514,
+              "rho_std": 0.35716,
+              "protected_frac": 0.4206,
+              "protected_density_conc": 0.21498,
+              "biv_activity_avg": 0.12495,
+              "d_eff": 1.1882,
+              "isotropy_branch_var": 1.9052,
+              "light_cone_mean_branch": 1.8,
+              "light_cone_std_branch": 3.429,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.8,
+                "3": 19.9,
+                "4": 24.1,
+                "5": 25.5
+              },
+              "recovery_step": 5
+            },
+            {
+              "N": 686,
+              "rho_avg": 0.14955,
+              "rho_std": 0.3512,
+              "protected_frac": 0.4242,
+              "protected_density_conc": 0.21158,
+              "biv_activity_avg": 0.12524,
+              "d_eff": 1.2366,
+              "isotropy_branch_var": 0.7881,
+              "light_cone_mean_branch": 3.2,
+              "light_cone_std_branch": 2.522,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.2,
+                "3": 20.1,
+                "4": 25.4,
+                "5": 27.2
+              },
+              "recovery_step": 6
+            },
+            {
+              "N": 711,
+              "rho_avg": 0.1488,
+              "rho_std": 0.34582,
+              "protected_frac": 0.429,
+              "protected_density_conc": 0.21091,
+              "biv_activity_avg": 0.12548,
+              "d_eff": 1.4107,
+              "isotropy_branch_var": 0.8745,
+              "light_cone_mean_branch": 1.7,
+              "light_cone_std_branch": 1.487,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.8,
+                "3": 22.0,
+                "4": 32.6,
+                "5": 35.5
+              },
+              "recovery_step": 7
+            }
+          ],
+          "metrics": {
+            "d_eff_pre": 0.848,
+            "d_eff_dev_immediate": 0.048,
+            "d_eff_dev_final": 0.5627,
+            "prot_conc_dev_final": 0.0181,
+            "isotropy_dev_final": 0.5099,
+            "relaxation_steps_to_tolerance": 1,
+            "recovered_within_tolerance": false,
+            "attractor_band_d_eff": 0.26,
+            "attractor_prot_conc_tol": 0.03
+          }
+        },
+        {
+          "trial": 1,
+          "perturbed_node_count": 7,
+          "pre": {
+            "N": 536,
+            "rho_avg": 0.16109,
+            "rho_std": 0.39283,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22903,
+            "biv_activity_avg": 0.12583,
+            "d_eff": 0.848,
+            "isotropy_branch_var": 1.3844,
+            "light_cone_mean_branch": 1.2,
+            "light_cone_std_branch": 1.661,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 3.7,
+              "2": 9.8,
+              "3": 13.4,
+              "4": 14.1,
+              "5": 14.1,
+              "6": 14.1
+            }
+          },
+          "immediate_post": {
+            "N": 536,
+            "rho_avg": 0.16092,
+            "rho_std": 0.39276,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22875,
+            "biv_activity_avg": 0.12589,
+            "d_eff": 0.8,
+            "isotropy_branch_var": 1.4778,
+            "light_cone_mean_branch": 5.0,
+            "light_cone_std_branch": 7.389,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 9.0,
+              "3": 9.4,
+              "4": 9.4,
+              "5": 9.4,
+              "6": 9.4
+            }
+          },
+          "final_after_recovery": {
+            "N": 711,
+            "rho_avg": 0.14822,
+            "rho_std": 0.34557,
+            "protected_frac": 0.4332,
+            "protected_density_conc": 0.20632,
+            "biv_activity_avg": 0.12394,
+            "d_eff": 1.2494,
+            "isotropy_branch_var": 1.9902,
+            "light_cone_mean_branch": 3.2,
+            "light_cone_std_branch": 6.369,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 11.5,
+              "3": 21.1,
+              "4": 26.4,
+              "5": 27.4
+            },
+            "recovery_step": 7
+          },
+          "recovery_series": [
+            {
+              "N": 561,
+              "rho_avg": 0.15922,
+              "rho_std": 0.38481,
+              "protected_frac": 0.4189,
+              "protected_density_conc": 0.22623,
+              "biv_activity_avg": 0.12544,
+              "d_eff": 0.9051,
+              "isotropy_branch_var": 2.7203,
+              "light_cone_mean_branch": 3.5,
+              "light_cone_std_branch": 9.521,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 3.6,
+                "2": 9.2,
+                "3": 14.2,
+                "4": 14.8,
+                "5": 14.8
+              },
+              "recovery_step": 1
+            },
+            {
+              "N": 586,
+              "rho_avg": 0.15818,
+              "rho_std": 0.37742,
+              "protected_frac": 0.4232,
+              "protected_density_conc": 0.22432,
+              "biv_activity_avg": 0.12541,
+              "d_eff": 1.124,
+              "isotropy_branch_var": 1.0435,
+              "light_cone_mean_branch": 1.5,
+              "light_cone_std_branch": 1.565,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 10.9,
+                "3": 19.1,
+                "4": 22.1,
+                "5": 22.5
+              },
+              "recovery_step": 2
+            },
+            {
+              "N": 611,
+              "rho_avg": 0.15614,
+              "rho_std": 0.3704,
+              "protected_frac": 0.4288,
+              "protected_density_conc": 0.2201,
+              "biv_activity_avg": 0.12505,
+              "d_eff": 1.2257,
+              "isotropy_branch_var": 0.8989,
+              "light_cone_mean_branch": 2.5,
+              "light_cone_std_branch": 2.247,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.9,
+                "3": 20.4,
+                "4": 25.2,
+                "5": 27.1
+              },
+              "recovery_step": 3
+            },
+            {
+              "N": 636,
+              "rho_avg": 0.15303,
+              "rho_std": 0.36351,
+              "protected_frac": 0.4277,
+              "protected_density_conc": 0.21505,
+              "biv_activity_avg": 0.12426,
+              "d_eff": 0.9438,
+              "isotropy_branch_var": 0.4972,
+              "light_cone_mean_branch": 2.1,
+              "light_cone_std_branch": 1.044,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.1,
+                "3": 16.5,
+                "4": 17.5,
+                "5": 17.5
+              },
+              "recovery_step": 4
+            },
+            {
+              "N": 661,
+              "rho_avg": 0.15129,
+              "rho_std": 0.35712,
+              "protected_frac": 0.4312,
+              "protected_density_conc": 0.21107,
+              "biv_activity_avg": 0.12389,
+              "d_eff": 1.336,
+              "isotropy_branch_var": 1.6997,
+              "light_cone_mean_branch": 1.2,
+              "light_cone_std_branch": 2.04,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.2,
+                "3": 23.8,
+                "4": 29.6,
+                "5": 30.4
+              },
+              "recovery_step": 5
+            },
+            {
+              "N": 686,
+              "rho_avg": 0.14845,
+              "rho_std": 0.3511,
+              "protected_frac": 0.4359,
+              "protected_density_conc": 0.20469,
+              "biv_activity_avg": 0.12403,
+              "d_eff": 1.093,
+              "isotropy_branch_var": 1.4205,
+              "light_cone_mean_branch": 2.6,
+              "light_cone_std_branch": 3.693,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.1,
+                "3": 19.0,
+                "4": 21.2,
+                "5": 21.6
+              },
+              "recovery_step": 6
+            },
+            {
+              "N": 711,
+              "rho_avg": 0.14822,
+              "rho_std": 0.34557,
+              "protected_frac": 0.4332,
+              "protected_density_conc": 0.20632,
+              "biv_activity_avg": 0.12394,
+              "d_eff": 1.2494,
+              "isotropy_branch_var": 1.9902,
+              "light_cone_mean_branch": 3.2,
+              "light_cone_std_branch": 6.369,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.5,
+                "3": 21.1,
+                "4": 26.4,
+                "5": 27.4
+              },
+              "recovery_step": 7
+            }
+          ],
+          "metrics": {
+            "d_eff_pre": 0.848,
+            "d_eff_dev_immediate": 0.048,
+            "d_eff_dev_final": 0.4014,
+            "prot_conc_dev_final": 0.0227,
+            "isotropy_dev_final": 0.6058,
+            "relaxation_steps_to_tolerance": 1,
+            "recovered_within_tolerance": false,
+            "attractor_band_d_eff": 0.26,
+            "attractor_prot_conc_tol": 0.03
+          }
+        },
+        {
+          "trial": 2,
+          "perturbed_node_count": 7,
+          "pre": {
+            "N": 536,
+            "rho_avg": 0.16109,
+            "rho_std": 0.39283,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22903,
+            "biv_activity_avg": 0.12583,
+            "d_eff": 0.848,
+            "isotropy_branch_var": 1.3844,
+            "light_cone_mean_branch": 1.2,
+            "light_cone_std_branch": 1.661,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 3.7,
+              "2": 9.8,
+              "3": 13.4,
+              "4": 14.1,
+              "5": 14.1,
+              "6": 14.1
+            }
+          },
+          "immediate_post": {
+            "N": 536,
+            "rho_avg": 0.16085,
+            "rho_std": 0.39279,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.2287,
+            "biv_activity_avg": 0.12603,
+            "d_eff": 0.9649,
+            "isotropy_branch_var": 0.8707,
+            "light_cone_mean_branch": 2.3,
+            "light_cone_std_branch": 2.002,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 10.3,
+              "3": 16.2,
+              "4": 17.8,
+              "5": 17.8,
+              "6": 17.8
+            }
+          },
+          "final_after_recovery": {
+            "N": 711,
+            "rho_avg": 0.14639,
+            "rho_std": 0.34642,
+            "protected_frac": 0.4205,
+            "protected_density_conc": 0.2092,
+            "biv_activity_avg": 0.1239,
+            "d_eff": 0.9135,
+            "isotropy_branch_var": 1.3924,
+            "light_cone_mean_branch": 3.9,
+            "light_cone_std_branch": 5.43,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 9.6,
+              "3": 14.6,
+              "4": 16.2,
+              "5": 16.5
+            },
+            "recovery_step": 7
+          },
+          "recovery_series": [
+            {
+              "N": 561,
+              "rho_avg": 0.15764,
+              "rho_std": 0.38475,
+              "protected_frac": 0.4171,
+              "protected_density_conc": 0.2235,
+              "biv_activity_avg": 0.1259,
+              "d_eff": 1.021,
+              "isotropy_branch_var": 1.6855,
+              "light_cone_mean_branch": 3.4,
+              "light_cone_std_branch": 5.731,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.2,
+                "3": 17.6,
+                "4": 19.4,
+                "5": 19.6
+              },
+              "recovery_step": 1
+            },
+            {
+              "N": 586,
+              "rho_avg": 0.15637,
+              "rho_std": 0.37733,
+              "protected_frac": 0.4215,
+              "protected_density_conc": 0.22043,
+              "biv_activity_avg": 0.12526,
+              "d_eff": 1.2258,
+              "isotropy_branch_var": 2.164,
+              "light_cone_mean_branch": 6.7,
+              "light_cone_std_branch": 14.499,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 3.6,
+                "2": 10.6,
+                "3": 20.0,
+                "4": 23.1,
+                "5": 23.9
+              },
+              "recovery_step": 2
+            },
+            {
+              "N": 611,
+              "rho_avg": 0.15501,
+              "rho_std": 0.3705,
+              "protected_frac": 0.4206,
+              "protected_density_conc": 0.22072,
+              "biv_activity_avg": 0.12474,
+              "d_eff": 1.0966,
+              "isotropy_branch_var": 1.4557,
+              "light_cone_mean_branch": 2.3,
+              "light_cone_std_branch": 3.348,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 2.9,
+                "2": 8.0,
+                "3": 13.6,
+                "4": 15.4,
+                "5": 15.6
+              },
+              "recovery_step": 3
+            },
+            {
+              "N": 636,
+              "rho_avg": 0.15128,
+              "rho_std": 0.36389,
+              "protected_frac": 0.4182,
+              "protected_density_conc": 0.21617,
+              "biv_activity_avg": 0.12467,
+              "d_eff": 1.1305,
+              "isotropy_branch_var": 1.3395,
+              "light_cone_mean_branch": 2.9,
+              "light_cone_std_branch": 3.885,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 3.6,
+                "2": 10.0,
+                "3": 16.9,
+                "4": 20.0,
+                "5": 21.0
+              },
+              "recovery_step": 4
+            },
+            {
+              "N": 661,
+              "rho_avg": 0.14951,
+              "rho_std": 0.35772,
+              "protected_frac": 0.416,
+              "protected_density_conc": 0.21442,
+              "biv_activity_avg": 0.12426,
+              "d_eff": 1.027,
+              "isotropy_branch_var": 1.4514,
+              "light_cone_mean_branch": 4.2,
+              "light_cone_std_branch": 6.096,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.4,
+                "3": 17.5,
+                "4": 19.6,
+                "5": 19.9
+              },
+              "recovery_step": 5
+            },
+            {
+              "N": 686,
+              "rho_avg": 0.14729,
+              "rho_std": 0.35181,
+              "protected_frac": 0.4125,
+              "protected_density_conc": 0.21192,
+              "biv_activity_avg": 0.12405,
+              "d_eff": 1.0814,
+              "isotropy_branch_var": 1.1592,
+              "light_cone_mean_branch": 7.8,
+              "light_cone_std_branch": 9.042,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 10.4,
+                "3": 18.1,
+                "4": 20.9,
+                "5": 20.9
+              },
+              "recovery_step": 6
+            },
+            {
+              "N": 711,
+              "rho_avg": 0.14639,
+              "rho_std": 0.34642,
+              "protected_frac": 0.4205,
+              "protected_density_conc": 0.2092,
+              "biv_activity_avg": 0.1239,
+              "d_eff": 0.9135,
+              "isotropy_branch_var": 1.3924,
+              "light_cone_mean_branch": 3.9,
+              "light_cone_std_branch": 5.43,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 9.6,
+                "3": 14.6,
+                "4": 16.2,
+                "5": 16.5
+              },
+              "recovery_step": 7
+            }
+          ],
+          "metrics": {
+            "d_eff_pre": 0.848,
+            "d_eff_dev_immediate": 0.1169,
+            "d_eff_dev_final": 0.0655,
+            "prot_conc_dev_final": 0.0198,
+            "isotropy_dev_final": 0.008,
+            "relaxation_steps_to_tolerance": 1,
+            "recovered_within_tolerance": true,
+            "attractor_band_d_eff": 0.26,
+            "attractor_prot_conc_tol": 0.03
+          }
+        },
+        {
+          "trial": 3,
+          "perturbed_node_count": 7,
+          "pre": {
+            "N": 536,
+            "rho_avg": 0.16109,
+            "rho_std": 0.39283,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22903,
+            "biv_activity_avg": 0.12583,
+            "d_eff": 0.848,
+            "isotropy_branch_var": 1.3844,
+            "light_cone_mean_branch": 1.2,
+            "light_cone_std_branch": 1.661,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 3.7,
+              "2": 9.8,
+              "3": 13.4,
+              "4": 14.1,
+              "5": 14.1,
+              "6": 14.1
+            }
+          },
+          "immediate_post": {
+            "N": 536,
+            "rho_avg": 0.16111,
+            "rho_std": 0.39279,
+            "protected_frac": 0.4142,
+            "protected_density_conc": 0.22888,
+            "biv_activity_avg": 0.1256,
+            "d_eff": 0.8,
+            "isotropy_branch_var": 1.0482,
+            "light_cone_mean_branch": 0.9,
+            "light_cone_std_branch": 0.943,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 3.7,
+              "2": 9.0,
+              "3": 11.4,
+              "4": 12.0,
+              "5": 12.0,
+              "6": 12.0
+            }
+          },
+          "final_after_recovery": {
+            "N": 711,
+            "rho_avg": 0.14962,
+            "rho_std": 0.34655,
+            "protected_frac": 0.4191,
+            "protected_density_conc": 0.21489,
+            "biv_activity_avg": 0.12527,
+            "d_eff": 1.495,
+            "isotropy_branch_var": 1.758,
+            "light_cone_mean_branch": 5.3,
+            "light_cone_std_branch": 9.317,
+            "growth_N_tau": {
+              "0": 1.0,
+              "1": 4.0,
+              "2": 11.9,
+              "3": 21.0,
+              "4": 33.6,
+              "5": 43.5
+            },
+            "recovery_step": 7
+          },
+          "recovery_series": [
+            {
+              "N": 561,
+              "rho_avg": 0.15885,
+              "rho_std": 0.38514,
+              "protected_frac": 0.41,
+              "protected_density_conc": 0.22867,
+              "biv_activity_avg": 0.12531,
+              "d_eff": 0.8,
+              "isotropy_branch_var": 2.4984,
+              "light_cone_mean_branch": 5.9,
+              "light_cone_std_branch": 14.741,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 10.2,
+                "3": 11.8,
+                "4": 11.9,
+                "5": 11.9
+              },
+              "recovery_step": 1
+            },
+            {
+              "N": 586,
+              "rho_avg": 0.15796,
+              "rho_std": 0.37757,
+              "protected_frac": 0.4164,
+              "protected_density_conc": 0.22583,
+              "biv_activity_avg": 0.12508,
+              "d_eff": 0.8155,
+              "isotropy_branch_var": 1.1263,
+              "light_cone_mean_branch": 3.6,
+              "light_cone_std_branch": 4.055,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 3.6,
+                "2": 9.1,
+                "3": 12.0,
+                "4": 13.0,
+                "5": 13.2
+              },
+              "recovery_step": 2
+            },
+            {
+              "N": 611,
+              "rho_avg": 0.15841,
+              "rho_std": 0.37095,
+              "protected_frac": 0.4206,
+              "protected_density_conc": 0.22764,
+              "biv_activity_avg": 0.12588,
+              "d_eff": 0.9081,
+              "isotropy_branch_var": 2.102,
+              "light_cone_mean_branch": 4.9,
+              "light_cone_std_branch": 10.3,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.9,
+                "3": 16.4,
+                "4": 16.9,
+                "5": 16.9
+              },
+              "recovery_step": 3
+            },
+            {
+              "N": 636,
+              "rho_avg": 0.15679,
+              "rho_std": 0.36439,
+              "protected_frac": 0.4245,
+              "protected_density_conc": 0.22437,
+              "biv_activity_avg": 0.12563,
+              "d_eff": 1.197,
+              "isotropy_branch_var": 2.6477,
+              "light_cone_mean_branch": 5.6,
+              "light_cone_std_branch": 14.827,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 12.0,
+                "3": 21.0,
+                "4": 24.6,
+                "5": 25.6
+              },
+              "recovery_step": 4
+            },
+            {
+              "N": 661,
+              "rho_avg": 0.15384,
+              "rho_std": 0.358,
+              "protected_frac": 0.4206,
+              "protected_density_conc": 0.22077,
+              "biv_activity_avg": 0.12576,
+              "d_eff": 1.1775,
+              "isotropy_branch_var": 1.3323,
+              "light_cone_mean_branch": 4.7,
+              "light_cone_std_branch": 6.262,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 12.0,
+                "3": 21.0,
+                "4": 24.1,
+                "5": 24.8
+              },
+              "recovery_step": 5
+            },
+            {
+              "N": 686,
+              "rho_avg": 0.15226,
+              "rho_std": 0.35234,
+              "protected_frac": 0.4242,
+              "protected_density_conc": 0.21795,
+              "biv_activity_avg": 0.12554,
+              "d_eff": 1.2132,
+              "isotropy_branch_var": 1.275,
+              "light_cone_mean_branch": 5.2,
+              "light_cone_std_branch": 6.63,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.8,
+                "3": 20.8,
+                "4": 25.4,
+                "5": 26.0
+              },
+              "recovery_step": 6
+            },
+            {
+              "N": 711,
+              "rho_avg": 0.14962,
+              "rho_std": 0.34655,
+              "protected_frac": 0.4191,
+              "protected_density_conc": 0.21489,
+              "biv_activity_avg": 0.12527,
+              "d_eff": 1.495,
+              "isotropy_branch_var": 1.758,
+              "light_cone_mean_branch": 5.3,
+              "light_cone_std_branch": 9.317,
+              "growth_N_tau": {
+                "0": 1.0,
+                "1": 4.0,
+                "2": 11.9,
+                "3": 21.0,
+                "4": 33.6,
+                "5": 43.5
+              },
+              "recovery_step": 7
+            }
+          ],
+          "metrics": {
+            "d_eff_pre": 0.848,
+            "d_eff_dev_immediate": 0.048,
+            "d_eff_dev_final": 0.647,
+            "prot_conc_dev_final": 0.0141,
+            "isotropy_dev_final": 0.3736,
+            "relaxation_steps_to_tolerance": 1,
+            "recovered_within_tolerance": false,
+            "attractor_band_d_eff": 0.26,
+            "attractor_prot_conc_tol": 0.03
+          }
+        }
+      ],
+      "recovery_summary": {
+        "num_trials": 4,
+        "recovered_count": 1,
+        "mean_prot_dev_final": 0.0187,
+        "mean_d_eff_dev_final": 0.4192
+      }
+    }
+  },
+  "comparison_summary": {
+    "full": {
+      "num_trials": 4,
+      "recovered_within_tolerance": 1,
+      "mean_prot_conc_dev_final": 0.0184,
+      "mean_d_eff_dev_final": 0.3782,
+      "late_d_eff_mean": 0.978,
+      "late_prot_conc_mean": 0.2369
+    },
+    "no_quad": {
+      "num_trials": 4,
+      "recovered_within_tolerance": 1,
+      "mean_prot_conc_dev_final": 0.0183,
+      "mean_d_eff_dev_final": 0.4036,
+      "late_d_eff_mean": 0.9769,
+      "late_prot_conc_mean": 0.2369
+    },
+    "no_fg": {
+      "num_trials": 4,
+      "recovered_within_tolerance": 1,
+      "mean_prot_conc_dev_final": 0.0187,
+      "mean_d_eff_dev_final": 0.4192,
+      "late_d_eff_mean": 0.8954,
+      "late_prot_conc_mean": 0.2369
+    }
+  },
+  "export_note": "Real comparative data from matched evolutions under full vs cleanly ablated living candidate on relational graphs \u2265500 nodes. For Lean theorems demonstrating necessity of quadratic + ambient terms."
+}

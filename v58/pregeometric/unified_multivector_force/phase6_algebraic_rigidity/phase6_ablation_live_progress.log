@@ -1,0 +1,43 @@
+[2026-05-20 20:39:50] === Starting VERY INTENSIVE ablation study ===
+[2026-05-20 20:39:50] n_seeds per config      : 1000
+[2026-05-20 20:39:50] growth_steps per eval   : 100
+[2026-05-20 20:39:50] perturbation_strength   : 0.08
+[2026-05-20 20:39:50] parallel workers        : 16
+[2026-05-20 20:39:50] 
+[2026-05-20 20:39:50] Evaluating BASELINE (full best vector)...
+[2026-05-20 21:04:22]   BASELINE — 200/1000 seeds | mean=-1.8469 ± 0.0064
+[2026-05-20 21:30:53]   BASELINE — 400/1000 seeds | mean=-1.8477 ± 0.0046
+[2026-05-20 21:55:56]   BASELINE — 600/1000 seeds | mean=-1.8489 ± 0.0038
+[2026-05-20 22:20:51]   BASELINE — 800/1000 seeds | mean=-1.8500 ± 0.0034
+[2026-05-20 22:45:39]   BASELINE — 1000/1000 seeds | mean=-1.8461 ± 0.0032
+[2026-05-20 22:45:39] Baseline: -1.8461 ± 0.0032
+
+[2026-05-20 22:45:39] Evaluating ablation: ZERO term_rank_deviation
+[2026-05-20 23:10:12]   ZERO term_rank_deviation — 200/1000 seeds | mean=-1.8500 ± 0.0065
+[2026-05-20 23:34:47]   ZERO term_rank_deviation — 400/1000 seeds | mean=-1.8497 ± 0.0046
+[2026-05-20 23:59:22]   ZERO term_rank_deviation — 600/1000 seeds | mean=-1.8491 ± 0.0038
+[2026-05-21 00:23:58]   ZERO term_rank_deviation — 800/1000 seeds | mean=-1.8498 ± 0.0033
+[2026-05-21 00:48:35]   ZERO term_rank_deviation — 1000/1000 seeds | mean=-1.8471 ± 0.0031
+[2026-05-21 00:48:35]   → -1.8471 ± 0.0031   (Δ = -0.0010)
+
+[2026-05-21 00:48:35] Evaluating ablation: ZERO term_rank_abs
+[2026-05-21 01:13:15]   ZERO term_rank_abs — 200/1000 seeds | mean=-1.8521 ± 0.0064
+[2026-05-21 01:37:54]   ZERO term_rank_abs — 400/1000 seeds | mean=-1.8543 ± 0.0047
+[2026-05-21 02:02:13]   ZERO term_rank_abs — 600/1000 seeds | mean=-1.8503 ± 0.0040
+[2026-05-21 02:25:52]   ZERO term_rank_abs — 800/1000 seeds | mean=-1.8508 ± 0.0035
+[2026-05-21 02:49:31]   ZERO term_rank_abs — 1000/1000 seeds | mean=-1.8468 ± 0.0031
+[2026-05-21 02:49:31]   → -1.8468 ± 0.0031   (Δ = -0.0007)
+
+[2026-05-21 02:49:31] Evaluating ablation: ZERO term_closure_defect
+[2026-05-21 03:13:10]   ZERO term_closure_defect — 200/1000 seeds | mean=-1.8539 ± 0.0069
+[2026-05-21 03:36:49]   ZERO term_closure_defect — 400/1000 seeds | mean=-1.8541 ± 0.0048
+[2026-05-21 04:00:28]   ZERO term_closure_defect — 600/1000 seeds | mean=-1.8482 ± 0.0041
+[2026-05-21 04:24:06]   ZERO term_closure_defect — 800/1000 seeds | mean=-1.8491 ± 0.0035
+[2026-05-21 04:47:47]   ZERO term_closure_defect — 1000/1000 seeds | mean=-1.8456 ± 0.0032
+[2026-05-21 04:47:47]   → -1.8456 ± 0.0032   (Δ = +0.0005)
+
+[2026-05-21 04:47:47] Evaluating ablation: ZERO term_balance
+[2026-05-21 05:11:29]   ZERO term_balance — 200/1000 seeds | mean=-1.8520 ± 0.0067
+[2026-05-21 05:35:10]   ZERO term_balance — 400/1000 seeds | mean=-1.8486 ± 0.0047
+[2026-05-21 05:58:51]   ZERO term_balance — 600/1000 seeds | mean=-1.8482 ± 0.0039
+[2026-05-21 06:22:27]   ZERO term_balance — 800/1000 seeds | mean=-1.8496 ± 0.0034
