@@ -1,0 +1,25 @@
+{
+  "leading_cos_3phi_coefficient_at_t3": 4.0,
+  "sector_t_cubed": {
+    "lepton": 0.35355339059327384,
+    "d-quark": 0.46475800154489005,
+    "u-quark": 0.6859355250908198
+  },
+  "predicted_phi_X_from_alpha_N": {
+    "phi_d_14_alpha_MZ": 0.10941603101162936,
+    "phi_u_neg_10_alpha_0": -0.07297352520505561
+  },
+  "empirical_phi_X": {
+    "phi_l": 0.2222222222222222,
+    "phi_d": 0.10859,
+    "phi_u": -0.07251
+  },
+  "fourier_lepton_V_eff": {
+    "c_0": -1.1580295679394943,
+    "c_3": 1.981606027744361,
+    "c_6": 0.06599277796111211,
+    "c_9": -0.01359825431469899,
+    "cos_3phi_critical": -7.506904880228227
+  },
+  "notes": "1-loop V_eff infrastructure set up.  Sector counting N_X (= dim G_2 for d-quark, dim Spin(5) for u-quark) requires explicit G_2-equivariant projection of \u039b\u2074(R\u2077) \u2014 next computational step."
+}

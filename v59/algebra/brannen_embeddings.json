@@ -1,0 +1,57 @@
+{
+  "lepton_slice": [
+    0,
+    1,
+    2,
+    7
+  ],
+  "lepton_slice_signs": [
+    1,
+    1,
+    1,
+    -1
+  ],
+  "lepton_slice_basis_tuples": [
+    [],
+    [
+      0,
+      1
+    ],
+    [
+      0,
+      2
+    ],
+    [
+      1,
+      2
+    ]
+  ],
+  "lepton_brannen": {
+    "a_l_sqrtMeV": 17.7156,
+    "t_l_sq": 0.5,
+    "phi_l": 0.2222222222222222,
+    "predicted_masses": [
+      0.5109716840766757,
+      105.65377656965401,
+      1776.8901519062686
+    ],
+    "Q_l": 0.6666666666666667
+  },
+  "d_quark_slice_placeholder": [
+    22,
+    29,
+    52,
+    36
+  ],
+  "u_quark_slice_placeholder": [
+    0,
+    1,
+    2,
+    7,
+    22,
+    29,
+    52,
+    36
+  ],
+  "notes": "Sector \u210d-slice embeddings.  Lepton is canonical (e_01, e_02, e_12). d-quark and u-quark placeholders need G_2-equivariant refinement based on the coassociative 4-form *\u03c6 structure."
+}

@@ -1,0 +1,31 @@
+{
+  "higgs_mass": {
+    "m_H_sq_over_v_sq_target": 0.2585612358349202,
+    "best_candidate": "7/27",
+    "best_candidate_value": 0.25925925925925924,
+    "best_candidate_gap_pct": 0.26996445236079886,
+    "predicted_m_H_GeV": 125.36888384241657,
+    "observed_m_H_GeV": 125.2
+  },
+  "brannen_scales": {
+    "a_lepton_sq_MeV": 313.8411267080086,
+    "a_d_sq_MeV": 649.8812427720936,
+    "a_u_sq_MeV": 22757.158020405517,
+    "a_u_over_a_d": 35.017410139941845,
+    "near_35": 0.04974325697669915
+  },
+  "alpha_consistency": {
+    "v59_alpha_inv": 127.91007303811807,
+    "alpha_MZ_inv": 127.9,
+    "alpha_0_inv": 137.036,
+    "v59_to_MZ_gap_pct": 0.007875093711394669
+  },
+  "combined_predictions": {
+    "alpha_v59": 0.0078179925649952,
+    "v_v59_GeV": 246.05144333907873,
+    "mW_v59_GeV": 81.80026991812998,
+    "mZ_v59_GeV": 92.75278773485562,
+    "mW_gap_pct": 1.7806198371141908,
+    "mZ_gap_pct": 1.716447998253724
+  }
+}

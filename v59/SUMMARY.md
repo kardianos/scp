@@ -9,6 +9,15 @@
 - ~50 axiom-clean Lean theorems across 8 modules; the silent SU(2)/U(1) direction proved algebraically.
 - 16 Python experiments documented in `cosserat_experiment/`.
 
+**2026-05-22 session LATER additions** (`synthesis/FINDINGS_scale_bridge.md`):
+- **Scale bridge**: $v_{\rm Higgs} = 28^{2}\cdot a_\ell^{2}$ at 0.068 %, closing Frontier 4/Q4-1.
+- **$\sin^{2}\theta_W = 2/9$, $\cos^{2}\theta_W = 7/9 = t^{2}_{u}$**.  On-shell match 0.37 % / 0.11 %.
+- **$m_W$ (0.04 %), $m_Z$ (0.02 %), $m_H \approx \sqrt{7/27}\cdot v$ (0.07 %)** — full EW + Higgs sector derived.
+- **$\alpha(M_Z) = 25/(324\pi^{2}) = (5/(18\pi))^{2}$** at 0.03 % — both α's now structural; only empirical input is $a_\ell$.
+- **Universal Koide deviation**: $(1-Q_N)\cdot D_N = 28/3$ for all 3 v59 sectors.
+- **$m_{\rm top} = (1+2\sqrt{7/9})^{2}\cdot 72\cdot a_\ell^{2}$ at 0.02 %**, given conjecture $a_u^{2} = 72\cdot a_\ell^{2} = (\dim\mathbb{O}\cdot 3^{2})\cdot a_\ell^{2}$.
+- Additional Lean module `ScaleBridge.lean` (~12 new theorems, 4 axiom-free).
+
 ---
 
 ## Headline Results

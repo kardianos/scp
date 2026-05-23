@@ -1,0 +1,53 @@
+{
+  "step3_simple_brannen_CKM": {
+    "description": "Brannen circulant kernels, same basis",
+    "V_CKM_magnitudes": [
+      [
+        8.632686586694674e-16,
+        0.9999999999999998,
+        5.043040465407275e-16
+      ],
+      [
+        2.5760318401929272e-17,
+        5.946087395082685e-16,
+        0.9999999999999999
+      ],
+      [
+        0.9999999999999997,
+        9.264389965425833e-16,
+        1.460503274755629e-16
+      ]
+    ],
+    "result": "gives mixing but doesn't match empirical magnitudes"
+  },
+  "step3_quaternion_slice_CKM": {
+    "description": "\u03be \u2208 \u210d in sector-specific complex slices",
+    "V_CKM_magnitudes": [
+      [
+        0.4311653613670711,
+        0.633984306350882,
+        3.2222367259112504e-16
+      ],
+      [
+        6.372331376106191e-17,
+        4.512845813003782e-16,
+        0.6354198741678739
+      ],
+      [
+        0.7614054215390725,
+        0.17411743764696128,
+        2.1928606635449892e-17
+      ]
+    ],
+    "sin_theta_C_v59": 0.633984306350882,
+    "sin_theta_C_empirical": 0.2253
+  },
+  "step4_mu_bisection": {
+    "description": "Cl(7)_even bisects via grade-mod-4 operator \u03bc",
+    "L_dim": 28,
+    "F_dim": 35,
+    "L_grades": "\u039b\u00b2\u2295\u039b\u2076 (\u03bc = -1)",
+    "F_grades": "\u039b\u2074 (\u03bc = +1, minus identity)",
+    "selection_rule_status": "structurally derived; mechanism for sector\u2192bits still empirical"
+  }
+}

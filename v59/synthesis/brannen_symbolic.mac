@@ -1,0 +1,295 @@
+/*
+  brannen_symbolic.mac
+
+  DEEP symbolic analysis of the Brannen-Z_3 mass operator
+  M = a·(I + ξ·S + ξ̄·S²)
+  with the goal of finding NEW dynamic invariants and structural patterns
+  beyond the Koide ratio.
+
+  Specific items to compute:
+   - All elementary symmetric functions e_n(m_1, m_2, m_3)
+   - All power sums P_n = sum m_k^n
+   - Newton's identities relating them
+   - The cubic discriminant (controls when eigenvalues become degenerate)
+   - Higher-order Z_3-invariant combinations
+   - Sector-coupling invariants
+*/
+
+display2d : false$
+
+/* --- Setup --- */
+declare([a, t, phi], real)$
+assume(a > 0, t > 0, t < 1)$
+
+/* The 3 Brannen amplitudes (= square-roots of masses) */
+s0: a*(1 + 2*t*cos(phi))$
+s1: a*(1 + 2*t*cos(phi + 2*%pi/3))$
+s2: a*(1 + 2*t*cos(phi - 2*%pi/3))$
+
+print("=== Brannen amplitudes s_k = √m_k ===")$
+print("s_0 = ", s0)$
+print("s_1 = ", s1)$
+print("s_2 = ", s2)$
+print("")$
+
+/* The 3 masses m_k = s_k^2 */
+m0: s0^2$
+m1: s1^2$
+m2: s2^2$
+
+/* --- Elementary symmetric functions of s_k --- */
+print("=== Elementary symmetric functions of s_k ===")$
+
+/* e_1 = sum s_k */
+e_s1: trigsimp(expand(s0 + s1 + s2))$
+print("e_1(s) = sum s_k = ", e_s1)$
+
+/* e_2 = sum of pairwise products */
+e_s2: trigsimp(expand(s0*s1 + s1*s2 + s2*s0))$
+print("e_2(s) = sum s_i s_j = ", e_s2)$
+
+/* e_3 = product */
+e_s3: trigsimp(expand(s0*s1*s2))$
+print("e_3(s) = prod s_k = ", e_s3)$
+print("")$
+
+/* --- Power sums of s_k --- */
+print("=== Power sums of s_k ===")$
+
+P1_s: trigsimp(s0 + s1 + s2)$
+print("P_1(s) = sum s_k = ", P1_s)$
+
+P2_s: trigsimp(expand(s0^2 + s1^2 + s2^2))$
+print("P_2(s) = sum s_k^2 = ", P2_s)$
+print("       (= sum m_k!)")$
+
+P3_s: trigsimp(expand(s0^3 + s1^3 + s2^3))$
+print("P_3(s) = sum s_k^3 = ", P3_s)$
+
+P4_s: trigsimp(expand(s0^4 + s1^4 + s2^4))$
+print("P_4(s) = sum s_k^4 = ", P4_s)$
+print("       (= sum m_k^2)")$
+
+P6_s: trigsimp(expand(s0^6 + s1^6 + s2^6))$
+print("P_6(s) = sum s_k^6 = ", P6_s)$
+print("       (= sum m_k^3)")$
+print("")$
+
+/* --- KEY: phase-INDEPENDENCE of P_2(s) --- */
+print("=== KEY OBSERVATION: P_2(s) is φ-INDEPENDENT ===")$
+print("P_2 = sum m_k = ", expand(P2_s))$
+print("Substitute identities cos²+sin²=1:")$
+P2_simplified: ratsimp(P2_s)$
+print("P_2 (simplified) = ", P2_simplified)$
+print("")$
+print("→ This is the Koide-like statement:")$
+print("  sum m_k = 3 a² (1 + 2 t²)  (independent of φ)")$
+print("")$
+
+/* --- Koide ratio --- */
+Koide_Q: P2_s / P1_s^2$
+print("Koide Q = sum m / (sum s)² = ", trigsimp(Koide_Q))$
+print("        = (1 + 2 t²)/3")$
+print("")$
+
+/* --- Higher Z_3 invariants --- */
+print("=== Higher Z_3 invariants (φ-DEPENDENT) ===")$
+print("")$
+
+/* sum s_k^3 contains cos(3φ) -- this is the NEW dynamic information */
+P3_simplified: ratsimp(trigsimp(P3_s))$
+print("P_3(s) = sum s_k^3 = ", P3_simplified)$
+print("")$
+
+/* Let me extract cos(3φ) more explicitly */
+print("Substituting cos(φ+2π/3) = cos(φ)cos(2π/3) - sin(φ)sin(2π/3) = -cos(φ)/2 - √3 sin(φ)/2:")$
+P3_explicit: trigexpand(P3_s)$
+print("P_3 (expanded) = ", ratsimp(P3_explicit))$
+print("")$
+
+/* The product s_0 s_1 s_2 */
+print("Product s_0 s_1 s_2 = ", trigsimp(expand(s0 * s1 * s2)))$
+print("")$
+
+/* --- Use elementary trig identity for sum cos(θ+2πk/3) and sum cos²(θ+2πk/3) --- */
+/* sum cos(θ + 2πk/3) = 0
+   sum cos²(θ + 2πk/3) = 3/2
+   sum cos³(θ + 2πk/3) = (3/4) cos(3θ)
+   sum cos⁴(θ + 2πk/3) = (3/8)(1 + cos(2θ) + cos(2θ + 2π/3) + cos(2θ - 2π/3)) = wait
+   Actually for n-fold sum: sum cos^n(θ + 2πk/3) has specific structure
+*/
+
+print("=== Trigonometric sum identities (used to simplify) ===")$
+
+T1: trigsimp(cos(phi) + cos(phi + 2*%pi/3) + cos(phi - 2*%pi/3))$
+print("sum cos(θ+2πk/3) = ", T1, "    (vanishes)")$
+
+T2: trigsimp(cos(phi)^2 + cos(phi + 2*%pi/3)^2 + cos(phi - 2*%pi/3)^2)$
+print("sum cos²(θ+2πk/3) = ", T2, "    (= 3/2)")$
+
+T3: trigsimp(cos(phi)^3 + cos(phi + 2*%pi/3)^3 + cos(phi - 2*%pi/3)^3)$
+print("sum cos³(θ+2πk/3) = ", T3, "    (= 3/4 cos(3φ))")$
+
+T4: trigsimp(cos(phi)^4 + cos(phi + 2*%pi/3)^4 + cos(phi - 2*%pi/3)^4)$
+print("sum cos⁴(θ+2πk/3) = ", T4)$
+
+T6: trigsimp(cos(phi)^6 + cos(phi + 2*%pi/3)^6 + cos(phi - 2*%pi/3)^6)$
+print("sum cos⁶(θ+2πk/3) = ", T6)$
+print("")$
+
+/* --- Now derive structural identities --- */
+print("=== Z_3-INVARIANT polynomials in (t, φ) ===")$
+print("")$
+print("P_1(s) = 3a                                     (constant; t,φ-independent)")$
+print("P_2(s) = 3a²(1 + 2t²)                           (φ-INDEPENDENT; depends on t only)")$
+print("P_3(s) = 3a³(1 + 6t² + 2t³·cos(3φ))             (φ-DEPENDENT via cos(3φ))")$
+print("P_4(s) = ?                                       (computed below)")$
+print("")$
+
+/* Actually compute the simplified forms */
+P3_clean: subst([cos(phi)^3 = (3*cos(phi) + cos(3*phi))/4,
+                 cos(phi + 2*%pi/3)^3 = (3*cos(phi + 2*%pi/3) + cos(3*phi + 2*%pi))/4,
+                 cos(phi - 2*%pi/3)^3 = (3*cos(phi - 2*%pi/3) + cos(3*phi - 2*%pi))/4],
+                expand(P3_s))$
+
+/* This is getting tangled. Let me directly compute P_3 in terms of cos(3φ). */
+
+/* Compute (s_0^3 + s_1^3 + s_2^3) substituting and trigsimp-ing */
+P3_explicit_form: 3*a^3*(1 + 6*t^2 + 2*t^3*cos(3*phi))$
+print("Test: predicted P_3 form = 3a³(1 + 6t² + 2t³cos(3φ))")$
+print("vs computed: ", ratsimp(trigsimp(expand(P3_s))))$
+print("Difference: ", ratsimp(trigsimp(expand(P3_explicit_form - P3_s))))$
+print("(should vanish if formula correct)")$
+print("")$
+
+/* --- Discriminant of the Brannen mass polynomial --- */
+print("=== Mass-eigenvalue discriminant ===")$
+print("The discriminant Δ = (m_0-m_1)²(m_1-m_2)²(m_2-m_0)² vanishes when masses degenerate.")$
+print("")$
+
+Delta: expand((m0-m1)^2 * (m1-m2)^2 * (m2-m0)^2)$
+Delta_simplified: ratsimp(trigsimp(Delta))$
+print("Δ = ", Delta_simplified)$
+print("")$
+
+/* The discriminant is a function of (t², cos(3φ)). It vanishes at specific values. */
+
+/* --- Dynamic property: Z_6 symmetry beyond Z_3 --- */
+print("=== Hidden Z_6 symmetry? ===")$
+print("Replacing φ → φ + 2π/3:")$
+s0_shifted: a*(1 + 2*t*cos(phi + 2*%pi/3))$
+print("s_0(φ + 2π/3) = ", s0_shifted, " = s_1(φ) (yes, just cycle k)")$
+print("")$
+print("Replacing φ → φ + π/3:")$
+s0_half_shifted: trigsimp(a*(1 + 2*t*cos(phi + %pi/3)))$
+print("s_0(φ + π/3) = ", s0_half_shifted)$
+print("(half-shift gives a NEW Brannen configuration)")$
+print("")$
+print("Replacing φ → -φ:")$
+s0_reflected: a*(1 + 2*t*cos(-phi))$
+print("s_0(-φ) = a(1 + 2t cos(φ)) = s_0(φ)  (real-cosine reflection invariant)")$
+s1_reflected: trigsimp(a*(1 + 2*t*cos(-phi + 2*%pi/3)))$
+print("s_1(-φ) = ", s1_reflected, " = s_2(φ)")$
+print("→ The reflection φ → -φ swaps s_1 ↔ s_2.")$
+print("→ This is the Z_2 of CP conjugation in the Brannen kernel.")$
+print("")$
+
+/* --- Connection to Newton's identities --- */
+print("=== Newton's identities ===")$
+print("e_1 = P_1, e_2 = (P_1² - P_2)/2, e_3 = (P_1³ - 3 P_1 P_2 + 2 P_3)/6")$
+print("")$
+
+/* Compute these for our case */
+e1_check: P1_s$
+e2_check: (P1_s^2 - P2_s)/2$
+e3_check: (P1_s^3 - 3*P1_s*P2_s + 2*P3_s)/6$
+
+print("e_1 from Newton: ", trigsimp(expand(e1_check)))$
+print("e_1 direct:      ", trigsimp(expand(e_s1)))$
+print("Difference: ", trigsimp(expand(e1_check - e_s1)))$
+print("")$
+print("e_2 from Newton: ", trigsimp(expand(e2_check)))$
+print("e_2 direct:      ", trigsimp(expand(e_s2)))$
+print("Difference: ", trigsimp(expand(e2_check - e_s2)))$
+print("")$
+print("e_3 from Newton: ", trigsimp(expand(e3_check)))$
+print("e_3 direct:      ", trigsimp(expand(e_s3)))$
+print("Difference: ", trigsimp(expand(e3_check - e_s3)))$
+print("")$
+
+/* --- Closed forms for elementary symmetric functions --- */
+print("=== Closed forms for elementary symmetric functions ===")$
+print("")$
+print("e_1(s) = 3a")$
+print("e_2(s) = 3a²·(1 - t²)             (φ-INDEPENDENT!)")$
+print("e_3(s) = a³·(1 - 3t² + 2t³·cos(3φ))   (φ-DEPENDENT)")$
+print("")$
+print("Verifying e_2(s) is φ-independent...")$
+e2_predicted: 3*a^2*(1 - t^2)$
+e2_actual: trigsimp(expand(e_s2))$
+e2_diff: ratsimp(trigsimp(expand(e2_predicted - e2_actual)))$
+print("e_2 predicted = ", e2_predicted)$
+print("e_2 actual    = ", e2_actual)$
+print("Difference    = ", e2_diff)$
+print("")$
+
+/* --- THE KEY OBSERVATION --- */
+print("===========================================================")$
+print("KEY STRUCTURAL OBSERVATION")$
+print("===========================================================")$
+print("")$
+print("The Z_3-symmetric functions of the Brannen amplitudes s_k = √m_k are:")$
+print("")$
+print("  e_1 = P_1 = 3a              (linear in a, φ-independent)")$
+print("  e_2 = P_2 = 3a²(1+2t²)      (quadratic, φ-independent)")$
+print("  e_3 = ?                     (cubic, φ-DEPENDENT)")$
+print("")$
+print("Note: P_2/P_1² = (1+2t²)/3 = Koide Q.  φ-INDEPENDENT.")$
+print("")$
+print("In contrast, the elementary symmetric functions of the s_k are:")$
+print("")$
+print("  e_1(s) = 3a")$
+print("  e_2(s) = 3a²(1 - t²)        ← NEW φ-INDEPENDENT INVARIANT")$
+print("  e_3(s) = a³(1 - 3t² + 2t³cos(3φ))    ← contains the φ phase")$
+print("")$
+print("--- The e_2(s) = 3a²(1-t²) is potentially a NEW v59 conserved quantity. ---")$
+print("  At t² = 1/2 (lepton):    e_2 = 3a²·(1/2)   = (3/2)·a²")$
+print("  At t² = 3/5 (d-quark):   e_2 = 3a²·(2/5)   = (6/5)·a²")$
+print("  At t² = 7/9 (u-quark):   e_2 = 3a²·(2/9)   = (2/3)·a²")$
+print("")$
+print("Notice: 1 - t² = dim G_2 / D_X = 14/D_X !")$
+print("So e_2(s) = 3a²·(14/D_X) = (42/D_X)·a²")$
+print("→ e_2(s) · D_X / a² = 42 = 3 · dim G_2  (UNIVERSAL across sectors!)")$
+print("")$
+print("This is a NEW UNIVERSAL IDENTITY:")$
+print("    e_2(√m) · D_X / a² = 3 · dim G_2 = 42  (independent of sector)")$
+print("")$
+
+/* Final test: compute numerically for the 3 sectors */
+print("=== Numerical verification ===")$
+print("")$
+
+for sector_data in [["lepton", 1/2, 28], ["d-quark", 3/5, 35], ["u-quark", 7/9, 63]] do (
+  sector_name: sector_data[1],
+  t_sq_val: sector_data[2],
+  D_val: sector_data[3],
+  print("Sector ", sector_name, ":  t² = ", t_sq_val, ",  D = ", D_val),
+  print("  e_2/a² = 3·(1 - t²)            = ", 3*(1 - t_sq_val)),
+  print("  e_2·D/(a²)                     = ", 3*(1 - t_sq_val)*D_val),
+  print("  Expected: 3 · dim G_2 = 3·14   = 42"),
+  print("")
+)$
+
+print("=== Done. Look for NEW DYNAMIC INVARIANT ===")$
+print("")$
+print("The new finding: e_2(s)·D_X = 42·a²  universal across sectors.")$
+print("This is COMPLEMENTARY to (1-Q_N)·D_N = 28/3.")$
+print("  (1-Q)·D = D·(1 - (1+2t²)/3) = D·(2-2t²)/3 = (2/3)·D·(1-t²) = (2/3)·14 = 28/3 ✓")$
+print("  e_2/a²·D = 3·(1-t²)·D = 3·14 = 42 ✓")$
+print("")$
+print("They're related: (1-Q)·D = (1/3)·(e_2(s)/a²)·D / 1 = ... wait")$
+print("  e_2/a² = 3(1-t²); (1-Q) = (2/3)(1-t²)")$
+print("  So e_2/a² = (9/2)(1-Q)  ⟹  e_2(s) = (9/2)(1-Q)·a²")$
+print("")$
+print("→ Both 'universal invariants' are different expressions of (1-t²)·D = const.")$
+print("  The CORE structural identity is:  (1 - t²) · D = dim G_2 = 14  ALWAYS.")$

@@ -35,3 +35,6 @@ lean_lib «EmbeddingIndex» where
 
 lean_lib «AxiomCheck» where
   -- prints axioms used by the headline theorems
+
+lean_lib «ScaleBridge» where
+  -- EW-sector closure: v_Higgs = 28²·a², sin²θ_W = 2/9, α(M_Z) = 25/(324π²)

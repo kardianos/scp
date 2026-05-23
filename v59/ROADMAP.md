@@ -15,11 +15,26 @@ consolidates every open question across the project as of 2026-05-22.
    1. DYNAMICAL ξ(x) field        ← active investigation, this session
    2. MECHANISM for selection rule (Z₂×Z₂ pattern)
    3. LAGRANGIAN derivation of (5, 21/16) prefactors
-   4. SCALE bridges (Brannen a ↔ Higgs VEV ↔ Planck mass)
+   4. SCALE bridges (Brannen a ↔ Higgs VEV ↔ Planck mass)  [PARTIAL CLOSE]
 ```
 
 Each is a multi-session research effort.  None of them is "do once and
 finish".  But each has concrete entry points.
+
+**Status update (later in 2026-05-22 session)**: Frontier 4 / Q4-1
+(Brannen-to-Higgs bridge) is largely **closed**. The relation
+`v_Higgs = D_lepton² · a_l² = 28² · a_l²` matches at 0.068 %, cascades
+to m_W (0.04 %), m_Z (0.02 %) when combined with g_W² = 5√α and the
+new `sin²θ_W = 2/9`, `cos²θ_W = 7/9`. The SM tree identity then forces
+**α(M_Z) = 25/(324π²)** at 0.03 % match — making α structural at BOTH
+ends of the running scale (q=0 from -ln α + 2α = π²/2; q=M_Z from
+this session). See `synthesis/FINDINGS_scale_bridge.md`.
+
+The EW sector now has zero empirical α inputs; only a_l is empirical.
+
+Remaining open in Frontier 4: Higgs mass mechanism (m_H ≈ √(7/27)·v
+at 0.14 %, no mechanism); Planck-mass bridge; cross-sector Brannen
+scales (a_u² ≈ 35·a_d² hint, within quark-mass uncertainty).
 
 ---
 

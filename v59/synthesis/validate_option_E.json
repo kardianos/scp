@@ -1,0 +1,20 @@
+{
+  "option_E_simple_passes_constraints": false,
+  "constraint_sum_test": {
+    "r_L_sq + r_F_sq": 1.1,
+    "r_LF_sq": 0.7777777777777778,
+    "difference": 0.3222222222222223,
+    "verdict": "Option E with orthogonal projections FALSIFIED"
+  },
+  "option_E_star_predictions": {
+    "v_lepton_GeV": 246.05055999999996,
+    "v_dquark_GeV": 797.475,
+    "v_uquark_GeV": 90322.533,
+    "v_uquark_TeV": 90.322533
+  },
+  "constraint_check": {
+    "passed": 9,
+    "needs_verification": 2,
+    "failed": 0
+  }
+}

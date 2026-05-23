@@ -9,6 +9,7 @@ import SpinDimension
 import SilentDirection
 import Predictions
 import EmbeddingIndex
+import ScaleBridge
 
 #print axioms SCPv59.BrannenKernel.Q_value
 #print axioms SCPv59.BrannenKernel.koide_iff_constraint
@@ -60,3 +61,24 @@ import EmbeddingIndex
 #print axioms SCPv59.Predictions.d_quark_ambient_decomp
 #print axioms SCPv59.Predictions.u_quark_ambient_decomp
 #print axioms SCPv59.Predictions.single_source_decomposition
+#print axioms SCPv59.ScaleBridge.dimLepton_eq_L
+#print axioms SCPv59.ScaleBridge.dimLepton_eq_decomp
+#print axioms SCPv59.ScaleBridge.v_Higgs_factor
+#print axioms SCPv59.ScaleBridge.sin_sq_thW_eq_brannen_phase
+#print axioms SCPv59.ScaleBridge.cos_sq_thW_eq_t_sq_u_quark
+#print axioms SCPv59.ScaleBridge.sin_cos_sq_thW_sum
+#print axioms SCPv59.ScaleBridge.mZ_over_mW_sq
+#print axioms SCPv59.ScaleBridge.sqrt_alpha_MZ_form
+#print axioms SCPv59.ScaleBridge.sqrt_alpha_MZ_factored
+#print axioms SCPv59.ScaleBridge.alpha_MZ_from_consistency
+#print axioms SCPv59.ScaleBridge.scale_bridge_summary
+#print axioms SCPv59.ScaleBridge.koide_deviation_universal
+#print axioms SCPv59.ScaleBridge.two_dimG2_eq_dimSpin8
+#print axioms SCPv59.ScaleBridge.two_dimG2_eq_dimLepton
+#print axioms SCPv59.ScaleBridge.dimImO_eq_choose_seven
+#print axioms SCPv59.ScaleBridge.dimImO_eq_lambda6
+#print axioms SCPv59.ScaleBridge.sin_sq_cabibbo_value
+#print axioms SCPv59.ScaleBridge.cabibbo_seven_eq_cos_thW_seven
+#print axioms SCPv59.ScaleBridge.spin7_pati_salam_decomp
+#print axioms SCPv59.ScaleBridge.spin7_g2_plus_seven
+#print axioms SCPv59.ScaleBridge.seven_unifies_su2L_su2R_u1BL_eq_dimImO

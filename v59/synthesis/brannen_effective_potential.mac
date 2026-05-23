@@ -1,0 +1,187 @@
+/*
+  brannen_effective_potential.mac
+
+  KEY DYNAMIC QUESTION: are the Brannen phases φ_X determined dynamically
+  by an EFFECTIVE POTENTIAL induced by fermion back-reaction?
+
+  Setup: in the v59 framework, the Brannen ξ_X ∈ ℍ is COUPLED to fermions
+  via Yukawa L_Y = -y·ψ̄·M(ξ)·ψ with M(ξ) the Brannen kernel.
+
+  When integrating out fermions at loop level, an effective potential
+  V_eff(ξ) emerges.  The leading 1-loop contribution is:
+    V_eff(ξ) ~ -Tr(M(ξ)² · log M(ξ)²)·(loop factor)
+
+  In renormalized form, this expands as a power series in the Brannen
+  phase φ and the constraint deviation (|ξ|² - r²).
+
+  We compute symbolically the φ-DEPENDENT pieces of V_eff(ξ) to leading
+  orders, look for stationary points in φ, and compare to empirical phases.
+*/
+
+display2d : false$
+print("=== Effective potential V_eff(φ) from fermion back-reaction ===")$
+print("")$
+
+declare([a, t, phi], real)$
+assume(a > 0, t > 0, t < 1)$
+
+/* Brannen amplitudes */
+s_k(k_idx) := a*(1 + 2*t*cos(phi + 2*%pi*k_idx/3))$
+
+/* Squared masses */
+m_k(k_idx) := s_k(k_idx)^2$
+
+print("--- Sum of masses ---")$
+sum_m: trigsimp(expand(m_k(0) + m_k(1) + m_k(2)))$
+print("Σ m_k = ", sum_m, "  (should be 3a²(1+2t²))")$
+print("")$
+
+/* The φ-DEPENDENT corrections at higher orders */
+print("--- Σ m_k² (= P_4(s)) ---")$
+sum_m_sq: trigsimp(expand(m_k(0)^2 + m_k(1)^2 + m_k(2)^2))$
+print("Σ m_k² (raw) = ", sum_m_sq)$
+/* This contains cos(3φ) */
+print("")$
+
+/* Use explicit identity for sum cos^n */
+/* Σ cos⁴(φ+2πk/3) = 9/8 + (some φ-dependent terms) */
+print("--- Sum of various cos^n(2π_k/3 + φ) over k ---")$
+for n: 1 thru 8 do (
+  expr_cosn: trigsimp(cos(phi)^n + cos(phi + 2*%pi/3)^n + cos(phi - 2*%pi/3)^n),
+  print("Σ cos^", n, "(θ_k) = ", expr_cosn)
+)$
+print("")$
+
+/* Key identities:
+   Σ cos = 0
+   Σ cos² = 3/2
+   Σ cos³ = (3/4) cos(3φ)
+   Σ cos⁴ = 9/8
+   Σ cos⁵ = (5/8) cos(3φ)
+   Σ cos⁶ = 9/8 + (3/16) cos(6φ)  -- has cos(6φ) at order 6!
+   Σ cos⁷ = (35/64) cos(3φ) + ...
+   Σ cos⁸ = ... cos(6φ) + ...
+*/
+
+print("--- KEY: cos(3φ) appears at orders 3, 5, 7, ...  cos(6φ) at orders 6, 8, ... ---")$
+print("")$
+
+/* Now write V_eff(φ) as a sum: c_1·cos(3φ) + c_2·cos(6φ) + ... */
+/* Then minimize over φ */
+
+/* For a fermion loop: V_eff ~ Σ m_k^2 · (some function) - simplest model: */
+/* V_eff^{(2)} = -k_1 · Σ m_k² + k_2 · Σ m_k³ + ... */
+/* where the coefficients depend on which loop contribution */
+
+print("--- Model V_eff(φ) = α·cos(3φ) + β·cos(6φ) + ... ---")$
+print("")$
+print("Define:")$
+print("  V_eff(φ) = -A·cos(3φ) + B·cos(6φ)")$
+print("    (sign chosen so minimum is at cos(3φ) = +1, i.e., 3φ = 0, 2π/3, ...")$
+print("     A, B > 0 by convention)")$
+print("")$
+
+/* Take derivative and set to 0 */
+print("--- d V_eff / dφ = 3A·sin(3φ) - 6B·sin(6φ) = 0 ---")$
+print("")$
+print("Using sin(6φ) = 2 sin(3φ) cos(3φ):")$
+print("  3A·sin(3φ) - 12B·sin(3φ)·cos(3φ) = 0")$
+print("  sin(3φ) · (3A - 12B·cos(3φ)) = 0")$
+print("")$
+print("Either sin(3φ) = 0 → 3φ = 0, π, 2π, ... → φ = 0, π/3, 2π/3, ...")$
+print("Or cos(3φ) = A/(4B)")$
+print("")$
+print("For φ_l = 2/9: cos(3·2/9) = cos(2/3) ≈ 0.7859")$
+print("  If A/(4B) = 0.7859, then B/A = 1/(4·0.7859) ≈ 0.318")$
+print("")$
+print("For φ_d = 1/9: cos(3·1/9) = cos(1/3) ≈ 0.9450")$
+print("  If A/(4B) = 0.9450, then B/A ≈ 0.265")$
+print("")$
+print("For φ_u = -1/14: cos(3·(-1/14)) = cos(-3/14) ≈ 0.9776")$
+print("  If A/(4B) = 0.9776, then B/A ≈ 0.256")$
+print("")$
+print("So each sector has DIFFERENT B/A ratio.  Not uniform — but interesting:")$
+print("  B_X / A_X depends on sector.  This might be the structural distinguisher.")$
+print("")$
+
+/* Alternative: what if the EOM is φ_X = arccos(some structural number)/3? */
+print("--- Alternative: φ_X = arccos(structural)/3 ? ---")$
+print("")$
+print("If 3φ_X = arccos(c_X) for sector-specific c_X:")$
+print("  Lepton:  3·(2/9) = 2/3 = arccos(?) → ? = cos(2/3) = ", float(cos(2.0/3.0)))$
+print("  d-quark: 3·(1/9) = 1/3 = arccos(?) → ? = cos(1/3) = ", float(cos(1.0/3.0)))$
+print("  u-quark: 3·(-1/14) = -3/14 = arccos(?) → ? = cos(-3/14) = ", float(cos(-3.0/14.0)))$
+print("")$
+print("Values: 0.7859, 0.9450, 0.9775")$
+print("These are NOT obviously v59-structural numbers.")$
+print("")$
+
+/* Maybe the right framing: 3φ_X = (something v59) */
+print("--- 3φ_X as v59-natural angles ---")$
+print("  3·φ_l = 6/9 = 2/3 = Q_l (lepton Koide!)")$
+print("  3·φ_d = 3/9 = 1/3")$
+print("  3·φ_u = -3/14 (≈ -dim G_2 ratio?)")$
+print("")$
+print("Interesting: 3φ_l = Q_l = 2/3.  Match exact!")$
+print("Could 3φ_X be (Q_X-related)?")$
+print("  3φ_d = 1/3 vs Q_d = 11/15 = 0.733. Not match.")$
+print("  3φ_u = -3/14 vs Q_u = 23/27 = 0.852. Not match.")$
+print("")$
+print("So only the LEPTON has clean 3φ_l = Q_l. Quarks don't follow.")$
+print("")$
+
+/* Last attempt: is there a unified relation? */
+print("--- Search for unified relation: 3φ_X = f(D_X, dim G_2)? ---")$
+print("")$
+print("  3φ_l (lepton, D=28)  = 2/3")$
+print("  3φ_d (d-quark, D=35) = 1/3 (= 1/2 of lepton)")$
+print("  3φ_u (u-quark, D=63) = -3/14")$
+print("")$
+print("Try 3φ_X = 2·dim G_2 / (D_X + dim G_2)?")$
+print("  Lepton:  2·14/(28+14) = 28/42 = 2/3 ✓")$
+print("  d-quark: 2·14/(35+14) = 28/49 = 4/7 ≈ 0.571.  vs 1/3 = 0.333.  ✗")$
+print("")$
+print("Try 3φ_X = (D_X - 2·dim G_2)/D_X?")$
+print("  Lepton:  (28-28)/28 = 0.  ✗ (vs 2/3)")$
+print("")$
+print("Try 3φ_X · D_X = ?")$
+print("  3φ_l · 28 = (2/3)·28 = 56/3 ≈ 18.67")$
+print("  3φ_d · 35 = (1/3)·35 = 35/3 ≈ 11.67")$
+print("  3φ_u · 63 = (-3/14)·63 = -27/2 = -13.5")$
+print("  → 18.67, 11.67, -13.5.  Sum = 16.83.  No clean v59 pattern.")$
+print("")$
+
+/* CONCLUSION */
+print("===============================================================")$
+print("CONCLUSION: dynamic phase determination")$
+print("===============================================================")$
+print("")$
+print("The Brannen phases φ_X have SUGGESTIVE but NOT TIGHT structural forms:")$
+print("  φ_l = 2/9          (EXACT — structural in v59)")$
+print("  φ_d ≈ 1/9          (2.3% match — possibly structural)")$
+print("  φ_u ≈ -1/14        (1.5% match — possibly structural)")$
+print("")$
+print("Or equivalently: 3φ_l = 2/3 = Q_l = dim G_2/dim Spin(7)")$
+print("                  3φ_d = 1/3 = (1/2)·Q_l")$
+print("                  3φ_u = -3/14 = -3/dim G_2")$
+print("")$
+print("Unified pattern: NOT found yet.  Different denominators (9, 9, 14)")$
+print("between sectors suggest sector-dependent dynamics.")$
+print("")$
+print("Effective-potential analysis: V_eff(φ) = -A·cos(3φ) + B·cos(6φ)")$
+print("has critical points satisfying cos(3φ) = A/(4B).  Each sector would")$
+print("need its own (A_X, B_X) ratio.  These could come from sector-specific")$
+print("fermion loop contributions to ξ_X effective action.")$
+print("")$
+print("Path forward: COMPUTE A_X, B_X from 1-loop and 2-loop fermion-Yukawa")$
+print("contributions to V_eff(φ_X), and verify the structural ratios match")$
+print("the empirical phases.  This is a DETAILED LOOP CALCULATION that goes")$
+print("beyond what we can do here without a complete Lagrangian.")$
+print("")$
+print("KEY NEW FINDING (this Maxima session):")$
+print("  3φ_l = Q_l = 2/3  (the LEPTON Brannen phase TIMES 3 equals the lepton Koide ratio)")$
+print("")$
+print("This is a CONNECTION between φ_l and Q_l: the lepton Brannen phase is")$
+print("structurally the (Koide ratio)/3, AS GIVEN.  But this 'Koide-phase'")$
+print("relation doesn't extend straightforwardly to quark sectors.")$
+print("")$
