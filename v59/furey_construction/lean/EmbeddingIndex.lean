@@ -1,6 +1,14 @@
 /-
   v59/furey_construction/lean/EmbeddingIndex.lean
 
+  ⚠ INTERPRETATION CORRECTED (2026-05-24): the quantity `(N−2)/(n−2)` computed here is NOT a
+  genuine Dynkin/embedding index — the real Dynkin indices of `so(3) ↪ so(7)` are `1` (regular
+  block `so(3)⊕so(4)`) and `56` (the 7-dim irrep of `su(2)`), neither of which is `5`.  The `5`
+  in `g_W² = 5√α` is correctly the **dual Coxeter number `h∨(Spin(7)) = N−2 = 5`** — see
+  `GaugePrefactorDualCoxeter.lean`, which derives it and explains the physical meaning (gauge
+  β-function normalization).  The arithmetic identities below remain valid; only the
+  "embedding index" label was a misnomer (the `/(n−2)` divisor is `1` for n=3, a coincidence).
+
   The Killing-form embedding index for so(n) ⊂ so(N).
 
   For the canonical block embedding (so(n) acting on the first n coordinates

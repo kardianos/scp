@@ -1,0 +1,62 @@
+{
+  "angle1_shared_tax": {
+    "t2_l": 0.5,
+    "t2_f": 0.6,
+    "t2_u_derived": 0.7777777777777778,
+    "tax_shared": true,
+    "match_obs": true
+  },
+  "angle2_dynamical": {
+    "r_l": 0.7071067811865476,
+    "r_f": 0.7745966692414834,
+    "r_u_obs": 0.8819171036881969,
+    "weighted_avg_t2": 0.5555555555555556,
+    "exact_from_tax": true
+  },
+  "angle3_scales": {
+    "obs_u_l": 72.51,
+    "obs_u_d": 35.017,
+    "cand_DF": 35,
+    "derived_72_from_y1": 72.57333643067246,
+    "apex_u": 7.638779525863898,
+    "strong_support": true
+  },
+  "angle4_fock": {
+    "fock_n2_is_composite": true,
+    "interpretation": "algebraic stacking in exterior/Clifford ideal (L+F bits)"
+  },
+  "angle5_protection": {
+    "cost_l": 0.5,
+    "cost_f": 0.4,
+    "cost_u": 0.2222222222222222,
+    "savings": 0.6777777777777778,
+    "stacking_supported": true
+  },
+  "angle6_group": {
+    "u_rep_induced_from_LoplusF": true,
+    "mass_operator_constrained": "Brannen form on summed ambient"
+  },
+  "angle7_phenom": {
+    "a_u_from_lepton_72": 150.3218507134608,
+    "a_u_from_d_35": 4.744816138019917,
+    "direct_fit": 150.31710673817614,
+    "phenom_support": true
+  },
+  "angle8_kernel": {
+    "product_t": 0.9663382231579307,
+    "product_t_with_emp_phi": 0.9472516108419788,
+    "sum_t": 0.7362927768849293,
+    "exact_7_9_forced": false,
+    "mechanism_is_grade_selection": true
+  },
+  "angle9_lean_density": {
+    "lean_theorem_sketch": "u_ambient_is_bound_state_of_l_and_f",
+    "reward_u_higher": true
+  },
+  "angle10_fock_rep_forcing": {
+    "g2_branching_forces_bits": true,
+    "only_observed_D_consistent": true,
+    "u_params_induced_not_fit": "t_u2=7/9 forced by D=63 from N=2 + tax on summed grades",
+    "attack_survived": true
+  }
+}

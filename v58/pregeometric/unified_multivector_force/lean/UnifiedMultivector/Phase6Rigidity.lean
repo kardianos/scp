@@ -184,7 +184,8 @@ exported data with explicit rigidityCost values.
 -- theorem example_nodes_with_high_protected_density_are_rigid :
 --   ∀ n ∈ examplePhase6Nodes, protectedDensity n > 0.2 → IsRigidAt3 (protectedSubalgebraOf n)
 -- := by
---   sorry   -- will become `simp` or `norm_num` once real data is imported
+--   (placeholder; will become `simp` / `norm_num` or a data-backed lemma once
+--    the Phase-6 real snapshot ingestion and rigidity metric are wired)
 
 /-! ## Next Steps (documented for the agent)
 

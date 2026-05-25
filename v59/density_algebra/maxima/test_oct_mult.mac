@@ -1,0 +1,74 @@
+/*
+  Test and development of proper symbolic octonion multiplication
+  for the 8D algebra (Cl(3) ~ octonion-like with Fano table)
+*/
+
+display2d : false$
+print("=== Testing proper symbolic octonion mult for density algebra ===")$
+
+/* Basis indices: 0=1 (scalar), 1=e1, ..., 7=e7 */
+basis_names : [1, e1, e2, e3, e4, e5, e6, e7]$
+
+/* The multiplication table from the original: result of basis_i * basis_j  (1-based in matrix) */
+oct_prod : matrix(
+  [ 1, e1, e2, e3, e4, e5, e6, e7 ],   /* 0 * (but 1-based row1) */
+  [e1, -1, e3,-e2, e5,-e4, e7,-e6 ],   /* 1 */
+  [e2,-e3, -1, e1, e6, e7,-e4,-e5 ],   /* 2 */
+  [e3, e2,-e1, -1, e7,-e6, e5,-e4 ],   /* 3 */
+  [e4,-e5,-e6,-e7, -1, e1, e2, e3 ],   /* 4 */
+  [e5, e4,-e7, e6,-e1, -1,-e3, e2 ],   /* 5 */
+  [e6, e7, e4,-e5,-e2, e3, -1,-e1 ],   /* 6 */
+  [e7,-e6, e5, e4,-e3,-e2, e1, -1 ]    /* 7 */
+)$
+
+/* To make it indexable by 0-7, we'll use 1-based for matrix, map 0->1 etc */
+idx(k) := k + 1$   /* 0->1, 1->2, ...,7->8 */
+
+print("Table loaded.")$
+
+/* Simpler approach: hardcode the table as list of lists of [sign, k] for 0-based */
+mult_table : [
+  /* row for left 0 (1): */  [[1,0],[1,1],[1,2],[1,3],[1,4],[1,5],[1,6],[1,7]],
+  /* left 1 (e1): */ [[1,1],[-1,0],[1,3],[-1,2],[1,5],[-1,4],[-1,7],[1,6]],  /* FIXED 2026-05-24: e1*e6,e1*e7 sign errors */
+  /* left 2 e2: */ [[1,2],[-1,3],[-1,0],[1,1],[1,6],[1,7],[-1,4],[-1,5]],
+  /* left 3: */ [[1,3],[1,2],[-1,1],[-1,0],[1,7],[-1,6],[1,5],[-1,4]],
+  /* left 4: */ [[1,4],[-1,5],[-1,6],[-1,7],[-1,0],[1,1],[1,2],[1,3]],
+  /* left 5: */ [[1,5],[1,4],[-1,7],[1,6],[-1,1],[-1,0],[-1,3],[1,2]],
+  /* left 6: */ [[1,6],[1,7],[1,4],[-1,5],[-1,2],[1,3],[-1,0],[-1,1]],
+  /* left 7: */ [[1,7],[-1,6],[1,5],[1,4],[-1,3],[-1,2],[1,1],[-1,0]]
+ ] $
+
+print("mult_table defined as list of [sign, k] pairs.")$
+
+/* Now, function to multiply two coeff lists [c0..c7] symbolic -> product coeff list [8] */
+oct_mult(cA, cB) := block(
+  [res : makelist(0, i, 1, 8)],
+  for ia:0 thru 7 do
+    for ib:0 thru 7 do (
+      [sgn, k] : mult_table[ia+1][ib+1],
+      res[k+1] : res[k+1] + sgn * cA[ia+1] * cB[ib+1]
+    ),
+  res
+)$
+
+print("oct_mult defined.")$
+
+/* Test with basis: e1 * e2 should be e3 : cA=[0,1,0..], cB=[0,0,1,0..] -> [0,0,0,1,0..] */
+test1 : oct_mult( [0,1,0,0,0,0,0,0], [0,0,1,0,0,0,0,0] )$
+print("e1 * e2 = ", test1 )$   /* should [0,0,0,1,0,0,0,0] */
+
+/* e1*e1 = -1 : [ -1, 0,0..] */
+test2 : oct_mult( [0,1,0,0,0,0,0,0], [0,1,0,0,0,0,0,0] )$
+print("e1*e1 = ", test2)$
+
+/* Now general symbolic */
+m : [m0, m1, m2, m3, m4, m5, m6, m7]$
+mbar : [m0, -m1, -m2, -m3, -m4, -m5, -m6, -m7]$
+norm_coeffs : oct_mult(m, mbar)$
+print("norm scalar part (should be m0^2 + m1^2 + ... + m7^2 ): ", norm_coeffs[1] )$
+print("imag part e1 of norm (should be 0): ", norm_coeffs[2] )$
+
+/* Check a cross term, e.g. 2 m0 m1 for e1? but should cancel in scalar of M Mbar? No, scalar of M Mbar is always sum sq. */
+print("Full norm_coeffs: ", norm_coeffs)$
+
+print("=== Test complete ===")$

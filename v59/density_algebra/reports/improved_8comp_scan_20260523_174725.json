@@ -1,0 +1,286 @@
+{
+  "timestamp": "2026-05-23T17:47:25.408993",
+  "description": "Improved scan with explicit 8-component algebraic masks (protection as projector on octonion imaginaries) and direct \u03c1_M measurement.",
+  "results": [
+    {
+      "lambda_nl": 0.0,
+      "protection": "unprotected_full",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.0,
+      "peak_density": 0.0,
+      "cross_term_pct": 0.0,
+      "comm_err": 0.0
+    },
+    {
+      "lambda_nl": 0.0,
+      "protection": "protected_L",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "num_active": 4,
+      "avg_density": 0.0,
+      "peak_density": 0.0,
+      "cross_term_pct": 0.0,
+      "comm_err": 0.0
+    },
+    {
+      "lambda_nl": 0.0,
+      "protection": "protected_F",
+      "active_components": [
+        "s",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 5,
+      "avg_density": 0.0,
+      "peak_density": 0.0,
+      "cross_term_pct": 0.0,
+      "comm_err": 0.0
+    },
+    {
+      "lambda_nl": 0.0,
+      "protection": "protected_LF",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.0,
+      "peak_density": 0.0,
+      "cross_term_pct": 0.0,
+      "comm_err": 0.0
+    },
+    {
+      "lambda_nl": 0.003,
+      "protection": "unprotected_full",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.0,
+      "peak_density": 0.0,
+      "cross_term_pct": 0.036000000000000004,
+      "comm_err": 0.024
+    },
+    {
+      "lambda_nl": 0.003,
+      "protection": "protected_L",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "num_active": 4,
+      "avg_density": 0.0,
+      "peak_density": 0.0,
+      "cross_term_pct": 0.018000000000000002,
+      "comm_err": 0.0144
+    },
+    {
+      "lambda_nl": 0.003,
+      "protection": "protected_F",
+      "active_components": [
+        "s",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 5,
+      "avg_density": 0.0,
+      "peak_density": 0.0,
+      "cross_term_pct": 0.022500000000000003,
+      "comm_err": 0.0144
+    },
+    {
+      "lambda_nl": 0.003,
+      "protection": "protected_LF",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.0,
+      "peak_density": 0.0,
+      "cross_term_pct": 0.036000000000000004,
+      "comm_err": 0.024
+    },
+    {
+      "lambda_nl": 0.005,
+      "protection": "unprotected_full",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.0,
+      "peak_density": 0.0,
+      "cross_term_pct": 0.06,
+      "comm_err": 0.04
+    },
+    {
+      "lambda_nl": 0.005,
+      "protection": "protected_L",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "num_active": 4,
+      "avg_density": 0.0,
+      "peak_density": 0.0,
+      "cross_term_pct": 0.03,
+      "comm_err": 0.024
+    },
+    {
+      "lambda_nl": 0.005,
+      "protection": "protected_F",
+      "active_components": [
+        "s",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 5,
+      "avg_density": 0.0,
+      "peak_density": 0.0,
+      "cross_term_pct": 0.0375,
+      "comm_err": 0.024
+    },
+    {
+      "lambda_nl": 0.005,
+      "protection": "protected_LF",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.0,
+      "peak_density": 0.0,
+      "cross_term_pct": 0.06,
+      "comm_err": 0.04
+    },
+    {
+      "lambda_nl": 0.008,
+      "protection": "unprotected_full",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.0,
+      "peak_density": 0.0,
+      "cross_term_pct": 0.096,
+      "comm_err": 0.064
+    },
+    {
+      "lambda_nl": 0.008,
+      "protection": "protected_L",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "num_active": 4,
+      "avg_density": 0.0,
+      "peak_density": 0.0,
+      "cross_term_pct": 0.048,
+      "comm_err": 0.0384
+    },
+    {
+      "lambda_nl": 0.008,
+      "protection": "protected_F",
+      "active_components": [
+        "s",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 5,
+      "avg_density": 0.0,
+      "peak_density": 0.0,
+      "cross_term_pct": 0.06,
+      "comm_err": 0.0384
+    },
+    {
+      "lambda_nl": 0.008,
+      "protection": "protected_LF",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.0,
+      "peak_density": 0.0,
+      "cross_term_pct": 0.096,
+      "comm_err": 0.064
+    }
+  ],
+  "links": {
+    "hypotheses": "../HYPOTHESES.md",
+    "maxima": "../maxima/full_octonion_perturbation.mac"
+  }
+}

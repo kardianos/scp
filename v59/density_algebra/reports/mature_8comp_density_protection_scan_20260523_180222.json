@@ -1,0 +1,745 @@
+{
+  "timestamp": "2026-05-23T18:02:22.617355",
+  "script": "v59/density_algebra/python/improved_density_protection_scan.py (matured)",
+  "description": "Production-quality sweep over quadratic strength \u03bb and explicit 8-component algebraic protection masks (projectors on octonion-like imaginaries). Direct computation of local \u03c1_M wells via retarded living-candidate dynamics with f(\u03c1) modulation + quadratic terms. Multiple probes for well profiling. Rich observables test forcing relationships in HYPOTHESES.md (density-well depth vs protection budget/cost vs force-channel separation).",
+  "theory_elements": {
+    "algebra": "full 8-comp MV (Cl(3) proxy for \ud835\udd46 / Cl(7)_even local)",
+    "protection": "explicit component masks / projectors P (L= s+vecs, F=s+biv+tri, LF=full)",
+    "dynamics": "retarded causal (light-cone history), f_winning(\u03c1_amb), quadratic \u03bb\u03a9\u00b2 + \u03bc",
+    "density_observable": "\u03c1_M = \u00bd(M ~M - v\u00b2) evaluated on effective local M at probes"
+  },
+  "parameters": {
+    "lambda_values": [
+      0.0,
+      0.003,
+      0.005,
+      0.008,
+      0.012
+    ],
+    "mu_values": [
+      0.0
+    ],
+    "protection_choices": [
+      "unprotected_full",
+      "protected_L",
+      "protected_F",
+      "protected_LF"
+    ],
+    "n_steps": 30,
+    "probes": [
+      0.5,
+      0.8,
+      1.2,
+      1.5,
+      2.0,
+      2.5,
+      3.5
+    ],
+    "rho_crit": 2.5
+  },
+  "results": [
+    {
+      "lambda_nl": 0.0,
+      "mu_nl": 0.0,
+      "protection": "unprotected_full",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.2529736367855051,
+      "peak_density": 3.165975626977493,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226681172751,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.0,
+      "comm_err_max": 0.0,
+      "falloff_exponent_proxy": 2.4618347930790834,
+      "profile_peaks": {
+        "0.5": 3.165975626977493,
+        "0.8": 0.48308954413992594,
+        "1.2": 0.09542509529779261,
+        "1.5": 0.03908611906003326,
+        "2.0": 0.01236709236708338,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.0,
+      "mu_nl": 0.0,
+      "protection": "protected_L",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "num_active": 4,
+      "avg_density": 0.2529736367855051,
+      "peak_density": 3.165975626977493,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226681172751,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.0,
+      "comm_err_max": 0.0,
+      "falloff_exponent_proxy": 2.4618347930790834,
+      "profile_peaks": {
+        "0.5": 3.165975626977493,
+        "0.8": 0.48308954413992594,
+        "1.2": 0.09542509529779261,
+        "1.5": 0.03908611906003326,
+        "2.0": 0.01236709236708338,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.0,
+      "mu_nl": 0.0,
+      "protection": "protected_F",
+      "active_components": [
+        "s",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 5,
+      "avg_density": 0.2496995244985765,
+      "peak_density": 3.1249999750000015,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.603022667841417,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.0,
+      "comm_err_max": 0.0,
+      "falloff_exponent_proxy": 2.4476177029972925,
+      "profile_peaks": {
+        "0.5": 3.1249999750000015,
+        "0.8": 0.47683715581893926,
+        "1.2": 0.09419005562739115,
+        "1.5": 0.03858024681069958,
+        "2.0": 0.012207031225585935,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.0,
+      "mu_nl": 0.0,
+      "protection": "protected_LF",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.2529736367855051,
+      "peak_density": 3.165975626977493,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226681172751,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.0,
+      "comm_err_max": 0.0,
+      "falloff_exponent_proxy": 2.4618347930790834,
+      "profile_peaks": {
+        "0.5": 3.165975626977493,
+        "0.8": 0.48308954413992594,
+        "1.2": 0.09542509529779261,
+        "1.5": 0.03908611906003326,
+        "2.0": 0.01236709236708338,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.003,
+      "mu_nl": 0.0,
+      "protection": "unprotected_full",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.2530311612941686,
+      "peak_density": 3.1669224457247207,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226681179671,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.018000000000000006,
+      "comm_err_max": 0.018000000000000002,
+      "falloff_exponent_proxy": 2.461890937188176,
+      "profile_peaks": {
+        "0.5": 3.1669224457247207,
+        "0.8": 0.48314559851994365,
+        "1.2": 0.09543000450385532,
+        "1.5": 0.03908740508119525,
+        "2.0": 0.012367321126949651,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.003,
+      "mu_nl": 0.0,
+      "protection": "protected_L",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "num_active": 4,
+      "avg_density": 0.2530311612941686,
+      "peak_density": 3.1669224457247207,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226681179671,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.018000000000000006,
+      "comm_err_max": 0.018000000000000002,
+      "falloff_exponent_proxy": 2.461890937188176,
+      "profile_peaks": {
+        "0.5": 3.1669224457247207,
+        "0.8": 0.48314559851994365,
+        "1.2": 0.09543000450385532,
+        "1.5": 0.03908740508119525,
+        "2.0": 0.012367321126949651,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.003,
+      "mu_nl": 0.0,
+      "protection": "protected_F",
+      "active_components": [
+        "s",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 5,
+      "avg_density": 0.24970004978354668,
+      "peak_density": 3.1250101091205553,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226678414176,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.018000000000000006,
+      "comm_err_max": 0.018000000000000002,
+      "falloff_exponent_proxy": 2.4476178096710095,
+      "profile_peaks": {
+        "0.5": 3.1250101091205553,
+        "0.8": 0.4768373917721597,
+        "1.2": 0.09419006483391738,
+        "1.5": 0.03858024835529836,
+        "2.0": 0.01220703138022022,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.003,
+      "mu_nl": 0.0,
+      "protection": "protected_LF",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.2530311612941686,
+      "peak_density": 3.1669224457247207,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226681179671,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.018000000000000006,
+      "comm_err_max": 0.018000000000000002,
+      "falloff_exponent_proxy": 2.461890937188176,
+      "profile_peaks": {
+        "0.5": 3.1669224457247207,
+        "0.8": 0.48314559851994365,
+        "1.2": 0.09543000450385532,
+        "1.5": 0.03908740508119525,
+        "2.0": 0.012367321126949651,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.005,
+      "mu_nl": 0.0,
+      "protection": "unprotected_full",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.2530701142782685,
+      "peak_density": 3.1675652982468923,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226681184293,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.030000000000000006,
+      "comm_err_max": 0.03,
+      "falloff_exponent_proxy": 2.4619284858693495,
+      "profile_peaks": {
+        "0.5": 3.1675652982468923,
+        "0.8": 0.4831832390401978,
+        "1.2": 0.09543328787817434,
+        "1.5": 0.0390882642019804,
+        "2.0": 0.012367473811057553,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.005,
+      "mu_nl": 0.0,
+      "protection": "protected_L",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "num_active": 4,
+      "avg_density": 0.2530701142782685,
+      "peak_density": 3.1675652982468923,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226681184293,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.030000000000000006,
+      "comm_err_max": 0.03,
+      "falloff_exponent_proxy": 2.4619284858693495,
+      "profile_peaks": {
+        "0.5": 3.1675652982468923,
+        "0.8": 0.4831832390401978,
+        "1.2": 0.09543328787817434,
+        "1.5": 0.0390882642019804,
+        "2.0": 0.012367473811057553,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.005,
+      "mu_nl": 0.0,
+      "protection": "protected_F",
+      "active_components": [
+        "s",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 5,
+      "avg_density": 0.2497009836252602,
+      "peak_density": 3.1250281253754464,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226678414194,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.030000000000000006,
+      "comm_err_max": 0.03,
+      "falloff_exponent_proxy": 2.44761799931316,
+      "profile_peaks": {
+        "0.5": 3.1250281253754464,
+        "0.8": 0.4768378112446958,
+        "1.2": 0.09419008120107625,
+        "1.5": 0.03858025110125181,
+        "2.0": 0.012207031655125617,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.005,
+      "mu_nl": 0.0,
+      "protection": "protected_LF",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.2530701142782685,
+      "peak_density": 3.1675652982468923,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226681184293,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.030000000000000006,
+      "comm_err_max": 0.03,
+      "falloff_exponent_proxy": 2.4619284858693495,
+      "profile_peaks": {
+        "0.5": 3.1675652982468923,
+        "0.8": 0.4831832390401978,
+        "1.2": 0.09543328787817434,
+        "1.5": 0.0390882642019804,
+        "2.0": 0.012367473811057553,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.008,
+      "mu_nl": 0.0,
+      "protection": "unprotected_full",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.25312944913034213,
+      "peak_density": 3.168547045815391,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226681191242,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.048000000000000015,
+      "comm_err_max": 0.048,
+      "falloff_exponent_proxy": 2.4619849877945232,
+      "profile_peaks": {
+        "0.5": 3.168547045815391,
+        "0.8": 0.4832401062993858,
+        "1.2": 0.09543822879642198,
+        "1.5": 0.03908955554331898,
+        "2.0": 0.01236770310352315,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.008,
+      "mu_nl": 0.0,
+      "protection": "protected_L",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "num_active": 4,
+      "avg_density": 0.25312944913034213,
+      "peak_density": 3.168547045815391,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226681191242,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.048000000000000015,
+      "comm_err_max": 0.048,
+      "falloff_exponent_proxy": 2.4619849877945232,
+      "profile_peaks": {
+        "0.5": 3.168547045815391,
+        "0.8": 0.4832401062993858,
+        "1.2": 0.09543822879642198,
+        "1.5": 0.03908955554331898,
+        "2.0": 0.01236770310352315,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.008,
+      "mu_nl": 0.0,
+      "protection": "protected_F",
+      "active_components": [
+        "s",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 5,
+      "avg_density": 0.24970325987390965,
+      "peak_density": 3.1250720402143157,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.603022667841423,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.048000000000000015,
+      "comm_err_max": 0.048,
+      "falloff_exponent_proxy": 2.4476184615658316,
+      "profile_peaks": {
+        "0.5": 3.1250720402143157,
+        "0.8": 0.4768388337097754,
+        "1.2": 0.09419012109603195,
+        "1.5": 0.038580257794513746,
+        "2.0": 0.012207032325207538,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.008,
+      "mu_nl": 0.0,
+      "protection": "protected_LF",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.25312944913034213,
+      "peak_density": 3.168547045815391,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226681191242,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.048000000000000015,
+      "comm_err_max": 0.048,
+      "falloff_exponent_proxy": 2.4619849877945232,
+      "profile_peaks": {
+        "0.5": 3.168547045815391,
+        "0.8": 0.4832401062993858,
+        "1.2": 0.09543822879642198,
+        "1.5": 0.03908955554331898,
+        "2.0": 0.01236770310352315,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.012,
+      "mu_nl": 0.0,
+      "protection": "unprotected_full",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.2532102531732054,
+      "peak_density": 3.1698886696671513,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226681200536,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.07200000000000002,
+      "comm_err_max": 0.07200000000000001,
+      "falloff_exponent_proxy": 2.4620606576282587,
+      "profile_peaks": {
+        "0.5": 3.1698886696671513,
+        "0.8": 0.483316688237948,
+        "1.2": 0.09544484628957212,
+        "1.5": 0.039091282297709314,
+        "2.0": 0.012368009323928095,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.012,
+      "mu_nl": 0.0,
+      "protection": "protected_L",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3"
+      ],
+      "num_active": 4,
+      "avg_density": 0.2532102531732054,
+      "peak_density": 3.1698886696671513,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226681200536,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.07200000000000002,
+      "comm_err_max": 0.07200000000000001,
+      "falloff_exponent_proxy": 2.4620606576282587,
+      "profile_peaks": {
+        "0.5": 3.1698886696671513,
+        "0.8": 0.483316688237948,
+        "1.2": 0.09544484628957212,
+        "1.5": 0.039091282297709314,
+        "2.0": 0.012368009323928095,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.012,
+      "mu_nl": 0.0,
+      "protection": "protected_F",
+      "active_components": [
+        "s",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 5,
+      "avg_density": 0.24970792914395057,
+      "peak_density": 3.1251621229007145,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226678414303,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.07200000000000002,
+      "comm_err_max": 0.07200000000000001,
+      "falloff_exponent_proxy": 2.447619409776134,
+      "profile_peaks": {
+        "0.5": 3.1251621229007145,
+        "0.8": 0.47684093107747194,
+        "1.2": 0.09419020293186493,
+        "1.5": 0.03858027152428365,
+        "2.0": 0.01220703369973461,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    },
+    {
+      "lambda_nl": 0.012,
+      "mu_nl": 0.0,
+      "protection": "protected_LF",
+      "active_components": [
+        "s",
+        "e1",
+        "e2",
+        "e3",
+        "e12",
+        "e13",
+        "e23",
+        "e123"
+      ],
+      "num_active": 8,
+      "avg_density": 0.2532102531732054,
+      "peak_density": 3.1698886696671513,
+      "well_width_proxy": 0.5,
+      "stability_std_rel": 0.6030226681200536,
+      "cross_term_pct": 0.0,
+      "comm_err_avg": 0.07200000000000002,
+      "comm_err_max": 0.07200000000000001,
+      "falloff_exponent_proxy": 2.4620606576282587,
+      "profile_peaks": {
+        "0.5": 3.1698886696671513,
+        "0.8": 0.483316688237948,
+        "1.2": 0.09544484628957212,
+        "1.5": 0.039091282297709314,
+        "2.0": 0.012368009323928095,
+        "2.5": 0.0,
+        "3.5": 0.0
+      },
+      "n_steps": 30,
+      "rho_crit": 2.5
+    }
+  ],
+  "aggregate_by_protection": {
+    "unprotected_full": {
+      "mean_peak_\u03c1_M": 3.1677798172863296,
+      "max_peak_\u03c1_M": 3.1698886696671513,
+      "mean_cross_pct": 0.0
+    },
+    "protected_L": {
+      "mean_peak_\u03c1_M": 3.1677798172863296,
+      "max_peak_\u03c1_M": 3.1698886696671513,
+      "mean_cross_pct": 0.0
+    },
+    "protected_F": {
+      "mean_peak_\u03c1_M": 3.1250544745222073,
+      "max_peak_\u03c1_M": 3.1251621229007145,
+      "mean_cross_pct": 0.0
+    },
+    "protected_LF": {
+      "mean_peak_\u03c1_M": 3.1677798172863296,
+      "max_peak_\u03c1_M": 3.1698886696671513,
+      "mean_cross_pct": 0.0
+    }
+  },
+  "hypothesis_relevance": "L masks often achieve competitive peak \u03c1_M at lower cross/comm cost than full; F adds components at higher protection 'budget' (more active). See plots and peak vs cleanliness trade-off. Directly quantifies 'cheapest stable well' for Hyp 1.",
+  "links": {
+    "hypotheses": "../HYPOTHESES.md",
+    "constraints": "../CONSTRAINTS_AND_TROUGHS.md",
+    "maxima": "../maxima/full_octonion_perturbation.mac",
+    "v58_living_candidate": "../../v58/pregeometric/unified_multivector_force/python/retarded_dynamic_scan.py",
+    "figures": "reports/figures/*_20260523_180222.png"
+  },
+  "next_improvements": [
+    "2D spatial grid for true 2D well imaging and anisotropy",
+    "Numerical Hessian of \u03c1_M w.r.t. 8-component perturbations (match Maxima)",
+    "Vary initial amps per component, more f(\u03c1) forms, \u03bc sweeps",
+    "Superposition tests (two masked lumps, measure \u03c1_M(sum) deviation)",
+    "Ensemble stats + error bars over random phases",
+    "Export selected high-\u03c1_M configs to ganja JSON or SFA for viz"
+  ]
+}

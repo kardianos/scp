@@ -1,0 +1,225 @@
+/*
+  Full 8-Dimensional Octonion Perturbation Analysis
+  for the Living Candidate + Density Wells + Protection
+
+  Location: v59/density_algebra/maxima/
+
+  This scales the previous low-dimensional (essentially complex/quaternionic
+  Brannen kernel) analysis up to the full octonion (8 real dimensions)
+  corresponding to the Furey / Cl(7)_even color algebra used in v59.
+
+  Goal:
+  - Work in the full 8D octonion algebra (or the even subalgebra of Cl(7)).
+  - Substitute a generalized "Brannen-like" ansatz living in the full 𝕆.
+  - Perform linearization and second variation of the density functional
+    ρ_M = ½(M M̃ − v²) (or the full living-candidate effective potential)
+    around high-density protected configurations.
+  - Treat "protection" as a projector onto a subspace of the 7 imaginary
+    directions (corresponding to the L vs F vs L+F choices, or restricted
+    bivector support in the multivector formulation).
+  - Derive the conditions under which stable density wells exist only for
+    specific discrete choices of which imaginaries are "activated".
+
+  This provides the analytic "forcing" expressions that the numerical
+  Python scans (varying algebraic content / protection masks on the 8
+  components) are meant to measure.
+
+  Octonion multiplication is non-associative, so we must be careful with
+  parentheses. We use a standard basis {1, e1, ..., e7} with the Fano-plane
+  multiplication table.
+*/
+
+/* ------------------------------------------------------------------
+   1. Octonion basis and multiplication table (standard Fano)
+   ------------------------------------------------------------------ */
+
+display2d : false$
+print("=== Full 8D Octonion Perturbation Analysis for Density Wells ===")$
+
+/* Basis: 1 (scalar), e[1]..e[7] (imaginary octonions) */
+basis : [1, e1, e2, e3, e4, e5, e6, e7]$
+
+/* Octonion multiplication table (one standard realization)
+   We encode it as a function oprod(a,b) that returns the product.
+   For symbolic work we use rules + a lookup table.
+*/
+
+oct_prod : matrix(
+  /*  1  e1  e2  e3  e4  e5  e6  e7 */
+  [ 1, e1, e2, e3, e4, e5, e6, e7 ],   /* 1 * */
+  [e1, -1, e3,-e2, e5,-e4,-e7, e6 ],   /* e1 *  (FIXED 2026-05-24: e1*e6,e1*e7 sign errors — broke anticommutativity/alternativity) */
+  [e2,-e3, -1, e1, e6, e7,-e4,-e5 ],   /* e2 * */
+  [e3, e2,-e1, -1, e7,-e6, e5,-e4 ],   /* e3 * */
+  [e4,-e5,-e6,-e7, -1, e1, e2, e3 ],   /* e4 * */
+  [e5, e4,-e7, e6,-e1, -1,-e3, e2 ],   /* e5 * */
+  [e6, e7, e4,-e5,-e2, e3, -1,-e1 ],   /* e6 * */
+  [e7,-e6, e5, e4,-e3,-e2, e1, -1 ]    /* e7 * */
+)$
+
+/* Map index 0=1, 1=e1, ..., 7=e7 */
+idx(e) := if e=1 then 1 else e+1$
+
+oprod(a,b) := block(
+  [ia:idx(a), ib:idx(b)],
+  oct_prod[ia, ib]
+)$
+
+print("Octonion basis and multiplication table loaded (Fano plane).")$
+
+/* ------------------------------------------------------------------
+   2. General 8-component octonion element
+   ------------------------------------------------------------------ */
+
+M : m0*1 + m1*e1 + m2*e2 + m3*e3 + m4*e4 + m5*e5 + m6*e6 + m7*e7$
+print("General octonion M = ", M)$
+
+/* Conjugate (reverse sign on imaginaries) */
+Mbar : m0*1 - m1*e1 - m2*e2 - m3*e3 - m4*e4 - m5*e5 - m6*e6 - m7*e7$
+
+/* ------------------------------------------------------------------
+   3. Density ρ_M = ½ (M * Mbar - v²)
+   ------------------------------------------------------------------ */
+
+/* NOTE (2026-05-23): original oprod does not distribute; see octonion_sensitivity_analysis.mac
+   for full working coeff-vector implementation using the same table.
+   For this starter we use the known result that scalar norm part = sum m_i^2 under the conj. */
+rho_M_expr : (1/2) * (m0^2 + m1^2 + m2^2 + m3^2 + m4^2 + m5^2 + m6^2 + m7^2 - v^2)$
+print("ρ_M (symbolic, norm form) = ", rho_M_expr)$
+print("See new octonion_sensitivity_analysis.mac for full perturbation/Hessian with protection + λ/μ.")$
+
+/* For the living candidate we also have the quadratic self-interaction
+   and the ambient modulation f(ρ_amb) acting on currents.
+   For perturbation analysis we focus first on the quadratic form of ρ_M
+   around a background configuration.
+*/
+
+/* ------------------------------------------------------------------
+   4. Protection as a projector on the imaginary directions
+   ------------------------------------------------------------------ */
+
+/*
+In the v59 picture, different sectors "activate" different subsets of the
+octonion imaginaries (L = certain grades, F = the 4-form piece, etc.).
+
+We model protection as a linear projector P that zeros out some of the
+m1..m7 coefficients. The protected M_p = P(M) is what is allowed to
+participate in the high-density lump.
+
+Examples:
+  P_L : projects onto a 3- or 4-dimensional subalgebra (lepton protection)
+  P_F : projects onto the complementary 4 directions
+  P_full : identity (no protection, or full octonion)
+*/
+
+print("")$
+print("Protection is implemented as a projector P onto a subset of the 7")$
+print("imaginary octonion directions. Different sectors correspond to")$
+print("different choices of P (L, F, L+F).")$
+
+/* Example projectors (symbolic for now) */
+P_L(M) := m0*1 + m1*e1 + m2*e2 + m3*e3$          /* toy lepton-like */
+P_F(M) := m0*1 + m4*e4 + m5*e5 + m6*e6 + m7*e7$  /* toy F content */
+P_full(M) := M$
+
+/* Protected density */
+rho_protected(P, M) := (1/2) * (oprod(P(M), P(Mbar)) - v^2)$
+
+/* ------------------------------------------------------------------
+   5. Perturbation expansion in full 8D
+   ------------------------------------------------------------------ */
+
+/*
+Let M0 be a background high-density configuration (e.g. a Brannen-like
+ansatz living in a protected subalgebra).
+
+We perturb: M = M0 + ε δM, where δM = δm0 + δm1 e1 + ... + δm7 e7
+is a general small octonion variation (all 8 components allowed in the
+perturbation, even if the background is protected).
+
+We expand ρ_M to second order in ε and look at the quadratic form
+in the δmi.
+
+The eigenvalues of that quadratic form tell us which perturbation
+directions are stable (positive) or unstable (negative), and how
+protection changes the spectrum.
+*/
+
+print("")$
+print("We now expand around a background M0 living in a protected subalgebra.")$
+print("M = M0 + ε δM ,  expand ρ_M to O(ε²).")$
+
+/* For concreteness, take M0 in the "L" subalgebra (first few imaginaries) */
+M0 : a*1 + b*e1 + c*e2 + d*e3$     /* background in protected L directions */
+
+deltaM : dm0 + dm1*e1 + dm2*e2 + dm3*e3 + dm4*e4 + dm5*e5 + dm6*e6 + dm7*e7$
+
+M_pert : M0 + eps * deltaM$
+
+/* Compute ρ_M up to second order (we keep terms up to eps^2) */
+rho_pert : rho_protected(P_L, M_pert)$
+rho_series : taylor(rho_pert, eps, 0, 2)$
+
+print("")$
+print("Second-order expansion of protected density:")$
+print(rho_series)$
+
+/* The coefficient of eps^2 is the quadratic form whose signature
+   determines the stability of the density well.
+
+   Protection (restricting which mi are non-zero in M0) changes which
+   cross terms appear in this quadratic form.
+*/
+
+/* ------------------------------------------------------------------
+   6. What changes with full octonion vs reduced (Brannen) analysis
+   ------------------------------------------------------------------ */
+
+print("")$
+print("=== Key differences from previous (low-dimensional) analysis ===")$
+print("")$
+print("- Non-associativity of 𝕆 must be respected in all products.")$
+print("- The 7 imaginary directions are not all equivalent; the Fano plane")$
+print("  structure means some triples associate and others do not.")$
+print("- Protection can now be a projector onto any subset of the 7")$
+print("  imaginaries (not just a simple complex/quaternionic subalgebra).")$
+print("- The second variation will generally be a 8×8 (or 7×7) matrix")$
+print("  whose eigenvalues depend on which directions are protected.")$
+print("- The discrete jumps (28, 35, 63, 21, ...) should appear as the")$
+print("  only dimensions for which the quadratic form has the right number")$
+print("  of positive eigenvalues while still allowing a deep density well.")$
+
+/* ------------------------------------------------------------------
+   7. Next concrete steps (to be filled in this file)
+   ------------------------------------------------------------------ */
+
+print("")$
+print("=== Immediate follow-up tasks ===")$
+print("1. Implement a full symbolic octonion multiplication function that")$
+print("   respects the Fano table and non-associativity.")$
+print("2. Substitute a concrete 8D generalization of the Brannen ansatz")$
+print("   (M living in a chosen 3- or 4-dimensional subalgebra of 𝕆).")
+print("3. Compute the Hessian matrix of ρ_M with respect to the 8 (or 7)")$
+print("   perturbation coefficients δmi, for different protection projectors.")
+print("4. Find the eigenvalues as a function of the protection choice and")$
+print("   of the living-candidate parameters λ, μ, f(ρ).")
+print("5. Compare the resulting 'cost of protection vs depth of well'")$
+print("   curves with the numerical results from the Python scans.")$
+
+print("")$
+print("This 8D version directly supports testing whether the observed")$
+print("sector dimensions (28, 35, 63) are the only ones for which the")$
+print("second variation admits a stable, protected density well while")$
+print("preserving force-channel separation.")$
+
+/* End of starter. 
+
+Heavy development moved to octonion_sensitivity_analysis.mac (2026-05-23):
+- Full working oct_mult on coeff vectors
+- Protection masks + taylor to O(ε³)
+- Living-candidate λ/μ in effective_V
+- Explicit Hessians + eigenvalues for L/F masks
+- Mixed ∂/∂p sensitivities
+- Concrete expressions linking to density well stability, |ξ| selection, 21 factors, L/F stacking.
+
+Run the new file for results that directly quantify the forcing in HYPOTHESES.md.
+Original oprod left for reference; new code supersedes for production analysis. */

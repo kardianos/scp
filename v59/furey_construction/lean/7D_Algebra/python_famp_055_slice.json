@@ -1,0 +1,9 @@
+{
+  "source": "f_amplitude_sweep (documented behavior from sweep_f_amplitude.py)",
+  "fAmp": 0.55,
+  "description": "Mixed L+F source at fAmp=0.55: protected_L develops significant cross-term penalty (~13.3%), loses effective peak density/stability; protected_LF stacking keeps cross low and preserves deep well.",
+  "L_cross_observed": 13.333,
+  "LF_cross_observed": 0.0,
+  "L_degradation_min_pct": 0.12,
+  "LF_degradation_max_pct": 0.04
+}

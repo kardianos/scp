@@ -62,3 +62,6 @@ key.txt
 sfa/runner/scp-runner
 sfa/runner/runner
 bin/
+
+# Local tool / CLI caches (e.g. antigravitycli state)
+.antigravitycli/

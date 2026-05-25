@@ -1,0 +1,161 @@
+{
+  "timestamp": "2026-05-23T17:42:04.119657",
+  "description": "Targeted sweep of quadratic strength (lambda) and protected-chirality (bivector support restriction) measuring density proxy vs force-channel cleanliness. First quantitative data point for v59/density_algebra hypotheses.",
+  "parameters": {
+    "lambda_values": [
+      0.0,
+      0.003,
+      0.005,
+      0.008
+    ],
+    "protection_levels": [
+      "unprotected",
+      "protected_biv"
+    ],
+    "n_steps": 35,
+    "dt": 0.06
+  },
+  "results": [
+    {
+      "lambda_nl": 0.0,
+      "protection": "unprotected",
+      "protected_biv": false,
+      "density_proxy": 0.0,
+      "cross_term_pct": 0.0,
+      "comm_err": 0.0,
+      "raw_stats": {
+        "avg_force_neutral": 0.0,
+        "cross_term_pct": 0.0,
+        "exponent_near_far": 1.88,
+        "comm_error_avg": 0.0,
+        "comm_error_max": 0.0,
+        "retardation_penalty": 0.12,
+        "n_steps": 35.0
+      }
+    },
+    {
+      "lambda_nl": 0.0,
+      "protection": "protected_biv",
+      "protected_biv": true,
+      "density_proxy": 0.0,
+      "cross_term_pct": 0.0,
+      "comm_err": 0.0,
+      "raw_stats": {
+        "avg_force_neutral": 0.0,
+        "cross_term_pct": 0.0,
+        "exponent_near_far": 1.88,
+        "comm_error_avg": 0.0,
+        "comm_error_max": 0.0,
+        "retardation_penalty": 0.12,
+        "n_steps": 35.0
+      }
+    },
+    {
+      "lambda_nl": 0.003,
+      "protection": "unprotected",
+      "protected_biv": false,
+      "density_proxy": 0.0,
+      "cross_term_pct": 0.0,
+      "comm_err": 0.0,
+      "raw_stats": {
+        "avg_force_neutral": 0.0,
+        "cross_term_pct": 0.0,
+        "exponent_near_far": 1.88,
+        "comm_error_avg": 0.024000000000000004,
+        "comm_error_max": 0.024,
+        "retardation_penalty": 0.12,
+        "n_steps": 35.0
+      }
+    },
+    {
+      "lambda_nl": 0.003,
+      "protection": "protected_biv",
+      "protected_biv": true,
+      "density_proxy": 0.0,
+      "cross_term_pct": 0.0,
+      "comm_err": 0.0,
+      "raw_stats": {
+        "avg_force_neutral": 0.0,
+        "cross_term_pct": 0.0,
+        "exponent_near_far": 1.88,
+        "comm_error_avg": 0.024000000000000004,
+        "comm_error_max": 0.024,
+        "retardation_penalty": 0.12,
+        "n_steps": 35.0
+      }
+    },
+    {
+      "lambda_nl": 0.005,
+      "protection": "unprotected",
+      "protected_biv": false,
+      "density_proxy": 0.0,
+      "cross_term_pct": 0.0,
+      "comm_err": 0.0,
+      "raw_stats": {
+        "avg_force_neutral": 0.0,
+        "cross_term_pct": 0.0,
+        "exponent_near_far": 1.88,
+        "comm_error_avg": 0.04,
+        "comm_error_max": 0.04,
+        "retardation_penalty": 0.12,
+        "n_steps": 35.0
+      }
+    },
+    {
+      "lambda_nl": 0.005,
+      "protection": "protected_biv",
+      "protected_biv": true,
+      "density_proxy": 0.0,
+      "cross_term_pct": 0.0,
+      "comm_err": 0.0,
+      "raw_stats": {
+        "avg_force_neutral": 0.0,
+        "cross_term_pct": 0.0,
+        "exponent_near_far": 1.88,
+        "comm_error_avg": 0.04,
+        "comm_error_max": 0.04,
+        "retardation_penalty": 0.12,
+        "n_steps": 35.0
+      }
+    },
+    {
+      "lambda_nl": 0.008,
+      "protection": "unprotected",
+      "protected_biv": false,
+      "density_proxy": 0.0,
+      "cross_term_pct": 0.0,
+      "comm_err": 0.0,
+      "raw_stats": {
+        "avg_force_neutral": 0.0,
+        "cross_term_pct": 0.0,
+        "exponent_near_far": 1.88,
+        "comm_error_avg": 0.064,
+        "comm_error_max": 0.064,
+        "retardation_penalty": 0.12,
+        "n_steps": 35.0
+      }
+    },
+    {
+      "lambda_nl": 0.008,
+      "protection": "protected_biv",
+      "protected_biv": true,
+      "density_proxy": 0.0,
+      "cross_term_pct": 0.0,
+      "comm_err": 0.0,
+      "raw_stats": {
+        "avg_force_neutral": 0.0,
+        "cross_term_pct": 0.0,
+        "exponent_near_far": 1.88,
+        "comm_error_avg": 0.064,
+        "comm_error_max": 0.064,
+        "retardation_penalty": 0.12,
+        "n_steps": 35.0
+      }
+    }
+  ],
+  "links": {
+    "hypotheses": "../HYPOTHESES.md",
+    "constraints": "../CONSTRAINTS_AND_TROUGHS.md",
+    "source_script": "v58/pregeometric/unified_multivector_force/python/retarded_dynamic_scan.py"
+  }
+}

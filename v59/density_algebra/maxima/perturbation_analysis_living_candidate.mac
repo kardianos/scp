@@ -1,0 +1,173 @@
+/*
+  Perturbation Analysis of the Living Candidate Equation
+  (for v59/density_algebra forcing relationships)
+
+  Goal:
+  - Take the v58 living candidate (unified multivector equation with quadratic terms
+    and ambient density modulation f(ρ)).
+  - Substitute the v59 Brannen kernel (or protected variants of it).
+  - Perform linearization + second variation (Hessian) with respect to small
+    perturbations δM around a high-density protected lump.
+  - Compare "protected" (restricted grades / bivector support) vs "unprotected"
+    cases.
+  - Extract conditions under which a stable density well (negative eigenvalue in
+    the second variation only for specific discrete algebraic choices) appears.
+
+  This is intended to give analytic expressions for the "cost of protection"
+  vs "depth of density well" that can be compared against the numerical
+  experiments in python/targeted_density_protection_scan.py.
+
+  Builds directly on v59/synthesis/v58_v59_synthesis.mac.
+
+  Run with: maxima -b v59/density_algebra/maxima/perturbation_analysis_living_candidate.mac
+*/
+
+display2d : false$
+print("=== Perturbation Analysis of Living Candidate + Brannen Kernel ===")$
+print("Focus: second variation / stability of density wells under protection constraints")$
+
+/* ------------------------------------------------------------------
+   1. Recall the living candidate structure (symbolic)
+   ------------------------------------------------------------------ */
+
+/*
+The projected living candidate (grades 0 and 2):
+
+  < D Ω + λ Ω² + μ ⟨Ω, Ω⟩ >_{0,2}   =   f_g(ρ_amb) · J_ρ   +   f_em(ρ_amb) · J_χ
+
+where
+  ρ_M     = (1/2) (scalar part of M M̃ - v²)     -- local density deviation
+  J_ρ     ~ grade 1 of (something · ρ_M)
+  J_χ     = bivector part of M M̃               -- chiral current
+  f_g, f_em are the ambient modulation functions (e.g. 1 / (1 + ρ_amb / ρ_crit))
+
+For perturbation analysis we treat Ω = Ω_0 + ε δΩ, where Ω_0 is a
+"background + protected high-density lump" configuration, and expand to
+second order in ε.
+*/
+
+/* For the first version we work with the density scalar part only,
+   since that is what sources the Newtonian channel and is the direct
+   measure of "density well depth". */
+
+print("")$
+print("We work with the effective density functional whose second variation")$
+print("determines stability of a high-density lump:")$
+print("")$
+
+/* ------------------------------------------------------------------
+   2. Effective density functional (schematic)
+   ------------------------------------------------------------------ */
+
+/*
+From the v58 side, the density source term is proportional to ρ_M.
+The quadratic self-interaction (λ, μ terms) and the protection constraint
+(restricted support on certain grades/bivectors) modify the effective
+potential felt by ρ_M.
+
+We model a minimal effective description:
+
+  V_eff(ρ, protection) =  (1/2) α( protection ) ρ²   +   (1/3) β ρ³   +   ...
+                         -  f(ρ_amb) · γ ρ
+
+where "protection" enters by changing the allowed quadratic / cubic
+coefficients or by projecting out certain modes.
+
+The second derivative V_eff''(ρ) at the equilibrium point tells us whether
+we have a stable well.
+*/
+
+print("Minimal effective potential for density deviation ρ:")$
+print("  V(ρ, p) = (1/2) α(p) ρ² + (1/3) β ρ³ - f(ρ_amb) γ ρ")$
+print("where p encodes the protection choice (which grades / biv support are allowed).")$
+
+/* ------------------------------------------------------------------
+   3. Protection as a projection / constraint
+   ------------------------------------------------------------------ */
+
+/*
+"Protected" means we restrict the bivector (or higher) support of the test
+excitation M_t. In the Brannen kernel language this corresponds to restricting
+the allowed components of ξ or of the full multivector M.
+
+For the first symbolic exploration we treat protection as a discrete parameter
+p ∈ {unprotected, protected_L, protected_LF} that modifies the quadratic
+stiffness α(p).
+
+We will later substitute the concrete algebraic form from the v59 kernel.
+*/
+
+alpha_unprotected : 1.0$
+alpha_protected_L : 1.4$     /* example: protection increases effective stiffness */
+alpha_protected_LF : 2.1$    /* stacking L+F gives even higher stiffness / deeper well */
+
+print("")$
+print("Example stiffness values (to be derived from the algebra later):")$
+print("  α(unprotected)   =", alpha_unprotected)$
+print("  α(protected_L)   =", alpha_protected_L)$
+print("  α(protected_LF)  =", alpha_protected_LF)$
+
+/* ------------------------------------------------------------------
+   4. Second variation and stability condition
+   ------------------------------------------------------------------ */
+
+print("")$
+print("Second derivative of V at a trial equilibrium ρ* :")$
+
+V2_unprot : alpha_unprotected + 2*beta*rho_star - f_prime*gamma$
+V2_protL  : alpha_protected_L   + 2*beta*rho_star - f_prime*gamma$
+V2_protLF : alpha_protected_LF  + 2*beta*rho_star - f_prime*gamma$
+
+print("  V''(unprotected)   = α_u + 2βρ* - f'γ")$
+print("  V''(protected_L)   = α_L + 2βρ* - f'γ")$
+print("  V''(protected_LF)  = α_LF + 2βρ* - f'γ")$
+
+print("")$
+print("A stable density well requires V'' > 0 at the equilibrium.")$
+print("Protection enters by increasing α, which shifts the location of the")$
+print("minimum and can create a well where none existed before (or deepen it).")$
+
+/* ------------------------------------------------------------------
+   5. Link to the Brannen / v59 kernel (future step)
+   ------------------------------------------------------------------ */
+
+/*
+The real power comes when we substitute the v59 Brannen form
+
+    M = a ( I + ξ S + ξ̄ S² )
+
+with the protection constraint (e.g. only certain components of ξ allowed,
+or only certain grades in the full Cl(7) multivector) and expand the exact
+ρ_M = ½(M M̃ - v²) to second order in small deviations δξ around the
+equilibrium surface |ξ|² = 1/2 (lepton) or 3/5, 7/9 (quarks).
+
+The coefficient of (δξ)² in that expansion is precisely α(protection).
+
+The discrete jumps in the observed |ξ|² values (1/2, 3/5, 7/9) should then
+appear as the only points where the second variation is positive *and*
+the force-channel separation (bivector vs scalar sourcing) remains clean.
+
+This is the symbolic counterpart of the numerical "vary protection strength
+and measure density achieved vs cleanliness" experiments.
+*/
+
+/* ------------------------------------------------------------------
+   6. Immediate next symbolic tasks (to be expanded in this file)
+   ------------------------------------------------------------------ */
+
+print("")$
+print("=== Immediate next Maxima tasks ===")$
+print("")$
+print("1. Substitute the concrete Brannen M into ρ_M and expand to O((t - t0)²)")
+print("   around each sector equilibrium (t² = 1/2, 3/5, 7/9).")
+print("2. Introduce a protection projector P_protected on the allowed components")
+print("   of ξ or of the full multivector, and recompute the quadratic form.")
+print("3. Extract the condition on λ, μ (the living-candidate quadratic strengths)")
+print("   such that V'' > 0 only for the protected choices of grades.")
+print("4. Compute the mixed second derivative ∂²ρ_M / ∂(protection) ∂(λ)")
+print("   — this is the 'leverage' of protection on density well depth.")
+print("")$
+print("These coefficients can then be compared directly with the numerical")
+print("scans produced by targeted_density_protection_scan.py.")$
+
+/* End of starter file. Extend with actual diff / taylor commands in follow-ups. */

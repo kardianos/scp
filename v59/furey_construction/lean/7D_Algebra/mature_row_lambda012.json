@@ -1,0 +1,13 @@
+{
+  "source": "mature_8comp_density_protection_scan_20260523_180222.json (lambda=0.012)",
+  "lambda": 0.012,
+  "description": "Real measured row at lambda=0.012 from mature protection report: protected_L and protected_LF have identical peak_density and stability_std_rel (cross=0 for both) in the low f_content regime.",
+  "protected_L_peak_density": 3.1698886696671513,
+  "protected_L_stability_std_rel": 0.6030226681200536,
+  "protected_L_cross_term_pct": 0.0,
+  "protected_LF_peak_density": 3.1698886696671513,
+  "protected_LF_stability_std_rel": 0.6030226681200536,
+  "protected_LF_cross_term_pct": 0.0,
+  "L_degradation_min_pct": 0.001,
+  "LF_degradation_max_pct": 0.001
+}
