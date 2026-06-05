@@ -150,6 +150,10 @@ func resolveGPUSpec(filter string) (query map[string]any, minRAM int64) {
 		"verified": map[string]any{"eq": true},
 		"external": map[string]any{"eq": false},
 		"rented":   map[string]any{"eq": false},
+		// rentable=true is REQUIRED: without it /bundles/ returns catalog machines
+		// that are not currently rentable, and every create then fails with
+		// "404/3603 no_such_ask ... not available". Matches vast-python's default.
+		"rentable": map[string]any{"eq": true},
 		"order":    [][]string{{"dph_total", "asc"}},
 		"type":     "on-demand",
 	}
@@ -287,10 +291,15 @@ type CreateInstanceResult struct {
 
 // CreateInstance rents a GPU instance. Returns the instance/contract ID.
 func (v *VastClient) CreateInstance(ctx context.Context, offerID int, image string, diskGB int, onstart string) (int, error) {
+	// Match vast-python's create payload: target_state/runtype/client_id ensure the
+	// rented instance actually boots an SSH server and transitions to running.
 	payload := map[string]any{
-		"image":   image,
-		"disk":    diskGB,
-		"onstart": onstart,
+		"client_id":    "me",
+		"image":        image,
+		"disk":         float64(diskGB),
+		"onstart":      onstart,
+		"runtype":      "ssh",
+		"target_state": "running",
 	}
 	body, err := json.Marshal(payload)
 	if err != nil {

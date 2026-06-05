@@ -113,27 +113,45 @@ func (r *RemoteExecutor) Provision(ctx context.Context, gpuFilter map[string]str
 		}
 	}
 
-	// Search for offers.
-	offers, err := r.vast.SearchOffers(ctx, filterStr)
-	if err != nil {
-		return fmt.Errorf("search offers: %w", err)
-	}
-	if len(offers) == 0 {
-		return fmt.Errorf("no GPU offers found for filter: %v", gpuFilter)
-	}
-
-	// Try offers in order (cheapest first). Offers are ephemeral — the first
-	// one may be snatched between search and create, so retry with the next.
-	maxTries := len(offers)
-	if maxTries > 5 {
-		maxTries = 5
-	}
+	// Vast offers are ephemeral: an ask id snapshotted by SearchOffers is often
+	// already taken ("404/3603 no_such_ask … not available") by the time we PUT
+	// /asks/{id}/. Iterating a single stale snapshot therefore fails on every id.
+	// Instead, re-query offers immediately before each create attempt so the ask
+	// id handed to CreateInstance is always fresh. Track tried ids to avoid
+	// re-picking the same stale cheapest offer within one Provision call.
+	const maxAttempts = 6
 	var instanceID int
 	var lastErr error
-	for i := 0; i < maxTries; i++ {
-		offer := offers[i]
-		fmt.Fprintf(os.Stderr, "scp-runner: trying offer %d/%d: %s (%d GB VRAM, %s, $%.3f/hr) [%d offers]\n",
-			i+1, maxTries, offer.GPUName, offer.GPUMemMB/1024, offer.Geolocation, offer.DPHTot, len(offers))
+	tried := make(map[int]bool)
+	for attempt := 0; attempt < maxAttempts; attempt++ {
+		offers, err := r.vast.SearchOffers(ctx, filterStr)
+		if err != nil {
+			lastErr = fmt.Errorf("search offers: %w", err)
+			fmt.Fprintf(os.Stderr, "scp-runner: attempt %d/%d: search failed (%v), retrying...\n", attempt+1, maxAttempts, err)
+			continue
+		}
+		if len(offers) == 0 {
+			lastErr = fmt.Errorf("no GPU offers found for filter: %v", gpuFilter)
+			fmt.Fprintf(os.Stderr, "scp-runner: attempt %d/%d: no offers for filter, retrying...\n", attempt+1, maxAttempts)
+			continue
+		}
+
+		// Pick the cheapest offer (already sorted asc by price) not yet tried.
+		idx := -1
+		for i := range offers {
+			if !tried[offers[i].ID] {
+				idx = i
+				break
+			}
+		}
+		if idx < 0 { // all current offers already tried — take the freshest cheapest
+			idx = 0
+		}
+		offer := offers[idx]
+		tried[offer.ID] = true
+
+		fmt.Fprintf(os.Stderr, "scp-runner: attempt %d/%d: offer %d %s (%d GB VRAM, %s, $%.3f/hr) [%d offers]\n",
+			attempt+1, maxAttempts, offer.ID, offer.GPUName, offer.GPUMemMB/1024, offer.Geolocation, offer.DPHTot, len(offers))
 
 		instanceID, lastErr = r.vast.CreateInstance(ctx, offer.ID, defaultImage, diskGB, defaultOnstart)
 		if lastErr == nil {
@@ -141,10 +159,10 @@ func (r *RemoteExecutor) Provision(ctx context.Context, gpuFilter map[string]str
 			r.gpuName = offer.GPUName
 			break
 		}
-		fmt.Fprintf(os.Stderr, "scp-runner: offer %d failed (%v), trying next...\n", offer.ID, lastErr)
+		fmt.Fprintf(os.Stderr, "scp-runner: offer %d failed (%v), re-querying fresh offers...\n", offer.ID, lastErr)
 	}
-	if lastErr != nil && r.instanceID == 0 {
-		return fmt.Errorf("create instance: all %d offers failed, last error: %w", maxTries, lastErr)
+	if r.instanceID == 0 {
+		return fmt.Errorf("create instance: all %d attempts failed, last error: %w", maxAttempts, lastErr)
 	}
 
 	// Wait for instance to become ready with SSH info.
