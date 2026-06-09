@@ -1,0 +1,28 @@
+/* v60 GEN5 -- independent Maxima cross-check: the matter Hessian's PSD identity.
+   For H_ij = 2 lam u1_i u1_j + 2 mu u2_i u2_j (the rank-1+rank-1 form proved in
+   14_spectrum.py at the Koide vacuum), verify the sum-of-squares identity that
+   establishes positive-semidefiniteness:
+
+       v^T H v  =  2 lam (u1 . v)^2 + 2 mu (u2 . v)^2   >= 0   for lam,mu >= 0.
+
+   Done with explicit scalar sums (no matrix indexing).
+   Run:  maxima --very-quiet -b 14_hessian_psd.mac
+*/
+
+u1 : [p1, p2, p3]$
+u2 : [q1, q2, q3]$
+vv : [v1, v2, v3]$
+
+/* H_ij = 2 lam u1_i u1_j + 2 mu u2_i u2_j */
+Hij(i, j) := 2*lam*u1[i]*u1[j] + 2*mu*u2[i]*u2[j]$
+
+quad : expand(sum(sum(vv[i]*Hij(i,j)*vv[j], j, 1, 3), i, 1, 3))$
+u1v  : sum(u1[i]*vv[i], i, 1, 3)$
+u2v  : sum(u2[i]*vv[i], i, 1, 3)$
+sos  : expand(2*lam*u1v^2 + 2*mu*u2v^2)$
+
+diff_check : expand(quad - sos)$
+print("MAXIMA: v^T H v - [2 lam (u1.v)^2 + 2 mu (u2.v)^2] =", diff_check)$
+if diff_check = 0
+  then print("MAXIMA CHECK PASSED: v^T H v is a sum of squares (PSD for lam,mu>=0); no tachyon.")
+  else error("MAXIMA PSD identity FAILED")$

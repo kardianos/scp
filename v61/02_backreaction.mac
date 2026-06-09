@@ -1,0 +1,28 @@
+/* v61 GEN2 -- independent Maxima (ctensor) cross-check: the mixed Einstein
+   component G^t_t of the mass-function metric equals -2 m'(r)/r^2, giving the
+   backreaction law m'(r) = 4 pi r^2 rho.
+
+   Run:  maxima --very-quiet -b 02_backreaction.mac
+*/
+load(ctensor)$
+ct_coords : [t, r, theta, phi]$
+depends(m, r)$
+depends(PHI, r)$
+lg : matrix([-exp(2*PHI), 0, 0, 0],
+            [0, 1/(1 - 2*m/r), 0, 0],
+            [0, 0, r^2, 0],
+            [0, 0, 0, r^2*sin(theta)^2])$
+cmetric(false)$
+christof(false)$
+ricci(false)$
+scurvature()$
+einstein(false)$
+
+/* ctensor `ein[i,j]` is the mixed Einstein tensor G^i_j; index 1 = t. */
+Gtt : ratsimp(ein[1,1])$
+target : ratsimp(-2*diff(m,r)/r^2)$
+print("MAXIMA (ctensor): G^t_t =", Gtt)$
+print("MAXIMA: -2 m'(r)/r^2  =", target)$
+if ratsimp(Gtt - target) = 0
+  then print("MAXIMA CHECK PASSED: G^t_t = -2 m'/r^2  ->  m' = 4 pi r^2 rho (backreaction).")
+  else error("MAXIMA backreaction FAILED")$

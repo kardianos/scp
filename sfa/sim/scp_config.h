@@ -51,6 +51,23 @@ typedef struct {
     int sweep;                  /* Sweep mode: 0=off, 1=parameter sweep */
     double sweep_T;             /* Time per sweep trial (default 50) */
 
+    /* v65 self-tuning (mechanism A): kappa self-organizes to the stability edge at fixed
+       conserved charge Q=int|phi|^2. Action pulls kappa down (dE/dkappa>0); a collapse
+       sensor pushes it up; the balance is the self-organized-critical edge kappa*(Q). */
+    int    self_tune;           /* 0=off, 1=on (kappa becomes dynamical) */
+    double st_dt;               /* self-tune update interval (sim time units) */
+    double st_eps;              /* stable: drift kappa DOWN by this fraction (action pull) */
+    double st_gamma;            /* collapse: push kappa UP by this fraction (stability feedback) */
+    double st_pcrit;            /* P_max collapse threshold (settled-state, SOC mode) */
+    double st_charge;           /* target charge Q (<=0: use value at first tune step) */
+    int    st_project;          /* 1=enforce fixed charge by rescaling phi (mechanism A) */
+    /* Bidirectional density homeostasis: regulate core density P_max to st_ptarget by
+       adjusting kappa (higher kappa -> lower density). Corrects BOTH dissolution (density
+       too low -> kappa down -> re-concentrate) and collapse (too high -> kappa up ->
+       spread), so the particle persists. st_ptarget>0 enables this instead of SOC. */
+    double st_ptarget;          /* target core density P_max (>0 enables density feedback) */
+    double st_gain;             /* proportional gain for the density feedback */
+
     /* Boundary */
     int bc_type;                /* 0=absorb_sphere, 1=gradient_pinned, 2=periodic */
     double damp_width, damp_rate;
@@ -93,6 +110,9 @@ static Config cfg_defaults(void) {
     c.sigma_grad = 0;  c.chi_chiral = 0;  c.sigma_cubic = 0;  c.sigma_freq = 0;
     c.sigma_cross = 0;  c.lambda_self = 0;  c.theta_vev = 0;  c.tune_dt = 0;
     c.sweep = 0;  c.sweep_T = 50;
+    c.self_tune = 0;  c.st_dt = 2.0;  c.st_eps = 0.04;  c.st_gamma = 0.12;
+    c.st_pcrit = 2.0;  c.st_charge = 0;  c.st_project = 1;
+    c.st_ptarget = 0;  c.st_gain = 0.10;
     c.bc_type = 0;
     c.damp_width = 3.0;  c.damp_rate = 0.01;  c.bc_switch_time = 0.0;
     c.gradient_A_high = 0.15;  c.gradient_A_low = 0.05;  c.gradient_margin = 3;
@@ -141,6 +161,15 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"lambda_self")) c->lambda_self = atof(val);
     else if (!strcmp(key,"theta_vev"))  c->theta_vev = atof(val);
     else if (!strcmp(key,"tune_dt"))    c->tune_dt = atof(val);
+    else if (!strcmp(key,"self_tune"))  c->self_tune = atoi(val);
+    else if (!strcmp(key,"st_dt"))      c->st_dt = atof(val);
+    else if (!strcmp(key,"st_eps"))     c->st_eps = atof(val);
+    else if (!strcmp(key,"st_gamma"))   c->st_gamma = atof(val);
+    else if (!strcmp(key,"st_pcrit"))   c->st_pcrit = atof(val);
+    else if (!strcmp(key,"st_charge"))  c->st_charge = atof(val);
+    else if (!strcmp(key,"st_project")) c->st_project = atoi(val);
+    else if (!strcmp(key,"st_ptarget")) c->st_ptarget = atof(val);
+    else if (!strcmp(key,"st_gain"))    c->st_gain = atof(val);
     else if (!strcmp(key,"sweep"))      c->sweep = atoi(val);
     else if (!strcmp(key,"sweep_T"))    c->sweep_T = atof(val);
     else if (!strcmp(key,"bc_type"))      c->bc_type = atoi(val);

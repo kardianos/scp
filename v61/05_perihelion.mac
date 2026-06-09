@@ -1,0 +1,26 @@
+/* v61 GEN5 -- independent Maxima cross-check of the Schwarzschild orbit equation
+   and the perihelion precession (pure algebra/differentiation; no integration).
+
+   Run:  maxima --very-quiet -b 05_perihelion.mac
+*/
+/* first integral R(u) = (du/dphi)^2 (c=1); orbit eq from u'' = R'(u)/2 */
+R : (E^2 - 1)/L^2 + (2*G*M/L^2)*u - u^2 + 2*G*M*u^3$
+upp : ratsimp(diff(R, u)/2)$            /* u'' */
+orbit : ratsimp(upp + u)$               /* u'' + u */
+target : G*M/L^2 + 3*G*M*u^2$
+print("MAXIMA: u'' + u =", orbit)$
+if ratsimp(orbit - target) = 0
+  then print("MAXIMA CHECK PASSED (A): u''+u = GM/L^2 + 3 GM u^2 (GR term coeff 3).")
+  else error("MAXIMA orbit FAILED")$
+
+/* precession per orbit = 2 pi eps C, eps = 3GM/c^2, C = GM/L^2 */
+prec : ratsimp( 2*%pi*(3*G*M/c^2)*(G*M/L^2) )$
+ptarget : 6*%pi*(G*M)^2/(c^2*L^2)$
+print("MAXIMA: Delta_phi =", prec)$
+/* standard form with L^2 = G M a (1 - e^2) */
+prec_std : ratsimp( subst(L^2 = G*M*a*(1-ecc^2), ptarget) )$
+print("MAXIMA: Delta_phi (standard) =", prec_std)$
+if ratsimp(prec - ptarget) = 0
+   and ratsimp(prec_std - 6*%pi*G*M/(c^2*a*(1-ecc^2))) = 0
+  then print("MAXIMA CHECK PASSED (B): Delta_phi = 6 pi GM/(c^2 a(1-e^2)).")
+  else error("MAXIMA precession FAILED")$

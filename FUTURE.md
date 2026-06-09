@@ -10,6 +10,32 @@ All new experiments use pre-converged proton templates, NOT analytical seeds.
 
 ---
 
+## Algebraic / Dynamical-Lagrangian Track (v59–v61)
+
+*Separate from the V50/C4 simulation work below. Authoritative sources:
+`v60/lagrangian/CLOSEOUT.md` (the dynamical Lagrangian) and `v61/CLOSEOUT.md`
+(curved gravity + EW-vev home). All results verified with SymPy/Maxima/Lean.*
+
+**Done:**
+- v60: `ℒ_v60` on `Cl(3,1)⊗Cl(7)_even` — OBE as a connection-eliminated sector,
+  2 ghost-free TT gravitons, Koide cone Q=2/3 from EL minimization, EP-exact
+  coupling, stable spectrum, nonlinear time evolution.
+- v61: curved-space GR (Schwarzschild from `ρ_grav`, backreaction `m'=4πr²ρ`), the
+  LIGO closure (2 TT = `h₊,h×`, GW quadrupole, speed `c`), all three classic GR
+  tests (deflection `4GM/b`, GW, perihelion `6πGM/(c²a(1−e²))`, Mercury 43″/cy), and
+  a dynamical *home* for the EW vev `v=784a²` (Frobenius `End(L)` Higgs).
+
+**Open (v62 candidates):**
+1. Numerical self-gravitating Koide / boson star (TOV with the GEN3 potential),
+   closing v61 GEN2's interior solution quantitatively.
+2. R1 equipartition/democracy selection — the extra term that picks the democratic
+   `End(L)` vacuum (`784a²`), or a proof it cannot be selected.
+3. FRW cosmology sourced by the matter sector.
+4. The four residual value-conjectures (`α`, `v=784a²`, `φ=2/9`, `f_g~α^{21/2}`) —
+   inputs, not dynamical gaps.
+
+---
+
 ## Critical Priority — V52 Quantitative Measurements
 
 These are detailed in `v52/PLAN.md`. Summary:

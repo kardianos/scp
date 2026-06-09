@@ -1,0 +1,24 @@
+{
+  "phi_emp": {
+    "d": 0.10859,
+    "u": -0.07251,
+    "l": 0.22222
+  },
+  "phi_q_eq_Q_over_3": false,
+  "scale_ratios": {
+    "PDG_native_mixed": {
+      "a_u2_over_a_d2": 35.03324953514717,
+      "a_u2_over_a_l2": 72.54451000216936
+    },
+    "MSbar_MZ": {
+      "a_u2_over_a_d2": 49.318073421868036,
+      "a_u2_over_a_l2": 68.7105948434111
+    },
+    "MSbar_2GeV": {
+      "a_u2_over_a_d2": 44.9961665750295,
+      "a_u2_over_a_l2": 152.52207583044665
+    }
+  },
+  "a_l2_GeV": 0.31384114036424665,
+  "note": "All phases/ratios inherit RG/scheme dependence; integer*alpha is overfit-prone."
+}

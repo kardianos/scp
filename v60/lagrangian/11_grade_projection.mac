@@ -1,0 +1,48 @@
+/* v60 GEN2 -- independent Maxima cross-check of the B/\F grade-projection identity.
+   Verifies, with a CAS independent of SymPy, the so(3,1) bivector trace identity
+   that underlies "B^{IJ} F_{IJ} = scalar grade projection <B F>_0":
+
+       Tr(M_{IJ} M_{KL}) = 2 (eta_{IL} eta_{JK} - eta_{IK} eta_{JL}),
+
+   where (M_{IJ})^a_b = delta^a_I eta_{Jb} - delta^a_J eta_{Ib} are the so(3,1)
+   generators in the defining rep and eta = diag(-1,1,1,1).
+
+   Run:  maxima --very-quiet -b 11_grade_projection.mac
+*/
+
+eta : matrix([-1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1])$
+
+/* generator M_{IJ} as a 4x4 matrix, indices 1..4 (Maxima is 1-based) */
+Mgen(Ii,Jj) := genmatrix(
+   lambda([a,b], (if a=Ii then eta[Jj,b] else 0) - (if a=Jj then eta[Ii,b] else 0)),
+   4,4)$
+
+/* check the identity over all I,J,K,L */
+maxerr : 0$
+for Ii:1 thru 4 do
+ for Jj:1 thru 4 do
+  for Kk:1 thru 4 do
+   for Ll:1 thru 4 do (
+     lhs : mat_trace(Mgen(Ii,Jj) . Mgen(Kk,Ll)),
+     rhs : 2*(eta[Ii,Ll]*eta[Jj,Kk] - eta[Ii,Kk]*eta[Jj,Ll]),
+     maxerr : max(maxerr, abs(lhs - rhs))
+   )$
+
+print("MAXIMA: max|Tr(M_IJ M_KL) - 2(eta_IL eta_JK - eta_IK eta_JL)| =", maxerr)$
+if maxerr = 0 then print("MAXIMA CHECK PASSED: so(3,1) grade-projection trace identity holds.")
+else error("MAXIMA CHECK FAILED")$
+
+/* Also confirm the antisymmetry-collapsed contraction constant:
+   for antisymmetric B,F,  B^{IJ}F_{IJ} = - Tr( (1/2 B^{IJ}M_IJ)(1/2 F^{KL}M_KL) ).
+   Take a concrete antisymmetric pair and verify the constant is -1 (not -1/2). */
+Bc : matrix([0,2,-1,3],[-2,0,1,0],[1,-1,0,-2],[-3,0,2,0])$   /* antisymmetric */
+Fc : matrix([0,-1,2,1],[1,0,-3,0],[-2,3,0,1],[-1,0,-1,0])$   /* antisymmetric */
+Bm : sum(sum((1/2)*Bc[Ii,Jj]*Mgen(Ii,Jj), Jj,1,4), Ii,1,4)$
+Fm : sum(sum((1/2)*Fc[Ii,Jj]*Mgen(Ii,Jj), Jj,1,4), Ii,1,4)$
+/* B^{IJ} F_{IJ}: lower F's indices with eta on both sides */
+Flow : eta . Fc . eta$
+BF : sum(sum(Bc[Ii,Jj]*Flow[Ii,Jj], Jj,1,4), Ii,1,4)$
+trBF : mat_trace(Bm . Fm)$
+print("MAXIMA: B^IJ F_IJ =", BF, "   -Tr(B F) =", -trBF)$
+if BF + trBF = 0 then print("MAXIMA CHECK PASSED: B^{IJ}F_{IJ} = -Tr(B F) (grade-0 projection).")
+else error("MAXIMA contraction constant FAILED")$

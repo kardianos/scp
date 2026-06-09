@@ -1,0 +1,31 @@
+/* v61 GEN4 -- independent Maxima cross-check of the GW quadrupole luminosity for a
+   mass mu on a circular orbit (radius a, angular frequency w):
+       L = (G/5) <Idddot_ij Idddot_ij>  =  (32/5) G mu^2 a^4 w^6.
+   (Ibar = reduced trace-free mass quadrupole, c=1.)
+
+   Run:  maxima --very-quiet -b 04_quadrupole.mac
+*/
+/* declare signs so integrate() does not stop on an interactive assume query */
+assume(w > 0, a > 0, mu > 0, G > 0)$
+
+x : a*cos(w*t)$  y : a*sin(w*t)$  z : 0$
+pos : [x, y, z]$
+
+/* mass quadrupole Q_ij = mu x_i x_j */
+Q : genmatrix(lambda([i,j], mu*pos[i]*pos[j]), 3, 3)$
+trQ : ratsimp(Q[1,1] + Q[2,2] + Q[3,3])$
+/* reduced trace-free quadrupole */
+Ibar : genmatrix(lambda([i,j], Q[i,j] - (if i=j then trQ/3 else 0)), 3, 3)$
+/* third time derivative */
+Iddd : genmatrix(lambda([i,j], diff(Ibar[i,j], t, 3)), 3, 3)$
+
+integrand : expand(sum(sum(Iddd[i,j]^2, j, 1, 3), i, 1, 3))$
+avg : ratsimp( integrate(integrand, t, 0, 2*%pi/w) / (2*%pi/w) )$
+L : ratsimp( G/5 * avg )$
+Ltarget : (32/5)*G*mu^2*a^4*w^6$
+
+print("MAXIMA: L = (G/5) <Idddot^2> =", L)$
+print("MAXIMA: target (32/5) G mu^2 a^4 w^6 =", expand(Ltarget))$
+if ratsimp(L - Ltarget) = 0
+  then print("MAXIMA CHECK PASSED: GW luminosity = (32/5) G mu^2 a^4 omega^6.")
+  else error("MAXIMA quadrupole FAILED")$

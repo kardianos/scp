@@ -1,0 +1,24 @@
+/* v60 GEN6 -- independent Maxima cross-check of the universal Koide deviation.
+   (1 - Q_N) D_N = 28/3 for the three selection-rule sectors, and the additive
+   identity D_u = D_e + D_d.
+
+   Run:  maxima --very-quiet -b 15_koide_universal.mac
+*/
+
+DL : 21 + 7$    /* L = Lambda^2 (+) Lambda^6 */
+DF : 35$        /* F = Lambda^4 */
+Du : DL + DF$   /* u = L (+) F */
+
+QL : 2/3$
+QF : 11/15$
+Qu : 23/27$
+
+devL : (1 - QL)*DL$
+devF : (1 - QF)*DF$
+devu : (1 - Qu)*Du$
+
+print("MAXIMA: D_L,D_F,D_u =", DL, DF, Du, "  (additive: D_u - (D_e+D_d) =", Du-(DL+DF), ")")$
+print("MAXIMA: (1-Q)D for lepton,d,u =", devL, devF, devu)$
+if Du = 63 and DL+DF = 63 and devL = 28/3 and devF = 28/3 and devu = 28/3
+  then print("MAXIMA CHECK PASSED: D_u=D_e+D_d=63 and (1-Q)D=28/3 universal (2/3,11/15,23/27).")
+  else error("MAXIMA GEN6 FAILED")$

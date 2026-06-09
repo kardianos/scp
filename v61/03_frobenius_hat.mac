@@ -1,0 +1,30 @@
+/* v61 GEN3 -- independent Maxima cross-check of the Frobenius Mexican-hat structure
+   for the End(L) Higgs:  gradient = 4 lam (||Y||^2 - v0) Y_k, and the Hessian at a
+   vacuum (||Y||^2 = v0) is the rank-1 matrix 8 lam Y_k Y_l (=> 1 Higgs + N-1
+   Goldstones). Plus 784 = 28^2 = dim End(L).
+
+   Run:  maxima --very-quiet -b 03_frobenius_hat.mac
+*/
+Y : [y1, y2, y3]$
+nsq : y1^2 + y2^2 + y3^2$
+V : lam*(nsq - v0)^2$
+
+/* gradient */
+grad : makelist(diff(V, Y[k]), k, 1, 3)$
+gpred : makelist(4*lam*(nsq - v0)*Y[k], k, 1, 3)$
+gbad : ratsimp(grad - gpred)$
+print("MAXIMA: gradient - 4 lam(||Y||^2-v0)Y =", gbad)$
+
+/* Hessian at a vacuum: substitute nsq = v0 (i.e. v0 -> nsq) and compare to 8 lam YiYj */
+H : genmatrix(lambda([i,j], diff(diff(V, Y[i]), Y[j])), 3, 3)$
+Hvac : subst(v0 = nsq, H)$                       /* enforce ||Y||^2 = v0 */
+Hpred : genmatrix(lambda([i,j], 8*lam*Y[i]*Y[j]), 3, 3)$
+Hbad : ratsimp(Hvac - Hpred)$
+print("MAXIMA: Hessian(vac) - 8 lam Y Y^T =", Hbad)$
+
+dimEndL : 28^2$
+print("MAXIMA: dim End(L) = 28^2 =", dimEndL)$
+
+if gbad = [0,0,0] and Hbad = zeromatrix(3,3) and dimEndL = 784
+  then print("MAXIMA CHECK PASSED: Frobenius hat grad/Hessian (rank-1) + 784=28^2.")
+  else error("MAXIMA Frobenius-hat FAILED")$

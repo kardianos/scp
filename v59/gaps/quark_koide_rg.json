@@ -1,0 +1,69 @@
+{
+  "targets": {
+    "Q_d": 0.7333333333333333,
+    "Q_u": 0.8518518518518519
+  },
+  "per_dataset": {
+    "PDG_native_mixed_scales": {
+      "Q_d": 0.731427651432937,
+      "Q_u": 0.848980777661061,
+      "gap_d_pct": 0.26054277503221157,
+      "gap_u_pct": 0.3381789395397987,
+      "note": "PDG quoted values, MIXED reference scales (u,d,s@2GeV; c@mc; b@mb; t pole). Not a single-scale set."
+    },
+    "MSbar_2GeV": {
+      "Q_d": 0.7831409190543093,
+      "Q_u": 0.8942289366061082,
+      "gap_d_pct": -6.3599774330680745,
+      "gap_u_pct": -4.738952523175028,
+      "note": "MS-bar all evolved to 2 GeV (heavy-quark masses run UP at low scale)."
+    },
+    "MSbar_MZ": {
+      "Q_d": 0.7486858194463929,
+      "Q_u": 0.88793359452894,
+      "gap_d_pct": -2.05059127798251,
+      "gap_u_pct": -4.063563187541069,
+      "note": "MS-bar all evolved to M_Z=91.19 GeV (Xing-Zhang-Zhou style)."
+    },
+    "MSbar_mt": {
+      "Q_d": 0.7476170879091568,
+      "Q_u": 0.8932206740021275,
+      "gap_d_pct": -1.9105709067954262,
+      "gap_u_pct": -4.631422374598673,
+      "note": "MS-bar all evolved to m_t ~ 173 GeV."
+    },
+    "MSbar_1TeV": {
+      "Q_d": 0.74787438852306,
+      "Q_u": 0.8959093697987915,
+      "gap_d_pct": -1.944317844396719,
+      "gap_u_pct": -4.917631116731637,
+      "note": "MS-bar all evolved to 1 TeV (GUT-direction trend)."
+    }
+  },
+  "Q_d_spread": {
+    "min": 0.731427651432937,
+    "max": 0.7831409190543093,
+    "range": 0.051713267621372294
+  },
+  "Q_u_spread": {
+    "min": 0.848980777661061,
+    "max": 0.8959093697987915,
+    "range": 0.046928592137730596
+  },
+  "mc_native": {
+    "Q_d": {
+      "median": 0.731425860516505,
+      "ci68": [
+        0.7246379706878722,
+        0.7387245708457703
+      ]
+    },
+    "Q_u": {
+      "median": 0.8489841148618826,
+      "ci68": [
+        0.8480317507327254,
+        0.8499477422934671
+      ]
+    }
+  }
+}

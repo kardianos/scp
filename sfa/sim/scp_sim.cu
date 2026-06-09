@@ -1129,6 +1129,15 @@ __global__ void zero_diag_kernel(double *d_results, int n) {
     if (idx < n) d_results[idx] = 0.0;
 }
 
+/* v65 self-tuning: rescale phi (and its velocity) by f to enforce a fixed charge
+   Q=int|phi|^2 (the mechanism-A Lagrange-multiplier projection). */
+__global__ void rescale_phi_kernel(double *p0, double *p1, double *p2,
+                                   double *v0, double *v1, double *v2,
+                                   double f, long N3) {
+    long i = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (i < N3) { p0[i]*=f; p1[i]*=f; p2[i]*=f; v0[i]*=f; v1[i]*=f; v2[i]*=f; }
+}
+
 /* ================================================================
    GPU memory management
    ================================================================ */
@@ -3095,6 +3104,15 @@ int main(int argc, char **argv) {
     if (tune_every > 0)
         printf("Auto-tune: every %d steps (%.1f time units)\n\n", tune_every, c.tune_dt);
 
+    /* v65 self-tuning: kappa becomes a dynamical variable that self-organizes to the
+       stability edge at fixed conserved charge Q=int|phi|^2 (mechanism A). */
+    int st_every = (c.self_tune && c.st_dt > 0) ? (int)lround(c.st_dt / g->dt) : 0;
+    double st_Q0 = -1.0;   /* target charge, set at first tune step */
+    if (st_every > 0)
+        printf("Self-tune: kappa dynamical, every %d steps (%.1f t.u.); "
+               "eps=%.3f gamma=%.3f pcrit=%.2f project=%d  kappa0=%.3f\n\n",
+               st_every, c.st_dt, c.st_eps, c.st_gamma, c.st_pcrit, c.st_project, c.kappa);
+
     /* ===== Main loop ===== */
     for (int step = 1; step <= n_steps; step++) {
         /* Check for BC switch */
@@ -3111,6 +3129,50 @@ int main(int argc, char **argv) {
         if (tune_every > 0 && step % tune_every == 0) {
             cudaDeviceSynchronize();
             inline_cluster_analysis(&c, g->N, g->N3, g->L, g->dx, step * g->dt, step);
+        }
+
+        /* v65 self-tuning (mechanism A): kappa -> stability edge at fixed charge.
+           The action pull (dE/dkappa>0) drifts kappa down when the core is stable; a
+           collapse sensor (P_max) pushes it up; the balance is the SOC critical edge.
+           The charge Q=int|phi|^2 (= 2*E_mass/m2) is held fixed by rescaling phi, so the
+           self-tuned kappa*(Q) is a function of the conserved charge. */
+        if (st_every > 0 && step % st_every == 0) {
+            cudaDeviceSynchronize();
+            run_gpu_diagnostics(&fstate, &diag_ctx);
+            double Pmax  = diag_ctx.h_results[9];
+            double Emass = diag_ctx.h_results[3];
+            double Q = (c.m2 > 1e-12) ? 2.0 * Emass / c.m2 : Emass;
+            if (st_Q0 < 0) st_Q0 = (c.st_charge > 0 ? c.st_charge : Q);  /* set target once */
+            if (c.st_project && c.st_ptarget <= 0 && Q > 1e-12) {        /* charge projection (SOC mode only) */
+                double f = sqrt(st_Q0 / Q);
+                rescale_phi_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                    d_phi[0], d_phi[1], d_phi[2],
+                    d_vel_phi[0], d_vel_phi[1], d_vel_phi[2], f, g->N3);
+            }
+            int nanflag = (Pmax != Pmax) || (Pmax > 1e30);
+            if (c.st_ptarget > 0.0) {
+                /* Bidirectional density homeostasis: regulate P_max -> st_ptarget. Higher
+                   kappa lowers the equilibrium density, so kappa *= (1 + gain*err) with
+                   err=(P_max-target)/target is stable NEGATIVE feedback. Dissolution
+                   (P_max<target) -> kappa DOWN -> attraction re-concentrates the particle;
+                   collapse (P_max>target) -> kappa UP -> saturation spreads it. */
+                double err = nanflag ? 1.0 : (Pmax - c.st_ptarget) / c.st_ptarget;
+                if (err >  1.0) err =  1.0;
+                if (err < -1.0) err = -1.0;
+                c.kappa *= (1.0 + c.st_gain * err);
+                if (c.kappa < 1e-3) c.kappa = 1e-3;
+                cudaMemcpyToSymbol(d_KAPPA, &c.kappa, sizeof(double));
+                printf("[self-tune] t=%6.1f kappa=%9.4f Pmax=%10.3e target=%.4f err=%+.3f Q=%9.3e\n",
+                       step * g->dt, c.kappa, Pmax, c.st_ptarget, err, Q);
+            } else {
+                int collapse = nanflag || (Pmax > c.st_pcrit);
+                c.kappa *= collapse ? (1.0 + c.st_gamma) : (1.0 - c.st_eps);  /* SOC update */
+                if (c.kappa < 1e-3) c.kappa = 1e-3;
+                cudaMemcpyToSymbol(d_KAPPA, &c.kappa, sizeof(double));
+                printf("[self-tune] t=%6.1f kappa=%9.4f Pmax=%10.3e Q=%9.3e %s\n",
+                       step * g->dt, c.kappa, Pmax, Q, collapse ? "COLLAPSE" : "stable");
+            }
+            fflush(stdout);
         }
 
         if (c.bc_type == 1) {

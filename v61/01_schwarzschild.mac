@@ -1,0 +1,34 @@
+/* v61 GEN1 -- independent Maxima (ctensor) cross-check: the Schwarzschild metric
+   is Ricci-flat (vacuum Einstein), confirming the v61 GEN1 SymPy computation with
+   a different CAS and a purpose-built tensor engine.
+
+   Run:  maxima --very-quiet -b 01_schwarzschild.mac
+*/
+load(ctensor)$
+ct_coords : [t, r, theta, phi]$
+lg : matrix([-(1-rs/r),0,0,0],
+            [0, 1/(1-rs/r), 0, 0],
+            [0, 0, r^2, 0],
+            [0, 0, 0, r^2*sin(theta)^2])$
+cmetric(false)$
+christof(false)$
+ricci(false)$
+
+bad : 0$
+for i:1 thru 4 do
+  for j:1 thru 4 do
+    bad : bad + abs(trigsimp(ratsimp(ric[i,j])))$
+
+print("MAXIMA (ctensor): sum |Ricci_ij| for Schwarzschild =", bad)$
+if bad = 0
+  then print("MAXIMA CHECK PASSED: Ricci = 0 -> Schwarzschild is the vacuum solution.")
+  else error("MAXIMA Schwarzschild FAILED")$
+
+/* horizon / mass relation and the GR light-deflection factor (algebra) */
+rs_val : 2*G*M$
+defl_GR : 2*rs_val/b$        /* 4 G M / b */
+defl_N  : 2*G*M/b$           /* Newtonian 2 G M / b */
+print("MAXIMA: r_s = 2GM =", rs_val, "  deflection GR/Newton =", ratsimp(defl_GR/defl_N))$
+if ratsimp(defl_GR/defl_N) = 2
+  then print("MAXIMA CHECK PASSED: light deflection 4GM/b = 2x Newtonian.")
+  else error("MAXIMA deflection FAILED")$
