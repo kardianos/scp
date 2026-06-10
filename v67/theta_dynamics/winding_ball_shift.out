@@ -1,0 +1,41 @@
+=== Winding quantization (L=25, box side 50) ===
+dK = pi/L = 0.125664  (Beltrami eigenvalue lambda_B = -K_n, K_n = n*dK)
+bath band |k| in [1.1,1.7]  ->  n in [8.75, 13.53]  ->  n = 9..13
+
+=== Polariton branches at K_n (m_th=0, eta=0.5; helicity-degenerate, W4) ===
+ n    K_n     w_-      w_+     (dw_- per n)
+ 8  1.0053  0.95050  1.83517   
+ 9  1.1310  1.07003  1.91396   0.11953
+10  1.2566  1.18978  1.99818   0.11974
+11  1.3823  1.30974  2.08713   0.11996
+12  1.5080  1.42992  2.18020   0.12018
+13  1.6336  1.55032  2.27684   0.12040
+14  1.7593  1.67094  2.37659   0.12062
+small-k lower-branch v_phase = sqrt(1-eta^2/m^2) = 0.942809  (v50: 0.9428)
+
+=== Induced condensate amplitude c = eta K B / m^2 ===
+fixed e_bath=0.2:  c = eta*sqrt(e_bath)/m^2 = 0.099381  (n-INDEPENDENT)
+fixed B (B=0.3194, i.e. e_bath=0.2 at K=1.4):  c_n = 0.008920 * n  (linear in n)
+   n= 9: K=1.1310  c_n=0.080284  e_bath(n)=0.1305
+   n=11: K=1.3823  c_n=0.098124  e_bath(n)=0.1950
+   n=13: K=1.6336  c_n=0.115965  e_bath(n)=0.2723
+
+=== Q-ball profiles and second-order shift dE = c^2 * I_g ===
+w=1.39: f(0)=0.6405  Q=  482.2  E=  691.9  I_g=  -39.90  dE=c^2*I_g=-0.3941  dE/E=-5.70e-04
+w=1.41: f(0)=0.6403  Q=  267.4  E=  391.5  I_g=  -29.29  dE=c^2*I_g=-0.2893  dE/E=-7.39e-04
+w=1.44: f(0)=0.6224  Q=  139.5  E=  209.5  I_g=  -20.05  dE=c^2*I_g=-0.1980  dE/E=-9.45e-04
+(v66 cross-check at w=1.39: f(0)=0.64, Q=482, E=692)
+
+fixed-Q frequency shift d(omega) = d(dE)/dQ ~ c^2*(I_g(1.41)-I_g(1.39))/(Q(1.41)-Q(1.39))
+  = -4.88e-04   (relative: -3.48e-04)
+crude bound |dE|/Q = 8.17e-04
+
+=== n-stepping of the ball shift ===
+fixed e_bath: dE independent of n (c = eta sqrt(e_bath)/m^2, K cancels) [thm]
+fixed B:      dE(n) = (eta B dK/m^2)^2 * n^2 * I_g  -> QUADRATIC steps in n
+   n= 9: dE = -0.2572
+   n=11: dE = -0.3842
+   n=13: dE = -0.5366
+
+=== AB-analog scattering phase (NOT topological) ===
+d(m^2)_Phi2 = mu*c^4/8 = -5.041e-04; path phase over l=50 at k=1.4: dphi = -dm2*l/(2k) = +9.002e-03 rad (continuous in B, NOT n-quantized)

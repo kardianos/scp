@@ -73,6 +73,10 @@ typedef struct {
     char   qball_profile[512]; /* path to radial profile (r f) text file, init=qball */
     double qball_omega;        /* internal rotation frequency omega */
     double qball_x0, qball_y0, qball_z0;  /* qball center, physical coords; 1e30 = grid center */
+    /* v67 frequency-domain + core-charge diagnostics (active only when complex_phi=1) */
+    double qdiag_radius;       /* Q_core integration radius about box center (physical) */
+    double qdiag_probe1;       /* theta probe 1 radius on +x axis (physical) */
+    double qdiag_probe2;       /* theta probe 2 radius on +x axis (physical) */
 
     /* Boundary */
     int bc_type;                /* 0=absorb_sphere, 1=gradient_pinned, 2=periodic */
@@ -123,6 +127,7 @@ static Config cfg_defaults(void) {
     c.qball_profile[0] = '\0';
     c.qball_omega = 1.39;            /* THEORY §4: recommended first 3D target */
     c.qball_x0 = 1e30;  c.qball_y0 = 1e30;  c.qball_z0 = 1e30;
+    c.qdiag_radius = 8.0;  c.qdiag_probe1 = 8.0;  c.qdiag_probe2 = 16.0;
     c.bc_type = 0;
     c.damp_width = 3.0;  c.damp_rate = 0.01;  c.bc_switch_time = 0.0;
     c.gradient_A_high = 0.15;  c.gradient_A_low = 0.05;  c.gradient_margin = 3;
@@ -186,6 +191,9 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"qball_x0"))      c->qball_x0 = atof(val);
     else if (!strcmp(key,"qball_y0"))      c->qball_y0 = atof(val);
     else if (!strcmp(key,"qball_z0"))      c->qball_z0 = atof(val);
+    else if (!strcmp(key,"qdiag_radius"))  c->qdiag_radius = atof(val);
+    else if (!strcmp(key,"qdiag_probe1"))  c->qdiag_probe1 = atof(val);
+    else if (!strcmp(key,"qdiag_probe2"))  c->qdiag_probe2 = atof(val);
     else if (!strcmp(key,"sweep"))      c->sweep = atoi(val);
     else if (!strcmp(key,"sweep_T"))    c->sweep_T = atof(val);
     else if (!strcmp(key,"bc_type"))      c->bc_type = atoi(val);
@@ -269,6 +277,8 @@ static void cfg_print(const Config *c) {
                    (c->qball_x0>=1e29?0.0:c->qball_x0),
                    (c->qball_y0>=1e29?0.0:c->qball_y0),
                    (c->qball_z0>=1e29?0.0:c->qball_z0));
+        printf("Q-diag:  radius=%.2f probes=(%.2f,%.2f)\n",
+               c->qdiag_radius, c->qdiag_probe1, c->qdiag_probe2);
     }
     printf("Mode:    %d", c->mode);
     if (c->mode == 1) printf(" (inverse: α=%.3f β=%.3f)", c->inv_alpha, c->inv_beta);

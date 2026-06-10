@@ -1,0 +1,123 @@
+
+Maxima 5.46.0 https://maxima.sourceforge.io
+using Lisp GNU Common Lisp (GCL) GCL 2.6.14 git tag Version_2_6_15pre7
+Distributed under the GNU Public License. See the file COPYING.
+Dedicated to the memory of William Schelter.
+The function bug_report() provides bug reporting information.
+(%i1) batch("deBroglie.mac")
+
+read and interpret /home/d/code/scp/v67/theta_dynamics/deBroglie.mac
+(%i2) kill(all)
+(%i1) nfail:0
+(%i2) check(name,expr):=block([r:radcan(ratsimp(expr))],
+            if is(equal(r,0)) then print(sconcat("PASS ",name))
+                else (print(sconcat("FAIL ",name," residual=")),print(r),
+                      nfail:nfail+1))
+(%i3) checknum(name,val,target,tol):=block([d:abs(float(val)-float(target))],
+               if d <= tol
+                   then print(sconcat("PASS ",name,"  val=",float(val)))
+                   else (print(sconcat("FAIL ",name,"  val=",float(val),
+                                       " target=",float(target))),
+                         nfail:nfail+1))
+(%i4) assume(v > 0,v < 1,w > 0,E0 > 0,kk > 0,ep >= 0,ep+1-v^2 > 0)
+(%i5) g:1/sqrt(1-v^2)
+(%i6) depends(F,[XX,y,z])
+(%i7) depends(XX,[x,t])
+(%i8) th:g*w*(t-v*x)
+(%i9) Phi:F*exp(%i*th)
+(%i10) R:diff(Phi,t,2)-diff(Phi,x,2)-diff(Phi,y,2)-diff(Phi,z,2)
+(%i11) R:subst(['diff(XX,x,2) = 0,'diff(XX,t,2) = 0,'diff(XX,x,1) = g,
+                'diff(XX,t,1) = (-g)*v],R)
+(%i12) target:(-exp(%i*th))*(w^2*F+diff(F,XX,2)+diff(F,y,2)+diff(F,z,2))
+(%i13) check("D1_boosted_ansatz_exact_solution",R-target)
+PASS D1_boosted_ansatz_exact_solution 
+(%i14) kdB:-diff(th,x)
+(%i15) check("D2_kdB_eq_gamma_w_v",kdB-g*w*v)
+PASS D2_kdB_eq_gamma_w_v 
+(%i16) check("D3_comoving_freq_w_over_gamma",
+             diff(subst(x = v*t,th),t)-w*sqrt(1-v^2))
+PASS D3_comoving_freq_w_over_gamma 
+(%i17) check("D4_lab_freq_gamma_w",diff(th,t)-g*w)
+PASS D4_lab_freq_gamma_w 
+(%i18) Om(k):=sqrt(w^2+k^2)
+(%i19) check("D5a_on_shell_Om(kdB)_eq_gamma_w",Om(kdB)-g*w)
+PASS D5a_on_shell_Om(kdB)_eq_gamma_w 
+(%i20) check("D5b_group_velocity_v",subst(kk = kdB,diff(Om(kk),kk))-v)
+PASS D5b_group_velocity_v 
+(%i21) check("D5c_phase_velocity_1_over_v",Om(kdB)/kdB-1/v)
+PASS D5c_phase_velocity_1_over_v 
+(%i22) check("D5d_vph_vg_eq_c2",(Om(kk)/kk)*diff(Om(kk),kk)-1)
+PASS D5d_vph_vg_eq_c2 
+(%i23) EE:g*E0
+(%i24) pp:g*E0*v
+(%i25) check("D6_mass_shell_E2_eq_p2_plus_E02",EE^2-pp^2-E0^2)
+PASS D6_mass_shell_E2_eq_p2_plus_E02 
+(%i26) check("D7_kdB_eq_w_over_E0_times_p",kdB-(w/E0)*pp)
+PASS D7_kdB_eq_w_over_E0_times_p 
+(%i27) Vt(s):=((mu/2)*s)/(1+kap*s)
+(%i28) Uw(f):=(1/2)*(m2-w^2)*f^2+((mu/6)*f^6)/(1+kap*f^6)
+(%i29) eden:(3/2)*(w^2*f^2+fp^2+m2*f^2)+Vt(f^6)
+(%i30) rhoQ:3*w*f^2
+(%i31) check("D8a_density_identity",eden-w*rhoQ+(-3)*(fp^2/2+Uw(f)))
+PASS D8a_density_identity 
+(%i32) sol:solve(subst(lam = 1,diff(3*(lam*Kk+lam^3*PU),lam)) = 0,PU)
+(%i33) check("D8b_pohozaev_K_plus_3PU",subst(sol,Kk+3*PU))
+PASS D8b_pohozaev_K_plus_3PU 
+(%i34) check("D8c_E_minus_wQ_eq_int_fp2",subst(sol,3*(Kk+PU)-2*Kk))
+PASS D8c_E_minus_wQ_eq_int_fp2 
+(%i35) uu:A*cos(w*t-kk*x)
+(%i36) vv:A*sin(w*t-kk*x)
+(%i37) rhoE:(1/2)*(diff(uu,t)^2+diff(vv,t)^2)
+            +(1/2)*(diff(uu,x)^2+diff(vv,x)^2)+(m2/2)*(uu^2+vv^2)
+(%i38) rhoQc:uu*diff(vv,t)-vv*diff(uu,t)
+(%i39) check("D9a_free_wave_rhoE_eq_w2A2",
+             trigsimp(subst(m2 = w^2-kk^2,rhoE))-w^2*A^2)
+PASS D9a_free_wave_rhoE_eq_w2A2 
+(%i40) check("D9b_free_wave_rhoQ_eq_wA2",trigsimp(rhoQc)-w*A^2)
+PASS D9b_free_wave_rhoQ_eq_wA2 
+(%i41) check("D9c_free_E_over_Q_eq_w",
+             trigsimp(subst(m2 = w^2-kk^2,rhoE))-w*trigsimp(rhoQc))
+PASS D9c_free_E_over_Q_eq_w 
+(%i42) c2:1+ep
+(%i43) OmM(k):=sqrt(w^2+c2*k^2)
+(%i44) kofv:(w*v)/(sqrt(c2)*sqrt(c2-v^2))
+(%i45) check("D10a_medium_group_velocity_inversion",
+             rootscontract(subst(kk = kofv,diff(OmM(kk),kk))-v))
+PASS D10a_medium_group_velocity_inversion 
+(%i46) check("D10b_kdB_O(eta2)_correction",
+             taylor(kofv-g*w*v*(1-(ep*(2-v^2))/(2*(1-v^2))),ep,0,1))
+PASS D10b_kdB_O(eta2)_correction 
+(%i47) check("D10c_vph_vg_eq_ceff2",
+             (OmM(kofv)/kofv)*subst(kk = kofv,diff(OmM(kk),kk))-c2)
+PASS D10c_vph_vg_eq_ceff2 
+(%i48) checknum("D10d_transverse_reduction_factor",1-0.5^2/2.25,0.8889,2.0E-4)
+PASS D10d_transverse_reduction_factor  val=0.8888888888888888 
+(%i49) depends(omg,x)
+(%i50) OmE:sqrt(omg^2+kk^2)
+(%i51) xdot:diff(OmE,kk)
+(%i52) kdot:-diff(OmE,x)
+(%i53) check("D11a_Omega_conserved_along_ray",diff(OmE,x)*xdot
+                                               +diff(OmE,kk)*kdot)
+PASS D11a_Omega_conserved_along_ray 
+(%i54) adrift:ratsimp(diff(xdot,x)*xdot+diff(xdot,kk)*kdot)
+(%i55) check("D11b_drift_accel_minus_c2_dlnw_dx",
+             adrift+((1-(kk/OmE)^2)*diff(omg,x))/omg)
+PASS D11b_drift_accel_minus_c2_dlnw_dx 
+(%i56) aval:(0.0119*(0.2/25))/1.39
+(%i57) checknum("D12a_drift_accel_code_units",aval,6.848E-5,1.0E-7)
+PASS D12a_drift_accel_code_units  val=6.848920863309354E-5 
+(%i58) checknum("D12b_V51_order_of_magnitude_ratio",aval/((2*6.0)/400^2),0.913,0.01)
+PASS D12b_V51_order_of_magnitude_ratio  val=0.9131894484412473 
+(%i59) check("D13a_closure_D_vrel_eq_2n_over_w",
+             subst(vr = (2*nq)/(w*Dd),2*%pi*Dd*((w*vr)/2)-2*%pi*nq))
+PASS D13a_closure_D_vrel_eq_2n_over_w 
+(%i60) checknum("D13b_n1_Dv_product_w139",2/1.39,1.4388,0.001)
+PASS D13b_n1_Dv_product_w139  val=1.43884892086331 
+(%i61) checknum("D13c_Freq_at_D12",(2*692)/(1.39^2*12^3),0.4146,0.001)
+PASS D13c_Freq_at_D12  val=0.41453647633452 
+(%i62) checknum("D13d_orbit_period_at_D12",%pi*1.39*12^2,628.8,0.5)
+PASS D13d_orbit_period_at_D12  val=628.8211855425329 
+(%i63) if nfail = 0 then print("ALL CHECKS PASS")
+           else (print(sconcat(nfail," CHECKS FAILED")),quit(1))
+ALL CHECKS PASS 
+(%o64)         /home/d/code/scp/v67/theta_dynamics/deBroglie.mac

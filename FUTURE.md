@@ -342,3 +342,23 @@ from the background field (A_bg coupling).
 - X6: Asymmetric drag hypothesis (refuted by V33 drag test)
 - X7: Single-particle density-dependent κ collapse (theta prevents it)
 - X8: Random parameter sweep (superseded by first-principles V41)
+
+---
+
+## v67: The Theta-Boundedness Problem (2026-06-10)
+
+The complexified kernel's Θ is massless, potential-free, AND charged under the
+diagonal U(1) — a combination nature never allows (photon: neutral; gluon:
+confined; W: massive). The measured η-drain is the dynamical symptom: an
+unprotected channel bleeding every ball to the marginal state. If left unbounded,
+all particle masses become epoch-dependent (drain to threshold) — fatal for the
+v59 Koide bridge. Resolution routes (task #10):
+
+1. **m_θ > ω (W-route)**: Yukawa-bound dressing, drain kinematically closed.
+   v67 runs th1 (m_θ=1.6) / th2 (m_θ=0.7) test this directly.
+2. **Cosserat binding (geometry route)**: complexified α|∇×Φ/2 − Θ|²
+   (U(1)-invariant, v66 THEORY §1.1) — θ locked to matter's torsion, gap √(2α).
+3. **Gauge the diagonal U(1)**: θ → connection; amplitude unboundedness = pure
+   gauge; Gauss law pins charge to matter. The η curl coupling is already
+   A·J-shaped. Deepest fix; design doc before any code.
+4. **sigma_cross complexified**: density-dependent θ mass (interim).

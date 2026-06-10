@@ -1,0 +1,90 @@
+/* v67 modulational-instability algebra checks (Maxima)
+   Run: maxima -b mi_dispersion.mac
+   Checks D1-D9. Conventions match v66/THEORY.md (real-field kinetic 1/2 u_dot^2). */
+
+kill(all)$
+declare([m2,mu,kappa,A,w,k2,sg,t], real)$
+
+s_expr : (u1^2+v1^2)*(u2^2+v2^2)*(u3^2+v3^2)$
+Vt(s)  := (mu/2)*s/(1+kappa*s)$
+Vtp(s) := (mu/2)/(1+kappa*s)^2$
+Vtpp(s):= -mu*kappa/(1+kappa*s)^3$
+V : Vt(s_expr)$
+
+check(name, expr) := block([r: ratsimp(expr)],
+  if r = 0 then print(name, ": PASS") else (print(name, ": FAIL ->", r), error(name)))$
+
+/* D0: Vt', Vt'' formulas */
+check("D0a Vt' ", diff(Vt(z),z)   - Vtp(z))$
+check("D0b Vt''", diff(Vt(z),z,2) - Vtpp(z))$
+
+/* ---- background: uniform charged condensate ---- */
+bg : [u1=A*cos(w*t), u2=A*cos(w*t), u3=A*cos(w*t),
+      v1=A*sin(w*t), v2=A*sin(w*t), v3=A*sin(w*t)]$
+
+/* D1: potential force on the ansatz = 2 Vt'(A^6) A^4 * u_a  */
+check("D1 force",
+  trigsimp(ratsimp(subst(bg, diff(V,u1)) - 2*Vtp(A^6)*A^4*A*cos(w*t))))$
+
+/* D2: dispersion w_c^2 = m2 + 2 Vt'(A^6) A^4
+   (EOM: u'' = -m2 u - dV/du, uniform => Laplacian=0) */
+ub : A*cos(w*t)$
+resid : diff(ub,t,2) + m2*ub + 2*Vtp(A^6)*A^4*ub$
+check("D2 dispersion",
+  trigsimp(ratsimp(subst(w^2 = m2 + 2*Vtp(A^6)*A^4, resid))))$
+
+/* D3: charge density rho_Q = sum_a (u v' - v u') = 3 w A^2 */
+rhoQ : sum(subst(bg, concat(u,a)*diff(concat(v,a),t) - concat(v,a)*diff(concat(u,a),t)), a, 1, 3)$
+rhoQ : trigsimp(ev(sum(A*cos(w*t)*diff(A*sin(w*t),t) - A*sin(w*t)*diff(A*cos(w*t),t),a,1,3), diff))$
+check("D3 rho_Q", rhoQ - 3*w*A^2)$
+
+/* D4: energy density e0 = (3/2)(w^2+m2) A^2 + Vt(A^6) */
+e0 : sum(trigsimp( (1/2)*(diff(A*cos(w*t),t)^2 + diff(A*sin(w*t),t)^2)
+                 + (m2/2)*( (A*cos(w*t))^2 + (A*sin(w*t))^2 ) ), a,1,3)
+     + Vt(trigsimp(subst(bg, s_expr)))$
+check("D4 e0", trigsimp(ratsimp(e0 - ((3/2)*(w^2+m2)*A^2 + Vt(A^6)))))$
+
+/* ---- D5: Hessian of V at the gauge point u=(A,A,A), v=0 ----
+   Rotating frame: R-sector mass matrix = H_uu - W0*I = C,
+   I-sector = H_vv - W0*I = 0 (Goldstone), cross block H_uv = 0. */
+pt : [u1=A,u2=A,u3=A,v1=0,v2=0,v3=0]$
+W0 : 2*Vtp(A^6)*A^4$
+Cdiag : 4*A^10*Vtpp(A^6)$
+Coff  : 4*A^10*Vtpp(A^6) + 4*A^4*Vtp(A^6)$
+check("D5a H_u1u1", subst(pt, diff(diff(V,u1),u1)) - (W0 + Cdiag))$
+check("D5b H_u1u2", subst(pt, diff(diff(V,u1),u2)) - Coff)$
+check("D5c H_v1v1", subst(pt, diff(diff(V,v1),v1)) - W0)$
+check("D5d H_v1v2", subst(pt, diff(diff(V,v1),v2)))$
+check("D5e H_u1v1", subst(pt, diff(diff(V,u1),v1)))$
+check("D5f H_u1v2", subst(pt, diff(diff(V,u1),v2)))$
+
+/* D6: eigenvalues of C = Cdiag*I + Coff*(J - I), J = ones(3,3) */
+Cm : matrix([Cdiag,Coff,Coff],[Coff,Cdiag,Coff],[Coff,Coff,Cdiag])$
+vs : Cm . [1,1,1]$                              /* eigvec (1,1,1) */
+check("D6a Msym ", ratsimp(vs[1][1] - (8*A^4*Vtp(A^6) + 12*A^10*Vtpp(A^6))))$
+va : Cm . [1,-1,0]$
+check("D6b Manti", ratsimp(va[1][1] - (-4*A^4*Vtp(A^6))*1))$
+check("D6c Manti", ratsimp(va[2][1] - (-4*A^4*Vtp(A^6))*(-1)))$
+
+/* D7: closed forms */
+check("D7a Msym closed",
+  ratsimp(8*A^4*Vtp(A^6) + 12*A^10*Vtpp(A^6)
+          - 4*A^4*mu*(1-2*kappa*A^6)/(1+kappa*A^6)^3))$
+check("D7b Manti closed",
+  ratsimp(-4*A^4*Vtp(A^6) - (-2*mu*A^4/(1+kappa*A^6)^2)))$
+/* threshold: Msym = 0  <=>  kappa*A^6 = 1/2 (A>0) */
+check("D7c threshold", ratsimp(subst(A = (2*kappa)^(-1/6),
+        4*A^4*mu*(1-2*kappa*A^6)/(1+kappa*A^6)^3)))$
+
+/* D8: perturbation determinant: per eigenmode M, modes (R,I) ~ e^(sg*t):
+   [sg^2+k2+M, -2*w*sg ; 2*w*sg, sg^2+k2] */
+Dm : determinant(matrix([sg^2+k2+M, -2*w*sg],[2*w*sg, sg^2+k2]))$
+check("D8 quartic", ratsimp(Dm - (sg^4 + sg^2*(2*k2 + M + 4*w^2) + k2*(k2+M))))$
+/* product of sg^2-roots = k2*(k2+M): negative (=> one growing root) iff 0<k2<-M */
+
+/* D9: condensate at A = f* = (2/kappa)^(1/6) has w_c = w_min of the Q-ball window:
+   w_min^2 = m2 + (mu/9)*(2/kappa)^(2/3)  (v66 THEORY 3.1) */
+check("D9 wc(f*)=wmin",
+  ratsimp(subst(A=(2/kappa)^(1/6), m2 + 2*Vtp(A^6)*A^4) - (m2 + (mu/9)*(2/kappa)^(2/3))))$
+
+print("ALL DISPERSION CHECKS PASS")$

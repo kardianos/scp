@@ -1278,3 +1278,28 @@ anti-phase EJECTS (D 12→40.6, ~0.06c), ball/anti-ball undergoes STEPWISE ANNIH
 remnant — a new object class. Phase-dependent cos(Δφ) force = clean realization of
 V34's winding force. New tools: gen_qball_pair seed generator; ρ₂-based cluster
 tracking. Infra: two Vast instance deaths — eager-download discipline now standard.
+
+---
+
+## V67 (2026-06-10/11): Theta Sector Resolved Experimentally; Emergent Kinematics
+
+Full record: v67/FINDINGS.md, v67/THEORY.md, v67/theta_dynamics/. Headlines:
+1. **θ-boundedness (user question)**: m_θ>ω closes the drain (~400× suppression,
+   stable dressed ball at full η=0.5); m_θ<ω leaves it open. Mass route saves matter
+   but kills the long-range mediator ⇒ gauging the diagonal U(1) is the structural fix.
+2. **omega_core instrument**: edge-ball death = shock-driven frequency excursion past
+   the VK turn (1.46→1.525 by t=5), measured directly. E=mQ plays no dynamical role.
+3. **Condensate threshold A*=(2κ)^(-1/6)=0.4642 confirmed both ways** (cf2 fragments,
+   growth 0.23 vs σ=0.29; cf3 falsifier flat for T=200) + **NEW η-only parametric
+   instability** (cf4: identical stable condensate fragments at η=0.5, growth 0.078
+   vs predicted 0.058-0.067) — torsion coupling CREATES particles from dense matter.
+4. **Neutral bath erodes balls** (charge-neutral quanta can't return charge); matched-Q
+   clock shifts +0.012/−0.025/−0.120 (blue→red crossover; e=0.8 ball lives BELOW the
+   vacuum window — strongly dressed state). Detailed balance needs a charged bath.
+5. **Neutral remnant = standing-wave breather** (density zeros every π/ω) — real-sector
+   oscillon, decelerating decay (dE/dt −0.76→−0.06 over T=1000), mortal.
+6. **Emergent kinematics (user's "c = rate of locality" idea)**: boosted ball is an
+   exact relativistic particle (E²=p²+E₀²); **Pohozaev identity E−ωQ=∫f′²dV exactly**
+   ⇒ h_eff=Q(1+ε): the charge IS the action quantum. Clock-gradient force matches
+   V51 drift to ratio 0.91. Mathieu tongues + winding quantization mapped (chiral
+   splitting and AB phase exactly zero without gauging — honest nulls).

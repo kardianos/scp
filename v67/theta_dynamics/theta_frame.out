@@ -1,0 +1,30 @@
+F1a Vt'(0)=mu/2 : PASS 
+F1b potential force O(eps^5): orders 0..4 vanish : PASS 
+F1c eps^5 coefficient = mu*U1*(U2^2+V2^2)*(U3^2+V3^2) : PASS 
+F2 polariton det = (w2-k2-m2)(w2-k2)-eta^2 k^2 : PASS 
+F2b branches solve det=0 (photon) : PASS 
+F2c branches solve det=0 (matter) : PASS 
+F3 photon v_phase^2 (k->0) = 1 - eta^2/m2  [V50: 0.9428c] : PASS 
+F4 matter w^2 = m2 + (1+eta^2/m2)k^2 + O(k^4) : PASS 
+F5a Beltrami: curl tu = K tu : PASS 
+F5b Beltrami: curl tv = K tv : PASS 
+F5c bath energy density = (W^2+K^2) B^2 (pointwise const) : PASS 
+F6a driven u solves u''=lap u - m2 u + eta curl tu : PASS 
+F6b driven v solves v''=lap v - m2 v + eta curl tv : PASS 
+shell) : PASS 
+F7a Hessian = mu c0^4 * diag(0,0,1,0,0,1): ONLY K^-component Phi shifts : PASS 
+F7b shift is STATIC+HOMOGENEOUS (no Floquet) for charged Beltrami : PASS 
+F8a dm2 = mu eta^4 K^4 B^4 / M2t^4 : PASS 
+F8b dm2 = mu eta^4 K^4 e^2 / (M2t^4 (W^2+K^2)^2) : PASS 
+F8c on-shell W=K: dm2 = mu eta^4 e_bath^2 / (4 m2^4) : PASS 
+F9 d(v_ph^2) = eta^2 dm2/(m2(m2+dm2)) : PASS 
+F10a g(A^2) = 2 Vt'(A^6) A^4 : PASS 
+F10b g'(X) = 2 mu X (1-2 kappa X^3)/(1+kappa X^3)^3 : PASS 
+F11a eta=0 limit IS Lorentz invariant : PASS 
+F11b eta#0 dispersion NOT Lorentz invariant : PASS (nonzero, as claimed) 
+                                                                        : PASS 
+F12a neutral-bath H_zz = mu c0^4 cos^2(ph) sin^2(ph) : PASS 
+                                                                        : PASS 
+F12c neutral mean shift = (1/2) charged shift at equal e_bath : PASS 
+(%i64) print("ALL THETA_FRAME CHECKS COMPLETE")
+ALL THETA_FRAME CHECKS COMPLETE 

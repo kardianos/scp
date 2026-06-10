@@ -1,0 +1,163 @@
+/* v67 theta_dynamics WORKPACKAGE A: bulk theta as medium/frame -> relative mass.
+   Run: maxima -b theta_frame.mac
+   Checks F1-F12. Conventions: v66/THEORY.md sec.1 (12-field complexified Cosserat),
+   kinetic 1/2 u_dot^2; EOM
+     u_a''  = lap u_a  - m2 u_a - 2 Vt'(s) u_a prod_{b!=a}(u_b^2+v_b^2) + eta (curl tu)_a
+     tu_a'' = lap tu_a - mth2 tu_a + eta (curl u)_a       (and v/tv twin),
+   Vt(s) = (mu/2) s/(1+kappa s), s = prod_a (u_a^2+v_a^2). mth2 = 0 throughout. */
+
+kill(all)$
+declare([m2,mu,kappa,eta,B,K,W,k,w,t,x,y,z,A,X,vb,wp,kp,ebath], real)$
+assume(m2>0, k>0, K>0, W>0, eta>0, B>0, kappa>0, 1-vb^2>0)$
+
+s_expr : (u1^2+v1^2)*(u2^2+v2^2)*(u3^2+v3^2)$
+Vt(s)  := (mu/2)*s/(1+kappa*s)$
+Vtp(s) := (mu/2)/(1+kappa*s)^2$
+V : Vt(s_expr)$
+
+allzero(r) := if listp(r) or matrixp(r) then every(lambda([q], allzero(q)), r)
+              else is(r = 0)$
+check(name, expr) := block([r: trigsimp(ratsimp(expr))],
+  if allzero(r) then print(name, ": PASS") else (print(name, ": FAIL ->", r), error(name)))$
+ncheck(name, expr) := block([r: trigsimp(ratsimp(expr))],  /* assert NONZERO */
+  if r # 0 then print(name, ": PASS (nonzero, as claimed)")
+  else (print(name, ": FAIL -> identically zero"), error(name)))$
+
+/* ============ F1: potential contributes NOTHING at linear order around Phi=0.
+   Force on u1 scaled u_a -> e_*U_a, v_a -> e_*V_a: Taylor starts at e_^5
+   (coefficient mu*U1*(U2^2+V2^2)*(U3^2+V3^2), i.e. 2Vt'(0)=mu times QUARTIC
+   prefactor). Linear Phi mass = m2 exactly. Theta never enters V at all. */
+pf : diff(V, u1)$
+pfs : subst([u1=e_*U1,u2=e_*U2,u3=e_*U3,v1=e_*V1,v2=e_*V2,v3=e_*V3], pf)$
+check("F1a Vt'(0)=mu/2", Vtp(0) - mu/2)$
+check("F1b potential force O(eps^5): orders 0..4 vanish",
+      ratsimp(expand(taylor(pfs, e_, 0, 4))))$
+check("F1c eps^5 coefficient = mu*U1*(U2^2+V2^2)*(U3^2+V3^2)",
+      ratsimp(coeff(expand(taylor(pfs, e_, 0, 5)), e_, 5)
+              - mu*U1*(U2^2+V2^2)*(U3^2+V3^2)))$
+
+/* ============ F2: vacuum polariton dispersion (B-independent O(eta^2) self-energy).
+   Transverse plane waves along z: u_x ~ Ux e^{i(kz-wt)}, tu_y ~ Ty e^{i(kz-wt)}.
+   (curl tu)_x = -dz tu_y, (curl u)_y = +dz u_x. 2x2 system: */
+Mpol : matrix([k^2+m2-w^2, %i*k*eta], [-%i*k*eta, k^2-w^2])$
+check("F2 polariton det = (w2-k2-m2)(w2-k2)-eta^2 k^2",
+      ratsimp(determinant(Mpol) - ((w^2-k^2-m2)*(w^2-k^2)-eta^2*k^2)))$
+
+/* branches */
+wphot2 : (2*k^2+m2 - sqrt(m2^2+4*eta^2*k^2))/2$
+wmatt2 : (2*k^2+m2 + sqrt(m2^2+4*eta^2*k^2))/2$
+check("F2b branches solve det=0 (photon)",
+      ratsimp(subst(w^2=wphot2, (w^2-k^2-m2)*(w^2-k^2)-eta^2*k^2)))$
+check("F2c branches solve det=0 (matter)",
+      ratsimp(subst(w^2=wmatt2, (w^2-k^2-m2)*(w^2-k^2)-eta^2*k^2)))$
+
+/* ============ F3: V50 limit check: photon branch v^2 -> 1 - eta^2/m2 at k->0 */
+check("F3 photon v_phase^2 (k->0) = 1 - eta^2/m2  [V50: 0.9428c]",
+      ratsimp(expand(taylor(wphot2 - k^2*(1-eta^2/m2), k, 0, 3))))$
+
+/* ============ F4: matter branch w^2 = m2 + (1+eta^2/m2) k^2 + O(k^4):
+   the vacuum eta-coupling acts as k-dependent RELATIVE mass for Phi quanta */
+check("F4 matter w^2 = m2 + (1+eta^2/m2)k^2 + O(k^4)",
+      ratsimp(expand(taylor(wmatt2 - (m2 + (1+eta^2/m2)*k^2), k, 0, 3))))$
+
+/* ============ F5: Beltrami circularly-polarized CHARGED theta background.
+   Theta_a = B (1, i, 0)_a e^{i(Kz - Wt)}, i.e.
+   tu = B(cos ph, -sin ph, 0), tv = B(sin ph, cos ph, 0), ph = Kz - Wt.
+   curl Theta = K Theta (Beltrami); |Theta|^2 = 2B^2 constant; e_bath=(W^2+K^2)B^2. */
+ph : K*z - W*t$
+curlv(F) := [diff(F[3],y)-diff(F[2],z), diff(F[1],z)-diff(F[3],x), diff(F[2],x)-diff(F[1],y)]$
+lapv(F)  := [diff(F[1],x,2)+diff(F[1],y,2)+diff(F[1],z,2),
+             diff(F[2],x,2)+diff(F[2],y,2)+diff(F[2],z,2),
+             diff(F[3],x,2)+diff(F[3],y,2)+diff(F[3],z,2)]$
+tub : [B*cos(ph), -B*sin(ph), 0]$
+tvb : [B*sin(ph),  B*cos(ph), 0]$
+check("F5a Beltrami: curl tu = K tu", trigsimp(curlv(tub) - K*tub))$
+check("F5b Beltrami: curl tv = K tv", trigsimp(curlv(tvb) - K*tvb))$
+ebath_expr : (1/2)*sum(diff(tub[i],t)^2 + diff(tub[i],x)^2+diff(tub[i],y)^2+diff(tub[i],z)^2
+                     + diff(tvb[i],t)^2 + diff(tvb[i],x)^2+diff(tvb[i],y)^2+diff(tvb[i],z)^2, i,1,3)$
+check("F5c bath energy density = (W^2+K^2) B^2 (pointwise const)",
+      trigsimp(ebath_expr - (W^2+K^2)*B^2))$
+/* free theta wave (eta=0, mth=0) would need W=K; with eta on it sits on the
+   polariton photon branch W(K) -- kept GENERAL (W,K) here. */
+
+/* ============ F6: driven Phi response (the O(eta B) condensate).
+   Linear Phi eq (F1: no potential): u'' = lap u - m2 u + eta curl tu.
+   Ansatz u_drv = c0 (cos ph, -sin ph, 0), v_drv = c0 (sin ph, cos ph, 0),
+   c0 = eta K B / M2t,  M2t := m2 + K^2 - W^2 (detuning). Exact solution. */
+M2t : m2 + K^2 - W^2$
+c0  : eta*K*B/M2t$
+udrv : (c0/B)*tub$
+vdrv : (c0/B)*tvb$
+check("F6a driven u solves u''=lap u - m2 u + eta curl tu",
+      trigsimp(makelist(diff(udrv[i],t,2) - (lapv(udrv)[i] - m2*udrv[i] + eta*curlv(tub)[i]), i,1,3)))$
+check("F6b driven v solves v''=lap v - m2 v + eta curl tv",
+      trigsimp(makelist(diff(vdrv[i],t,2) - (lapv(vdrv)[i] - m2*vdrv[i] + eta*curlv(tvb)[i]), i,1,3)))$
+check("F6c admixture ratio |Phi_drv|/B = eta K/M2t  (V50 mixing -eta k/m^2 at W=K on-shell)",
+      ratsimp(subst(W=K, c0/B) - eta*K/m2))$
+
+/* ============ F7: Hessian of Vt(s) on the driven background -> RELATIVE MASS.
+   Background point (per-component |Phi|^2: x: c0^2, y: c0^2, z: 0):  */
+pt : [u1=c0*cos(ph), u2=-c0*sin(ph), u3=0,
+      v1=c0*sin(ph), v2= c0*cos(ph), v3=0]$
+vars : [u1,u2,u3,v1,v2,v3]$
+dm2 : mu*c0^4$   /* claimed shift, z-component only */
+Hexp : genmatrix(lambda([i,j],
+        trigsimp(ratsimp(subst(pt, diff(diff(V, vars[i]), vars[j]))))), 6, 6)$
+Hclaim : genmatrix(lambda([i,j],
+        if (i=3 and j=3) or (i=6 and j=6) then dm2 else 0), 6, 6)$
+check("F7a Hessian = mu c0^4 * diag(0,0,1,0,0,1): ONLY K^-component Phi shifts",
+      ratsimp(Hexp - Hclaim))$
+check("F7b shift is STATIC+HOMOGENEOUS (no Floquet) for charged Beltrami",
+      ratsimp(diff(Hexp[3,3], t)) + ratsimp(diff(Hexp[3,3], z)))$
+
+/* ============ F8: closed forms for delta m_eff^2 */
+check("F8a dm2 = mu eta^4 K^4 B^4 / M2t^4",
+      ratsimp(dm2 - mu*eta^4*K^4*B^4/M2t^4))$
+/* in terms of bath energy density e = (W^2+K^2) B^2: */
+check("F8b dm2 = mu eta^4 K^4 e^2 / (M2t^4 (W^2+K^2)^2)",
+      ratsimp(ratsubst(ebath/(W^2+K^2), B^2, dm2)
+              - mu*eta^4*K^4*ebath^2/(M2t^4*(W^2+K^2)^2)))$
+/* bare-massless on-shell W=K: M2t=m2, e=2K^2B^2  ->  K-INDEPENDENT closed form */
+check("F8c on-shell W=K: dm2 = mu eta^4 e_bath^2 / (4 m2^4)",
+      ratsimp(ratsubst(ebath/(2*K^2), B^2, subst(W=K, dm2)) - mu*eta^4*ebath^2/(4*m2^4)))$
+
+/* ============ F9: bath-shifted photon speed (effective metric correction).
+   v_ph^2(m2+dm2) - v_ph^2(m2) = eta^2 dm2 / (m2 (m2+dm2)) ~ eta^2 dm2/m2^2 */
+check("F9 d(v_ph^2) = eta^2 dm2/(m2(m2+dm2))",
+      ratsimp((1 - eta^2/(m2+dm2v)) - (1 - eta^2/m2) - eta^2*dm2v/(m2*(m2+dm2v))))$
+
+/* ============ F10: condensate mean-field slope g'(X) for the core shift.
+   g(X) := mu X^2/(1+kappa X^3)^2 = 2 Vt'(X^3) X^2 ; omega_c^2 = m2 + g(A^2) (v67 D2) */
+g(X) := mu*X^2/(1+kappa*X^3)^2$
+check("F10a g(A^2) = 2 Vt'(A^6) A^4", ratsimp(g(A^2) - 2*Vtp(A^6)*A^4))$
+check("F10b g'(X) = 2 mu X (1-2 kappa X^3)/(1+kappa X^3)^3",
+      ratsimp(diff(g(X),X) - 2*mu*X*(1-2*kappa*X^3)/(1+kappa*X^3)^3))$
+
+/* ============ F11: NO Lorentz invariance (medium!).
+   D(w,k) = (w^2-k^2-m2)(w^2-k^2) - eta^2 k^2 under boost
+   w -> g(wp+v kp), k -> g(kp+v wp): invariant iff eta=0. */
+gam : 1/sqrt(1-vb^2)$
+D(w_,k_) := (w_^2-k_^2-m2)*(w_^2-k_^2) - eta^2*k_^2$
+Dres : ratsimp(D(gam*(wp+vb*kp), gam*(kp+vb*wp)) - D(wp,kp))$
+check("F11a eta=0 limit IS Lorentz invariant", subst(eta=0, Dres))$
+ncheck("F11b eta#0 dispersion NOT Lorentz invariant", Dres)$
+check("F11c residual = -eta^2 [ (g(kp+v wp))^2 - kp^2 ] (pure curl-term breaking)",
+      ratsimp(Dres - (-eta^2*((gam*(kp+vb*wp))^2 - kp^2))))$
+
+/* ============ F12: CHARGE-NEUTRAL bath (v67 ladder!): tu-only Beltrami.
+   Driven u only; per-component |Phi|^2 oscillates -> Floquet at 2ph:
+   Pi_{b!=z} = c0^4 cos^2 sin^2 = (c0^4/8)(1-cos 4ph);
+   time-avg shift at EQUAL e_bath is 1/2 of the charged value. */
+ptn : [u1=c0*cos(ph), u2=-c0*sin(ph), u3=0, v1=0, v2=0, v3=0]$
+Hn33 : trigsimp(ratsimp(subst(ptn, diff(V, u3, 2))))$
+check("F12a neutral-bath H_zz = mu c0^4 cos^2(ph) sin^2(ph)",
+      trigsimp(Hn33 - mu*c0^4*cos(ph)^2*sin(ph)^2))$
+check("F12b = (mu c0^4/8)(1 - cos 4ph): mean mu c0^4/8 + parametric drive at (4K,4W)",
+      ratsimp(trigreduce(Hn33 - (mu*c0^4/8)*(1-cos(4*ph)))))$
+/* equal e_bath: tu-only has e = (W^2+K^2)B^2/2 -> B_n^2 = 2 e/(W^2+K^2):
+   mean shift = mu (eta K)^4 (B_n^2)^2 /(8 M2t^4) = (1/2) * charged dm2(e) */
+check("F12c neutral mean shift = (1/2) charged shift at equal e_bath",
+      ratsimp(ratsubst(2*ebath/(W^2+K^2), B^2, mu*eta^4*K^4*B^4/(8*M2t^4))
+              - (1/2)*mu*eta^4*K^4*ebath^2/(M2t^4*(W^2+K^2)^2)))$
+
+print("ALL THETA_FRAME CHECKS COMPLETE")$

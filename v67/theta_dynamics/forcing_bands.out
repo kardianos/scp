@@ -1,0 +1,81 @@
+=== core-mode parameters (omega=1.39 ball) ===
+f0=0.6405  M_sym(f0)=+1.8622  M'(f0)=-8.5499  Om0=sqrt(M+4w^2)=3.0969  gamma=1.73e-03
+
+=== Floquet validation (w0=1.39) ===
+PASS n=1 center growth = eps/(4 w0)                             got=0.0179842 want=0.0179856
+PASS n=1 edge W=2w0+eps/(2w0): growth ~ 0                       got=-6.46848e-16 want=0
+PASS just outside (1.2x half-width): growth = 0                 got=4.98846e-16 want=0
+PASS n=2 tongue width = eps^2/(4 w0^3) (eps=0.45)               got=0.01875 want=0.0188504
+     n=2 max growth (eps=0.45): 9.4382e-03 /t.u.  [~eps^2/(16 w0^3)=4.7126e-03]
+PASS damped n=1 threshold eps_c = 4 g w0 (g=0.01)               got=-1.13213e-07 want=0
+
+=== Table 1: naive lab-frame tongues W_n = 2*w0/n  (band 1.10-1.70) ===
+omega_0 = 1.39 (internal U(1) rotation)
+  n=1  W_n = 2.7800   out
+  n=2  W_n = 1.3900   IN BAND
+  n=3  W_n = 0.9267   out
+  n=4  W_n = 0.6950   out
+omega_0 = 1.44 (v66 dressed attractor)
+  n=1  W_n = 2.8800   out
+  n=2  W_n = 1.4400   IN BAND
+  n=3  W_n = 0.9600   out
+  n=4  W_n = 0.7200   out
+omega_0 = 0.94 (v66 lattice breathing)
+  n=1  W_n = 1.8800   out
+  n=2  W_n = 0.9400   out
+  n=3  W_n = 0.6267   out
+  n=4  W_n = 0.4700   out
+
+=== Table 2: beat-channel resonances (parametric drive = s-modulation at
+    Ob = |W-omega| or W+omega; tongue n: Ob = 2*w0/n; omega=1.39) ===
+w0=1.39
+  n=3  W_lab = 0.4633  (|W-om| diff)   out
+  n=4  W_lab = 0.6950  (|W-om| diff)   out
+  n=1  W_lab = 1.3900  (W+om sum)   IN BAND
+  n=4  W_lab = 2.0850  (|W-om| diff)   out
+  n=3  W_lab = 2.3167  (|W-om| diff)   out
+  n=2  W_lab = 2.7800  (|W-om| diff)   out
+  n=1  W_lab = 4.1700  (|W-om| diff)   out
+w0=0.94
+  n=2  W_lab = 0.4500  (|W-om| diff)   out
+  n=1  W_lab = 0.4900  (W+om sum)   out
+  n=3  W_lab = 0.7633  (|W-om| diff)   out
+  n=4  W_lab = 0.9200  (|W-om| diff)   out
+  n=4  W_lab = 1.8600  (|W-om| diff)   out
+  n=3  W_lab = 2.0167  (|W-om| diff)   out
+  n=2  W_lab = 2.3300  (|W-om| diff)   out
+  n=1  W_lab = 3.2700  (|W-om| diff)   out
+
+=== Table 3: rung ladder e_bath = 0.05/0.2/0.8, in-band drive W=omega=1.39 ===
+eps chains [estimate]: (a) sum-beat Ob=W+omega=2.78 -> n=1 tongue on a
+    corotating 1.39-mode (existence [open]); (c) naive n=2 at W=1.39.
+thresholds: n=1 eps_c = 4*g*w0 = 9.642e-03 ;  n=2 eps_c (Floquet growth=gamma):
+    eps_c2 = 0.1930
+e_bath   F0        eps(a)    n=1 net growth /t.u.   eps(c) -> n=2 verdict 
+0.05     0.0645    0.2964    5.157e-02 GROW         eps=0.296 ABOVE thr (net 2.4e-03)
+0.20     0.1291    0.5927    1.049e-01 GROW         eps=0.593 ABOVE thr (net 1.5e-02)
+0.80     0.2582    1.1855    2.115e-01 GROW         eps=1.185 ABOVE thr (net 6.4e-02)
+
+=== Direct forcing / interference (item 4) ===
+in-band corotating beats |W-omega|: 0.000 .. 0.310 (soft modes only)
+two-bath-mode beats |W1-W2|: 0 .. 0.600
+  beat hits mode 0.94? NO (max beat 0.60)
+  beat hits mode 1.39? NO (max beat 0.60)
+Lorentzian response |X| = F0/sqrt((w0^2-Ob^2)^2+(2 g Ob)^2), Ob=|W-omega|:
+  W=1.10  Ob=0.29  |X|(vs 0.94-mode, e=0.2) = 0.1615
+  W=1.25  Ob=0.14  |X|(vs 0.94-mode, e=0.2) = 0.1494
+  W=1.39  Ob=0.00  |X|(vs 0.94-mode, e=0.2) = 0.1461
+  W=1.55  Ob=0.16  |X|(vs 0.94-mode, e=0.2) = 0.1505
+  W=1.70  Ob=0.31  |X|(vs 0.94-mode, e=0.2) = 0.1639
+
+=== Broadband dilution (running baths spread power over dW=0.6) ===
+only in-tongue power pumps: eps_eff = eps_mono*sqrt(min(1, dW_tongue/dW_band))
+channel (a) n=1 (tongue width eps/w0), fixed point:
+  e_bath=0.05  eps_mono=0.296 -> eps_eff=0.105  net growth 1.721e-02 GROW
+  e_bath=0.20  eps_mono=0.593 -> eps_eff=0.421  net growth 7.403e-02 GROW
+  e_bath=0.80  eps_mono=1.185 -> eps_eff=1.185  net growth 2.115e-01 GROW
+channel (c) n=2 (tongue width eps^2/(4 w0^3)): fixed point eps_eff =
+  eps_mono*eps_eff/sqrt(4 w0^3 dW) -> collapses to 0 for eps_mono < sqrt(4 w0^3 dW) = 2.539
+  => broadband n=2 pumping NEGLIGIBLE at all rungs; needs monochromatic drive.
+
+Floquet validation: 5 PASS, 0 FAIL

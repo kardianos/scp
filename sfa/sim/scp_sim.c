@@ -976,32 +976,47 @@ static double P_integrated_complex(Grid *g) {
     return t;
 }
 
-/* Noether charges + core diagnostics (SPEC §6.1, THEORY §2).
+/* Noether charges + core diagnostics (SPEC §6.1, THEORY §2; v67 additions).
  * Sign convention: Q > 0 for Phi ~ e^{+i omega t}.
- * r_core = centroid-based rms radius of rho2 = sum_a (u_a^2+v_a^2). */
-static void compute_charges(Grid *g, double *Q_phi, double *Q_theta,
-                            double *s_max, double *r_core) {
+ * r_core = centroid-based rms radius of rho2 = sum_a (u_a^2+v_a^2).
+ * omega_core = (u0*v0dot - v0*u0dot)/(u0^2+v0^2) at the argmax-s voxel
+ *   (0 when u0^2+v0^2 < 1e-20).
+ * Q_core = total Noether charge density (phi + theta sectors) integrated over
+ *   voxels within qdiag_radius of the box center — interior-charge measurement
+ *   for periodic-box bath runs where total Q is trivially conserved.
+ * thp[4] = {thp1u,thp1v,thp2u,thp2v}: theta[1]/theta_im[1] point samples at
+ *   (x=+qdiag_probe1,0,0) and (x=+qdiag_probe2,0,0), clamped inside the grid.
+ *   Component 1 is sampled because the theta source eta*curl(phi) of a
+ *   centered symmetric ball has component 0 ~ (y-z), identically zero on the
+ *   y=z probe diagonal; component 1 ~ (z-x) is maximal on the +x axis. */
+static void compute_charges(Grid *g, const Config *c,
+                            double *Q_phi, double *Q_theta,
+                            double *s_max, double *r_core,
+                            double *omega_core, double *Q_core, double thp[4]) {
     const int N=g->N, NN=N*N; const long N3=g->N3;
     const double L=g->L, dx=g->dx, dV=dx*dx*dx;
-    double qp=0, qt=0, smax=0, M0=0, cx=0, cy=0, cz=0;
+    const double R2 = c->qdiag_radius * c->qdiag_radius;
+    double qp=0, qt=0, smax=0, M0=0, cx=0, cy=0, cz=0, qc=0;
 
-    #pragma omp parallel for reduction(+:qp,qt,M0,cx,cy,cz) \
+    #pragma omp parallel for reduction(+:qp,qt,M0,cx,cy,cz,qc) \
         reduction(max:smax) schedule(static)
     for (long idx=0;idx<N3;idx++) {
         int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
         double x=-L+i*dx, y=-L+j*dx, z=-L+k*dx;
-        double rho2=0, s=1.0;
+        double rho2=0, s=1.0, qp_v=0, qt_v=0;
         for (int a=0;a<NFIELDS;a++) {
             double u=g->phi[a][idx],    v=g->phi_im[a][idx];
             double ud=g->phi_vel[a][idx], vd=g->phi_im_vel[a][idx];
             double tu=g->theta[a][idx],   tv=g->theta_im[a][idx];
             double tud=g->theta_vel[a][idx], tvd=g->theta_im_vel[a][idx];
-            qp += u*vd - v*ud;
-            qt += tu*tvd - tv*tud;
+            qp_v += u*vd - v*ud;
+            qt_v += tu*tvd - tv*tud;
             double s2a = u*u + v*v;
             rho2 += s2a;
             s *= s2a;
         }
+        qp += qp_v; qt += qt_v;
+        if (x*x+y*y+z*z <= R2) qc += qp_v + qt_v;
         if (s>smax) smax=s;
         M0 += rho2;
         cx += x*rho2; cy += y*rho2; cz += z*rho2;
@@ -1009,6 +1024,44 @@ static void compute_charges(Grid *g, double *Q_phi, double *Q_theta,
     *Q_phi   = qp*dV;
     *Q_theta = qt*dV;
     *s_max   = smax;
+    *Q_core  = qc*dV;
+
+    /* omega_core: locate the argmax-s voxel (lowest index on ties; relative
+     * tolerance guards rounding differences vs the reduction pass) */
+    long smax_idx = -1;
+    const double sthr = smax * (1.0 - 1e-12);
+    #pragma omp parallel for schedule(static)
+    for (long idx=0;idx<N3;idx++) {
+        double s=1.0;
+        for (int a=0;a<NFIELDS;a++) {
+            double u=g->phi[a][idx], v=g->phi_im[a][idx];
+            double s2a = u*u + v*v;
+            s *= s2a;
+        }
+        if (s >= sthr) {
+            #pragma omp critical
+            { if (smax_idx < 0 || idx < smax_idx) smax_idx = idx; }
+        }
+    }
+    *omega_core = 0.0;
+    if (smax_idx >= 0) {
+        double u0 = g->phi[0][smax_idx],     v0 = g->phi_im[0][smax_idx];
+        double ud0 = g->phi_vel[0][smax_idx], vd0 = g->phi_im_vel[0][smax_idx];
+        double den = u0*u0 + v0*v0;
+        if (den >= 1e-20) *omega_core = (u0*vd0 - v0*ud0)/den;
+    }
+
+    /* theta probes at (x=+r_p, 0, 0), clamped to the grid */
+    {
+        int jc = (int)lround(L/dx);                    if (jc<0) jc=0; if (jc>N-1) jc=N-1;
+        int i1 = (int)lround((c->qdiag_probe1+L)/dx);  if (i1<0) i1=0; if (i1>N-1) i1=N-1;
+        int i2 = (int)lround((c->qdiag_probe2+L)/dx);  if (i2<0) i2=0; if (i2>N-1) i2=N-1;
+        long p1 = (long)i1*NN + (long)jc*N + jc;
+        long p2 = (long)i2*NN + (long)jc*N + jc;
+        thp[0] = g->theta[1][p1];  thp[1] = g->theta_im[1][p1];
+        thp[2] = g->theta[1][p2];  thp[3] = g->theta_im[1][p2];
+    }
+
     M0 *= dV;
     if (M0 < 1e-30) { *r_core = 0; return; }
     cx = cx*dV/M0; cy = cy*dV/M0; cz = cz*dV/M0;
@@ -1329,7 +1382,8 @@ int main(int argc, char **argv) {
     FILE *fp = fopen(c.diag_file, "w");
     fprintf(fp, "t\tE_phi_kin\tE_theta_kin\tE_grad\tE_mass\tE_pot\tE_tgrad\tE_tmass\t"
                 "E_coupling\tE_total\tphi_max\tP_max\tP_int\ttheta_rms");
-    if (c.complex_phi) fprintf(fp, "\tQ_phi\tQ_theta\tQ_total\ts_max\tr_core");
+    if (c.complex_phi) fprintf(fp, "\tQ_phi\tQ_theta\tQ_total\ts_max\tr_core"
+                                   "\tomega_core\tQ_core\tthp1u\tthp1v\tthp2u\tthp2v");
     fprintf(fp, "\n");
 
     int n_steps = (int)lround(c.T / g->dt);
@@ -1348,6 +1402,7 @@ int main(int argc, char **argv) {
     /* Initial diagnostic */
     double epk,etk,eg,em,ep,etg,etm,ec,et,pm,Pm;
     double Qp=0,Qt=0,smax=0,rcore=0;
+    double ocore=0,qcore=0,thp[4]={0,0,0,0};
     if (c.complex_phi) compute_energy_complex(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
     else               compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
     double Pint0 = c.complex_phi ? P_integrated_complex(g) : P_integrated(g);
@@ -1358,8 +1413,9 @@ int main(int argc, char **argv) {
     fprintf(fp,"%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e",
             0.0,epk,etk,eg,em,ep,etg,etm,ec,et,pm,Pm,Pint0,trms0);
     if (c.complex_phi) {
-        compute_charges(g,&Qp,&Qt,&smax,&rcore);
-        fprintf(fp,"\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e",Qp,Qt,Qp+Qt,smax,rcore);
+        compute_charges(g,&c,&Qp,&Qt,&smax,&rcore,&ocore,&qcore,thp);
+        fprintf(fp,"\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%.6e",
+                Qp,Qt,Qp+Qt,smax,rcore,ocore,qcore,thp[0],thp[1],thp[2],thp[3]);
     }
     fprintf(fp,"\n");
 
@@ -1499,8 +1555,9 @@ int main(int argc, char **argv) {
             fprintf(fp,"%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e",
                     t,epk,etk,eg,em,ep,etg,etm,ec,et,pm,Pm,Pint,trms);
             if (c.complex_phi) {
-                compute_charges(g,&Qp,&Qt,&smax,&rcore);
-                fprintf(fp,"\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e",Qp,Qt,Qp+Qt,smax,rcore);
+                compute_charges(g,&c,&Qp,&Qt,&smax,&rcore,&ocore,&qcore,thp);
+                fprintf(fp,"\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%.6e",
+                        Qp,Qt,Qp+Qt,smax,rcore,ocore,qcore,thp[0],thp[1],thp[2],thp[3]);
             }
             fprintf(fp,"\n");
             fflush(fp);
@@ -1543,14 +1600,15 @@ int main(int argc, char **argv) {
     double trms = c.complex_phi ? theta_rms_complex(g)    : theta_rms(g);
     double Pint = c.complex_phi ? P_integrated_complex(g) : P_integrated(g);
     double wall=omp_get_wtime()-wall0;
-    if (c.complex_phi) compute_charges(g,&Qp,&Qt,&smax,&rcore);
+    if (c.complex_phi) compute_charges(g,&c,&Qp,&Qt,&smax,&rcore,&ocore,&qcore,thp);
 
     printf("\n=== COMPLETE ===\n");
     printf("E_total=%.4e (drift %.3f%%) E_pot=%.4f\n", et, 100*(et-E0)/(fabs(E0)+1e-30), ep);
     printf("phi_max=%.4f P_int=%.4e theta_rms=%.3e\n", pm, Pint, trms);
     if (c.complex_phi)
-        printf("Q_phi=%.6e Q_theta=%.6e Q_total=%.6e s_max=%.4e r_core=%.3f\n",
-               Qp, Qt, Qp+Qt, smax, rcore);
+        printf("Q_phi=%.6e Q_theta=%.6e Q_total=%.6e s_max=%.4e r_core=%.3f "
+               "omega_core=%.4f Q_core=%.6e\n",
+               Qp, Qt, Qp+Qt, smax, rcore, ocore, qcore);
     printf("SFA: %s (%u frames)\n", c.output, nf);
     printf("[%s] theta_rms grew: %.2e -> %.2e\n", (trms>trms0+1e-10)?"OK":"WARN", trms0, trms);
     printf("Wall: %.1fs (%.1f min) %.2fms/step\n", wall, wall/60, 1000*wall/n_steps);

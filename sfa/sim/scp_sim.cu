@@ -260,10 +260,17 @@ typedef struct {
     int n_steps;          /* total steps for % progress */
     cudaEvent_t t_start;  /* for wall-clock timing */
 
-    /* GPU reduction output (12 doubles real mode; 20 in complex mode, v66) */
+    /* GPU reduction output (12 doubles real mode; 21 in complex mode, v66/v67) */
     int complex_mode;
     double *d_results;
     double *h_results;
+
+    /* v67 frequency-domain diagnostics (allocated/used only in complex mode) */
+    unsigned long long *d_sidx;  /* argmax-s voxel index (device, init ~0ULL) */
+    double qdiag_R2;             /* Q_core integration radius^2 */
+    long probe1_idx, probe2_idx; /* theta probe voxel indices, (x=+r_p,0,0) */
+    double omega_core;           /* filled by run_gpu_diagnostics */
+    double probes[4];            /* thp1u, thp1v, thp2u, thp2v */
 
     /* Config params for potential energy */
     double m2, mtheta2, eta, mu, kappa;
@@ -1303,11 +1310,13 @@ __global__ void reduce_diagnostics_kernel(
    [12] Q_phi_sum  = sum_a (u*vdot - v*udot)   (raw, *dV on host),
    [13] Q_theta_sum= sum_a (tu*tvdot - tv*tudot) (raw, *dV on host),
    [14] s_max (max), [15] M0_sum = sum rho2 (raw),
-   [16] cx_sum = x*rho2, [17] cy_sum, [18] cz_sum.
-   [19] (filled by reduce_rcore_kernel, second pass): rsum for r_core.
+   [16] cx_sum = x*rho2, [17] cy_sum, [18] cz_sum,
+   [19] Q_core_sum = (qp+qt) masked to x^2+y^2+z^2 <= qdiag_radius^2
+        (raw, *dV on host; v67).
+   [20] (filled by reduce_rcore_kernel, second pass): rsum for r_core.
    ================================================================ */
-#define CDIAG_NVALS 19
-#define CDIAG_TOTAL 20
+#define CDIAG_NVALS 20
+#define CDIAG_TOTAL 21
 
 __global__ void reduce_diagnostics_complex_kernel(
     const double *u0, const double *u1, const double *u2,
@@ -1320,7 +1329,7 @@ __global__ void reduce_diagnostics_complex_kernel(
     const double *vtv0, const double *vtv1, const double *vtv2,
     double dV, double idx1,
     double mass2, double mtheta2, double eta, double mu, double kappa,
-    double *d_results)
+    double qr2, double *d_results)
 {
     __shared__ double sdata[CDIAG_NVALS * 256];  /* THREADS_PER_BLOCK * CDIAG_NVALS */
 
@@ -1416,6 +1425,8 @@ __global__ void reduce_diagnostics_complex_kernel(
         local[16] = x*rho2;
         local[17] = y*rho2;
         local[18] = z*rho2;
+        /* v67 Q_core: total Noether charge density masked to the interior ball */
+        local[19] = (x*x + y*y + z*z <= qr2) ? (qp + qt) : 0.0;
     }
 
     for (int vv = 0; vv < CDIAG_NVALS; vv++)
@@ -1485,6 +1496,26 @@ __global__ void reduce_rcore_kernel(
         __syncthreads();
     }
     if (tid == 0) atomicAdd(d_rsum, sdata[0]);
+}
+
+/* v67: find the voxel index where s = prod_a(u_a^2+v_a^2) attains the global
+ * max found by the main complex reduction (omega_core sample point). The
+ * relative tolerance guards 1-ulp cross-kernel rounding differences; ties
+ * resolve to the LOWEST index via atomicMin (matches CPU compute_charges).
+ * d_idx must be initialized to ~0ULL before launch. */
+__global__ void find_smax_idx_kernel(
+    const double *u0, const double *u1, const double *u2,
+    const double *v0, const double *v1, const double *v2,
+    double smax, unsigned long long *d_idx)
+{
+    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= d_N3) return;
+    double s2_0 = u0[idx]*u0[idx] + v0[idx]*v0[idx];
+    double s2_1 = u1[idx]*u1[idx] + v1[idx]*v1[idx];
+    double s2_2 = u2[idx]*u2[idx] + v2[idx]*v2[idx];
+    double s = s2_0*s2_1*s2_2;
+    if (s >= smax * (1.0 - 1e-12))
+        atomicMin(d_idx, (unsigned long long)idx);
 }
 
 /* Zero the diagnostics results buffer */
@@ -2236,12 +2267,27 @@ static DiagHookCtx create_diag_hook(FILE *fp, int diag_every, int major_every,
     int nvals = ctx.complex_mode ? CDIAG_TOTAL : DIAG_NVALS;
     cudaMalloc(&ctx.d_results, nvals * sizeof(double));
     cudaMallocHost(&ctx.h_results, nvals * sizeof(double));
+
+    /* v67: argmax-s index buffer + Q_core radius + theta probe voxel indices
+     * (complex mode only; real mode allocates and launches nothing new) */
+    if (ctx.complex_mode) {
+        cudaMalloc(&ctx.d_sidx, sizeof(unsigned long long));
+        ctx.qdiag_R2 = c->qdiag_radius * c->qdiag_radius;
+        int N = c->N;
+        double L = c->L;
+        int jc = (int)lround(L/dx);                    if (jc<0) jc=0; if (jc>N-1) jc=N-1;
+        int i1 = (int)lround((c->qdiag_probe1+L)/dx);  if (i1<0) i1=0; if (i1>N-1) i1=N-1;
+        int i2 = (int)lround((c->qdiag_probe2+L)/dx);  if (i2<0) i2=0; if (i2>N-1) i2=N-1;
+        ctx.probe1_idx = (long)i1*N*N + (long)jc*N + jc;
+        ctx.probe2_idx = (long)i2*N*N + (long)jc*N + jc;
+    }
     return ctx;
 }
 
 static void destroy_diag_hook(DiagHookCtx *ctx) {
     cudaFree(ctx->d_results);
     cudaFreeHost(ctx->h_results);
+    if (ctx->d_sidx) cudaFree(ctx->d_sidx);
 }
 
 /* Run the GPU reduction and populate h_results. Used by diag_hook and for initial/final diag. */
@@ -2250,7 +2296,7 @@ static void run_gpu_diagnostics(const FieldState *state, DiagHookCtx *ctx) {
     double idx2_val = 1.0 / (ctx->dx * ctx->dx);
 
     if (ctx->complex_mode) {
-        /* v66 complex path: 19-value reduction + two-pass centroid r_core
+        /* v66 complex path: 20-value reduction + two-pass centroid r_core
          * (mirrors CPU compute_energy_complex + compute_charges) */
         zero_diag_kernel<<<1, CDIAG_TOTAL>>>(ctx->d_results, CDIAG_TOTAL);
         reduce_diagnostics_complex_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
@@ -2264,7 +2310,7 @@ static void run_gpu_diagnostics(const FieldState *state, DiagHookCtx *ctx) {
             state->vel_theta_im[0], state->vel_theta_im[1], state->vel_theta_im[2],
             ctx->dV, idx1,
             ctx->m2, ctx->mtheta2, ctx->eta, ctx->mu, ctx->kappa,
-            ctx->d_results);
+            ctx->qdiag_R2, ctx->d_results);
         cudaMemcpy(ctx->h_results, ctx->d_results, CDIAG_TOTAL * sizeof(double),
                    cudaMemcpyDeviceToHost);
         /* pass 2: rms charge radius about the rho2 centroid (dV cancels in centroid) */
@@ -2276,12 +2322,44 @@ static void run_gpu_diagnostics(const FieldState *state, DiagHookCtx *ctx) {
             reduce_rcore_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
                 state->phi[0], state->phi[1], state->phi[2],
                 state->phi_im[0], state->phi_im[1], state->phi_im[2],
-                cx, cy, cz, ctx->d_results + 19);
-            cudaMemcpy(&ctx->h_results[19], ctx->d_results + 19, sizeof(double),
+                cx, cy, cz, ctx->d_results + 20);
+            cudaMemcpy(&ctx->h_results[20], ctx->d_results + 20, sizeof(double),
                        cudaMemcpyDeviceToHost);
         } else {
-            ctx->h_results[19] = 0.0;
+            ctx->h_results[20] = 0.0;
         }
+
+        /* v67 pass 3: omega_core at the argmax-s voxel (tiny kernel reading the
+         * s_max value found by pass 1, then 4 single-voxel DtoH copies) */
+        double smax = ctx->h_results[14];
+        cudaMemset(ctx->d_sidx, 0xFF, sizeof(unsigned long long));
+        find_smax_idx_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            state->phi[0], state->phi[1], state->phi[2],
+            state->phi_im[0], state->phi_im[1], state->phi_im[2],
+            smax, ctx->d_sidx);
+        unsigned long long h_sidx = ~0ULL;
+        cudaMemcpy(&h_sidx, ctx->d_sidx, sizeof(unsigned long long),
+                   cudaMemcpyDeviceToHost);
+        ctx->omega_core = 0.0;
+        if (h_sidx != ~0ULL && (long)h_sidx < ctx->N3) {
+            long si = (long)h_sidx;
+            double u0v, v0v, ud0, vd0;
+            cudaMemcpy(&u0v, state->phi[0]        + si, sizeof(double), cudaMemcpyDeviceToHost);
+            cudaMemcpy(&v0v, state->phi_im[0]     + si, sizeof(double), cudaMemcpyDeviceToHost);
+            cudaMemcpy(&ud0, state->vel_phi[0]    + si, sizeof(double), cudaMemcpyDeviceToHost);
+            cudaMemcpy(&vd0, state->vel_phi_im[0] + si, sizeof(double), cudaMemcpyDeviceToHost);
+            double den = u0v*u0v + v0v*v0v;
+            if (den >= 1e-20) ctx->omega_core = (u0v*vd0 - v0v*ud0)/den;
+        }
+
+        /* v67 theta probes: single-voxel point samples for offline FFT.
+         * Component 1 (not 0): for a centered symmetric ball the theta source
+         * eta*curl(phi) has component 0 ~ (y-z), identically zero on the y=z
+         * probe diagonal; component 1 ~ (z-x) is maximal on the +x axis. */
+        cudaMemcpy(&ctx->probes[0], state->theta[1]    + ctx->probe1_idx, sizeof(double), cudaMemcpyDeviceToHost);
+        cudaMemcpy(&ctx->probes[1], state->theta_im[1] + ctx->probe1_idx, sizeof(double), cudaMemcpyDeviceToHost);
+        cudaMemcpy(&ctx->probes[2], state->theta[1]    + ctx->probe2_idx, sizeof(double), cudaMemcpyDeviceToHost);
+        cudaMemcpy(&ctx->probes[3], state->theta_im[1] + ctx->probe2_idx, sizeof(double), cudaMemcpyDeviceToHost);
         return;
     }
 
@@ -2306,13 +2384,16 @@ static void run_gpu_diagnostics(const FieldState *state, DiagHookCtx *ctx) {
 /* v66: extract Noether charges + core diagnostics from a completed complex
  * reduction (raw sums -> physical values, mirroring CPU compute_charges). */
 static void complex_charges_from_results(const DiagHookCtx *ctx,
-    double *Qp, double *Qt, double *smax, double *rcore) {
+    double *Qp, double *Qt, double *smax, double *rcore,
+    double *omega_core, double *Q_core) {
     const double *r = ctx->h_results;
     *Qp = r[12] * ctx->dV;
     *Qt = r[13] * ctx->dV;
     *smax = r[14];
     double M0 = r[15] * ctx->dV;
-    *rcore = (M0 < 1e-30) ? 0.0 : sqrt(r[19] * ctx->dV / M0);
+    *rcore = (M0 < 1e-30) ? 0.0 : sqrt(r[20] * ctx->dV / M0);
+    *omega_core = ctx->omega_core;   /* computed in run_gpu_diagnostics pass 3 */
+    *Q_core = r[19] * ctx->dV;
 }
 
 static void diag_hook(int step, double t, const FieldState *state, void *vctx) {
@@ -2326,14 +2407,16 @@ static void diag_hook(int step, double t, const FieldState *state, void *vctx) {
     double et = r[0]+r[1]+r[2]+r[3]+r[4]+r[5]+r[6]+r[7];
     /* theta_rms: complex mode divides by the actual 6 theta components (v66) */
     double trms = sqrt(r[11] / ((ctx->complex_mode ? 6.0 : 3.0) * ctx->N3));
-    double Qp = 0, Qt = 0, smax = 0, rcore = 0;
+    double Qp = 0, Qt = 0, smax = 0, rcore = 0, ocore = 0, qcore = 0;
     if (ctx->complex_mode)
-        complex_charges_from_results(ctx, &Qp, &Qt, &smax, &rcore);
+        complex_charges_from_results(ctx, &Qp, &Qt, &smax, &rcore, &ocore, &qcore);
 
     fprintf(ctx->fp, "%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e",
             t, r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], et, r[8], r[9], r[10], trms);
     if (ctx->complex_mode)
-        fprintf(ctx->fp, "\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e", Qp, Qt, Qp+Qt, smax, rcore);
+        fprintf(ctx->fp, "\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%.6e",
+                Qp, Qt, Qp+Qt, smax, rcore, ocore, qcore,
+                ctx->probes[0], ctx->probes[1], ctx->probes[2], ctx->probes[3]);
     fprintf(ctx->fp, "\n");
     fflush(ctx->fp);
 
@@ -3607,7 +3690,8 @@ int main(int argc, char **argv) {
     FILE *fp = fopen(c.diag_file, "w");
     fprintf(fp, "t\tE_phi_kin\tE_theta_kin\tE_grad\tE_mass\tE_pot\tE_tgrad\tE_tmass\t"
                 "E_coupling\tE_total\tphi_max\tP_max\tP_int\ttheta_rms");
-    if (c.complex_phi) fprintf(fp, "\tQ_phi\tQ_theta\tQ_total\ts_max\tr_core");
+    if (c.complex_phi) fprintf(fp, "\tQ_phi\tQ_theta\tQ_total\ts_max\tr_core"
+                                   "\tomega_core\tQ_core\tthp1u\tthp1v\tthp2u\tthp2v");
     fprintf(fp, "\n");
 
     cudaEvent_t t_start;
@@ -3633,11 +3717,14 @@ int main(int argc, char **argv) {
         fprintf(fp, "%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e",
                 0.0, r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], et0, r[8], r[9], r[10], trms0);
         if (c.complex_phi) {
-            double Qp, Qt, smax, rcore;
-            complex_charges_from_results(&diag_ctx, &Qp, &Qt, &smax, &rcore);
-            fprintf(fp, "\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e", Qp, Qt, Qp+Qt, smax, rcore);
-            printf("INIT charges: Q_phi=%.6e Q_theta=%.6e s_max=%.4e r_core=%.3f\n\n",
-                   Qp, Qt, smax, rcore);
+            double Qp, Qt, smax, rcore, ocore, qcore;
+            complex_charges_from_results(&diag_ctx, &Qp, &Qt, &smax, &rcore, &ocore, &qcore);
+            fprintf(fp, "\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%.6e",
+                    Qp, Qt, Qp+Qt, smax, rcore, ocore, qcore,
+                    diag_ctx.probes[0], diag_ctx.probes[1], diag_ctx.probes[2], diag_ctx.probes[3]);
+            printf("INIT charges: Q_phi=%.6e Q_theta=%.6e s_max=%.4e r_core=%.3f "
+                   "omega_core=%.4f Q_core=%.6e\n\n",
+                   Qp, Qt, smax, rcore, ocore, qcore);
         }
         fprintf(fp, "\n");
         fflush(fp);
@@ -3831,10 +3918,11 @@ int main(int argc, char **argv) {
         printf("E_total=%.4e (drift %.3f%%) E_pot=%.4f\n", et, 100*(et-diag_ctx.E0)/(fabs(diag_ctx.E0)+1e-30), r[4]);
         printf("phi_max=%.4f theta_rms=%.3e\n", r[8], trms);
         if (c.complex_phi) {
-            double Qp, Qt, smax, rcore;
-            complex_charges_from_results(&diag_ctx, &Qp, &Qt, &smax, &rcore);
-            printf("Q_phi=%.6e Q_theta=%.6e Q_total=%.6e s_max=%.4e r_core=%.3f\n",
-                   Qp, Qt, Qp+Qt, smax, rcore);
+            double Qp, Qt, smax, rcore, ocore, qcore;
+            complex_charges_from_results(&diag_ctx, &Qp, &Qt, &smax, &rcore, &ocore, &qcore);
+            printf("Q_phi=%.6e Q_theta=%.6e Q_total=%.6e s_max=%.4e r_core=%.3f "
+                   "omega_core=%.4f Q_core=%.6e\n",
+                   Qp, Qt, Qp+Qt, smax, rcore, ocore, qcore);
         }
         printf("SFA: %s (%u frames)\n", c.output, nf);
         printf("Wall: %.1fs (%.1f min) %.2fms/step\n", total_ms/1000, total_ms/60000, total_ms/n_steps);

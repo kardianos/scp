@@ -1,0 +1,46 @@
+=== (1) V50 limit check [verified F3] ===
+v_photon(k->0) = sqrt(1-eta^2/m2) = 0.9428 c  (V50: 0.9428c)
+matter-branch c_eff^2 = 1+eta^2/m2 = 1.1111  (transverse pol. only)
+
+=== (2) band scan K in [1.1,1.7] (photon-branch bath) ===
+  K     W(K)    M2t     c0^2/e   n_tot/e   dm2/e^2(coh)
+  1.10  1.0406  2.3772  0.02335  0.04669  -0.02254
+  1.25  1.1834  2.4120  0.02266  0.04532  -0.02123
+  1.40  1.3266  2.4500  0.02194  0.04389  -0.01991
+  1.55  1.4702  2.4911  0.02121  0.04241  -0.01859
+  1.70  1.6140  2.5350  0.02046  0.04092  -0.01731
+band-avg: C_coh = dm2/e^2 = -0.01991 (coherent, K^-component only)
+band-avg: n_tot/e = 0.04386, n_comp/e = 0.01462
+Gaussian neutral-bath: dm2 = mu*n_comp^2 = -0.00884 e^2 (isotropic) [estimate]
+single-mode neutral (F12c): -0.00996 e^2 + Floquet at (4K,4W)
+
+=== (4) core mean-field slope ===
+f0=0.6405, X=f0^2=0.4102, kappa*X^3=3.452 (>1/2: saturated => g'>0)
+g'(X) = +2.2696   => d(omega^2)_core = g'(X)*n_comp = +0.03318 * e_bath
+
+=== (5) PREDICTION TABLE: v67 bath ladder, ball omega=1.39 ===
+dm2_amb = C_gauss*e^2 [estimate]; dm/m = dm2/(2 m2)
+d_omega_core = g'*n_comp*e/(2 omega) [estimate, factor ~2 syst]
+d_omega_amb  = dm2_amb/(2 omega)
+ e_bath | n_comp   | dm2_amb    | dm_eff/m  | dw_core   | dw_amb     | dw_tot   | omega_pred
+  0.05  | 0.000731 | -0.000022  | -4.91e-06 | +0.000597 | -0.000008  | +0.000589 | 1.3906
+  0.20  | 0.002924 | -0.000353  | -7.85e-05 | +0.002387 | -0.000127  | +0.002260 | 1.3923
+  0.80  | 0.011695 | -0.005655  | -1.26e-03 | +0.009548 | -0.002034  | +0.007514 | 1.3975
+(coherent/charged-bath variant: dm2_amb = C_coh*e^2 = -0.01275 at e=0.8, K^-component only)
+
+=== (6) effective metric / photon-speed corrections at e_bath=0.8 ===
+photon: v^2 = 0.888889 -> 0.888609; d(v^2) = -2.80e-04
+  (eta^2*dm2/m2^2 = -2.79e-04, F9 agrees)
+matter g^ij_perp = (1+eta^2/(m2+dm2)) = 1.111391 (vac 1.111111)
+coherent-bath birefringence (k perp K^): Delta(m_eff^2) between polarizations = |C_coh| e^2 = 0.01275 at e=0.8
+
+=== (7) motion through bath: relative-mass anisotropy [estimate] ===
+isotropic on-shell bath, ball velocity v: e_bath -> gamma^2(1+v^2/3) e
+dm2(v) = dm2(0) * gamma^4 (1+v^2/3)^2  ~  dm2(0) * (1 + 8 v^2/3)  (O(v^2))
+  v=0.1: dm2(v)/dm2(0) = 1.0271  (O(v^2) approx 1.0267)
+  v=0.3: dm2(v)/dm2(0) = 1.2811  (O(v^2) approx 1.2400)
+  v=0.5: dm2(v)/dm2(0) = 2.0864  (O(v^2) approx 1.6667)
+
+=== consistency cross-checks ===
+2x2 eigencheck at K=1.4: photon W^2=1.760000, matter 4.410000 : PASS
+F8c on-shell closed form: dm2 = mu eta^4 e^2/(4 m2^4) = -0.02521 e^2 : PASS

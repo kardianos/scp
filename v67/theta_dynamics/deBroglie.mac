@@ -1,0 +1,193 @@
+/* ============================================================
+ * v67 Workpackage D — de Broglie kinematics of the v66 Q-ball
+ * Run: maxima -b deBroglie.mac    (all checks must print PASS)
+ * Companion: deBroglie.py (scan.tsv action-quantum table +
+ *            profile-integral verification of E - wQ = int f'^2 dV)
+ * Doc: DEBROGLIE.md
+ *
+ * Context: v66/THEORY.md SS1-4 (Q-ball, eta=0 phi sector is exactly
+ * Lorentz invariant), v67/theta_dynamics/THETA_DYNAMICS.md SS1-2
+ * (eta!=0 medium: c_eff^2 = 1 + eta^2/m^2 transverse; bath ladder
+ * delta-omega(e) = +0.0119 e - 0.0032 e^2).
+ * ============================================================ */
+kill(all)$
+nfail: 0$
+check(name, expr) := block([r: radcan(ratsimp(expr))],
+  if is(equal(r,0)) then print(sconcat("PASS ", name))
+  else (print(sconcat("FAIL ", name, " residual=")), print(r), nfail: nfail+1))$
+checknum(name, val, target, tol) := block([d: abs(float(val) - float(target))],
+  if d <= tol then print(sconcat("PASS ", name, "  val=", float(val)))
+  else (print(sconcat("FAIL ", name, "  val=", float(val), " target=", float(target))),
+        nfail: nfail+1))$
+
+assume(v>0, v<1, w>0, E0>0, kk>0, ep>=0, ep+1-v^2>0)$
+g: 1/sqrt(1-v^2)$          /* Lorentz gamma, c = 1 */
+
+/* ============================================================
+ * D1 — Boosted Q-ball is an exact solution (eta = 0)  [thm]
+ *
+ * Single complex field, EOM:  Phi_tt - lap(Phi) + W(|Phi|^2) Phi = 0
+ * (W absorbs m^2 and the potential force; the v66 three-field
+ * potential is pointwise in the |Phi_a|, so the argument applies
+ * componentwise to the symmetric ansatz).
+ * Rest solution: Phi = F(x,y,z) e^{i w t} with
+ *   W(F^2) F = w^2 F + F_xx + F_yy + F_zz          (rest profile eq.)
+ * Boosted ansatz:  Phi_v = F(XX, y, z) e^{i g w (t - v x)},
+ *   XX = g (x - v t)   (contracted comoving coordinate).
+ * Claim: residual of Phi_v reduces EXACTLY to the (boosted) rest
+ * profile equation -> Phi_v is an exact solution.
+ * ============================================================ */
+depends(F, [XX, y, z])$
+depends(XX, [x, t])$
+th: g*w*(t - v*x)$
+Phi: F*exp(%i*th)$
+R: diff(Phi,t,2) - diff(Phi,x,2) - diff(Phi,y,2) - diff(Phi,z,2)$
+/* insert XX = g(x - vt):  XX_x = g, XX_t = -g v, second derivs 0 */
+R: subst(['diff(XX,x,2)=0, 'diff(XX,t,2)=0, 'diff(XX,x,1)=g, 'diff(XX,t,1)=-g*v], R)$
+/* the rest profile equation lets us write W(F^2)*F at the mapped point: */
+target: -exp(%i*th)*(w^2*F + diff(F,XX,2) + diff(F,y,2) + diff(F,z,2))$
+check("D1_boosted_ansatz_exact_solution", R - target)$
+/* (R = -e^{i th} W(F^2) F  <=>  R - target = 0 by the rest equation;
+   first-derivative cross terms in F_XX, F_X cancel identically) */
+
+/* ============================================================
+ * D2-D4 — phase kinematics of the moving ball  [thm]
+ * phase th(t,x) = g w (t - v x)
+ * ============================================================ */
+/* D2: de Broglie wavenumber = spatial phase tilt at fixed t */
+kdB: -diff(th, x)$
+check("D2_kdB_eq_gamma_w_v", kdB - g*w*v)$
+
+/* D3: frequency at the MOVING CENTER x = v t : time dilation w/gamma */
+check("D3_comoving_freq_w_over_gamma", diff(subst(x=v*t, th), t) - w*sqrt(1-v^2))$
+
+/* D4: frequency at a FIXED LAB POINT: gamma w */
+check("D4_lab_freq_gamma_w", diff(th, t) - g*w)$
+
+/* ============================================================
+ * D5 — the ball as a wavepacket: lab dispersion, phase/group velocity [thm]
+ * ============================================================ */
+Om(k) := sqrt(w^2 + k^2)$
+/* D5a: lab frequency and kdB sit ON the dispersion curve Om(k) */
+check("D5a_on_shell_Om(kdB)_eq_gamma_w", Om(kdB) - g*w)$
+/* D5b: group velocity at kdB equals the boost velocity v */
+check("D5b_group_velocity_v", subst(kk=kdB, diff(Om(kk),kk)) - v)$
+/* D5c: phase velocity = 1/v (superluminal, carries no energy) */
+check("D5c_phase_velocity_1_over_v", Om(kdB)/kdB - 1/v)$
+/* D5d: v_ph * v_g = 1 (= c^2) identically on this dispersion */
+check("D5d_vph_vg_eq_c2", Om(kk)/kk * diff(Om(kk),kk) - 1)$
+
+/* ============================================================
+ * D6-D7 — relativistic particle kinematics  [thm]
+ * ============================================================ */
+EE: g*E0$   pp: g*E0*v$
+/* D6: exact mass-shell relation with rest energy E0 */
+check("D6_mass_shell_E2_eq_p2_plus_E02", EE^2 - pp^2 - E0^2)$
+/* D7: de Broglie relation reads kdB = (w/E0) p  -> p only if w = E0 */
+check("D7_kdB_eq_w_over_E0_times_p", kdB - (w/E0)*pp)$
+/* => effective action quantum h_eff = p/kdB = E0/w  (Q-dependent!) */
+
+/* ============================================================
+ * D8 — THE ACTION-QUANTUM IDENTITY:  E - w Q = int f'^2 dV   [thm]
+ * (Pohozaev/Derrick scaling on the radial Q-ball)
+ * ============================================================ */
+Vt(s) := (mu/2)*s/(1+kap*s)$
+Uw(f)  := (1/2)*(m2 - w^2)*f^2 + (mu/6)*f^6/(1+kap*f^6)$
+eden: (3/2)*(w^2*f^2 + fp^2 + m2*f^2) + Vt(f^6)$   /* v66 SS3.2 */
+rhoQ: 3*w*f^2$
+/* D8a: pointwise density identity  e - w rho_Q = 3( f'^2/2 + U_w(f) ) */
+check("D8a_density_identity", eden - w*rhoQ - 3*(fp^2/2 + Uw(f)))$
+/* D8b: Derrick scaling f_lam(r) = f(r/lam):
+   per-field K = int (1/2) f'^2 dV scales as lam,
+   per-field PU = int U_w dV scales as lam^3;
+   stationarity of S = 3(lam K + lam^3 PU) at lam = 1 (the ODE solution)
+   => Pohozaev:  K + 3 PU = 0 */
+sol: solve(subst(lam=1, diff(3*(lam*Kk + lam^3*PU), lam)) = 0, PU)$
+check("D8b_pohozaev_K_plus_3PU", subst(sol, Kk + 3*PU))$
+/* D8c: therefore  E - w Q = 3(K + PU) = 2K = int f'^2 dV  (exact) */
+check("D8c_E_minus_wQ_eq_int_fp2", subst(sol, 3*(Kk + PU) - 2*Kk))$
+/* numerical verification across the whole branch: deBroglie.py */
+
+/* ============================================================
+ * D9 — free-quantum normalization: each unit of Q carries E = w
+ * (so Q literally counts quanta; per-quantum action over one
+ *  internal period = E*T/Q = 2 pi)                              [thm]
+ * ============================================================ */
+uu: A*cos(w*t - kk*x)$
+vv: A*sin(w*t - kk*x)$
+rhoE: (1/2)*(diff(uu,t)^2 + diff(vv,t)^2)
+    + (1/2)*(diff(uu,x)^2 + diff(vv,x)^2) + (m2/2)*(uu^2 + vv^2)$
+rhoQc: uu*diff(vv,t) - vv*diff(uu,t)$
+check("D9a_free_wave_rhoE_eq_w2A2", trigsimp(subst(m2 = w^2 - kk^2, rhoE)) - w^2*A^2)$
+check("D9b_free_wave_rhoQ_eq_wA2", trigsimp(rhoQc) - w*A^2)$
+check("D9c_free_E_over_Q_eq_w",
+      trigsimp(subst(m2 = w^2 - kk^2, rhoE)) - w*trigsimp(rhoQc))$
+
+/* ============================================================
+ * D10 — medium corrections (eta != 0): de Broglie tilt through the
+ * theta vacuum, matter branch  Om(k)^2 = w0^2 + c_eff^2 k^2,
+ * c_eff^2 = 1 + ep,  ep = eta^2/m^2  (transverse; longitudinal ep=0)
+ * [thm on the linear matter-branch dispersion; applying it to the
+ *  ball is an estimate — see DEBROGLIE.md SS3]
+ * ============================================================ */
+c2: 1 + ep$
+OmM(k) := sqrt(w^2 + c2*k^2)$
+kofv: w*v/(sqrt(c2)*sqrt(c2 - v^2))$
+/* D10a: kofv inverts the group velocity: OmM'(kofv) = v
+   (rootscontract first: radcan alone picks a wrong sqrt branch here) */
+check("D10a_medium_group_velocity_inversion",
+      rootscontract(subst(kk=kofv, diff(OmM(kk),kk)) - v))$
+/* D10b: leading Lorentz-violating correction to the de Broglie tilt:
+   kdB(v) = g w v [ 1 - ep (2 - v^2) / (2 (1 - v^2)) + O(ep^2) ] */
+check("D10b_kdB_O(eta2)_correction",
+      taylor(kofv - g*w*v*(1 - ep*(2-v^2)/(2*(1-v^2))), ep, 0, 1))$
+/* D10c: in the medium  v_ph * v_g = c_eff^2 (not 1) */
+check("D10c_vph_vg_eq_ceff2", OmM(kofv)/kofv * subst(kk=kofv, diff(OmM(kk),kk)) - c2)$
+/* D10d: standard parameters eta = 0.5, m^2 = 2.25 -> ep = 1/9:
+   low-v transverse tilt reduced by factor 1 - 1/9 = 0.888.. (11.1%) */
+checknum("D10d_transverse_reduction_factor", 1 - (0.5^2/2.25), 0.8889, 2e-4)$
+
+/* ============================================================
+ * D11 — clock-gradient force (eikonal rays on Om(x,k) = sqrt(w(x)^2+k^2))
+ * a = -c^2 (1 - v^2) d(ln w)/dx ;  v->0:  a = -c^2 d(dw/w)/dx   [thm]
+ * ============================================================ */
+depends(omg, x)$
+OmE: sqrt(omg^2 + kk^2)$
+xdot: diff(OmE, kk)$
+kdot: -diff(OmE, x)$
+/* D11a: Om is conserved along rays (energy conservation) */
+check("D11a_Omega_conserved_along_ray", diff(OmE,x)*xdot + diff(OmE,kk)*kdot)$
+/* D11b: drift acceleration  a = -(1 - v^2) w'/w  with v = kk/OmE */
+adrift: ratsimp(diff(xdot,x)*xdot + diff(xdot,kk)*kdot)$
+check("D11b_drift_accel_minus_c2_dlnw_dx",
+      adrift + (1 - (kk/OmE)^2) * diff(omg,x)/omg)$
+
+/* ============================================================
+ * D12 — numbers: bath-gradient drift for the v67 ladder    [estimate]
+ * dw(e) = +0.0119 e - 0.0032 e^2  (THETA_DYNAMICS SS2.5);
+ * de/dx = 0.2/25 = 0.008 (one rung across the box); w_ball = 1.39
+ * a = -(1/w) (d dw/de) (de/dx)   (v -> 0 limit of D11b)
+ * ============================================================ */
+aval: (0.0119)*(0.2/25)/1.39$
+checknum("D12a_drift_accel_code_units", aval, 6.848e-5, 1e-7)$
+/* V51 measured gradient drift (FUTURE.md F25): +6 code units in T=400
+   from rest => a_V51 = 2*6/400^2 = 7.5e-5 — SAME ORDER, different bkg */
+checknum("D12b_V51_order_of_magnitude_ratio", aval/(2*6.0/400^2), 0.913, 0.01)$
+
+/* ============================================================
+ * D13 — orbit quantization arithmetic                       [estimate]
+ * relative coords: mu_red = M/2, p_rel = (M/2) v_rel, h_eff = E0/w = M/w
+ * (M = E0); k_rel = p_rel/h_eff = w v_rel / 2;
+ * closure on the relative circle (radius D):
+ *    2 pi D k_rel = 2 pi n   =>   D v_rel = 2 n / w
+ * ============================================================ */
+check("D13a_closure_D_vrel_eq_2n_over_w",
+      subst(vr = 2*nq/(w*Dd), 2*%pi*Dd*(w*vr/2) - 2*%pi*nq))$
+checknum("D13b_n1_Dv_product_w139", 2/1.39, 1.4388, 1e-3)$
+/* centripetal requirement (n=1):  F_req = 2 M / (w^2 D^3), M = 692 */
+checknum("D13c_Freq_at_D12", 2*692/(1.39^2*12^3), 0.4146, 1e-3)$
+checknum("D13d_orbit_period_at_D12", %pi*1.39*12^2, 628.8, 0.5)$
+
+/* ============================================================ */
+if nfail = 0 then print("ALL CHECKS PASS")
+else (print(sconcat(nfail, " CHECKS FAILED")), quit(1))$

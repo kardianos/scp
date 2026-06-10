@@ -1,0 +1,150 @@
+/* ============================================================
+   WP-B: THETA WINDING — Beltrami backgrounds, quantization,
+   chiral-splitting question, AB analog, Q-ball shift.
+   Theory: v66/THEORY.md sections 1-2 (12-field complexified Cosserat).
+   Run: maxima -b theta_winding.mac     -> prints PASS/FAIL per check.
+   ============================================================ */
+kill(all)$
+ratprint:false$
+
+npass:0$ nfail:0$
+chk(name, e) := block([r: ratsimp(trigsimp(ratsimp(e)))],
+  if is(equal(r,0)) then (npass:npass+1, print(sconcat("PASS ", name)))
+  else (nfail:nfail+1, print(sconcat("FAIL ", name, " residual=")), print(r)))$
+chkv(name, v) := block([ok:true],
+  for i:1 thru length(v) do
+    if not is(equal(ratsimp(trigsimp(ratsimp(v[i]))),0)) then ok:false,
+  if ok then (npass:npass+1, print(sconcat("PASS ", name)))
+  else (nfail:nfail+1, print(sconcat("FAIL ", name)), print(ratsimp(trigsimp(v)))))$
+chknum(name, cond) := if cond then (npass:npass+1, print(sconcat("PASS ", name)))
+  else (nfail:nfail+1, print(sconcat("FAIL ", name)))$
+
+curl3(F) := [diff(F[3],y)-diff(F[2],z), diff(F[1],z)-diff(F[3],x), diff(F[2],x)-diff(F[1],y)]$
+lap3(F)  := map(lambda([g], diff(g,x,2)+diff(g,y,2)+diff(g,z,2)), F)$
+
+/* ---------- W1: helical fields are exact Beltrami eigenfields ----------
+   Theta_- = B(cos Kz, sin Kz, 0):  curl = -K * Theta_-  (helicity -1)
+   Theta_+ = B(cos Kz, -sin Kz, 0): curl = +K * Theta_+  (helicity +1)  */
+hm: [B*cos(K*z), B*sin(K*z), 0]$
+hp: [B*cos(K*z), -B*sin(K*z), 0]$
+chkv("W1a_curl(helix-)=-K*helix-", curl3(hm) + K*hm)$
+chkv("W1b_curl(helix+)=+K*helix+", curl3(hp) - K*hp)$
+
+/* ---------- W2: traveling circular wave (the dynamical Beltrami background)
+   tu = B(cos psi, sin psi, 0), psi = K z - W t, is an EXACT free-theta solution
+   (m_theta=0) iff W^2 = K^2, and is Beltrami at every instant: curl = -K tu. */
+psi: K*z - W*t$
+tw: [B*cos(psi), B*sin(psi), 0]$
+waveres: map(lambda([g], diff(g,t,2)), tw) - lap3(tw)$
+chkv("W2a_traveling_wave_solves_free_theta_iff_W=K", subst(W=K, waveres))$
+chkv("W2b_instantaneous_Beltrami_curl=-K*tu", curl3(tw) + K*tw)$
+
+/* ---------- W3: induced phi condensate (forced response) ----------
+   Linearized phi EOM at Phi~0:  u_tt = lap u - m^2 u + eta*curl(tu_bg).
+   curl(tu_bg) = -K tu_bg  => forcing -eta K B (cos psi, sin psi, 0).
+   Ansatz u = C(cos psi, sin psi, 0):  C = -eta K B/(m^2 + K^2 - W^2);
+   on shell (W=K, massless theta): C = -eta K B / m^2.  */
+uind: [C*cos(psi), C*sin(psi), 0]$
+phires: map(lambda([g], diff(g,t,2)), uind) - lap3(uind) + m2*uind - eta*curl3(tw)$
+Csol: rhs(solve(ratcoef(trigsimp(phires[1]), cos(psi), 1) = 0, C)[1])$
+chk("W3a_C_general=-eta*K*B/(m2+K^2-W^2)", Csol - (-eta*K*B/(m2+K^2-W^2)))$
+chk("W3b_C_onshell=-eta*K*B/m2", subst(W=K, Csol) - (-eta*K*B/m2))$
+chkv("W3c_onshell_residual_zero", subst([C=-eta*K*B/m2, W=K], phires))$
+
+/* ---------- W4: polariton dispersion is helicity-EVEN => ZERO chiral splitting
+   Helicity eigenmode u = a e_lam e^{i(kz-wt)}, tu = b e_lam e^{i(kz-wt)},
+   curl -> lam*k (lam = +/-1).  Coupled system determinant:
+   D(lam) = (w^2-k^2-m^2)(w^2-k^2-mt^2) - eta^2 lam^2 k^2.
+   D(+1) - D(-1) = 0 identically: the +/- branches do NOT split.  */
+D(lam) := (w2 - k^2 - m2)*(w2 - k^2 - mt2) - eta^2*lam^2*k^2$
+chk("W4_chiral_splitting_identically_zero", D(1) - D(-1))$
+
+/* ---------- W5: lower polariton branch, small k, m_theta=0:
+   w_-^2 = (1 - eta^2/m^2) k^2 + O(k^4)  -> v50 polariton v=sqrt(1-eta^2/m^2). */
+disc: (2*k^2+m2)^2 - 4*(k^4 + m2*k^2 - eta^2*k^2)$
+xminus: ((2*k^2+m2) - sqrt(disc))/2$
+chk("W5_lower_branch_vphase2=1-eta^2/m^2",
+    ratcoef(taylor(xminus, k, 0, 2), k, 2) - (1 - eta^2/m2))$
+
+/* ---------- W6: energy density of the traveling circular theta wave = K^2 B^2 */
+edens: (1/2)*( sum(diff(tw[i],t)^2, i,1,3)
+             + sum(diff(tw[i],x)^2 + diff(tw[i],y)^2 + diff(tw[i],z)^2, i,1,3) )$
+chk("W6_bath_energy_density=K^2*B^2", trigsimp(subst(W=K, edens)) - K^2*B^2)$
+
+/* ---------- W7: potential Hessian at the induced helical condensate ----------
+   Background u = (c1 cos p, c1 sin p, 0), v = 0 (third component ZERO).
+   Vt(s), s = prod_a (u_a^2+v_a^2).  Claim: ALL second derivatives vanish
+   except (u2,u2) and (v2,v2), both = mu*c1^4*cos(p)^2*sin(p)^2.
+   => background effect on fluctuations is O(c1^4), scalar (component-2 only),
+   NOT chiral.  */
+Vt(s) := (mu/2)*s/(1+kap*s)$
+svar: (u0^2+v0^2)*(u1^2+v1^2)*(u2^2+v2^2)$
+VV: Vt(svar)$
+vars: [u0,u1,u2,v0,v1,v2]$
+bg: [u0=c1*cos(p), u1=c1*sin(p), u2=0, v0=0, v1=0, v2=0]$
+hessOK: true$
+for i:1 thru 6 do for j:i thru 6 do block([h],
+  h: ratsimp(subst(bg, diff(diff(VV, vars[i]), vars[j]))),
+  if (vars[i]=u2 and vars[j]=u2) or (vars[i]=v2 and vars[j]=v2)
+    then ( if not is(equal(ratsimp(h - mu*c1^4*cos(p)^2*sin(p)^2),0)) then hessOK:false )
+    else ( if not is(equal(h,0)) then hessOK:false ))$
+chknum("W7_Hessian_only_(u2,u2),(v2,v2)=mu*c1^4*cos^2*sin^2", hessOK)$
+
+/* ---------- W8: first-order Q-ball shift vanishes (time average) ----------
+   dE1 = -eta Int Theta_bg . curl(u_ball); ball oscillates at omega, background
+   at W != omega  => <cos(omega t) cos(W t + phase)> = 0.  Representative
+   integer-frequency check (3 vs 2 over the common period). */
+chk("W8_first_order_ball_shift_time_avg=0",
+    integrate(cos(3*t)*cos(2*t + ph), t, 0, 2*%pi))$
+
+/* ---------- W9: second-order mean potential shift on the ball ----------
+   Ball Phi_a = f e^{i th} (all a) + induced condensate (c on components 0,1).
+   Two-angle average (th = omega t, p = psi incommensurate):
+   <Vt(s)> - Vt(f^6) = c^2 [ Vt'(f^6) f^4 + Vt''(f^6) f^10 ] + O(c^4).  */
+u0b: f*cos(th)+c*cos(p)$  v0b: f*sin(th)$
+u1b: f*cos(th)+c*sin(p)$  v1b: f*sin(th)$
+u2b: f*cos(th)$           v2b: f*sin(th)$
+sb: (u0b^2+v0b^2)*(u1b^2+v1b^2)*(u2b^2+v2b^2)$
+ds: expand(trigsimp(expand(sb)) - f^6)$
+avg2(e) := integrate(integrate(expand(e), th, 0, 2*%pi), p, 0, 2*%pi)/(4*%pi^2)$
+m1: ratsimp(avg2(ds))$
+m2: ratsimp(avg2(ds^2))$
+chk("W9a_<ds>_leading=f^4*c^2", ratcoef(taylor(m1, c, 0, 2), c, 2) - f^4)$
+chk("W9b_<ds^2>_leading=2*f^10*c^2", ratcoef(taylor(m2, c, 0, 2), c, 2) - 2*f^10)$
+define(Vp(s),  diff(Vt(s), s))$
+define(Vpp(s), diff(Vp(s), s))$
+gcoef: Vp(f^6)*f^4 + Vpp(f^6)*f^10$
+chk("W9c_g(f)_closed_form=(mu/2)f^4(1-kap*f^6)/(1+kap*f^6)^3",
+    ratsimp(gcoef - (mu/2)*f^4*(1-kap*f^6)/(1+kap*f^6)^3))$
+
+/* ---------- W10: winding quantization numbers, L=25 (box side 2L=50) ---------- */
+dK: float(%pi/25)$
+chknum("W10a_step_dK=0.125664", abs(dK - 0.125664) < 1e-5)$
+chknum("W10b_bath_band_1.1-1.7_is_n=9..13",
+   (9*dK >= 1.1) and (13*dK <= 1.7) and (8*dK < 1.1) and (14*dK > 1.7))$
+
+/* ---------- W11: condensate amplitude stepping ----------
+   Fixed B:        c_n = eta*B*K_n/m^2  — LINEAR in winding n.
+   Fixed e_bath:   B = sqrt(e)/K  =>  c = eta*sqrt(e)/m^2 — n-INDEPENDENT. */
+cofK: eta*KK*B/m2$
+chk("W11a_fixed_ebath_c_independent_of_K",
+    diff(subst(B = sqrt(e)/KK, cofK), KK))$
+chk("W11b_fixed_B_c_linear_in_n",
+    subst(KK = n*%pi/Lbox, cofK) - eta*B*n*%pi/(Lbox*m2))$
+
+/* ---------- W12: AB analog — bilinearity theorem ----------
+   The ONLY theta term in the phi EOM is eta*(curl tu)_a, LINEAR in tu;
+   the fluctuation operator around (u_bg, tu_bg) therefore contains NO tu_bg.
+   Check: d^2/du db of the coupling Lagrangian eta*tu.curl(u) with
+   tu -> tu_bg + b*dtu, u -> u_bg + a*du is independent of the backgrounds. */
+Lc: eta*sum((tub[i] + b*dtu[i])*curl3([ub[1]+a*du[1], ub[2]+a*du[2], ub[3]+a*du[3]])[i], i, 1, 3)$
+depends([ub,du],[x,y,z])$
+ub:[ub1(x,y,z),ub2(x,y,z),ub3(x,y,z)]$ du:[du1(x,y,z),du2(x,y,z),du3(x,y,z)]$
+tub:[tb1(x,y,z),tb2(x,y,z),tb3(x,y,z)]$ dtu:[dt1(x,y,z),dt2(x,y,z),dt3(x,y,z)]$
+Lc: eta*sum((tub[i] + b*dtu[i])*curl3(ub + a*du)[i], i, 1, 3)$
+cross: diff(diff(Lc, a), b)$
+chknum("W12_fluct_bilinear_indep_of_backgrounds",
+   is(freeof(tb1,cross)) and is(freeof(tb2,cross)) and is(freeof(tb3,cross))
+   and is(freeof(ub1,cross)) and is(freeof(ub2,cross)) and is(freeof(ub3,cross)))$
+
+print(sconcat("SUMMARY: ", npass, " PASS, ", nfail, " FAIL"))$

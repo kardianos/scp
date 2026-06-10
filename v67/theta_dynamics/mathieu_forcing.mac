@@ -1,0 +1,222 @@
+/* mathieu_forcing.mac — WP-C: parametric (Mathieu/Hill) forcing of a Q-ball
+   by an oscillating theta background.
+   Run: maxima -b mathieu_forcing.mac   — every check prints PASS/FAIL.
+
+   Model: ball perturbation mode q(t):
+       q'' + [ w0^2 + eps*cos(W*t) ] q = 0        (Mathieu form)
+   Standard form via tau = W*t/2:
+       d2q/dtau^2 + ( a - 2 qm cos(2 tau) ) q = 0,
+       a = 4 w0^2 / W^2 ,  qm = -2 eps / W^2   (|qm| = 2 eps/W^2; sign only swaps
+       a_n <-> b_n for odd n, widths unchanged).                                  */
+
+npass : 0$ nfail : 0$
+check(name, expr) := block([r : ratsimp(expand(expr))],
+  if is(equal(r, 0)) then (npass : npass + 1, print("PASS", name))
+  else (nfail : nfail + 1, print("FAIL", name, "residual =", r)))$
+
+/* ================================================================
+   PART 1 — Mathieu tongue boundaries by harmonic balance, O(qm^2)
+   y'' + (a - 2 q cos 2t) y = 0
+   ================================================================ */
+
+/* ---- n=1, cos branch (ce1): a1(q) = 1 + q - q^2/8 ---- */
+block([y, R, e1, e2, e3, sol,
+       a : 1 + A1*q + A2*q^2,
+       c31, c32, c51],
+  y : cos(t) + q*c31*cos(3*t) + q^2*(c32*cos(3*t) + c51*cos(5*t)),
+  R : trigreduce(expand(diff(y,t,2) + (a - 2*q*cos(2*t))*y)),
+  e1 : taylor(ratcoef(R, cos(t)),   q, 0, 2),
+  e2 : taylor(ratcoef(R, cos(3*t)), q, 0, 2),
+  e3 : taylor(ratcoef(R, cos(5*t)), q, 0, 2),
+  sol : solve(append(makelist(ratcoef(e1,q,k),k,1,2),
+                     makelist(ratcoef(e2,q,k),k,1,2),
+                     makelist(ratcoef(e3,q,k),k,2,2)),
+              [A1, A2, c31, c32, c51]),
+  ce1_a : subst(sol[1], 1 + A1*q + A2*q^2),
+  check("C1a: ce1 boundary a1(q) = 1 + q - q^2/8", ce1_a - (1 + q - q^2/8)))$
+
+/* ---- n=1, sin branch (se1): b1(q) = 1 - q - q^2/8 ---- */
+block([y, R, e1, e2, e3, sol,
+       a : 1 + B1*q + B2*q^2, s31, s32, s51],
+  y : sin(t) + q*s31*sin(3*t) + q^2*(s32*sin(3*t) + s51*sin(5*t)),
+  R : trigreduce(expand(diff(y,t,2) + (a - 2*q*cos(2*t))*y)),
+  e1 : taylor(ratcoef(R, sin(t)),   q, 0, 2),
+  e2 : taylor(ratcoef(R, sin(3*t)), q, 0, 2),
+  e3 : taylor(ratcoef(R, sin(5*t)), q, 0, 2),
+  sol : solve(append(makelist(ratcoef(e1,q,k),k,1,2),
+                     makelist(ratcoef(e2,q,k),k,1,2),
+                     makelist(ratcoef(e3,q,k),k,2,2)),
+              [B1, B2, s31, s32, s51]),
+  se1_b : subst(sol[1], 1 + B1*q + B2*q^2),
+  check("C1b: se1 boundary b1(q) = 1 - q - q^2/8", se1_b - (1 - q - q^2/8)))$
+
+/* ---- n=2, cos branch (ce2): a2(q) = 4 + 5 q^2/12 ---- */
+block([y, R, e0, e2, e4, e6, sol,
+       a : 4 + A1*q + A2*q^2, d01, d02, d41, d42, d61],
+  y : cos(2*t) + q*(d01 + d41*cos(4*t)) + q^2*(d02 + d42*cos(4*t) + d61*cos(6*t)),
+  R : trigreduce(expand(diff(y,t,2) + (a - 2*q*cos(2*t))*y)),
+  e0 : taylor(ratsimp(R - ratcoef(R,cos(2*t))*cos(2*t) - ratcoef(R,cos(4*t))*cos(4*t)
+                        - ratcoef(R,cos(6*t))*cos(6*t)), q, 0, 2),  /* constant harmonic */
+  e2 : taylor(ratcoef(R, cos(2*t)), q, 0, 2),
+  e4 : taylor(ratcoef(R, cos(4*t)), q, 0, 2),
+  e6 : taylor(ratcoef(R, cos(6*t)), q, 0, 2),
+  sol : solve(append(makelist(ratcoef(e0,q,k),k,1,2),
+                     makelist(ratcoef(e2,q,k),k,1,2),
+                     makelist(ratcoef(e4,q,k),k,1,2),
+                     makelist(ratcoef(e6,q,k),k,2,2)),
+              [A1, A2, d01, d02, d41, d42, d61]),
+  ce2_a : subst(sol[1], 4 + A1*q + A2*q^2),
+  check("C1c: ce2 boundary a2(q) = 4 + 5q^2/12", ce2_a - (4 + 5*q^2/12)))$
+
+/* ---- n=2, sin branch (se2): b2(q) = 4 - q^2/12 ---- */
+block([y, R, e2, e4, e6, sol,
+       a : 4 + B1*q + B2*q^2, s41, s42, s61],
+  y : sin(2*t) + q*s41*sin(4*t) + q^2*(s42*sin(4*t) + s61*sin(6*t)),
+  R : trigreduce(expand(diff(y,t,2) + (a - 2*q*cos(2*t))*y)),
+  e2 : taylor(ratcoef(R, sin(2*t)), q, 0, 2),
+  e4 : taylor(ratcoef(R, sin(4*t)), q, 0, 2),
+  e6 : taylor(ratcoef(R, sin(6*t)), q, 0, 2),
+  sol : solve(append(makelist(ratcoef(e2,q,k),k,1,2),
+                     makelist(ratcoef(e4,q,k),k,1,2),
+                     makelist(ratcoef(e6,q,k),k,2,2)),
+              [B1, B2, s41, s42, s61]),
+  se2_b : subst(sol[1], 4 + B1*q + B2*q^2),
+  check("C1d: se2 boundary b2(q) = 4 - q^2/12", se2_b - (4 - q^2/12)))$
+
+/* ================================================================
+   PART 2 — Conversion to physical drive frequency W
+   a = 4 w0^2/W^2, |qm| = 2 eps/W^2
+   ================================================================ */
+
+/* n=1: boundaries a = 1 +/- qm - qm^2/8  =>  W = 2 w0 -/+ eps/(2 w0) + O(eps^2) */
+block([eq, W1, W2, ser1, ser2],
+  /* + branch */
+  eq : 4*w0^2 - (W^2 + 2*eps - (1/8)*(4*eps^2/W^2)),  /* a*W^2 = W^2 + 2eps - qm^2 W^2/8 */
+  W1 : 2*w0 + w1*eps + w2*eps^2,
+  ser1 : taylor(subst(W = W1, eq), eps, 0, 1),
+  sol1 : solve(ratcoef(ser1, eps, 1), w1),
+  check("C2a: n=1 boundary (+q): W = 2w0 - eps/(2w0) + O(eps^2)",
+        subst(sol1[1], w1) - (-1/(2*w0))),
+  /* - branch */
+  eq : 4*w0^2 - (W^2 - 2*eps - (1/8)*(4*eps^2/W^2)),
+  ser2 : taylor(subst(W = 2*w0 + v1*eps, eq), eps, 0, 1),
+  sol2 : solve(ratcoef(ser2, eps, 1), v1),
+  check("C2b: n=1 boundary (-q): W = 2w0 + eps/(2w0) + O(eps^2)",
+        subst(sol2[1], v1) - (1/(2*w0))),
+  check("C2c: n=1 tongue full width = eps/w0 + O(eps^2)",
+        (subst(sol2[1], v1) - subst(sol1[1], w1)) - 1/w0))$
+
+/* n=2: boundaries a = 4 + 5 qm^2/12 and 4 - qm^2/12
+   => W in [ w0 - 5 eps^2/(24 w0^3), w0 + eps^2/(24 w0^3) ], width eps^2/(4 w0^3) */
+block([equp, eqdn, serup, serdn, solup, soldn],
+  /* a = 4 + (5/12) qm^2 :  4 w0^2 = 4 W^2 + (5/12)(4 eps^2/W^2) */
+  equp : 4*w0^2 - (4*W^2 + (5/3)*eps^2/W^2),
+  serup : taylor(subst(W = w0 + u2*eps^2, equp), eps, 0, 2),
+  solup : solve(ratcoef(serup, eps, 2), u2),
+  check("C2d: n=2 lower boundary W = w0 - 5 eps^2/(24 w0^3)",
+        subst(solup[1], u2) - (-5/(24*w0^3))),
+  eqdn : 4*w0^2 - (4*W^2 - (1/3)*eps^2/W^2),
+  serdn : taylor(subst(W = w0 + d2*eps^2, eqdn), eps, 0, 2),
+  soldn : solve(ratcoef(serdn, eps, 2), d2),
+  check("C2e: n=2 upper boundary W = w0 + eps^2/(24 w0^3)",
+        subst(soldn[1], d2) - (1/(24*w0^3))),
+  check("C2f: n=2 tongue full width = eps^2/(4 w0^3)",
+        (subst(soldn[1], d2) - subst(solup[1], u2)) - 1/(4*w0^3)))$
+
+/* ================================================================
+   PART 3 — Growth rate at n=1 tongue center, and damping threshold
+   q'' + 2 g q' + (w0^2 + eps cos(2 w0 t)) q = 0
+   ================================================================ */
+
+/* undamped growth: q = e^{s t}(Ac cos w0 t + As sin w0 t), drop 3w0 harmonics */
+block([y, R, Rb, ccos, csin, D, Dser],
+  y : exp(s*t)*(Ac*cos(w0*t) + As*sin(w0*t)),
+  R : diff(y,t,2) + (w0^2 + eps*cos(2*w0*t))*y,
+  Rb : trigreduce(expand(R / exp(s*t))),
+  ccos : ratcoef(Rb, cos(w0*t)),
+  csin : ratcoef(Rb, sin(w0*t)),
+  D : ratsimp(determinant(matrix(
+        [ratcoef(ccos,Ac), ratcoef(ccos,As)],
+        [ratcoef(csin,Ac), ratcoef(csin,As)]))),
+  /* D(s,eps)=0; substitute s = eps/(4 w0): residual must vanish at O(eps^2) */
+  Dser : taylor(subst(s = eps/(4*w0), D), eps, 0, 2),
+  check("C3a: n=1 center growth s = eps/(4 w0)  [det residual O(eps^3)]",
+        Dser))$
+
+/* damped threshold: s=0 solution exists when eps = 4 g w0 (leading order) */
+block([y, R, Rb, ccos, csin, D, sol],
+  y : Ac*cos(w0*t) + As*sin(w0*t),
+  R : diff(y,t,2) + 2*g*diff(y,t) + (w0^2 + eps*cos(2*w0*t))*y,
+  Rb : trigreduce(expand(R)),
+  ccos : ratcoef(Rb, cos(w0*t)),
+  csin : ratcoef(Rb, sin(w0*t)),
+  D : ratsimp(determinant(matrix(
+        [ratcoef(ccos,Ac), ratcoef(ccos,As)],
+        [ratcoef(csin,Ac), ratcoef(csin,As)]))),
+  sol : solve(D = 0, eps),
+  /* roots eps = +/- 4 g w0 */
+  check("C3b: damped n=1 threshold eps_c = 4 g w0",
+        (subst(sol[1], eps))^2 - 16*g^2*w0^2))$
+
+/* ================================================================
+   PART 4 — Two-stage parametric coefficient eps(B, eta)
+   Stage 1: bath curl force on Phi, corotating amplitude F0 = eta*W*B
+            (massless theta: |k| = W; curl ~ k B; verified dimensionally)
+   Stage 2: driven response of the core amplitude mode (freq Om0):
+            x'' + 2 g x' + Om0^2 x = F0 cos(Ob t)
+            steady |X| = F0 / sqrt((Om0^2-Ob^2)^2 + (2 g Ob)^2)
+   Stage 3: mode-frequency modulation M(A + x) = M(A) + M'(A) x + O(x^2)
+            => eps_eff = |M'(A)| |X|
+   ================================================================ */
+
+/* C4a: driven-oscillator steady amplitude (the Lorentzian of item 4) */
+block([xs, R, e1, e2, sol, Xc, Xs, amp2],
+  xs : Xc*cos(Ob*t) + Xs*sin(Ob*t),
+  R : trigreduce(expand(diff(xs,t,2) + 2*g*diff(xs,t) + Om0^2*xs - F0*cos(Ob*t))),
+  sol : solve([ratcoef(R, cos(Ob*t)), ratcoef(R, sin(Ob*t))], [Xc, Xs]),
+  amp2 : ratsimp(subst(sol[1], Xc^2 + Xs^2)),
+  check("C4a: |X|^2 = F0^2 / ((Om0^2-Ob^2)^2 + (2 g Ob)^2)",
+        amp2 - F0^2/((Om0^2-Ob^2)^2 + (2*g*Ob)^2)))$
+
+/* C4b: beat decomposition — drive at lab W against internal rotation omega
+        produces corotating-frame beats |W-omega| and W+omega */
+check("C4b: cos(W*t)*cos(om*t) = (1/2)cos((W-om)t) + (1/2)cos((W+om)t)",
+      trigreduce(cos(W*t)*cos(om*t)) - (cos((W-om)*t)/2 + cos((W+om)*t)/2))$
+
+/* C4c: symmetric-channel curvature M_sym(A) closed form (v67 Hessian),
+        used for M'(A) in stage 3:
+        M_sym = 8 A^4 Vt'(A^6) + 12 A^10 Vt''(A^6)
+              = 4 mu A^4 (1 - 2 kap A^6) / (1 + kap A^6)^3 */
+block([Vt, Vp, Vpp, Msym, Mclosed],
+  Vt  : (mu/2)*ss/(1 + kap*ss),
+  Vp  : ratsimp(diff(Vt, ss)),
+  Vpp : ratsimp(diff(Vt, ss, 2)),
+  Msym : ratsimp(8*A^4*subst(ss = A^6, Vp) + 12*A^10*subst(ss = A^6, Vpp)),
+  Mclosed : 4*mu*A^4*(1 - 2*kap*A^6)/(1 + kap*A^6)^3,
+  check("C4c: M_sym(A) = 4 mu A^4 (1-2 kap A^6)/(1+kap A^6)^3", Msym - Mclosed))$
+
+/* C4d: k=0 corotating amplitude-mode frequency from the v67 quartic:
+        sig^4 + sig^2 (2k^2 + M + 4 wc^2) + k^2(k^2+M) = 0 at k=0
+        => sig^2 = 0 (Goldstone) or sig^2 = -(M + 4 wc^2): Om0^2 = M + 4 wc^2 */
+block([quart, sol],
+  quart : sig^4 + sig^2*(2*k^2 + M + 4*wc^2) + k^2*(k^2 + M),
+  sol : solve(subst(k = 0, quart) = 0, sig),
+  /* roots: sig = 0 (Goldstone, double) and sig = +/- sqrt(-(M + 4 wc^2)),
+     i.e. oscillation frequency Om0 with Om0^2 = M + 4 wc^2 */
+  check("C4d: k=0 amplitude mode Om0^2 = M + 4 wc^2",
+        ratsimp((subst(sol[2], sig))^2 + (M + 4*wc^2))))$
+
+/* C4e: bath normalization — one complex massless theta component
+        Theta = B e^{i(kx - Wt)} (tu = B cos, tv = -B sin), W = k:
+        time-avg energy density = W^2 B^2 per complex component;
+        3 components: e_bath = 3 W^2 B^2  =>  B = sqrt(e_bath/3)/W
+        and F0 = eta*W*B = eta*sqrt(e_bath/3)  (W-independent). */
+block([tu, tv, edens, eavg],
+  tu : B*cos(k*x - W*t), tv : -B*sin(k*x - W*t),
+  edens : (1/2)*(diff(tu,t)^2 + diff(tu,x)^2 + diff(tv,t)^2 + diff(tv,x)^2),
+  eavg : subst(k = W, ratsimp(trigreduce(expand(edens)))),
+  check("C4e: per-component bath energy density = W^2 B^2 (massless, k=W)",
+        eavg - W^2*B^2))$
+
+print("----------------------------------------------------")$
+print("mathieu_forcing.mac:", npass, "PASS,", nfail, "FAIL")$

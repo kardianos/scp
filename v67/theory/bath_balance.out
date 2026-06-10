@@ -1,0 +1,14 @@
+radiation quanta check: (dE/dt)/(dQ/dt) = 1.395 vs omega = 1.39
+quality factor Q_fac = omega*E/P_em = 401  (weak coupling)
+k_theta = omega = 1.39, lambda_theta = 4.520, omega*r_Q = 5.16 (>1: wavelength-scale ball)
+
+sigma_abs geometric  (upper bound on sigma) =  61.10  -> e_bath* = 0.0393
+sigma_abs unitarity l<=1, 2 pol            =  13.01  -> e_bath* = 0.1845
+occupation criterion (n~1)        -> e_bath* in [0.038, 1.135]
+
+combined bracket: e_bath* in [0.039, 1.13], geometric-mean center ~ 0.21
+context: ball core e(0) = 2.25, condensate e_0(A=0.40) = 0.83
+
+recommended scan ladder (log-spaced, brackets center):
+  e_bath in {0.05, 0.2, 0.8}  (+ e_bath=0 control)
+interpolate the zero crossing of dE/dt(e_bath); slope near 0 gives sigma_abs directly
