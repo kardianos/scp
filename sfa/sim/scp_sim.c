@@ -37,6 +37,12 @@ typedef struct {
     double *harden_Q[NFIELDS]; /* Hardening vector: Q_a = (β/2)|θ|²curl(φ)_a */
     double *pin_phi[NFIELDS], *pin_vel[NFIELDS];  /* pinned BC storage (bc_type=1) */
     double *pin_theta[NFIELDS], *pin_tvel[NFIELDS];
+    /* v66 complex sector: u=phi (Re Φ), v=phi_im (Im Φ), tu=theta, tv=theta_im */
+    int complex_mode;                       /* copied from c->complex_phi at alloc */
+    double *phi_im[NFIELDS],   *phi_im_vel[NFIELDS],   *phi_im_acc[NFIELDS];
+    double *theta_im[NFIELDS], *theta_im_vel[NFIELDS], *theta_im_acc[NFIELDS];
+    double *pin_phi_im[NFIELDS], *pin_vel_im[NFIELDS];
+    double *pin_theta_im[NFIELDS], *pin_tvel_im[NFIELDS];
     int N; long N3;
     double L, dx, dt;
 } Grid;
@@ -49,8 +55,11 @@ static Grid *grid_alloc(const Config *c) {
     g->dx = 2.0 * c->L / (c->N - 1);
     g->dt = c->dt_factor * g->dx;
 
-    long total = 18 * g->N3;
-    printf("Allocating %.2f GB (%ld doubles, N=%d, 6 fields)\n", total*8.0/1e9, total, c->N);
+    g->complex_mode = c->complex_phi;
+    long nblocks = g->complex_mode ? 36 : 18;
+    long total = nblocks * g->N3;
+    printf("Allocating %.2f GB (%ld doubles, N=%d, %d fields)\n",
+           total*8.0/1e9, total, c->N, g->complex_mode ? 12 : 6);
     g->mem = malloc(total * sizeof(double));
     if (!g->mem) { fprintf(stderr, "FATAL: malloc failed\n"); exit(1); }
     memset(g->mem, 0, total * sizeof(double));
@@ -62,6 +71,20 @@ static Grid *grid_alloc(const Config *c) {
         g->theta[a]     = g->mem + (9  + a) * g->N3;
         g->theta_vel[a] = g->mem + (12 + a) * g->N3;
         g->theta_acc[a] = g->mem + (15 + a) * g->N3;
+    }
+    /* v66: imaginary copy appended after the 18 real blocks (real offsets unchanged) */
+    for (int a = 0; a < NFIELDS; a++) {
+        if (g->complex_mode) {
+            g->phi_im[a]       = g->mem + (18 + a) * g->N3;
+            g->phi_im_vel[a]   = g->mem + (21 + a) * g->N3;
+            g->phi_im_acc[a]   = g->mem + (24 + a) * g->N3;
+            g->theta_im[a]     = g->mem + (27 + a) * g->N3;
+            g->theta_im_vel[a] = g->mem + (30 + a) * g->N3;
+            g->theta_im_acc[a] = g->mem + (33 + a) * g->N3;
+        } else {
+            g->phi_im[a] = g->phi_im_vel[a] = g->phi_im_acc[a] = NULL;
+            g->theta_im[a] = g->theta_im_vel[a] = g->theta_im_acc[a] = NULL;
+        }
     }
     /* Temporary arrays for two-pass force computations */
     for (int a = 0; a < NFIELDS; a++) {
@@ -76,6 +99,8 @@ static void grid_free(Grid *g) {
     for (int a = 0; a < NFIELDS; a++) {
         free(g->pin_phi[a]); free(g->pin_vel[a]);
         free(g->pin_theta[a]); free(g->pin_tvel[a]);
+        free(g->pin_phi_im[a]); free(g->pin_vel_im[a]);
+        free(g->pin_theta_im[a]); free(g->pin_tvel_im[a]);
     }
     free(g->mem); free(g);
 }
@@ -91,6 +116,16 @@ static void grid_save_pinned(Grid *g) {
         memcpy(g->pin_vel[a],   g->phi_vel[a],   g->N3 * sizeof(double));
         memcpy(g->pin_theta[a], g->theta[a],     g->N3 * sizeof(double));
         memcpy(g->pin_tvel[a],  g->theta_vel[a], g->N3 * sizeof(double));
+        if (g->complex_mode) {
+            g->pin_phi_im[a]   = malloc(g->N3 * sizeof(double));
+            g->pin_vel_im[a]   = malloc(g->N3 * sizeof(double));
+            g->pin_theta_im[a] = malloc(g->N3 * sizeof(double));
+            g->pin_tvel_im[a]  = malloc(g->N3 * sizeof(double));
+            memcpy(g->pin_phi_im[a],   g->phi_im[a],       g->N3 * sizeof(double));
+            memcpy(g->pin_vel_im[a],   g->phi_im_vel[a],   g->N3 * sizeof(double));
+            memcpy(g->pin_theta_im[a], g->theta_im[a],     g->N3 * sizeof(double));
+            memcpy(g->pin_tvel_im[a],  g->theta_im_vel[a], g->N3 * sizeof(double));
+        }
     }
 }
 
@@ -106,7 +141,11 @@ static inline double curl_component(double *F[3], int a,
     return            (F[1][n_ip] - F[1][n_im] - F[0][n_jp] + F[0][n_jm]) * idx1;
 }
 
-/* Initialization and KVMD embedding from shared header */
+/* Initialization and KVMD embedding from shared header.
+ * SCP_COMPLEX_FIELDS enables the v66 complex-sector init code paths in
+ * scp_init.h (they reference Grid members phi_im/theta_im that only the
+ * CPU Grid has; scp_sim.cu — phase 2 — includes the header without it). */
+#define SCP_COMPLEX_FIELDS 1
 #include "scp_init.h"
 
 /* Forces start below — init functions are in scp_init.h */
@@ -527,6 +566,78 @@ static void compute_forces(Grid *g, const Config *c) {
 }
 
 /* ================================================================
+   v66 complex forces (SPEC §3): minimal 12-field loop.
+   THEORY.md §1 EOM verbatim — curl pairs (u,tu) and (v,tv) ONLY.
+   cfg_validate guarantees alpha_cs=beta_h=kappa_h=0, mode=0, so no
+   scratch passes, no chiral block, no mode corrections are needed.
+   ================================================================ */
+
+static void compute_forces_complex(Grid *g, const Config *c) {
+    const int N = g->N, NN = N * N;
+    const long N3 = g->N3;
+    const double idx2 = 1.0 / (g->dx * g->dx);
+    const double idx1 = 1.0 / (2.0 * g->dx);
+    const double MU = c->mu, KAPPA = c->kappa, MASS2 = c->m2;
+    const double MTHETA2 = c->mtheta2, ETA = c->eta;
+
+    #pragma omp parallel for schedule(static)
+    for (long idx = 0; idx < N3; idx++) {
+        int i = (int)(idx / NN), j = (int)((idx / N) % N), k = (int)(idx % N);
+        int ip=(i+1)%N, im=(i-1+N)%N, jp=(j+1)%N, jm=(j-1+N)%N;
+        int kp=(k+1)%N, km=(k-1+N)%N;
+        long n_ip=(long)ip*NN+j*N+k, n_im=(long)im*NN+j*N+k;
+        long n_jp=(long)i*NN+jp*N+k, n_jm=(long)i*NN+jm*N+k;
+        long n_kp=(long)i*NN+j*N+kp, n_km=(long)i*NN+j*N+km;
+
+        /* amplitudes */
+        double u0=g->phi[0][idx],    u1=g->phi[1][idx],    u2=g->phi[2][idx];
+        double v0=g->phi_im[0][idx], v1=g->phi_im[1][idx], v2=g->phi_im[2][idx];
+        double s2_0 = u0*u0 + v0*v0;          /* |Phi_0|^2 */
+        double s2_1 = u1*u1 + v1*v1;
+        double s2_2 = u2*u2 + v2*v2;
+        double s    = s2_0 * s2_1 * s2_2;     /* s = prod |Phi_a|^2 */
+        double den  = 1.0 + KAPPA*s;
+        double Vp   = 0.5*MU / (den*den);     /* Vt'(s) = (mu/2)/(1+kappa s)^2 */
+        /* product over b != a — explicit pair products, NEVER s/s2_a */
+        double prod_rest[3] = { s2_1*s2_2, s2_0*s2_2, s2_0*s2_1 };
+
+        for (int a = 0; a < NFIELDS; a++) {
+            /* u sector: pairs with tu via curl */
+            double lap_u = (g->phi[a][n_ip]+g->phi[a][n_im]+g->phi[a][n_jp]
+                          +g->phi[a][n_jm]+g->phi[a][n_kp]+g->phi[a][n_km]
+                          -6.0*g->phi[a][idx]) * idx2;
+            double ctu = curl_component(g->theta, a, n_ip,n_im,n_jp,n_jm,n_kp,n_km, idx1);
+            g->phi_acc[a][idx] = lap_u - MASS2*g->phi[a][idx]
+                               - 2.0*Vp*g->phi[a][idx]*prod_rest[a]
+                               + ETA*ctu;
+
+            /* v sector: pairs with tv via curl */
+            double lap_v = (g->phi_im[a][n_ip]+g->phi_im[a][n_im]+g->phi_im[a][n_jp]
+                          +g->phi_im[a][n_jm]+g->phi_im[a][n_kp]+g->phi_im[a][n_km]
+                          -6.0*g->phi_im[a][idx]) * idx2;
+            double ctv = curl_component(g->theta_im, a, n_ip,n_im,n_jp,n_jm,n_kp,n_km, idx1);
+            g->phi_im_acc[a][idx] = lap_v - MASS2*g->phi_im[a][idx]
+                                  - 2.0*Vp*g->phi_im[a][idx]*prod_rest[a]
+                                  + ETA*ctv;
+
+            /* tu sector */
+            double lap_tu = (g->theta[a][n_ip]+g->theta[a][n_im]+g->theta[a][n_jp]
+                           +g->theta[a][n_jm]+g->theta[a][n_kp]+g->theta[a][n_km]
+                           -6.0*g->theta[a][idx]) * idx2;
+            double cu = curl_component(g->phi, a, n_ip,n_im,n_jp,n_jm,n_kp,n_km, idx1);
+            g->theta_acc[a][idx] = lap_tu - MTHETA2*g->theta[a][idx] + ETA*cu;
+
+            /* tv sector */
+            double lap_tv = (g->theta_im[a][n_ip]+g->theta_im[a][n_im]+g->theta_im[a][n_jp]
+                           +g->theta_im[a][n_jm]+g->theta_im[a][n_kp]+g->theta_im[a][n_km]
+                           -6.0*g->theta_im[a][idx]) * idx2;
+            double cv = curl_component(g->phi_im, a, n_ip,n_im,n_jp,n_jm,n_kp,n_km, idx1);
+            g->theta_im_acc[a][idx] = lap_tv - MTHETA2*g->theta_im[a][idx] + ETA*cv;
+        }
+    }
+}
+
+/* ================================================================
    Boundary conditions
    ================================================================ */
 
@@ -546,6 +657,8 @@ static void apply_damping(Grid *g, const Config *c) {
             double s = (r-R_damp)/DW; if (s>1) s=1;
             double d = 1.0 - DR*s*s;
             for (int a=0;a<NFIELDS;a++) { g->phi_vel[a][idx]*=d; g->theta_vel[a][idx]*=d; }
+            if (g->complex_mode)
+                for (int a=0;a<NFIELDS;a++) { g->phi_im_vel[a][idx]*=d; g->theta_im_vel[a][idx]*=d; }
         }
     }
 }
@@ -572,6 +685,16 @@ static void apply_gradient_bc(Grid *g, const Config *c) {
                 g->theta_vel[a][idx] = g->pin_tvel[a][idx];
                 g->theta_acc[a][idx] = 0;
             }
+            if (g->complex_mode) {
+                for (int a = 0; a < NFIELDS; a++) {
+                    g->phi_im[a][idx]       = g->pin_phi_im[a][idx];
+                    g->phi_im_vel[a][idx]   = g->pin_vel_im[a][idx];
+                    g->phi_im_acc[a][idx]   = 0;
+                    g->theta_im[a][idx]     = g->pin_theta_im[a][idx];
+                    g->theta_im_vel[a][idx] = g->pin_tvel_im[a][idx];
+                    g->theta_im_acc[a][idx] = 0;
+                }
+            }
         }
     }
 
@@ -597,6 +720,26 @@ static void apply_gradient_bc(Grid *g, const Config *c) {
                 g->phi_vel[a][idx0] = 2*g->phi_vel[a][idx1] - g->phi_vel[a][idx2];
                 g->theta[a][idx0] = 2*g->theta[a][idx1] - g->theta[a][idx2];
                 g->theta_vel[a][idx0] = 2*g->theta_vel[a][idx1] - g->theta_vel[a][idx2];
+
+                if (g->complex_mode) {
+                    /* j=0 edge (imaginary sector) */
+                    idx0 = (long)i*NN + 0*N + k;
+                    idx1 = (long)i*NN + 1*N + k;
+                    idx2 = (long)i*NN + 2*N + k;
+                    g->phi_im[a][idx0] = 2*g->phi_im[a][idx1] - g->phi_im[a][idx2];
+                    g->phi_im_vel[a][idx0] = 2*g->phi_im_vel[a][idx1] - g->phi_im_vel[a][idx2];
+                    g->theta_im[a][idx0] = 2*g->theta_im[a][idx1] - g->theta_im[a][idx2];
+                    g->theta_im_vel[a][idx0] = 2*g->theta_im_vel[a][idx1] - g->theta_im_vel[a][idx2];
+
+                    /* j=N-1 edge (imaginary sector) */
+                    idx0 = (long)i*NN + (N-1)*N + k;
+                    idx1 = (long)i*NN + (N-2)*N + k;
+                    idx2 = (long)i*NN + (N-3)*N + k;
+                    g->phi_im[a][idx0] = 2*g->phi_im[a][idx1] - g->phi_im[a][idx2];
+                    g->phi_im_vel[a][idx0] = 2*g->phi_im_vel[a][idx1] - g->phi_im_vel[a][idx2];
+                    g->theta_im[a][idx0] = 2*g->theta_im[a][idx1] - g->theta_im[a][idx2];
+                    g->theta_im_vel[a][idx0] = 2*g->theta_im_vel[a][idx1] - g->theta_im_vel[a][idx2];
+                }
             }
         }
     }
@@ -613,14 +756,30 @@ static void verlet_step(Grid *g, const Config *c) {
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
     }
+    if (g->complex_mode) for (int a=0;a<NFIELDS;a++) {
+        double *vp=g->phi_im_vel[a],*ap=g->phi_im_acc[a],*vt=g->theta_im_vel[a],*at=g->theta_im_acc[a];
+        #pragma omp parallel for schedule(static)
+        for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
+    }
     for (int a=0;a<NFIELDS;a++) {
         double *pp=g->phi[a],*vp=g->phi_vel[a],*pt=g->theta[a],*vt=g->theta_vel[a];
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) { pp[i]+=dt*vp[i]; pt[i]+=dt*vt[i]; }
     }
-    compute_forces(g, c);
+    if (g->complex_mode) for (int a=0;a<NFIELDS;a++) {
+        double *pp=g->phi_im[a],*vp=g->phi_im_vel[a],*pt=g->theta_im[a],*vt=g->theta_im_vel[a];
+        #pragma omp parallel for schedule(static)
+        for (long i=0;i<N3;i++) { pp[i]+=dt*vp[i]; pt[i]+=dt*vt[i]; }
+    }
+    if (g->complex_mode) compute_forces_complex(g, c);
+    else                 compute_forces(g, c);
     for (int a=0;a<NFIELDS;a++) {
         double *vp=g->phi_vel[a],*ap=g->phi_acc[a],*vt=g->theta_vel[a],*at=g->theta_acc[a];
+        #pragma omp parallel for schedule(static)
+        for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
+    }
+    if (g->complex_mode) for (int a=0;a<NFIELDS;a++) {
+        double *vp=g->phi_im_vel[a],*ap=g->phi_im_acc[a],*vt=g->theta_im_vel[a],*at=g->theta_im_acc[a];
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
     }
@@ -731,6 +890,145 @@ static double P_integrated(Grid *g) {
 }
 
 /* ================================================================
+   v66 complex diagnostics (SPEC §6). compute_energy/theta_rms/
+   P_integrated stay untouched; these are the 12-field variants.
+   ================================================================ */
+
+static void compute_energy_complex(Grid *g, const Config *c,
+    double *epk, double *etk, double *eg, double *em, double *ep,
+    double *etg, double *etm, double *ec, double *et,
+    double *phi_max, double *P_max) {
+    const int N=g->N,NN=N*N; const long N3=g->N3;
+    const double dx=g->dx, dV=dx*dx*dx, idx1=1.0/(2.0*dx);
+    const double MU=c->mu, KAPPA=c->kappa, MASS2=c->m2, MTHETA2=c->mtheta2, ETA=c->eta;
+    double s_epk=0,s_etk=0,s_eg=0,s_em=0,s_ep=0,s_etg=0,s_etm=0,s_ec=0,s_pm=0,s_Pm=0;
+
+    #pragma omp parallel for reduction(+:s_epk,s_etk,s_eg,s_em,s_ep,s_etg,s_etm,s_ec) \
+        reduction(max:s_pm,s_Pm) schedule(static)
+    for (long idx=0;idx<N3;idx++) {
+        int i=(int)(idx/NN),j=(int)((idx/N)%N),k=(int)(idx%N);
+        int ip=(i+1)%N,im=(i-1+N)%N,jp=(j+1)%N,jm=(j-1+N)%N,kp=(k+1)%N,km=(k-1+N)%N;
+        long n_ip=(long)ip*NN+j*N+k,n_im=(long)im*NN+j*N+k;
+        long n_jp=(long)i*NN+jp*N+k,n_jm=(long)i*NN+jm*N+k;
+        long n_kp=(long)i*NN+j*N+kp,n_km=(long)i*NN+j*N+km;
+        double s2[3];
+        for (int a=0;a<NFIELDS;a++) {
+            double u=g->phi[a][idx], v=g->phi_im[a][idx];
+            double tu=g->theta[a][idx], tv=g->theta_im[a][idx];
+            s2[a] = u*u + v*v;
+            s_epk+=0.5*(g->phi_vel[a][idx]*g->phi_vel[a][idx]
+                       +g->phi_im_vel[a][idx]*g->phi_im_vel[a][idx])*dV;
+            s_etk+=0.5*(g->theta_vel[a][idx]*g->theta_vel[a][idx]
+                       +g->theta_im_vel[a][idx]*g->theta_im_vel[a][idx])*dV;
+            double gx=(g->phi[a][n_ip]-g->phi[a][n_im])*idx1;
+            double gy=(g->phi[a][n_jp]-g->phi[a][n_jm])*idx1;
+            double gz=(g->phi[a][n_kp]-g->phi[a][n_km])*idx1;
+            double hx=(g->phi_im[a][n_ip]-g->phi_im[a][n_im])*idx1;
+            double hy=(g->phi_im[a][n_jp]-g->phi_im[a][n_jm])*idx1;
+            double hz=(g->phi_im[a][n_kp]-g->phi_im[a][n_km])*idx1;
+            s_eg+=0.5*(gx*gx+gy*gy+gz*gz+hx*hx+hy*hy+hz*hz)*dV;
+            s_em+=0.5*MASS2*(u*u+v*v)*dV;
+            double tgx=(g->theta[a][n_ip]-g->theta[a][n_im])*idx1;
+            double tgy=(g->theta[a][n_jp]-g->theta[a][n_jm])*idx1;
+            double tgz=(g->theta[a][n_kp]-g->theta[a][n_km])*idx1;
+            double thx=(g->theta_im[a][n_ip]-g->theta_im[a][n_im])*idx1;
+            double thy=(g->theta_im[a][n_jp]-g->theta_im[a][n_jm])*idx1;
+            double thz=(g->theta_im[a][n_kp]-g->theta_im[a][n_km])*idx1;
+            s_etg+=0.5*(tgx*tgx+tgy*tgy+tgz*tgz+thx*thx+thy*thy+thz*thz)*dV;
+            s_etm+=0.5*MTHETA2*(tu*tu+tv*tv)*dV;
+            /* phi_max as complex modulus |Phi_a| (time-stationary on a Q-ball) */
+            double mod=sqrt(s2[a]); if(mod>s_pm) s_pm=mod;
+            /* E_coupling = -eta * (u.curl(tu) + v.curl(tv)) */
+            double ctu=curl_component(g->theta,a,n_ip,n_im,n_jp,n_jm,n_kp,n_km,idx1);
+            double ctv=curl_component(g->theta_im,a,n_ip,n_im,n_jp,n_jm,n_kp,n_km,idx1);
+            s_ec-=ETA*(u*ctu + v*ctv)*dV;
+        }
+        double s = s2[0]*s2[1]*s2[2];
+        s_ep+=(MU/2.0)*s/(1.0+KAPPA*s)*dV;          /* Vt(s) */
+        double Pmod=sqrt(s); if(Pmod>s_Pm) s_Pm=Pmod; /* P := sqrt(s) >= 0 */
+    }
+    *epk=s_epk;*etk=s_etk;*eg=s_eg;*em=s_em;*ep=s_ep;
+    *etg=s_etg;*etm=s_etm;*ec=s_ec;
+    *et=s_epk+s_etk+s_eg+s_em+s_ep+s_etg+s_etm+s_ec;
+    *phi_max=s_pm;*P_max=s_Pm;
+}
+
+/* RMS over the actual 6 theta components (tu,tv) — denominator 6, not 3 */
+static double theta_rms_complex(Grid *g) {
+    double sum=0;
+    #pragma omp parallel for reduction(+:sum)
+    for (long i=0;i<g->N3;i++)
+        for (int a=0;a<NFIELDS;a++)
+            sum+=g->theta[a][i]*g->theta[a][i]+g->theta_im[a][i]*g->theta_im[a][i];
+    return sqrt(sum/(6.0*g->N3));
+}
+
+/* P_int = int sqrt(s) dV, s = prod_a (u_a^2 + v_a^2) */
+static double P_integrated_complex(Grid *g) {
+    double t=0; const double dV=g->dx*g->dx*g->dx;
+    #pragma omp parallel for reduction(+:t)
+    for (long i=0;i<g->N3;i++) {
+        double s2_0=g->phi[0][i]*g->phi[0][i]+g->phi_im[0][i]*g->phi_im[0][i];
+        double s2_1=g->phi[1][i]*g->phi[1][i]+g->phi_im[1][i]*g->phi_im[1][i];
+        double s2_2=g->phi[2][i]*g->phi[2][i]+g->phi_im[2][i]*g->phi_im[2][i];
+        t+=sqrt(s2_0*s2_1*s2_2)*dV;
+    }
+    return t;
+}
+
+/* Noether charges + core diagnostics (SPEC §6.1, THEORY §2).
+ * Sign convention: Q > 0 for Phi ~ e^{+i omega t}.
+ * r_core = centroid-based rms radius of rho2 = sum_a (u_a^2+v_a^2). */
+static void compute_charges(Grid *g, double *Q_phi, double *Q_theta,
+                            double *s_max, double *r_core) {
+    const int N=g->N, NN=N*N; const long N3=g->N3;
+    const double L=g->L, dx=g->dx, dV=dx*dx*dx;
+    double qp=0, qt=0, smax=0, M0=0, cx=0, cy=0, cz=0;
+
+    #pragma omp parallel for reduction(+:qp,qt,M0,cx,cy,cz) \
+        reduction(max:smax) schedule(static)
+    for (long idx=0;idx<N3;idx++) {
+        int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+        double x=-L+i*dx, y=-L+j*dx, z=-L+k*dx;
+        double rho2=0, s=1.0;
+        for (int a=0;a<NFIELDS;a++) {
+            double u=g->phi[a][idx],    v=g->phi_im[a][idx];
+            double ud=g->phi_vel[a][idx], vd=g->phi_im_vel[a][idx];
+            double tu=g->theta[a][idx],   tv=g->theta_im[a][idx];
+            double tud=g->theta_vel[a][idx], tvd=g->theta_im_vel[a][idx];
+            qp += u*vd - v*ud;
+            qt += tu*tvd - tv*tud;
+            double s2a = u*u + v*v;
+            rho2 += s2a;
+            s *= s2a;
+        }
+        if (s>smax) smax=s;
+        M0 += rho2;
+        cx += x*rho2; cy += y*rho2; cz += z*rho2;
+    }
+    *Q_phi   = qp*dV;
+    *Q_theta = qt*dV;
+    *s_max   = smax;
+    M0 *= dV;
+    if (M0 < 1e-30) { *r_core = 0; return; }
+    cx = cx*dV/M0; cy = cy*dV/M0; cz = cz*dV/M0;
+
+    double rsum=0;
+    #pragma omp parallel for reduction(+:rsum) schedule(static)
+    for (long idx=0;idx<N3;idx++) {
+        int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+        double x=-L+i*dx, y=-L+j*dx, z=-L+k*dx;
+        double rho2=0;
+        for (int a=0;a<NFIELDS;a++) {
+            double u=g->phi[a][idx], v=g->phi_im[a][idx];
+            rho2 += u*u + v*v;
+        }
+        rsum += ((x-cx)*(x-cx)+(y-cy)*(y-cy)+(z-cz)*(z-cz))*rho2;
+    }
+    *r_core = sqrt(rsum*dV/M0);
+}
+
+/* ================================================================
    SFA output: 12 columns, configurable precision
    ================================================================ */
 
@@ -820,12 +1118,18 @@ static void *cast_buf = NULL;
 
 static void sfa_snap(SFA *sfa, Grid *g, double t, int precision) {
     long n = g->N3;
-    /* 12 arrays: phi[3], theta[3], phi_vel[3], theta_vel[3] */
-    double *arrays[12] = {
+    int nf = g->complex_mode ? 24 : 12;
+    /* Order MUST match column registration: 12 real arrays, then the
+       imaginary copy (phi_im, theta_im, phi_im_vel, theta_im_vel). */
+    double *arrays[24] = {
         g->phi[0], g->phi[1], g->phi[2],
         g->theta[0], g->theta[1], g->theta[2],
         g->phi_vel[0], g->phi_vel[1], g->phi_vel[2],
-        g->theta_vel[0], g->theta_vel[1], g->theta_vel[2]
+        g->theta_vel[0], g->theta_vel[1], g->theta_vel[2],
+        g->phi_im[0], g->phi_im[1], g->phi_im[2],
+        g->theta_im[0], g->theta_im[1], g->theta_im[2],
+        g->phi_im_vel[0], g->phi_im_vel[1], g->phi_im_vel[2],
+        g->theta_im_vel[0], g->theta_im_vel[1], g->theta_im_vel[2]
     };
 
     /* For f64, we can pass pointers directly. For f16/f32, we need to
@@ -834,15 +1138,15 @@ static void sfa_snap(SFA *sfa, Grid *g, double t, int precision) {
     if (precision == 2) {
         sfa_write_frame(sfa, t, (void**)arrays);
     } else {
-        void *cols[12];
+        void *cols[24];
         int es = (precision == 0) ? 2 : 4;
-        for (int c = 0; c < 12; c++) {
+        for (int c = 0; c < nf; c++) {
             cols[c] = malloc(n * es);
             if (precision == 1) { float *p=(float*)cols[c]; for(long i=0;i<n;i++) p[i]=(float)arrays[c][i]; }
             else { uint16_t *p=(uint16_t*)cols[c]; for(long i=0;i<n;i++) p[i]=f64_to_f16(arrays[c][i]); }
         }
         sfa_write_frame(sfa, t, cols);
-        for (int c = 0; c < 12; c++) free(cols[c]);
+        for (int c = 0; c < nf; c++) free(cols[c]);
     }
 }
 
@@ -915,6 +1219,7 @@ int main(int argc, char **argv) {
     omp_set_num_threads(nth);
 
     cfg_print(&c);
+    cfg_validate(&c);
 
     /* Grid */
     Grid *g = grid_alloc(&c);
@@ -922,7 +1227,8 @@ int main(int argc, char **argv) {
 
     /* Initialize */
     do_init(g, &c);
-    compute_forces(g, &c);
+    if (g->complex_mode) compute_forces_complex(g, &c);
+    else                 compute_forces(g, &c);
 
     /* For gradient_pinned BC: save initial state as pinned boundary values */
     if (c.bc_type == 1) {
@@ -949,9 +1255,24 @@ int main(int argc, char **argv) {
     sfa_add_column(sfa, "theta_vx", sfa_dtype, SFA_VELOCITY, 3);
     sfa_add_column(sfa, "theta_vy", sfa_dtype, SFA_VELOCITY, 4);
     sfa_add_column(sfa, "theta_vz", sfa_dtype, SFA_VELOCITY, 5);
+    if (c.complex_phi) {
+        /* v66 imaginary sector (SPEC §7.1): component offset marks Im parts */
+        sfa_add_column(sfa, "phiim_x",    sfa_dtype, SFA_POSITION, 3);
+        sfa_add_column(sfa, "phiim_y",    sfa_dtype, SFA_POSITION, 4);
+        sfa_add_column(sfa, "phiim_z",    sfa_dtype, SFA_POSITION, 5);
+        sfa_add_column(sfa, "thetaim_x",  sfa_dtype, SFA_ANGLE,    3);
+        sfa_add_column(sfa, "thetaim_y",  sfa_dtype, SFA_ANGLE,    4);
+        sfa_add_column(sfa, "thetaim_z",  sfa_dtype, SFA_ANGLE,    5);
+        sfa_add_column(sfa, "phiim_vx",   sfa_dtype, SFA_VELOCITY, 6);
+        sfa_add_column(sfa, "phiim_vy",   sfa_dtype, SFA_VELOCITY, 7);
+        sfa_add_column(sfa, "phiim_vz",   sfa_dtype, SFA_VELOCITY, 8);
+        sfa_add_column(sfa, "thetaim_vx", sfa_dtype, SFA_VELOCITY, 9);
+        sfa_add_column(sfa, "thetaim_vy", sfa_dtype, SFA_VELOCITY, 10);
+        sfa_add_column(sfa, "thetaim_vz", sfa_dtype, SFA_VELOCITY, 11);
+    }
     sfa_finalize_header(sfa);
     const char *pn[] = {"f16","f32","f64"};
-    printf("SFA: %s (12 cols, %s, BSS+zstd)\n\n", c.output, pn[c.precision]);
+    printf("SFA: %s (%d cols, %s, BSS+zstd)\n\n", c.output, c.complex_phi ? 24 : 12, pn[c.precision]);
 
     sfa_snap(sfa, g, 0.0, c.precision);
 
@@ -1007,7 +1328,9 @@ int main(int argc, char **argv) {
     /* Diagnostics file */
     FILE *fp = fopen(c.diag_file, "w");
     fprintf(fp, "t\tE_phi_kin\tE_theta_kin\tE_grad\tE_mass\tE_pot\tE_tgrad\tE_tmass\t"
-                "E_coupling\tE_total\tphi_max\tP_max\tP_int\ttheta_rms\n");
+                "E_coupling\tE_total\tphi_max\tP_max\tP_int\ttheta_rms");
+    if (c.complex_phi) fprintf(fp, "\tQ_phi\tQ_theta\tQ_total\ts_max\tr_core");
+    fprintf(fp, "\n");
 
     int n_steps = (int)lround(c.T / g->dt);
     int diag_every = (int)lround(c.diag_dt / g->dt); if (diag_every<1) diag_every=1;
@@ -1024,13 +1347,21 @@ int main(int argc, char **argv) {
 
     /* Initial diagnostic */
     double epk,etk,eg,em,ep,etg,etm,ec,et,pm,Pm;
-    compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
-    double Pint0=P_integrated(g), trms0=theta_rms(g);
+    double Qp=0,Qt=0,smax=0,rcore=0;
+    if (c.complex_phi) compute_energy_complex(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
+    else               compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
+    double Pint0 = c.complex_phi ? P_integrated_complex(g) : P_integrated(g);
+    double trms0 = c.complex_phi ? theta_rms_complex(g)    : theta_rms(g);
     double E0 = et;
     printf("INIT: E_total=%.4e E_pot=%.4f phi_max=%.4f P_int=%.4e theta_rms=%.3e\n\n",
            et, ep, pm, Pint0, trms0);
-    fprintf(fp,"%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n",
+    fprintf(fp,"%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e",
             0.0,epk,etk,eg,em,ep,etg,etm,ec,et,pm,Pm,Pint0,trms0);
+    if (c.complex_phi) {
+        compute_charges(g,&Qp,&Qt,&smax,&rcore);
+        fprintf(fp,"\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e",Qp,Qt,Qp+Qt,smax,rcore);
+    }
+    fprintf(fp,"\n");
 
     double wall0 = omp_get_wtime();
     int major = diag_every * 25; if (major<1) major=1;
@@ -1161,18 +1492,27 @@ int main(int argc, char **argv) {
         }
 
         if (step % diag_every == 0) {
-            compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
-            double Pint=P_integrated(g), trms=theta_rms(g);
-            fprintf(fp,"%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n",
+            if (c.complex_phi) compute_energy_complex(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
+            else               compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
+            double Pint = c.complex_phi ? P_integrated_complex(g) : P_integrated(g);
+            double trms = c.complex_phi ? theta_rms_complex(g)    : theta_rms(g);
+            fprintf(fp,"%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e",
                     t,epk,etk,eg,em,ep,etg,etm,ec,et,pm,Pm,Pint,trms);
+            if (c.complex_phi) {
+                compute_charges(g,&Qp,&Qt,&smax,&rcore);
+                fprintf(fp,"\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e",Qp,Qt,Qp+Qt,smax,rcore);
+            }
+            fprintf(fp,"\n");
             fflush(fp);
 
             if (step % major == 0) {
                 double wall=omp_get_wtime()-wall0;
                 double drift=100*(et-E0)/(fabs(E0)+1e-30);
-                printf("t=%7.1f E=%.3e (drift %+.3f%%) Ep=%.1f phi=%.3f θ_rms=%.2e "
-                       "[%.0f%% %.1fs %.2fms/step]\n",
-                       t,et,drift,ep,pm,trms,100.0*step/n_steps,wall,1000*wall/step);
+                printf("t=%7.1f E=%.3e (drift %+.3f%%) Ep=%.1f phi=%.3f θ_rms=%.2e ",
+                       t,et,drift,ep,pm,trms);
+                if (c.complex_phi) printf("Q=%.6e s_max=%.4e ", Qp+Qt, smax);
+                printf("[%.0f%% %.1fs %.2fms/step]\n",
+                       100.0*step/n_steps,wall,1000*wall/step);
                 fflush(stdout);
             }
         }
@@ -1198,13 +1538,19 @@ int main(int argc, char **argv) {
     }
 
     /* Final summary */
-    compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
-    double trms=theta_rms(g), Pint=P_integrated(g);
+    if (c.complex_phi) compute_energy_complex(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
+    else               compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
+    double trms = c.complex_phi ? theta_rms_complex(g)    : theta_rms(g);
+    double Pint = c.complex_phi ? P_integrated_complex(g) : P_integrated(g);
     double wall=omp_get_wtime()-wall0;
+    if (c.complex_phi) compute_charges(g,&Qp,&Qt,&smax,&rcore);
 
     printf("\n=== COMPLETE ===\n");
     printf("E_total=%.4e (drift %.3f%%) E_pot=%.4f\n", et, 100*(et-E0)/(fabs(E0)+1e-30), ep);
     printf("phi_max=%.4f P_int=%.4e theta_rms=%.3e\n", pm, Pint, trms);
+    if (c.complex_phi)
+        printf("Q_phi=%.6e Q_theta=%.6e Q_total=%.6e s_max=%.4e r_core=%.3f\n",
+               Qp, Qt, Qp+Qt, smax, rcore);
     printf("SFA: %s (%u frames)\n", c.output, nf);
     printf("[%s] theta_rms grew: %.2e -> %.2e\n", (trms>trms0+1e-10)?"OK":"WARN", trms0, trms);
     printf("Wall: %.1fs (%.1f min) %.2fms/step\n", wall, wall/60, 1000*wall/n_steps);

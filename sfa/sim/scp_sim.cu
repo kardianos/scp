@@ -189,6 +189,10 @@ static inline double f16_to_f64(uint16_t h) {
 typedef struct {
     double *phi[3], *vel_phi[3], *acc_phi[3];
     double *theta[3], *vel_theta[3], *acc_theta[3];
+    /* v66 complex sector (device pointers; NULL when complex_mode=0) */
+    int complex_mode;
+    double *phi_im[3], *vel_phi_im[3], *acc_phi_im[3];
+    double *theta_im[3], *vel_theta_im[3], *acc_theta_im[3];
     long N3;
     int N;
     double L, dx, dt;
@@ -222,11 +226,12 @@ typedef struct {
     FrameWriter *fw;  /* shared frame writer (thread-safe) */
     int precision;        /* 0=f16, 1=f32, 2=f64 */
     int snap_every;
+    int nf;               /* columns per frame: 12 real, 24 complex (v66) */
 
     /* GPU resources */
     cudaStream_t stream;
-    uint16_t *d_f16_buf;  /* GPU-side f16 staging (12 * N3 * 2 bytes) */
-    float *d_f32_buf;     /* GPU-side f32 staging (12 * N3 * 4 bytes) — for precision=1 */
+    uint16_t *d_f16_buf;  /* GPU-side f16 staging (nf * N3 * 2 bytes) */
+    float *d_f32_buf;     /* GPU-side f32 staging (nf * N3 * 4 bytes) — for precision=1 */
 
     /* Host resources */
     void *h_pin_buf;      /* PINNED host memory for DMA target */
@@ -255,9 +260,10 @@ typedef struct {
     int n_steps;          /* total steps for % progress */
     cudaEvent_t t_start;  /* for wall-clock timing */
 
-    /* GPU reduction output */
-    double *d_results;    /* 12 doubles on GPU */
-    double *h_results;    /* 12 doubles on host (pinned) */
+    /* GPU reduction output (12 doubles real mode; 20 in complex mode, v66) */
+    int complex_mode;
+    double *d_results;
+    double *h_results;
 
     /* Config params for potential energy */
     double m2, mtheta2, eta, mu, kappa;
@@ -276,6 +282,10 @@ typedef struct {
     double *theta[NFIELDS], *theta_vel[NFIELDS], *theta_acc[NFIELDS];
     double *pin_phi[NFIELDS], *pin_vel[NFIELDS];  /* pinned BC storage (bc_type=1) */
     double *pin_theta[NFIELDS], *pin_tvel[NFIELDS];
+    /* v66 complex sector: u=phi (Re Φ), v=phi_im (Im Φ), tu=theta, tv=theta_im */
+    int complex_mode;                       /* copied from c->complex_phi at alloc */
+    double *phi_im[NFIELDS],   *phi_im_vel[NFIELDS],   *phi_im_acc[NFIELDS];
+    double *theta_im[NFIELDS], *theta_im_vel[NFIELDS], *theta_im_acc[NFIELDS];
     int N; long N3;
     double L, dx, dt;
 } Grid;
@@ -285,7 +295,9 @@ static Grid *grid_alloc(const Config *c) {
     g->N = c->N; g->N3 = (long)c->N * c->N * c->N;
     g->L = c->L; g->dx = 2.0 * c->L / (c->N - 1);
     g->dt = c->dt_factor * g->dx;
-    long total = 18 * g->N3;
+    g->complex_mode = c->complex_phi;
+    long nblocks = g->complex_mode ? 36 : 18;
+    long total = nblocks * g->N3;
     g->mem = (double*)malloc(total * sizeof(double));
     if (!g->mem) { fprintf(stderr, "FATAL: host malloc\n"); exit(1); }
     memset(g->mem, 0, total * sizeof(double));
@@ -297,6 +309,20 @@ static Grid *grid_alloc(const Config *c) {
         g->theta_vel[a] = g->mem + (12+a)*g->N3;
         g->theta_acc[a] = g->mem + (15+a)*g->N3;
     }
+    /* v66: imaginary copy appended after the 18 real blocks (real offsets unchanged) */
+    for (int a = 0; a < NFIELDS; a++) {
+        if (g->complex_mode) {
+            g->phi_im[a]       = g->mem + (18+a)*g->N3;
+            g->phi_im_vel[a]   = g->mem + (21+a)*g->N3;
+            g->phi_im_acc[a]   = g->mem + (24+a)*g->N3;
+            g->theta_im[a]     = g->mem + (27+a)*g->N3;
+            g->theta_im_vel[a] = g->mem + (30+a)*g->N3;
+            g->theta_im_acc[a] = g->mem + (33+a)*g->N3;
+        } else {
+            g->phi_im[a] = g->phi_im_vel[a] = g->phi_im_acc[a] = NULL;
+            g->theta_im[a] = g->theta_im_vel[a] = g->theta_im_acc[a] = NULL;
+        }
+    }
     return g;
 }
 static void grid_free(Grid *g) {
@@ -307,7 +333,11 @@ static void grid_free(Grid *g) {
     free(g->mem); free(g);
 }
 
-/* Initialization from shared header */
+/* Initialization from shared header.
+ * SCP_COMPLEX_FIELDS enables the v66 complex-sector init code paths in
+ * scp_init.h (init=qball ansatz fill + imaginary-column SFA loading);
+ * the Grid above provides the phi_im/theta_im members they reference. */
+#define SCP_COMPLEX_FIELDS 1
 #include "scp_init.h"
 
 #if 0 /* deleted — now in scp_init.h */
@@ -835,6 +865,95 @@ __global__ void compute_forces_kernel(
     acc_theta0[idx]=acc_t[0]; acc_theta1[idx]=acc_t[1]; acc_theta2[idx]=acc_t[2];
 }
 
+/* v66 complex forces (SPEC §3, mirrors CPU compute_forces_complex):
+ * minimal 12-field loop, THEORY.md §1 EOM verbatim. Curl pairs (u,tu)
+ * and (v,tv) ONLY — no u<->tv or v<->tu coupling. cfg_validate guarantees
+ * alpha_cs=beta_h=kappa_h=0, mode=0, sigma_*=theta_sat=0 under complex,
+ * so no intermediates pass, no chiral block, no mode/conversion terms. */
+__global__ void compute_forces_complex_kernel(
+    const double *u0, const double *u1, const double *u2,
+    const double *v0, const double *v1, const double *v2,
+    const double *tu0, const double *tu1, const double *tu2,
+    const double *tv0, const double *tv1, const double *tv2,
+    double *acc_u0, double *acc_u1, double *acc_u2,
+    double *acc_v0, double *acc_v1, double *acc_v2,
+    double *acc_tu0, double *acc_tu1, double *acc_tu2,
+    double *acc_tv0, double *acc_tv1, double *acc_tv2)
+{
+    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= d_N3) return;
+
+    int N = d_N, NN = d_NN;
+    int i = (int)(idx / NN), j = (int)((idx / N) % N), k = (int)(idx % N);
+    int ip=(i+1)%N, im=(i-1+N)%N, jp=(j+1)%N, jm=(j-1+N)%N, kp=(k+1)%N, km=(k-1+N)%N;
+    long n_ip=(long)ip*NN+j*N+k, n_im=(long)im*NN+j*N+k;
+    long n_jp=(long)i*NN+jp*N+k, n_jm=(long)i*NN+jm*N+k;
+    long n_kp=(long)i*NN+j*N+kp, n_km=(long)i*NN+j*N+km;
+
+    const double *u[3]  = {u0, u1, u2};
+    const double *v[3]  = {v0, v1, v2};
+    const double *tu[3] = {tu0, tu1, tu2};
+    const double *tv[3] = {tv0, tv1, tv2};
+
+    /* amplitudes */
+    double uu0=u0[idx], uu1=u1[idx], uu2=u2[idx];
+    double vv0=v0[idx], vv1=v1[idx], vv2=v2[idx];
+    double s2_0 = uu0*uu0 + vv0*vv0;          /* |Phi_0|^2 */
+    double s2_1 = uu1*uu1 + vv1*vv1;
+    double s2_2 = uu2*uu2 + vv2*vv2;
+    double sv   = s2_0 * s2_1 * s2_2;         /* s = prod |Phi_a|^2 */
+    double den  = 1.0 + d_KAPPA*sv;
+    double Vp   = 0.5*d_MU / (den*den);       /* Vt'(s) = (mu/2)/(1+kappa s)^2 */
+    /* product over b != a — explicit pair products, NEVER s/s2_a */
+    double prod_rest[3] = { s2_1*s2_2, s2_0*s2_2, s2_0*s2_1 };
+
+    double acc_u[3], acc_v[3], acc_tu[3], acc_tv[3];
+    for (int a = 0; a < 3; a++) {
+        /* u sector: pairs with tu via curl */
+        double lap_u = (u[a][n_ip]+u[a][n_im]+u[a][n_jp]+u[a][n_jm]
+                       +u[a][n_kp]+u[a][n_km]-6.0*u[a][idx]) * d_idx2;
+        double ctu;
+        if (a==0)      ctu = (tu[2][n_jp]-tu[2][n_jm]-tu[1][n_kp]+tu[1][n_km])*d_idx1;
+        else if (a==1) ctu = (tu[0][n_kp]-tu[0][n_km]-tu[2][n_ip]+tu[2][n_im])*d_idx1;
+        else           ctu = (tu[1][n_ip]-tu[1][n_im]-tu[0][n_jp]+tu[0][n_jm])*d_idx1;
+        acc_u[a] = lap_u - d_MASS2*u[a][idx]
+                 - 2.0*Vp*u[a][idx]*prod_rest[a] + d_ETA*ctu;
+
+        /* v sector: pairs with tv via curl */
+        double lap_v = (v[a][n_ip]+v[a][n_im]+v[a][n_jp]+v[a][n_jm]
+                       +v[a][n_kp]+v[a][n_km]-6.0*v[a][idx]) * d_idx2;
+        double ctv;
+        if (a==0)      ctv = (tv[2][n_jp]-tv[2][n_jm]-tv[1][n_kp]+tv[1][n_km])*d_idx1;
+        else if (a==1) ctv = (tv[0][n_kp]-tv[0][n_km]-tv[2][n_ip]+tv[2][n_im])*d_idx1;
+        else           ctv = (tv[1][n_ip]-tv[1][n_im]-tv[0][n_jp]+tv[0][n_jm])*d_idx1;
+        acc_v[a] = lap_v - d_MASS2*v[a][idx]
+                 - 2.0*Vp*v[a][idx]*prod_rest[a] + d_ETA*ctv;
+
+        /* tu sector */
+        double lap_tu = (tu[a][n_ip]+tu[a][n_im]+tu[a][n_jp]+tu[a][n_jm]
+                        +tu[a][n_kp]+tu[a][n_km]-6.0*tu[a][idx]) * d_idx2;
+        double cu;
+        if (a==0)      cu = (u[2][n_jp]-u[2][n_jm]-u[1][n_kp]+u[1][n_km])*d_idx1;
+        else if (a==1) cu = (u[0][n_kp]-u[0][n_km]-u[2][n_ip]+u[2][n_im])*d_idx1;
+        else           cu = (u[1][n_ip]-u[1][n_im]-u[0][n_jp]+u[0][n_jm])*d_idx1;
+        acc_tu[a] = lap_tu - d_MTHETA2*tu[a][idx] + d_ETA*cu;
+
+        /* tv sector */
+        double lap_tv = (tv[a][n_ip]+tv[a][n_im]+tv[a][n_jp]+tv[a][n_jm]
+                        +tv[a][n_kp]+tv[a][n_km]-6.0*tv[a][idx]) * d_idx2;
+        double cv;
+        if (a==0)      cv = (v[2][n_jp]-v[2][n_jm]-v[1][n_kp]+v[1][n_km])*d_idx1;
+        else if (a==1) cv = (v[0][n_kp]-v[0][n_km]-v[2][n_ip]+v[2][n_im])*d_idx1;
+        else           cv = (v[1][n_ip]-v[1][n_im]-v[0][n_jp]+v[0][n_jm])*d_idx1;
+        acc_tv[a] = lap_tv - d_MTHETA2*tv[a][idx] + d_ETA*cv;
+    }
+
+    acc_u0[idx]=acc_u[0]; acc_u1[idx]=acc_u[1]; acc_u2[idx]=acc_u[2];
+    acc_v0[idx]=acc_v[0]; acc_v1[idx]=acc_v[1]; acc_v2[idx]=acc_v[2];
+    acc_tu0[idx]=acc_tu[0]; acc_tu1[idx]=acc_tu[1]; acc_tu2[idx]=acc_tu[2];
+    acc_tv0[idx]=acc_tv[0]; acc_tv1[idx]=acc_tv[1]; acc_tv2[idx]=acc_tv[2];
+}
+
 __global__ void verlet_halfkick_kernel(
     double *vp0, double *vp1, double *vp2,
     double *vt0, double *vt1, double *vt2,
@@ -920,6 +1039,56 @@ __global__ void gradient_bc_kernel(
         vp0[idx] = omega_bg * A_bg * sin(k_bg * z + delta[0]);
         vp1[idx] = omega_bg * A_bg * sin(k_bg * z + delta[1]);
         vp2[idx] = omega_bg * A_bg * sin(k_bg * z + delta[2]);
+        ap0[idx] = 0; ap1[idx] = 0; ap2[idx] = 0;
+        t0[idx] = 0; t1[idx] = 0; t2[idx] = 0;
+        vt0[idx] = 0; vt1[idx] = 0; vt2[idx] = 0;
+        at0[idx] = 0; at1[idx] = 0; at2[idx] = 0;
+        return;
+    }
+
+    /* y-direction: linear extrapolation at j=0 and j=N-1 */
+    if (j == 0) {
+        long idx1 = (long)i*NN + 1*N + k;
+        long idx2 = (long)i*NN + 2*N + k;
+        p0[idx]=2*p0[idx1]-p0[idx2]; p1[idx]=2*p1[idx1]-p1[idx2]; p2[idx]=2*p2[idx1]-p2[idx2];
+        vp0[idx]=2*vp0[idx1]-vp0[idx2]; vp1[idx]=2*vp1[idx1]-vp1[idx2]; vp2[idx]=2*vp2[idx1]-vp2[idx2];
+        t0[idx]=2*t0[idx1]-t0[idx2]; t1[idx]=2*t1[idx1]-t1[idx2]; t2[idx]=2*t2[idx1]-t2[idx2];
+        vt0[idx]=2*vt0[idx1]-vt0[idx2]; vt1[idx]=2*vt1[idx1]-vt1[idx2]; vt2[idx]=2*vt2[idx1]-vt2[idx2];
+    } else if (j == N - 1) {
+        long idx1 = (long)i*NN + (N-2)*N + k;
+        long idx2 = (long)i*NN + (N-3)*N + k;
+        p0[idx]=2*p0[idx1]-p0[idx2]; p1[idx]=2*p1[idx1]-p1[idx2]; p2[idx]=2*p2[idx1]-p2[idx2];
+        vp0[idx]=2*vp0[idx1]-vp0[idx2]; vp1[idx]=2*vp1[idx1]-vp1[idx2]; vp2[idx]=2*vp2[idx1]-vp2[idx2];
+        t0[idx]=2*t0[idx1]-t0[idx2]; t1[idx]=2*t1[idx1]-t1[idx2]; t2[idx]=2*t2[idx1]-t2[idx2];
+        vt0[idx]=2*vt0[idx1]-vt0[idx2]; vt1[idx]=2*vt1[idx1]-vt1[idx2]; vt2[idx]=2*vt2[idx1]-vt2[idx2];
+    }
+}
+
+/* v66: bc_type=1 imaginary sector (complex_phi=1). The analytical gradient
+ * background is purely real, so the x-slabs pin the imaginary sector to
+ * ZERO (the CPU kernel pins to the saved initial imaginary state, which is
+ * zero for every init mode legal under bc_type=1 + complex). y edges:
+ * linear extrapolation, same stencil as the real kernel. Launched right
+ * after gradient_bc_kernel with the *_im device pointers. */
+__global__ void gradient_bc_im_kernel(
+    double *p0, double *p1, double *p2,
+    double *vp0, double *vp1, double *vp2,
+    double *ap0, double *ap1, double *ap2,
+    double *t0, double *t1, double *t2,
+    double *vt0, double *vt1, double *vt2,
+    double *at0, double *at1, double *at2)
+{
+    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= d_N3) return;
+
+    int N = d_N, NN = d_NN;
+    int M = d_GRAD_MARGIN;
+    int i = (int)(idx / NN), j = (int)((idx / N) % N), k = (int)(idx % N);
+
+    /* x-direction: pin boundary slabs (imaginary background = 0) */
+    if (i < M || i >= N - M) {
+        p0[idx] = 0; p1[idx] = 0; p2[idx] = 0;
+        vp0[idx] = 0; vp1[idx] = 0; vp2[idx] = 0;
         ap0[idx] = 0; ap1[idx] = 0; ap2[idx] = 0;
         t0[idx] = 0; t1[idx] = 0; t2[idx] = 0;
         vt0[idx] = 0; vt1[idx] = 0; vt2[idx] = 0;
@@ -1123,6 +1292,201 @@ __global__ void reduce_diagnostics_kernel(
     }
 }
 
+/* ================================================================
+   v66 complex diagnostics reduction (mirrors CPU compute_energy_complex,
+   theta_rms_complex, P_integrated_complex and pass 1 of compute_charges).
+   19 values in one pass:
+   [0] E_phi_kin, [1] E_theta_kin, [2] E_grad, [3] E_mass,
+   [4] E_pot = int Vt(s) dV, [5] E_tgrad, [6] E_tmass, [7] E_coupling,
+   [8] phi_max = max_a |Phi_a| (max), [9] P_max = max sqrt(s) (max),
+   [10] P_int = int sqrt(s) dV, [11] theta_rms_sum (tu^2+tv^2, /(6 N^3) on host),
+   [12] Q_phi_sum  = sum_a (u*vdot - v*udot)   (raw, *dV on host),
+   [13] Q_theta_sum= sum_a (tu*tvdot - tv*tudot) (raw, *dV on host),
+   [14] s_max (max), [15] M0_sum = sum rho2 (raw),
+   [16] cx_sum = x*rho2, [17] cy_sum, [18] cz_sum.
+   [19] (filled by reduce_rcore_kernel, second pass): rsum for r_core.
+   ================================================================ */
+#define CDIAG_NVALS 19
+#define CDIAG_TOTAL 20
+
+__global__ void reduce_diagnostics_complex_kernel(
+    const double *u0, const double *u1, const double *u2,
+    const double *v0, const double *v1, const double *v2,
+    const double *tu0, const double *tu1, const double *tu2,
+    const double *tv0, const double *tv1, const double *tv2,
+    const double *vu0, const double *vu1, const double *vu2,
+    const double *vv0, const double *vv1, const double *vv2,
+    const double *vtu0, const double *vtu1, const double *vtu2,
+    const double *vtv0, const double *vtv1, const double *vtv2,
+    double dV, double idx1,
+    double mass2, double mtheta2, double eta, double mu, double kappa,
+    double *d_results)
+{
+    __shared__ double sdata[CDIAG_NVALS * 256];  /* THREADS_PER_BLOCK * CDIAG_NVALS */
+
+    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    int tid = threadIdx.x;
+
+    double local[CDIAG_NVALS];
+    for (int vv = 0; vv < CDIAG_NVALS; vv++) local[vv] = 0.0;
+
+    if (idx < d_N3) {
+        int N = d_N, NN = d_NN;
+        int i = (int)(idx / NN), j = (int)((idx / N) % N), k = (int)(idx % N);
+        int ip=(i+1)%N, im=(i-1+N)%N, jp=(j+1)%N, jm=(j-1+N)%N, kp=(k+1)%N, km=(k-1+N)%N;
+        long n_ip=(long)ip*NN+j*N+k, n_im=(long)im*NN+j*N+k;
+        long n_jp=(long)i*NN+jp*N+k, n_jm=(long)i*NN+jm*N+k;
+        long n_kp=(long)i*NN+j*N+kp, n_km=(long)i*NN+j*N+km;
+
+        const double *u[3]   = {u0, u1, u2};
+        const double *v[3]   = {v0, v1, v2};
+        const double *tu[3]  = {tu0, tu1, tu2};
+        const double *tv[3]  = {tv0, tv1, tv2};
+        const double *vu[3]  = {vu0, vu1, vu2};
+        const double *vv_[3] = {vv0, vv1, vv2};
+        const double *vtu[3] = {vtu0, vtu1, vtu2};
+        const double *vtv[3] = {vtv0, vtv1, vtv2};
+
+        double s2[3];
+        double s_epk=0, s_etk=0, s_eg=0, s_em=0, s_etg=0, s_etm=0, s_ec=0;
+        double s_pm=0, s_trms=0, qp=0, qt=0, rho2=0;
+
+        for (int a = 0; a < 3; a++) {
+            double ua=u[a][idx], va=v[a][idx];
+            double tua=tu[a][idx], tva=tv[a][idx];
+            s2[a] = ua*ua + va*va;
+            s_epk += 0.5*(vu[a][idx]*vu[a][idx] + vv_[a][idx]*vv_[a][idx])*dV;
+            s_etk += 0.5*(vtu[a][idx]*vtu[a][idx] + vtv[a][idx]*vtv[a][idx])*dV;
+            double gx=(u[a][n_ip]-u[a][n_im])*idx1;
+            double gy=(u[a][n_jp]-u[a][n_jm])*idx1;
+            double gz=(u[a][n_kp]-u[a][n_km])*idx1;
+            double hx=(v[a][n_ip]-v[a][n_im])*idx1;
+            double hy=(v[a][n_jp]-v[a][n_jm])*idx1;
+            double hz=(v[a][n_kp]-v[a][n_km])*idx1;
+            s_eg += 0.5*(gx*gx+gy*gy+gz*gz+hx*hx+hy*hy+hz*hz)*dV;
+            s_em += 0.5*mass2*(ua*ua+va*va)*dV;
+            double tgx=(tu[a][n_ip]-tu[a][n_im])*idx1;
+            double tgy=(tu[a][n_jp]-tu[a][n_jm])*idx1;
+            double tgz=(tu[a][n_kp]-tu[a][n_km])*idx1;
+            double thx=(tv[a][n_ip]-tv[a][n_im])*idx1;
+            double thy=(tv[a][n_jp]-tv[a][n_jm])*idx1;
+            double thz=(tv[a][n_kp]-tv[a][n_km])*idx1;
+            s_etg += 0.5*(tgx*tgx+tgy*tgy+tgz*tgz+thx*thx+thy*thy+thz*thz)*dV;
+            s_etm += 0.5*mtheta2*(tua*tua+tva*tva)*dV;
+            /* phi_max as complex modulus |Phi_a| (time-stationary on a Q-ball) */
+            double mod = sqrt(s2[a]); if (mod > s_pm) s_pm = mod;
+            /* E_coupling = -eta * (u.curl(tu) + v.curl(tv)) */
+            double ctu, ctv;
+            if (a==0) {
+                ctu = (tu[2][n_jp]-tu[2][n_jm]-tu[1][n_kp]+tu[1][n_km])*idx1;
+                ctv = (tv[2][n_jp]-tv[2][n_jm]-tv[1][n_kp]+tv[1][n_km])*idx1;
+            } else if (a==1) {
+                ctu = (tu[0][n_kp]-tu[0][n_km]-tu[2][n_ip]+tu[2][n_im])*idx1;
+                ctv = (tv[0][n_kp]-tv[0][n_km]-tv[2][n_ip]+tv[2][n_im])*idx1;
+            } else {
+                ctu = (tu[1][n_ip]-tu[1][n_im]-tu[0][n_jp]+tu[0][n_jm])*idx1;
+                ctv = (tv[1][n_ip]-tv[1][n_im]-tv[0][n_jp]+tv[0][n_jm])*idx1;
+            }
+            s_ec -= eta*(ua*ctu + va*ctv)*dV;
+            s_trms += tua*tua + tva*tva;
+            /* Noether charges (THEORY §2): Q > 0 for Phi ~ e^{+i omega t} */
+            qp += ua*vv_[a][idx] - va*vu[a][idx];
+            qt += tua*vtv[a][idx] - tva*vtu[a][idx];
+            rho2 += s2[a];
+        }
+        double sv = s2[0]*s2[1]*s2[2];
+        double x = -d_L + i*d_dx, y = -d_L + j*d_dx, z = -d_L + k*d_dx;
+
+        local[0]  = s_epk;
+        local[1]  = s_etk;
+        local[2]  = s_eg;
+        local[3]  = s_em;
+        local[4]  = (mu/2.0)*sv/(1.0+kappa*sv)*dV;  /* Vt(s) */
+        local[5]  = s_etg;
+        local[6]  = s_etm;
+        local[7]  = s_ec;
+        local[8]  = s_pm;          /* phi_max — max reduction */
+        local[9]  = sqrt(sv);      /* P_max = sqrt(s) — max reduction */
+        local[10] = sqrt(sv)*dV;   /* P_int */
+        local[11] = s_trms;        /* theta_rms sum (6 components) */
+        local[12] = qp;            /* Q_phi (raw) */
+        local[13] = qt;            /* Q_theta (raw) */
+        local[14] = sv;            /* s_max — max reduction */
+        local[15] = rho2;          /* M0 (raw) */
+        local[16] = x*rho2;
+        local[17] = y*rho2;
+        local[18] = z*rho2;
+    }
+
+    for (int vv = 0; vv < CDIAG_NVALS; vv++)
+        sdata[vv * blockDim.x + tid] = local[vv];
+    __syncthreads();
+
+    for (int s = blockDim.x/2; s > 0; s >>= 1) {
+        if (tid < s) {
+            for (int vv = 0; vv < CDIAG_NVALS; vv++) {
+                int si = vv * blockDim.x;
+                if (vv == 8 || vv == 9 || vv == 14) {
+                    double other = sdata[si + tid + s];
+                    if (other > sdata[si + tid]) sdata[si + tid] = other;
+                } else {
+                    sdata[si + tid] += sdata[si + tid + s];
+                }
+            }
+        }
+        __syncthreads();
+    }
+
+    if (tid == 0) {
+        for (int vv = 0; vv < CDIAG_NVALS; vv++) {
+            if (vv == 8 || vv == 9 || vv == 14) {
+                unsigned long long *addr = (unsigned long long *)&d_results[vv];
+                unsigned long long old_val = *addr, assumed;
+                double new_val = sdata[vv * blockDim.x];
+                do {
+                    assumed = old_val;
+                    double cur = __longlong_as_double(assumed);
+                    if (new_val <= cur) break;
+                    unsigned long long new_bits = __double_as_longlong(new_val);
+                    old_val = atomicCAS(addr, assumed, new_bits);
+                } while (assumed != old_val);
+            } else {
+                atomicAdd(&d_results[vv], sdata[vv * blockDim.x]);
+            }
+        }
+    }
+}
+
+/* v66 second pass of compute_charges: centroid-based rms radius of
+ * rho2 = sum_a (u_a^2 + v_a^2). Accumulates the RAW rsum into d_rsum
+ * (host applies *dV/M0 and sqrt, exactly like the CPU). */
+__global__ void reduce_rcore_kernel(
+    const double *u0, const double *u1, const double *u2,
+    const double *v0, const double *v1, const double *v2,
+    double cx, double cy, double cz, double *d_rsum)
+{
+    __shared__ double sdata[256];
+    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    int tid = threadIdx.x;
+    double val = 0.0;
+    if (idx < d_N3) {
+        int N = d_N, NN = d_NN;
+        int i = (int)(idx / NN), j = (int)((idx / N) % N), k = (int)(idx % N);
+        double x = -d_L + i*d_dx, y = -d_L + j*d_dx, z = -d_L + k*d_dx;
+        double rho2 = u0[idx]*u0[idx] + v0[idx]*v0[idx]
+                    + u1[idx]*u1[idx] + v1[idx]*v1[idx]
+                    + u2[idx]*u2[idx] + v2[idx]*v2[idx];
+        val = ((x-cx)*(x-cx)+(y-cy)*(y-cy)+(z-cz)*(z-cz))*rho2;
+    }
+    sdata[tid] = val;
+    __syncthreads();
+    for (int s = blockDim.x/2; s > 0; s >>= 1) {
+        if (tid < s) sdata[tid] += sdata[tid + s];
+        __syncthreads();
+    }
+    if (tid == 0) atomicAdd(d_rsum, sdata[0]);
+}
+
 /* Zero the diagnostics results buffer */
 __global__ void zero_diag_kernel(double *d_results, int n) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
@@ -1145,11 +1509,16 @@ __global__ void rescale_phi_kernel(double *p0, double *p1, double *p2,
 static double *d_phi[3], *d_vel_phi[3], *d_acc_phi[3];
 static double *d_theta[3], *d_vel_theta[3], *d_acc_theta[3];
 static double *d_mismatch[3], *d_harden_Q[3];  /* intermediates for Cosserat/hardening */
+/* v66 complex sector device arrays (allocated only when complex_phi=1) */
+static double *d_phi_im[3], *d_vel_phi_im[3], *d_acc_phi_im[3];
+static double *d_theta_im[3], *d_vel_theta_im[3], *d_acc_theta_im[3];
 static int gpu_blocks;
 static int gpu_has_intermediates = 0;  /* nonzero if intermediate arrays allocated */
+static int gpu_complex_mode = 0;       /* nonzero if complex arrays allocated (v66) */
 
-static void gpu_alloc(long N3, int need_intermediates) {
+static void gpu_alloc(long N3, int need_intermediates, int complex_mode) {
     size_t bytes = N3 * sizeof(double);
+    gpu_complex_mode = complex_mode;
     for (int a = 0; a < 3; a++) {
         cudaMalloc(&d_phi[a], bytes);       cudaMalloc(&d_vel_phi[a], bytes);   cudaMalloc(&d_acc_phi[a], bytes);
         cudaMalloc(&d_theta[a], bytes);     cudaMalloc(&d_vel_theta[a], bytes); cudaMalloc(&d_acc_theta[a], bytes);
@@ -1165,9 +1534,37 @@ static void gpu_alloc(long N3, int need_intermediates) {
         gpu_has_intermediates = 1;
         total_gb += 6.0*bytes/1e9;
     }
+    if (complex_mode) {
+        /* 18 more arrays: the imaginary copy of the 6-field system */
+        for (int a = 0; a < 3; a++) {
+            cudaMalloc(&d_phi_im[a], bytes);   cudaMalloc(&d_vel_phi_im[a], bytes);   cudaMalloc(&d_acc_phi_im[a], bytes);
+            cudaMalloc(&d_theta_im[a], bytes); cudaMalloc(&d_vel_theta_im[a], bytes); cudaMalloc(&d_acc_theta_im[a], bytes);
+        }
+        total_gb += 18.0*bytes/1e9;
+    } else {
+        for (int a = 0; a < 3; a++) {
+            d_phi_im[a] = d_vel_phi_im[a] = d_acc_phi_im[a] = NULL;
+            d_theta_im[a] = d_vel_theta_im[a] = d_acc_theta_im[a] = NULL;
+        }
+    }
     gpu_blocks = (int)((N3 + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK);
-    printf("GPU: allocated %.2f GB (physics%s), %d blocks × %d threads\n",
-           total_gb, need_intermediates ? "+Cosserat" : "", gpu_blocks, THREADS_PER_BLOCK);
+    printf("GPU: allocated %.2f GB (physics%s%s), %d blocks × %d threads\n",
+           total_gb, need_intermediates ? "+Cosserat" : "",
+           complex_mode ? ", complex 36 arrays" : "",
+           gpu_blocks, THREADS_PER_BLOCK);
+    if (complex_mode) {
+        /* v66 memory guard: 36 N^3 doubles of physics, plus snapshot staging
+         * (24 N^3 f32/f16). Physics alone: N=320 -> 9.4 GB, N=384 -> 16.3 GB,
+         * N=400 -> 18.4 GB. Practical limits: N<=320 on 16 GB, N<=400 on 32 GB. */
+        size_t free_b = 0, total_b = 0;
+        cudaMemGetInfo(&free_b, &total_b);
+        double need_gb = 36.0*bytes/1e9;
+        printf("Complex mode: %.2f GB physics (36 N^3 arrays); max N<=320 on 16 GB, N<=400 on 32 GB\n",
+               need_gb);
+        if (need_gb*1e9 > (double)total_b)
+            printf("WARNING: complex physics arrays (%.2f GB) exceed GPU memory (%.2f GB)\n",
+                   need_gb, total_b/1e9);
+    }
 }
 
 static void gpu_upload(Grid *g) {
@@ -1180,6 +1577,16 @@ static void gpu_upload(Grid *g) {
         cudaMemset(d_acc_phi[a], 0, bytes);
         cudaMemset(d_acc_theta[a], 0, bytes);
     }
+    if (gpu_complex_mode) {
+        for (int a = 0; a < 3; a++) {
+            cudaMemcpy(d_phi_im[a], g->phi_im[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_vel_phi_im[a], g->phi_im_vel[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_theta_im[a], g->theta_im[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_vel_theta_im[a], g->theta_im_vel[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemset(d_acc_phi_im[a], 0, bytes);
+            cudaMemset(d_acc_theta_im[a], 0, bytes);
+        }
+    }
 }
 
 static void gpu_download(Grid *g) {
@@ -1189,6 +1596,14 @@ static void gpu_download(Grid *g) {
         cudaMemcpy(g->phi_vel[a], d_vel_phi[a], bytes, cudaMemcpyDeviceToHost);
         cudaMemcpy(g->theta[a], d_theta[a], bytes, cudaMemcpyDeviceToHost);
         cudaMemcpy(g->theta_vel[a], d_vel_theta[a], bytes, cudaMemcpyDeviceToHost);
+    }
+    if (gpu_complex_mode) {
+        for (int a = 0; a < 3; a++) {
+            cudaMemcpy(g->phi_im[a], d_phi_im[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->phi_im_vel[a], d_vel_phi_im[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->theta_im[a], d_theta_im[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->theta_im_vel[a], d_vel_theta_im[a], bytes, cudaMemcpyDeviceToHost);
+        }
     }
 }
 
@@ -1200,6 +1615,12 @@ static void gpu_free(void) {
     if (gpu_has_intermediates) {
         for (int a = 0; a < 3; a++) {
             cudaFree(d_mismatch[a]); cudaFree(d_harden_Q[a]);
+        }
+    }
+    if (gpu_complex_mode) {
+        for (int a = 0; a < 3; a++) {
+            cudaFree(d_phi_im[a]); cudaFree(d_vel_phi_im[a]); cudaFree(d_acc_phi_im[a]);
+            cudaFree(d_theta_im[a]); cudaFree(d_vel_theta_im[a]); cudaFree(d_acc_theta_im[a]);
         }
     }
 }
@@ -1248,39 +1669,74 @@ static void gpu_verlet_step(double dt) {
         d_vel_theta[0], d_vel_theta[1], d_vel_theta[2],
         d_acc_phi[0], d_acc_phi[1], d_acc_phi[2],
         d_acc_theta[0], d_acc_theta[1], d_acc_theta[2], hdt);
+    if (gpu_complex_mode)
+        verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_vel_phi_im[0], d_vel_phi_im[1], d_vel_phi_im[2],
+            d_vel_theta_im[0], d_vel_theta_im[1], d_vel_theta_im[2],
+            d_acc_phi_im[0], d_acc_phi_im[1], d_acc_phi_im[2],
+            d_acc_theta_im[0], d_acc_theta_im[1], d_acc_theta_im[2], hdt);
     /* Drift */
     verlet_drift_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_phi[0], d_phi[1], d_phi[2],
         d_theta[0], d_theta[1], d_theta[2],
         d_vel_phi[0], d_vel_phi[1], d_vel_phi[2],
         d_vel_theta[0], d_vel_theta[1], d_vel_theta[2], dt);
-    /* Intermediates (Cosserat mismatch + hardening Q) */
-    if (gpu_has_intermediates) {
-        compute_intermediates_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+    if (gpu_complex_mode)
+        verlet_drift_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_phi_im[0], d_phi_im[1], d_phi_im[2],
+            d_theta_im[0], d_theta_im[1], d_theta_im[2],
+            d_vel_phi_im[0], d_vel_phi_im[1], d_vel_phi_im[2],
+            d_vel_theta_im[0], d_vel_theta_im[1], d_vel_theta_im[2], dt);
+    /* Forces */
+    if (gpu_complex_mode) {
+        /* v66: 12-field minimal loop; intermediates guarded off by cfg_validate */
+        compute_forces_complex_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_phi[0], d_phi[1], d_phi[2],
+            d_phi_im[0], d_phi_im[1], d_phi_im[2],
+            d_theta[0], d_theta[1], d_theta[2],
+            d_theta_im[0], d_theta_im[1], d_theta_im[2],
+            d_acc_phi[0], d_acc_phi[1], d_acc_phi[2],
+            d_acc_phi_im[0], d_acc_phi_im[1], d_acc_phi_im[2],
+            d_acc_theta[0], d_acc_theta[1], d_acc_theta[2],
+            d_acc_theta_im[0], d_acc_theta_im[1], d_acc_theta_im[2]);
+    } else {
+        /* Intermediates (Cosserat mismatch + hardening Q) */
+        if (gpu_has_intermediates) {
+            compute_intermediates_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                d_phi[0], d_phi[1], d_phi[2],
+                d_theta[0], d_theta[1], d_theta[2],
+                d_mismatch[0], d_mismatch[1], d_mismatch[2],
+                d_harden_Q[0], d_harden_Q[1], d_harden_Q[2]);
+        }
+        compute_forces_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
             d_phi[0], d_phi[1], d_phi[2],
             d_theta[0], d_theta[1], d_theta[2],
+            d_vel_theta[0], d_vel_theta[1], d_vel_theta[2],
+            d_acc_phi[0], d_acc_phi[1], d_acc_phi[2],
+            d_acc_theta[0], d_acc_theta[1], d_acc_theta[2],
             d_mismatch[0], d_mismatch[1], d_mismatch[2],
             d_harden_Q[0], d_harden_Q[1], d_harden_Q[2]);
     }
-    /* Forces */
-    compute_forces_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
-        d_phi[0], d_phi[1], d_phi[2],
-        d_theta[0], d_theta[1], d_theta[2],
-        d_vel_theta[0], d_vel_theta[1], d_vel_theta[2],
-        d_acc_phi[0], d_acc_phi[1], d_acc_phi[2],
-        d_acc_theta[0], d_acc_theta[1], d_acc_theta[2],
-        d_mismatch[0], d_mismatch[1], d_mismatch[2],
-        d_harden_Q[0], d_harden_Q[1], d_harden_Q[2]);
     /* Half-kick */
     verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_vel_phi[0], d_vel_phi[1], d_vel_phi[2],
         d_vel_theta[0], d_vel_theta[1], d_vel_theta[2],
         d_acc_phi[0], d_acc_phi[1], d_acc_phi[2],
         d_acc_theta[0], d_acc_theta[1], d_acc_theta[2], hdt);
+    if (gpu_complex_mode)
+        verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_vel_phi_im[0], d_vel_phi_im[1], d_vel_phi_im[2],
+            d_vel_theta_im[0], d_vel_theta_im[1], d_vel_theta_im[2],
+            d_acc_phi_im[0], d_acc_phi_im[1], d_acc_phi_im[2],
+            d_acc_theta_im[0], d_acc_theta_im[1], d_acc_theta_im[2], hdt);
     /* Boundary — type set externally before calling gpu_verlet_step */
     absorbing_boundary_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_vel_phi[0], d_vel_phi[1], d_vel_phi[2],
         d_vel_theta[0], d_vel_theta[1], d_vel_theta[2]);
+    if (gpu_complex_mode)
+        absorbing_boundary_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_vel_phi_im[0], d_vel_phi_im[1], d_vel_phi_im[2],
+            d_vel_theta_im[0], d_vel_theta_im[1], d_vel_theta_im[2]);
 }
 
 /* Save current host grid state as pinned boundary values (for bc_type=1) */
@@ -1580,23 +2036,24 @@ static void *snap_writer_thread(void *arg) {
         ctx->writer_busy = 1;
         pthread_mutex_unlock(&ctx->mutex);
 
-        /* Compress and write frame to SFA */
-        void *cols[12];
+        /* Compress and write frame to SFA (nf = 12 real, 24 complex) */
+        void *cols[24];
         long N3 = ctx->N3;
+        int nf = ctx->nf;
         if (ctx->precision == 0) {
-            /* f16: h_pin_buf is uint16_t[12*N3] */
+            /* f16: h_pin_buf is uint16_t[nf*N3] */
             uint16_t *base = (uint16_t *)ctx->h_pin_buf;
-            for (int c = 0; c < 12; c++)
+            for (int c = 0; c < nf; c++)
                 cols[c] = base + c * N3;
         } else if (ctx->precision == 1) {
-            /* f32: h_pin_buf is float[12*N3] */
+            /* f32: h_pin_buf is float[nf*N3] */
             float *base = (float *)ctx->h_pin_buf;
-            for (int c = 0; c < 12; c++)
+            for (int c = 0; c < nf; c++)
                 cols[c] = base + c * N3;
         } else {
-            /* f64: h_pin_buf is double[12*N3] */
+            /* f64: h_pin_buf is double[nf*N3] */
             double *base = (double *)ctx->h_pin_buf;
-            for (int c = 0; c < 12; c++)
+            for (int c = 0; c < nf; c++)
                 cols[c] = base + c * N3;
         }
         fw_write_voxel(ctx->fw, ctx->frame_time, cols);
@@ -1609,28 +2066,29 @@ static void *snap_writer_thread(void *arg) {
     return NULL;
 }
 
-static SnapHookCtx create_snap_hook(FrameWriter *fw, int precision, int snap_every, long N3) {
+static SnapHookCtx create_snap_hook(FrameWriter *fw, int precision, int snap_every, long N3, int nf) {
     SnapHookCtx ctx;
     memset(&ctx, 0, sizeof(ctx));
     ctx.fw = fw;
     ctx.precision = precision;
     ctx.snap_every = snap_every;
     ctx.N3 = N3;
+    ctx.nf = nf;   /* 12 real-mode columns, 24 complex (v66) */
 
     cudaStreamCreate(&ctx.stream);
 
     /* Allocate GPU staging buffer and pinned host buffer */
     if (precision == 0) {
-        ctx.buf_bytes = 12L * N3 * sizeof(uint16_t);
+        ctx.buf_bytes = (long)nf * N3 * sizeof(uint16_t);
         cudaMalloc(&ctx.d_f16_buf, ctx.buf_bytes);
         ctx.d_f32_buf = NULL;
     } else if (precision == 1) {
-        ctx.buf_bytes = 12L * N3 * sizeof(float);
+        ctx.buf_bytes = (long)nf * N3 * sizeof(float);
         ctx.d_f16_buf = NULL;
         cudaMalloc(&ctx.d_f32_buf, ctx.buf_bytes);
     } else {
         /* f64: DMA directly from physics arrays, staging = pinned host only */
-        ctx.buf_bytes = 12L * N3 * sizeof(double);
+        ctx.buf_bytes = (long)nf * N3 * sizeof(double);
         ctx.d_f16_buf = NULL;
         ctx.d_f32_buf = NULL;
     }
@@ -1689,17 +2147,24 @@ static void snap_hook(int step, double t, const FieldState *state, void *vctx) {
 
     long N3 = state->N3;
     int blocks = (int)((N3 + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK);
+    int nf = ctx->nf;
 
-    const double *src[12] = {
+    /* Order MUST match column registration: 12 real arrays, then the
+       imaginary copy (phi_im, theta_im, phi_im_vel, theta_im_vel) — v66. */
+    const double *src[24] = {
         state->phi[0], state->phi[1], state->phi[2],
         state->theta[0], state->theta[1], state->theta[2],
         state->vel_phi[0], state->vel_phi[1], state->vel_phi[2],
-        state->vel_theta[0], state->vel_theta[1], state->vel_theta[2]
+        state->vel_theta[0], state->vel_theta[1], state->vel_theta[2],
+        state->phi_im[0], state->phi_im[1], state->phi_im[2],
+        state->theta_im[0], state->theta_im[1], state->theta_im[2],
+        state->vel_phi_im[0], state->vel_phi_im[1], state->vel_phi_im[2],
+        state->vel_theta_im[0], state->vel_theta_im[1], state->vel_theta_im[2]
     };
 
     if (ctx->precision == 0) {
         /* f16 path: convert on GPU, DMA f16 */
-        for (int c = 0; c < 12; c++) {
+        for (int c = 0; c < nf; c++) {
             downcast_f64_to_f16_kernel<<<blocks, THREADS_PER_BLOCK, 0, ctx->stream>>>(
                 src[c], ctx->d_f16_buf + c * N3, N3);
         }
@@ -1708,7 +2173,7 @@ static void snap_hook(int step, double t, const FieldState *state, void *vctx) {
                         cudaMemcpyDeviceToHost, ctx->stream);
     } else if (ctx->precision == 1) {
         /* f32 path: convert on GPU, DMA f32 */
-        for (int c = 0; c < 12; c++) {
+        for (int c = 0; c < nf; c++) {
             downcast_f64_to_f32_kernel<<<blocks, THREADS_PER_BLOCK, 0, ctx->stream>>>(
                 src[c], ctx->d_f32_buf + c * N3, N3);
         }
@@ -1716,9 +2181,9 @@ static void snap_hook(int step, double t, const FieldState *state, void *vctx) {
         cudaMemcpyAsync(ctx->h_pin_buf, ctx->d_f32_buf, ctx->buf_bytes,
                         cudaMemcpyDeviceToHost, ctx->stream);
     } else {
-        /* f64 path: DMA raw doubles (12 separate copies) */
+        /* f64 path: DMA raw doubles (nf separate copies) */
         double *dst = (double *)ctx->h_pin_buf;
-        for (int c = 0; c < 12; c++) {
+        for (int c = 0; c < nf; c++) {
             cudaMemcpyAsync(dst + c * N3, src[c], N3 * sizeof(double),
                             cudaMemcpyDeviceToHost, ctx->stream);
         }
@@ -1766,9 +2231,11 @@ static DiagHookCtx create_diag_hook(FILE *fp, int diag_every, int major_every,
     ctx.inv_alpha = c->inv_alpha;
     ctx.inv_beta = c->inv_beta;
     ctx.kappa_gamma = c->kappa_gamma;
+    ctx.complex_mode = c->complex_phi;
 
-    cudaMalloc(&ctx.d_results, DIAG_NVALS * sizeof(double));
-    cudaMallocHost(&ctx.h_results, DIAG_NVALS * sizeof(double));
+    int nvals = ctx.complex_mode ? CDIAG_TOTAL : DIAG_NVALS;
+    cudaMalloc(&ctx.d_results, nvals * sizeof(double));
+    cudaMallocHost(&ctx.h_results, nvals * sizeof(double));
     return ctx;
 }
 
@@ -1779,11 +2246,47 @@ static void destroy_diag_hook(DiagHookCtx *ctx) {
 
 /* Run the GPU reduction and populate h_results. Used by diag_hook and for initial/final diag. */
 static void run_gpu_diagnostics(const FieldState *state, DiagHookCtx *ctx) {
-    /* Zero the results buffer */
-    zero_diag_kernel<<<1, DIAG_NVALS>>>(ctx->d_results, DIAG_NVALS);
-
     double idx1 = 1.0 / (2.0 * ctx->dx);
     double idx2_val = 1.0 / (ctx->dx * ctx->dx);
+
+    if (ctx->complex_mode) {
+        /* v66 complex path: 19-value reduction + two-pass centroid r_core
+         * (mirrors CPU compute_energy_complex + compute_charges) */
+        zero_diag_kernel<<<1, CDIAG_TOTAL>>>(ctx->d_results, CDIAG_TOTAL);
+        reduce_diagnostics_complex_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            state->phi[0], state->phi[1], state->phi[2],
+            state->phi_im[0], state->phi_im[1], state->phi_im[2],
+            state->theta[0], state->theta[1], state->theta[2],
+            state->theta_im[0], state->theta_im[1], state->theta_im[2],
+            state->vel_phi[0], state->vel_phi[1], state->vel_phi[2],
+            state->vel_phi_im[0], state->vel_phi_im[1], state->vel_phi_im[2],
+            state->vel_theta[0], state->vel_theta[1], state->vel_theta[2],
+            state->vel_theta_im[0], state->vel_theta_im[1], state->vel_theta_im[2],
+            ctx->dV, idx1,
+            ctx->m2, ctx->mtheta2, ctx->eta, ctx->mu, ctx->kappa,
+            ctx->d_results);
+        cudaMemcpy(ctx->h_results, ctx->d_results, CDIAG_TOTAL * sizeof(double),
+                   cudaMemcpyDeviceToHost);
+        /* pass 2: rms charge radius about the rho2 centroid (dV cancels in centroid) */
+        double M0_raw = ctx->h_results[15];
+        if (M0_raw * ctx->dV >= 1e-30) {
+            double cx = ctx->h_results[16] / M0_raw;
+            double cy = ctx->h_results[17] / M0_raw;
+            double cz = ctx->h_results[18] / M0_raw;
+            reduce_rcore_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                state->phi[0], state->phi[1], state->phi[2],
+                state->phi_im[0], state->phi_im[1], state->phi_im[2],
+                cx, cy, cz, ctx->d_results + 19);
+            cudaMemcpy(&ctx->h_results[19], ctx->d_results + 19, sizeof(double),
+                       cudaMemcpyDeviceToHost);
+        } else {
+            ctx->h_results[19] = 0.0;
+        }
+        return;
+    }
+
+    /* Zero the results buffer */
+    zero_diag_kernel<<<1, DIAG_NVALS>>>(ctx->d_results, DIAG_NVALS);
 
     reduce_diagnostics_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         state->phi[0], state->phi[1], state->phi[2],
@@ -1800,6 +2303,18 @@ static void run_gpu_diagnostics(const FieldState *state, DiagHookCtx *ctx) {
                cudaMemcpyDeviceToHost);
 }
 
+/* v66: extract Noether charges + core diagnostics from a completed complex
+ * reduction (raw sums -> physical values, mirroring CPU compute_charges). */
+static void complex_charges_from_results(const DiagHookCtx *ctx,
+    double *Qp, double *Qt, double *smax, double *rcore) {
+    const double *r = ctx->h_results;
+    *Qp = r[12] * ctx->dV;
+    *Qt = r[13] * ctx->dV;
+    *smax = r[14];
+    double M0 = r[15] * ctx->dV;
+    *rcore = (M0 < 1e-30) ? 0.0 : sqrt(r[19] * ctx->dV / M0);
+}
+
 static void diag_hook(int step, double t, const FieldState *state, void *vctx) {
     DiagHookCtx *ctx = (DiagHookCtx *)vctx;
     if (step % ctx->diag_every != 0) return;
@@ -1809,10 +2324,17 @@ static void diag_hook(int step, double t, const FieldState *state, void *vctx) {
     double *r = ctx->h_results;
     /* r: [0]epk [1]etk [2]eg [3]em [4]ep [5]etg [6]etm [7]ec [8]pm [9]Pm [10]Pint [11]trms_sum */
     double et = r[0]+r[1]+r[2]+r[3]+r[4]+r[5]+r[6]+r[7];
-    double trms = sqrt(r[11] / (3.0 * ctx->N3));
+    /* theta_rms: complex mode divides by the actual 6 theta components (v66) */
+    double trms = sqrt(r[11] / ((ctx->complex_mode ? 6.0 : 3.0) * ctx->N3));
+    double Qp = 0, Qt = 0, smax = 0, rcore = 0;
+    if (ctx->complex_mode)
+        complex_charges_from_results(ctx, &Qp, &Qt, &smax, &rcore);
 
-    fprintf(ctx->fp, "%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n",
+    fprintf(ctx->fp, "%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e",
             t, r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], et, r[8], r[9], r[10], trms);
+    if (ctx->complex_mode)
+        fprintf(ctx->fp, "\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e", Qp, Qt, Qp+Qt, smax, rcore);
+    fprintf(ctx->fp, "\n");
     fflush(ctx->fp);
 
     if (step % ctx->major_every == 0) {
@@ -1823,9 +2345,10 @@ static void diag_hook(int step, double t, const FieldState *state, void *vctx) {
         float ms; cudaEventElapsedTime(&ms, ctx->t_start, t_stop);
         cudaEventDestroy(t_stop);
         double drift = 100.0 * (et - ctx->E0) / (fabs(ctx->E0) + 1e-30);
-        printf("t=%7.1f E=%.3e (drift %+.3f%%) Ep=%.1f phi=%.3f θ_rms=%.2e "
-               "[%.0f%% %.1fs %.2fms/step]\n",
-               t, et, drift, r[4], r[8], trms,
+        printf("t=%7.1f E=%.3e (drift %+.3f%%) Ep=%.1f phi=%.3f θ_rms=%.2e ",
+               t, et, drift, r[4], r[8], trms);
+        if (ctx->complex_mode) printf("Q=%.6e s_max=%.4e ", Qp+Qt, smax);
+        printf("[%.0f%% %.1fs %.2fms/step]\n",
                100.0 * step / ctx->n_steps, ms / 1000, ms / step);
         fflush(stdout);
     }
@@ -2929,6 +3452,7 @@ int main(int argc, char **argv) {
            prop.totalGlobalMem/1e9, prop.major, prop.minor);
 
     cfg_print(&c);
+    cfg_validate(&c);
 
     Grid *g = grid_alloc(&c);
     printf("dx=%.4f dt=%.6f\n\n", g->dx, g->dt);
@@ -2944,7 +3468,7 @@ int main(int argc, char **argv) {
     }
 
     /* GPU setup */
-    gpu_alloc(g->N3, (c.alpha_cs != 0 || c.beta_h != 0));
+    gpu_alloc(g->N3, (c.alpha_cs != 0 || c.beta_h != 0), c.complex_phi);
     gpu_set_constants(&c, g->dx);
     cudaMemcpyToSymbol(d_BC_TYPE, &c.bc_type, sizeof(int));
     cudaMemcpyToSymbol(d_GRAD_MARGIN, &c.gradient_margin, sizeof(int));
@@ -2953,19 +3477,29 @@ int main(int argc, char **argv) {
     gpu_upload(g);
 
     /* Initial force computation on GPU */
-    if (gpu_has_intermediates) {
-        compute_intermediates_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+    if (c.complex_phi) {
+        compute_forces_complex_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_phi[0],d_phi[1],d_phi[2], d_phi_im[0],d_phi_im[1],d_phi_im[2],
+            d_theta[0],d_theta[1],d_theta[2], d_theta_im[0],d_theta_im[1],d_theta_im[2],
+            d_acc_phi[0],d_acc_phi[1],d_acc_phi[2],
+            d_acc_phi_im[0],d_acc_phi_im[1],d_acc_phi_im[2],
+            d_acc_theta[0],d_acc_theta[1],d_acc_theta[2],
+            d_acc_theta_im[0],d_acc_theta_im[1],d_acc_theta_im[2]);
+    } else {
+        if (gpu_has_intermediates) {
+            compute_intermediates_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                d_phi[0],d_phi[1],d_phi[2], d_theta[0],d_theta[1],d_theta[2],
+                d_mismatch[0],d_mismatch[1],d_mismatch[2],
+                d_harden_Q[0],d_harden_Q[1],d_harden_Q[2]);
+        }
+        compute_forces_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
             d_phi[0],d_phi[1],d_phi[2], d_theta[0],d_theta[1],d_theta[2],
+            d_vel_theta[0],d_vel_theta[1],d_vel_theta[2],
+            d_acc_phi[0],d_acc_phi[1],d_acc_phi[2],
+            d_acc_theta[0],d_acc_theta[1],d_acc_theta[2],
             d_mismatch[0],d_mismatch[1],d_mismatch[2],
             d_harden_Q[0],d_harden_Q[1],d_harden_Q[2]);
     }
-    compute_forces_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
-        d_phi[0],d_phi[1],d_phi[2], d_theta[0],d_theta[1],d_theta[2],
-        d_vel_theta[0],d_vel_theta[1],d_vel_theta[2],
-        d_acc_phi[0],d_acc_phi[1],d_acc_phi[2],
-        d_acc_theta[0],d_acc_theta[1],d_acc_theta[2],
-        d_mismatch[0],d_mismatch[1],d_mismatch[2],
-        d_harden_Q[0],d_harden_Q[1],d_harden_Q[2]);
     cudaDeviceSynchronize();
 
     /* Parameter sweep mode */
@@ -3020,9 +3554,24 @@ int main(int argc, char **argv) {
     sfa_add_column(sfa,"theta_vx",sfa_dtype,SFA_VELOCITY,3);
     sfa_add_column(sfa,"theta_vy",sfa_dtype,SFA_VELOCITY,4);
     sfa_add_column(sfa,"theta_vz",sfa_dtype,SFA_VELOCITY,5);
+    if (c.complex_phi) {
+        /* v66 imaginary sector (SPEC §7.1): component offset marks Im parts */
+        sfa_add_column(sfa,"phiim_x",   sfa_dtype,SFA_POSITION,3);
+        sfa_add_column(sfa,"phiim_y",   sfa_dtype,SFA_POSITION,4);
+        sfa_add_column(sfa,"phiim_z",   sfa_dtype,SFA_POSITION,5);
+        sfa_add_column(sfa,"thetaim_x", sfa_dtype,SFA_ANGLE,3);
+        sfa_add_column(sfa,"thetaim_y", sfa_dtype,SFA_ANGLE,4);
+        sfa_add_column(sfa,"thetaim_z", sfa_dtype,SFA_ANGLE,5);
+        sfa_add_column(sfa,"phiim_vx",  sfa_dtype,SFA_VELOCITY,6);
+        sfa_add_column(sfa,"phiim_vy",  sfa_dtype,SFA_VELOCITY,7);
+        sfa_add_column(sfa,"phiim_vz",  sfa_dtype,SFA_VELOCITY,8);
+        sfa_add_column(sfa,"thetaim_vx",sfa_dtype,SFA_VELOCITY,9);
+        sfa_add_column(sfa,"thetaim_vy",sfa_dtype,SFA_VELOCITY,10);
+        sfa_add_column(sfa,"thetaim_vz",sfa_dtype,SFA_VELOCITY,11);
+    }
     sfa_finalize_header(sfa);
     const char *pn[]={"f16","f32","f64"};
-    printf("SFA: %s (12 cols, %s, colzstd)\n\n", c.output, pn[c.precision]);
+    printf("SFA: %s (%d cols, %s, colzstd)\n\n", c.output, c.complex_phi ? 24 : 12, pn[c.precision]);
 
     /* Timing, step counts — use lround to avoid truncation errors */
     int n_steps=(int)lround(c.T/g->dt);
@@ -3037,7 +3586,10 @@ int main(int argc, char **argv) {
     for (int a = 0; a < 3; a++) {
         fstate.phi[a] = d_phi[a]; fstate.vel_phi[a] = d_vel_phi[a]; fstate.acc_phi[a] = d_acc_phi[a];
         fstate.theta[a] = d_theta[a]; fstate.vel_theta[a] = d_vel_theta[a]; fstate.acc_theta[a] = d_acc_theta[a];
+        fstate.phi_im[a] = d_phi_im[a]; fstate.vel_phi_im[a] = d_vel_phi_im[a]; fstate.acc_phi_im[a] = d_acc_phi_im[a];
+        fstate.theta_im[a] = d_theta_im[a]; fstate.vel_theta_im[a] = d_vel_theta_im[a]; fstate.acc_theta_im[a] = d_acc_theta_im[a];
     }
+    fstate.complex_mode = c.complex_phi;
     fstate.N3 = g->N3; fstate.N = g->N;
     fstate.L = g->L; fstate.dx = g->dx; fstate.dt = g->dt;
 
@@ -3046,14 +3598,17 @@ int main(int argc, char **argv) {
     fw_init(&frame_writer, sfa);
 
     /* Create hooks */
-    SnapHookCtx snap_ctx = create_snap_hook(&frame_writer, c.precision, snap_every, g->N3);
+    SnapHookCtx snap_ctx = create_snap_hook(&frame_writer, c.precision, snap_every, g->N3,
+                                            c.complex_phi ? 24 : 12);
     start_snap_writer(&snap_ctx);
     register_hook(snap_hook, &snap_ctx);
 
     /* Diagnostics file */
     FILE *fp = fopen(c.diag_file, "w");
     fprintf(fp, "t\tE_phi_kin\tE_theta_kin\tE_grad\tE_mass\tE_pot\tE_tgrad\tE_tmass\t"
-                "E_coupling\tE_total\tphi_max\tP_max\tP_int\ttheta_rms\n");
+                "E_coupling\tE_total\tphi_max\tP_max\tP_int\ttheta_rms");
+    if (c.complex_phi) fprintf(fp, "\tQ_phi\tQ_theta\tQ_total\ts_max\tr_core");
+    fprintf(fp, "\n");
 
     cudaEvent_t t_start;
     cudaEventCreate(&t_start);
@@ -3072,11 +3627,19 @@ int main(int argc, char **argv) {
     {
         double *r = diag_ctx.h_results;
         double et0 = r[0]+r[1]+r[2]+r[3]+r[4]+r[5]+r[6]+r[7];
-        double trms0 = sqrt(r[11] / (3.0 * g->N3));
+        double trms0 = sqrt(r[11] / ((c.complex_phi ? 6.0 : 3.0) * g->N3));
         diag_ctx.E0 = et0;
         printf("INIT: E_total=%.4e E_pot=%.4f phi_max=%.4f theta_rms=%.3e\n\n", et0, r[4], r[8], trms0);
-        fprintf(fp, "%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\n",
+        fprintf(fp, "%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e",
                 0.0, r[0], r[1], r[2], r[3], r[4], r[5], r[6], r[7], et0, r[8], r[9], r[10], trms0);
+        if (c.complex_phi) {
+            double Qp, Qt, smax, rcore;
+            complex_charges_from_results(&diag_ctx, &Qp, &Qt, &smax, &rcore);
+            fprintf(fp, "\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e", Qp, Qt, Qp+Qt, smax, rcore);
+            printf("INIT charges: Q_phi=%.6e Q_theta=%.6e s_max=%.4e r_core=%.3f\n\n",
+                   Qp, Qt, smax, rcore);
+        }
+        fprintf(fp, "\n");
         fflush(fp);
     }
 
@@ -3183,6 +3746,14 @@ int main(int argc, char **argv) {
                 d_theta[0], d_theta[1], d_theta[2],
                 d_vel_theta[0], d_vel_theta[1], d_vel_theta[2],
                 d_acc_theta[0], d_acc_theta[1], d_acc_theta[2]);
+            if (c.complex_phi)
+                gradient_bc_im_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                    d_phi_im[0], d_phi_im[1], d_phi_im[2],
+                    d_vel_phi_im[0], d_vel_phi_im[1], d_vel_phi_im[2],
+                    d_acc_phi_im[0], d_acc_phi_im[1], d_acc_phi_im[2],
+                    d_theta_im[0], d_theta_im[1], d_theta_im[2],
+                    d_vel_theta_im[0], d_vel_theta_im[1], d_vel_theta_im[2],
+                    d_acc_theta_im[0], d_acc_theta_im[1], d_acc_theta_im[2]);
         }
 
         /* Dispatch hooks — with burst mode snap override */
@@ -3247,7 +3818,7 @@ int main(int argc, char **argv) {
     {
         double *r = diag_ctx.h_results;
         double et = r[0]+r[1]+r[2]+r[3]+r[4]+r[5]+r[6]+r[7];
-        double trms = sqrt(r[11] / (3.0 * g->N3));
+        double trms = sqrt(r[11] / ((c.complex_phi ? 6.0 : 3.0) * g->N3));
 
         cudaEvent_t t_stop;
         cudaEventCreate(&t_stop);
@@ -3259,6 +3830,12 @@ int main(int argc, char **argv) {
         printf("\n=== COMPLETE (GPU, async pipeline) ===\n");
         printf("E_total=%.4e (drift %.3f%%) E_pot=%.4f\n", et, 100*(et-diag_ctx.E0)/(fabs(diag_ctx.E0)+1e-30), r[4]);
         printf("phi_max=%.4f theta_rms=%.3e\n", r[8], trms);
+        if (c.complex_phi) {
+            double Qp, Qt, smax, rcore;
+            complex_charges_from_results(&diag_ctx, &Qp, &Qt, &smax, &rcore);
+            printf("Q_phi=%.6e Q_theta=%.6e Q_total=%.6e s_max=%.4e r_core=%.3f\n",
+                   Qp, Qt, Qp+Qt, smax, rcore);
+        }
         printf("SFA: %s (%u frames)\n", c.output, nf);
         printf("Wall: %.1fs (%.1f min) %.2fms/step\n", total_ms/1000, total_ms/60000, total_ms/n_steps);
     }

@@ -68,6 +68,12 @@ typedef struct {
     double st_ptarget;          /* target core density P_max (>0 enables density feedback) */
     double st_gain;             /* proportional gain for the density feedback */
 
+    /* v66 complexified Q-ball sector */
+    int    complex_phi;        /* 0=real 6-field (default), 1=complex 12-field */
+    char   qball_profile[512]; /* path to radial profile (r f) text file, init=qball */
+    double qball_omega;        /* internal rotation frequency omega */
+    double qball_x0, qball_y0, qball_z0;  /* qball center, physical coords; 1e30 = grid center */
+
     /* Boundary */
     int bc_type;                /* 0=absorb_sphere, 1=gradient_pinned, 2=periodic */
     double damp_width, damp_rate;
@@ -76,7 +82,7 @@ typedef struct {
     int gradient_margin;
 
     /* Init */
-    char init[32];          /* "oscillon", "braid", "sfa", "exec", "template" */
+    char init[32];          /* "oscillon", "braid", "sfa", "exec", "template", "qball" */
     double A, sigma, A_bg, ellip, R_tube;
     double delta[3];
     char init_sfa[512];
@@ -113,6 +119,10 @@ static Config cfg_defaults(void) {
     c.self_tune = 0;  c.st_dt = 2.0;  c.st_eps = 0.04;  c.st_gamma = 0.12;
     c.st_pcrit = 2.0;  c.st_charge = 0;  c.st_project = 1;
     c.st_ptarget = 0;  c.st_gain = 0.10;
+    c.complex_phi = 0;
+    c.qball_profile[0] = '\0';
+    c.qball_omega = 1.39;            /* THEORY §4: recommended first 3D target */
+    c.qball_x0 = 1e30;  c.qball_y0 = 1e30;  c.qball_z0 = 1e30;
     c.bc_type = 0;
     c.damp_width = 3.0;  c.damp_rate = 0.01;  c.bc_switch_time = 0.0;
     c.gradient_A_high = 0.15;  c.gradient_A_low = 0.05;  c.gradient_margin = 3;
@@ -170,6 +180,12 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"st_project")) c->st_project = atoi(val);
     else if (!strcmp(key,"st_ptarget")) c->st_ptarget = atof(val);
     else if (!strcmp(key,"st_gain"))    c->st_gain = atof(val);
+    else if (!strcmp(key,"complex_phi"))   c->complex_phi = atoi(val);
+    else if (!strcmp(key,"qball_profile")) strncpy(c->qball_profile, val, 511);
+    else if (!strcmp(key,"qball_omega"))   c->qball_omega = atof(val);
+    else if (!strcmp(key,"qball_x0"))      c->qball_x0 = atof(val);
+    else if (!strcmp(key,"qball_y0"))      c->qball_y0 = atof(val);
+    else if (!strcmp(key,"qball_z0"))      c->qball_z0 = atof(val);
     else if (!strcmp(key,"sweep"))      c->sweep = atoi(val);
     else if (!strcmp(key,"sweep_T"))    c->sweep_T = atof(val);
     else if (!strcmp(key,"bc_type"))      c->bc_type = atoi(val);
@@ -245,6 +261,15 @@ static void cfg_print(const Config *c) {
     printf("Grid:    N=%d L=%.1f T=%.0f dt_factor=%.4f\n", c->N, c->L, c->T, c->dt_factor);
     printf("Physics: m²=%.4f m_θ²=%.4f η=%.3f μ=%.3f κ=%.1f κ_h=%.3f α=%.3f β=%.3f\n",
            c->m2, c->mtheta2, c->eta, c->mu, c->kappa, c->kappa_h, c->alpha_cs, c->beta_h);
+    if (c->complex_phi) {
+        printf("Complex: 12-field U(1) kernel (complex_phi=1)\n");
+        if (!strcmp(c->init, "qball"))
+            printf("Q-ball:  omega=%.4f profile=%s center=(%.2f,%.2f,%.2f)\n",
+                   c->qball_omega, c->qball_profile,
+                   (c->qball_x0>=1e29?0.0:c->qball_x0),
+                   (c->qball_y0>=1e29?0.0:c->qball_y0),
+                   (c->qball_z0>=1e29?0.0:c->qball_z0));
+    }
     printf("Mode:    %d", c->mode);
     if (c->mode == 1) printf(" (inverse: α=%.3f β=%.3f)", c->inv_alpha, c->inv_beta);
     if (c->mode == 3) printf(" (density-κ: γ=%.3f)", c->kappa_gamma);
@@ -261,8 +286,51 @@ static void cfg_print(const Config *c) {
     if (!strcmp(c->init, "sfa")) printf(" (%s frame=%d)", c->init_sfa, c->init_frame);
     if (!strcmp(c->init, "exec")) printf(" (%s)", c->init_exec);
     if (!strcmp(c->init, "template")) printf(" (%s)", c->init_sfa);
+    if (!strcmp(c->init, "qball")) printf(" (%s, omega=%.4f)", c->qball_profile, c->qball_omega);
     printf("\nOutput:  %s (%s, snap=%.1f diag=%.1f)\n\n",
            c->output, prec_names[c->precision], c->snap_dt, c->diag_dt);
+}
+
+/* v66: hard-error on configs incompatible with the complexified kernel (SPEC §1.1, §4.5) */
+static void cfg_validate(const Config *c) {
+    if (c->complex_phi != 0) {
+        const char *bad = NULL;
+        if      (c->alpha_cs    != 0) bad = "alpha_cs";
+        else if (c->beta_h      != 0) bad = "beta_h";
+        else if (c->kappa_h     != 0) bad = "kappa_h";
+        else if (c->mode        != 0) bad = "mode";
+        else if (c->self_tune   != 0) bad = "self_tune";
+        else if (c->sigma_grad  != 0) bad = "sigma_grad";
+        else if (c->sigma_cubic != 0) bad = "sigma_cubic";
+        else if (c->sigma_freq  != 0) bad = "sigma_freq";
+        else if (c->sigma_cross != 0) bad = "sigma_cross";
+        else if (c->lambda_self != 0) bad = "lambda_self";
+        else if (c->theta_vev   != 0) bad = "theta_vev";
+        else if (c->theta_sat   != 0) bad = "theta_sat";
+        else if (c->gamma_conf  != 0) bad = "gamma_conf";
+        else if (c->gamma_conv  != 0) bad = "gamma_conv";
+        else if (c->sweep       != 0) bad = "sweep";
+        else if (c->tune_dt     != 0) bad = "tune_dt";
+        else if (c->vec_snap_dt != 0) bad = "vec_snap_dt";
+        if (bad) {
+            fprintf(stderr, "ERROR: complex_phi=1 is incompatible with %s\n", bad);
+            exit(1);
+        }
+        if (!strcmp(c->init, "braid")) {
+            fprintf(stderr, "ERROR: braid init not defined for complex mode\n");
+            exit(1);
+        }
+    }
+    if (!strcmp(c->init, "qball")) {
+        if (c->complex_phi == 0) {
+            fprintf(stderr, "ERROR: init=qball requires complex_phi=1\n");
+            exit(1);
+        }
+        if (c->qball_profile[0] == '\0') {
+            fprintf(stderr, "ERROR: init=qball requires a non-empty qball_profile\n");
+            exit(1);
+        }
+    }
 }
 
 /* ================================================================

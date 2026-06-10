@@ -77,7 +77,8 @@ static void init_from_sfa(Grid *g, const Config *c) {
     if (!buf) { fprintf(stderr, "FATAL: frame buffer alloc\n"); exit(1); }
     sfa_read_frame(sfa, frame, buf);
 
-    int loaded[12] = {0};
+    int loaded[24] = {0};
+    int warned_im = 0;
     uint64_t off = 0;
     for (uint32_t col = 0; col < sfa->n_columns; col++) {
         int dtype = sfa->columns[col].dtype;
@@ -92,6 +93,23 @@ static void init_from_sfa(Grid *g, const Config *c) {
         else if (sem == SFA_ANGLE && comp < 3) { target = g->theta[comp]; slot = 3+comp; }
         else if (sem == SFA_VELOCITY && comp < 3) { target = g->phi_vel[comp]; slot = 6+comp; }
         else if (sem == SFA_VELOCITY && comp >= 3 && comp < 6) { target = g->theta_vel[comp-3]; slot = 9+comp-3; }
+        else if ((sem == SFA_POSITION && comp >= 3 && comp < 6) ||
+                 (sem == SFA_ANGLE    && comp >= 3 && comp < 6) ||
+                 (sem == SFA_VELOCITY && comp >= 6 && comp < 12)) {
+            /* v66 imaginary-sector columns (SPEC §5.2/§7.1) */
+#ifdef SCP_COMPLEX_FIELDS
+            if (c->complex_phi) {
+                if      (sem == SFA_POSITION)             { target = g->phi_im[comp-3];       slot = 12+comp-3; }
+                else if (sem == SFA_ANGLE)                { target = g->theta_im[comp-3];     slot = 15+comp-3; }
+                else if (sem == SFA_VELOCITY && comp < 9) { target = g->phi_im_vel[comp-6];   slot = 18+comp-6; }
+                else                                      { target = g->theta_im_vel[comp-9]; slot = 21+comp-9; }
+            } else
+#endif
+            if (!warned_im) {
+                printf("  WARNING: file has imaginary-sector columns; skipped (complex_phi=0)\n");
+                warned_im = 1;
+            }
+        }
 
         if (target) {
             long N3 = g->N3;
@@ -231,12 +249,104 @@ static void init_template(Grid *g, const Config *c) {
     printf("  Placed %d voxels from template\n", placed);
 }
 
+#ifdef SCP_COMPLEX_FIELDS
+/* v66 init=qball (SPEC §5.1): symmetric Q-ball ansatz at t=0,
+ *   Phi_a(0) = f(r),  d/dt Phi_a(0) = i*omega*f(r)
+ * i.e. u_a=f, v_a=0, udot_a=0, vdot_a=omega*f; theta sector zero.
+ * Q = 3*omega*int f^2 dV > 0 with the THEORY §2 sign convention.
+ * delta[] is IGNORED (identical phase for all a — THEORY §5c). */
+static void init_qball(Grid *g, const Config *c) {
+    /* --- load two-column (r f) profile --- */
+    FILE *pf = fopen(c->qball_profile, "r");
+    if (!pf) { fprintf(stderr, "FATAL: cannot open qball profile '%s'\n", c->qball_profile); exit(1); }
+    size_t cap = 256, np = 0;
+    double *rt = (double*)malloc(cap * sizeof(double));
+    double *ft = (double*)malloc(cap * sizeof(double));
+    if (!rt || !ft) { fprintf(stderr, "FATAL: qball profile alloc\n"); exit(1); }
+    char line[1024];
+    int lineno = 0;
+    while (fgets(line, sizeof(line), pf)) {
+        lineno++;
+        char *p = line;
+        while (*p == ' ' || *p == '\t') p++;
+        if (*p == '#' || *p == '\n' || *p == '\r' || *p == '\0') continue;
+        double r, f;
+        if (sscanf(p, "%lf %lf", &r, &f) != 2) {
+            fprintf(stderr, "FATAL: qball profile parse error at %s:%d\n",
+                    c->qball_profile, lineno);
+            exit(1);
+        }
+        if (np == 0 && r < 0) {
+            fprintf(stderr, "FATAL: qball profile first r must be >= 0 (got %f)\n", r);
+            exit(1);
+        }
+        if (np > 0 && r <= rt[np-1]) {
+            fprintf(stderr, "FATAL: qball profile r not strictly increasing at %s:%d\n",
+                    c->qball_profile, lineno);
+            exit(1);
+        }
+        if (np == cap) {
+            cap *= 2;
+            rt = (double*)realloc(rt, cap * sizeof(double));
+            ft = (double*)realloc(ft, cap * sizeof(double));
+            if (!rt || !ft) { fprintf(stderr, "FATAL: qball profile realloc\n"); exit(1); }
+        }
+        rt[np] = r; ft[np] = f; np++;
+    }
+    fclose(pf);
+    if (np < 2) { fprintf(stderr, "FATAL: qball profile has <2 points\n"); exit(1); }
+    printf("Init: qball (%zu points, r=[%.3f,%.3f], f0=%.6f, omega=%.4f; delta[] ignored)\n",
+           np, rt[0], rt[np-1], ft[0], c->qball_omega);
+    if (fabs(ft[np-1]) > 1e-8)
+        printf("  WARNING: profile truncated while still sizable (f_last=%.3e at r=%.3f)\n",
+               ft[np-1], rt[np-1]);
+
+    /* --- fill grid: linear interpolation in r from the qball center --- */
+    const int N = g->N, NN = N * N;
+    const double L = g->L, dx = g->dx;
+    const double x0 = (c->qball_x0 >= 1e29) ? 0.0 : c->qball_x0;
+    const double y0 = (c->qball_y0 >= 1e29) ? 0.0 : c->qball_y0;
+    const double z0 = (c->qball_z0 >= 1e29) ? 0.0 : c->qball_z0;
+    const double om = c->qball_omega;
+    for (int i = 0; i < N; i++) { double x = -L + i*dx;
+    for (int j = 0; j < N; j++) { double y = -L + j*dx;
+    for (int k = 0; k < N; k++) { double z = -L + k*dx;
+        long idx = (long)i*NN + j*N + k;
+        double r = sqrt((x-x0)*(x-x0) + (y-y0)*(y-y0) + (z-z0)*(z-z0));
+        double f;
+        if (r <= rt[0]) f = ft[0];                 /* flat core, f'(0)=0 */
+        else if (r >= rt[np-1]) f = 0.0;
+        else {
+            /* binary search for the bracketing table interval */
+            size_t lo = 0, hi = np - 1;
+            while (hi - lo > 1) {
+                size_t mid = (lo + hi) / 2;
+                if (rt[mid] <= r) lo = mid; else hi = mid;
+            }
+            double w = (r - rt[lo]) / (rt[hi] - rt[lo]);
+            f = ft[lo] + w * (ft[hi] - ft[lo]);
+        }
+        for (int a = 0; a < NFIELDS; a++) {
+            g->phi[a][idx]        = f;       /* u_a = f(r) */
+            g->phi_im[a][idx]     = 0.0;     /* v_a = 0 */
+            g->phi_vel[a][idx]    = 0.0;     /* udot_a = 0 */
+            g->phi_im_vel[a][idx] = om * f;  /* vdot_a = omega*f(r) */
+            /* theta sector (tu, tv, tudot, tvdot) stays zero (calloc'd) */
+        }
+    }}}
+    free(rt); free(ft);
+}
+#endif /* SCP_COMPLEX_FIELDS */
+
 static void do_init(Grid *g, const Config *c) {
     if      (!strcmp(c->init, "oscillon")) init_oscillon(g, c);
     else if (!strcmp(c->init, "braid"))    init_braid(g, c);
     else if (!strcmp(c->init, "sfa"))      init_from_sfa(g, c);
     else if (!strcmp(c->init, "exec"))     init_from_exec(g, c);
     else if (!strcmp(c->init, "template")) init_template(g, c);
+#ifdef SCP_COMPLEX_FIELDS
+    else if (!strcmp(c->init, "qball"))    init_qball(g, c);
+#endif
     else { fprintf(stderr, "FATAL: unknown init mode '%s'\n", c->init); exit(1); }
 }
 
@@ -248,6 +358,7 @@ static void sfa_embed_kvmd(SFA *sfa, const Config *c) {
     char vN[32],vL[32],vT[32],vdt[32],vm[32],vmt[32],veta[32],vmu[32],vkappa[32];
     char vkh[32],vacs[32],vbh[32],vbcsw[32],vmode[32],via[32],vib[32],vkg[32];
     char vdw[32],vdr[32],vprec[32],vdelta[64],vbc[32],vgah[32],vgal[32],vgm[32];
+    char vcplx[32],vqom[32];
     snprintf(vN,32,"%d",c->N); snprintf(vL,32,"%f",c->L);
     snprintf(vT,32,"%f",c->T); snprintf(vdt,32,"%f",c->dt_factor);
     snprintf(vm,32,"%f",sqrt(c->m2)); snprintf(vmt,32,"%f",sqrt(c->mtheta2));
@@ -266,16 +377,26 @@ static void sfa_embed_kvmd(SFA *sfa, const Config *c) {
     snprintf(vgah,32,"%.6f",c->gradient_A_high);
     snprintf(vgal,32,"%.6f",c->gradient_A_low);
     snprintf(vgm,32,"%d",c->gradient_margin);
+    /* v66: complex_phi MUST be embedded so the .sfa-restart path (scp_sim
+     * <file>.sfa builds its config from KVMD) reallocates the imaginary
+     * sector instead of silently dropping it; qball_omega for provenance.
+     * The two keys are appended ONLY when complex_phi=1, keeping real-mode
+     * output byte-identical to today (SPEC §7.1); files lacking the key
+     * default to complex_phi=0, which is correct for all legacy files. */
+    snprintf(vcplx,32,"%d",c->complex_phi);
+    snprintf(vqom,32,"%.6f",c->qball_omega);
     const char *keys[] = {"N","L","T","dt_factor","m","m_theta","eta","mu","kappa",
                           "kappa_h","alpha_cs","beta_h","bc_switch_time",
                           "mode","inv_alpha","inv_beta","kappa_gamma",
                           "damp_width","damp_rate","precision","delta",
-                          "bc_type","gradient_A_high","gradient_A_low","gradient_margin"};
+                          "bc_type","gradient_A_high","gradient_A_low","gradient_margin",
+                          "complex_phi","qball_omega"};
     const char *vals[] = {vN,vL,vT,vdt,vm,vmt,veta,vmu,vkappa,
                           vkh,vacs,vbh,vbcsw,
                           vmode,via,vib,vkg,vdw,vdr,vprec,vdelta,
-                          vbc,vgah,vgal,vgm};
-    sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 25);
+                          vbc,vgah,vgal,vgm,
+                          vcplx,vqom};
+    sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, c->complex_phi ? 27 : 25);
 }
 
 #endif /* SCP_INIT_H */

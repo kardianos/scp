@@ -1,0 +1,125 @@
+/* ============================================================
+ * v66 Q-ball complexification — symbolic verification (Maxima)
+ * Run: maxima -b qball.mac    (all checks must print PASS)
+ *
+ * Conventions (locked design):
+ *   Phi_a = u_a + i v_a, Theta_a = tu_a + i tv_a  (a = 0,1,2)
+ *   s  = prod_a (u_a^2 + v_a^2) = prod_a |Phi_a|^2
+ *   Vt(s) = (mu/2) s / (1 + kappa s)
+ *   real 6-field potential V(P) = (mu/2) P^2/(1+kappa P^2), P = phi0 phi1 phi2
+ *   kinetic: (1/2) sum over each of the 12 real components
+ *   curl coupling: eta*( tu.curl(u) + tv.curl(v) ) = eta*Re[conj(Theta).curl(Phi)]
+ * ============================================================ */
+kill(all)$
+assume(kappa>0)$
+nfail: 0$
+check(name, expr) := block([r: ratsimp(expr)],
+  if is(equal(r,0)) then print(sconcat("PASS ", name))
+  else (print(sconcat("FAIL ", name, " residual=")), print(r), nfail: nfail+1))$
+
+V(P)  := (mu/2)*P^2/(1+kappa*P^2)$
+Vt(s) := (mu/2)*s/(1+kappa*s)$
+Vtp(s):= (mu/2)/(1+kappa*s)^2$   /* claimed Vt'(s) */
+
+/* ---- C1: potential reduction at v=0: Vt(P^2) == V(P) ---- */
+check("C1_Vt(P^2)=V(P)", Vt(P^2) - V(P))$
+
+/* ---- C2: Vt'(s) closed form ---- */
+check("C2_Vtprime", diff(Vt(s),s) - Vtp(s))$
+
+/* ---- C3: complexified force and its real limit ---- */
+sgen: (u0^2+v0^2)*(u1^2+v1^2)*(u2^2+v2^2)$
+Fc_u0: -diff(Vt(sgen), u0)$
+check("C3a_force_formula_-2Vt'(s)u0*prod",
+      Fc_u0 - (-2*subst(s=sgen, diff(Vt(s),s))*u0*(u1^2+v1^2)*(u2^2+v2^2)))$
+/* real limit: matches existing 6-field force -V'(P)*P/phi0 */
+check("C3b_real_limit_equals_-dV/dphi0",
+      subst([v0=0,v1=0,v2=0], Fc_u0) - (-diff(V(u0*u1*u2), u0)))$
+check("C3c_real_force_is_-V'(P)P/phi",
+      -diff(V(u0*u1*u2),u0) - (-subst(P=u0*u1*u2,diff(V(P),P))*u1*u2))$
+
+/* ---- C4: diagonal U(1) invariance of s (generator annihilates s) ---- */
+gen_s: -v0*diff(sgen,u0)+u0*diff(sgen,v0)
+      -v1*diff(sgen,u1)+u1*diff(sgen,v1)
+      -v2*diff(sgen,u2)+u2*diff(sgen,v2)$
+check("C4_U1_invariance_of_s", gen_s)$
+
+/* ---- C5: curl cross-terms in dQ/dt are a total divergence ----
+ * d/dt(charge density) curl part:
+ *   eta*[ u.curl(tv) - v.curl(tu) + tu.curl(v) - tv.curl(u) ]
+ * claim: equals -eta*div( u x tv + tu x v )  (pointwise identity)   */
+depends([U1,U2,U3, W1,W2,W3, A1,A2,A3, B1,B2,B3],[x,y,z])$
+uu: [U1,U2,U3]$  vv: [W1,W2,W3]$  tu: [A1,A2,A3]$  tv: [B1,B2,B3]$
+curlv(p) := [diff(p[3],y)-diff(p[2],z), diff(p[1],z)-diff(p[3],x), diff(p[2],x)-diff(p[1],y)]$
+divv(p)  := diff(p[1],x)+diff(p[2],y)+diff(p[3],z)$
+crossv(p,q) := [p[2]*q[3]-p[3]*q[2], p[3]*q[1]-p[1]*q[3], p[1]*q[2]-p[2]*q[1]]$
+dotv(p,q) := p[1]*q[1]+p[2]*q[2]+p[3]*q[3]$
+T: dotv(uu,curlv(tv)) - dotv(vv,curlv(tu)) + dotv(tu,curlv(vv)) - dotv(tv,curlv(uu))$
+check("C5_curl_terms_total_divergence",
+      T + divv( crossv(uu,tv) ) + divv( crossv(tu,vv) ))$
+/* Laplacian part: u lap(v) - v lap(u) = div(u grad v - v grad u): standard, verify scalar */
+depends([p,q],[x,y,z])$
+lap(f) := diff(f,x,2)+diff(f,y,2)+diff(f,z,2)$
+check("C5b_laplacian_total_divergence",
+      p*lap(q)-q*lap(p) - divv([p*diff(q,x)-q*diff(p,x),
+                                p*diff(q,y)-q*diff(p,y),
+                                p*diff(q,z)-q*diff(p,z)]))$
+
+/* ---- C6: symmetric ansatz Phi_a = f e^{i w t}: s = f^6, force factorizes ---- */
+ans: [u0=f*cos(w*t), v0=f*sin(w*t), u1=f*cos(w*t), v1=f*sin(w*t),
+      u2=f*cos(w*t), v2=f*sin(w*t)]$
+check("C6a_s_equals_f^6", trigsimp(subst(ans, sgen)) - f^6)$
+check("C6b_force_u0_ansatz",
+      trigsimp(subst(ans, Fc_u0)) - (-2*Vtp(f^6)*f^5*cos(w*t)))$
+Fc_v0: -diff(Vt(sgen), v0)$
+check("C6c_force_v0_ansatz",
+      trigsimp(subst(ans, Fc_v0)) - (-2*Vtp(f^6)*f^5*sin(w*t)))$
+/* => u-EOM and v-EOM both reduce to the SAME radial ODE:
+   f'' + (2/r) f' = (m2 - w^2) f + 2 Vt'(f^6) f^5                      */
+
+/* ---- C7: radial ODE = gradient of effective potential U_w ---- */
+Uw(f) := (1/2)*(m2-w^2)*f^2 + (1/3)*Vt(f^6)$
+check("C7_Uw_prime", diff(Uw(f),f) - ((m2-w^2)*f + 2*Vtp(f^6)*f^5))$
+
+/* ---- C8: existence window ----
+ * need Uw(f)<0 for some f>0  =>  w^2 > m2 + min_f (2/3) Vt(f^6)/f^2
+ * (2/3) Vt(f^6)/f^2 = (mu/3) f^4/(1+kappa f^6); minimized (mu<0 => maximize
+ * g=f^4/(1+kappa f^6)) at kappa f^6 = 2.                                 */
+g(f) := f^4/(1+kappa*f^6)$
+check("C8a_window_integrand", (2/3)*Vt(f^6)/f^2 - (mu/3)*g(f))$
+fstar: (2/kappa)^(1/6)$
+check("C8b_stationary_at_kappa_f6=2", radcan(subst(f=fstar, diff(g(f),f))))$
+check("C8c_gstar_value", radcan(g(fstar) - (1/3)*(2/kappa)^(2/3)))$
+wmin2: m2 + (mu/9)*(2/kappa)^(2/3)$
+print("omega_min^2 closed form: m2 + (mu/9)*(2/kappa)^(2/3)")$
+num: float(subst([m2=2.25, mu=-41.345, kappa=50], wmin2))$
+print(sconcat("omega_min^2 = ", num, "   omega_min = ", float(sqrt(num)),
+              "   window = (", float(sqrt(num)), ", 1.5)"))$
+fstar_num: float(subst(kappa=50, fstar))$
+print(sconcat("f* = (2/kappa)^(1/6) = ", fstar_num))$
+
+/* ---- C9: free-quanta normalization: E/Q = w for circular plane wave ----
+ * u = A cos(wt-kx), v = A sin(wt-kx), w^2 = k^2 + m2.
+ * energy density = w^2 A^2, charge density = w A^2  =>  E = w Q >= m Q.  */
+up: A*cos(w*t-k*x)$  vp: A*sin(w*t-k*x)$
+eps: (1/2)*(diff(up,t)^2+diff(vp,t)^2) + (1/2)*(diff(up,x)^2+diff(vp,x)^2)
+     + (m2/2)*(up^2+vp^2)$
+rhoQ: up*diff(vp,t) - vp*diff(up,t)$
+check("C9a_charge_density_wA2", trigsimp(rhoQ - w*A^2))$
+check("C9b_energy_density_w2A2", trigsimp(subst(m2=w^2-k^2, eps) - w^2*A^2))$
+
+/* ---- C10: Q on the ansatz: rho_Q = 3 w f^2 (Theta=0) ---- */
+rq: 3*( (f*cos(w*t))*diff(f*sin(w*t),t) - (f*sin(w*t))*diff(f*cos(w*t),t) )$
+check("C10_rhoQ_ansatz_3wf2", trigsimp(rq - 3*w*f^2))$
+
+/* ---- C11: energy density on ansatz ----
+ * e = (3/2)(w^2 f^2 + f'^2 + m2 f^2) + Vt(f^6); check the time-dependence cancels */
+fr: f$ /* radial profile symbol; gradient magnitude fp */
+edens: sum( (1/2)*(diff(subst(ans,[u0,v0,u1,v1,u2,v2])[i], t))^2, i, 1, 6)
+     + (3/2)*fp^2  /* |grad u_a|^2+|grad v_a|^2 = fp^2 per complex field */
+     + (m2/2)*trigsimp(subst(ans, u0^2+v0^2+u1^2+v1^2+u2^2+v2^2))
+     + Vt(trigsimp(subst(ans,sgen)))$
+check("C11_energy_density_ansatz",
+      trigsimp(edens) - ((3/2)*(w^2*f^2 + fp^2 + m2*f^2) + Vt(f^6)))$
+
+if nfail = 0 then print("ALL CHECKS PASS") else (print(sconcat(nfail, " CHECKS FAILED")), quit(1))$

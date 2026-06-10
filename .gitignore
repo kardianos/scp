@@ -65,3 +65,4 @@ bin/
 
 # Local tool / CLI caches (e.g. antigravitycli state)
 .antigravitycli/
+*.lock

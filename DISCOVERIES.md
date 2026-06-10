@@ -1220,3 +1220,61 @@ phase DIFFERENCE between fields).
 5. **Confinement**: The oscillons still leak (dE/dt ~ -10⁻⁵). True
    stability requires topological protection or a confining mechanism
    that doesn't create saddle-point instabilities.
+
+---
+
+## V66 (2026-06-09): Q-Ball Stabilization — FIRST PERSISTENT PARTICLE
+
+**Context**: v65 proved the real 6-field theory has NO stable localized structure
+(Derrick saddle + 3ω harmonic radiation from the cubic source P=φ₀φ₁φ₂), and that
+a conserved-charge K/λ³ term creates a guaranteed Derrick minimum. v66 implemented
+the derived fix: complexify all six fields (12 real fields), make the potential
+U(1)-invariant — V = (μ/2)s/(1+κs), s = Π_a|Φ_a|² — so the diagonal global U(1)
+(co-rotating Φ and Θ phases; the curl coupling reduces U(1)³ to the diagonal)
+yields an exactly conserved Noether charge Q.
+
+**Theory** (v66/THEORY.md, Maxima 19/19 + Python shooting cross-check):
+- Real limit v=tv=0 reproduces the old kernel EXACTLY (symbolic + 2e-15 regression).
+- Symmetric ansatz Φ_a = f(r)e^{iωt}: one radial ODE; closed-form window
+  ω_min² = m² + (μ/9)(2/κ)^(2/3) → ω ∈ (1.3087, 1.5) for standard parameters.
+- Absolutely stable branch (dQ/dω<0 AND E<mQ): ω ∈ (1.309, 1.438). Q_min ≈ 87.
+- The rotating phase makes |Φ| static → NO 3ω channel (the v65 killer).
+- Honest cost: massless Θ is sourced at ω by curl(Φ) → θ-radiation drain at η≠0;
+  U(1) protects total Q but not against charge/energy outflow through Θ.
+
+**Implementation**: `complex_phi=1` opt-in in scp_sim.c + scp_sim.cu (user-authorized
+kernel change); `init=qball` from radial-solver profiles (v66/radial_qball.c);
+new diag columns Q_phi/Q_theta/Q_total/s_max/r_core. Verified: real-limit 2e-15,
+Q-drift 7e-14 (T=20 periodic), GPU/CPU parity 2e-13, adversarial review (5 lenses
+total), 1 fix round.
+
+**RESULT — first persistent particle in program history** (N=96, T=100, ABSORBING BC):
+- η=0: Q retention 99.99927%, E drift −0.004%, r_core frozen (3.705→3.703),
+  extrapolated half-life ~5×10⁷ t.u. FFT confirms NO 3ω power. This falsifies
+  CONCEPT.md §6 item 1 for the complexified theory and supplies item 2 (conserved Q).
+- η=0.5: coherent θ-mediated drain — the ball slides adiabatically UP the stable
+  Q(ω) branch (measured E/Q tracks the equilibrium scan values), dQ/dt ≈ −1.6,
+  half-life ~105 t.u. Open: finite-η attractor vs evaporation at ω≈1.438.
+- V100 production campaign launched (η ∈ {0, 0.25, 0.5}, N=192, T up to 1000):
+  η² drain scaling + attractor question. Results → v66/results/.
+
+**Cross-track note**: the U(1) Q-ball realizes dynamically the v62 flat-direction
+law (magnitude potential-fixed, phase flat) — the same structure as the algebraic
+track's L = Λ²⊕Λ⁶ complex pairing. First structural bridge between the simulation
+and octonionic tracks.
+
+### V66 production campaign results (2026-06-10, V100)
+
+Full campaign complete (see v66/FINDINGS.md): (1) η=0 ball eternal — Q retention
+99.99985% over T=1000 absorbing BC; (2) universal η=0.5 attractor Q∞≈170 — seeds from
+Q=210/482/1745 all converge onto the equilibrium branch, r2/b2 endpoints agree to 0.8%;
+dressed attractor is η-dependent (Q∞≈156, E/Q=1.512>1.5 at η=0.75); (3) stability
+boundary corrected: E=mQ line does NOT govern classical dynamics (ω=1.46 ball frozen at
+η=0 for T=300) — VK criterion + finite-η dressing-shock fragility does (edge ball
+survives η≤0.1, ejected at η=0.5); (4) drain law η^1.88 perturbative → saturation
+(exp 0.78 by η=0.75); (5) two-ball taxonomy: co-phase FUSES (merger→standard branch),
+anti-phase EJECTS (D 12→40.6, ~0.06c), ball/anti-ball undergoes STEPWISE ANNIHILATION
+(collide/dissolve/re-form every ~100 t.u.) ending in a long-lived NET-NEUTRAL two-lobed
+remnant — a new object class. Phase-dependent cos(Δφ) force = clean realization of
+V34's winding force. New tools: gen_qball_pair seed generator; ρ₂-based cluster
+tracking. Infra: two Vast instance deaths — eager-download discipline now standard.
