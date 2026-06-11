@@ -3189,12 +3189,213 @@ func computeChargeView(n int, re, im, vre, vim [3][]float32,
 	fmt.Printf("  charge view: max|rhoQ|=%.3e (R=+Q, B=-Q)\n", mQ)
 }
 
+// computeFlavorView: R/G/B = |Phi_0|^2, |Phi_1|^2, |Phi_2|^2 under a COMMON
+// normalization — equal components render white/gray, flavored components
+// render colored. Also prints the inline frequency analysis: each component's
+// density-weighted internal clock W_a = sum(u vdot - v udot)/sum(u^2+v^2)
+// and its Noether charge Q_a.
+func computeFlavorView(s *sfaFile, n int, mod [3][]float32, re, im, vre, vim [3][]float32, hasVel bool, vol *volumeData) {
+	total := n * n * n
+	vol.n = n
+	vol.loaded = true
+	if len(vol.rgba) != total*4 {
+		vol.rgba = make([]float32, total*4)
+	}
+	var maxR [64]float32
+	nw := parallelChunks(total, func(start, end, w int) {
+		var m float32
+		for i := start; i < end; i++ {
+			r0 := mod[0][i] * mod[0][i]
+			r1 := mod[1][i] * mod[1][i]
+			r2 := mod[2][i] * mod[2][i]
+			vol.rgba[i*4+0] = r0
+			vol.rgba[i*4+1] = r1
+			vol.rgba[i*4+2] = r2
+			vol.rgba[i*4+3] = 1.0
+			if r0 > m {
+				m = r0
+			}
+			if r1 > m {
+				m = r1
+			}
+			if r2 > m {
+				m = r2
+			}
+		}
+		maxR[w] = m
+	})
+	var mR float32
+	for w := 0; w < nw; w++ {
+		if maxR[w] > mR {
+			mR = maxR[w]
+		}
+	}
+	inv := float32(0)
+	if mR > 1e-30 {
+		inv = 1.0 / mR
+	}
+	parallelChunks(total, func(start, end, _ int) {
+		for i := start; i < end; i++ {
+			vol.rgba[i*4+0] *= inv
+			vol.rgba[i*4+1] *= inv
+			vol.rgba[i*4+2] *= inv
+		}
+	})
+
+	// inline frequency analysis: per-component density-weighted clocks
+	if hasVel {
+		dx := 2.0 * s.Lx / float64(n-1)
+		dV := dx * dx * dx
+		var num, den [3]float64
+		for a := 0; a < 3; a++ {
+			ra, ia, va, wa := re[a], im[a], vre[a], vim[a]
+			var nm, dn float64
+			for i := 0; i < total; i++ {
+				nm += float64(ra[i])*float64(wa[i]) - float64(ia[i])*float64(va[i])
+				dn += float64(ra[i])*float64(ra[i]) + float64(ia[i])*float64(ia[i])
+			}
+			num[a], den[a] = nm, dn
+		}
+		fmt.Printf("  flavor clocks: W = [")
+		for a := 0; a < 3; a++ {
+			w := 0.0
+			if den[a] > 1e-30 {
+				w = num[a] / den[a]
+			}
+			fmt.Printf("%s%+.4f", map[bool]string{true: "", false: " "}[a == 0], w)
+		}
+		fmt.Printf(" ]   Q_a = [")
+		for a := 0; a < 3; a++ {
+			fmt.Printf("%s%.2f", map[bool]string{true: "", false: " "}[a == 0], num[a]*dV)
+		}
+		fmt.Printf(" ]\n")
+	}
+}
+
+// computeClockView: per-voxel LOCAL internal clock
+//     w(x) = sum_a (u vdot - v udot) / sum_a (u^2 + v^2)
+// rendered as a diverging color (R = faster than the density-weighted mean,
+// B = slower / opposite charge), brightness = density. Shows flavor shells,
+// the Coulomb-shifted weff(r) gradient, and +/- charge at a glance.
+func computeClockView(s *sfaFile, n int, re, im, vre, vim [3][]float32, vol *volumeData) {
+	total := n * n * n
+	vol.n = n
+	vol.loaded = true
+	if len(vol.rgba) != total*4 {
+		vol.rgba = make([]float32, total*4)
+	}
+	// pass 1: density, local clock, density-weighted mean clock
+	clock := s.effBuf(7, total)
+	dens := s.effBuf(8, total)
+	var maxD [64]float32
+	var sumWD, sumD [64]float64
+	nw := parallelChunks(total, func(start, end, w int) {
+		var md float32
+		var swd, sd float64
+		for i := start; i < end; i++ {
+			var nm, dn float32
+			for a := 0; a < 3; a++ {
+				nm += re[a][i]*vim[a][i] - im[a][i]*vre[a][i]
+				dn += re[a][i]*re[a][i] + im[a][i]*im[a][i]
+			}
+			dens[i] = dn
+			if dn > 1e-12 {
+				clock[i] = nm / dn
+			} else {
+				clock[i] = 0
+			}
+			if dn > md {
+				md = dn
+			}
+			swd += float64(nm) // = clock*dens
+			sd += float64(dn)
+		}
+		maxD[w], sumWD[w], sumD[w] = md, swd, sd
+	})
+	var mD float32
+	var sWD, sD float64
+	for w := 0; w < nw; w++ {
+		if maxD[w] > mD {
+			mD = maxD[w]
+		}
+		sWD += sumWD[w]
+		sD += sumD[w]
+	}
+	Wmean := float32(0)
+	if sD > 1e-30 {
+		Wmean = float32(sWD / sD)
+	}
+	// clock spread over significant-density voxels
+	thresh := mD * 0.01
+	var minW, maxW [64]float32
+	parallelChunks(total, func(start, end, w int) {
+		lo, hi := float32(math.MaxFloat32), float32(-math.MaxFloat32)
+		for i := start; i < end; i++ {
+			if dens[i] >= thresh {
+				if clock[i] < lo {
+					lo = clock[i]
+				}
+				if clock[i] > hi {
+					hi = clock[i]
+				}
+			}
+		}
+		minW[w], maxW[w] = lo, hi
+	})
+	wLo, wHi := float32(math.MaxFloat32), float32(-math.MaxFloat32)
+	for w := 0; w < nw; w++ {
+		if minW[w] < wLo {
+			wLo = minW[w]
+		}
+		if maxW[w] > wHi {
+			wHi = maxW[w]
+		}
+	}
+	scale := wHi - Wmean
+	if Wmean-wLo > scale {
+		scale = Wmean - wLo
+	}
+	if scale < 1e-9 {
+		scale = 1e-9
+	}
+	invD := float32(0)
+	if mD > 1e-30 {
+		invD = 1.0 / mD
+	}
+	parallelChunks(total, func(start, end, _ int) {
+		for i := start; i < end; i++ {
+			b := dens[i] * invD
+			if dens[i] < thresh {
+				vol.rgba[i*4+0] = 0
+				vol.rgba[i*4+1] = 0
+				vol.rgba[i*4+2] = 0
+				vol.rgba[i*4+3] = 1.0
+				continue
+			}
+			d := (clock[i] - Wmean) / scale // [-1, 1]
+			if d > 1 {
+				d = 1
+			}
+			if d < -1 {
+				d = -1
+			}
+			r, g, bl := float32(0.5+0.5*d), float32(0.25), float32(0.5-0.5*d)
+			vol.rgba[i*4+0] = b * r
+			vol.rgba[i*4+1] = b * g
+			vol.rgba[i*4+2] = b * bl
+			vol.rgba[i*4+3] = 1.0
+		}
+	})
+	fmt.Printf("  clock view: W_mean=%+.4f range=[%+.4f, %+.4f] (R=fast, B=slow/anti)\n",
+		Wmean, wLo, wHi)
+}
+
 // computeStandardView is the shared column-resolution + view dispatch for
 // non-PGA, non-preview files. For complexified files (phiim_* present) the
 // field/velocity/accel views receive per-component complex moduli |Phi_a|,
 // |Theta_a| — phase-invariant, so Q-balls render as static objects instead
 // of flickering at their internal clock frequency.
-// Modes: 0=field, 1=velocity, 2=accel, 3=U(1) gauge, 4=charge.
+// Modes: 0=field, 1=velocity, 2=accel, 3=U(1) gauge, 4=charge, 5=flavor, 6=clock.
 func computeStandardView(s *sfaFile, n int, vol *volumeData, mode int, fixedMax float32) {
 	total := n * n * n
 	ec := resolveExtCols(s)
@@ -3204,6 +3405,20 @@ func computeStandardView(s *sfaFile, n int, vol *volumeData, mode int, fixedMax 
 	hasTheta := s.nColumns >= 6
 	if hasTheta {
 		theta = [3][]float32{s.extractColumnF32(3), s.extractColumnF32(4), s.extractColumnF32(5)}
+	}
+
+	// clock view needs only the RAW complex parts — handle before modulus replacement
+	if mode == 6 {
+		if !(ec.hasIm && ec.hasVel) {
+			fmt.Println("Warning: clock view needs complex columns (phiim_*, *_v*), falling back to field view")
+			mode = 0
+		} else {
+			im := [3][]float32{s.extractColumnF32(ec.im[0]), s.extractColumnF32(ec.im[1]), s.extractColumnF32(ec.im[2])}
+			vre := [3][]float32{s.extractColumnF32(ec.vre[0]), s.extractColumnF32(ec.vre[1]), s.extractColumnF32(ec.vre[2])}
+			vim := [3][]float32{s.extractColumnF32(ec.vim[0]), s.extractColumnF32(ec.vim[1]), s.extractColumnF32(ec.vim[2])}
+			computeClockView(s, n, phi, im, vre, vim, vol)
+			return
+		}
 	}
 
 	// charge view needs the RAW re/im parts — capture before modulus replacement
@@ -3277,6 +3492,21 @@ func computeStandardView(s *sfaFile, n int, vol *volumeData, mode int, fixedMax 
 		ef := [3][]float32{s.extractColumnF32(ec.ef[0]), s.extractColumnF32(ec.ef[1]), s.extractColumnF32(ec.ef[2])}
 		link := [3][]float32{s.extractColumnF32(ec.link[0]), s.extractColumnF32(ec.link[1]), s.extractColumnF32(ec.link[2])}
 		computeGaugeView(n, phi, ef, link, vol)
+	case 5: // flavor: per-component densities as RGB + inline clock analysis
+		if !ec.hasIm {
+			fmt.Println("Warning: flavor view needs complex columns (phiim_*), falling back to field view")
+			computeFieldView(n, phi[0], phi[1], phi[2], theta[0], theta[1], theta[2], vol, fixedMax)
+			return
+		}
+		// phi[] already holds the moduli; raw parts for the clock analysis
+		reRaw := [3][]float32{s.extractColumnF32(0), s.extractColumnF32(1), s.extractColumnF32(2)}
+		imRaw := [3][]float32{s.extractColumnF32(ec.im[0]), s.extractColumnF32(ec.im[1]), s.extractColumnF32(ec.im[2])}
+		var vre, vim [3][]float32
+		if ec.hasVel {
+			vre = [3][]float32{s.extractColumnF32(ec.vre[0]), s.extractColumnF32(ec.vre[1]), s.extractColumnF32(ec.vre[2])}
+			vim = [3][]float32{s.extractColumnF32(ec.vim[0]), s.extractColumnF32(ec.vim[1]), s.extractColumnF32(ec.vim[2])}
+		}
+		computeFlavorView(s, n, phi, reRaw, imRaw, vre, vim, ec.hasVel, vol)
 	default:
 		computeFieldView(n, phi[0], phi[1], phi[2], theta[0], theta[1], theta[2], vol, fixedMax)
 	}
@@ -4366,6 +4596,8 @@ func printHelp() {
 	fmt.Println("  6              Accel view  (R=cbrt|P|, G=theta^2, B=|v|)")
 	fmt.Println("  8              U(1) gauge view (R=|E|, G=|Phi|^2, B=|A| links) [30-col files]")
 	fmt.Println("  9              Charge view (R=+rhoQ, B=-rhoQ, G=|Phi|^2) [24/30-col files]")
+	fmt.Println("  0              Flavor view (R/G/B = |Phi_0/1/2|^2; prints per-component clocks W_a, Q_a)")
+	fmt.Println("  C              Clock view (local frequency: R=fast, B=slow/anti; shows flavor shells, weff(r))")
 	fmt.Println("  (complex files: field/velocity views use |Phi_a| moduli — phase-invariant)")
 	fmt.Println("  M              Toggle PGA mode: spectrum / rotation (8-component v56 files)")
 	fmt.Println("  N              Advance PGA rotation phase (when in rotation mode)")
@@ -4401,7 +4633,7 @@ func main() {
 	vecFlag := flag.String("vec", "", "Vec3D wireframe overlay file (.vec3d)")
 	pgaModeFlag := flag.Int("pga-mode", 0, "PGA view mode: 0=spectrum, 1=rotation (8-comp v56 files)")
 	pgaPhaseFlag := flag.Int("pga-phase", 0, "PGA rotation phase (which 3-of-8 components → R,G,B)")
-	viewFlag := flag.Int("view", 0, "View mode: 0=field, 1=velocity, 2=accel, 3=U(1) gauge, 4=charge")
+	viewFlag := flag.Int("view", 0, "View mode: 0=field, 1=velocity, 2=accel, 3=U(1) gauge, 4=charge, 5=flavor, 6=clock")
 	flag.Parse()
 
 	// CPU profiling to file
@@ -4880,6 +5112,20 @@ func main() {
 				params.viewMode = 4
 				fl.viewMode = 4
 				fmt.Println("View: CHARGE (R=+rhoQ, B=-rhoQ, G=|Phi|^2 context)")
+				loadSFAFrame(fl, params)
+			}
+		case glfw.Key0:
+			if fl != nil && params.viewMode != 5 {
+				params.viewMode = 5
+				fl.viewMode = 5
+				fmt.Println("View: FLAVOR (R=|Phi_0|^2, G=|Phi_1|^2, B=|Phi_2|^2 — equal flavors render white)")
+				loadSFAFrame(fl, params)
+			}
+		case glfw.KeyC:
+			if fl != nil && params.viewMode != 6 {
+				params.viewMode = 6
+				fl.viewMode = 6
+				fmt.Println("View: CLOCK (local frequency: R=fast, B=slow/anti-charge, brightness=density)")
 				loadSFAFrame(fl, params)
 			}
 		case glfw.KeyM:

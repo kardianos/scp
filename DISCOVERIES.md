@@ -1348,3 +1348,70 @@ Full record: v69/FINDINGS.md, v69/SPEC.md, v68/GAUGE_DESIGN.md, v69/theory/.
    275), Q=0 exact, NO annihilation — drain closed + charge gauged = no decay channel.
 6. omega_core = omega + g·a0(0) measured exactly (1.395960) — the Coulomb potential
    lives in the local phase rate, as temporal-gauge theory demands.
+
+---
+
+## V70 (2026-06-11): SKEPTICAL VERIFICATION CAMPAIGN — visual + lever-arm + existence dynamics.
+
+Full record: v70/FINDINGS.md, v70/EXISTENCE.md, v70/PLAN.md. New tools:
+sfa/analysis/sfa_slice.c + render_slices.py (visual pipeline), sfa_qcomp.c,
+v70/analysis/{phase_tilt,forcelaw_fit,existence_spectrum}.py.
+1. **Two v69 conclusions corrected**: (a) pos1 "no annihilation" is FALSE in strong
+   form — charge segregation decays ~4x over T=600 (slow annihilation, ~10x slower
+   than ungauged); (b) the v69 "absolute Coulomb calibration" compared against naive
+   vacuum, ignoring the wrapped-box jellium correction (−9% at D=20) and settling
+   transients (the 0.92→1.17 ratio drift was transient bias; fl14 is a true
+   watershed null).
+2. **Pair-dynamics force measurements are invalid beyond D ≈ L/2**: the absorbing
+   sponge acts like conductor walls; image forces invert the opposite-charge force
+   sign at D=40 (predicted in-flight, then measured). Future force runs need L ≳ 2D.
+3. **Mediator masslessness measured directly**: single-ball halo flux flat ±2% (no
+   trend) over r∈[6,32] after the documented jellium correction; m_A=(−0.4±1.0)e-3 —
+   massless to ~1500x below the matter mass. This replaces pair fits as the 1/r²
+   statement. Force = gQE confirmed ≤6% both signs at D=20. Drift floor 3.5e-8.
+4. **hbar_eff = Q measured** (bs03/05/07): phase tilt frozen at γωv to 4 decimals
+   over 60 t.u.; hbar_eff = p/k = E₀/ω = Q(1+ε) to 3–5% (deviations at the lattice-
+   dispersion scale). The DEBROGLIE fingerprint is now data.
+5. **Existence dynamics** (user question: do particles fully exist or dissipate/
+   reform?): charged ball existence flat to 2.4% (no clock-harmonic line — components
+   blink at ω, the object does not); ±ω neutral breather blinks at 100% depth every
+   ~2.4 t.u. and slowly dies. The short-range force is clock interference:
+   cos(Δφ)·e^{−0.56D} — Δφ=0 fuses THROUGH Coulomb repulsion, π/2 = pure Coulomb
+   (0.94), π = enhanced escape. Genuinely detuned on-branch pair (1.46/1.42, new
+   shooter-continued profile): the force BEATS at Δω (approach → 4–10x-Coulomb surge
+   at anti-phase passage); no phase locking at D≥11 (lock range < 0.06). TRAP logged:
+   spinning a profile at off-branch ω relaxes to the profile's branch ω — detuning
+   needs genuinely different branch profiles.
+
+---
+
+## V71 (2026-06-11): QUARK SUBSTRUCTURE, NUCLEI, FLAVOR, AND THE GDR ANALOG.
+
+Full record: v71/QUARK.md (+2 updates, 2 addenda), v71/NUCLEI.md. New tools:
+sfa/seed/{gen_qball_quark,gen_qball_multi,gen_qball_flavored}.c,
+v71/analysis/flavored_qball.py (3-field BVP); volview rebuilt for 24/30-col files
+(was crashing >16 columns) with U(1)-gauge, charge, FLAVOR, and CLOCK views +
+inline per-component frequency analysis.
+1. **The Q-ball is the baryon; the components are the quarks**: exactly Q/3 charge
+   per component; a single-component lump CANNOT exist (binding force ≡ 0, disperses);
+   two components also die — NO meson sector (binding needs all three "colors").
+2. **Proton assembly**: three displaced single-component quarks self-assemble into a
+   baryon for triangle radius d ≲ 4 ≈ r_half (charge captured: 72%/46%/31% at
+   d=2/4/6 — a race between infall and dispersal); capture exactly democratic.
+3. **Nuclei = fused charge droplets** (liquid drop, literal): He (2 nucleons → Q=605,
+   ON-branch to 0.1%, mass defect 1.6%) and light-Li (Q=357, defect 3.5%/charge)
+   composed and photographed (quadrupole-ringing merger). Super-critical Li (3
+   nucleons → Q up to 1051 > Q_max=921) does NOT fission — it EVAPORATES toward the
+   cap as a single droplet (Q=934 at t=300, still shedding).
+4. **Flavored baryons are real and stable**: asymmetric (ω_a) stationary solutions
+   exist (BVP continuation, Q_0/Q_1 to 0.74 at Δω=0.04) and are 3D-stable — Q_a
+   machine-flat and the three internal clocks distinct to 4 decimals over 300 t.u.
+   Baryons form a frequency-partition multiplet (proton/neutron-analog distinction).
+5. **Flavor survives fusion** (flavored + symmetric → "deuteron"): Q_0/Q_1
+   0.832 → 0.827 over 1300 t.u. total; losses flavor-proportional; the composite
+   carries TWO internal clocks (Δω 0.040 → 0.027). Flavor ≈ conserved nuclear
+   attribute.
+6. **Giant-dipole-resonance analog discovered** (user-spotted in the volview flavor
+   view): inside the fused flavored nucleus the two flavor fluids slosh against each
+   other — a clean collective resonance at ω ≈ 0.137–0.144 (period ~45 t.u., width
+   ~0.01, NO power at the clock beat), high-Q (τ ~ 10³ t.u., Q-factor ≈ 170).

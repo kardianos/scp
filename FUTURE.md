@@ -1,12 +1,45 @@
 # SCP Future Directions and Open Questions
 
 **Purpose**: Tracks future research directions, unresolved questions, and
-exploratory paths. Items marked [CONFIRMED] have been tested under the current
-V50/C4 equations. Items marked [V44-ERA] were tested under earlier equations
-and may need retesting. Maintain with CONCEPT.md and EM_THEORY.md.
+exploratory paths. Maintain with CONCEPT.md and EM_THEORY.md.
 
-**Current equation set**: V50/C4 (Cosserat strain α=0.1, curl²-hardening β=0.5).
-All new experiments use pre-converged proton templates, NOT analytical seeds.
+**Current equation set (2026-06): kernel-v3** — complexified 12-field Cosserat
+with gauged diagonal U(1) (`complex_phi=1`, `complex_gauge=1`, g=0.05,
+m_θ=1.6). Sections below this first one predate the U(1) era (≤v65 real-field
+equations) and are kept for the record; most are superseded — the real theory
+has no stable particles (CONCEPT.md §2/§9).
+
+---
+
+## Current Open Questions (post-v71, 2026-06-11)
+
+1. **ℓ=2-perturbed cold fission test** — super-critical balls survive the
+   symmetric saddle and hot mergers evaporate rather than split; does a cold
+   deformed Q > Q_max ball undergo binary fission? (v69 queue #1)
+2. **Clean big-box force exponent** — pair-dynamics force laws are
+   boundary-contaminated beyond D ≈ L/2 (v70); a L ≳ 2D (N=384) run would give
+   the direct n=2.00 exponent if ever needed beyond the halo measurement.
+3. **Flavored branch extent** — the BVP continuation reached Δω = 0.04 easily;
+   where does the flavored branch end, and does deeper detuning produce
+   visually stratified (concentric-shell) baryons?
+4. **η ≠ 0 in the complex theory** — the curl coupling ties the component
+   (color) index to spatial direction; its effect on baryon substructure,
+   flavor, and the GDR mode is unexplored. Includes the in-medium η_eff ~
+   g|Φ_bg| re-emergence of the old polariton phenomenology (v68 §1.2).
+5. **Quantized-orbit / positronium dynamics** — clean opposite-charge orbit at
+   D ≈ 16 with tangential velocity (per-ball velocity seeding: small
+   gen_qball_multi extension); phase-closure quantization test (DEBROGLIE).
+6. **AB / flux-line winding** — holonomy 2πqn is now topological (gauged);
+   needs a flux-tube seeder (v69 O4).
+7. **Charged-bath equilibrium** — replenished co-rotating bath for a true
+   detailed-balance steady state (v68 #5); star-interior/accretion program.
+8. **GDR systematics** — mode frequency vs flavor asymmetry and nucleus size;
+   damping mechanism (radiation vs internal mixing).
+9. **EM_THEORY.md rewrite** — map the EM sector onto the gauge field A
+   (photon analog); θ is now massive charged torsion matter (v69 queue #6).
+10. **Gravity** — still absent from the framework; the clock-gradient force
+    a = −c²(1−v²)∇(ln ω) (v67 DEBROGLIE §3) is the surviving candidate
+    mechanism, untested in the gauged theory.
 
 ---
 

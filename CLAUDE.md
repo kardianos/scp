@@ -9,15 +9,21 @@
   - DO include null results that clarify the theory ("it is NOT X, it IS Y")
   - DO include key numerical data that confirms claims
   - Present the physics as understood NOW, not as it was discovered over time
-  - Use correct terminology: "particle" or "proton" for gravitationally responsive
-    objects, "braid" only for the z-aligned sub-component (quark analog)
+  - Use correct terminology (U(1) era, v66+): "ball"/"baryon" for the stable
+    charged Q-ball, "component"/"quark" for the Φ_a sub-fields, "flavor" for the
+    frequency/charge partition (ω_a, Q_a), "nucleus" for fused multi-ball droplets.
+    "Braid", "oscillon", "UUD/UDD proton/neutron" are real-field-era (≤v53) terms —
+    use only in historical context.
 - **DISCOVERIES.md** is the chronological lab notebook — records what was found, when,
   including failed approaches and process. This is where the history lives.
 - **EM_THEORY.md** is the detailed electromagnetic sector theory document (same
-  standards as CONCEPT.md — cohesive, not chronological).
+  standards as CONCEPT.md — cohesive, not chronological). NOTE: the photon analog is
+  the gauge field A (v68+); the old θ-polariton mapping is historical.
 - **FUTURE.md** tracks open questions and proposed experiments.
-- **Version directories** (v28/, v34/, v41/, v42/, v43/) contain per-experiment
-  plans, results, analysis, and generated data. Each version builds on the previous.
+- **Version directories** (v28/ … v71/) contain per-experiment plans, results,
+  analysis, and generated data. Current era: v66 (complexified U(1) Q-balls),
+  v67–v68 (characterization + gauge design), v69 (gauged kernel-v3), v70 (skeptical
+  verification + existence dynamics), v71 (quark substructure, nuclei, flavor).
 
 ## Data Format Policy
 - **ALL simulation output MUST use SFA format** (`.sfa` files via `sfa.h`)
@@ -27,13 +33,21 @@
 - Link with: `-lzstd`
 - Column convention: phi_x/phi_y/phi_z (SFA_POSITION), theta_x/theta_y/theta_z (SFA_ANGLE)
 - All analysis tools must READ SFA files using `sfa_open()` / `sfa_read_frame()`
-- SFA viewer: `/home/d/code/scp/sfa/viewer/volview`
+- SFA viewer: `sfa/volview` (binary `bin/volview`) — handles 12/24/30-column files;
+  views: 4 field / 5 velocity / 6 accel / 8 U(1) gauge (|E|,|A|) / 9 charge (±ρ_Q) /
+  0 flavor (per-component RGB + inline clock analysis) / C local clock;
+  headless export: `volview -snapshot N -view K -out f.webp file.sfa`
 
 ## Simulation Parameters (standard)
-- Equation: 6-field Cosserat (3 phi + 3 theta)
-- V(P) = (mu/2) P^2 / (1 + kappa P^2), P = phi_0 * phi_1 * phi_2
-- Default: m^2=2.25, mu=-41.345, kappa=50, eta=0.5, A_bg=0.1
-- Phase offsets: delta = {0, 3.0005, 4.4325} (from v28 optimization)
+- **Current standard (U(1) era, v66+)**: complexified 12-field Cosserat, optionally
+  gauged. Config: `complex_phi=1`, `complex_gauge=1`, `g_gauge=0.05`, `m_theta=1.6`
+  (closes the θ-drain), `eta=0` for particle experiments, absorbing BC.
+  Vt(s) = (mu/2) s/(1+kappa s), s = Π|Φ_a|²; m²=2.25, mu=-41.345, kappa=50.
+  Q-ball window ω ∈ (1.3087, 1.5) ungauged; (1.406, 1.5) and Q_max=921 at g=0.05.
+  Seed via radial profiles (init=qball on CPU; gen_qball_* + init=sfa on GPU —
+  the GPU kernel has no init=qball path; the init Gauss projection builds E).
+- Real-kernel legacy defaults (≤v65): m^2=2.25, mu=-41.345, kappa=50, eta=0.5,
+  A_bg=0.1, delta = {0, 3.0005, 4.4325} (from v28 optimization)
 
 ## Running Simulations — Use the MCP Runner
 
@@ -111,12 +125,18 @@ returns instantly with cached state.
 - All binaries go to `bin/` via `make install` — do NOT commit binaries
 
 ## Physics Requirements — CRITICAL
-- **ALL simulations MUST use the FULL 6-field Cosserat equation (3 phi + 3 theta)**
-- The equation: d²φ/dt² = ∇²φ - m²φ - V'(P) + η×curl(θ), d²θ/dt² = ∇²θ - m_θ²θ + η×curl(φ)
-- NEVER build a 3-field-only simulator. The theta coupling is ESSENTIAL physics.
-- Default: m²=2.25, m_θ²=0 (massless theta), η=0.5, μ=-41.345, κ=50
-- Verify: 18 arrays (not 9), curl terms in forces, theta_rms grows from zero
-- Reference implementation: `v34/torsion_coupling/src/v33_cosserat.c`
+- **ALL simulations MUST use the unified kernel with the full field content** —
+  never a reduced/3-field-only simulator. The theta sector and (in complex mode)
+  the imaginary sector are essential physics even when seeded to zero.
+- Real mode: d²φ/dt² = ∇²φ - m²φ - V'(P) + η×curl(θ), d²θ/dt² = ∇²θ - m_θ²θ + η×curl(φ)
+- Complex/gauged mode (v66/THEORY.md, v68/GAUGE_DESIGN.md, v69/SPEC.md): all matter
+  derivatives link-covariant; charge conservation and the discrete Gauss law are
+  exact by construction — verify `gauss_max` stays at the 1e-13 floor (a drift is
+  implementation-bug tripwire #1).
+- Verify (complex): 36 arrays (+ gauge blocks when complex_gauge=1), Q_phi conserved
+  to the integrator floor at eta=0, g=0 byte-identical to the ungauged path.
+- Reference docs: `v66/THEORY.md` (complexification), `v69/SPEC.md` (gauged lattice);
+  historical real-field reference: `v34/torsion_coupling/src/v33_cosserat.c`
 
 ## Simulation Kernel Policy — CRITICAL
 - **The unified sim kernel (`sfa/sim/scp_sim.c` and `sfa/sim/scp_sim.cu`) MUST NOT be modified unless the user EXPLICITLY requests changes to the simulation code.**
@@ -129,10 +149,16 @@ returns instantly with cached state.
 ## Simulation Kernel Location
 - CPU kernel: `sfa/sim/scp_sim.c` — build with `gcc -O3 -march=native -fopenmp -o scp_sim scp_sim.c -lzstd -lm`
 - GPU kernel: `sfa/sim/scp_sim.cu` — build with `nvcc -O3 -arch=sm_70 -o scp_sim_cuda scp_sim.cu -lzstd -lm`
-- Seed generators: `sfa/seed/gen_braid.c`, `sfa/seed/gen_oscillon.c`,
-  `sfa/seed/gen_phase_confined.c` (UUD/UDD composites),
-  `sfa/seed/gen_proton_analytical.c` (algebraic proton/neutron),
-  `sfa/seed/gen_composite.c` (stamp templates into grids for composite nuclei)
+- Seed generators (U(1) era): `gen_qball_pair.c` (two balls, phases/signs),
+  `gen_qball_boost.c` (boosted single ball; v=0 → single static ball),
+  `gen_qball_bath.c` (ball + θ bath), `gen_qball_multi.c` (N balls — nuclei),
+  `gen_qball_quark.c` (single-COMPONENT lumps, mask + per-component centers),
+  `gen_qball_flavored.c` (per-component profiles/frequencies; multi-ball;
+  accepts 2-col symmetric or 4-col flavored profiles). Profiles from
+  `radial_qball` (ungauged) or the v69 gauged shooter. NOTE: seed writers MUST
+  call `sfa_finalize_header()` before `sfa_write_frame()`.
+- Seed generators (real-field era, historical): `gen_braid.c`, `gen_oscillon.c`,
+  `gen_phase_confined.c` (UUD/UDD), `gen_proton_analytical.c`, `gen_composite.c`
 - **Analytical seed warning**: `gen_proton_analytical` (Level 2) produces baryons
   with ~4× the equilibrium binding density (P_int ~1270 vs ~320 per baryon in V42).
   These seeds need T=2000+ to relax and are NOT suitable for energy comparisons.

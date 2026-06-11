@@ -1,6 +1,23 @@
 # Electromagnetism in the Cosserat Field Theory
 
-## Summary
+> **STATUS (2026-06, v68–v69): SUPERSEDED — historical document.**
+> The electromagnetic sector of the current theory is the **gauged diagonal
+> U(1)**: the photon analog is the real abelian gauge field A_μ (kernel-v3),
+> which mediates a measured massless 1/r² Coulomb force between Q-balls
+> (force = gQ·E to ≤6%, mediator mass < 10⁻³) with exact local charge
+> conservation. The θ-as-vector-potential mapping below is structurally
+> impossible as a gauge theory: the η coupling is matter-LINEAR (Proca-like
+> two-point mixing) while minimal coupling is matter-QUADRATIC — no field
+> redefinition connects them (v68/GAUGE_DESIGN.md §1.2, theorem, 59/59
+> Maxima). θ is now massive (m_θ = 1.6) charged torsion matter. What survives
+> of this document's idea: in a charged condensate background, minimal
+> coupling linearizes to an η_eff ~ g|Φ_bg| two-point mixing — the
+> polariton phenomenology described here re-emerges as IN-MEDIUM physics of
+> the gauged theory. A rewrite onto the A-field is queued (FUTURE.md item 9).
+> The analysis below also concerns the REAL-field theory, whose "braids" are
+> mortal oscillons (CONCEPT.md §2).
+
+## Summary (historical)
 
 The 6-field Cosserat equation naturally produces classical electromagnetism.
 The three angle fields θ_a map to the electromagnetic vector potential A_a.
