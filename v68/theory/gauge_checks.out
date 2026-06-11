@@ -1,0 +1,237 @@
+
+Maxima 5.46.0 https://maxima.sourceforge.io
+using Lisp GNU Common Lisp (GCL) GCL 2.6.14 git tag Version_2_6_15pre7
+Distributed under the GNU Public License. See the file COPYING.
+Dedicated to the memory of William Schelter.
+The function bug_report() provides bug reporting information.
+(%i1) batch("gauge_checks.mac")
+
+read and interpret /home/d/code/scp/v68/theory/gauge_checks.mac
+(%i2) kill(all)
+(%i1) nfail:0
+(%i2) chk(name,expr):=block([r:trigsimp(ratsimp(expr))],
+          if is(equal(r,0)) then print(sconcat("PASS ",name))
+              else (print(sconcat("FAIL ",name," residual=")),print(r),
+                    nfail:nfail+1))
+(%i3) chkv(name,lst):=block([j:0],
+           for e in lst do (j:j+1,chk(sconcat(name,"_",j),e)))
+(%i4) depends([u1,u2,u3,v1,v2,v3,p1,p2,p3,q1,q2,q3,A1,A2,A3,a0,al,chi],[x,y,z,
+                                                                        t])
+(%i5) xx:[x,y,z]
+(%i6) uu:[u1,u2,u3]
+(%i7) vv:[v1,v2,v3]
+(%i8) pp:[p1,p2,p3]
+(%i9) qq:[q1,q2,q3]
+(%i10) AA:[A1,A2,A3]
+(%i11) gradv(f):=[diff(f,x),diff(f,y),diff(f,z)]
+(%i12) divv(w):=diff(w[1],x)+diff(w[2],y)+diff(w[3],z)
+(%i13) curlv(w):=[diff(w[3],y)-diff(w[2],z),diff(w[1],z)-diff(w[3],x),
+             diff(w[2],x)-diff(w[1],y)]
+(%i14) crossv(a,b):=[a[2]*b[3]-a[3]*b[2],a[3]*b[1]-a[1]*b[3],a[1]*b[2]
+                                                              -a[2]*b[1]]
+(%i15) dotv(a,b):=a[1]*b[1]+a[2]*b[2]+a[3]*b[3]
+(%i16) lap(f):=diff(f,x,2)+diff(f,y,2)+diff(f,z,2)
+(%i17) DRe(U,V,Av,i,k):=diff(U[k],xx[i])-g*Av[i]*V[k]
+(%i18) DIm(U,V,Av,i,k):=diff(V[k],xx[i])+g*Av[i]*U[k]
+(%i19) CcR(U,V,Av):=curlv(U)-g*crossv(Av,V)
+(%i20) CcI(U,V,Av):=curlv(V)+g*crossv(Av,U)
+(%i21) K(U,V,Av):=sum(sum(DRe(U,V,Av,i,k)^2+DIm(U,V,Av,i,k)^2,i,1,3),k,1,3)
+(%i22) c:cos(g*al)
+(%i23) s:sin(g*al)
+(%i24) up:c*uu+s*vv
+(%i25) vp:(-s)*uu+c*vv
+(%i26) pr:c*pp+s*qq
+(%i27) qr:(-s)*pp+c*qq
+(%i28) Ap:AA+gradv(al)
+(%i29) for i thru 3 do
+           (for k thru 3 do
+                (chk(sconcat("G1a_Dcov_Re_i",i,"_k",k),
+                     DRe(up,vp,Ap,i,k)-(c*DRe(uu,vv,AA,i,k)
+                                       +s*DIm(uu,vv,AA,i,k))),
+                 chk(sconcat("G1b_Dcov_Im_i",i,"_k",k),
+                     DIm(up,vp,Ap,i,k)-((-s)*DRe(uu,vv,AA,i,k)
+                                       +c*DIm(uu,vv,AA,i,k)))))
+PASS G1a_Dcov_Re_i1_k1 
+PASS G1b_Dcov_Im_i1_k1 
+PASS G1a_Dcov_Re_i1_k2 
+PASS G1b_Dcov_Im_i1_k2 
+PASS G1a_Dcov_Re_i1_k3 
+PASS G1b_Dcov_Im_i1_k3 
+PASS G1a_Dcov_Re_i2_k1 
+PASS G1b_Dcov_Im_i2_k1 
+PASS G1a_Dcov_Re_i2_k2 
+PASS G1b_Dcov_Im_i2_k2 
+PASS G1a_Dcov_Re_i2_k3 
+PASS G1b_Dcov_Im_i2_k3 
+PASS G1a_Dcov_Re_i3_k1 
+PASS G1b_Dcov_Im_i3_k1 
+PASS G1a_Dcov_Re_i3_k2 
+PASS G1b_Dcov_Im_i3_k2 
+PASS G1a_Dcov_Re_i3_k3 
+PASS G1b_Dcov_Im_i3_k3 
+(%i30) chk("G2_kinetic_invariance",K(up,vp,Ap)-K(uu,vv,AA))
+PASS G2_kinetic_invariance 
+(%i31) Jgrad(U,V):=makelist(sum(U[k]*diff(V[k],xx[i])-V[k]*diff(U[k],xx[i]),k,
+                                1,3),i,1,3)
+(%i32) nrm(U,V):=sum(U[k]^2+V[k]^2,k,1,3)
+(%i33) chk("G3_cross_term",
+           K(uu,vv,AA)-(K(uu,vv,[0,0,0])+2*g*dotv(AA,Jgrad(uu,vv))
+                                        +g^2*dotv(AA,AA)*nrm(uu,vv)))
+PASS G3_cross_term 
+(%i34) chkv("G4a_curlcov_Re",CcR(up,vp,Ap)-(c*CcR(uu,vv,AA)+s*CcI(uu,vv,AA)))
+PASS G4a_curlcov_Re_1 
+PASS G4a_curlcov_Re_2 
+PASS G4a_curlcov_Re_3 
+(%i35) chkv("G4b_curlcov_Im",CcI(up,vp,Ap)
+                              -((-s)*CcR(uu,vv,AA)+c*CcI(uu,vv,AA)))
+PASS G4b_curlcov_Im_1 
+PASS G4b_curlcov_Im_2 
+PASS G4b_curlcov_Im_3 
+(%i36) Leta(U,V,P,Q,Av):=eta*(dotv(P,CcR(U,V,Av))+dotv(Q,CcI(U,V,Av)))
+(%i37) chk("G5_eta_term_invariance",Leta(up,vp,pr,qr,Ap)-Leta(uu,vv,pp,qq,AA))
+PASS G5_eta_term_invariance 
+(%i38) Lt:(1/2)*sum((diff(uu[k],t)-g*a0*vv[k])^2+(diff(vv[k],t)+g*a0*uu[k])^2
+                                                +(diff(pp[k],t)-g*a0*qq[k])^2
+                                                +(diff(qq[k],t)+g*a0*pp[k])^2,
+                    k,1,3)
+(%i39) EE:makelist(diff(a0,xx[i])-diff(AA[i],t),i,1,3)
+(%i40) LE:(1/2)*dotv(EE,EE)
+(%i41) sub6:['diff(a0,x) = da0x,'diff(a0,y) = da0y,'diff(a0,z) = da0z,
+             a0 = a00]
+(%i42) bak6:[da0x = 'diff(a0,x),da0y = 'diff(a0,y),da0z = 'diff(a0,z),
+             a00 = a0]
+(%i43) L6:subst(sub6,Lt+LE)
+(%i44) EL_a0:subst(bak6,diff(L6,a00))-diff(subst(bak6,diff(L6,da0x)),x)
+                                     -diff(subst(bak6,diff(L6,da0y)),y)
+                                     -diff(subst(bak6,diff(L6,da0z)),z)
+(%i45) rho_cov:sum(uu[k]*diff(vv[k],t)-vv[k]*diff(uu[k],t)+pp[k]*diff(qq[k],t)
+                                      +(-qq[k])*diff(pp[k],t),k,1,3)
+               +g*a0*(nrm(uu,vv)+nrm(pp,qq))
+(%i46) chk("G6_gauss_law_EL",EL_a0-(g*rho_cov-divv(EE)))
+PASS G6_gauss_law_EL 
+(%i47) Lsp:(-1/2)*K(uu,vv,AA)
+(%i48) sub7u:['diff(u1,x) = d1,'diff(u1,y) = d2,'diff(u1,z) = d3,u1 = w0]
+(%i49) bak7u:[d1 = 'diff(u1,x),d2 = 'diff(u1,y),d3 = 'diff(u1,z),w0 = u1]
+(%i50) L7u:subst(sub7u,Lsp)
+(%i51) F_u1:subst(bak7u,diff(L7u,w0))-diff(subst(bak7u,diff(L7u,d1)),x)
+                                     -diff(subst(bak7u,diff(L7u,d2)),y)
+                                     -diff(subst(bak7u,diff(L7u,d3)),z)
+(%i52) DDre1:lap(u1)-g*divv(AA)*v1+(-2)*g*dotv(AA,gradv(v1))
+                    +(-g^2)*dotv(AA,AA)*u1
+(%i53) chk("G7a_force_u1_is_Re_DD",F_u1-DDre1)
+PASS G7a_force_u1_is_Re_DD 
+(%i54) sub7v:['diff(v1,x) = d1,'diff(v1,y) = d2,'diff(v1,z) = d3,v1 = w0]
+(%i55) bak7v:[d1 = 'diff(v1,x),d2 = 'diff(v1,y),d3 = 'diff(v1,z),w0 = v1]
+(%i56) L7v:subst(sub7v,Lsp)
+(%i57) F_v1:subst(bak7v,diff(L7v,w0))-diff(subst(bak7v,diff(L7v,d1)),x)
+                                     -diff(subst(bak7v,diff(L7v,d2)),y)
+                                     -diff(subst(bak7v,diff(L7v,d3)),z)
+(%i58) DDim1:lap(v1)+g*divv(AA)*u1+2*g*dotv(AA,gradv(u1))
+                    +(-g^2)*dotv(AA,AA)*v1
+(%i59) chk("G7b_force_v1_is_Im_DD",F_v1-DDim1)
+PASS G7b_force_v1_is_Im_DD 
+(%i60) Le:Leta(uu,vv,pp,qq,AA)
+(%i61) L7e:subst(sub7u,Le)
+(%i62) Fe_u1:subst(bak7u,diff(L7e,w0))-diff(subst(bak7u,diff(L7e,d1)),x)
+                                      -diff(subst(bak7u,diff(L7e,d2)),y)
+                                      -diff(subst(bak7u,diff(L7e,d3)),z)
+(%i63) chk("G7c_eta_force_u1",Fe_u1-eta*CcR(pp,qq,AA)[1])
+PASS G7c_eta_force_u1 
+(%i64) L7ev:subst(sub7v,Le)
+(%i65) Fe_v1:subst(bak7v,diff(L7ev,w0))-diff(subst(bak7v,diff(L7ev,d1)),x)
+                                       -diff(subst(bak7v,diff(L7ev,d2)),y)
+                                       -diff(subst(bak7v,diff(L7ev,d3)),z)
+(%i66) chk("G7d_eta_force_v1",Fe_v1-eta*CcI(pp,qq,AA)[1])
+PASS G7d_eta_force_v1 
+(%i67) chk("G7e_eta_force_p1",diff(Le,p1)-eta*CcR(uu,vv,AA)[1])
+PASS G7e_eta_force_p1 
+(%i68) chk("G7f_eta_force_q1",diff(Le,q1)-eta*CcI(uu,vv,AA)[1])
+PASS G7f_eta_force_q1 
+(%i69) sgen:(u1^2+v1^2)*(u2^2+v2^2)*(u3^2+v3^2)
+(%i70) Vt(s):=((mu/2)*s)/(1+kappa*s)
+(%i71) chk("G8a_potential_charge_cancel",
+           sum(uu[k]*diff(Vt(sgen),vv[k])-vv[k]*diff(Vt(sgen),uu[k]),k,1,3))
+PASS G8a_potential_charge_cancel 
+(%i72) DDreL(U,V):=makelist(
+             lap(U[k])-g*divv(AA)*V[k]+(-2)*g*dotv(AA,gradv(V[k]))
+                      +(-g^2)*dotv(AA,AA)*U[k],k,1,3)
+(%i73) DDimL(U,V):=makelist(
+             lap(V[k])+g*divv(AA)*U[k]+2*g*dotv(AA,gradv(U[k]))
+                      +(-g^2)*dotv(AA,AA)*V[k],k,1,3)
+(%i74) udd:DDreL(uu,vv)-m2*uu+eta*CcR(pp,qq,AA)
+(%i75) vdd:DDimL(uu,vv)-m2*vv+eta*CcI(pp,qq,AA)
+(%i76) pdd:DDreL(pp,qq)-mth2*pp+eta*CcR(uu,vv,AA)
+(%i77) qdd:DDimL(pp,qq)-mth2*qq+eta*CcI(uu,vv,AA)
+(%i78) rho:sum(uu[k]*diff(vv[k],t)-vv[k]*diff(uu[k],t)+pp[k]*diff(qq[k],t)
+                                  +(-qq[k])*diff(pp[k],t),k,1,3)
+(%i79) JJ:(-Jgrad(uu,vv))-Jgrad(pp,qq)+(-g)*(nrm(uu,vv)+nrm(pp,qq))*AA
+                         +eta*(crossv(uu,qq)+crossv(pp,vv))
+(%i80) rdot:diff(rho,t)
+(%i81) eomsub:append(makelist('diff(uu[k],t,2) = udd[k],k,1,3),
+                     makelist('diff(vv[k],t,2) = vdd[k],k,1,3),
+                     makelist('diff(pp[k],t,2) = pdd[k],k,1,3),
+                     makelist('diff(qq[k],t,2) = qdd[k],k,1,3))
+(%i82) chk("G8_local_continuity",subst(eomsub,rdot)+divv(JJ))
+PASS G8_local_continuity 
+(%i83) LAdep:(-1/2)*K(uu,vv,AA)-(1/2)*K(pp,qq,AA)+Leta(uu,vv,pp,qq,AA)
+(%i84) for i thru 3 do
+           chk(sconcat("G9_ampere_current_",i),diff(LAdep,AA[i])-g*JJ[i])
+PASS G9_ampere_current_1 
+PASS G9_ampere_current_2 
+PASS G9_ampere_current_3 
+(%i85) chk("G10_divcurlcurl",divv(curlv(curlv(AA))))
+PASS G10_divcurlcurl 
+(%i86) chkv("G11_pure_gauge_F_zero",curlv(gradv(chi)))
+PASS G11_pure_gauge_F_zero_1 
+PASS G11_pure_gauge_F_zero_2 
+PASS G11_pure_gauge_F_zero_3 
+(%i87) gradef(IQ(r),fb(r)^2*r^2)
+(%i88) Er:(3*g*w*IQ(r))/r^2
+(%i89) chk("G12a_coulomb_solves_gauss",(1/r^2)*diff(r^2*Er,r)-g*3*w*fb(r)^2)
+PASS G12a_coulomb_solves_gauss 
+(%i90) depends(F,[x,y,z])
+(%i91) chk("G12b_ball_current_zero",
+           trigsimp(F*cos(w*t)*diff(F*sin(w*t),x)
+                     -F*sin(w*t)*diff(F*cos(w*t),x)))
+PASS G12b_ball_current_zero 
+(%i92) depends(psi,[r])
+(%i93) rr:sqrt(x^2+y^2+z^2)
+(%i94) Ec:[(subst(r = rr,diff(psi,r))*x)/rr,(subst(r = rr,diff(psi,r))*y)/rr,
+           (subst(r = rr,diff(psi,r))*z)/rr]
+(%i95) chkv("G12c_coulomb_curl_free",curlv(Ec))
+PASS G12c_coulomb_curl_free_1 
+PASS G12c_coulomb_curl_free_2 
+PASS G12c_coulomb_curl_free_3 
+(%i96) chk("G13_g0_limit_u1",subst(g = 0,udd[1])
+                              -(lap(u1)-m2*u1+eta*curlv(pp)[1]))
+PASS G13_g0_limit_u1 
+(%i97) chk("G13_g0_limit_q1",subst(g = 0,qdd[1])
+                              -(lap(q1)-mth2*q1+eta*curlv(vv)[1]))
+PASS G13_g0_limit_q1 
+(%i98) cb:cos(g*bet)
+(%i99) sb:sin(g*bet)
+(%i100) ug:cb*uu+sb*vv
+(%i101) vg:(-sb)*uu+cb*vv
+(%i102) pg:cb*pp+sb*qq
+(%i103) qg:(-sb)*pp+cb*qq
+(%i104) chkv("G14a_Jgrad_invariant",Jgrad(ug,vg)-Jgrad(uu,vv))
+PASS G14a_Jgrad_invariant_1 
+PASS G14a_Jgrad_invariant_2 
+PASS G14a_Jgrad_invariant_3 
+(%i105) chk("G14b_norm_invariant",nrm(ug,vg)-nrm(uu,vv))
+PASS G14b_norm_invariant 
+(%i106) chkv("G14c_eta_seagull_invariant",
+             crossv(ug,qg)+crossv(pg,vg)-crossv(uu,qq)-crossv(pp,vv))
+PASS G14c_eta_seagull_invariant_1 
+PASS G14c_eta_seagull_invariant_2 
+PASS G14c_eta_seagull_invariant_3 
+(%i107) oldterm:eta*(dotv(pp,curlv(uu))+dotv(qq,curlv(vv)))
+(%i108) chk("G15a_old_coupling_linear_in_phi",diff(diff(oldterm,u1),u2))
+PASS G15a_old_coupling_linear_in_phi 
+(%i109) chk("G15b_minimal_coupling_quadratic",
+            diff(diff(g*dotv(AA,Jgrad(uu,vv)),u1),'diff(v1,x))-g*A1)
+PASS G15b_minimal_coupling_quadratic 
+(%i110) if nfail = 0 then print("ALL CHECKS PASS")
+            else print(sconcat(nfail," CHECKS FAILED"))
+ALL CHECKS PASS 
+(%o111)          /home/d/code/scp/v68/theory/gauge_checks.mac

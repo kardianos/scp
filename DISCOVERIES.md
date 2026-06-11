@@ -1303,3 +1303,48 @@ Full record: v67/FINDINGS.md, v67/THEORY.md, v67/theta_dynamics/. Headlines:
    ⇒ h_eff=Q(1+ε): the charge IS the action quantum. Clock-gradient force matches
    V51 drift to ratio 0.91. Mathieu tongues + winding quantization mapped (chiral
    splitting and AB phase exactly zero without gauging — honest nulls).
+
+---
+
+## V68 (2026-06-11): Relativity Ladder, Charge Accretion, Resonance Chirp, Gauge Design
+
+Full record: v68/FINDINGS.md, v68/GAUGE_DESIGN.md, v68/DRESSED_STATE.md.
+1. **Relativity ladder exact**: boosted balls measure omega_core = γω to 5-6 digits
+   through v=0.7 (1.946389 vs 1.946394); E=γE₀; charge Lorentz-invariant. The Q-ball
+   is an exact relativistic particle in-simulation.
+2. **Charged bath inverts the drain**: e=0.005 drains / e≈0.02 balances (transient) /
+   e=0.05 feeds / e=0.15 runaway accretion (Q 482→1560 in 50 t.u.) — charged media
+   GROW balls; detailed-balance point e*∈[0.01,0.03] (finite-reservoir caveat).
+3. **Mathieu resonance = chirped stimulated emission**: drain enhanced 6-9% at the
+   W=ω(t) instantaneous resonance, sweeping up the rung ladder as the ball's clock
+   climbs — discrete frequency response confirmed, emission-side.
+4. **Gauge design (59/59 Maxima)**: "θ IS the connection" disproved (matter-linear vs
+   quadratic, theorem); package = new A_μ + full diagonal U(1) + m_θ=1.6 + g=0.05 +
+   compact KS links; drain closes identically, AB holonomy restored, positronium
+   orbit predicted in-box. Kernel-v3 awaits explicit authorization.
+5. **Dressed-state mean-field falsified honestly**: thermal/Gaussian dressing cannot
+   produce the measured shifts or sub-window states — v67 dressed states are COHERENT
+   (±ω admixture or Mathieu-driven); 2ω-beat fingerprint specified.
+6. Fragment spectra: charged web + droplets, no anti-charge fragments, cf4 cores match
+   prediction to 3.5%; attractor convergence needs T≳1000.
+
+---
+
+## V69 (2026-06-11): KERNEL-V3 — THE GAUGED U(1). Coulomb force measured.
+
+Full record: v69/FINDINGS.md, v69/SPEC.md, v68/GAUGE_DESIGN.md, v69/theory/.
+1. Gauged diagonal U(1) implemented (compact KS links, temporal gauge, Hamiltonian-
+   derived current): g=0 byte-identical; discrete Gauss law 6.7e-14 flat; GPU port
+   12-digit identical to CPU; ball charge readable from boundary flux (0.1-1%).
+2. **Coulomb force measured, both signs, ABSOLUTE calibration**: same-charge repel /
+   opposite attract; beyond the watershed the force matches parameter-free
+   a=2g²Q²/(4πD²M) to 10-20%. Watershed r*(Q=311) just below D=14 (contact cancels
+   86% of Coulomb there). F1 — the program's oldest goal — closed on stable particles.
+3. **Maximum particle size**: gauged branch terminates at Q_max=921 (g=0.05) — the
+   fission/end-of-periodic-table analog, quantitative (shooter gscan.tsv).
+4. Bohr-Wheeler in-sim: spherical super-critical ball (Q=1745) survives on the
+   symmetric saddle — fission needs an asymmetry seed (follow-up queued).
+5. Positronium: opposite-charge pair bound and oscillating (period ~200 vs predicted
+   275), Q=0 exact, NO annihilation — drain closed + charge gauged = no decay channel.
+6. omega_core = omega + g·a0(0) measured exactly (1.395960) — the Coulomb potential
+   lives in the local phase rate, as temporal-gauge theory demands.

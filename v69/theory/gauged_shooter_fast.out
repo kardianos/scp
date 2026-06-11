@@ -1,0 +1,4 @@
+v69 gauged radial shooter  (h=0.01, Rmax=100, N=10000 nodes, 20000 unknowns)
+conventions: D=d+igA, E_i=d_iA_0-d_tA_i, divE=+g rho_Q;  wt(r)=omega+g a0(r)=omega-chi(r)
+ungauged window: omega in (1.308700, 1.500000)
+

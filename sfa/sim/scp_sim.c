@@ -43,6 +43,15 @@ typedef struct {
     double *theta_im[NFIELDS], *theta_im_vel[NFIELDS], *theta_im_acc[NFIELDS];
     double *pin_phi_im[NFIELDS], *pin_vel_im[NFIELDS];
     double *pin_theta_im[NFIELDS], *pin_tvel_im[NFIELDS];
+    /* v69 gauged U(1) sector (SPEC §2.2) — all f64, NULL when complex_gauge=0 */
+    int    gauge_mode;            /* copied from c->complex_gauge at alloc */
+    double g_gauge;               /* cached coupling */
+    double G_offset;              /* frozen uniform Gauss offset, measured post-init (§4.1) */
+    double *th[3];                /* link angles theta_i(x) on link (x, x+i), wrapped (-pi,pi] */
+    double *Efield[3];            /* E_i(x) on the same link (noncompact) */
+    double *E_acc[3];             /* E-kick K_i (the gauge "acceleration", §3.4) */
+    double *link_c[3], *link_s[3];/* scratch: cos/sin theta_i, refreshed per force call */
+    double *plaq_s[3];            /* scratch: sin theta_P per plaquette plane (§3.4) */
     int N; long N3;
     double L, dx, dt;
 } Grid;
@@ -56,10 +65,14 @@ static Grid *grid_alloc(const Config *c) {
     g->dt = c->dt_factor * g->dx;
 
     g->complex_mode = c->complex_phi;
-    long nblocks = g->complex_mode ? 36 : 18;
+    g->gauge_mode   = c->complex_gauge;
+    g->g_gauge      = c->g_gauge;
+    g->G_offset     = 0.0;
+    long nblocks = g->gauge_mode ? 54 : (g->complex_mode ? 36 : 18);
     long total = nblocks * g->N3;
-    printf("Allocating %.2f GB (%ld doubles, N=%d, %d fields)\n",
-           total*8.0/1e9, total, c->N, g->complex_mode ? 12 : 6);
+    printf("Allocating %.2f GB (%ld doubles, N=%d, %d fields%s)\n",
+           total*8.0/1e9, total, c->N, g->complex_mode ? 12 : 6,
+           g->gauge_mode ? " + U(1) links" : "");
     g->mem = malloc(total * sizeof(double));
     if (!g->mem) { fprintf(stderr, "FATAL: malloc failed\n"); exit(1); }
     memset(g->mem, 0, total * sizeof(double));
@@ -84,6 +97,21 @@ static Grid *grid_alloc(const Config *c) {
         } else {
             g->phi_im[a] = g->phi_im_vel[a] = g->phi_im_acc[a] = NULL;
             g->theta_im[a] = g->theta_im_vel[a] = g->theta_im_acc[a] = NULL;
+        }
+    }
+    /* v69 gauge sector: blocks 36-53 (th 36-38, E 39-41, E_acc 42-44,
+     * link_c 45-47, link_s 48-50, plaq_s 51-53), zero-initialized */
+    for (int i = 0; i < 3; i++) {
+        if (g->gauge_mode) {
+            g->th[i]     = g->mem + (36 + i) * g->N3;
+            g->Efield[i] = g->mem + (39 + i) * g->N3;
+            g->E_acc[i]  = g->mem + (42 + i) * g->N3;
+            g->link_c[i] = g->mem + (45 + i) * g->N3;
+            g->link_s[i] = g->mem + (48 + i) * g->N3;
+            g->plaq_s[i] = g->mem + (51 + i) * g->N3;
+        } else {
+            g->th[i] = g->Efield[i] = g->E_acc[i] = NULL;
+            g->link_c[i] = g->link_s[i] = g->plaq_s[i] = NULL;
         }
     }
     /* Temporary arrays for two-pass force computations */
@@ -638,6 +666,170 @@ static void compute_forces_complex(Grid *g, const Config *c) {
 }
 
 /* ================================================================
+   v69 gauged complex forces (SPEC §3): 12 matter fields + compact
+   U(1) links. ALL spatial matter differences are link-covariant
+   (forward+backward transported neighbors, §3.1-3.3); the E-kick is
+   plaquette staples + the unique Gauss-conserving lattice current
+   (§3.4). Never called when g_gauge==0 (§1.3 dispatch).
+   ================================================================ */
+
+static void compute_forces_complex_gauge(Grid *g, const Config *c) {
+    const int N = g->N, NN = N * N;
+    const long N3 = g->N3;
+    const double dx = g->dx;
+    const double idx2 = 1.0 / (dx * dx);
+    const double idx1 = 1.0 / (2.0 * dx);
+    const double inva = 1.0 / dx;
+    const double MU = c->mu, KAPPA = c->kappa, MASS2 = c->m2;
+    const double MTHETA2 = c->mtheta2, ETA = c->eta;
+    const double GG = g->g_gauge;
+    const double STP = 1.0 / (GG * dx * dx * dx);   /* staple prefactor 1/(g a^3) */
+
+    /* === pass A: link cos/sin scratch === */
+    for (int i = 0; i < 3; i++) {
+        double *thp = g->th[i], *cp = g->link_c[i], *sp = g->link_s[i];
+        #pragma omp parallel for schedule(static)
+        for (long idx = 0; idx < N3; idx++) {
+            cp[idx] = cos(thp[idx]);
+            sp[idx] = sin(thp[idx]);
+        }
+    }
+
+    /* === pass B: plaquette sines, planes p0=(0,1), p1=(1,2), p2=(2,0)
+     * theta_ij(x) = th_i(x) + th_j(x+i) - th_i(x+j) - th_j(x) === */
+    #pragma omp parallel for schedule(static)
+    for (long idx = 0; idx < N3; idx++) {
+        int i = (int)(idx/NN), j = (int)((idx/N)%N), k = (int)(idx%N);
+        long np[3];
+        np[0] = (long)((i+1)%N)*NN + (long)j*N + k;
+        np[1] = (long)i*NN + (long)((j+1)%N)*N + k;
+        np[2] = (long)i*NN + (long)j*N + (k+1)%N;
+        const int pa[3] = {0,1,2}, pb[3] = {1,2,0};
+        for (int p = 0; p < 3; p++) {
+            int a = pa[p], b = pb[p];
+            double ang = g->th[a][idx] + g->th[b][np[a]]
+                       - g->th[a][np[b]] - g->th[b][idx];
+            g->plaq_s[p][idx] = sin(ang);
+        }
+    }
+
+    /* === pass C: fused matter accs + E-kick === */
+    #pragma omp parallel for schedule(static)
+    for (long idx = 0; idx < N3; idx++) {
+        int i = (int)(idx/NN), j = (int)((idx/N)%N), k = (int)(idx%N);
+        long np[3], nm[3];
+        np[0] = (long)((i+1)%N)*NN + (long)j*N + k;
+        nm[0] = (long)((i-1+N)%N)*NN + (long)j*N + k;
+        np[1] = (long)i*NN + (long)((j+1)%N)*N + k;
+        nm[1] = (long)i*NN + (long)((j-1+N)%N)*N + k;
+        np[2] = (long)i*NN + (long)j*N + (k+1)%N;
+        nm[2] = (long)i*NN + (long)j*N + (k-1+N)%N;
+
+        /* fields at x: f=0..2 Phi_a (u,v), f=3..5 Theta_a (tu,tv) */
+        double fu[6], fv[6];
+        for (int a = 0; a < 3; a++) {
+            fu[a]   = g->phi[a][idx];    fv[a]   = g->phi_im[a][idx];
+            fu[3+a] = g->theta[a][idx];  fv[3+a] = g->theta_im[a][idx];
+        }
+
+        /* transported neighbors (SPEC §3.1) per direction d, field f */
+        double TRp[3][6], TIp[3][6], TRm[3][6], TIm[3][6];
+        /* raw +d theta neighbors needed for the symmetrized eta current */
+        double tup[3][3], tvp[3][3];
+        for (int d = 0; d < 3; d++) {
+            double cP = g->link_c[d][idx],  sP = g->link_s[d][idx];
+            double cM = g->link_c[d][nm[d]], sM = g->link_s[d][nm[d]];
+            for (int a = 0; a < 3; a++) {
+                double upn = g->phi[a][np[d]],     vpn = g->phi_im[a][np[d]];
+                double umn = g->phi[a][nm[d]],     vmn = g->phi_im[a][nm[d]];
+                double tpn = g->theta[a][np[d]],   wpn = g->theta_im[a][np[d]];
+                double tmn = g->theta[a][nm[d]],   wmn = g->theta_im[a][nm[d]];
+                TRp[d][a]   = cP*upn - sP*vpn;   TIp[d][a]   = cP*vpn + sP*upn;
+                TRm[d][a]   = cM*umn + sM*vmn;   TIm[d][a]   = cM*vmn - sM*umn;
+                TRp[d][3+a] = cP*tpn - sP*wpn;   TIp[d][3+a] = cP*wpn + sP*tpn;
+                TRm[d][3+a] = cM*tmn + sM*wmn;   TIm[d][3+a] = cM*wmn - sM*tmn;
+                tup[d][a] = tpn;  tvp[d][a] = wpn;
+            }
+        }
+
+        /* potential pieces (identical to compute_forces_complex) */
+        double s2_0 = fu[0]*fu[0] + fv[0]*fv[0];
+        double s2_1 = fu[1]*fu[1] + fv[1]*fv[1];
+        double s2_2 = fu[2]*fu[2] + fv[2]*fv[2];
+        double s    = s2_0 * s2_1 * s2_2;
+        double den  = 1.0 + KAPPA*s;
+        double Vp   = 0.5*MU / (den*den);
+        double prod_rest[3] = { s2_1*s2_2, s2_0*s2_2, s2_0*s2_1 };
+
+        /* covariant central differences (SPEC §3.3): Dc[d][f] */
+        double DcU[3][6], DcV[3][6];
+        for (int d = 0; d < 3; d++)
+            for (int f = 0; f < 6; f++) {
+                DcU[d][f] = (TRp[d][f] - TRm[d][f]) * idx1;
+                DcV[d][f] = (TIp[d][f] - TIm[d][f]) * idx1;
+            }
+
+        /* covariant curls: (DxF)_0 = Dc_1 F_2 - Dc_2 F_1, cyclic */
+        const int ci1[3] = {1,2,0}, ci2[3] = {2,0,1};
+        for (int a = 0; a < 3; a++) {
+            int d1 = ci1[a], d2 = ci2[a];
+            double reDxT = DcU[d1][3+ci2[a]] - DcU[d2][3+ci1[a]];
+            double imDxT = DcV[d1][3+ci2[a]] - DcV[d2][3+ci1[a]];
+            double reDxP = DcU[d1][ci2[a]]   - DcU[d2][ci1[a]];
+            double imDxP = DcV[d1][ci2[a]]   - DcV[d2][ci1[a]];
+
+            /* covariant Laplacians (SPEC §3.2) */
+            double lapU_P = (TRp[0][a]+TRm[0][a] + TRp[1][a]+TRm[1][a]
+                           + TRp[2][a]+TRm[2][a] - 6.0*fu[a]) * idx2;
+            double lapV_P = (TIp[0][a]+TIm[0][a] + TIp[1][a]+TIm[1][a]
+                           + TIp[2][a]+TIm[2][a] - 6.0*fv[a]) * idx2;
+            double lapU_T = (TRp[0][3+a]+TRm[0][3+a] + TRp[1][3+a]+TRm[1][3+a]
+                           + TRp[2][3+a]+TRm[2][3+a] - 6.0*fu[3+a]) * idx2;
+            double lapV_T = (TIp[0][3+a]+TIm[0][3+a] + TIp[1][3+a]+TIm[1][3+a]
+                           + TIp[2][3+a]+TIm[2][3+a] - 6.0*fv[3+a]) * idx2;
+
+            g->phi_acc[a][idx]      = lapU_P - MASS2*fu[a]
+                                    - 2.0*Vp*fu[a]*prod_rest[a] + ETA*reDxT;
+            g->phi_im_acc[a][idx]   = lapV_P - MASS2*fv[a]
+                                    - 2.0*Vp*fv[a]*prod_rest[a] + ETA*imDxT;
+            g->theta_acc[a][idx]    = lapU_T - MTHETA2*fu[3+a] + ETA*reDxP;
+            g->theta_im_acc[a][idx] = lapV_T - MTHETA2*fv[3+a] + ETA*imDxP;
+        }
+
+        /* staple sums (SPEC §3.4 table) */
+        double st[3];
+        st[0] =  (g->plaq_s[0][idx] - g->plaq_s[0][nm[1]])
+               - (g->plaq_s[2][idx] - g->plaq_s[2][nm[2]]);
+        st[1] = -(g->plaq_s[0][idx] - g->plaq_s[0][nm[0]])
+               + (g->plaq_s[1][idx] - g->plaq_s[1][nm[2]]);
+        st[2] =  (g->plaq_s[2][idx] - g->plaq_s[2][nm[0]])
+               - (g->plaq_s[1][idx] - g->plaq_s[1][nm[1]]);
+
+        /* lattice current J_i^lat (SPEC §3.4) + E-kick */
+        for (int d = 0; d < 3; d++) {
+            double cP = g->link_c[d][idx], sP = g->link_s[d][idx];
+            double Jg = 0.0;
+            for (int a = 0; a < 3; a++) {
+                Jg += fu[a]  *TIp[d][a]   - fv[a]  *TRp[d][a];     /* Phi link current */
+                Jg += fu[3+a]*TIp[d][3+a] - fv[3+a]*TRp[d][3+a];   /* Theta ditto */
+            }
+            /* eta seagull, symmetrized over link ends:
+             * T(j,k) = Im[Th_j(x)~ U Phi_k(x+d)] + Im[Th_j(x+d)~ U+ Phi_k(x)],
+             * J_eta_d = -(eta/2) * (T(d1,d2) - T(d2,d1)), (d,d1,d2) cyclic */
+            int d1 = ci1[d], d2 = ci2[d];
+            double WpR1 = cP*fu[d2] + sP*fv[d2], WpI1 = cP*fv[d2] - sP*fu[d2];
+            double WpR2 = cP*fu[d1] + sP*fv[d1], WpI2 = cP*fv[d1] - sP*fu[d1];
+            double T12 = (fu[3+d1]*TIp[d][d2] - fv[3+d1]*TRp[d][d2])
+                       + (tup[d][d1]*WpI1     - tvp[d][d1]*WpR1);
+            double T21 = (fu[3+d2]*TIp[d][d1] - fv[3+d2]*TRp[d][d1])
+                       + (tup[d][d2]*WpI2     - tvp[d][d2]*WpR2);
+            double Jlat = inva*Jg - 0.5*ETA*(T12 - T21);
+            g->E_acc[d][idx] = STP*st[d] + GG*Jlat;
+        }
+    }
+}
+
+/* ================================================================
    Boundary conditions
    ================================================================ */
 
@@ -657,8 +849,13 @@ static void apply_damping(Grid *g, const Config *c) {
             double s = (r-R_damp)/DW; if (s>1) s=1;
             double d = 1.0 - DR*s*s;
             for (int a=0;a<NFIELDS;a++) { g->phi_vel[a][idx]*=d; g->theta_vel[a][idx]*=d; }
-            if (g->complex_mode)
+            if (g->complex_mode) {
                 for (int a=0;a<NFIELDS;a++) { g->phi_im_vel[a][idx]*=d; g->theta_im_vel[a][idx]*=d; }
+                /* v69 §3.6: damp E (velocity-like) in the sponge; th links are
+                 * positions and are NOT damped */
+                if (g->gauge_mode)
+                    for (int a=0;a<3;a++) g->Efield[a][idx]*=d;
+            }
         }
     }
 }
@@ -751,6 +948,9 @@ static void apply_gradient_bc(Grid *g, const Config *c) {
 
 static void verlet_step(Grid *g, const Config *c) {
     const long N3=g->N3; const double hdt=0.5*g->dt, dt=g->dt;
+    /* v69 §1.3/§3.5: gauge sector active only when complex_gauge && g != 0 */
+    const int gauged = g->gauge_mode && g->g_gauge != 0.0;
+    /* stage 1: half-kick (matter velocities AND E) */
     for (int a=0;a<NFIELDS;a++) {
         double *vp=g->phi_vel[a],*ap=g->phi_acc[a],*vt=g->theta_vel[a],*at=g->theta_acc[a];
         #pragma omp parallel for schedule(static)
@@ -761,6 +961,12 @@ static void verlet_step(Grid *g, const Config *c) {
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
     }
+    if (gauged) for (int a=0;a<3;a++) {
+        double *E=g->Efield[a],*K=g->E_acc[a];
+        #pragma omp parallel for schedule(static)
+        for (long i=0;i<N3;i++) E[i]+=hdt*K[i];
+    }
+    /* stage 2: drift (fields AND link angles, wrapped to (-pi,pi]) */
     for (int a=0;a<NFIELDS;a++) {
         double *pp=g->phi[a],*vp=g->phi_vel[a],*pt=g->theta[a],*vt=g->theta_vel[a];
         #pragma omp parallel for schedule(static)
@@ -771,8 +977,22 @@ static void verlet_step(Grid *g, const Config *c) {
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) { pp[i]+=dt*vp[i]; pt[i]+=dt*vt[i]; }
     }
-    if (g->complex_mode) compute_forces_complex(g, c);
-    else                 compute_forces(g, c);
+    if (gauged) {
+        const double gad = -g->g_gauge * g->dx * dt;   /* th_dot = -g*a*E */
+        for (int a=0;a<3;a++) {
+            double *thp=g->th[a],*E=g->Efield[a];
+            #pragma omp parallel for schedule(static)
+            for (long i=0;i<N3;i++) {
+                double v = thp[i] + gad*E[i];
+                thp[i] = v - 2.0*PI*rint(v/(2.0*PI));
+            }
+        }
+    }
+    /* stage 3: forces (matter accs + E_acc) */
+    if (gauged)               compute_forces_complex_gauge(g, c);
+    else if (g->complex_mode) compute_forces_complex(g, c);
+    else                      compute_forces(g, c);
+    /* stage 4: half-kick (matter + E) */
     for (int a=0;a<NFIELDS;a++) {
         double *vp=g->phi_vel[a],*ap=g->phi_acc[a],*vt=g->theta_vel[a],*at=g->theta_acc[a];
         #pragma omp parallel for schedule(static)
@@ -783,6 +1003,12 @@ static void verlet_step(Grid *g, const Config *c) {
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
     }
+    if (gauged) for (int a=0;a<3;a++) {
+        double *E=g->Efield[a],*K=g->E_acc[a];
+        #pragma omp parallel for schedule(static)
+        for (long i=0;i<N3;i++) E[i]+=hdt*K[i];
+    }
+    /* stage 5: BCs */
     if (c->bc_type == 0)
         apply_damping(g, c);
     else if (c->bc_type == 1)
@@ -953,6 +1179,99 @@ static void compute_energy_complex(Grid *g, const Config *c,
     *phi_max=s_pm;*P_max=s_Pm;
 }
 
+/* v69 gauged energy (SPEC §4.3): mirror of compute_energy_complex with
+ * covariant CENTRAL differences for E_grad/E_tgrad/E_coupling, plus E_em
+ * (electric + compact magnetic) returned separately and added to E_total.
+ * Never called when g_gauge==0 (§1.3 dispatch). */
+static void compute_energy_complex_gauge(Grid *g, const Config *c,
+    double *epk, double *etk, double *eg, double *em, double *ep,
+    double *etg, double *etm, double *ec, double *et,
+    double *phi_max, double *P_max, double *e_em) {
+    const int N=g->N,NN=N*N; const long N3=g->N3;
+    const double dx=g->dx, dV=dx*dx*dx, idx1=1.0/(2.0*dx);
+    const double MU=c->mu, KAPPA=c->kappa, MASS2=c->m2, MTHETA2=c->mtheta2, ETA=c->eta;
+    const double GG=g->g_gauge;
+    const double BPRE = 1.0/(GG*GG*dx*dx*dx*dx);   /* 1/(g^2 a^4), GG != 0 here */
+    double s_epk=0,s_etk=0,s_eg=0,s_em=0,s_ep=0,s_etg=0,s_etm=0,s_ec=0,s_pm=0,s_Pm=0,s_eem=0;
+
+    /* refresh link cos/sin scratch (cheap; diag-time only) */
+    for (int i = 0; i < 3; i++) {
+        double *thp = g->th[i], *cp = g->link_c[i], *sp = g->link_s[i];
+        #pragma omp parallel for schedule(static)
+        for (long idx = 0; idx < N3; idx++) { cp[idx]=cos(thp[idx]); sp[idx]=sin(thp[idx]); }
+    }
+
+    #pragma omp parallel for reduction(+:s_epk,s_etk,s_eg,s_em,s_ep,s_etg,s_etm,s_ec,s_eem) \
+        reduction(max:s_pm,s_Pm) schedule(static)
+    for (long idx=0;idx<N3;idx++) {
+        int i=(int)(idx/NN),j=(int)((idx/N)%N),k=(int)(idx%N);
+        long np[3], nm[3];
+        np[0]=(long)((i+1)%N)*NN+(long)j*N+k;   nm[0]=(long)((i-1+N)%N)*NN+(long)j*N+k;
+        np[1]=(long)i*NN+(long)((j+1)%N)*N+k;   nm[1]=(long)i*NN+(long)((j-1+N)%N)*N+k;
+        np[2]=(long)i*NN+(long)j*N+(k+1)%N;     nm[2]=(long)i*NN+(long)j*N+(k-1+N)%N;
+
+        double fu[6], fv[6];
+        for (int a=0;a<3;a++) {
+            fu[a]=g->phi[a][idx];    fv[a]=g->phi_im[a][idx];
+            fu[3+a]=g->theta[a][idx]; fv[3+a]=g->theta_im[a][idx];
+        }
+        double DcU[3][6], DcV[3][6];
+        for (int d=0; d<3; d++) {
+            double cP=g->link_c[d][idx],  sP=g->link_s[d][idx];
+            double cM=g->link_c[d][nm[d]], sM=g->link_s[d][nm[d]];
+            for (int a=0;a<3;a++) {
+                double upn=g->phi[a][np[d]],   vpn=g->phi_im[a][np[d]];
+                double umn=g->phi[a][nm[d]],   vmn=g->phi_im[a][nm[d]];
+                double tpn=g->theta[a][np[d]], wpn=g->theta_im[a][np[d]];
+                double tmn=g->theta[a][nm[d]], wmn=g->theta_im[a][nm[d]];
+                DcU[d][a]   = ((cP*upn - sP*vpn) - (cM*umn + sM*vmn))*idx1;
+                DcV[d][a]   = ((cP*vpn + sP*upn) - (cM*vmn - sM*umn))*idx1;
+                DcU[d][3+a] = ((cP*tpn - sP*wpn) - (cM*tmn + sM*wmn))*idx1;
+                DcV[d][3+a] = ((cP*wpn + sP*tpn) - (cM*wmn - sM*tmn))*idx1;
+            }
+        }
+        double s2[3];
+        const int ci1[3]={1,2,0}, ci2[3]={2,0,1};
+        for (int a=0;a<NFIELDS;a++) {
+            s2[a] = fu[a]*fu[a] + fv[a]*fv[a];
+            s_epk+=0.5*(g->phi_vel[a][idx]*g->phi_vel[a][idx]
+                       +g->phi_im_vel[a][idx]*g->phi_im_vel[a][idx])*dV;
+            s_etk+=0.5*(g->theta_vel[a][idx]*g->theta_vel[a][idx]
+                       +g->theta_im_vel[a][idx]*g->theta_im_vel[a][idx])*dV;
+            s_eg+=0.5*(DcU[0][a]*DcU[0][a]+DcU[1][a]*DcU[1][a]+DcU[2][a]*DcU[2][a]
+                      +DcV[0][a]*DcV[0][a]+DcV[1][a]*DcV[1][a]+DcV[2][a]*DcV[2][a])*dV;
+            s_em+=0.5*MASS2*s2[a]*dV;
+            s_etg+=0.5*(DcU[0][3+a]*DcU[0][3+a]+DcU[1][3+a]*DcU[1][3+a]+DcU[2][3+a]*DcU[2][3+a]
+                       +DcV[0][3+a]*DcV[0][3+a]+DcV[1][3+a]*DcV[1][3+a]+DcV[2][3+a]*DcV[2][3+a])*dV;
+            s_etm+=0.5*MTHETA2*(fu[3+a]*fu[3+a]+fv[3+a]*fv[3+a])*dV;
+            double mod=sqrt(s2[a]); if(mod>s_pm) s_pm=mod;
+            /* E_coupling = -eta*(u.Re(DxTheta) + v.Im(DxTheta)) (v66 pairing, transported curls) */
+            double reDxT = DcU[ci1[a]][3+ci2[a]] - DcU[ci2[a]][3+ci1[a]];
+            double imDxT = DcV[ci1[a]][3+ci2[a]] - DcV[ci2[a]][3+ci1[a]];
+            s_ec-=ETA*(fu[a]*reDxT + fv[a]*imDxT)*dV;
+        }
+        double s = s2[0]*s2[1]*s2[2];
+        s_ep+=(MU/2.0)*s/(1.0+KAPPA*s)*dV;
+        double Pmod=sqrt(s); if(Pmod>s_Pm) s_Pm=Pmod;
+        /* E_em: electric + compact magnetic (SPEC §4.1) */
+        double ee = 0.5*(g->Efield[0][idx]*g->Efield[0][idx]
+                        +g->Efield[1][idx]*g->Efield[1][idx]
+                        +g->Efield[2][idx]*g->Efield[2][idx]);
+        const int pa[3]={0,1,2}, pb[3]={1,2,0};
+        double bb = 0.0;
+        for (int p=0;p<3;p++) {
+            int a=pa[p], b=pb[p];
+            double ang = g->th[a][idx] + g->th[b][np[a]] - g->th[a][np[b]] - g->th[b][idx];
+            bb += 1.0 - cos(ang);
+        }
+        s_eem += (ee + BPRE*bb)*dV;
+    }
+    *epk=s_epk;*etk=s_etk;*eg=s_eg;*em=s_em;*ep=s_ep;
+    *etg=s_etg;*etm=s_etm;*ec=s_ec;*e_em=s_eem;
+    *et=s_epk+s_etk+s_eg+s_em+s_ep+s_etg+s_etm+s_ec+s_eem;
+    *phi_max=s_pm;*P_max=s_Pm;
+}
+
 /* RMS over the actual 6 theta components (tu,tv) — denominator 6, not 3 */
 static double theta_rms_complex(Grid *g) {
     double sum=0;
@@ -1082,6 +1401,326 @@ static void compute_charges(Grid *g, const Config *c,
 }
 
 /* ================================================================
+   v69 Gauss / gauge diagnostics (SPEC §4)
+   ================================================================ */
+
+/* G(x) = (1/a) sum_i [E_i(x) - E_i(x-i)] - g*rho_Q(x) at voxel idx */
+static inline double gauss_residual_at(Grid *g, long idx, const long nm[3]) {
+    double divE = (g->Efield[0][idx]-g->Efield[0][nm[0]]
+                  +g->Efield[1][idx]-g->Efield[1][nm[1]]
+                  +g->Efield[2][idx]-g->Efield[2][nm[2]]) / g->dx;
+    double rho = 0;
+    for (int a=0;a<NFIELDS;a++)
+        rho += g->phi[a][idx]  *g->phi_im_vel[a][idx] - g->phi_im[a][idx]  *g->phi_vel[a][idx]
+             + g->theta[a][idx]*g->theta_im_vel[a][idx] - g->theta_im[a][idx]*g->theta_vel[a][idx];
+    return divE - g->g_gauge*rho;
+}
+
+/* gauss_max/gauss_l2 over interior Omega (sponge excluded for bc_type=0),
+ * relative to the frozen jellium offset G_offset; E_em; Q_flux from the
+ * centered cube of half-width qdiag_radius (bias-subtracted, SPEC §4.1). */
+static void compute_gauss(Grid *g, const Config *c, double *gauss_max,
+                          double *gauss_l2, double *e_em, double *q_flux) {
+    const int N=g->N, NN=N*N; const long N3=g->N3;
+    const double L=g->L, dx=g->dx, dV=dx*dx*dx;
+    const double GG=g->g_gauge, OFF=g->G_offset;
+    /* Interior Omega: one extra dx inside the sponge edge — div E at a voxel
+     * within one link of r = L-damp_width reads damped sponge links, so the
+     * (shell-confined, frozen) violation leaks one cell inward otherwise. */
+    const double Rint = (c->bc_type==0) ? (L - c->damp_width - dx) : 1e300;
+    const double Rint2 = Rint*Rint;
+    const double Rcube = c->qdiag_radius;
+    double gmax=0, gl2=0, eem=0, fsum=0;
+    long nOmega=0, nC=0;
+
+    #pragma omp parallel for reduction(+:gl2,eem,fsum,nOmega,nC) \
+        reduction(max:gmax) schedule(static)
+    for (long idx=0;idx<N3;idx++) {
+        int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+        long np[3], nm[3];
+        np[0]=(long)((i+1)%N)*NN+(long)j*N+k;   nm[0]=(long)((i-1+N)%N)*NN+(long)j*N+k;
+        np[1]=(long)i*NN+(long)((j+1)%N)*N+k;   nm[1]=(long)i*NN+(long)((j-1+N)%N)*N+k;
+        np[2]=(long)i*NN+(long)j*N+(k+1)%N;     nm[2]=(long)i*NN+(long)j*N+(k-1+N)%N;
+        double x=-L+i*dx, y=-L+j*dx, z=-L+k*dx;
+
+        double divE = (g->Efield[0][idx]-g->Efield[0][nm[0]]
+                      +g->Efield[1][idx]-g->Efield[1][nm[1]]
+                      +g->Efield[2][idx]-g->Efield[2][nm[2]]) / dx;
+        double G = gauss_residual_at(g, idx, nm);
+        if (x*x+y*y+z*z < Rint2) {
+            double d = fabs(G - OFF);
+            if (d > gmax) gmax = d;
+            gl2 += (G-OFF)*(G-OFF);
+            nOmega++;
+        }
+        double ee = 0.5*(g->Efield[0][idx]*g->Efield[0][idx]
+                        +g->Efield[1][idx]*g->Efield[1][idx]
+                        +g->Efield[2][idx]*g->Efield[2][idx]);
+        if (GG != 0) {
+            const int pa[3]={0,1,2}, pb[3]={1,2,0};
+            double bb=0;
+            for (int p=0;p<3;p++) {
+                int a=pa[p], b=pb[p];
+                double ang = g->th[a][idx]+g->th[b][np[a]]-g->th[a][np[b]]-g->th[b][idx];
+                bb += 1.0 - cos(ang);
+            }
+            ee += bb/(GG*GG*dx*dx*dx*dx);
+        }
+        eem += ee*dV;
+        if (fabs(x)<=Rcube && fabs(y)<=Rcube && fabs(z)<=Rcube) {
+            fsum += divE*dV;     /* a^3 * (1/a) sum_i (E_i(x)-E_i(x-i)) */
+            nC++;
+        }
+    }
+    *gauss_max = gmax;
+    *gauss_l2  = (nOmega>0) ? sqrt(gl2/(double)nOmega) : 0.0;
+    *e_em      = eem;
+    *q_flux    = (GG != 0) ? (fsum - OFF*(double)nC*dV)/GG : 0.0;
+}
+
+/* §1.2 runtime net-charge check (bc_type=2 only) */
+static void net_charge_check(Grid *g, const Config *c) {
+    (void)c;
+    const long N3=g->N3; const double dV=g->dx*g->dx*g->dx;
+    double qn=0, qa=0;
+    #pragma omp parallel for reduction(+:qn,qa) schedule(static)
+    for (long idx=0;idx<N3;idx++) {
+        double rho=0;
+        for (int a=0;a<NFIELDS;a++)
+            rho += g->phi[a][idx]  *g->phi_im_vel[a][idx] - g->phi_im[a][idx]  *g->phi_vel[a][idx]
+                 + g->theta[a][idx]*g->theta_im_vel[a][idx] - g->theta_im[a][idx]*g->theta_vel[a][idx];
+        qn += rho*dV; qa += fabs(rho)*dV;
+    }
+    if (fabs(qn) > 1e-6 * fmax(qa, 1.0)) {
+        fprintf(stderr, "ERROR: bc_type=2 (periodic) requires net-neutral seed "
+                "(Q_net=%.3e, Q_abs=%.3e); use +/- pairs or bc_type=0. "
+                "jellium=1 is deferred (not implemented in v1).\n", qn, qa);
+        exit(1);
+    }
+}
+
+/* §5.4 one-time Gauss projection: CG-solve the periodic 7-point lattice
+ * Poisson lap(chi) = -(G - Gbar), correct E by the forward gradient, then
+ * measure and freeze G_offset. Idempotent; runs for EVERY init mode. */
+static void init_gauss_project(Grid *g, const Config *c) {
+    (void)c;
+    const int N=g->N, NN=N*N; const long N3=g->N3;
+    const double dx=g->dx, idx2=1.0/(dx*dx);
+    double *b  = malloc(N3*sizeof(double));
+    double *xv = calloc(N3, sizeof(double));
+    double *r  = malloc(N3*sizeof(double));
+    double *p  = malloc(N3*sizeof(double));
+    double *Ap = malloc(N3*sizeof(double));
+    if (!b||!xv||!r||!p||!Ap) { fprintf(stderr,"FATAL: gauss projection alloc\n"); exit(1); }
+
+    /* b = G - Gbar (zero-mean RHS; we solve (-lap) chi = b) */
+    double gsum=0, gmax0=0;
+    #pragma omp parallel for reduction(+:gsum) schedule(static)
+    for (long idx=0;idx<N3;idx++) {
+        int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+        long nm[3];
+        nm[0]=(long)((i-1+N)%N)*NN+(long)j*N+k;
+        nm[1]=(long)i*NN+(long)((j-1+N)%N)*N+k;
+        nm[2]=(long)i*NN+(long)j*N+(k-1+N)%N;
+        b[idx] = gauss_residual_at(g, idx, nm);
+        gsum += b[idx];
+    }
+    double gbar = gsum/(double)N3;
+    #pragma omp parallel for reduction(max:gmax0) schedule(static)
+    for (long idx=0;idx<N3;idx++) {
+        b[idx] -= gbar;
+        double d=fabs(b[idx]); if (d>gmax0) gmax0=d;
+    }
+
+    const double tol = 1e-13 * fmax(1.0, gmax0);
+    memcpy(r, b, N3*sizeof(double));
+    memcpy(p, b, N3*sizeof(double));
+    double rz=0;
+    #pragma omp parallel for reduction(+:rz) schedule(static)
+    for (long idx=0;idx<N3;idx++) rz += r[idx]*r[idx];
+
+    int it=0;
+    const int itmax=20000;
+    double rmax=gmax0;
+    while (rmax > tol && it < itmax) {
+        double pAp=0;
+        #pragma omp parallel for reduction(+:pAp) schedule(static)
+        for (long idx=0;idx<N3;idx++) {
+            int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+            long nip=(long)((i+1)%N)*NN+(long)j*N+k, nim=(long)((i-1+N)%N)*NN+(long)j*N+k;
+            long njp=(long)i*NN+(long)((j+1)%N)*N+k, njm=(long)i*NN+(long)((j-1+N)%N)*N+k;
+            long nkp=(long)i*NN+(long)j*N+(k+1)%N,   nkm=(long)i*NN+(long)j*N+(k-1+N)%N;
+            double lap = (p[nip]+p[nim]+p[njp]+p[njm]+p[nkp]+p[nkm]-6.0*p[idx])*idx2;
+            Ap[idx] = -lap;                       /* A = -lap (PSD on zero-mean) */
+            pAp += p[idx]*Ap[idx];
+        }
+        double alpha = rz/pAp;
+        double rz2=0, xsum=0, rm=0;
+        #pragma omp parallel for reduction(+:rz2,xsum) reduction(max:rm) schedule(static)
+        for (long idx=0;idx<N3;idx++) {
+            xv[idx] += alpha*p[idx];
+            r[idx]  -= alpha*Ap[idx];
+            rz2 += r[idx]*r[idx];
+            xsum += xv[idx];
+            double d=fabs(r[idx]); if (d>rm) rm=d;
+        }
+        /* keep chi zero-mean per iteration (torus null space) */
+        double xbar = xsum/(double)N3;
+        double beta = rz2/rz;
+        #pragma omp parallel for schedule(static)
+        for (long idx=0;idx<N3;idx++) {
+            xv[idx] -= xbar;
+            p[idx] = r[idx] + beta*p[idx];
+        }
+        rz = rz2; rmax = rm; it++;
+    }
+    if (rmax > tol) {
+        fprintf(stderr, "FATAL: Gauss projection CG failed to converge "
+                "(%d iters, max|res|=%.3e > tol=%.3e)\n", it, rmax, tol);
+        exit(1);
+    }
+
+    /* E correction by the forward gradient: div-correction = lap(chi) exactly */
+    #pragma omp parallel for schedule(static)
+    for (long idx=0;idx<N3;idx++) {
+        int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+        long np[3];
+        np[0]=(long)((i+1)%N)*NN+(long)j*N+k;
+        np[1]=(long)i*NN+(long)((j+1)%N)*N+k;
+        np[2]=(long)i*NN+(long)j*N+(k+1)%N;
+        for (int d=0;d<3;d++)
+            g->Efield[d][idx] += (xv[np[d]] - xv[idx])/dx;
+    }
+
+    /* measure + freeze G_offset; report post-projection residual */
+    double osum=0;
+    #pragma omp parallel for reduction(+:osum) schedule(static)
+    for (long idx=0;idx<N3;idx++) {
+        int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+        long nm[3];
+        nm[0]=(long)((i-1+N)%N)*NN+(long)j*N+k;
+        nm[1]=(long)i*NN+(long)((j-1+N)%N)*N+k;
+        nm[2]=(long)i*NN+(long)j*N+(k-1+N)%N;
+        osum += gauss_residual_at(g, idx, nm);
+    }
+    g->G_offset = osum/(double)N3;
+    double gres=0;
+    #pragma omp parallel for reduction(max:gres) schedule(static)
+    for (long idx=0;idx<N3;idx++) {
+        int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+        long nm[3];
+        nm[0]=(long)((i-1+N)%N)*NN+(long)j*N+k;
+        nm[1]=(long)i*NN+(long)((j-1+N)%N)*N+k;
+        nm[2]=(long)i*NN+(long)j*N+(k-1+N)%N;
+        double d=fabs(gauss_residual_at(g, idx, nm) - g->G_offset);
+        if (d>gres) gres=d;
+    }
+    printf("Gauss projection: %d CG iters, gauss_max(0)=%.2e (offset %.3e)\n",
+           it, gres, g->G_offset);
+    free(b); free(xv); free(r); free(p); free(Ap);
+}
+
+/* §7.2 unit check: deterministic random lattice gauge transformation must
+ * leave all gauge-invariant bilinears (|acc| per complex pair, E_acc, G)
+ * unchanged to <= 1e-12 relative. Prints PASS/FAIL and exits. */
+static void do_test_gauge_xform(Grid *g, const Config *c) {
+    const int N=g->N, NN=N*N; const long N3=g->N3;
+    const double GG=g->g_gauge;
+    printf("\n=== test_gauge_xform: random lattice gauge transformation ===\n");
+    /* before-bilinears: 6 |acc|^2 + 3 E_acc + 1 G = 10 arrays */
+    double *bf[10];
+    for (int q=0;q<10;q++) bf[q]=malloc(N3*sizeof(double));
+    double *alpha=malloc(N3*sizeof(double));
+    if (!alpha) { fprintf(stderr,"FATAL: xform alloc\n"); exit(1); }
+    #pragma omp parallel for schedule(static)
+    for (long idx=0;idx<N3;idx++) {
+        int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+        long nm[3];
+        nm[0]=(long)((i-1+N)%N)*NN+(long)j*N+k;
+        nm[1]=(long)i*NN+(long)((j-1+N)%N)*N+k;
+        nm[2]=(long)i*NN+(long)j*N+(k-1+N)%N;
+        for (int a=0;a<3;a++) {
+            bf[a][idx]   = g->phi_acc[a][idx]*g->phi_acc[a][idx]
+                         + g->phi_im_acc[a][idx]*g->phi_im_acc[a][idx];
+            bf[3+a][idx] = g->theta_acc[a][idx]*g->theta_acc[a][idx]
+                         + g->theta_im_acc[a][idx]*g->theta_im_acc[a][idx];
+            bf[6+a][idx] = g->E_acc[a][idx];
+        }
+        bf[9][idx] = gauss_residual_at(g, idx, nm);
+        /* fixed-seed LCG keyed by voxel index (deterministic, order-free) */
+        uint64_t sgen = (uint64_t)idx*6364136223846793005ULL + 1442695040888963407ULL;
+        sgen = sgen*6364136223846793005ULL + 1442695040888963407ULL;
+        alpha[idx] = (((double)(sgen>>11))/9007199254740992.0 - 0.5)*20.0;
+    }
+    /* apply: matter rotates by e^{-ig alpha(x)}; links shift by g*(alpha(x+i)-alpha(x)) */
+    #pragma omp parallel for schedule(static)
+    for (long idx=0;idx<N3;idx++) {
+        int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+        long np[3];
+        np[0]=(long)((i+1)%N)*NN+(long)j*N+k;
+        np[1]=(long)i*NN+(long)((j+1)%N)*N+k;
+        np[2]=(long)i*NN+(long)j*N+(k+1)%N;
+        double ca=cos(GG*alpha[idx]), sa=sin(GG*alpha[idx]);
+        for (int a=0;a<3;a++) {
+            double u,v;
+            u=g->phi[a][idx]; v=g->phi_im[a][idx];
+            g->phi[a][idx]=ca*u+sa*v;          g->phi_im[a][idx]=ca*v-sa*u;
+            u=g->phi_vel[a][idx]; v=g->phi_im_vel[a][idx];
+            g->phi_vel[a][idx]=ca*u+sa*v;      g->phi_im_vel[a][idx]=ca*v-sa*u;
+            u=g->theta[a][idx]; v=g->theta_im[a][idx];
+            g->theta[a][idx]=ca*u+sa*v;        g->theta_im[a][idx]=ca*v-sa*u;
+            u=g->theta_vel[a][idx]; v=g->theta_im_vel[a][idx];
+            g->theta_vel[a][idx]=ca*u+sa*v;    g->theta_im_vel[a][idx]=ca*v-sa*u;
+        }
+        for (int d=0;d<3;d++) {
+            double v = g->th[d][idx] + GG*(alpha[np[d]]-alpha[idx]);
+            g->th[d][idx] = v - 2.0*PI*rint(v/(2.0*PI));
+        }
+    }
+    compute_forces_complex_gauge(g, c);
+    /* compare */
+    double scale[10]={0}, dmax[10]={0};
+    for (int q=0;q<10;q++) {
+        double sc=0, dm=0;
+        #pragma omp parallel for reduction(max:sc,dm) schedule(static)
+        for (long idx=0;idx<N3;idx++) {
+            int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+            long nm[3];
+            nm[0]=(long)((i-1+N)%N)*NN+(long)j*N+k;
+            nm[1]=(long)i*NN+(long)((j-1+N)%N)*N+k;
+            nm[2]=(long)i*NN+(long)j*N+(k-1+N)%N;
+            double after;
+            if (q<3)      after = g->phi_acc[q][idx]*g->phi_acc[q][idx]
+                                + g->phi_im_acc[q][idx]*g->phi_im_acc[q][idx];
+            else if (q<6) after = g->theta_acc[q-3][idx]*g->theta_acc[q-3][idx]
+                                + g->theta_im_acc[q-3][idx]*g->theta_im_acc[q-3][idx];
+            else if (q<9) after = g->E_acc[q-6][idx];
+            else          after = gauss_residual_at(g, idx, nm);
+            double s0=fabs(bf[q][idx]); if (s0>sc) sc=s0;
+            double d=fabs(after-bf[q][idx]); if (d>dm) dm=d;
+        }
+        scale[q]=sc; dmax[q]=dm;
+    }
+    const char *names[10]={"|acc Phi_0|^2","|acc Phi_1|^2","|acc Phi_2|^2",
+                           "|acc Th_0|^2","|acc Th_1|^2","|acc Th_2|^2",
+                           "E_acc_x","E_acc_y","E_acc_z","G"};
+    int pass=1;
+    for (int q=0;q<10;q++) {
+        /* unit floor on the scale: a static Coulomb seed has E_acc == 0
+         * exactly (zero staples + zero spatial current), and a genuine
+         * non-invariant stencil shows up at O(g*field^2) >> 1e-12 anyway */
+        double rel = dmax[q]/fmax(scale[q],1.0);
+        printf("  %-14s max|diff|=%.3e scale=%.3e rel=%.3e %s\n",
+               names[q], dmax[q], scale[q], rel, rel<=1e-12?"ok":"FAIL");
+        if (rel > 1e-12) pass=0;
+    }
+    printf("test_gauge_xform: %s\n", pass?"PASS":"FAIL");
+    for (int q=0;q<10;q++) free(bf[q]);
+    free(alpha);
+    exit(pass?0:1);
+}
+
+/* ================================================================
    SFA output: 12 columns, configurable precision
    ================================================================ */
 
@@ -1171,10 +1810,11 @@ static void *cast_buf = NULL;
 
 static void sfa_snap(SFA *sfa, Grid *g, double t, int precision) {
     long n = g->N3;
-    int nf = g->complex_mode ? 24 : 12;
+    int nf = g->gauge_mode ? 30 : (g->complex_mode ? 24 : 12);
     /* Order MUST match column registration: 12 real arrays, then the
-       imaginary copy (phi_im, theta_im, phi_im_vel, theta_im_vel). */
-    double *arrays[24] = {
+       imaginary copy (phi_im, theta_im, phi_im_vel, theta_im_vel),
+       then the v69 gauge sector (th links, E). */
+    double *arrays[30] = {
         g->phi[0], g->phi[1], g->phi[2],
         g->theta[0], g->theta[1], g->theta[2],
         g->phi_vel[0], g->phi_vel[1], g->phi_vel[2],
@@ -1182,7 +1822,9 @@ static void sfa_snap(SFA *sfa, Grid *g, double t, int precision) {
         g->phi_im[0], g->phi_im[1], g->phi_im[2],
         g->theta_im[0], g->theta_im[1], g->theta_im[2],
         g->phi_im_vel[0], g->phi_im_vel[1], g->phi_im_vel[2],
-        g->theta_im_vel[0], g->theta_im_vel[1], g->theta_im_vel[2]
+        g->theta_im_vel[0], g->theta_im_vel[1], g->theta_im_vel[2],
+        g->th[0], g->th[1], g->th[2],
+        g->Efield[0], g->Efield[1], g->Efield[2]
     };
 
     /* For f64, we can pass pointers directly. For f16/f32, we need to
@@ -1191,7 +1833,7 @@ static void sfa_snap(SFA *sfa, Grid *g, double t, int precision) {
     if (precision == 2) {
         sfa_write_frame(sfa, t, (void**)arrays);
     } else {
-        void *cols[24];
+        void *cols[30];
         int es = (precision == 0) ? 2 : 4;
         for (int c = 0; c < nf; c++) {
             cols[c] = malloc(n * es);
@@ -1280,8 +1922,19 @@ int main(int argc, char **argv) {
 
     /* Initialize */
     do_init(g, &c);
-    if (g->complex_mode) compute_forces_complex(g, &c);
-    else                 compute_forces(g, &c);
+    /* v69: net-charge refusal (§1.2) + mandatory Gauss projection (§5.4) */
+    const int gauged = (c.complex_gauge && c.g_gauge != 0.0);
+    if (gauged) {
+        if (c.bc_type == 2) net_charge_check(g, &c);
+        init_gauss_project(g, &c);
+    }
+    if (gauged)              compute_forces_complex_gauge(g, &c);
+    else if (g->complex_mode) compute_forces_complex(g, &c);
+    else                      compute_forces(g, &c);
+    if (c.test_gauge_xform) {
+        if (!gauged) { fprintf(stderr, "ERROR: test_gauge_xform=1 requires complex_gauge=1 and g_gauge != 0\n"); exit(1); }
+        do_test_gauge_xform(g, &c);   /* prints PASS/FAIL and exits */
+    }
 
     /* For gradient_pinned BC: save initial state as pinned boundary values */
     if (c.bc_type == 1) {
@@ -1293,6 +1946,11 @@ int main(int argc, char **argv) {
     /* SFA archive: 12 columns + KVMD metadata */
     uint8_t sfa_dtype = (c.precision == 0) ? SFA_F16 : (c.precision == 1) ? SFA_F32 : SFA_F64;
     SFA *sfa = sfa_create(c.output, c.N, c.N, c.N, c.L, c.L, c.L, g->dt);
+    if (!sfa) {
+        fprintf(stderr, "ERROR: cannot create output file '%s' (missing directory or unwritable path?)\n",
+                c.output);
+        exit(1);
+    }
     sfa->flags = SFA_CODEC_COLZSTD | SFA_FLAG_STREAMING;  /* per-column parallel compression */
 
     sfa_embed_kvmd(sfa, &c);
@@ -1323,9 +1981,19 @@ int main(int argc, char **argv) {
         sfa_add_column(sfa, "thetaim_vy", sfa_dtype, SFA_VELOCITY, 10);
         sfa_add_column(sfa, "thetaim_vz", sfa_dtype, SFA_VELOCITY, 11);
     }
+    if (c.complex_gauge) {
+        /* v69 gauge sector (SPEC §6): links as ANGLE 6-8, E as VELOCITY 12-14 */
+        sfa_add_column(sfa, "th_x", sfa_dtype, SFA_ANGLE,    6);
+        sfa_add_column(sfa, "th_y", sfa_dtype, SFA_ANGLE,    7);
+        sfa_add_column(sfa, "th_z", sfa_dtype, SFA_ANGLE,    8);
+        sfa_add_column(sfa, "E_x",  sfa_dtype, SFA_VELOCITY, 12);
+        sfa_add_column(sfa, "E_y",  sfa_dtype, SFA_VELOCITY, 13);
+        sfa_add_column(sfa, "E_z",  sfa_dtype, SFA_VELOCITY, 14);
+    }
     sfa_finalize_header(sfa);
     const char *pn[] = {"f16","f32","f64"};
-    printf("SFA: %s (%d cols, %s, BSS+zstd)\n\n", c.output, c.complex_phi ? 24 : 12, pn[c.precision]);
+    printf("SFA: %s (%d cols, %s, BSS+zstd)\n\n", c.output,
+           c.complex_gauge ? 30 : (c.complex_phi ? 24 : 12), pn[c.precision]);
 
     sfa_snap(sfa, g, 0.0, c.precision);
 
@@ -1384,6 +2052,7 @@ int main(int argc, char **argv) {
                 "E_coupling\tE_total\tphi_max\tP_max\tP_int\ttheta_rms");
     if (c.complex_phi) fprintf(fp, "\tQ_phi\tQ_theta\tQ_total\ts_max\tr_core"
                                    "\tomega_core\tQ_core\tthp1u\tthp1v\tthp2u\tthp2v");
+    if (c.complex_gauge) fprintf(fp, "\tgauss_max\tgauss_l2\tE_em\tQ_flux");
     fprintf(fp, "\n");
 
     int n_steps = (int)lround(c.T / g->dt);
@@ -1403,8 +2072,10 @@ int main(int argc, char **argv) {
     double epk,etk,eg,em,ep,etg,etm,ec,et,pm,Pm;
     double Qp=0,Qt=0,smax=0,rcore=0;
     double ocore=0,qcore=0,thp[4]={0,0,0,0};
-    if (c.complex_phi) compute_energy_complex(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
-    else               compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
+    double eem=0, gmax=0, gl2=0, gem=0, qflux=0;
+    if (gauged)            compute_energy_complex_gauge(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm,&eem);
+    else if (c.complex_phi) compute_energy_complex(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
+    else                    compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
     double Pint0 = c.complex_phi ? P_integrated_complex(g) : P_integrated(g);
     double trms0 = c.complex_phi ? theta_rms_complex(g)    : theta_rms(g);
     double E0 = et;
@@ -1416,6 +2087,10 @@ int main(int argc, char **argv) {
         compute_charges(g,&c,&Qp,&Qt,&smax,&rcore,&ocore,&qcore,thp);
         fprintf(fp,"\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%.6e",
                 Qp,Qt,Qp+Qt,smax,rcore,ocore,qcore,thp[0],thp[1],thp[2],thp[3]);
+    }
+    if (c.complex_gauge) {
+        compute_gauss(g,&c,&gmax,&gl2,&gem,&qflux);
+        fprintf(fp,"\t%.6e\t%.6e\t%.12e\t%.12e",gmax,gl2,gem,qflux);
     }
     fprintf(fp,"\n");
 
@@ -1548,8 +2223,9 @@ int main(int argc, char **argv) {
         }
 
         if (step % diag_every == 0) {
-            if (c.complex_phi) compute_energy_complex(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
-            else               compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
+            if (gauged)             compute_energy_complex_gauge(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm,&eem);
+            else if (c.complex_phi) compute_energy_complex(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
+            else                    compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
             double Pint = c.complex_phi ? P_integrated_complex(g) : P_integrated(g);
             double trms = c.complex_phi ? theta_rms_complex(g)    : theta_rms(g);
             fprintf(fp,"%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e",
@@ -1558,6 +2234,10 @@ int main(int argc, char **argv) {
                 compute_charges(g,&c,&Qp,&Qt,&smax,&rcore,&ocore,&qcore,thp);
                 fprintf(fp,"\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%.6e",
                         Qp,Qt,Qp+Qt,smax,rcore,ocore,qcore,thp[0],thp[1],thp[2],thp[3]);
+            }
+            if (c.complex_gauge) {
+                compute_gauss(g,&c,&gmax,&gl2,&gem,&qflux);
+                fprintf(fp,"\t%.6e\t%.6e\t%.12e\t%.12e",gmax,gl2,gem,qflux);
             }
             fprintf(fp,"\n");
             fflush(fp);
@@ -1568,6 +2248,7 @@ int main(int argc, char **argv) {
                 printf("t=%7.1f E=%.3e (drift %+.3f%%) Ep=%.1f phi=%.3f θ_rms=%.2e ",
                        t,et,drift,ep,pm,trms);
                 if (c.complex_phi) printf("Q=%.6e s_max=%.4e ", Qp+Qt, smax);
+                if (c.complex_gauge) printf("gauss=%.1e E_em=%.3e ", gmax, gem);
                 printf("[%.0f%% %.1fs %.2fms/step]\n",
                        100.0*step/n_steps,wall,1000*wall/step);
                 fflush(stdout);
@@ -1595,12 +2276,14 @@ int main(int argc, char **argv) {
     }
 
     /* Final summary */
-    if (c.complex_phi) compute_energy_complex(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
-    else               compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
+    if (gauged)             compute_energy_complex_gauge(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm,&eem);
+    else if (c.complex_phi) compute_energy_complex(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
+    else                    compute_energy(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm);
     double trms = c.complex_phi ? theta_rms_complex(g)    : theta_rms(g);
     double Pint = c.complex_phi ? P_integrated_complex(g) : P_integrated(g);
     double wall=omp_get_wtime()-wall0;
     if (c.complex_phi) compute_charges(g,&c,&Qp,&Qt,&smax,&rcore,&ocore,&qcore,thp);
+    if (c.complex_gauge) compute_gauss(g,&c,&gmax,&gl2,&gem,&qflux);
 
     printf("\n=== COMPLETE ===\n");
     printf("E_total=%.4e (drift %.3f%%) E_pot=%.4f\n", et, 100*(et-E0)/(fabs(E0)+1e-30), ep);
@@ -1609,6 +2292,9 @@ int main(int argc, char **argv) {
         printf("Q_phi=%.6e Q_theta=%.6e Q_total=%.6e s_max=%.4e r_core=%.3f "
                "omega_core=%.4f Q_core=%.6e\n",
                Qp, Qt, Qp+Qt, smax, rcore, ocore, qcore);
+    if (c.complex_gauge)
+        printf("gauss_max=%.3e gauss_l2=%.3e E_em=%.6e Q_flux=%.6e\n",
+               gmax, gl2, gem, qflux);
     printf("SFA: %s (%u frames)\n", c.output, nf);
     printf("[%s] theta_rms grew: %.2e -> %.2e\n", (trms>trms0+1e-10)?"OK":"WARN", trms0, trms);
     printf("Wall: %.1fs (%.1f min) %.2fms/step\n", wall, wall/60, 1000*wall/n_steps);

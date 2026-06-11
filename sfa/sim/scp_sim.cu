@@ -193,6 +193,9 @@ typedef struct {
     int complex_mode;
     double *phi_im[3], *vel_phi_im[3], *acc_phi_im[3];
     double *theta_im[3], *vel_theta_im[3], *acc_theta_im[3];
+    /* v69 gauge sector (device pointers; NULL when gauge_mode=0) */
+    int gauge_mode;
+    double *th[3], *Efield[3], *E_acc[3];
     long N3;
     int N;
     double L, dx, dt;
@@ -226,7 +229,7 @@ typedef struct {
     FrameWriter *fw;  /* shared frame writer (thread-safe) */
     int precision;        /* 0=f16, 1=f32, 2=f64 */
     int snap_every;
-    int nf;               /* columns per frame: 12 real, 24 complex (v66) */
+    int nf;               /* columns per frame: 12 real, 24 complex (v66), 30 gauged (v69) */
 
     /* GPU resources */
     cudaStream_t stream;
@@ -272,6 +275,15 @@ typedef struct {
     double omega_core;           /* filled by run_gpu_diagnostics */
     double probes[4];            /* thp1u, thp1v, thp2u, thp2v */
 
+    /* v69 gauge diagnostics (SPEC §4) */
+    int gauge_mode;              /* c->complex_gauge */
+    int gauged;                  /* complex_gauge && g_gauge != 0 */
+    double g_gauge;
+    double G_offset;             /* frozen jellium offset (set after init_gauss_project) */
+    double Rint2;                /* interior Omega radius^2 (sponge excluded, bc_type=0) */
+    double Rcube;                /* Q_flux cube half-width = qdiag_radius */
+    double gauss_max, gauss_l2, e_em, q_flux;  /* filled by run_gpu_diagnostics */
+
     /* Config params for potential energy */
     double m2, mtheta2, eta, mu, kappa;
     double kappa_h, alpha_cs, beta_h;
@@ -293,6 +305,13 @@ typedef struct {
     int complex_mode;                       /* copied from c->complex_phi at alloc */
     double *phi_im[NFIELDS],   *phi_im_vel[NFIELDS],   *phi_im_acc[NFIELDS];
     double *theta_im[NFIELDS], *theta_im_vel[NFIELDS], *theta_im_acc[NFIELDS];
+    /* v69 gauged U(1) sector (SPEC §2.2) — host copies for init/projection;
+     * NULL when complex_gauge=0. (No host E_acc/scratch: forces run on GPU.) */
+    int    gauge_mode;            /* copied from c->complex_gauge at alloc */
+    double g_gauge;               /* cached coupling */
+    double G_offset;              /* frozen uniform Gauss offset, measured post-init (§4.1) */
+    double *th[3];                /* link angles theta_i(x) on link (x, x+i), wrapped (-pi,pi] */
+    double *Efield[3];            /* E_i(x) on the same link (noncompact) */
     int N; long N3;
     double L, dx, dt;
 } Grid;
@@ -303,7 +322,11 @@ static Grid *grid_alloc(const Config *c) {
     g->L = c->L; g->dx = 2.0 * c->L / (c->N - 1);
     g->dt = c->dt_factor * g->dx;
     g->complex_mode = c->complex_phi;
-    long nblocks = g->complex_mode ? 36 : 18;
+    g->gauge_mode   = c->complex_gauge;
+    g->g_gauge      = c->g_gauge;
+    g->G_offset     = 0.0;
+    /* gauge adds 6 host blocks (th 36-38, E 39-41) after the 36 complex blocks */
+    long nblocks = g->gauge_mode ? 42 : (g->complex_mode ? 36 : 18);
     long total = nblocks * g->N3;
     g->mem = (double*)malloc(total * sizeof(double));
     if (!g->mem) { fprintf(stderr, "FATAL: host malloc\n"); exit(1); }
@@ -328,6 +351,15 @@ static Grid *grid_alloc(const Config *c) {
         } else {
             g->phi_im[a] = g->phi_im_vel[a] = g->phi_im_acc[a] = NULL;
             g->theta_im[a] = g->theta_im_vel[a] = g->theta_im_acc[a] = NULL;
+        }
+    }
+    /* v69 gauge sector: host blocks 36-41 (th 36-38, E 39-41), zero-initialized */
+    for (int i = 0; i < 3; i++) {
+        if (g->gauge_mode) {
+            g->th[i]     = g->mem + (36 + i) * g->N3;
+            g->Efield[i] = g->mem + (39 + i) * g->N3;
+        } else {
+            g->th[i] = g->Efield[i] = NULL;
         }
     }
     return g;
@@ -563,6 +595,158 @@ static void do_init(Grid *g, const Config *c) {
     else { fprintf(stderr, "FATAL: unknown init '%s'\n", c->init); exit(1); }
 }
 #endif /* deleted init block */
+
+/* ================================================================
+   v69 host-side gauged init (mirrors scp_sim.c): Gauss residual,
+   net-charge refusal (§1.2), one-time CG Gauss projection (§5.4).
+   These run on the HOST grid after do_init and BEFORE gpu_upload,
+   so the device starts from the exact projected state.
+   ================================================================ */
+
+/* G(x) = (1/a) sum_i [E_i(x) - E_i(x-i)] - g*rho_Q(x) at voxel idx */
+static inline double gauss_residual_at(Grid *g, long idx, const long nm[3]) {
+    double divE = (g->Efield[0][idx]-g->Efield[0][nm[0]]
+                  +g->Efield[1][idx]-g->Efield[1][nm[1]]
+                  +g->Efield[2][idx]-g->Efield[2][nm[2]]) / g->dx;
+    double rho = 0;
+    for (int a=0;a<NFIELDS;a++)
+        rho += g->phi[a][idx]  *g->phi_im_vel[a][idx] - g->phi_im[a][idx]  *g->phi_vel[a][idx]
+             + g->theta[a][idx]*g->theta_im_vel[a][idx] - g->theta_im[a][idx]*g->theta_vel[a][idx];
+    return divE - g->g_gauge*rho;
+}
+
+/* §1.2 runtime net-charge check (bc_type=2 only) */
+static void net_charge_check(Grid *g, const Config *c) {
+    (void)c;
+    const long N3=g->N3; const double dV=g->dx*g->dx*g->dx;
+    double qn=0, qa=0;
+    for (long idx=0;idx<N3;idx++) {
+        double rho=0;
+        for (int a=0;a<NFIELDS;a++)
+            rho += g->phi[a][idx]  *g->phi_im_vel[a][idx] - g->phi_im[a][idx]  *g->phi_vel[a][idx]
+                 + g->theta[a][idx]*g->theta_im_vel[a][idx] - g->theta_im[a][idx]*g->theta_vel[a][idx];
+        qn += rho*dV; qa += fabs(rho)*dV;
+    }
+    if (fabs(qn) > 1e-6 * fmax(qa, 1.0)) {
+        fprintf(stderr, "ERROR: bc_type=2 (periodic) requires net-neutral seed "
+                "(Q_net=%.3e, Q_abs=%.3e); use +/- pairs or bc_type=0. "
+                "jellium=1 is deferred (not implemented in v1).\n", qn, qa);
+        exit(1);
+    }
+}
+
+/* §5.4 one-time Gauss projection: CG-solve the periodic 7-point lattice
+ * Poisson lap(chi) = -(G - Gbar), correct E by the forward gradient, then
+ * measure and freeze G_offset. Idempotent; runs for EVERY init mode.
+ * (Host-side, serial — one-time cost at init.) */
+static void init_gauss_project(Grid *g, const Config *c) {
+    (void)c;
+    const int N=g->N, NN=N*N; const long N3=g->N3;
+    const double dx=g->dx, idx2=1.0/(dx*dx);
+    double *b  = (double*)malloc(N3*sizeof(double));
+    double *xv = (double*)calloc(N3, sizeof(double));
+    double *r  = (double*)malloc(N3*sizeof(double));
+    double *p  = (double*)malloc(N3*sizeof(double));
+    double *Ap = (double*)malloc(N3*sizeof(double));
+    if (!b||!xv||!r||!p||!Ap) { fprintf(stderr,"FATAL: gauss projection alloc\n"); exit(1); }
+
+    /* b = G - Gbar (zero-mean RHS; we solve (-lap) chi = b) */
+    double gsum=0, gmax0=0;
+    for (long idx=0;idx<N3;idx++) {
+        int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+        long nm[3];
+        nm[0]=(long)((i-1+N)%N)*NN+(long)j*N+k;
+        nm[1]=(long)i*NN+(long)((j-1+N)%N)*N+k;
+        nm[2]=(long)i*NN+(long)j*N+(k-1+N)%N;
+        b[idx] = gauss_residual_at(g, idx, nm);
+        gsum += b[idx];
+    }
+    double gbar = gsum/(double)N3;
+    for (long idx=0;idx<N3;idx++) {
+        b[idx] -= gbar;
+        double d=fabs(b[idx]); if (d>gmax0) gmax0=d;
+    }
+
+    const double tol = 1e-13 * fmax(1.0, gmax0);
+    memcpy(r, b, N3*sizeof(double));
+    memcpy(p, b, N3*sizeof(double));
+    double rz=0;
+    for (long idx=0;idx<N3;idx++) rz += r[idx]*r[idx];
+
+    int it=0;
+    const int itmax=20000;
+    double rmax=gmax0;
+    while (rmax > tol && it < itmax) {
+        double pAp=0;
+        for (long idx=0;idx<N3;idx++) {
+            int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+            long nip=(long)((i+1)%N)*NN+(long)j*N+k, nim=(long)((i-1+N)%N)*NN+(long)j*N+k;
+            long njp=(long)i*NN+(long)((j+1)%N)*N+k, njm=(long)i*NN+(long)((j-1+N)%N)*N+k;
+            long nkp=(long)i*NN+(long)j*N+(k+1)%N,   nkm=(long)i*NN+(long)j*N+(k-1+N)%N;
+            double lap = (p[nip]+p[nim]+p[njp]+p[njm]+p[nkp]+p[nkm]-6.0*p[idx])*idx2;
+            Ap[idx] = -lap;                       /* A = -lap (PSD on zero-mean) */
+            pAp += p[idx]*Ap[idx];
+        }
+        double alpha = rz/pAp;
+        double rz2=0, xsum=0, rm=0;
+        for (long idx=0;idx<N3;idx++) {
+            xv[idx] += alpha*p[idx];
+            r[idx]  -= alpha*Ap[idx];
+            rz2 += r[idx]*r[idx];
+            xsum += xv[idx];
+            double d=fabs(r[idx]); if (d>rm) rm=d;
+        }
+        /* keep chi zero-mean per iteration (torus null space) */
+        double xbar = xsum/(double)N3;
+        double beta = rz2/rz;
+        for (long idx=0;idx<N3;idx++) {
+            xv[idx] -= xbar;
+            p[idx] = r[idx] + beta*p[idx];
+        }
+        rz = rz2; rmax = rm; it++;
+    }
+    if (rmax > tol) {
+        fprintf(stderr, "FATAL: Gauss projection CG failed to converge "
+                "(%d iters, max|res|=%.3e > tol=%.3e)\n", it, rmax, tol);
+        exit(1);
+    }
+
+    /* E correction by the forward gradient: div-correction = lap(chi) exactly */
+    for (long idx=0;idx<N3;idx++) {
+        int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+        long np[3];
+        np[0]=(long)((i+1)%N)*NN+(long)j*N+k;
+        np[1]=(long)i*NN+(long)((j+1)%N)*N+k;
+        np[2]=(long)i*NN+(long)j*N+(k+1)%N;
+        for (int d=0;d<3;d++)
+            g->Efield[d][idx] += (xv[np[d]] - xv[idx])/dx;
+    }
+
+    /* measure + freeze G_offset; report post-projection residual */
+    double osum=0;
+    for (long idx=0;idx<N3;idx++) {
+        int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+        long nm[3];
+        nm[0]=(long)((i-1+N)%N)*NN+(long)j*N+k;
+        nm[1]=(long)i*NN+(long)((j-1+N)%N)*N+k;
+        nm[2]=(long)i*NN+(long)j*N+(k-1+N)%N;
+        osum += gauss_residual_at(g, idx, nm);
+    }
+    g->G_offset = osum/(double)N3;
+    double gres=0;
+    for (long idx=0;idx<N3;idx++) {
+        int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+        long nm[3];
+        nm[0]=(long)((i-1+N)%N)*NN+(long)j*N+k;
+        nm[1]=(long)i*NN+(long)((j-1+N)%N)*N+k;
+        nm[2]=(long)i*NN+(long)j*N+(k-1+N)%N;
+        double d=fabs(gauss_residual_at(g, idx, nm) - g->G_offset);
+        if (d>gres) gres=d;
+    }
+    printf("Gauss projection: %d CG iters, gauss_max(0)=%.2e (offset %.3e)\n",
+           it, gres, g->G_offset);
+    free(b); free(xv); free(r); free(p); free(Ap);
+}
 
 /* ================================================================
    GPU constant memory
@@ -961,6 +1145,229 @@ __global__ void compute_forces_complex_kernel(
     acc_tv0[idx]=acc_tv[0]; acc_tv1[idx]=acc_tv[1]; acc_tv2[idx]=acc_tv[2];
 }
 
+/* ================================================================
+   v69 gauged complex forces (SPEC §3, mirrors CPU
+   compute_forces_complex_gauge): 12 matter fields + compact U(1)
+   links. ALL spatial matter differences are link-covariant
+   (forward+backward transported neighbors, §3.1-3.3); the E-kick is
+   plaquette staples + the unique Gauss-conserving lattice current
+   (§3.4). Never launched when g_gauge==0 (§1.3 dispatch).
+   The CPU's link cos/sin (pass A) and plaquette-sine (pass B)
+   scratch arrays are recomputed INLINE here — only th/E/E_acc
+   (9 blocks) live on the device.
+   ================================================================ */
+
+/* sin(theta_P) of the plane-(a,b) plaquette anchored at lattice site
+ * (i,j,k): ang = th_a(x) + th_b(x+a) - th_a(x+b) - th_b(x) */
+__device__ inline double gauge_plaq_sin(const double *tha, const double *thb,
+    int a, int b, int i, int j, int k, int N, int NN)
+{
+    long s = (long)i*NN + (long)j*N + k;
+    int ia=i, ja=j, ka=k;
+    if (a==0) ia=(i+1)%N; else if (a==1) ja=(j+1)%N; else ka=(k+1)%N;
+    long sa = (long)ia*NN + (long)ja*N + ka;
+    int ib=i, jb=j, kb=k;
+    if (b==0) ib=(i+1)%N; else if (b==1) jb=(j+1)%N; else kb=(k+1)%N;
+    long sb = (long)ib*NN + (long)jb*N + kb;
+    return sin(tha[s] + thb[sa] - tha[sb] - thb[s]);
+}
+
+__global__ void compute_forces_complex_gauge_kernel(
+    const double *u0, const double *u1, const double *u2,
+    const double *v0, const double *v1, const double *v2,
+    const double *tu0, const double *tu1, const double *tu2,
+    const double *tv0, const double *tv1, const double *tv2,
+    const double *th0, const double *th1, const double *th2,
+    double *acc_u0, double *acc_u1, double *acc_u2,
+    double *acc_v0, double *acc_v1, double *acc_v2,
+    double *acc_tu0, double *acc_tu1, double *acc_tu2,
+    double *acc_tv0, double *acc_tv1, double *acc_tv2,
+    double *Eacc0, double *Eacc1, double *Eacc2,
+    double GG, double STP, double inva)
+{
+    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= d_N3) return;
+
+    int N = d_N, NN = d_NN;
+    int i = (int)(idx / NN), j = (int)((idx / N) % N), k = (int)(idx % N);
+    long np[3], nm[3];
+    np[0] = (long)((i+1)%N)*NN + (long)j*N + k;
+    nm[0] = (long)((i-1+N)%N)*NN + (long)j*N + k;
+    np[1] = (long)i*NN + (long)((j+1)%N)*N + k;
+    nm[1] = (long)i*NN + (long)((j-1+N)%N)*N + k;
+    np[2] = (long)i*NN + (long)j*N + (k+1)%N;
+    nm[2] = (long)i*NN + (long)j*N + (k-1+N)%N;
+
+    const double *u[3]  = {u0, u1, u2};
+    const double *v[3]  = {v0, v1, v2};
+    const double *tu[3] = {tu0, tu1, tu2};
+    const double *tv[3] = {tv0, tv1, tv2};
+    const double *th[3] = {th0, th1, th2};
+    double *Eacc[3] = {Eacc0, Eacc1, Eacc2};
+
+    /* fields at x: f=0..2 Phi_a (u,v), f=3..5 Theta_a (tu,tv) */
+    double fu[6], fv[6];
+    for (int a = 0; a < 3; a++) {
+        fu[a]   = u[a][idx];   fv[a]   = v[a][idx];
+        fu[3+a] = tu[a][idx];  fv[3+a] = tv[a][idx];
+    }
+
+    /* transported neighbors (SPEC §3.1) per direction d, field f */
+    double TRp[3][6], TIp[3][6], TRm[3][6], TIm[3][6];
+    /* raw +d theta neighbors needed for the symmetrized eta current */
+    double tup[3][3], tvp[3][3];
+    /* forward-link cos/sin at x (CPU link_c/link_s scratch, inline) */
+    double cPd[3], sPd[3];
+    for (int d = 0; d < 3; d++) {
+        double cP = cos(th[d][idx]),   sP = sin(th[d][idx]);
+        double cM = cos(th[d][nm[d]]), sM = sin(th[d][nm[d]]);
+        cPd[d] = cP;  sPd[d] = sP;
+        for (int a = 0; a < 3; a++) {
+            double upn = u[a][np[d]],   vpn = v[a][np[d]];
+            double umn = u[a][nm[d]],   vmn = v[a][nm[d]];
+            double tpn = tu[a][np[d]],  wpn = tv[a][np[d]];
+            double tmn = tu[a][nm[d]],  wmn = tv[a][nm[d]];
+            TRp[d][a]   = cP*upn - sP*vpn;   TIp[d][a]   = cP*vpn + sP*upn;
+            TRm[d][a]   = cM*umn + sM*vmn;   TIm[d][a]   = cM*vmn - sM*umn;
+            TRp[d][3+a] = cP*tpn - sP*wpn;   TIp[d][3+a] = cP*wpn + sP*tpn;
+            TRm[d][3+a] = cM*tmn + sM*wmn;   TIm[d][3+a] = cM*wmn - sM*tmn;
+            tup[d][a] = tpn;  tvp[d][a] = wpn;
+        }
+    }
+
+    /* potential pieces (identical to compute_forces_complex) */
+    double s2_0 = fu[0]*fu[0] + fv[0]*fv[0];
+    double s2_1 = fu[1]*fu[1] + fv[1]*fv[1];
+    double s2_2 = fu[2]*fu[2] + fv[2]*fv[2];
+    double s    = s2_0 * s2_1 * s2_2;
+    double den  = 1.0 + d_KAPPA*s;
+    double Vp   = 0.5*d_MU / (den*den);
+    double prod_rest[3] = { s2_1*s2_2, s2_0*s2_2, s2_0*s2_1 };
+
+    /* covariant central differences (SPEC §3.3): Dc[d][f] */
+    double DcU[3][6], DcV[3][6];
+    for (int d = 0; d < 3; d++)
+        for (int f = 0; f < 6; f++) {
+            DcU[d][f] = (TRp[d][f] - TRm[d][f]) * d_idx1;
+            DcV[d][f] = (TIp[d][f] - TIm[d][f]) * d_idx1;
+        }
+
+    /* covariant curls: (DxF)_0 = Dc_1 F_2 - Dc_2 F_1, cyclic */
+    const int ci1[3] = {1,2,0}, ci2[3] = {2,0,1};
+    for (int a = 0; a < 3; a++) {
+        int d1 = ci1[a], d2 = ci2[a];
+        double reDxT = DcU[d1][3+ci2[a]] - DcU[d2][3+ci1[a]];
+        double imDxT = DcV[d1][3+ci2[a]] - DcV[d2][3+ci1[a]];
+        double reDxP = DcU[d1][ci2[a]]   - DcU[d2][ci1[a]];
+        double imDxP = DcV[d1][ci2[a]]   - DcV[d2][ci1[a]];
+
+        /* covariant Laplacians (SPEC §3.2) */
+        double lapU_P = (TRp[0][a]+TRm[0][a] + TRp[1][a]+TRm[1][a]
+                       + TRp[2][a]+TRm[2][a] - 6.0*fu[a]) * d_idx2;
+        double lapV_P = (TIp[0][a]+TIm[0][a] + TIp[1][a]+TIm[1][a]
+                       + TIp[2][a]+TIm[2][a] - 6.0*fv[a]) * d_idx2;
+        double lapU_T = (TRp[0][3+a]+TRm[0][3+a] + TRp[1][3+a]+TRm[1][3+a]
+                       + TRp[2][3+a]+TRm[2][3+a] - 6.0*fu[3+a]) * d_idx2;
+        double lapV_T = (TIp[0][3+a]+TIm[0][3+a] + TIp[1][3+a]+TIm[1][3+a]
+                       + TIp[2][3+a]+TIm[2][3+a] - 6.0*fv[3+a]) * d_idx2;
+
+        double au = lapU_P - d_MASS2*fu[a]
+                  - 2.0*Vp*fu[a]*prod_rest[a] + d_ETA*reDxT;
+        double av = lapV_P - d_MASS2*fv[a]
+                  - 2.0*Vp*fv[a]*prod_rest[a] + d_ETA*imDxT;
+        double atu = lapU_T - d_MTHETA2*fu[3+a] + d_ETA*reDxP;
+        double atv = lapV_T - d_MTHETA2*fv[3+a] + d_ETA*imDxP;
+        if (a == 0)      { acc_u0[idx]=au; acc_v0[idx]=av; acc_tu0[idx]=atu; acc_tv0[idx]=atv; }
+        else if (a == 1) { acc_u1[idx]=au; acc_v1[idx]=av; acc_tu1[idx]=atu; acc_tv1[idx]=atv; }
+        else             { acc_u2[idx]=au; acc_v2[idx]=av; acc_tu2[idx]=atu; acc_tv2[idx]=atv; }
+    }
+
+    /* staple sums (SPEC §3.4 table): plaquette sines recomputed inline,
+     * planes p0=(0,1), p1=(1,2), p2=(2,0), at x and x-1/x-j/x-k */
+    int im = (i-1+N)%N, jm = (j-1+N)%N, km = (k-1+N)%N;
+    double P0_x  = gauge_plaq_sin(th[0], th[1], 0, 1, i,  j,  k,  N, NN);
+    double P0_im = gauge_plaq_sin(th[0], th[1], 0, 1, im, j,  k,  N, NN);
+    double P0_jm = gauge_plaq_sin(th[0], th[1], 0, 1, i,  jm, k,  N, NN);
+    double P1_x  = gauge_plaq_sin(th[1], th[2], 1, 2, i,  j,  k,  N, NN);
+    double P1_jm = gauge_plaq_sin(th[1], th[2], 1, 2, i,  jm, k,  N, NN);
+    double P1_km = gauge_plaq_sin(th[1], th[2], 1, 2, i,  j,  km, N, NN);
+    double P2_x  = gauge_plaq_sin(th[2], th[0], 2, 0, i,  j,  k,  N, NN);
+    double P2_im = gauge_plaq_sin(th[2], th[0], 2, 0, im, j,  k,  N, NN);
+    double P2_km = gauge_plaq_sin(th[2], th[0], 2, 0, i,  j,  km, N, NN);
+    double st[3];
+    st[0] =  (P0_x - P0_jm) - (P2_x - P2_km);
+    st[1] = -(P0_x - P0_im) + (P1_x - P1_km);
+    st[2] =  (P2_x - P2_im) - (P1_x - P1_jm);
+
+    /* lattice current J_i^lat (SPEC §3.4) + E-kick */
+    for (int d = 0; d < 3; d++) {
+        double cP = cPd[d], sP = sPd[d];
+        double Jg = 0.0;
+        for (int a = 0; a < 3; a++) {
+            Jg += fu[a]  *TIp[d][a]   - fv[a]  *TRp[d][a];     /* Phi link current */
+            Jg += fu[3+a]*TIp[d][3+a] - fv[3+a]*TRp[d][3+a];   /* Theta ditto */
+        }
+        /* eta seagull, symmetrized over link ends:
+         * T(j,k) = Im[Th_j(x)~ U Phi_k(x+d)] + Im[Th_j(x+d)~ U+ Phi_k(x)],
+         * J_eta_d = -(eta/2) * (T(d1,d2) - T(d2,d1)), (d,d1,d2) cyclic */
+        int d1 = ci1[d], d2 = ci2[d];
+        double WpR1 = cP*fu[d2] + sP*fv[d2], WpI1 = cP*fv[d2] - sP*fu[d2];
+        double WpR2 = cP*fu[d1] + sP*fv[d1], WpI2 = cP*fv[d1] - sP*fu[d1];
+        double T12 = (fu[3+d1]*TIp[d][d2] - fv[3+d1]*TRp[d][d2])
+                   + (tup[d][d1]*WpI1     - tvp[d][d1]*WpR1);
+        double T21 = (fu[3+d2]*TIp[d][d1] - fv[3+d2]*TRp[d][d1])
+                   + (tup[d][d2]*WpI2     - tvp[d][d2]*WpR2);
+        double Jlat = inva*Jg - 0.5*d_ETA*(T12 - T21);
+        Eacc[d][idx] = STP*st[d] + GG*Jlat;
+    }
+}
+
+/* v69 E half-kick: E_i += hdt * K_i (3 link-field arrays) */
+__global__ void gauge_halfkick_kernel(
+    double *E0, double *E1, double *E2,
+    const double *K0, const double *K1, const double *K2, double hdt)
+{
+    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= d_N3) return;
+    E0[idx]+=hdt*K0[idx]; E1[idx]+=hdt*K1[idx]; E2[idx]+=hdt*K2[idx];
+}
+
+/* v69 link drift: th_i += gad*E_i (gad = -g*a*dt), wrapped to (-pi,pi] */
+__global__ void gauge_link_drift_kernel(
+    double *t0, double *t1, double *t2,
+    const double *E0, const double *E1, const double *E2, double gad)
+{
+    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= d_N3) return;
+    double w;
+    w = t0[idx] + gad*E0[idx];  t0[idx] = w - 2.0*PI*rint(w/(2.0*PI));
+    w = t1[idx] + gad*E1[idx];  t1[idx] = w - 2.0*PI*rint(w/(2.0*PI));
+    w = t2[idx] + gad*E2[idx];  t2[idx] = w - 2.0*PI*rint(w/(2.0*PI));
+}
+
+/* v69 §3.6: damp E (velocity-like) in the sponge; th links are
+ * positions and are NOT damped */
+__global__ void absorbing_boundary_gauge_kernel(
+    double *E0, double *E1, double *E2)
+{
+    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx >= d_N3) return;
+    if (d_DAMP_WIDTH <= 0 || d_DAMP_RATE <= 0) return;
+
+    int N=d_N, NN=d_NN;
+    int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+    double x = -d_L + i*d_dx, y = -d_L + j*d_dx, z = -d_L + k*d_dx;
+    double r = sqrt(x*x + y*y + z*z);
+    double R_damp = d_L - d_DAMP_WIDTH;
+
+    if (r > R_damp) {
+        double s = (r - R_damp) / d_DAMP_WIDTH;
+        if (s > 1.0) s = 1.0;
+        double damp = 1.0 - d_DAMP_RATE * s * s;
+        E0[idx]*=damp; E1[idx]*=damp; E2[idx]*=damp;
+    }
+}
+
 __global__ void verlet_halfkick_kernel(
     double *vp0, double *vp1, double *vp2,
     double *vt0, double *vt1, double *vt2,
@@ -1317,6 +1724,11 @@ __global__ void reduce_diagnostics_kernel(
    ================================================================ */
 #define CDIAG_NVALS 20
 #define CDIAG_TOTAL 21
+/* v69: gauss reduction appends 6 slots after the complex 21:
+ * [21] gauss_max (max), [22] gauss_l2 sum, [23] nOmega,
+ * [24] E_em, [25] divE cube sum, [26] nC */
+#define GAUSS_BASE  21
+#define GDIAG_TOTAL 27
 
 __global__ void reduce_diagnostics_complex_kernel(
     const double *u0, const double *u1, const double *u2,
@@ -1468,6 +1880,289 @@ __global__ void reduce_diagnostics_complex_kernel(
     }
 }
 
+/* ================================================================
+   v69 gauged complex diagnostics reduction (mirrors CPU
+   compute_energy_complex_gauge): identical 20-slot layout to
+   reduce_diagnostics_complex_kernel, but E_grad [2], E_tgrad [5] and
+   E_coupling [7] use covariant CENTRAL differences (link-transported
+   neighbors). E_em is NOT accumulated here — it comes from
+   reduce_gauss_kernel (identical formula, computed once) and is added
+   to E_total on the host. Never launched when g_gauge==0.
+   ================================================================ */
+__global__ void reduce_diagnostics_complex_gauge_kernel(
+    const double *u0, const double *u1, const double *u2,
+    const double *v0, const double *v1, const double *v2,
+    const double *tu0, const double *tu1, const double *tu2,
+    const double *tv0, const double *tv1, const double *tv2,
+    const double *vu0, const double *vu1, const double *vu2,
+    const double *vv0, const double *vv1, const double *vv2,
+    const double *vtu0, const double *vtu1, const double *vtu2,
+    const double *vtv0, const double *vtv1, const double *vtv2,
+    const double *th0, const double *th1, const double *th2,
+    double dV, double idx1,
+    double mass2, double mtheta2, double eta, double mu, double kappa,
+    double qr2, double *d_results)
+{
+    __shared__ double sdata[CDIAG_NVALS * 256];
+
+    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    int tid = threadIdx.x;
+
+    double local[CDIAG_NVALS];
+    for (int vv = 0; vv < CDIAG_NVALS; vv++) local[vv] = 0.0;
+
+    if (idx < d_N3) {
+        int N = d_N, NN = d_NN;
+        int i = (int)(idx / NN), j = (int)((idx / N) % N), k = (int)(idx % N);
+        long np[3], nm[3];
+        np[0]=(long)((i+1)%N)*NN+(long)j*N+k;   nm[0]=(long)((i-1+N)%N)*NN+(long)j*N+k;
+        np[1]=(long)i*NN+(long)((j+1)%N)*N+k;   nm[1]=(long)i*NN+(long)((j-1+N)%N)*N+k;
+        np[2]=(long)i*NN+(long)j*N+(k+1)%N;     nm[2]=(long)i*NN+(long)j*N+(k-1+N)%N;
+
+        const double *u[3]   = {u0, u1, u2};
+        const double *v[3]   = {v0, v1, v2};
+        const double *tu[3]  = {tu0, tu1, tu2};
+        const double *tv[3]  = {tv0, tv1, tv2};
+        const double *vu[3]  = {vu0, vu1, vu2};
+        const double *vv_[3] = {vv0, vv1, vv2};
+        const double *vtu[3] = {vtu0, vtu1, vtu2};
+        const double *vtv[3] = {vtv0, vtv1, vtv2};
+        const double *th[3]  = {th0, th1, th2};
+
+        double fu[6], fv[6];
+        for (int a=0;a<3;a++) {
+            fu[a]   = u[a][idx];   fv[a]   = v[a][idx];
+            fu[3+a] = tu[a][idx];  fv[3+a] = tv[a][idx];
+        }
+        /* covariant central differences (link cos/sin inline) */
+        double DcU[3][6], DcV[3][6];
+        for (int d=0; d<3; d++) {
+            double cP=cos(th[d][idx]),   sP=sin(th[d][idx]);
+            double cM=cos(th[d][nm[d]]), sM=sin(th[d][nm[d]]);
+            for (int a=0;a<3;a++) {
+                double upn=u[a][np[d]],   vpn=v[a][np[d]];
+                double umn=u[a][nm[d]],   vmn=v[a][nm[d]];
+                double tpn=tu[a][np[d]],  wpn=tv[a][np[d]];
+                double tmn=tu[a][nm[d]],  wmn=tv[a][nm[d]];
+                DcU[d][a]   = ((cP*upn - sP*vpn) - (cM*umn + sM*vmn))*idx1;
+                DcV[d][a]   = ((cP*vpn + sP*upn) - (cM*vmn - sM*umn))*idx1;
+                DcU[d][3+a] = ((cP*tpn - sP*wpn) - (cM*tmn + sM*wmn))*idx1;
+                DcV[d][3+a] = ((cP*wpn + sP*tpn) - (cM*wmn - sM*tmn))*idx1;
+            }
+        }
+
+        double s2[3];
+        double s_epk=0, s_etk=0, s_eg=0, s_em=0, s_etg=0, s_etm=0, s_ec=0;
+        double s_pm=0, s_trms=0, qp=0, qt=0, rho2=0;
+        const int ci1[3]={1,2,0}, ci2[3]={2,0,1};
+
+        for (int a = 0; a < 3; a++) {
+            s2[a] = fu[a]*fu[a] + fv[a]*fv[a];
+            s_epk += 0.5*(vu[a][idx]*vu[a][idx] + vv_[a][idx]*vv_[a][idx])*dV;
+            s_etk += 0.5*(vtu[a][idx]*vtu[a][idx] + vtv[a][idx]*vtv[a][idx])*dV;
+            s_eg += 0.5*(DcU[0][a]*DcU[0][a]+DcU[1][a]*DcU[1][a]+DcU[2][a]*DcU[2][a]
+                        +DcV[0][a]*DcV[0][a]+DcV[1][a]*DcV[1][a]+DcV[2][a]*DcV[2][a])*dV;
+            s_em += 0.5*mass2*s2[a]*dV;
+            s_etg += 0.5*(DcU[0][3+a]*DcU[0][3+a]+DcU[1][3+a]*DcU[1][3+a]+DcU[2][3+a]*DcU[2][3+a]
+                         +DcV[0][3+a]*DcV[0][3+a]+DcV[1][3+a]*DcV[1][3+a]+DcV[2][3+a]*DcV[2][3+a])*dV;
+            s_etm += 0.5*mtheta2*(fu[3+a]*fu[3+a]+fv[3+a]*fv[3+a])*dV;
+            /* phi_max as complex modulus |Phi_a| */
+            double mod = sqrt(s2[a]); if (mod > s_pm) s_pm = mod;
+            /* E_coupling = -eta*(u.Re(DxTheta) + v.Im(DxTheta)) (transported curls) */
+            double reDxT = DcU[ci1[a]][3+ci2[a]] - DcU[ci2[a]][3+ci1[a]];
+            double imDxT = DcV[ci1[a]][3+ci2[a]] - DcV[ci2[a]][3+ci1[a]];
+            s_ec -= eta*(fu[a]*reDxT + fv[a]*imDxT)*dV;
+            s_trms += fu[3+a]*fu[3+a] + fv[3+a]*fv[3+a];
+            /* Noether charges (THEORY §2): Q > 0 for Phi ~ e^{+i omega t} */
+            qp += fu[a]*vv_[a][idx] - fv[a]*vu[a][idx];
+            qt += fu[3+a]*vtv[a][idx] - fv[3+a]*vtu[a][idx];
+            rho2 += s2[a];
+        }
+        double sv = s2[0]*s2[1]*s2[2];
+        double x = -d_L + i*d_dx, y = -d_L + j*d_dx, z = -d_L + k*d_dx;
+
+        local[0]  = s_epk;
+        local[1]  = s_etk;
+        local[2]  = s_eg;
+        local[3]  = s_em;
+        local[4]  = (mu/2.0)*sv/(1.0+kappa*sv)*dV;  /* Vt(s) */
+        local[5]  = s_etg;
+        local[6]  = s_etm;
+        local[7]  = s_ec;
+        local[8]  = s_pm;          /* phi_max — max reduction */
+        local[9]  = sqrt(sv);      /* P_max = sqrt(s) — max reduction */
+        local[10] = sqrt(sv)*dV;   /* P_int */
+        local[11] = s_trms;        /* theta_rms sum (6 components) */
+        local[12] = qp;            /* Q_phi (raw) */
+        local[13] = qt;            /* Q_theta (raw) */
+        local[14] = sv;            /* s_max — max reduction */
+        local[15] = rho2;          /* M0 (raw) */
+        local[16] = x*rho2;
+        local[17] = y*rho2;
+        local[18] = z*rho2;
+        local[19] = (x*x + y*y + z*z <= qr2) ? (qp + qt) : 0.0;
+    }
+
+    for (int vv = 0; vv < CDIAG_NVALS; vv++)
+        sdata[vv * blockDim.x + tid] = local[vv];
+    __syncthreads();
+
+    for (int s = blockDim.x/2; s > 0; s >>= 1) {
+        if (tid < s) {
+            for (int vv = 0; vv < CDIAG_NVALS; vv++) {
+                int si = vv * blockDim.x;
+                if (vv == 8 || vv == 9 || vv == 14) {
+                    double other = sdata[si + tid + s];
+                    if (other > sdata[si + tid]) sdata[si + tid] = other;
+                } else {
+                    sdata[si + tid] += sdata[si + tid + s];
+                }
+            }
+        }
+        __syncthreads();
+    }
+
+    if (tid == 0) {
+        for (int vv = 0; vv < CDIAG_NVALS; vv++) {
+            if (vv == 8 || vv == 9 || vv == 14) {
+                unsigned long long *addr = (unsigned long long *)&d_results[vv];
+                unsigned long long old_val = *addr, assumed;
+                double new_val = sdata[vv * blockDim.x];
+                do {
+                    assumed = old_val;
+                    double cur = __longlong_as_double(assumed);
+                    if (new_val <= cur) break;
+                    unsigned long long new_bits = __double_as_longlong(new_val);
+                    old_val = atomicCAS(addr, assumed, new_bits);
+                } while (assumed != old_val);
+            } else {
+                atomicAdd(&d_results[vv], sdata[vv * blockDim.x]);
+            }
+        }
+    }
+}
+
+/* ================================================================
+   v69 Gauss / gauge diagnostics reduction (mirrors CPU compute_gauss):
+   6 values into d_out[0..5]:
+   [0] gauss_max = max |G - OFF| over interior Omega (max reduction)
+   [1] gauss_l2 sum = sum (G-OFF)^2 over Omega (host: sqrt(sum/nOmega))
+   [2] nOmega   (voxel count, summed as double)
+   [3] E_em     = int [E^2/2 + (1-cos th_P)/(g^2 a^4)] dV
+   [4] fsum     = sum divE*dV over the centered Q_flux cube
+   [5] nC       (cube voxel count)
+   Host post-processing: q_flux = (fsum - OFF*nC*dV)/g  (g != 0).
+   Launched whenever complex_gauge=1 (handles GG==0: no magnetic term).
+   ================================================================ */
+#define GAUSS_NVALS 6
+
+__global__ void reduce_gauss_kernel(
+    const double *u0, const double *u1, const double *u2,
+    const double *v0, const double *v1, const double *v2,
+    const double *tu0, const double *tu1, const double *tu2,
+    const double *tv0, const double *tv1, const double *tv2,
+    const double *vu0, const double *vu1, const double *vu2,
+    const double *vv0, const double *vv1, const double *vv2,
+    const double *vtu0, const double *vtu1, const double *vtu2,
+    const double *vtv0, const double *vtv1, const double *vtv2,
+    const double *E0, const double *E1, const double *E2,
+    const double *th0, const double *th1, const double *th2,
+    double GG, double OFF, double Rint2, double Rcube, double dV,
+    double *d_out)
+{
+    __shared__ double sdata[GAUSS_NVALS * 256];
+
+    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    int tid = threadIdx.x;
+
+    double local[GAUSS_NVALS];
+    for (int vv = 0; vv < GAUSS_NVALS; vv++) local[vv] = 0.0;
+
+    if (idx < d_N3) {
+        int N = d_N, NN = d_NN;
+        int i = (int)(idx / NN), j = (int)((idx / N) % N), k = (int)(idx % N);
+        long np[3], nm[3];
+        np[0]=(long)((i+1)%N)*NN+(long)j*N+k;   nm[0]=(long)((i-1+N)%N)*NN+(long)j*N+k;
+        np[1]=(long)i*NN+(long)((j+1)%N)*N+k;   nm[1]=(long)i*NN+(long)((j-1+N)%N)*N+k;
+        np[2]=(long)i*NN+(long)j*N+(k+1)%N;     nm[2]=(long)i*NN+(long)j*N+(k-1+N)%N;
+        double x = -d_L + i*d_dx, y = -d_L + j*d_dx, z = -d_L + k*d_dx;
+
+        double divE = (E0[idx]-E0[nm[0]]
+                      +E1[idx]-E1[nm[1]]
+                      +E2[idx]-E2[nm[2]]) / d_dx;
+        /* rho_Q at idx (Noether density) */
+        double rho = (u0[idx]*vv0[idx] - v0[idx]*vu0[idx])
+                   + (u1[idx]*vv1[idx] - v1[idx]*vu1[idx])
+                   + (u2[idx]*vv2[idx] - v2[idx]*vu2[idx])
+                   + (tu0[idx]*vtv0[idx] - tv0[idx]*vtu0[idx])
+                   + (tu1[idx]*vtv1[idx] - tv1[idx]*vtu1[idx])
+                   + (tu2[idx]*vtv2[idx] - tv2[idx]*vtu2[idx]);
+        double G = divE - GG*rho;
+
+        if (x*x + y*y + z*z < Rint2) {
+            double d = fabs(G - OFF);
+            local[0] = d;                /* gauss_max — max reduction */
+            local[1] = (G-OFF)*(G-OFF);  /* gauss_l2 sum */
+            local[2] = 1.0;              /* nOmega */
+        }
+        double ee = 0.5*(E0[idx]*E0[idx] + E1[idx]*E1[idx] + E2[idx]*E2[idx]);
+        if (GG != 0) {
+            const double *th[3] = {th0, th1, th2};
+            const int pa[3]={0,1,2}, pb[3]={1,2,0};
+            double bb=0;
+            for (int p=0;p<3;p++) {
+                int a=pa[p], b=pb[p];
+                double ang = th[a][idx]+th[b][np[a]]-th[a][np[b]]-th[b][idx];
+                bb += 1.0 - cos(ang);
+            }
+            ee += bb/(GG*GG*d_dx*d_dx*d_dx*d_dx);
+        }
+        local[3] = ee*dV;
+        if (fabs(x)<=Rcube && fabs(y)<=Rcube && fabs(z)<=Rcube) {
+            local[4] = divE*dV;          /* a^3 * (1/a) sum_i (E_i(x)-E_i(x-i)) */
+            local[5] = 1.0;              /* nC */
+        }
+    }
+
+    for (int vv = 0; vv < GAUSS_NVALS; vv++)
+        sdata[vv * blockDim.x + tid] = local[vv];
+    __syncthreads();
+
+    for (int s = blockDim.x/2; s > 0; s >>= 1) {
+        if (tid < s) {
+            for (int vv = 0; vv < GAUSS_NVALS; vv++) {
+                int si = vv * blockDim.x;
+                if (vv == 0) {
+                    double other = sdata[si + tid + s];
+                    if (other > sdata[si + tid]) sdata[si + tid] = other;
+                } else {
+                    sdata[si + tid] += sdata[si + tid + s];
+                }
+            }
+        }
+        __syncthreads();
+    }
+
+    if (tid == 0) {
+        for (int vv = 0; vv < GAUSS_NVALS; vv++) {
+            if (vv == 0) {
+                unsigned long long *addr = (unsigned long long *)&d_out[vv];
+                unsigned long long old_val = *addr, assumed;
+                double new_val = sdata[vv * blockDim.x];
+                do {
+                    assumed = old_val;
+                    double cur = __longlong_as_double(assumed);
+                    if (new_val <= cur) break;
+                    unsigned long long new_bits = __double_as_longlong(new_val);
+                    old_val = atomicCAS(addr, assumed, new_bits);
+                } while (assumed != old_val);
+            } else {
+                atomicAdd(&d_out[vv], sdata[vv * blockDim.x]);
+            }
+        }
+    }
+}
+
 /* v66 second pass of compute_charges: centroid-based rms radius of
  * rho2 = sum_a (u_a^2 + v_a^2). Accumulates the RAW rsum into d_rsum
  * (host applies *dV/M0 and sqrt, exactly like the CPU). */
@@ -1543,13 +2238,20 @@ static double *d_mismatch[3], *d_harden_Q[3];  /* intermediates for Cosserat/har
 /* v66 complex sector device arrays (allocated only when complex_phi=1) */
 static double *d_phi_im[3], *d_vel_phi_im[3], *d_acc_phi_im[3];
 static double *d_theta_im[3], *d_vel_theta_im[3], *d_acc_theta_im[3];
+/* v69 gauge sector device arrays (allocated only when complex_gauge=1):
+ * +9 f64 blocks — links th_i, E_i, E-kick E_acc_i (CPU layout, no scratch) */
+static double *d_th[3], *d_E[3], *d_E_acc[3];
 static int gpu_blocks;
 static int gpu_has_intermediates = 0;  /* nonzero if intermediate arrays allocated */
 static int gpu_complex_mode = 0;       /* nonzero if complex arrays allocated (v66) */
+static int gpu_gauge_mode = 0;         /* nonzero if gauge arrays allocated (v69) */
+static double gpu_g_gauge = 0.0;       /* cached coupling for verlet dispatch */
+static double gpu_dx_cached = 0.0;     /* cached dx for the link-drift prefactor */
 
-static void gpu_alloc(long N3, int need_intermediates, int complex_mode) {
+static void gpu_alloc(long N3, int need_intermediates, int complex_mode, int gauge_mode) {
     size_t bytes = N3 * sizeof(double);
     gpu_complex_mode = complex_mode;
+    gpu_gauge_mode = gauge_mode;
     for (int a = 0; a < 3; a++) {
         cudaMalloc(&d_phi[a], bytes);       cudaMalloc(&d_vel_phi[a], bytes);   cudaMalloc(&d_acc_phi[a], bytes);
         cudaMalloc(&d_theta[a], bytes);     cudaMalloc(&d_vel_theta[a], bytes); cudaMalloc(&d_acc_theta[a], bytes);
@@ -1578,23 +2280,46 @@ static void gpu_alloc(long N3, int need_intermediates, int complex_mode) {
             d_theta_im[a] = d_vel_theta_im[a] = d_acc_theta_im[a] = NULL;
         }
     }
+    if (gauge_mode) {
+        /* v69: +9 f64 blocks (th_i, E_i, E_acc_i), zero-initialized */
+        for (int a = 0; a < 3; a++) {
+            cudaMalloc(&d_th[a], bytes);
+            cudaMalloc(&d_E[a], bytes);
+            cudaMalloc(&d_E_acc[a], bytes);
+            cudaMemset(d_th[a], 0, bytes);
+            cudaMemset(d_E[a], 0, bytes);
+            cudaMemset(d_E_acc[a], 0, bytes);
+        }
+        total_gb += 9.0*bytes/1e9;
+    } else {
+        for (int a = 0; a < 3; a++) d_th[a] = d_E[a] = d_E_acc[a] = NULL;
+    }
     gpu_blocks = (int)((N3 + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK);
-    printf("GPU: allocated %.2f GB (physics%s%s), %d blocks × %d threads\n",
+    printf("GPU: allocated %.2f GB (physics%s%s%s), %d blocks × %d threads\n",
            total_gb, need_intermediates ? "+Cosserat" : "",
            complex_mode ? ", complex 36 arrays" : "",
+           gauge_mode ? " + U(1) links 9 arrays" : "",
            gpu_blocks, THREADS_PER_BLOCK);
     if (complex_mode) {
         /* v66 memory guard: 36 N^3 doubles of physics, plus snapshot staging
          * (24 N^3 f32/f16). Physics alone: N=320 -> 9.4 GB, N=384 -> 16.3 GB,
-         * N=400 -> 18.4 GB. Practical limits: N<=320 on 16 GB, N<=400 on 32 GB. */
+         * N=400 -> 18.4 GB. Practical limits: N<=320 on 16 GB, N<=400 on 32 GB.
+         * v69 gauged: +9 blocks -> 45 N^3 doubles (N=320 -> 11.8 GB,
+         * N=384 -> 20.4 GB) plus 30-column staging; N<=288 on 16 GB,
+         * N<=384 on 32 GB. */
         size_t free_b = 0, total_b = 0;
         cudaMemGetInfo(&free_b, &total_b);
-        double need_gb = 36.0*bytes/1e9;
-        printf("Complex mode: %.2f GB physics (36 N^3 arrays); max N<=320 on 16 GB, N<=400 on 32 GB\n",
-               need_gb);
+        int nphys = gauge_mode ? 45 : 36;
+        double need_gb = (double)nphys*bytes/1e9;
+        if (gauge_mode)
+            printf("Gauged mode: %.2f GB physics (45 N^3 arrays); max N<=288 on 16 GB, N<=384 on 32 GB\n",
+                   need_gb);
+        else
+            printf("Complex mode: %.2f GB physics (36 N^3 arrays); max N<=320 on 16 GB, N<=400 on 32 GB\n",
+                   need_gb);
         if (need_gb*1e9 > (double)total_b)
-            printf("WARNING: complex physics arrays (%.2f GB) exceed GPU memory (%.2f GB)\n",
-                   need_gb, total_b/1e9);
+            printf("WARNING: %s physics arrays (%.2f GB) exceed GPU memory (%.2f GB)\n",
+                   gauge_mode ? "gauged" : "complex", need_gb, total_b/1e9);
     }
 }
 
@@ -1618,6 +2343,14 @@ static void gpu_upload(Grid *g) {
             cudaMemset(d_acc_theta_im[a], 0, bytes);
         }
     }
+    if (gpu_gauge_mode) {
+        /* v69: upload host-side init (post Gauss-projection) links + E */
+        for (int a = 0; a < 3; a++) {
+            cudaMemcpy(d_th[a], g->th[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_E[a], g->Efield[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemset(d_E_acc[a], 0, bytes);
+        }
+    }
 }
 
 static void gpu_download(Grid *g) {
@@ -1636,6 +2369,12 @@ static void gpu_download(Grid *g) {
             cudaMemcpy(g->theta_im_vel[a], d_vel_theta_im[a], bytes, cudaMemcpyDeviceToHost);
         }
     }
+    if (gpu_gauge_mode) {
+        for (int a = 0; a < 3; a++) {
+            cudaMemcpy(g->th[a], d_th[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->Efield[a], d_E[a], bytes, cudaMemcpyDeviceToHost);
+        }
+    }
 }
 
 static void gpu_free(void) {
@@ -1652,6 +2391,11 @@ static void gpu_free(void) {
         for (int a = 0; a < 3; a++) {
             cudaFree(d_phi_im[a]); cudaFree(d_vel_phi_im[a]); cudaFree(d_acc_phi_im[a]);
             cudaFree(d_theta_im[a]); cudaFree(d_vel_theta_im[a]); cudaFree(d_acc_theta_im[a]);
+        }
+    }
+    if (gpu_gauge_mode) {
+        for (int a = 0; a < 3; a++) {
+            cudaFree(d_th[a]); cudaFree(d_E[a]); cudaFree(d_E_acc[a]);
         }
     }
 }
@@ -1694,7 +2438,9 @@ static void gpu_set_constants(const Config *c, double dx) {
 /* GPU Verlet step */
 static void gpu_verlet_step(double dt) {
     double hdt = 0.5 * dt;
-    /* Half-kick */
+    /* v69 §1.3/§3.5: gauge sector active only when complex_gauge && g != 0 */
+    const int gauged = gpu_gauge_mode && gpu_g_gauge != 0.0;
+    /* stage 1: half-kick (matter velocities AND E) */
     verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_vel_phi[0], d_vel_phi[1], d_vel_phi[2],
         d_vel_theta[0], d_vel_theta[1], d_vel_theta[2],
@@ -1706,7 +2452,11 @@ static void gpu_verlet_step(double dt) {
             d_vel_theta_im[0], d_vel_theta_im[1], d_vel_theta_im[2],
             d_acc_phi_im[0], d_acc_phi_im[1], d_acc_phi_im[2],
             d_acc_theta_im[0], d_acc_theta_im[1], d_acc_theta_im[2], hdt);
-    /* Drift */
+    if (gauged)
+        gauge_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_E[0], d_E[1], d_E[2],
+            d_E_acc[0], d_E_acc[1], d_E_acc[2], hdt);
+    /* stage 2: drift (fields AND link angles, wrapped to (-pi,pi]) */
     verlet_drift_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_phi[0], d_phi[1], d_phi[2],
         d_theta[0], d_theta[1], d_theta[2],
@@ -1718,8 +2468,30 @@ static void gpu_verlet_step(double dt) {
             d_theta_im[0], d_theta_im[1], d_theta_im[2],
             d_vel_phi_im[0], d_vel_phi_im[1], d_vel_phi_im[2],
             d_vel_theta_im[0], d_vel_theta_im[1], d_vel_theta_im[2], dt);
-    /* Forces */
-    if (gpu_complex_mode) {
+    if (gauged) {
+        const double gad = -gpu_g_gauge * gpu_dx_cached * dt;  /* th_dot = -g*a*E */
+        gauge_link_drift_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_th[0], d_th[1], d_th[2],
+            d_E[0], d_E[1], d_E[2], gad);
+    }
+    /* stage 3: forces (matter accs + E_acc) */
+    if (gauged) {
+        const double GG  = gpu_g_gauge;
+        const double STP = 1.0 / (GG * gpu_dx_cached * gpu_dx_cached * gpu_dx_cached);
+        const double inva = 1.0 / gpu_dx_cached;
+        compute_forces_complex_gauge_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_phi[0], d_phi[1], d_phi[2],
+            d_phi_im[0], d_phi_im[1], d_phi_im[2],
+            d_theta[0], d_theta[1], d_theta[2],
+            d_theta_im[0], d_theta_im[1], d_theta_im[2],
+            d_th[0], d_th[1], d_th[2],
+            d_acc_phi[0], d_acc_phi[1], d_acc_phi[2],
+            d_acc_phi_im[0], d_acc_phi_im[1], d_acc_phi_im[2],
+            d_acc_theta[0], d_acc_theta[1], d_acc_theta[2],
+            d_acc_theta_im[0], d_acc_theta_im[1], d_acc_theta_im[2],
+            d_E_acc[0], d_E_acc[1], d_E_acc[2],
+            GG, STP, inva);
+    } else if (gpu_complex_mode) {
         /* v66: 12-field minimal loop; intermediates guarded off by cfg_validate */
         compute_forces_complex_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
             d_phi[0], d_phi[1], d_phi[2],
@@ -1748,7 +2520,7 @@ static void gpu_verlet_step(double dt) {
             d_mismatch[0], d_mismatch[1], d_mismatch[2],
             d_harden_Q[0], d_harden_Q[1], d_harden_Q[2]);
     }
-    /* Half-kick */
+    /* stage 4: half-kick (matter + E) */
     verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_vel_phi[0], d_vel_phi[1], d_vel_phi[2],
         d_vel_theta[0], d_vel_theta[1], d_vel_theta[2],
@@ -1760,14 +2532,23 @@ static void gpu_verlet_step(double dt) {
             d_vel_theta_im[0], d_vel_theta_im[1], d_vel_theta_im[2],
             d_acc_phi_im[0], d_acc_phi_im[1], d_acc_phi_im[2],
             d_acc_theta_im[0], d_acc_theta_im[1], d_acc_theta_im[2], hdt);
-    /* Boundary — type set externally before calling gpu_verlet_step */
+    if (gauged)
+        gauge_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_E[0], d_E[1], d_E[2],
+            d_E_acc[0], d_E_acc[1], d_E_acc[2], hdt);
+    /* stage 5: boundary — type set externally before calling gpu_verlet_step */
     absorbing_boundary_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_vel_phi[0], d_vel_phi[1], d_vel_phi[2],
         d_vel_theta[0], d_vel_theta[1], d_vel_theta[2]);
-    if (gpu_complex_mode)
+    if (gpu_complex_mode) {
         absorbing_boundary_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
             d_vel_phi_im[0], d_vel_phi_im[1], d_vel_phi_im[2],
             d_vel_theta_im[0], d_vel_theta_im[1], d_vel_theta_im[2]);
+        /* v69 §3.6: damp E in the sponge (links NOT damped) */
+        if (gpu_gauge_mode)
+            absorbing_boundary_gauge_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                d_E[0], d_E[1], d_E[2]);
+    }
 }
 
 /* Save current host grid state as pinned boundary values (for bc_type=1) */
@@ -2067,8 +2848,8 @@ static void *snap_writer_thread(void *arg) {
         ctx->writer_busy = 1;
         pthread_mutex_unlock(&ctx->mutex);
 
-        /* Compress and write frame to SFA (nf = 12 real, 24 complex) */
-        void *cols[24];
+        /* Compress and write frame to SFA (nf = 12 real, 24 complex, 30 gauged) */
+        void *cols[30];
         long N3 = ctx->N3;
         int nf = ctx->nf;
         if (ctx->precision == 0) {
@@ -2104,7 +2885,7 @@ static SnapHookCtx create_snap_hook(FrameWriter *fw, int precision, int snap_eve
     ctx.precision = precision;
     ctx.snap_every = snap_every;
     ctx.N3 = N3;
-    ctx.nf = nf;   /* 12 real-mode columns, 24 complex (v66) */
+    ctx.nf = nf;   /* 12 real-mode columns, 24 complex (v66), 30 gauged (v69) */
 
     cudaStreamCreate(&ctx.stream);
 
@@ -2181,8 +2962,9 @@ static void snap_hook(int step, double t, const FieldState *state, void *vctx) {
     int nf = ctx->nf;
 
     /* Order MUST match column registration: 12 real arrays, then the
-       imaginary copy (phi_im, theta_im, phi_im_vel, theta_im_vel) — v66. */
-    const double *src[24] = {
+       imaginary copy (phi_im, theta_im, phi_im_vel, theta_im_vel) — v66,
+       then the v69 gauge sector (th links, E). */
+    const double *src[30] = {
         state->phi[0], state->phi[1], state->phi[2],
         state->theta[0], state->theta[1], state->theta[2],
         state->vel_phi[0], state->vel_phi[1], state->vel_phi[2],
@@ -2190,7 +2972,9 @@ static void snap_hook(int step, double t, const FieldState *state, void *vctx) {
         state->phi_im[0], state->phi_im[1], state->phi_im[2],
         state->theta_im[0], state->theta_im[1], state->theta_im[2],
         state->vel_phi_im[0], state->vel_phi_im[1], state->vel_phi_im[2],
-        state->vel_theta_im[0], state->vel_theta_im[1], state->vel_theta_im[2]
+        state->vel_theta_im[0], state->vel_theta_im[1], state->vel_theta_im[2],
+        state->th[0], state->th[1], state->th[2],
+        state->Efield[0], state->Efield[1], state->Efield[2]
     };
 
     if (ctx->precision == 0) {
@@ -2264,7 +3048,19 @@ static DiagHookCtx create_diag_hook(FILE *fp, int diag_every, int major_every,
     ctx.kappa_gamma = c->kappa_gamma;
     ctx.complex_mode = c->complex_phi;
 
-    int nvals = ctx.complex_mode ? CDIAG_TOTAL : DIAG_NVALS;
+    /* v69 gauge diagnostics config (G_offset set by the caller after
+     * init_gauss_project — the host Grid owns the measured offset) */
+    ctx.gauge_mode = c->complex_gauge;
+    ctx.gauged = (c->complex_gauge && c->g_gauge != 0.0);
+    ctx.g_gauge = c->g_gauge;
+    ctx.G_offset = 0.0;
+    /* Interior Omega: one extra dx inside the sponge edge (CPU compute_gauss) */
+    double Rint = (c->bc_type == 0) ? (c->L - c->damp_width - dx) : 1e300;
+    ctx.Rint2 = Rint * Rint;
+    ctx.Rcube = c->qdiag_radius;
+    ctx.gauss_max = ctx.gauss_l2 = ctx.e_em = ctx.q_flux = 0.0;
+
+    int nvals = ctx.gauge_mode ? GDIAG_TOTAL : (ctx.complex_mode ? CDIAG_TOTAL : DIAG_NVALS);
     cudaMalloc(&ctx.d_results, nvals * sizeof(double));
     cudaMallocHost(&ctx.h_results, nvals * sizeof(double));
 
@@ -2297,22 +3093,66 @@ static void run_gpu_diagnostics(const FieldState *state, DiagHookCtx *ctx) {
 
     if (ctx->complex_mode) {
         /* v66 complex path: 20-value reduction + two-pass centroid r_core
-         * (mirrors CPU compute_energy_complex + compute_charges) */
-        zero_diag_kernel<<<1, CDIAG_TOTAL>>>(ctx->d_results, CDIAG_TOTAL);
-        reduce_diagnostics_complex_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
-            state->phi[0], state->phi[1], state->phi[2],
-            state->phi_im[0], state->phi_im[1], state->phi_im[2],
-            state->theta[0], state->theta[1], state->theta[2],
-            state->theta_im[0], state->theta_im[1], state->theta_im[2],
-            state->vel_phi[0], state->vel_phi[1], state->vel_phi[2],
-            state->vel_phi_im[0], state->vel_phi_im[1], state->vel_phi_im[2],
-            state->vel_theta[0], state->vel_theta[1], state->vel_theta[2],
-            state->vel_theta_im[0], state->vel_theta_im[1], state->vel_theta_im[2],
-            ctx->dV, idx1,
-            ctx->m2, ctx->mtheta2, ctx->eta, ctx->mu, ctx->kappa,
-            ctx->qdiag_R2, ctx->d_results);
-        cudaMemcpy(ctx->h_results, ctx->d_results, CDIAG_TOTAL * sizeof(double),
+         * (mirrors CPU compute_energy_complex + compute_charges).
+         * v69 gauged: covariant-difference energy variant + gauss reduction. */
+        int nvals = ctx->gauge_mode ? GDIAG_TOTAL : CDIAG_TOTAL;
+        zero_diag_kernel<<<1, nvals>>>(ctx->d_results, nvals);
+        if (ctx->gauged) {
+            reduce_diagnostics_complex_gauge_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                state->phi[0], state->phi[1], state->phi[2],
+                state->phi_im[0], state->phi_im[1], state->phi_im[2],
+                state->theta[0], state->theta[1], state->theta[2],
+                state->theta_im[0], state->theta_im[1], state->theta_im[2],
+                state->vel_phi[0], state->vel_phi[1], state->vel_phi[2],
+                state->vel_phi_im[0], state->vel_phi_im[1], state->vel_phi_im[2],
+                state->vel_theta[0], state->vel_theta[1], state->vel_theta[2],
+                state->vel_theta_im[0], state->vel_theta_im[1], state->vel_theta_im[2],
+                state->th[0], state->th[1], state->th[2],
+                ctx->dV, idx1,
+                ctx->m2, ctx->mtheta2, ctx->eta, ctx->mu, ctx->kappa,
+                ctx->qdiag_R2, ctx->d_results);
+        } else {
+            reduce_diagnostics_complex_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                state->phi[0], state->phi[1], state->phi[2],
+                state->phi_im[0], state->phi_im[1], state->phi_im[2],
+                state->theta[0], state->theta[1], state->theta[2],
+                state->theta_im[0], state->theta_im[1], state->theta_im[2],
+                state->vel_phi[0], state->vel_phi[1], state->vel_phi[2],
+                state->vel_phi_im[0], state->vel_phi_im[1], state->vel_phi_im[2],
+                state->vel_theta[0], state->vel_theta[1], state->vel_theta[2],
+                state->vel_theta_im[0], state->vel_theta_im[1], state->vel_theta_im[2],
+                ctx->dV, idx1,
+                ctx->m2, ctx->mtheta2, ctx->eta, ctx->mu, ctx->kappa,
+                ctx->qdiag_R2, ctx->d_results);
+        }
+        if (ctx->gauge_mode) {
+            /* v69 gauss/Q_flux reduction (also when g==0: gauss cols still written) */
+            reduce_gauss_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                state->phi[0], state->phi[1], state->phi[2],
+                state->phi_im[0], state->phi_im[1], state->phi_im[2],
+                state->theta[0], state->theta[1], state->theta[2],
+                state->theta_im[0], state->theta_im[1], state->theta_im[2],
+                state->vel_phi[0], state->vel_phi[1], state->vel_phi[2],
+                state->vel_phi_im[0], state->vel_phi_im[1], state->vel_phi_im[2],
+                state->vel_theta[0], state->vel_theta[1], state->vel_theta[2],
+                state->vel_theta_im[0], state->vel_theta_im[1], state->vel_theta_im[2],
+                state->Efield[0], state->Efield[1], state->Efield[2],
+                state->th[0], state->th[1], state->th[2],
+                ctx->g_gauge, ctx->G_offset, ctx->Rint2, ctx->Rcube, ctx->dV,
+                ctx->d_results + GAUSS_BASE);
+        }
+        cudaMemcpy(ctx->h_results, ctx->d_results, nvals * sizeof(double),
                    cudaMemcpyDeviceToHost);
+        if (ctx->gauge_mode) {
+            /* host post-processing (mirrors CPU compute_gauss outputs) */
+            const double *h = ctx->h_results;
+            double nOmega = h[GAUSS_BASE+2], nC = h[GAUSS_BASE+5];
+            ctx->gauss_max = h[GAUSS_BASE+0];
+            ctx->gauss_l2  = (nOmega > 0) ? sqrt(h[GAUSS_BASE+1]/nOmega) : 0.0;
+            ctx->e_em      = h[GAUSS_BASE+3];
+            ctx->q_flux    = (ctx->g_gauge != 0)
+                           ? (h[GAUSS_BASE+4] - ctx->G_offset*nC*ctx->dV)/ctx->g_gauge : 0.0;
+        }
         /* pass 2: rms charge radius about the rho2 centroid (dV cancels in centroid) */
         double M0_raw = ctx->h_results[15];
         if (M0_raw * ctx->dV >= 1e-30) {
@@ -2404,7 +3244,9 @@ static void diag_hook(int step, double t, const FieldState *state, void *vctx) {
 
     double *r = ctx->h_results;
     /* r: [0]epk [1]etk [2]eg [3]em [4]ep [5]etg [6]etm [7]ec [8]pm [9]Pm [10]Pint [11]trms_sum */
-    double et = r[0]+r[1]+r[2]+r[3]+r[4]+r[5]+r[6]+r[7];
+    /* v69: gauged E_total includes E_em (CPU compute_energy_complex_gauge) */
+    double et = r[0]+r[1]+r[2]+r[3]+r[4]+r[5]+r[6]+r[7]
+              + (ctx->gauged ? ctx->e_em : 0.0);
     /* theta_rms: complex mode divides by the actual 6 theta components (v66) */
     double trms = sqrt(r[11] / ((ctx->complex_mode ? 6.0 : 3.0) * ctx->N3));
     double Qp = 0, Qt = 0, smax = 0, rcore = 0, ocore = 0, qcore = 0;
@@ -2417,6 +3259,9 @@ static void diag_hook(int step, double t, const FieldState *state, void *vctx) {
         fprintf(ctx->fp, "\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%.6e",
                 Qp, Qt, Qp+Qt, smax, rcore, ocore, qcore,
                 ctx->probes[0], ctx->probes[1], ctx->probes[2], ctx->probes[3]);
+    if (ctx->gauge_mode)
+        fprintf(ctx->fp, "\t%.6e\t%.6e\t%.12e\t%.12e",
+                ctx->gauss_max, ctx->gauss_l2, ctx->e_em, ctx->q_flux);
     fprintf(ctx->fp, "\n");
     fflush(ctx->fp);
 
@@ -2431,6 +3276,7 @@ static void diag_hook(int step, double t, const FieldState *state, void *vctx) {
         printf("t=%7.1f E=%.3e (drift %+.3f%%) Ep=%.1f phi=%.3f θ_rms=%.2e ",
                t, et, drift, r[4], r[8], trms);
         if (ctx->complex_mode) printf("Q=%.6e s_max=%.4e ", Qp+Qt, smax);
+        if (ctx->gauge_mode) printf("gauss=%.1e E_em=%.3e ", ctx->gauss_max, ctx->e_em);
         printf("[%.0f%% %.1fs %.2fms/step]\n",
                100.0 * step / ctx->n_steps, ms / 1000, ms / step);
         fflush(stdout);
@@ -3542,6 +4388,18 @@ int main(int argc, char **argv) {
 
     do_init(g, &c);
 
+    /* v69: net-charge refusal (§1.2) + mandatory Gauss projection (§5.4),
+     * HOST-side on the freshly initialized grid, BEFORE gpu_upload */
+    const int gauged = (c.complex_gauge && c.g_gauge != 0.0);
+    if (gauged) {
+        if (c.bc_type == 2) net_charge_check(g, &c);
+        init_gauss_project(g, &c);
+    }
+    if (c.test_gauge_xform) {
+        fprintf(stderr, "ERROR: test_gauge_xform=1 is CPU-only (use scp_sim, not scp_sim_cuda)\n");
+        exit(1);
+    }
+
     /* For gradient_pinned BC: save initial state, disable spherical damping */
     if (c.bc_type == 1) {
         grid_save_pinned(g);
@@ -3549,9 +4407,16 @@ int main(int argc, char **argv) {
         printf("Gradient BC: pinned %d slabs on each x-face (A_high=%.3f, A_low=%.3f)\n\n",
                c.gradient_margin, c.gradient_A_high, c.gradient_A_low);
     }
+    /* bc_type=2 (periodic): CPU applies NO damping; the GPU absorbing kernel
+     * runs unconditionally, so zero its parameters (no-op in the kernel). */
+    if (c.bc_type == 2) {
+        c.damp_width = 0;  c.damp_rate = 0;
+    }
 
     /* GPU setup */
-    gpu_alloc(g->N3, (c.alpha_cs != 0 || c.beta_h != 0), c.complex_phi);
+    gpu_alloc(g->N3, (c.alpha_cs != 0 || c.beta_h != 0), c.complex_phi, c.complex_gauge);
+    gpu_g_gauge = c.g_gauge;
+    gpu_dx_cached = g->dx;
     gpu_set_constants(&c, g->dx);
     cudaMemcpyToSymbol(d_BC_TYPE, &c.bc_type, sizeof(int));
     cudaMemcpyToSymbol(d_GRAD_MARGIN, &c.gradient_margin, sizeof(int));
@@ -3560,7 +4425,19 @@ int main(int argc, char **argv) {
     gpu_upload(g);
 
     /* Initial force computation on GPU */
-    if (c.complex_phi) {
+    if (gauged) {
+        const double STP = 1.0 / (c.g_gauge * g->dx * g->dx * g->dx);
+        compute_forces_complex_gauge_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_phi[0],d_phi[1],d_phi[2], d_phi_im[0],d_phi_im[1],d_phi_im[2],
+            d_theta[0],d_theta[1],d_theta[2], d_theta_im[0],d_theta_im[1],d_theta_im[2],
+            d_th[0],d_th[1],d_th[2],
+            d_acc_phi[0],d_acc_phi[1],d_acc_phi[2],
+            d_acc_phi_im[0],d_acc_phi_im[1],d_acc_phi_im[2],
+            d_acc_theta[0],d_acc_theta[1],d_acc_theta[2],
+            d_acc_theta_im[0],d_acc_theta_im[1],d_acc_theta_im[2],
+            d_E_acc[0],d_E_acc[1],d_E_acc[2],
+            c.g_gauge, STP, 1.0/g->dx);
+    } else if (c.complex_phi) {
         compute_forces_complex_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
             d_phi[0],d_phi[1],d_phi[2], d_phi_im[0],d_phi_im[1],d_phi_im[2],
             d_theta[0],d_theta[1],d_theta[2], d_theta_im[0],d_theta_im[1],d_theta_im[2],
@@ -3652,9 +4529,19 @@ int main(int argc, char **argv) {
         sfa_add_column(sfa,"thetaim_vy",sfa_dtype,SFA_VELOCITY,10);
         sfa_add_column(sfa,"thetaim_vz",sfa_dtype,SFA_VELOCITY,11);
     }
+    if (c.complex_gauge) {
+        /* v69 gauge sector (SPEC §6): links as ANGLE 6-8, E as VELOCITY 12-14 */
+        sfa_add_column(sfa,"th_x",sfa_dtype,SFA_ANGLE,   6);
+        sfa_add_column(sfa,"th_y",sfa_dtype,SFA_ANGLE,   7);
+        sfa_add_column(sfa,"th_z",sfa_dtype,SFA_ANGLE,   8);
+        sfa_add_column(sfa,"E_x", sfa_dtype,SFA_VELOCITY,12);
+        sfa_add_column(sfa,"E_y", sfa_dtype,SFA_VELOCITY,13);
+        sfa_add_column(sfa,"E_z", sfa_dtype,SFA_VELOCITY,14);
+    }
     sfa_finalize_header(sfa);
     const char *pn[]={"f16","f32","f64"};
-    printf("SFA: %s (%d cols, %s, colzstd)\n\n", c.output, c.complex_phi ? 24 : 12, pn[c.precision]);
+    printf("SFA: %s (%d cols, %s, colzstd)\n\n", c.output,
+           c.complex_gauge ? 30 : (c.complex_phi ? 24 : 12), pn[c.precision]);
 
     /* Timing, step counts — use lround to avoid truncation errors */
     int n_steps=(int)lround(c.T/g->dt);
@@ -3671,8 +4558,10 @@ int main(int argc, char **argv) {
         fstate.theta[a] = d_theta[a]; fstate.vel_theta[a] = d_vel_theta[a]; fstate.acc_theta[a] = d_acc_theta[a];
         fstate.phi_im[a] = d_phi_im[a]; fstate.vel_phi_im[a] = d_vel_phi_im[a]; fstate.acc_phi_im[a] = d_acc_phi_im[a];
         fstate.theta_im[a] = d_theta_im[a]; fstate.vel_theta_im[a] = d_vel_theta_im[a]; fstate.acc_theta_im[a] = d_acc_theta_im[a];
+        fstate.th[a] = d_th[a]; fstate.Efield[a] = d_E[a]; fstate.E_acc[a] = d_E_acc[a];
     }
     fstate.complex_mode = c.complex_phi;
+    fstate.gauge_mode = c.complex_gauge;
     fstate.N3 = g->N3; fstate.N = g->N;
     fstate.L = g->L; fstate.dx = g->dx; fstate.dt = g->dt;
 
@@ -3682,7 +4571,7 @@ int main(int argc, char **argv) {
 
     /* Create hooks */
     SnapHookCtx snap_ctx = create_snap_hook(&frame_writer, c.precision, snap_every, g->N3,
-                                            c.complex_phi ? 24 : 12);
+                                            c.complex_gauge ? 30 : (c.complex_phi ? 24 : 12));
     start_snap_writer(&snap_ctx);
     register_hook(snap_hook, &snap_ctx);
 
@@ -3692,6 +4581,7 @@ int main(int argc, char **argv) {
                 "E_coupling\tE_total\tphi_max\tP_max\tP_int\ttheta_rms");
     if (c.complex_phi) fprintf(fp, "\tQ_phi\tQ_theta\tQ_total\ts_max\tr_core"
                                    "\tomega_core\tQ_core\tthp1u\tthp1v\tthp2u\tthp2v");
+    if (c.complex_gauge) fprintf(fp, "\tgauss_max\tgauss_l2\tE_em\tQ_flux");
     fprintf(fp, "\n");
 
     cudaEvent_t t_start;
@@ -3699,6 +4589,7 @@ int main(int argc, char **argv) {
     cudaEventRecord(t_start);
 
     DiagHookCtx diag_ctx = create_diag_hook(fp, diag_every, major, g->N3, g->dx, n_steps, t_start, &c);
+    diag_ctx.G_offset = g->G_offset;   /* frozen jellium offset from init_gauss_project */
     register_hook(diag_hook, &diag_ctx);
 
     /* Vector output hook (optional) — uses same FrameWriter */
@@ -3710,7 +4601,8 @@ int main(int argc, char **argv) {
     run_gpu_diagnostics(&fstate, &diag_ctx);
     {
         double *r = diag_ctx.h_results;
-        double et0 = r[0]+r[1]+r[2]+r[3]+r[4]+r[5]+r[6]+r[7];
+        double et0 = r[0]+r[1]+r[2]+r[3]+r[4]+r[5]+r[6]+r[7]
+                   + (diag_ctx.gauged ? diag_ctx.e_em : 0.0);
         double trms0 = sqrt(r[11] / ((c.complex_phi ? 6.0 : 3.0) * g->N3));
         diag_ctx.E0 = et0;
         printf("INIT: E_total=%.4e E_pot=%.4f phi_max=%.4f theta_rms=%.3e\n\n", et0, r[4], r[8], trms0);
@@ -3725,6 +4617,12 @@ int main(int argc, char **argv) {
             printf("INIT charges: Q_phi=%.6e Q_theta=%.6e s_max=%.4e r_core=%.3f "
                    "omega_core=%.4f Q_core=%.6e\n\n",
                    Qp, Qt, smax, rcore, ocore, qcore);
+        }
+        if (c.complex_gauge) {
+            fprintf(fp, "\t%.6e\t%.6e\t%.12e\t%.12e",
+                    diag_ctx.gauss_max, diag_ctx.gauss_l2, diag_ctx.e_em, diag_ctx.q_flux);
+            printf("INIT gauge: gauss_max=%.3e gauss_l2=%.3e E_em=%.6e Q_flux=%.6e\n\n",
+                   diag_ctx.gauss_max, diag_ctx.gauss_l2, diag_ctx.e_em, diag_ctx.q_flux);
         }
         fprintf(fp, "\n");
         fflush(fp);
@@ -3904,7 +4802,8 @@ int main(int argc, char **argv) {
     run_gpu_diagnostics(&fstate, &diag_ctx);
     {
         double *r = diag_ctx.h_results;
-        double et = r[0]+r[1]+r[2]+r[3]+r[4]+r[5]+r[6]+r[7];
+        double et = r[0]+r[1]+r[2]+r[3]+r[4]+r[5]+r[6]+r[7]
+                  + (diag_ctx.gauged ? diag_ctx.e_em : 0.0);
         double trms = sqrt(r[11] / ((c.complex_phi ? 6.0 : 3.0) * g->N3));
 
         cudaEvent_t t_stop;
@@ -3924,6 +4823,9 @@ int main(int argc, char **argv) {
                    "omega_core=%.4f Q_core=%.6e\n",
                    Qp, Qt, Qp+Qt, smax, rcore, ocore, qcore);
         }
+        if (c.complex_gauge)
+            printf("gauss_max=%.3e gauss_l2=%.3e E_em=%.6e Q_flux=%.6e\n",
+                   diag_ctx.gauss_max, diag_ctx.gauss_l2, diag_ctx.e_em, diag_ctx.q_flux);
         printf("SFA: %s (%u frames)\n", c.output, nf);
         printf("Wall: %.1fs (%.1f min) %.2fms/step\n", total_ms/1000, total_ms/60000, total_ms/n_steps);
     }

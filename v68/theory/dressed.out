@@ -1,0 +1,79 @@
+=== CHECK A: exact O(n) Gaussian slope c(X) vs resummed M2 numeric ===
+c(X) = 2 mu X (2t^2-6t+1)/(1+t)^4, t=kappa X^3 ; blue band where 2t^2-6t+1<0:
+  t in (0.1771,2.8229)  =>  X=f^2 in (0.1524,0.3836), f in (0.3904,0.6194)
+  X=0.050: M2 slope   -3.8821  c_exact   -3.8818  g'(FRAME)   -4.0072  rel 6.1e-05
+  X=0.150: M2 slope   -0.2950  c_exact   -0.2955  g'(FRAME)   -5.1471  rel 1.7e-03
+  X=0.250: M2 slope   +5.0651  c_exact   +5.0656  g'(FRAME)   +2.0575  rel 9.4e-05
+  X=0.342: M2 slope   +1.0474  c_exact   +1.0472  g'(FRAME)   +3.1421  rel 1.3e-04
+  X=0.410: M2 slope   -0.3534  c_exact   -0.3535  g'(FRAME)   +2.2729  rel 3.5e-04
+  X=0.550: M2 slope   -0.5397  c_exact   -0.5397  g'(FRAME)   +0.8788  rel 1.7e-05
+CHECK A: PASS
+  at ball core X=0.410: c=-0.3535 (RED) vs FRAME g'=+2.2729 (blue) — the FRAME blue-core term is cancelled by the Wick cross terms
+
+=== CHECK B/C: vacuum branch and window edge ===
+omega_min(0) = 1.308700  (closed form 1.308700) PASS
+  w=1.39: Q=482.2 (v66 482.2) E=691.9 f0=0.6405 rel 3.4e-05
+  w=1.42: Q=209.6 (v66 209.6) E=309.7 f0=0.6365 rel 1.5e-04
+CHECK B: PASS
+vacuum branch omega(Q=300) = 1.4057  [measured eta=0.5 control: 1.4142; offset +0.0085 = eta-dressing systematic, differenced out below]
+
+=== Dressed branches (M2 resummed, in-core enhancement) ===
+  e=0.05 n=0.00073: omega_min=1.30936 (+0.00066)  omega(Q=300)=1.40584  d_omega=+0.00016   [measured +0.012]
+  e=0.20 n=0.00292: omega_min=1.31126 (+0.00256)  omega(Q=300)=1.40628  d_omega=+0.00060   [measured -0.025]
+  e=0.80 n=0.01170: omega_min=1.31799 (+0.00929)  omega(Q=300)=1.40739  d_omega=+0.00172   [measured -0.120]
+  (M1 first-order check at e=0.8: d_omega=+0.00235, omega_min=1.31929 — O(n^2) size on shift: 6.4e-04)
+
+=== Matched-Q linear response (M1 analytic, small n) vs energy envelope ===
+  M1 n=0.0005: d_omega = +0.000119   slope d(dw)/dn = +0.238
+  M1 n=0.001: d_omega = +0.000227   slope d(dw)/dn = +0.227
+  M1 n=0.002: d_omega = +0.000452   slope d(dw)/dn = +0.226
+  energy-envelope d(dE)/dQ near Q=300 = +0.0791 per n
+  (mismatch vs full solve = the Wick-averaged EOM is NOT variational: the
+   coherent-projection cross term in c(X) has no counterpart in <E>)
+
+=== Window edge omega_min(n) — can ANY Gaussian n reach the measured 1.294? ===
+  n=0.001: omega_min = 1.30960  (+0.00090)
+  n=0.003: omega_min = 1.31132  (+0.00262)
+  n=0.010: omega_min = 1.31678  (+0.00808)
+  n=0.030: omega_min = 1.32951  (+0.02081)
+  n=0.060: omega_min = 1.34446  (+0.03576)
+  n=0.100: omega_min = 1.34373  (+0.03503)
+  n=0.150: omega_min = 1.34525  (+0.03655)
+  n=0.200: omega_min = 1.35880  (+0.05010)
+RESULT: NO Gaussian n reaches 1.294 — the edge moves UP monotonically until the well is smeared away. The neutral-Gaussian mean-field CANNOT produce sub-window states.
+
+=== Matched-Q shift d_omega(n) over the full Gaussian range (M2+enh, H=6) ===
+  n=0.0003: d_omega = +0.000070   omega_min = 1.30897
+  n=0.0010: d_omega = +0.000221   omega_min = 1.30960
+  n=0.0030: d_omega = +0.000617   omega_min = 1.31132
+  n=0.0100: d_omega = +0.001571   omega_min = 1.31678
+  n=0.0200: d_omega = +0.002058   omega_min = 1.32352
+  n=0.0400: d_omega = +0.000947   omega_min = 1.33506
+  n=0.0800: d_omega = -0.011688   omega_min = 1.34523
+targets: +0.012 (e=0.05), -0.025 (e=0.2), -0.120 (e=0.8)
+
+=== Crossover scan: d_omega(e) with vacuum-drive n=n0*e (M2+enh) ===
+  e=0.02: d_omega = +0.000068   omega_min = 1.30897
+  e=0.05: d_omega = +0.000168   omega_min = 1.30936
+  e=0.10: d_omega = +0.000318   omega_min = 1.31000
+  e=0.20: d_omega = +0.000604   omega_min = 1.31126
+  e=0.40: d_omega = +0.001080   omega_min = 1.31364
+  e=0.80: d_omega = +0.001718   omega_min = 1.31799
+  e=1.20: d_omega = +0.002018   omega_min = 1.32195
+
+=== Coherent (non-Gaussian) alternatives — required scales [estimate] ===
+(a) +/-omega anti-charged admixture: apparent rotation rate of
+    f+ e^{+iwt} + f- e^{-iwt} is w_app = w (f+^2 - f-^2)/(f+^2 + f-^2);
+    contamination needed for each measured red shift (w=1.414):
+      e=0.2: f-^2/f+^2 = 0.89 %
+      e=0.8: f-^2/f+^2 = 4.43 %
+(b) driven (pumped) state below the window: existence deficit at omega=1.294:
+    omega_min^2 - omega^2 = +0.0383  — a coherent co-rotating
+    drive of this size in U_eff (pump power, not a free eigenstate) is required;
+    free dressed branches cannot reach it (see edge scan above).
+(c) Mathieu n=1 sum-beat pumping (THETA_DYNAMICS WP-C): net growth at the rungs
+    +0.017/+0.074/+0.21 per t.u. — rank-orders with the measured |red| shifts.
+
+[total runtime 201 s]
+
+[total runtime 201 s]

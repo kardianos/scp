@@ -77,8 +77,8 @@ static void init_from_sfa(Grid *g, const Config *c) {
     if (!buf) { fprintf(stderr, "FATAL: frame buffer alloc\n"); exit(1); }
     sfa_read_frame(sfa, frame, buf);
 
-    int loaded[24] = {0};
-    int warned_im = 0;
+    int loaded[30] = {0};
+    int warned_im = 0, warned_gauge = 0;
     uint64_t off = 0;
     for (uint32_t col = 0; col < sfa->n_columns; col++) {
         int dtype = sfa->columns[col].dtype;
@@ -110,6 +110,20 @@ static void init_from_sfa(Grid *g, const Config *c) {
                 warned_im = 1;
             }
         }
+        else if ((sem == SFA_ANGLE    && comp >= 6  && comp < 9) ||
+                 (sem == SFA_VELOCITY && comp >= 12 && comp < 15)) {
+            /* v69 gauge-sector columns (SPEC §6): th links + E */
+#ifdef SCP_COMPLEX_FIELDS
+            if (c->complex_gauge) {
+                if (sem == SFA_ANGLE) { target = g->th[comp-6];      slot = 24+comp-6; }
+                else                  { target = g->Efield[comp-12]; slot = 27+comp-12; }
+            } else
+#endif
+            if (!warned_gauge) {
+                printf("  WARNING: file has gauge-sector columns; skipped (complex_gauge=0)\n");
+                warned_gauge = 1;
+            }
+        }
 
         if (target) {
             long N3 = g->N3;
@@ -126,12 +140,19 @@ static void init_from_sfa(Grid *g, const Config *c) {
         off += (uint64_t)g->N3 * es;
     }
 
-    int n_fields = 0, n_vels = 0;
+    int n_fields = 0, n_vels = 0, n_gauge = 0;
     for (int i = 0; i < 6; i++) n_fields += loaded[i];
     for (int i = 6; i < 12; i++) n_vels += loaded[i];
+    for (int i = 24; i < 30; i++) n_gauge += loaded[i];
     printf("  Loaded: %d/6 field arrays, %d/6 velocity arrays\n", n_fields, n_vels);
     if (n_vels == 0)
         printf("  WARNING: no velocity data — starting from rest (cold restart)\n");
+#ifdef SCP_COMPLEX_FIELDS
+    if (c->complex_gauge && c->g_gauge != 0 && n_gauge == 0)
+        printf("  WARNING: init=sfa: no gauge columns; E seeded by Gauss projection\n");
+#else
+    (void)n_gauge;
+#endif
     if (fabs(sfa->Lx - g->L) > 0.01)
         printf("  WARNING: SFA L=%.2f != config L=%.2f\n", sfa->Lx, g->L);
 
@@ -250,19 +271,56 @@ static void init_template(Grid *g, const Config *c) {
 }
 
 #ifdef SCP_COMPLEX_FIELDS
-/* v66 init=qball (SPEC §5.1): symmetric Q-ball ansatz at t=0,
- *   Phi_a(0) = f(r),  d/dt Phi_a(0) = i*omega*f(r)
- * i.e. u_a=f, v_a=0, udot_a=0, vdot_a=omega*f; theta sector zero.
- * Q = 3*omega*int f^2 dV > 0 with the THEORY §2 sign convention.
- * delta[] is IGNORED (identical phase for all a — THEORY §5c). */
+/* --- qball profile-table helpers (linear interp on strictly increasing r) --- */
+
+/* generic table value: flat below rt[0], 'tail' above rt[np-1] */
+static double qb_interp(const double *rt, const double *vt, size_t np,
+                        double r, double tail) {
+    if (r <= rt[0]) return vt[0];
+    if (r >= rt[np-1]) return tail;
+    size_t lo = 0, hi = np - 1;
+    while (hi - lo > 1) {
+        size_t mid = (lo + hi) / 2;
+        if (rt[mid] <= r) lo = mid; else hi = mid;
+    }
+    double w = (r - rt[lo]) / (rt[hi] - rt[lo]);
+    return vt[lo] + w * (vt[hi] - vt[lo]);
+}
+
+/* radial E: linear ramp to 0 at the center, inverse-square continuation
+ * beyond the table (the tail carries the flux — SPEC §5.2) */
+static double qb_er_interp(const double *rt, const double *et, size_t np, double r) {
+    if (r <= rt[0])
+        return (rt[0] > 0) ? et[0] * (r / rt[0]) : et[0];
+    if (r >= rt[np-1]) {
+        double R = rt[np-1];
+        return et[np-1] * (R/r) * (R/r);
+    }
+    size_t lo = 0, hi = np - 1;
+    while (hi - lo > 1) {
+        size_t mid = (lo + hi) / 2;
+        if (rt[mid] <= r) lo = mid; else hi = mid;
+    }
+    double w = (r - rt[lo]) / (rt[hi] - rt[lo]);
+    return et[lo] + w * (et[hi] - et[lo]);
+}
+
+/* v66/v69 init=qball (v66 SPEC §5.1, v69 SPEC §5.2): symmetric Q-ball ansatz,
+ *   u_a=f(r), v_a=0, udot_a=0, vdot_a=weff(r)*f(r); theta sector zero.
+ * Profile columns: (r f) legacy, (r f Er) v69 contract, (r f Er weff) shooter
+ * output (weff used directly). Gauged (complex_gauge && g!=0): E seeded on
+ * radial link MIDPOINTS with 1/r^2 continuation; optional second ball via
+ * qball2_* keys (matter + E superposed). delta[] is IGNORED. */
 static void init_qball(Grid *g, const Config *c) {
-    /* --- load two-column (r f) profile --- */
     FILE *pf = fopen(c->qball_profile, "r");
     if (!pf) { fprintf(stderr, "FATAL: cannot open qball profile '%s'\n", c->qball_profile); exit(1); }
     size_t cap = 256, np = 0;
+    int ncol = 0;
     double *rt = (double*)malloc(cap * sizeof(double));
     double *ft = (double*)malloc(cap * sizeof(double));
-    if (!rt || !ft) { fprintf(stderr, "FATAL: qball profile alloc\n"); exit(1); }
+    double *et = (double*)malloc(cap * sizeof(double));
+    double *wt = (double*)malloc(cap * sizeof(double));
+    if (!rt || !ft || !et || !wt) { fprintf(stderr, "FATAL: qball profile alloc\n"); exit(1); }
     char line[1024];
     int lineno = 0;
     while (fgets(line, sizeof(line), pf)) {
@@ -270,10 +328,17 @@ static void init_qball(Grid *g, const Config *c) {
         char *p = line;
         while (*p == ' ' || *p == '\t') p++;
         if (*p == '#' || *p == '\n' || *p == '\r' || *p == '\0') continue;
-        double r, f;
-        if (sscanf(p, "%lf %lf", &r, &f) != 2) {
+        double r, f, er = 0, we = 0;
+        int nf = sscanf(p, "%lf %lf %lf %lf", &r, &f, &er, &we);
+        if (nf < 2) {
             fprintf(stderr, "FATAL: qball profile parse error at %s:%d\n",
                     c->qball_profile, lineno);
+            exit(1);
+        }
+        if (ncol == 0) ncol = nf;                      /* first data line fixes layout */
+        else if (nf < ncol) {
+            fprintf(stderr, "FATAL: qball profile column count changed at %s:%d "
+                    "(%d < %d)\n", c->qball_profile, lineno, nf, ncol);
             exit(1);
         }
         if (np == 0 && r < 0) {
@@ -289,52 +354,135 @@ static void init_qball(Grid *g, const Config *c) {
             cap *= 2;
             rt = (double*)realloc(rt, cap * sizeof(double));
             ft = (double*)realloc(ft, cap * sizeof(double));
-            if (!rt || !ft) { fprintf(stderr, "FATAL: qball profile realloc\n"); exit(1); }
+            et = (double*)realloc(et, cap * sizeof(double));
+            wt = (double*)realloc(wt, cap * sizeof(double));
+            if (!rt || !ft || !et || !wt) { fprintf(stderr, "FATAL: qball profile realloc\n"); exit(1); }
         }
-        rt[np] = r; ft[np] = f; np++;
+        rt[np] = r; ft[np] = f; et[np] = er; wt[np] = we; np++;
     }
     fclose(pf);
     if (np < 2) { fprintf(stderr, "FATAL: qball profile has <2 points\n"); exit(1); }
-    printf("Init: qball (%zu points, r=[%.3f,%.3f], f0=%.6f, omega=%.4f; delta[] ignored)\n",
-           np, rt[0], rt[np-1], ft[0], c->qball_omega);
+
+    const double om = c->qball_omega;
+    const double GG = c->g_gauge;
+    const int gauged = (c->complex_gauge && GG != 0.0);
+    int have_er = (ncol >= 3);
+
+    /* extra profile columns are honored ONLY when gauged: a 3/4-col profile
+     * under complex_gauge=0 (or g==0) must reproduce the v66 seed exactly */
+    if (!gauged || ncol == 2) {
+        for (size_t q = 0; q < np; q++) wt[q] = om;   /* weff = omega everywhere */
+        if (gauged && ncol == 2)
+            printf("  WARNING: ungauged profile (no Er column): seeding "
+                   "vdot=omega*f, E from projection; O(g^2) settling "
+                   "transient expected\n");
+        have_er = gauged && have_er;
+    } else if (ncol == 3) {
+        /* build weff = omega + g*a0(r) with a0(r) = -[int_r^R Er ds
+         * + Er(R)*R] <= 0 (backward cumulative trapezoid + exact 1/r^2
+         * tail). NOTE: SPEC §5.2 writes a0 with a + sign (a0>0), but that
+         * is inconsistent with the kernel's own temporal-gauge dynamics:
+         * stationarity of Phi=f(r)e^{i*Omega(r)t} under theta_dot=-g*a*E
+         * requires Omega'(r)=+g*Er>=0 with Omega(inf)=omega, so the local
+         * phase rate is BELOW omega inside the ball (Coulomb well a0<0).
+         * GAUGE_DESIGN §2's original convention (E_i = d_i A_0 - d_t A_i,
+         * A_0 a negative well) agrees, as does the shooter's 4-column
+         * output (a0_GD(0)<0, weff0<omega). SPEC O1's E=-grad(A0)-dA/dt
+         * "repair" is not invariant under SPEC §3's own gauge law and
+         * §5.1/§5.2/§7.3(P4) inherited the flipped sign from it. */
+        double a0 = -(et[np-1] * rt[np-1]);
+        wt[np-1] = om + GG*a0;
+        for (size_t q = np-1; q > 0; q--) {
+            a0 -= 0.5*(et[q-1] + et[q])*(rt[q] - rt[q-1]);
+            wt[q-1] = om + GG*a0;
+        }
+    }   /* ncol == 4 && gauged: weff straight from the shooter table */
+
+    printf("Init: qball (%zu points, %d cols, r=[%.3f,%.3f], f0=%.6f, omega=%.4f, "
+           "weff0=%.4f; delta[] ignored)\n",
+           np, ncol, rt[0], rt[np-1], ft[0], om, wt[0]);
     if (fabs(ft[np-1]) > 1e-8)
         printf("  WARNING: profile truncated while still sizable (f_last=%.3e at r=%.3f)\n",
                ft[np-1], rt[np-1]);
 
-    /* --- fill grid: linear interpolation in r from the qball center --- */
+    /* --- ball centers --- */
     const int N = g->N, NN = N * N;
     const double L = g->L, dx = g->dx;
     const double x0 = (c->qball_x0 >= 1e29) ? 0.0 : c->qball_x0;
     const double y0 = (c->qball_y0 >= 1e29) ? 0.0 : c->qball_y0;
     const double z0 = (c->qball_z0 >= 1e29) ? 0.0 : c->qball_z0;
-    const double om = c->qball_omega;
+    const int ball2 = (c->qball2_x0 < 1e29 && c->qball2_y0 < 1e29 && c->qball2_z0 < 1e29);
+    const double x2 = ball2 ? c->qball2_x0 : 0, y2 = ball2 ? c->qball2_y0 : 0,
+                 z2 = ball2 ? c->qball2_z0 : 0;
+    const double sgn = (double)c->qball2_sign;
+    const double cd = ball2 ? cos(c->qball2_phase) : 1.0;
+    const double sd = ball2 ? sin(c->qball2_phase) : 0.0;
+    if (ball2)
+        printf("  ball1 center=(%.2f,%.2f,%.2f); ball2 center=(%.2f,%.2f,%.2f) "
+               "sign=%+d phase=%.4f\n", x0, y0, z0, x2, y2, z2,
+               c->qball2_sign, c->qball2_phase);
+
+    /* --- matter fill --- */
     for (int i = 0; i < N; i++) { double x = -L + i*dx;
     for (int j = 0; j < N; j++) { double y = -L + j*dx;
     for (int k = 0; k < N; k++) { double z = -L + k*dx;
         long idx = (long)i*NN + j*N + k;
         double r = sqrt((x-x0)*(x-x0) + (y-y0)*(y-y0) + (z-z0)*(z-z0));
-        double f;
-        if (r <= rt[0]) f = ft[0];                 /* flat core, f'(0)=0 */
-        else if (r >= rt[np-1]) f = 0.0;
-        else {
-            /* binary search for the bracketing table interval */
-            size_t lo = 0, hi = np - 1;
-            while (hi - lo > 1) {
-                size_t mid = (lo + hi) / 2;
-                if (rt[mid] <= r) lo = mid; else hi = mid;
-            }
-            double w = (r - rt[lo]) / (rt[hi] - rt[lo]);
-            f = ft[lo] + w * (ft[hi] - ft[lo]);
-        }
+        double f  = qb_interp(rt, ft, np, r, 0.0);
+        double we = qb_interp(rt, wt, np, r, wt[np-1]);
         for (int a = 0; a < NFIELDS; a++) {
-            g->phi[a][idx]        = f;       /* u_a = f(r) */
-            g->phi_im[a][idx]     = 0.0;     /* v_a = 0 */
-            g->phi_vel[a][idx]    = 0.0;     /* udot_a = 0 */
-            g->phi_im_vel[a][idx] = om * f;  /* vdot_a = omega*f(r) */
+            g->phi[a][idx]        = f;        /* u_a = f(r) */
+            g->phi_im[a][idx]     = 0.0;      /* v_a = 0 */
+            g->phi_vel[a][idx]    = 0.0;      /* udot_a = 0 */
+            g->phi_im_vel[a][idx] = we * f;   /* vdot_a = weff(r)*f(r) */
             /* theta sector (tu, tv, tudot, tvdot) stays zero (calloc'd) */
         }
+        if (ball2) {
+            double r2 = sqrt((x-x2)*(x-x2) + (y-y2)*(y-y2) + (z-z2)*(z-z2));
+            double f2  = qb_interp(rt, ft, np, r2, 0.0);
+            double we2 = qb_interp(rt, wt, np, r2, wt[np-1]);
+            for (int a = 0; a < NFIELDS; a++) {
+                g->phi[a][idx]        += f2*cd;
+                g->phi_im[a][idx]     += f2*sd;
+                g->phi_vel[a][idx]    += -sgn*we2*f2*sd;
+                g->phi_im_vel[a][idx] +=  sgn*we2*f2*cd;
+            }
+        }
     }}}
-    free(rt); free(ft);
+
+    /* --- E seeding on radial link midpoints (gauged, Er available) --- */
+    if (gauged && have_er) {
+        #pragma omp parallel for schedule(static)
+        for (long idx = 0; idx < (long)N*NN; idx++) {
+            int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+            double xc=-L+i*dx, yc=-L+j*dx, zc=-L+k*dx;
+            for (int d = 0; d < 3; d++) {
+                double mx = xc + (d==0 ? 0.5*dx : 0) - x0;
+                double my = yc + (d==1 ? 0.5*dx : 0) - y0;
+                double mz = zc + (d==2 ? 0.5*dx : 0) - z0;
+                double rm = sqrt(mx*mx + my*my + mz*mz);
+                double E = 0.0;
+                if (rm > 1e-12) {
+                    double Er = qb_er_interp(rt, et, np, rm);
+                    double rhat = (d==0 ? mx : d==1 ? my : mz) / rm;
+                    E += Er * rhat;
+                }
+                if (ball2) {
+                    double m2x = xc + (d==0 ? 0.5*dx : 0) - x2;
+                    double m2y = yc + (d==1 ? 0.5*dx : 0) - y2;
+                    double m2z = zc + (d==2 ? 0.5*dx : 0) - z2;
+                    double rm2 = sqrt(m2x*m2x + m2y*m2y + m2z*m2z);
+                    if (rm2 > 1e-12) {
+                        double Er2 = qb_er_interp(rt, et, np, rm2);
+                        double rhat2 = (d==0 ? m2x : d==1 ? m2y : m2z) / rm2;
+                        E += sgn * Er2 * rhat2;
+                    }
+                }
+                g->Efield[d][idx] += E;     /* th links stay 0 (Coulomb curl-free) */
+            }
+        }
+    }
+    free(rt); free(ft); free(et); free(wt);
 }
 #endif /* SCP_COMPLEX_FIELDS */
 
@@ -385,18 +533,26 @@ static void sfa_embed_kvmd(SFA *sfa, const Config *c) {
      * default to complex_phi=0, which is correct for all legacy files. */
     snprintf(vcplx,32,"%d",c->complex_phi);
     snprintf(vqom,32,"%.6f",c->qball_omega);
+    /* v69: complex_gauge + g_gauge appended ONLY when complex_gauge=1 (29 keys)
+     * so a .sfa-restart reallocates the gauge sector; legacy files default to 0. */
+    char vcgauge[32],vgg[32];
+    snprintf(vcgauge,32,"%d",c->complex_gauge);
+    snprintf(vgg,32,"%.9f",c->g_gauge);
     const char *keys[] = {"N","L","T","dt_factor","m","m_theta","eta","mu","kappa",
                           "kappa_h","alpha_cs","beta_h","bc_switch_time",
                           "mode","inv_alpha","inv_beta","kappa_gamma",
                           "damp_width","damp_rate","precision","delta",
                           "bc_type","gradient_A_high","gradient_A_low","gradient_margin",
-                          "complex_phi","qball_omega"};
+                          "complex_phi","qball_omega",
+                          "complex_gauge","g_gauge"};
     const char *vals[] = {vN,vL,vT,vdt,vm,vmt,veta,vmu,vkappa,
                           vkh,vacs,vbh,vbcsw,
                           vmode,via,vib,vkg,vdw,vdr,vprec,vdelta,
                           vbc,vgah,vgal,vgm,
-                          vcplx,vqom};
-    sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, c->complex_phi ? 27 : 25);
+                          vcplx,vqom,
+                          vcgauge,vgg};
+    sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals,
+                 c->complex_gauge ? 29 : (c->complex_phi ? 27 : 25));
 }
 
 #endif /* SCP_INIT_H */

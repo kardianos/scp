@@ -78,6 +78,14 @@ typedef struct {
     double qdiag_probe1;       /* theta probe 1 radius on +x axis (physical) */
     double qdiag_probe2;       /* theta probe 2 radius on +x axis (physical) */
 
+    /* v69 gauged diagonal U(1) sector (kernel-v3, SPEC.md) */
+    int    complex_gauge;      /* 0=ungauged (default), 1=compact U(1) links (needs complex_phi=1) */
+    double g_gauge;            /* gauge coupling g (>=0; flip charges via the seed) */
+    double qball2_x0, qball2_y0, qball2_z0;  /* optional second ball center; 1e30 = disabled */
+    int    qball2_sign;        /* +1 same charge (default), -1 conjugate/opposite ball */
+    double qball2_phase;       /* second-ball relative phase delta (radians) */
+    int    test_gauge_xform;   /* 1 = run lattice gauge-transform unit check and exit */
+
     /* Boundary */
     int bc_type;                /* 0=absorb_sphere, 1=gradient_pinned, 2=periodic */
     double damp_width, damp_rate;
@@ -128,6 +136,10 @@ static Config cfg_defaults(void) {
     c.qball_omega = 1.39;            /* THEORY §4: recommended first 3D target */
     c.qball_x0 = 1e30;  c.qball_y0 = 1e30;  c.qball_z0 = 1e30;
     c.qdiag_radius = 8.0;  c.qdiag_probe1 = 8.0;  c.qdiag_probe2 = 16.0;
+    c.complex_gauge = 0;  c.g_gauge = 0.05;
+    c.qball2_x0 = 1e30;  c.qball2_y0 = 1e30;  c.qball2_z0 = 1e30;
+    c.qball2_sign = 1;  c.qball2_phase = 0.0;
+    c.test_gauge_xform = 0;
     c.bc_type = 0;
     c.damp_width = 3.0;  c.damp_rate = 0.01;  c.bc_switch_time = 0.0;
     c.gradient_A_high = 0.15;  c.gradient_A_low = 0.05;  c.gradient_margin = 3;
@@ -194,6 +206,14 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"qdiag_radius"))  c->qdiag_radius = atof(val);
     else if (!strcmp(key,"qdiag_probe1"))  c->qdiag_probe1 = atof(val);
     else if (!strcmp(key,"qdiag_probe2"))  c->qdiag_probe2 = atof(val);
+    else if (!strcmp(key,"complex_gauge")) c->complex_gauge = atoi(val);
+    else if (!strcmp(key,"g_gauge"))       c->g_gauge = atof(val);
+    else if (!strcmp(key,"qball2_x0"))     c->qball2_x0 = atof(val);
+    else if (!strcmp(key,"qball2_y0"))     c->qball2_y0 = atof(val);
+    else if (!strcmp(key,"qball2_z0"))     c->qball2_z0 = atof(val);
+    else if (!strcmp(key,"qball2_sign"))   c->qball2_sign = atoi(val);
+    else if (!strcmp(key,"qball2_phase"))  c->qball2_phase = atof(val);
+    else if (!strcmp(key,"test_gauge_xform")) c->test_gauge_xform = atoi(val);
     else if (!strcmp(key,"sweep"))      c->sweep = atoi(val);
     else if (!strcmp(key,"sweep_T"))    c->sweep_T = atof(val);
     else if (!strcmp(key,"bc_type"))      c->bc_type = atoi(val);
@@ -279,6 +299,13 @@ static void cfg_print(const Config *c) {
                    (c->qball_z0>=1e29?0.0:c->qball_z0));
         printf("Q-diag:  radius=%.2f probes=(%.2f,%.2f)\n",
                c->qdiag_radius, c->qdiag_probe1, c->qdiag_probe2);
+        if (c->complex_gauge) {
+            printf("Gauge:   U(1) compact links, g=%.4f (complex_gauge=1)\n", c->g_gauge);
+            if (c->qball2_x0 < 1e29 && c->qball2_y0 < 1e29 && c->qball2_z0 < 1e29)
+                printf("Gauge:   second ball at (%.2f,%.2f,%.2f) sign=%+d phase=%.4f\n",
+                       c->qball2_x0, c->qball2_y0, c->qball2_z0,
+                       c->qball2_sign, c->qball2_phase);
+        }
     }
     printf("Mode:    %d", c->mode);
     if (c->mode == 1) printf(" (inverse: α=%.3f β=%.3f)", c->inv_alpha, c->inv_beta);
@@ -328,6 +355,27 @@ static void cfg_validate(const Config *c) {
         }
         if (!strcmp(c->init, "braid")) {
             fprintf(stderr, "ERROR: braid init not defined for complex mode\n");
+            exit(1);
+        }
+    }
+    /* v69 SPEC §1.1: gauged-kernel hard incompatibilities */
+    if (c->complex_gauge != 0) {
+        if (c->complex_phi == 0) {
+            fprintf(stderr, "ERROR: complex_gauge=1 requires complex_phi=1\n");
+            exit(1);
+        }
+        if (c->bc_type == 1) {
+            fprintf(stderr, "ERROR: complex_gauge=1 is incompatible with bc_type=1 "
+                            "(pinning A is gauge-dependent)\n");
+            exit(1);
+        }
+        if (c->bc_switch_time != 0) {
+            fprintf(stderr, "ERROR: complex_gauge=1 is incompatible with bc_switch_time != 0\n");
+            exit(1);
+        }
+        if (c->g_gauge < 0) {
+            fprintf(stderr, "ERROR: complex_gauge=1 requires g_gauge >= 0 "
+                            "(flip charges via the seed, not g)\n");
             exit(1);
         }
     }

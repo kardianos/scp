@@ -13,15 +13,33 @@
  *     (grid is x = -L + i*dx with dx = 2L/(N-1) and bc_type=2 wraps
  *      i=0 <-> i=N-1, so the true period is N*dx ~= 2L, NOT 2L;
  *      non-commensurate modes seam at the boundary)
- *   - random phase phi0, random U(1) angle alpha splitting amplitude
- *     between tu (cos alpha) and tv (sin alpha), random component a in 0..2
- *   - traveling wave:  t  = A cos(k.x - phi0)
- *                      td = A omega_k sin(k.x - phi0)
+ *   - random phase phi0, random component a in 0..2
+ *
+ * Two polarizations (bath_pol):
+ *   neutral  (default / legacy): random U(1) angle alpha splits the amplitude
+ *     between tu (cos alpha) and tv (sin alpha); both carry the SAME phase:
+ *         tu  = A ca cos(k.x - phi0)        tv  = A sa cos(k.x - phi0)
+ *         tud = A ca w_k sin(k.x - phi0)    tvd = A sa w_k sin(k.x - phi0)
+ *     -> q_theta = tu*tvd - tv*tud = 0 per mode (charge-neutral bath; v67 §4
+ *     showed such a bath can only ERODE a ball's charge).
+ *   charged  (co-rotating): U(1)-circular polarization rotating in the SAME
+ *     sense as a ball with omega>0. v66/THEORY.md §2 convention: Q > 0 for
+ *     e^{+i omega t}, q = tu*tvd - tv*tud. Take Theta_a = A e^{+i(w_k t - k.x
+ *     + phi0)}; with phase phi = w_k t - k.x + phi0:
+ *         tu = A cos(phi), tv = A sin(phi)
+ *         tud = -A w_k sin(phi), tvd = +A w_k cos(phi)
+ *         q_theta = A^2 w_k (cos^2+sin^2) = +A^2 w_k > 0   (uniform in space)
+ *     Evaluated at t=0 with ph = k.x - phi0 (so phi = -ph):
+ *         tu  =  A cos(ph)        tv  = -A sin(ph)
+ *         tud = +A w_k sin(ph)    tvd = +A w_k cos(ph)
+ *     (Note: the naive tv = +A sin(k.x - w_k t + phi0) would give
+ *     q_theta = -A^2 w_k < 0, i.e. COUNTER-rotating — sign matters.)
+ *
  * Amplitudes are normalized NUMERICALLY (against the kernel's central
  * difference energy stencil, compute_energy_complex) so the box-averaged
  * bath energy density (kinetic + gradient over the 6 theta components)
- * equals bath_e exactly; the achieved value is printed.
- * Note: this bath carries zero Q_theta (tu*tvd - tv*tud = 0 per mode).
+ * equals bath_e exactly; the achieved value is printed. For charged baths
+ * the achieved Noether charge density and total Q_bath are also printed.
  * bath_e = 0 reproduces a plain single-ball seed (control).
  *
  * Output: ONE SFA frame, f32, 24 columns named/typed exactly as the kernel
@@ -32,8 +50,11 @@
  *       sfa/seed/gen_qball_bath.c -lzstd -lm
  *
  * Usage:
- *   gen_qball_bath N L profile omega bath_e kmin kmax nmodes rngseed out.sfa
- *   (profile = radial_qball output: '#' headers then "r f")
+ *   gen_qball_bath N L profile omega bath_e bath_pol kmin kmax nmodes rngseed out.sfa
+ *   (profile = radial_qball output: '#' headers then "r f";
+ *    bath_pol = neutral | charged)
+ *   Legacy 10-arg form (no bath_pol) is accepted, defaults to neutral, and is
+ *   byte-identical to the pre-bath_pol generator (deprecation note printed).
  */
 
 #include <stdio.h>
@@ -170,27 +191,61 @@ static double bath_energy_density(float **cols, int N, double dx) {
     return sum / (double)N3;
 }
 
+/* box-averaged theta-sector Noether charge density
+ *   q_theta = sum_a (tu_a * tvd_a - tv_a * tud_a)
+ * (v66/THEORY.md §2 sign convention: Q > 0 for e^{+i omega t}). */
+static double bath_charge_density(float **cols, int N) {
+    const long N3 = (long)N * N * N;
+    double sum = 0.0;
+    #pragma omp parallel for reduction(+:sum) schedule(static)
+    for (long idx = 0; idx < N3; idx++)
+        for (int a = 0; a < 3; a++)
+            sum += (double)cols[3 + a][idx] * cols[21 + a][idx]
+                 - (double)cols[15 + a][idx] * cols[9 + a][idx];
+    return sum / (double)N3;
+}
+
 int main(int argc, char **argv) {
-    if (argc != 11) {
+    if (argc != 11 && argc != 12) {
         fprintf(stderr,
-            "Usage: %s N L profile omega bath_e kmin kmax nmodes rngseed out.sfa\n"
+            "Usage: %s N L profile omega bath_e bath_pol kmin kmax nmodes rngseed out.sfa\n"
             "  Ball: u_a=f(r), v_a=0, udot=0, vdot_a=omega*f(r) at box center.\n"
             "  Bath: nmodes random theta-sector plane waves, |k| in [kmin,kmax]\n"
             "        snapped to periodic box wavevectors; box-averaged energy\n"
-            "        density normalized to bath_e. bath_e=0 => plain ball seed.\n",
+            "        density normalized to bath_e. bath_e=0 => plain ball seed.\n"
+            "  bath_pol: neutral = random independent tu/tv phases, q_theta=0\n"
+            "                      (legacy behavior)\n"
+            "            charged = U(1)-circular co-rotating modes, q_theta>0\n"
+            "                      (same rotation sense as a ball with omega>0)\n"
+            "  Legacy 10-arg form (no bath_pol) = neutral, byte-identical output.\n",
             argv[0]);
         return 1;
     }
+    int legacy = (argc == 11);
+    int s_ = legacy ? 0 : 1;   /* arg index shift for args after bath_pol */
     int      N       = atoi(argv[1]);
     double   L       = atof(argv[2]);
     const char *ppath = argv[3];
     double   omega   = atof(argv[4]);
     double   bath_e  = atof(argv[5]);
-    double   kmin    = atof(argv[6]);
-    double   kmax    = atof(argv[7]);
-    int      nmodes  = atoi(argv[8]);
-    uint64_t rngseed = (uint64_t)strtoull(argv[9], NULL, 10);
-    const char *outpath = argv[10];
+    const char *polstr = legacy ? "neutral" : argv[6];
+    double   kmin    = atof(argv[6 + s_]);
+    double   kmax    = atof(argv[7 + s_]);
+    int      nmodes  = atoi(argv[8 + s_]);
+    uint64_t rngseed = (uint64_t)strtoull(argv[9 + s_], NULL, 10);
+    const char *outpath = argv[10 + s_];
+
+    int charged;
+    if      (!strcmp(polstr, "neutral")) charged = 0;
+    else if (!strcmp(polstr, "charged")) charged = 1;
+    else {
+        fprintf(stderr, "FATAL: bath_pol must be 'neutral' or 'charged' "
+                "(got '%s')\n", polstr);
+        return 1;
+    }
+    if (legacy)
+        printf("NOTE: legacy 10-arg invocation (no bath_pol) is deprecated; "
+               "defaulting to bath_pol=neutral.\n");
 
     if (N < 2 || L <= 0.0) {
         fprintf(stderr, "FATAL: bad N=%d or L=%g\n", N, L);
@@ -206,9 +261,9 @@ int main(int argc, char **argv) {
     printf("gen_qball_bath: N=%d L=%.4f -> %s\n", N, L, outpath);
     Profile prof;
     load_profile(ppath, &prof);
-    printf("  ball: omega=%.6f at center; bath_e=%.6g kmin=%.3f kmax=%.3f "
-           "nmodes=%d rngseed=%llu\n", omega, bath_e, kmin, kmax, nmodes,
-           (unsigned long long)rngseed);
+    printf("  ball: omega=%.6f at center; bath_e=%.6g bath_pol=%s kmin=%.3f "
+           "kmax=%.3f nmodes=%d rngseed=%llu\n", omega, bath_e, polstr, kmin,
+           kmax, nmodes, (unsigned long long)rngseed);
 
     long   N3 = (long)N * N * N;
     double dx = 2.0 * L / (N - 1);   /* grid: x = -L + i*dx (scp_init.h) */
@@ -274,8 +329,12 @@ int main(int argc, char **argv) {
             M->ctu = cos(alpha);
             M->stv = sin(alpha);
             M->a = (int)(3.0 * rng_uniform()); if (M->a > 2) M->a = 2;
-            /* equal continuum energy share per mode: <e> = A^2 omega^2 / 2 */
-            M->amp = sqrt(2.0 * bath_e / (double)nmodes) / M->omega;
+            /* equal continuum energy share per mode:
+             *   neutral: <e> = A^2 omega^2 / 2 (linear mode, spatial average)
+             *   charged: e   = A^2 omega^2     (circular, uniform in space) */
+            M->amp = charged
+                   ? sqrt(bath_e / (double)nmodes) / M->omega
+                   : sqrt(2.0 * bath_e / (double)nmodes) / M->omega;
             if (M->omega < ksnap_min) ksnap_min = M->omega;
             if (M->omega > ksnap_max) ksnap_max = M->omega;
         }
@@ -293,10 +352,19 @@ int main(int argc, char **argv) {
                 const Mode *M = &modes[m];
                 double ph = M->kx * x + M->ky * y + M->kz * z - M->phi0;
                 double cp = cos(ph), sp = sin(ph);
-                tu[M->a]  += M->amp * M->ctu * cp;
-                tud[M->a] += M->amp * M->ctu * M->omega * sp;
-                tv[M->a]  += M->amp * M->stv * cp;
-                tvd[M->a] += M->amp * M->stv * M->omega * sp;
+                if (charged) {
+                    /* Theta_a = A e^{+i(w t - k.x + phi0)} at t=0 (phase = -ph):
+                     * q_theta = tu*tvd - tv*tud = +A^2 w > 0 (co-rotating) */
+                    tu[M->a]  +=  M->amp * cp;
+                    tv[M->a]  += -M->amp * sp;
+                    tud[M->a] +=  M->amp * M->omega * sp;
+                    tvd[M->a] +=  M->amp * M->omega * cp;
+                } else {
+                    tu[M->a]  += M->amp * M->ctu * cp;
+                    tud[M->a] += M->amp * M->ctu * M->omega * sp;
+                    tv[M->a]  += M->amp * M->stv * cp;
+                    tvd[M->a] += M->amp * M->stv * M->omega * sp;
+                }
             }
             for (int a = 0; a < 3; a++) {
                 cols[3 + a][idx]  = (float)tu[a];
@@ -324,6 +392,12 @@ int main(int argc, char **argv) {
                "achieved=%.6e (target %.6e)\n", e0, (double)s, achieved, bath_e);
         printf("  bath total energy (kernel metric, N^3 dx^3): %.4f\n",
                achieved * (double)N3 * dx * dx * dx);
+        double qdens = bath_charge_density(cols, N);
+        double Qbath = qdens * (double)N3 * dx * dx * dx;
+        printf("  bath charge density (q_theta = tu*tvd - tv*tud): %.6e, "
+               "total Q_bath = %.6f  [pol=%s]\n", qdens, Qbath, polstr);
+        if (charged && qdens <= 0.0)
+            printf("  WARNING: charged bath produced q_theta <= 0 — sign bug?\n");
     } else {
         printf("  bath_e=0: theta sector left zero (plain single-ball seed)\n");
     }
@@ -346,10 +420,11 @@ int main(int argc, char **argv) {
     snprintf(bseed, sizeof(bseed), "%llu", (unsigned long long)rngseed);
     const char *keys[] = { "generator", "N", "L", "omega", "bath_e",
                            "bath_e_achieved", "bath_kmin", "bath_kmax",
-                           "bath_nmodes", "bath_rngseed" };
+                           "bath_nmodes", "bath_rngseed", "bath_pol" };
     const char *vals[] = { "gen_qball_bath", bN, bL, bo, be, bach,
-                           bkmin, bkmax, bnm, bseed };
-    sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, 10);
+                           bkmin, bkmax, bnm, bseed, polstr };
+    /* legacy invocation: write exactly the old 10 keys (byte-identical) */
+    sfa_add_kvmd(sfa, 0, 0xFFFFFFFF, 0xFFFFFFFF, keys, vals, legacy ? 10 : 11);
 
     /* exact names/semantics/components as the kernel registers (24 cols) */
     sfa_add_column(sfa, "phi_x",      SFA_F32, SFA_POSITION, 0);
