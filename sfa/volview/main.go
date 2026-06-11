@@ -139,6 +139,9 @@ type sfaFile struct {
 	phi2Buf  []float32 // Σφ² per voxel
 	theta2Buf []float32 // Σθ² per voxel
 
+	// Scratch buffers for complex-modulus / gauge derived arrays (v66+ files)
+	effBufs [9][]float32
+
 	// Vector frame state
 	vecCoeffs   []float32 // n_patches × nCoeffs: current patch coefficients
 	vecOrigins  [][3]int16 // n_patches × (ox,oy,oz)
@@ -1389,8 +1392,13 @@ func (s *sfaFile) readFrameColZstdInto(data []byte) error {
 		compOff, compSize int
 		rawOff            uint64
 	}
-	var colsBuf [16]colInfo
-	cols := colsBuf[:nc]
+	var colsBuf [32]colInfo
+	var cols []colInfo
+	if nc <= len(colsBuf) {
+		cols = colsBuf[:nc]
+	} else {
+		cols = make([]colInfo, nc)
+	}
 
 	compOff := headerSize
 	var rawOff uint64
@@ -1403,7 +1411,7 @@ func (s *sfaFile) readFrameColZstdInto(data []byte) error {
 	}
 
 	var wg sync.WaitGroup
-	var errs [16]error
+	errs := make([]error, nc)
 
 	nVals := int(s.nTotal)
 	for c := 0; c < nc; c++ {
@@ -2947,6 +2955,334 @@ func computeAccelView(n int, phi0, phi1, phi2, theta0, theta1, theta2, vphi0, vp
 }
 
 // ============================================================
+// Complex / U(1)-gauge aware views (v66+ kernels, 24/30-column files)
+// ============================================================
+
+// findColumn returns the index of the named column, or -1.
+func (s *sfaFile) findColumn(name string) int {
+	for i := 0; i < int(s.nColumns); i++ {
+		if strings.TrimRight(string(s.columns[i].name[:]), "\x00") == name {
+			return i
+		}
+	}
+	return -1
+}
+
+// extCols holds name-resolved indices for the complexified (phiim_*) and
+// gauged (th_*, E_*) column sets. Index -1 = absent.
+type extCols struct {
+	im, thim, vre, vim, tvre, tvim, link, ef [3]int
+	hasIm, hasThIm, hasVel, hasThVel, hasGauge bool
+}
+
+func resolveExtCols(s *sfaFile) extCols {
+	var e extCols
+	names := func(dst *[3]int, has *bool, n0, n1, n2 string) {
+		*has = true
+		for a, nm := range [3]string{n0, n1, n2} {
+			dst[a] = s.findColumn(nm)
+			if dst[a] < 0 {
+				*has = false
+			}
+		}
+	}
+	names(&e.im, &e.hasIm, "phiim_x", "phiim_y", "phiim_z")
+	names(&e.thim, &e.hasThIm, "thetaim_x", "thetaim_y", "thetaim_z")
+	names(&e.vre, &e.hasVel, "phi_vx", "phi_vy", "phi_vz")
+	var hasVim bool
+	names(&e.vim, &hasVim, "phiim_vx", "phiim_vy", "phiim_vz")
+	e.hasVel = e.hasVel && hasVim
+	names(&e.tvre, &e.hasThVel, "theta_vx", "theta_vy", "theta_vz")
+	var hasTvim bool
+	names(&e.tvim, &hasTvim, "thetaim_vx", "thetaim_vy", "thetaim_vz")
+	e.hasThVel = e.hasThVel && hasTvim
+	names(&e.link, &e.hasGauge, "th_x", "th_y", "th_z")
+	var hasEf bool
+	names(&e.ef, &hasEf, "E_x", "E_y", "E_z")
+	e.hasGauge = e.hasGauge && hasEf
+	return e
+}
+
+// effBuf returns a cached scratch buffer for derived per-voxel arrays.
+func (s *sfaFile) effBuf(i, n int) []float32 {
+	if len(s.effBufs[i]) < n {
+		s.effBufs[i] = make([]float32, n)
+	}
+	return s.effBufs[i][:n]
+}
+
+// parallelChunks runs fn(start, end, worker) over [0,total) in GOMAXPROCS chunks.
+func parallelChunks(total int, fn func(start, end, w int)) int {
+	nWorkers := runtime.GOMAXPROCS(0)
+	if nWorkers < 1 {
+		nWorkers = 1
+	}
+	if nWorkers > 64 {
+		nWorkers = 64
+	}
+	chunk := (total + nWorkers - 1) / nWorkers
+	var wg sync.WaitGroup
+	for w := 0; w < nWorkers; w++ {
+		wg.Add(1)
+		go func(w int) {
+			defer wg.Done()
+			start := w * chunk
+			end := start + chunk
+			if end > total {
+				end = total
+			}
+			if start < end {
+				fn(start, end, w)
+			}
+		}(w)
+	}
+	wg.Wait()
+	return nWorkers
+}
+
+// complexModulus writes sqrt(re^2+im^2) into dst (parallel).
+func complexModulus(dst, re, im []float32) {
+	parallelChunks(len(dst), func(start, end, _ int) {
+		d, r, m := dst[start:end], re[start:end], im[start:end]
+		for i := range d {
+			d[i] = float32(math.Sqrt(float64(r[i]*r[i] + m[i]*m[i])))
+		}
+	})
+}
+
+// computeGaugeView: U(1) sector. R = |E| (electric field / Coulomb halo),
+// G = |Phi|^2 (matter density, dimmed context), B = |A| (link angles).
+func computeGaugeView(n int, phi, ef, link [3][]float32, vol *volumeData) {
+	total := n * n * n
+	vol.n = n
+	vol.loaded = true
+	if len(vol.rgba) != total*4 {
+		vol.rgba = make([]float32, total*4)
+	}
+	var maxE, maxR, maxA [64]float32
+	nw := parallelChunks(total, func(start, end, w int) {
+		var me, mr, ma float32
+		for i := start; i < end; i++ {
+			e := float32(math.Sqrt(float64(ef[0][i]*ef[0][i] + ef[1][i]*ef[1][i] + ef[2][i]*ef[2][i])))
+			r := phi[0][i]*phi[0][i] + phi[1][i]*phi[1][i] + phi[2][i]*phi[2][i]
+			a := float32(math.Sqrt(float64(link[0][i]*link[0][i] + link[1][i]*link[1][i] + link[2][i]*link[2][i])))
+			vol.rgba[i*4+0] = e
+			vol.rgba[i*4+1] = r
+			vol.rgba[i*4+2] = a
+			vol.rgba[i*4+3] = 1.0
+			if e > me {
+				me = e
+			}
+			if r > mr {
+				mr = r
+			}
+			if a > ma {
+				ma = a
+			}
+		}
+		maxE[w], maxR[w], maxA[w] = me, mr, ma
+	})
+	var mE, mR, mA float32
+	for w := 0; w < nw; w++ {
+		if maxE[w] > mE {
+			mE = maxE[w]
+		}
+		if maxR[w] > mR {
+			mR = maxR[w]
+		}
+		if maxA[w] > mA {
+			mA = maxA[w]
+		}
+	}
+	invE := float32(0)
+	if mE > 1e-30 {
+		invE = 1.0 / mE
+	}
+	invR := float32(0)
+	if mR > 1e-30 {
+		invR = 0.5 / mR // dimmed: matter is context here
+	}
+	invA := float32(0)
+	if mA > 1e-30 {
+		invA = 1.0 / mA
+	}
+	parallelChunks(total, func(start, end, _ int) {
+		for i := start; i < end; i++ {
+			vol.rgba[i*4+0] *= invE
+			vol.rgba[i*4+1] *= invR
+			vol.rgba[i*4+2] *= invA
+		}
+	})
+	fmt.Printf("  gauge view: max|E|=%.3e max|Phi|^2=%.3e max|A|=%.3e\n", mE, mR, mA)
+}
+
+// computeChargeView: Noether charge density rhoQ = sum_a (u vdot - v udot)
+// (+ theta terms when present). R = +rhoQ, B = -rhoQ, G = |Phi|^2 context.
+func computeChargeView(n int, re, im, vre, vim [3][]float32,
+	tre, tim, tvre, tvim [3][]float32, hasThetaQ bool, vol *volumeData) {
+	total := n * n * n
+	vol.n = n
+	vol.loaded = true
+	if len(vol.rgba) != total*4 {
+		vol.rgba = make([]float32, total*4)
+	}
+	var maxQ, maxR [64]float32
+	nw := parallelChunks(total, func(start, end, w int) {
+		var mq, mr float32
+		for i := start; i < end; i++ {
+			var q, r float32
+			for a := 0; a < 3; a++ {
+				q += re[a][i]*vim[a][i] - im[a][i]*vre[a][i]
+				r += re[a][i]*re[a][i] + im[a][i]*im[a][i]
+			}
+			if hasThetaQ {
+				for a := 0; a < 3; a++ {
+					q += tre[a][i]*tvim[a][i] - tim[a][i]*tvre[a][i]
+				}
+			}
+			vol.rgba[i*4+0] = q // signed for now; split after normalize
+			vol.rgba[i*4+1] = r
+			vol.rgba[i*4+3] = 1.0
+			aq := q
+			if aq < 0 {
+				aq = -aq
+			}
+			if aq > mq {
+				mq = aq
+			}
+			if r > mr {
+				mr = r
+			}
+		}
+		maxQ[w], maxR[w] = mq, mr
+	})
+	var mQ, mR float32
+	for w := 0; w < nw; w++ {
+		if maxQ[w] > mQ {
+			mQ = maxQ[w]
+		}
+		if maxR[w] > mR {
+			mR = maxR[w]
+		}
+	}
+	invQ := float32(0)
+	if mQ > 1e-30 {
+		invQ = 1.0 / mQ
+	}
+	invR := float32(0)
+	if mR > 1e-30 {
+		invR = 0.3 / mR // faint context
+	}
+	parallelChunks(total, func(start, end, _ int) {
+		for i := start; i < end; i++ {
+			q := vol.rgba[i*4+0] * invQ
+			if q >= 0 {
+				vol.rgba[i*4+0] = q
+				vol.rgba[i*4+2] = 0
+			} else {
+				vol.rgba[i*4+0] = 0
+				vol.rgba[i*4+2] = -q
+			}
+			vol.rgba[i*4+1] *= invR
+		}
+	})
+	fmt.Printf("  charge view: max|rhoQ|=%.3e (R=+Q, B=-Q)\n", mQ)
+}
+
+// computeStandardView is the shared column-resolution + view dispatch for
+// non-PGA, non-preview files. For complexified files (phiim_* present) the
+// field/velocity/accel views receive per-component complex moduli |Phi_a|,
+// |Theta_a| — phase-invariant, so Q-balls render as static objects instead
+// of flickering at their internal clock frequency.
+// Modes: 0=field, 1=velocity, 2=accel, 3=U(1) gauge, 4=charge.
+func computeStandardView(s *sfaFile, n int, vol *volumeData, mode int, fixedMax float32) {
+	total := n * n * n
+	ec := resolveExtCols(s)
+
+	phi := [3][]float32{s.extractColumnF32(0), s.extractColumnF32(1), s.extractColumnF32(2)}
+	var theta [3][]float32
+	hasTheta := s.nColumns >= 6
+	if hasTheta {
+		theta = [3][]float32{s.extractColumnF32(3), s.extractColumnF32(4), s.extractColumnF32(5)}
+	}
+
+	// charge view needs the RAW re/im parts — capture before modulus replacement
+	if mode == 4 {
+		if !(ec.hasIm && ec.hasVel) {
+			fmt.Println("Warning: charge view needs complex columns (phiim_*, *_v*), falling back to field view")
+			mode = 0
+		} else {
+			im := [3][]float32{s.extractColumnF32(ec.im[0]), s.extractColumnF32(ec.im[1]), s.extractColumnF32(ec.im[2])}
+			vre := [3][]float32{s.extractColumnF32(ec.vre[0]), s.extractColumnF32(ec.vre[1]), s.extractColumnF32(ec.vre[2])}
+			vim := [3][]float32{s.extractColumnF32(ec.vim[0]), s.extractColumnF32(ec.vim[1]), s.extractColumnF32(ec.vim[2])}
+			var tre, tim, tvre, tvim [3][]float32
+			hasThetaQ := hasTheta && ec.hasThIm && ec.hasThVel
+			if hasThetaQ {
+				tre = theta
+				tim = [3][]float32{s.extractColumnF32(ec.thim[0]), s.extractColumnF32(ec.thim[1]), s.extractColumnF32(ec.thim[2])}
+				tvre = [3][]float32{s.extractColumnF32(ec.tvre[0]), s.extractColumnF32(ec.tvre[1]), s.extractColumnF32(ec.tvre[2])}
+				tvim = [3][]float32{s.extractColumnF32(ec.tvim[0]), s.extractColumnF32(ec.tvim[1]), s.extractColumnF32(ec.tvim[2])}
+			}
+			computeChargeView(n, phi, im, vre, vim, tre, tim, tvre, tvim, hasThetaQ, vol)
+			return
+		}
+	}
+
+	// complexified file: replace components by their moduli (phase-invariant)
+	if ec.hasIm {
+		for a := 0; a < 3; a++ {
+			eff := s.effBuf(a, total)
+			complexModulus(eff, phi[a], s.extractColumnF32(ec.im[a]))
+			phi[a] = eff
+		}
+		if hasTheta && ec.hasThIm {
+			for a := 0; a < 3; a++ {
+				eff := s.effBuf(3+a, total)
+				complexModulus(eff, theta[a], s.extractColumnF32(ec.thim[a]))
+				theta[a] = eff
+			}
+		}
+	}
+
+	switch mode {
+	case 1: // velocity
+		var v [3][]float32
+		if ec.hasIm && ec.hasVel {
+			for a := 0; a < 3; a++ {
+				eff := s.effBuf(6+a, total)
+				complexModulus(eff, s.extractColumnF32(ec.vre[a]), s.extractColumnF32(ec.vim[a]))
+				v[a] = eff
+			}
+		} else if s.nColumns >= 9 {
+			v = [3][]float32{s.extractColumnF32(6), s.extractColumnF32(7), s.extractColumnF32(8)}
+		}
+		if v[0] != nil {
+			computeVelocityView(n, phi[0], phi[1], phi[2], v[0], v[1], v[2], vol)
+		} else {
+			fmt.Println("Warning: no velocity columns (need >=9 columns), falling back to field view")
+			computeFieldView(n, phi[0], phi[1], phi[2], theta[0], theta[1], theta[2], vol, fixedMax)
+		}
+	case 2: // accel (legacy view; complex files get modulus inputs)
+		var v0, v1, v2 []float32
+		if s.nColumns >= 9 {
+			v0, v1, v2 = s.extractColumnF32(6), s.extractColumnF32(7), s.extractColumnF32(8)
+		}
+		computeAccelView(n, phi[0], phi[1], phi[2], theta[0], theta[1], theta[2], v0, v1, v2, vol)
+	case 3: // U(1) gauge
+		if !ec.hasGauge {
+			fmt.Println("Warning: no gauge columns (th_*, E_*) — not a complex_gauge=1 file; falling back to field view")
+			computeFieldView(n, phi[0], phi[1], phi[2], theta[0], theta[1], theta[2], vol, fixedMax)
+			return
+		}
+		ef := [3][]float32{s.extractColumnF32(ec.ef[0]), s.extractColumnF32(ec.ef[1]), s.extractColumnF32(ec.ef[2])}
+		link := [3][]float32{s.extractColumnF32(ec.link[0]), s.extractColumnF32(ec.link[1]), s.extractColumnF32(ec.link[2])}
+		computeGaugeView(n, phi, ef, link, vol)
+	default:
+		computeFieldView(n, phi[0], phi[1], phi[2], theta[0], theta[1], theta[2], vol, fixedMax)
+	}
+}
+
+// ============================================================
 // GLSL 430 ray marching shader
 // ============================================================
 
@@ -3590,37 +3926,8 @@ func (fl *frameLoader) startLoad(frameIdx int) {
 			}
 			vol.loaded = true
 		} else {
-			// Standard mode: extract phi/theta columns and compute derived view
-			phi0 := fl.sfa.extractColumnF32(0)
-			phi1 := fl.sfa.extractColumnF32(1)
-			phi2 := fl.sfa.extractColumnF32(2)
-			var theta0, theta1, theta2 []float32
-			if fl.sfa.nColumns >= 6 {
-				theta0 = fl.sfa.extractColumnF32(3)
-				theta1 = fl.sfa.extractColumnF32(4)
-				theta2 = fl.sfa.extractColumnF32(5)
-			}
-			var vphi0, vphi1, vphi2 []float32
-			if fl.sfa.nColumns >= 9 && mode >= 1 {
-				vphi0 = fl.sfa.extractColumnF32(6)
-				vphi1 = fl.sfa.extractColumnF32(7)
-				vphi2 = fl.sfa.extractColumnF32(8)
-			}
-
-			fm := fl.fixedMax
-			switch mode {
-			case 1:
-				if vphi0 != nil {
-					computeVelocityView(fl.volN, phi0, phi1, phi2, vphi0, vphi1, vphi2, &fl.workVol)
-				} else {
-					fmt.Println("Warning: no velocity columns (need >=9 columns), falling back to field view")
-					computeFieldView(fl.volN, phi0, phi1, phi2, theta0, theta1, theta2, &fl.workVol, fm)
-				}
-			case 2:
-				computeAccelView(fl.volN, phi0, phi1, phi2, theta0, theta1, theta2, vphi0, vphi1, vphi2, &fl.workVol)
-			default:
-				computeFieldView(fl.volN, phi0, phi1, phi2, theta0, theta1, theta2, &fl.workVol, fm)
-			}
+			// Standard mode: shared complex/gauge-aware dispatch
+			computeStandardView(fl.sfa, fl.volN, &fl.workVol, mode, fl.fixedMax)
 		}
 
 		fl.mu.Lock()
@@ -3969,17 +4276,8 @@ func exportAnimation(gpu *gpuResources, params *viewParams, fl *frameLoader, sfa
 			break
 		}
 
-		// Extract columns and compute field view
-		phi0 := sfa.extractColumnF32(0)
-		phi1 := sfa.extractColumnF32(1)
-		phi2 := sfa.extractColumnF32(2)
-		var theta0, theta1, theta2 []float32
-		if sfa.nColumns >= 6 {
-			theta0 = sfa.extractColumnF32(3)
-			theta1 = sfa.extractColumnF32(4)
-			theta2 = sfa.extractColumnF32(5)
-		}
-		computeFieldView(int(sfa.Nx), phi0, phi1, phi2, theta0, theta1, theta2, vol, 0)
+		// Extract columns and compute view (complex/gauge-aware)
+		computeStandardView(sfa, int(sfa.Nx), vol, params.viewMode, 0)
 
 		// Upload new volume data
 		gpu.uploadVolume(vol)
@@ -4066,6 +4364,9 @@ func printHelp() {
 	fmt.Println("  4              Field view  (R=|P|, G=phi^2, B=theta^2)")
 	fmt.Println("  5              Velocity view (R=|v|, G=|vx|, B=|vy|)")
 	fmt.Println("  6              Accel view  (R=cbrt|P|, G=theta^2, B=|v|)")
+	fmt.Println("  8              U(1) gauge view (R=|E|, G=|Phi|^2, B=|A| links) [30-col files]")
+	fmt.Println("  9              Charge view (R=+rhoQ, B=-rhoQ, G=|Phi|^2) [24/30-col files]")
+	fmt.Println("  (complex files: field/velocity views use |Phi_a| moduli — phase-invariant)")
 	fmt.Println("  M              Toggle PGA mode: spectrum / rotation (8-component v56 files)")
 	fmt.Println("  N              Advance PGA rotation phase (when in rotation mode)")
 	fmt.Println("  V              Toggle vec3d wireframe overlay")
@@ -4100,6 +4401,7 @@ func main() {
 	vecFlag := flag.String("vec", "", "Vec3D wireframe overlay file (.vec3d)")
 	pgaModeFlag := flag.Int("pga-mode", 0, "PGA view mode: 0=spectrum, 1=rotation (8-comp v56 files)")
 	pgaPhaseFlag := flag.Int("pga-phase", 0, "PGA rotation phase (which 3-of-8 components → R,G,B)")
+	viewFlag := flag.Int("view", 0, "View mode: 0=field, 1=velocity, 2=accel, 3=U(1) gauge, 4=charge")
 	flag.Parse()
 
 	// CPU profiling to file
@@ -4269,6 +4571,7 @@ func main() {
 	params.brightness = float32(*brightnessFlag)
 	params.pgaMode = *pgaModeFlag
 	params.pgaPhase = *pgaPhaseFlag
+	params.viewMode = *viewFlag
 	params.opacity = float32(*opacityFlag)
 	params.bgWhite = *bgWhiteFlag
 	params.updateCamera()
@@ -4355,16 +4658,7 @@ func main() {
 				}
 				computePGAView(int(sfa.Nx), pgaCols, vol, params.pgaMode, params.pgaPhase)
 			} else {
-				phi0 := sfa.extractColumnF32(0)
-				phi1 := sfa.extractColumnF32(1)
-				phi2 := sfa.extractColumnF32(2)
-				var theta0, theta1, theta2 []float32
-				if sfa.nColumns >= 6 {
-					theta0 = sfa.extractColumnF32(3)
-					theta1 = sfa.extractColumnF32(4)
-					theta2 = sfa.extractColumnF32(5)
-				}
-				computeFieldView(int(sfa.Nx), phi0, phi1, phi2, theta0, theta1, theta2, vol, 0)
+				computeStandardView(sfa, int(sfa.Nx), vol, params.viewMode, 0)
 			}
 			gpu.uploadVolume(vol)
 
@@ -4443,7 +4737,7 @@ func main() {
 	var vfl *vsFrameLoader // vecstream frame loader
 	if sfa != nil && fl == nil {
 		total := volN * volN * volN
-		fl = &frameLoader{sfa: sfa, volN: volN}
+		fl = &frameLoader{sfa: sfa, volN: volN, viewMode: *viewFlag}
 		fl.workVol.absPBuf = make([]float32, total)
 		fl.workVol.phi2Buf = make([]float32, total)
 		fl.workVol.theta2Buf = make([]float32, total)
@@ -4572,6 +4866,20 @@ func main() {
 				params.viewMode = 2
 				fl.viewMode = 2
 				fmt.Println("View: ACCEL (R=cbrt|P|, G=theta^2, B=|v|)")
+				loadSFAFrame(fl, params)
+			}
+		case glfw.Key8:
+			if fl != nil && params.viewMode != 3 {
+				params.viewMode = 3
+				fl.viewMode = 3
+				fmt.Println("View: U(1) GAUGE (R=|E|, G=|Phi|^2, B=|A| links)")
+				loadSFAFrame(fl, params)
+			}
+		case glfw.Key9:
+			if fl != nil && params.viewMode != 4 {
+				params.viewMode = 4
+				fl.viewMode = 4
+				fmt.Println("View: CHARGE (R=+rhoQ, B=-rhoQ, G=|Phi|^2 context)")
 				loadSFAFrame(fl, params)
 			}
 		case glfw.KeyM:

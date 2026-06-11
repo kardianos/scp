@@ -1,0 +1,2 @@
+# allow verification render images (negates root *.png rule)
+!*.png

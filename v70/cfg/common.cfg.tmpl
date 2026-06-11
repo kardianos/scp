@@ -1,0 +1,24 @@
+# v70 force-law lever-arm campaign — common template
+# Geometry: N=192, L=36 -> dx = 72/191 = 0.3770 (matches v69 fl runs' 0.3774)
+# Ball: omega=1.42, g=0.05 gauged profile (Q=311.46, E_total=456.27, r_half=3.80)
+# eta=0, m_theta=1.6: theta sector inert (drain closed), pure Coulomb + contact tail
+# T=150: at D=40 Coulomb gives dD = a_rel*t^2/2 ~ 0.59 (well above tracker noise)
+N=192
+L=36
+T=150
+dt_factor=0.025
+eta=0
+m_theta=1.6
+complex_phi=1
+complex_gauge=1
+g_gauge=0.05
+bc_type=0
+damp_width=3
+damp_rate=0.01
+init=qball
+qball_profile=/root/gprofile_w142_g005.txt
+qball_omega=1.42
+precision=f16
+snap_dt=5
+diag_dt=0.5
+qdiag_radius=8
