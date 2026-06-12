@@ -40,6 +40,14 @@ has no stable particles (CONCEPT.md §2/§9).
 10. **Gravity** — still absent from the framework; the clock-gradient force
     a = −c²(1−v²)∇(ln ω) (v67 DEBROGLIE §3) is the surviving candidate
     mechanism, untested in the gauged theory.
+11. **Gauged interlock molecule** — phases alone cannot hold a static two-ball
+    standoff (v71 COLLIDE); Coulomb repulsion + aligned-channel attraction
+    might. One run at g=0.05 with the two-low/one-high pair.
+12. **Collision systematics** — velocity and impact-parameter sweeps of the
+    flavored taxonomy; the merge/bounce boundary; fc3's charge-transfer
+    direction vs phase convention.
+13. **Per-cluster per-flavor charge matrix** — small sfa_qcomp extension
+    (cluster-masked integrals) to measure flavor exchange exactly.
 
 ---
 

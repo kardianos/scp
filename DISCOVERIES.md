@@ -1415,3 +1415,29 @@ inline per-component frequency analysis.
    view): inside the fused flavored nucleus the two flavor fluids slosh against each
    other — a clean collective resonance at ω ≈ 0.137–0.144 (period ~45 t.u., width
    ~0.01, NO power at the clock beat), high-Q (τ ~ 10³ t.u., Q-factor ≈ 170).
+
+### V71 continued (same day): η-flavor robustness, collision taxonomy, phase-interlock arc
+
+Full record: v71/COLLIDE.md.
+7. **Flavor survives the torsion coupling** (η=0.5, m_θ=1.6): one-time
+   flavor-DEPENDENT dressing transient (high-ω flavors shed more, Q0/Q1
+   0.739→0.78; θ cloud holds ~5% of charge), then NO secular mixing — even
+   though η formally breaks the separate Q_a conservation.
+8. **Flavored-collision taxonomy** (per-component relative phase is the knob;
+   new seeder: per-component phases + de Broglie velocity tilt k_a = ω_a·v):
+   all-aligned = MERGE; all-anti = EXTERIOR bounce at D_min=11.9 (cores never
+   touch — the phase node lives in the tail overlap, confirming the
+   exterior-distortion model); mixed = COLLIDE-AND-RE-EMERGE — inelastic,
+   flavor-differential charge exchange (~22% transfer), per-flavor node/bridge
+   interface directly visible (cyan band in the flavor view).
+9. **Phase-interlock arc**: no STATIC two-ball interlock exists — the
+   2-anti/1-aligned design (new two-low/one-high baryon, ω=1.38/1.38/1.42) is
+   nonlinearly repulsive in overlap (tail model invalid there); the
+   1-anti/2-aligned config collapses to a METASTABLE interlocked composite
+   (aligned flavors fused, frustrated flavor = two lobes around a node,
+   burning off at −33%/500 t.u., renders cyan). Crashing two live interlocked
+   molecules (v_rel 0.06 and 0.2): TOTAL FUSION both — no shatter, no bounce;
+   the interlock survives as MOMENTUM (flavor-asymmetric emission thrusts the
+   product along the internal frustration axis); frustrated flavor
+   proportionally better retained. Infrastructure: one Vast.ai instance death
+   (gpu9, 36 min), recovered with no data loss.

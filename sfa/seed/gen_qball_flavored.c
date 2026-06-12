@@ -80,29 +80,34 @@ static double interp(const Prof *p, int a, double r) {
 }
 
 int main(int argc, char **argv) {
-    if (argc < 11 || (argc - 4) % 7 != 0) {
+    if (argc < 15 || (argc - 4) % 11 != 0) {
         fprintf(stderr,
-            "Usage: %s N L out.sfa  profile w0 w1 w2 x y z  [.. more balls ..]\n"
-            "  one 7-arg group per ball (max %d); profile = 2-col (symmetric) or 4-col (flavored)\n",
+            "Usage: %s N L out.sfa  profile w0 w1 w2 x y z d0 d1 d2 vx  [.. more balls ..]\n"
+            "  one 11-arg group per ball (max %d); profile = 2-col (symmetric) or 4-col (flavored)\n"
+            "  d0 d1 d2: PER-COMPONENT phases (rad); vx: velocity (de Broglie tilt k_a = w_a*vx\n"
+            "  per component — momentum p ~ Q*k; |vx| << 1, no Lorentz contraction applied)\n",
             argv[0], MAXBALLS);
         return 1;
     }
     int N = atoi(argv[1]);
     double L = atof(argv[2]);
     const char *outpath = argv[3];
-    int nballs = (argc - 4) / 7;
+    int nballs = (argc - 4) / 11;
     if (nballs > MAXBALLS) { fprintf(stderr, "FATAL: too many balls\n"); return 1; }
 
     Prof prof[MAXBALLS];
     double w[MAXBALLS][3], cx[MAXBALLS], cy[MAXBALLS], cz[MAXBALLS];
+    double del[MAXBALLS][3], vx[MAXBALLS];
     printf("gen_qball_flavored: N=%d L=%g, %d ball(s) -> %s\n", N, L, nballs, outpath);
     for (int b = 0; b < nballs; b++) {
-        char **g = &argv[4 + 7 * b];
+        char **g = &argv[4 + 11 * b];
         load_prof(g[0], &prof[b]);
         for (int a = 0; a < 3; a++) w[b][a] = atof(g[1 + a]);
         cx[b] = atof(g[4]); cy[b] = atof(g[5]); cz[b] = atof(g[6]);
-        printf("  ball %d: w=(%.4f,%.4f,%.4f) center=(%.2f,%.2f,%.2f)\n",
-               b, w[b][0], w[b][1], w[b][2], cx[b], cy[b], cz[b]);
+        for (int a = 0; a < 3; a++) del[b][a] = atof(g[7 + a]);
+        vx[b] = atof(g[10]);
+        printf("  ball %d: w=(%.4f,%.4f,%.4f) center=(%.2f,%.2f,%.2f) d=(%.2f,%.2f,%.2f) vx=%+.3f\n",
+               b, w[b][0], w[b][1], w[b][2], cx[b], cy[b], cz[b], del[b][0], del[b][1], del[b][2], vx[b]);
     }
 
     long N3 = (long)N * N * N, NN = (long)N * N;
@@ -120,8 +125,14 @@ int main(int argc, char **argv) {
             for (int a = 0; a < 3; a++) {
                 double f = interp(&prof[b], a, r);
                 if (f == 0.0) continue;
-                col[0 + a][i]  += (float)f;               /* u_a   */
-                col[18 + a][i] += (float)(w[b][a] * f);   /* vdot_a */
+                /* phase: overall delta + per-component de Broglie tilt
+                   (Phi_a ~ f e^{i(w_a t - k_a x + delta)}, k_a = w_a*vx) */
+                double ph = del[b][a] - w[b][a] * vx[b] * dxa;
+                double cp = cos(ph), sp = sin(ph);
+                col[0 + a][i]  += (float)(f * cp);              /* u_a    */
+                col[12 + a][i] += (float)(f * sp);              /* v_a    */
+                col[6 + a][i]  += (float)(-w[b][a] * f * sp);   /* udot_a */
+                col[18 + a][i] += (float)( w[b][a] * f * cp);   /* vdot_a */
             }
         }
     }
