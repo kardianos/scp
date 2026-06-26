@@ -1,0 +1,98 @@
+gen 0  bestJ=0.1501 meanJ=0.0358 sigma=0.278 evals=14
+   FITNESS 0.150078 viability 0.3414 smean 0.3414 alive 1 drift 1.011 nqfi 4.433520e-01
+gen 1  bestJ=0.2696 meanJ=0.0687 sigma=0.264 evals=28
+   FITNESS 0.269571 viability 0.4146 smean 0.4146 alive 1 drift 0.995 nqfi 1.499750e+00
+gen 2  bestJ=0.2696 meanJ=0.0877 sigma=0.256 evals=42
+   FITNESS 0.269571 viability 0.4146 smean 0.4146 alive 1 drift 0.995 nqfi 1.499750e+00
+gen 3  bestJ=0.2696 meanJ=0.0980 sigma=0.249 evals=56
+   FITNESS 0.269571 viability 0.4146 smean 0.4146 alive 1 drift 0.995 nqfi 1.499750e+00
+gen 4  bestJ=0.2851 meanJ=0.1506 sigma=0.244 evals=70
+   FITNESS 0.285146 viability 0.3287 smean 0.3287 alive 1 drift 0.879 nqfi 1.757090e+00
+gen 5  bestJ=0.2851 meanJ=0.1205 sigma=0.242 evals=84
+   FITNESS 0.285146 viability 0.3287 smean 0.3287 alive 1 drift 0.879 nqfi 1.757090e+00
+gen 6  bestJ=0.2851 meanJ=0.1167 sigma=0.237 evals=98
+   FITNESS 0.285146 viability 0.3287 smean 0.3287 alive 1 drift 0.879 nqfi 1.757090e+00
+gen 7  bestJ=0.4181 meanJ=0.1557 sigma=0.234 evals=112
+   FITNESS 0.41813 viability 0.6458 smean 0.6458 alive 1 drift 1.062 nqfi 3.444820e+00
+gen 8  bestJ=0.4181 meanJ=0.0925 sigma=0.232 evals=126
+   FITNESS 0.41813 viability 0.6458 smean 0.6458 alive 1 drift 1.062 nqfi 3.444820e+00
+gen 9  bestJ=0.4181 meanJ=0.0836 sigma=0.229 evals=140
+   FITNESS 0.41813 viability 0.6458 smean 0.6458 alive 1 drift 1.062 nqfi 3.444820e+00
+gen 10  bestJ=0.5766 meanJ=0.1221 sigma=0.226 evals=154
+   FITNESS 0.576599 viability 1.2375 smean 1.2375 alive 1 drift 1.207 nqfi 4.044550e+00
+gen 11  bestJ=0.5766 meanJ=0.1042 sigma=0.219 evals=168
+   FITNESS 0.576599 viability 1.2375 smean 1.2375 alive 1 drift 1.207 nqfi 4.044550e+00
+gen 12  bestJ=0.5766 meanJ=0.0975 sigma=0.213 evals=182
+   FITNESS 0.576599 viability 1.2375 smean 1.2375 alive 1 drift 1.207 nqfi 4.044550e+00
+gen 13  bestJ=0.5766 meanJ=0.1178 sigma=0.209 evals=196
+   FITNESS 0.576599 viability 1.2375 smean 1.2375 alive 1 drift 1.207 nqfi 4.044550e+00
+gen 14  bestJ=0.5766 meanJ=0.1374 sigma=0.208 evals=210
+   FITNESS 0.576599 viability 1.2375 smean 1.2375 alive 1 drift 1.207 nqfi 4.044550e+00
+gen 15  bestJ=0.5766 meanJ=0.0904 sigma=0.207 evals=224
+   FITNESS 0.576599 viability 1.2375 smean 1.2375 alive 1 drift 1.207 nqfi 4.044550e+00
+gen 16  bestJ=0.5766 meanJ=0.0872 sigma=0.204 evals=238
+   FITNESS 0.576599 viability 1.2375 smean 1.2375 alive 1 drift 1.207 nqfi 4.044550e+00
+gen 17  bestJ=0.5766 meanJ=0.1325 sigma=0.199 evals=252
+   FITNESS 0.576599 viability 1.2375 smean 1.2375 alive 1 drift 1.207 nqfi 4.044550e+00
+gen 18  bestJ=0.5766 meanJ=0.1317 sigma=0.193 evals=266
+   FITNESS 0.576599 viability 1.2375 smean 1.2375 alive 1 drift 1.207 nqfi 4.044550e+00
+gen 19  bestJ=0.5766 meanJ=0.1030 sigma=0.188 evals=280
+   FITNESS 0.576599 viability 1.2375 smean 1.2375 alive 1 drift 1.207 nqfi 4.044550e+00
+gen 20  bestJ=0.5766 meanJ=0.1055 sigma=0.181 evals=294
+   FITNESS 0.576599 viability 1.2375 smean 1.2375 alive 1 drift 1.207 nqfi 4.044550e+00
+gen 21  bestJ=0.5766 meanJ=0.1375 sigma=0.174 evals=308
+   FITNESS 0.576599 viability 1.2375 smean 1.2375 alive 1 drift 1.207 nqfi 4.044550e+00
+gen 22  bestJ=0.5766 meanJ=0.1422 sigma=0.169 evals=322
+   FITNESS 0.576599 viability 1.2375 smean 1.2375 alive 1 drift 1.207 nqfi 4.044550e+00
+gen 23  bestJ=0.5766 meanJ=0.1895 sigma=0.163 evals=336
+   FITNESS 0.576599 viability 1.2375 smean 1.2375 alive 1 drift 1.207 nqfi 4.044550e+00
+gen 24  bestJ=0.5766 meanJ=0.1975 sigma=0.158 evals=350
+   FITNESS 0.576599 viability 1.2375 smean 1.2375 alive 1 drift 1.207 nqfi 4.044550e+00
+gen 25  bestJ=0.5766 meanJ=0.1929 sigma=0.155 evals=364
+   FITNESS 0.576599 viability 1.2375 smean 1.2375 alive 1 drift 1.207 nqfi 4.044550e+00
+gen 26  bestJ=0.6799 meanJ=0.2727 sigma=0.151 evals=378
+   FITNESS 0.679888 viability 1.0254 smean 1.0254 alive 1 drift 1.024 nqfi 1.784120e+00
+gen 27  bestJ=0.6799 meanJ=0.2412 sigma=0.148 evals=392
+   FITNESS 0.679888 viability 1.0254 smean 1.0254 alive 1 drift 1.024 nqfi 1.784120e+00
+gen 28  bestJ=0.6799 meanJ=0.1915 sigma=0.144 evals=406
+   FITNESS 0.679888 viability 1.0254 smean 1.0254 alive 1 drift 1.024 nqfi 1.784120e+00
+gen 29  bestJ=0.6799 meanJ=0.2185 sigma=0.144 evals=420
+   FITNESS 0.679888 viability 1.0254 smean 1.0254 alive 1 drift 1.024 nqfi 1.784120e+00
+gen 30  bestJ=0.6799 meanJ=0.1873 sigma=0.141 evals=434
+   FITNESS 0.679888 viability 1.0254 smean 1.0254 alive 1 drift 1.024 nqfi 1.784120e+00
+gen 31  bestJ=0.6799 meanJ=0.2235 sigma=0.138 evals=448
+   FITNESS 0.679888 viability 1.0254 smean 1.0254 alive 1 drift 1.024 nqfi 1.784120e+00
+gen 32  bestJ=0.6799 meanJ=0.2623 sigma=0.136 evals=462
+   FITNESS 0.679888 viability 1.0254 smean 1.0254 alive 1 drift 1.024 nqfi 1.784120e+00
+gen 33  bestJ=0.6799 meanJ=0.2381 sigma=0.133 evals=476
+   FITNESS 0.679888 viability 1.0254 smean 1.0254 alive 1 drift 1.024 nqfi 1.784120e+00
+gen 34  bestJ=0.6799 meanJ=0.2972 sigma=0.130 evals=490
+   FITNESS 0.679888 viability 1.0254 smean 1.0254 alive 1 drift 1.024 nqfi 1.784120e+00
+gen 35  bestJ=0.6799 meanJ=0.3139 sigma=0.127 evals=504
+   FITNESS 0.679888 viability 1.0254 smean 1.0254 alive 1 drift 1.024 nqfi 1.784120e+00
+gen 36  bestJ=0.7746 meanJ=0.3429 sigma=0.126 evals=518
+   FITNESS 0.774598 viability 1.4568 smean 1.4568 alive 1 drift 1.151 nqfi 2.315450e+00
+gen 37  bestJ=0.7746 meanJ=0.2402 sigma=0.125 evals=532
+   FITNESS 0.774598 viability 1.4568 smean 1.4568 alive 1 drift 1.151 nqfi 2.315450e+00
+gen 38  bestJ=0.7746 meanJ=0.2662 sigma=0.125 evals=546
+   FITNESS 0.774598 viability 1.4568 smean 1.4568 alive 1 drift 1.151 nqfi 2.315450e+00
+gen 39  bestJ=1.0201 meanJ=0.3697 sigma=0.122 evals=560
+   FITNESS 1.02012 viability 1.8002 smean 1.8002 alive 1 drift 1.123 nqfi 2.016370e+00
+gen 40  bestJ=1.0201 meanJ=0.3394 sigma=0.118 evals=574
+   FITNESS 1.02012 viability 1.8002 smean 1.8002 alive 1 drift 1.123 nqfi 2.016370e+00
+gen 41  bestJ=1.0201 meanJ=0.3718 sigma=0.115 evals=588
+   FITNESS 1.02012 viability 1.8002 smean 1.8002 alive 1 drift 1.123 nqfi 2.016370e+00
+gen 42  bestJ=1.0201 meanJ=0.2945 sigma=0.111 evals=602
+   FITNESS 1.02012 viability 1.8002 smean 1.8002 alive 1 drift 1.123 nqfi 2.016370e+00
+gen 43  bestJ=1.0201 meanJ=0.3217 sigma=0.108 evals=616
+   FITNESS 1.02012 viability 1.8002 smean 1.8002 alive 1 drift 1.123 nqfi 2.016370e+00
+gen 44  bestJ=1.0201 meanJ=0.4107 sigma=0.106 evals=630
+   FITNESS 1.02012 viability 1.8002 smean 1.8002 alive 1 drift 1.123 nqfi 2.016370e+00
+DONE bestJ=1.02012
+BEST_GENOME:
+omega 1.45
+blob -0.6884 -1.6058 1.0067 2.5870 0.8497 0.6989 0.4443 -0.2474 0.1793 -0.7570
+blob 0.3545 -0.1937 -0.8615 1.8260 -0.1473 -0.2209 0.2034 -0.3322 0.1303 -0.5689
+blob 0.2298 -0.6908 -0.3166 2.6249 -0.1617 -0.6824 0.7396 -0.0668 -0.2844 -0.2318
+blob -0.5560 2.1246 -1.1525 2.0724 0.4172 0.4599 0.2132 0.1366 0.0982 0.5871
+

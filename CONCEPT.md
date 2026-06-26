@@ -44,7 +44,7 @@ sector (§4).
 
 **The real limit.** Setting v = tv = 0 and g = 0 reproduces the original real
 6-field Cosserat system term-for-term. Everything the project measured before
-2026-06 lives in that limit (§9).
+2026-06 lives in that limit (§10).
 
 ---
 
@@ -233,7 +233,56 @@ charge droplets** — the liquid-drop picture is literal:
 
 ---
 
-## 9. Relation to Earlier Formulations (brief)
+## 9. The Standing Goal — A Classical Field That Witnesses Quantum Entanglement
+
+The theory is classical — a deterministic PDE on a grid — yet it is built to make
+contact with quantum physics at one specific seam. The U(1)-soliton identity (§7)
+makes the conserved charge double as a **quantum of action**: ℏ_eff ≡ E₀/ω =
+Q(1 + ε), ε ≈ 0.03 (measured 3–5%). Charge, mass, and action are the *same*
+conserved number; the particle is quantized because it is a soliton, not because
+the field was quantized. This is the bridge the project is designed to cross: a
+classical field that nonetheless carries its own ℏ.
+
+**The goal.** Demonstrate that this classical field reproduces a *genuinely
+quantum* many-body signature — specifically a **multipartite-entanglement
+witness** — computed from quantities the simulation already outputs, using
+ℏ_eff = Q as the action quantum. A positive witness would show that the
+soliton-charge-as-ℏ identity is strong enough to carry quantum *information*, not
+merely quantum kinematics (§7).
+
+**The target measurement.** The sharpest available witness is the **quantum
+Fisher information** (QFI), recently shown to be extractable purely from a
+dynamical structure factor by Mazza et al. (*Quantum Fisher information in a
+strange metal*, Nat. Phys. 2026, doi:10.1038/s41567-026-03298-0; measured on the
+heavy-fermion metal Ce₃Pd₂₀Si₆ by inelastic neutron scattering). For a system in
+equilibrium,
+
+    f_Q(T) = (4/π) ∫₀^∞ tanh(ℏω/2k_BT) χ″(q,ω,T) d(ℏω),
+
+with χ″ obtained from the dynamical structure factor S(q,ω,T) — the space–time
+Fourier transform of a local operator — by the fluctuation–dissipation theorem,
+χ″ = π(1 − e^{−ℏω/k_BT}) S. The normalized witness nQFI = f_Q/(h_max − h_min)²
+> m certifies **(m+1)-partite entanglement**. In their strange metal f_Q grows
+*scale-free* (no characteristic energy) with a fractional dynamical-scaling
+exponent (α ≈ 0.88) — the fingerprint of a collective state with no independent
+quasiparticles.
+
+**Why it fits this theory.** S(q,ω) is exactly what an SCP run produces: the
+clock-harmonic spectroscopy that establishes the ball's non-blinking existence
+density (§3) is already a space–time Fourier transform of a local density. The
+only quantum input the QFI kernel needs is ℏ — and the theory supplies it as
+ℏ_eff = Q. The natural local operator is the gauge-invariant charge density ρ_Q
+(or per-component density, for the flavor sector). A classically computed nQFI
+that crosses the m-partite bound — derived from a deterministic field whose action
+quantum is its own soliton charge — would be the concrete realization of "the
+particle *is* the fabric": not a quasiparticle on a pre-existing stage, but an
+irreducibly collective, entanglement-bearing configuration of the field itself. A
+null result is equally sharp: it would bound how far the soliton-ℏ identity
+reaches. Concrete measurement steps are in FUTURE.md.
+
+---
+
+## 10. Relation to Earlier Formulations (brief)
 
 The project's first arc used the **real** 6-field theory (v28–v53) and
 produced a rich phenomenology — oscillons, braids, UUD/UDD composites, a
@@ -257,7 +306,7 @@ DISCOVERIES.md; their surviving constraints (e.g. genuine inputs = a_lepton
 
 ---
 
-## 10. Technical Infrastructure
+## 11. Technical Infrastructure
 
 - **Kernel (kernel-v3)**: `sfa/sim/scp_sim.c` (CPU) and `.cu` (GPU) — one
   config-driven binary covering real (12-array), complex (`complex_phi=1`,

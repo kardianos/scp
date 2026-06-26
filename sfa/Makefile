@@ -12,7 +12,7 @@ BINDIR = ../bin
 ANALYSIS_TOOLS = analyze_sfa spatial_analysis cluster_profile stable_vs_unstable \
                  shell_analysis modify_sfa freq_phase accel_analysis breathing \
                  sfa_vectorize3d vecstream_verify sfa_particle_track sfa_qball_track \
-                 sfa_slice
+                 sfa_slice sfa_qcomp sfa_qfi
 
 ANALYSIS_BINS = $(addprefix analysis/, $(ANALYSIS_TOOLS))
 

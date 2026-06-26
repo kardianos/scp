@@ -52,6 +52,10 @@ typedef struct {
     double *E_acc[3];             /* E-kick K_i (the gauge "acceleration", §3.4) */
     double *link_c[3], *link_s[3];/* scratch: cos/sin theta_i, refreshed per force call */
     double *plaq_s[3];            /* scratch: sin theta_P per plaquette plane (§3.4) */
+    /* v71 Higgs condensate (self-compression bag); NULL when higgs_mode=0 */
+    int    higgs_mode;            /* copied from (c->higgs_v>0 && gauge_mode) */
+    double higgs_v, higgs_lam, higgs_kap;
+    double *H, *H_vel, *H_acc;    /* blocks 54,55,56 when higgs_mode */
     int N; long N3;
     double L, dx, dt;
 } Grid;
@@ -68,7 +72,12 @@ static Grid *grid_alloc(const Config *c) {
     g->gauge_mode   = c->complex_gauge;
     g->g_gauge      = c->g_gauge;
     g->G_offset     = 0.0;
-    long nblocks = g->gauge_mode ? 54 : (g->complex_mode ? 36 : 18);
+    /* v71 Higgs: only in the gauged-complex path; off => byte-identical */
+    g->higgs_mode = (c->higgs_v > 0.0 && g->gauge_mode) ? 1 : 0;
+    g->higgs_v = c->higgs_v;  g->higgs_lam = c->higgs_lam;  g->higgs_kap = c->higgs_kap;
+    if (c->higgs_v > 0.0 && !g->gauge_mode)
+        fprintf(stderr, "WARNING: higgs_v>0 ignored (needs complex_gauge=1)\n");
+    long nblocks = g->gauge_mode ? (g->higgs_mode ? 57 : 54) : (g->complex_mode ? 36 : 18);
     long total = nblocks * g->N3;
     printf("Allocating %.2f GB (%ld doubles, N=%d, %d fields%s)\n",
            total*8.0/1e9, total, c->N, g->complex_mode ? 12 : 6,
@@ -113,6 +122,14 @@ static Grid *grid_alloc(const Config *c) {
             g->th[i] = g->Efield[i] = g->E_acc[i] = NULL;
             g->link_c[i] = g->link_s[i] = g->plaq_s[i] = NULL;
         }
+    }
+    /* v71 Higgs blocks 54,55,56 (only when higgs_mode) */
+    if (g->higgs_mode) {
+        g->H     = g->mem + 54 * g->N3;
+        g->H_vel = g->mem + 55 * g->N3;
+        g->H_acc = g->mem + 56 * g->N3;
+    } else {
+        g->H = g->H_vel = g->H_acc = NULL;
     }
     /* Temporary arrays for two-pass force computations */
     for (int a = 0; a < NFIELDS; a++) {
@@ -684,6 +701,8 @@ static void compute_forces_complex_gauge(Grid *g, const Config *c) {
     const double MTHETA2 = c->mtheta2, ETA = c->eta;
     const double GG = g->g_gauge;
     const double STP = 1.0 / (GG * dx * dx * dx);   /* staple prefactor 1/(g a^3) */
+    const int    HIG = g->higgs_mode;               /* v71 Higgs bag (0 => terms vanish) */
+    const double HV = g->higgs_v, HLAM = g->higgs_lam, HKAP = g->higgs_kap;
 
     /* === pass A: link cos/sin scratch === */
     for (int i = 0; i < 3; i++) {
@@ -760,6 +779,7 @@ static void compute_forces_complex_gauge(Grid *g, const Config *c) {
         double den  = 1.0 + KAPPA*s;
         double Vp   = 0.5*MU / (den*den);
         double prod_rest[3] = { s2_1*s2_2, s2_0*s2_2, s2_0*s2_1 };
+        double hh = HIG ? g->H[idx]*g->H[idx] : 0.0;   /* Higgs density (0 => no back-reaction) */
 
         /* covariant central differences (SPEC §3.3): Dc[d][f] */
         double DcU[3][6], DcV[3][6];
@@ -789,11 +809,20 @@ static void compute_forces_complex_gauge(Grid *g, const Config *c) {
                            + TIp[2][3+a]+TIm[2][3+a] - 6.0*fv[3+a]) * idx2;
 
             g->phi_acc[a][idx]      = lapU_P - MASS2*fu[a]
-                                    - 2.0*Vp*fu[a]*prod_rest[a] + ETA*reDxT;
+                                    - 2.0*Vp*fu[a]*prod_rest[a] + ETA*reDxT
+                                    - HKAP*hh*fu[a]*prod_rest[a];
             g->phi_im_acc[a][idx]   = lapV_P - MASS2*fv[a]
-                                    - 2.0*Vp*fv[a]*prod_rest[a] + ETA*imDxT;
+                                    - 2.0*Vp*fv[a]*prod_rest[a] + ETA*imDxT
+                                    - HKAP*hh*fv[a]*prod_rest[a];
             g->theta_acc[a][idx]    = lapU_T - MTHETA2*fu[3+a] + ETA*reDxP;
             g->theta_im_acc[a][idx] = lapV_T - MTHETA2*fv[3+a] + ETA*imDxP;
+        }
+        /* v71 Higgs condensate acc: Hddot = lapH - lam H(H^2-v^2) - kap s H */
+        if (HIG) {
+            double lapH = (g->H[np[0]]+g->H[nm[0]]+g->H[np[1]]+g->H[nm[1]]
+                         + g->H[np[2]]+g->H[nm[2]] - 6.0*g->H[idx]) * idx2;
+            double h = g->H[idx];
+            g->H_acc[idx] = lapH - HLAM*h*(h*h - HV*HV) - HKAP*s*h;
         }
 
         /* staple sums (SPEC §3.4 table) */
@@ -966,6 +995,9 @@ static void verlet_step(Grid *g, const Config *c) {
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) E[i]+=hdt*K[i];
     }
+    if (g->higgs_mode) { double *vH=g->H_vel,*aH=g->H_acc;
+        #pragma omp parallel for schedule(static)
+        for (long i=0;i<N3;i++) vH[i]+=hdt*aH[i]; }
     /* stage 2: drift (fields AND link angles, wrapped to (-pi,pi]) */
     for (int a=0;a<NFIELDS;a++) {
         double *pp=g->phi[a],*vp=g->phi_vel[a],*pt=g->theta[a],*vt=g->theta_vel[a];
@@ -988,6 +1020,9 @@ static void verlet_step(Grid *g, const Config *c) {
             }
         }
     }
+    if (g->higgs_mode) { double *pH=g->H,*vH=g->H_vel;
+        #pragma omp parallel for schedule(static)
+        for (long i=0;i<N3;i++) pH[i]+=dt*vH[i]; }
     /* stage 3: forces (matter accs + E_acc) */
     if (gauged)               compute_forces_complex_gauge(g, c);
     else if (g->complex_mode) compute_forces_complex(g, c);
@@ -1008,6 +1043,9 @@ static void verlet_step(Grid *g, const Config *c) {
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) E[i]+=hdt*K[i];
     }
+    if (g->higgs_mode) { double *vH=g->H_vel,*aH=g->H_acc;
+        #pragma omp parallel for schedule(static)
+        for (long i=0;i<N3;i++) vH[i]+=hdt*aH[i]; }
     /* stage 5: BCs */
     if (c->bc_type == 0)
         apply_damping(g, c);
@@ -1192,7 +1230,8 @@ static void compute_energy_complex_gauge(Grid *g, const Config *c,
     const double MU=c->mu, KAPPA=c->kappa, MASS2=c->m2, MTHETA2=c->mtheta2, ETA=c->eta;
     const double GG=g->g_gauge;
     const double BPRE = 1.0/(GG*GG*dx*dx*dx*dx);   /* 1/(g^2 a^4), GG != 0 here */
-    double s_epk=0,s_etk=0,s_eg=0,s_em=0,s_ep=0,s_etg=0,s_etm=0,s_ec=0,s_pm=0,s_Pm=0,s_eem=0;
+    double s_epk=0,s_etk=0,s_eg=0,s_em=0,s_ep=0,s_etg=0,s_etm=0,s_ec=0,s_pm=0,s_Pm=0,s_eem=0,s_ehg=0;
+    const int HIG=g->higgs_mode; const double HV=g->higgs_v,HLAM=g->higgs_lam,HKAP=g->higgs_kap;
 
     /* refresh link cos/sin scratch (cheap; diag-time only) */
     for (int i = 0; i < 3; i++) {
@@ -1201,7 +1240,7 @@ static void compute_energy_complex_gauge(Grid *g, const Config *c,
         for (long idx = 0; idx < N3; idx++) { cp[idx]=cos(thp[idx]); sp[idx]=sin(thp[idx]); }
     }
 
-    #pragma omp parallel for reduction(+:s_epk,s_etk,s_eg,s_em,s_ep,s_etg,s_etm,s_ec,s_eem) \
+    #pragma omp parallel for reduction(+:s_epk,s_etk,s_eg,s_em,s_ep,s_etg,s_etm,s_ec,s_eem,s_ehg) \
         reduction(max:s_pm,s_Pm) schedule(static)
     for (long idx=0;idx<N3;idx++) {
         int i=(int)(idx/NN),j=(int)((idx/N)%N),k=(int)(idx%N);
@@ -1265,10 +1304,17 @@ static void compute_energy_complex_gauge(Grid *g, const Config *c,
             bb += 1.0 - cos(ang);
         }
         s_eem += (ee + BPRE*bb)*dV;
+        /* v71 Higgs energy density: 1/2 Hdot^2 + 1/2|grad H|^2 + (lam/4)(H^2-v^2)^2 + (kap/2) s H^2 */
+        if (HIG) {
+            double h=g->H[idx], hv=g->H_vel[idx];
+            double gx=(g->H[np[0]]-g->H[nm[0]])*idx1, gy=(g->H[np[1]]-g->H[nm[1]])*idx1, gz=(g->H[np[2]]-g->H[nm[2]])*idx1;
+            double hd=h*h-HV*HV;
+            s_ehg += (0.5*hv*hv + 0.5*(gx*gx+gy*gy+gz*gz) + 0.25*HLAM*hd*hd + 0.5*HKAP*s*h*h)*dV;
+        }
     }
     *epk=s_epk;*etk=s_etk;*eg=s_eg;*em=s_em;*ep=s_ep;
     *etg=s_etg;*etm=s_etm;*ec=s_ec;*e_em=s_eem;
-    *et=s_epk+s_etk+s_eg+s_em+s_ep+s_etg+s_etm+s_ec+s_eem;
+    *et=s_epk+s_etk+s_eg+s_em+s_ep+s_etg+s_etm+s_ec+s_eem+s_ehg;
     *phi_max=s_pm;*P_max=s_Pm;
 }
 
@@ -1922,6 +1968,23 @@ int main(int argc, char **argv) {
 
     /* Initialize */
     do_init(g, &c);
+    /* v71 Higgs: condensate at the VEV; optional central cavity (higgs_rvoid>0)
+     * — "Higgs in the middle": the matter sits in the void, the surrounding
+     * condensate pulls it inward. */
+    if (g->higgs_mode) {
+        const int N = g->N, NN = N*N; const double dx = g->dx, L = g->L;
+        const double rv = c.higgs_rvoid, vH = g->higgs_v;
+        #pragma omp parallel for schedule(static)
+        for (long idx = 0; idx < g->N3; idx++) {
+            double h = vH;
+            if (rv > 0.0) {
+                int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
+                double x=-L+i*dx, y=-L+j*dx, z=-L+k*dx, r=sqrt(x*x+y*y+z*z);
+                h = vH*0.5*(1.0 + tanh((r-rv)/0.6));
+            }
+            g->H[idx] = h; g->H_vel[idx] = 0.0;
+        }
+    }
     /* v69: net-charge refusal (§1.2) + mandatory Gauss projection (§5.4) */
     const int gauged = (c.complex_gauge && c.g_gauge != 0.0);
     if (gauged) {

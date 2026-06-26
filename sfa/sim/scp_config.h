@@ -86,6 +86,15 @@ typedef struct {
     double qball2_phase;       /* second-ball relative phase delta (radians) */
     int    test_gauge_xform;   /* 1 = run lattice gauge-transform unit check and exit */
 
+    /* Higgs "fabric-pull" condensate (self-compression bag), v71. v=0 => off.
+     * V_H=(higgs_lam/4)(H^2-higgs_v^2)^2 + (higgs_kap/2) s H^2 ; needs complex_gauge=1. */
+    double higgs_v;            /* VEV (0 = sector off, default) */
+    double higgs_lam;          /* quartic (gap m_H = sqrt(2 lam) v) */
+    double higgs_kap;          /* matter-Higgs coupling (bag strength) */
+    double higgs_rvoid;        /* central condensate cavity radius (0=uniform VEV);
+                                * "Higgs in the middle": matter sits in the void, the
+                                * surrounding condensate pulls it inward. */
+
     /* Boundary */
     int bc_type;                /* 0=absorb_sphere, 1=gradient_pinned, 2=periodic */
     double damp_width, damp_rate;
@@ -140,6 +149,7 @@ static Config cfg_defaults(void) {
     c.qball2_x0 = 1e30;  c.qball2_y0 = 1e30;  c.qball2_z0 = 1e30;
     c.qball2_sign = 1;  c.qball2_phase = 0.0;
     c.test_gauge_xform = 0;
+    c.higgs_v = 0.0;  c.higgs_lam = 1.0;  c.higgs_kap = 2.0;  c.higgs_rvoid = 0.0;
     c.bc_type = 0;
     c.damp_width = 3.0;  c.damp_rate = 0.01;  c.bc_switch_time = 0.0;
     c.gradient_A_high = 0.15;  c.gradient_A_low = 0.05;  c.gradient_margin = 3;
@@ -208,6 +218,10 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"qdiag_probe2"))  c->qdiag_probe2 = atof(val);
     else if (!strcmp(key,"complex_gauge")) c->complex_gauge = atoi(val);
     else if (!strcmp(key,"g_gauge"))       c->g_gauge = atof(val);
+    else if (!strcmp(key,"higgs_v"))       c->higgs_v = atof(val);
+    else if (!strcmp(key,"higgs_lam"))     c->higgs_lam = atof(val);
+    else if (!strcmp(key,"higgs_kap"))     c->higgs_kap = atof(val);
+    else if (!strcmp(key,"higgs_rvoid"))   c->higgs_rvoid = atof(val);
     else if (!strcmp(key,"qball2_x0"))     c->qball2_x0 = atof(val);
     else if (!strcmp(key,"qball2_y0"))     c->qball2_y0 = atof(val);
     else if (!strcmp(key,"qball2_z0"))     c->qball2_z0 = atof(val);
