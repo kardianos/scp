@@ -56,6 +56,13 @@ typedef struct {
     int    higgs_mode;            /* copied from (c->higgs_v>0 && gauge_mode) */
     double higgs_v, higgs_lam, higgs_kap;
     double *H, *H_vel, *H_acc;    /* blocks 54,55,56 when higgs_mode */
+    /* v71 SECOND compact-U(1) gauge (relative/color); NULL when gauge2_mode=0.
+     * Mirrors the first gauge sector (th2/Efield2/E_acc2 + scratch). */
+    int    gauge2_mode;          /* (c->g_gauge2!=0 && gauge_mode) */
+    double g_gauge2;
+    double qg2[3];               /* per-component charges under gauge2 */
+    double *th2[3], *Efield2[3], *E_acc2[3];
+    double *link2_c[3], *link2_s[3], *plaq2_s[3];
     int N; long N3;
     double L, dx, dt;
 } Grid;
@@ -77,7 +84,15 @@ static Grid *grid_alloc(const Config *c) {
     g->higgs_v = c->higgs_v;  g->higgs_lam = c->higgs_lam;  g->higgs_kap = c->higgs_kap;
     if (c->higgs_v > 0.0 && !g->gauge_mode)
         fprintf(stderr, "WARNING: higgs_v>0 ignored (needs complex_gauge=1)\n");
-    long nblocks = g->gauge_mode ? (g->higgs_mode ? 57 : 54) : (g->complex_mode ? 36 : 18);
+    /* v71 second gauge: only in the gauged-complex path; off => byte-identical */
+    g->gauge2_mode = (c->g_gauge2 != 0.0 && g->gauge_mode) ? 1 : 0;
+    g->g_gauge2 = c->g_gauge2;
+    g->qg2[0] = c->gauge2_q0;  g->qg2[1] = c->gauge2_q1;  g->qg2[2] = c->gauge2_q2;
+    if (c->g_gauge2 != 0.0 && !g->gauge_mode)
+        fprintf(stderr, "WARNING: g_gauge2!=0 ignored (needs complex_gauge=1)\n");
+    long base2 = 54 + (g->higgs_mode ? 3 : 0);   /* second-gauge block base */
+    long nblocks = g->gauge_mode ? (base2 + (g->gauge2_mode ? 18 : 0))
+                                 : (g->complex_mode ? 36 : 18);
     long total = nblocks * g->N3;
     printf("Allocating %.2f GB (%ld doubles, N=%d, %d fields%s)\n",
            total*8.0/1e9, total, c->N, g->complex_mode ? 12 : 6,
@@ -130,6 +145,20 @@ static Grid *grid_alloc(const Config *c) {
         g->H_acc = g->mem + 56 * g->N3;
     } else {
         g->H = g->H_vel = g->H_acc = NULL;
+    }
+    /* v71 second gauge: 18 blocks at base2 (th2,E2,E2_acc,link2_c/s,plaq2_s) */
+    for (int i = 0; i < 3; i++) {
+        if (g->gauge2_mode) {
+            g->th2[i]     = g->mem + (base2 + 0  + i) * g->N3;
+            g->Efield2[i] = g->mem + (base2 + 3  + i) * g->N3;
+            g->E_acc2[i]  = g->mem + (base2 + 6  + i) * g->N3;
+            g->link2_c[i] = g->mem + (base2 + 9  + i) * g->N3;
+            g->link2_s[i] = g->mem + (base2 + 12 + i) * g->N3;
+            g->plaq2_s[i] = g->mem + (base2 + 15 + i) * g->N3;
+        } else {
+            g->th2[i] = g->Efield2[i] = g->E_acc2[i] = NULL;
+            g->link2_c[i] = g->link2_s[i] = g->plaq2_s[i] = NULL;
+        }
     }
     /* Temporary arrays for two-pass force computations */
     for (int a = 0; a < NFIELDS; a++) {
@@ -703,6 +732,10 @@ static void compute_forces_complex_gauge(Grid *g, const Config *c) {
     const double STP = 1.0 / (GG * dx * dx * dx);   /* staple prefactor 1/(g a^3) */
     const int    HIG = g->higgs_mode;               /* v71 Higgs bag (0 => terms vanish) */
     const double HV = g->higgs_v, HLAM = g->higgs_lam, HKAP = g->higgs_kap;
+    const int    G2 = g->gauge2_mode;               /* v71 second compact-U(1) gauge */
+    const double GG2 = g->g_gauge2;
+    const double STP2 = G2 ? 1.0/(GG2*dx*dx*dx) : 0.0;
+    const double q20=g->qg2[0], q21=g->qg2[1], q22=g->qg2[2]; double qg2[3]={q20,q21,q22};
 
     /* === pass A: link cos/sin scratch === */
     for (int i = 0; i < 3; i++) {
@@ -712,6 +745,13 @@ static void compute_forces_complex_gauge(Grid *g, const Config *c) {
             cp[idx] = cos(thp[idx]);
             sp[idx] = sin(thp[idx]);
         }
+    }
+
+    /* === pass A2: second-gauge link cos/sin === */
+    if (G2) for (int i = 0; i < 3; i++) {
+        double *thp = g->th2[i], *cp = g->link2_c[i], *sp = g->link2_s[i];
+        #pragma omp parallel for schedule(static)
+        for (long idx = 0; idx < N3; idx++) { cp[idx] = cos(thp[idx]); sp[idx] = sin(thp[idx]); }
     }
 
     /* === pass B: plaquette sines, planes p0=(0,1), p1=(1,2), p2=(2,0)
@@ -729,6 +769,11 @@ static void compute_forces_complex_gauge(Grid *g, const Config *c) {
             double ang = g->th[a][idx] + g->th[b][np[a]]
                        - g->th[a][np[b]] - g->th[b][idx];
             g->plaq_s[p][idx] = sin(ang);
+            if (G2) {
+                double ang2 = g->th2[a][idx] + g->th2[b][np[a]]
+                            - g->th2[a][np[b]] - g->th2[b][idx];
+                g->plaq2_s[p][idx] = sin(ang2);
+            }
         }
     }
 
@@ -756,9 +801,18 @@ static void compute_forces_complex_gauge(Grid *g, const Config *c) {
         /* raw +d theta neighbors needed for the symmetrized eta current */
         double tup[3][3], tvp[3][3];
         for (int d = 0; d < 3; d++) {
-            double cP = g->link_c[d][idx],  sP = g->link_s[d][idx];
-            double cM = g->link_c[d][nm[d]], sM = g->link_s[d][nm[d]];
             for (int a = 0; a < 3; a++) {
+                /* covariant link phase for component a: th[d] + q2_a*th2[d] (combined
+                 * gauge1*gauge2^{q_a}); off => the precomputed gauge1 link (identical) */
+                double cP, sP, cM, sM;
+                if (G2) {
+                    double php = g->th[d][idx]   + qg2[a]*g->th2[d][idx];
+                    double phm = g->th[d][nm[d]] + qg2[a]*g->th2[d][nm[d]];
+                    cP=cos(php); sP=sin(php); cM=cos(phm); sM=sin(phm);
+                } else {
+                    cP=g->link_c[d][idx]; sP=g->link_s[d][idx];
+                    cM=g->link_c[d][nm[d]]; sM=g->link_s[d][nm[d]];
+                }
                 double upn = g->phi[a][np[d]],     vpn = g->phi_im[a][np[d]];
                 double umn = g->phi[a][nm[d]],     vmn = g->phi_im[a][nm[d]];
                 double tpn = g->theta[a][np[d]],   wpn = g->theta_im[a][np[d]];
@@ -833,6 +887,15 @@ static void compute_forces_complex_gauge(Grid *g, const Config *c) {
                + (g->plaq_s[1][idx] - g->plaq_s[1][nm[2]]);
         st[2] =  (g->plaq_s[2][idx] - g->plaq_s[2][nm[0]])
                - (g->plaq_s[1][idx] - g->plaq_s[1][nm[1]]);
+        double st2[3] = {0,0,0};
+        if (G2) {
+            st2[0] =  (g->plaq2_s[0][idx] - g->plaq2_s[0][nm[1]])
+                    - (g->plaq2_s[2][idx] - g->plaq2_s[2][nm[2]]);
+            st2[1] = -(g->plaq2_s[0][idx] - g->plaq2_s[0][nm[0]])
+                    + (g->plaq2_s[1][idx] - g->plaq2_s[1][nm[2]]);
+            st2[2] =  (g->plaq2_s[2][idx] - g->plaq2_s[2][nm[0]])
+                    - (g->plaq2_s[1][idx] - g->plaq2_s[1][nm[1]]);
+        }
 
         /* lattice current J_i^lat (SPEC §3.4) + E-kick */
         for (int d = 0; d < 3; d++) {
@@ -854,6 +917,16 @@ static void compute_forces_complex_gauge(Grid *g, const Config *c) {
                        + (tup[d][d2]*WpI2     - tvp[d][d2]*WpR2);
             double Jlat = inva*Jg - 0.5*ETA*(T12 - T21);
             g->E_acc[d][idx] = STP*st[d] + GG*Jlat;
+            /* v71 second gauge: relative current J2 = sum_a q2_a Im[Phi_a^* U Phi_a(x+d)]
+             * (+ theta), magnetic staple st2. Exact at eta=0 (no seagull). */
+            if (G2) {
+                double Jg2 = 0.0;
+                for (int a = 0; a < 3; a++) {
+                    Jg2 += qg2[a]*(fu[a]  *TIp[d][a]   - fv[a]  *TRp[d][a]);
+                    Jg2 += qg2[a]*(fu[3+a]*TIp[d][3+a] - fv[3+a]*TRp[d][3+a]);
+                }
+                g->E_acc2[d][idx] = STP2*st2[d] + GG2*inva*Jg2;
+            }
         }
     }
 }
@@ -995,6 +1068,11 @@ static void verlet_step(Grid *g, const Config *c) {
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) E[i]+=hdt*K[i];
     }
+    if (g->gauge2_mode) for (int a=0;a<3;a++) {
+        double *E=g->Efield2[a],*K=g->E_acc2[a];
+        #pragma omp parallel for schedule(static)
+        for (long i=0;i<N3;i++) E[i]+=hdt*K[i];
+    }
     if (g->higgs_mode) { double *vH=g->H_vel,*aH=g->H_acc;
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) vH[i]+=hdt*aH[i]; }
@@ -1020,6 +1098,17 @@ static void verlet_step(Grid *g, const Config *c) {
             }
         }
     }
+    if (g->gauge2_mode) {
+        const double gad2 = -g->g_gauge2 * g->dx * dt;
+        for (int a=0;a<3;a++) {
+            double *thp=g->th2[a],*E=g->Efield2[a];
+            #pragma omp parallel for schedule(static)
+            for (long i=0;i<N3;i++) {
+                double v = thp[i] + gad2*E[i];
+                thp[i] = v - 2.0*PI*rint(v/(2.0*PI));
+            }
+        }
+    }
     if (g->higgs_mode) { double *pH=g->H,*vH=g->H_vel;
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) pH[i]+=dt*vH[i]; }
@@ -1040,6 +1129,11 @@ static void verlet_step(Grid *g, const Config *c) {
     }
     if (gauged) for (int a=0;a<3;a++) {
         double *E=g->Efield[a],*K=g->E_acc[a];
+        #pragma omp parallel for schedule(static)
+        for (long i=0;i<N3;i++) E[i]+=hdt*K[i];
+    }
+    if (g->gauge2_mode) for (int a=0;a<3;a++) {
+        double *E=g->Efield2[a],*K=g->E_acc2[a];
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) E[i]+=hdt*K[i];
     }
@@ -1666,6 +1760,62 @@ static void init_gauss_project(Grid *g, const Config *c) {
     free(b); free(xv); free(r); free(p); free(Ap);
 }
 
+/* v71 second-gauge Gauss residual: div E2 - g2 * rho2, rho2 = sum_a q_a * charge_a */
+static inline double gauss2_residual_at(Grid *g, long idx, const long nm[3]) {
+    double divE = (g->Efield2[0][idx]-g->Efield2[0][nm[0]]
+                  +g->Efield2[1][idx]-g->Efield2[1][nm[1]]
+                  +g->Efield2[2][idx]-g->Efield2[2][nm[2]]) / g->dx;
+    double rho = 0;
+    for (int a=0;a<NFIELDS;a++)
+        rho += g->qg2[a]*( g->phi[a][idx]*g->phi_im_vel[a][idx] - g->phi_im[a][idx]*g->phi_vel[a][idx]
+                         + g->theta[a][idx]*g->theta_im_vel[a][idx] - g->theta_im[a][idx]*g->theta_vel[a][idx] );
+    return divE - g->g_gauge2*rho;
+}
+
+/* v71 project E2 so div E2 = g2 rho2 holds at init (mirror of init_gauss_project) */
+static void init_gauss2_project(Grid *g) {
+    const int N=g->N, NN=N*N; const long N3=g->N3;
+    const double dx=g->dx, idx2=1.0/(dx*dx);
+    double *b=malloc(N3*sizeof(double)), *xv=calloc(N3,sizeof(double));
+    double *r=malloc(N3*sizeof(double)), *p=malloc(N3*sizeof(double)), *Ap=malloc(N3*sizeof(double));
+    double gsum=0, gmax0=0;
+    #pragma omp parallel for reduction(+:gsum) schedule(static)
+    for (long idx=0;idx<N3;idx++){ int i=(int)(idx/NN),j=(int)((idx/N)%N),k=(int)(idx%N);
+        long nm[3]; nm[0]=(long)((i-1+N)%N)*NN+(long)j*N+k; nm[1]=(long)i*NN+(long)((j-1+N)%N)*N+k; nm[2]=(long)i*NN+(long)j*N+(k-1+N)%N;
+        b[idx]=gauss2_residual_at(g,idx,nm); gsum+=b[idx]; }
+    double gbar=gsum/(double)N3;
+    #pragma omp parallel for reduction(max:gmax0) schedule(static)
+    for (long idx=0;idx<N3;idx++){ b[idx]-=gbar; double d=fabs(b[idx]); if(d>gmax0)gmax0=d; }
+    const double tol=1e-13*fmax(1.0,gmax0);
+    memcpy(r,b,N3*sizeof(double)); memcpy(p,b,N3*sizeof(double));
+    double rz=0; for(long idx=0;idx<N3;idx++) rz+=r[idx]*r[idx];
+    int it=0; double rmax=gmax0;
+    while (rmax>tol && it<20000){
+        double pAp=0;
+        #pragma omp parallel for reduction(+:pAp) schedule(static)
+        for (long idx=0;idx<N3;idx++){ int i=(int)(idx/NN),j=(int)((idx/N)%N),k=(int)(idx%N);
+            long nip=(long)((i+1)%N)*NN+(long)j*N+k,nim=(long)((i-1+N)%N)*NN+(long)j*N+k;
+            long njp=(long)i*NN+(long)((j+1)%N)*N+k,njm=(long)i*NN+(long)((j-1+N)%N)*N+k;
+            long nkp=(long)i*NN+(long)j*N+(k+1)%N,nkm=(long)i*NN+(long)j*N+(k-1+N)%N;
+            double lap=(p[nip]+p[nim]+p[njp]+p[njm]+p[nkp]+p[nkm]-6.0*p[idx])*idx2;
+            Ap[idx]=-lap; pAp+=p[idx]*Ap[idx]; }
+        double alpha=rz/pAp, rz2=0,xsum=0,rm=0;
+        #pragma omp parallel for reduction(+:rz2,xsum) reduction(max:rm) schedule(static)
+        for (long idx=0;idx<N3;idx++){ xv[idx]+=alpha*p[idx]; r[idx]-=alpha*Ap[idx]; rz2+=r[idx]*r[idx]; xsum+=xv[idx]; double d=fabs(r[idx]); if(d>rm)rm=d; }
+        double xbar=xsum/(double)N3, beta=rz2/rz;
+        #pragma omp parallel for schedule(static)
+        for (long idx=0;idx<N3;idx++){ xv[idx]-=xbar; p[idx]=r[idx]+beta*p[idx]; }
+        rz=rz2; rmax=rm; it++;
+    }
+    if (rmax>tol) { fprintf(stderr,"FATAL: Gauss2 projection CG failed (%d it, res %.3e)\n",it,rmax); exit(1); }
+    #pragma omp parallel for schedule(static)
+    for (long idx=0;idx<N3;idx++){ int i=(int)(idx/NN),j=(int)((idx/N)%N),k=(int)(idx%N);
+        long np[3]; np[0]=(long)((i+1)%N)*NN+(long)j*N+k; np[1]=(long)i*NN+(long)((j+1)%N)*N+k; np[2]=(long)i*NN+(long)j*N+(k+1)%N;
+        for (int d=0;d<3;d++) g->Efield2[d][idx]+=(xv[np[d]]-xv[idx])/dx; }
+    printf("Gauss2 projection: %d CG iters, gmax0=%.2e\n", it, gmax0);
+    free(b); free(xv); free(r); free(p); free(Ap);
+}
+
 /* §7.2 unit check: deterministic random lattice gauge transformation must
  * leave all gauge-invariant bilinears (|acc| per complex pair, E_acc, G)
  * unchanged to <= 1e-12 relative. Prints PASS/FAIL and exits. */
@@ -1990,6 +2140,7 @@ int main(int argc, char **argv) {
     if (gauged) {
         if (c.bc_type == 2) net_charge_check(g, &c);
         init_gauss_project(g, &c);
+        if (g->gauge2_mode) init_gauss2_project(g);
     }
     if (gauged)              compute_forces_complex_gauge(g, &c);
     else if (g->complex_mode) compute_forces_complex(g, &c);

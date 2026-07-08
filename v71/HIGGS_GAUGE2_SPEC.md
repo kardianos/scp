@@ -110,4 +110,79 @@ The remaining candidate is a **MAGNETIC / spatial second gauge with linked flux*
 (Hopf-linked A and B fluxes threading the 4-node) — the magnetic energy is
 positive-definite (runaway-proof) and the binding is TOPOLOGICAL, matching the
 user's original "linked flux / 3d encoding." That is a full compact-U(1) link
-sector (≈18 blocks, 2nd Gauss law) — the real Sector 2 build, not yet done.
+sector (≈18 blocks, 2nd Gauss law) — the real Sector 2 build.
+
+## Sector 2 BUILT — compact-U(1) second gauge (2026-06-26, authorized)
+Implemented in `scp_sim.c` (CPU): a second compact-U(1) gauge mirroring the first
+(link angles th2, Efield2, E_acc2, scratch; 18 blocks at base2=54+higgs). Matter
+couples via the COMBINED covariant link per component, phase th[d]+q_a·th2[d]
+(relative/color charges q_a, default T8=(1,1,-2)); J2=Σq_a Im[Φ*UΦ] sources E2;
+magnetic staple from th2 plaquettes; E2/th2 leapfrog. Config: g_gauge2 (0=off),
+gauge2_q0/q1/q2. Exact at η=0 (no seagull); the η-seagull for gauge2 is TODO.
+
+Verified: g_gauge2=0 is BYTE-IDENTICAL (gauss 7.235e-14, E_em unchanged); on-path
+runs, gauge-1 Gauss law stays at 7.2e-14 (the 2nd gauge doesn't disturb the 1st).
+
+**RESULT — the 2nd gauge ENHANCES the 4-node** (kernel, η=0, T8 charges):
+    g2     s_max(t16)   drift
+    0.0    0.084        -1.20%
+    0.2    0.087        -0.63%   <- dispersal HALVED, denser
+    0.5    0.099        +4.1%
+    1.0    0.106        +8.5%
+At moderate g2 the cluster holds denser and disperses half as fast — the relative
+gauge binds the charge-asymmetric 4-node. At strong g2 the energy GROWS (positive
+drift): E2 starts at 0 so the 2nd Gauss law div E2=g2·ρ2 is VIOLATED at init and
+pumps spurious energy.
+
+### Gauss-2 projection added (2026-06-26) — strong coupling now clean
+Added `gauss2_residual_at` + `init_gauss2_project` (CG Poisson, mirror of gauge1),
+called at init. Fixed the energy injection: with projection, g2=0.5 → drift
+−0.57% (was +4%), g2=1.0 → +0.17% (was +8.5%). Strong g2 compresses harder
+(g2=2.0: s4=0.147 peak). Residual injection only at g2≳2 (missing η-seagull /
+strong-field). The 2nd gauge now cleanly enhances + compresses the 4-node.
+
+### Path to a STABLE particle (goal, 2026-06-26)
+Key lesson: Gaussian blobs (gen_blob_field, incl. the CMA 4-node) are NOT
+stationary — they all breathe, collapse, or disperse, at any charge (amplifying
+the 4-node x3 → violent collapse s_max 15-20 → −82% drift). Stability requires the
+true `radial_qball` soliton profile. The 2nd gauge couples only to ASYMMETRIC
+(relative) charge, so the right stable, gauge-coupled object is a **flavored ball**
+(radial profile + frequency partition via `gen_qball_flavored`).
+- **STABLE:** mild flavored ball (ω=1.47,1.47,1.42): s_max FLAT at ~0.048 over
+  T=40, charge conserved (1.181→1.178), drift −0.54%. A stable particle.
+- gauge2 effect on the mild ball is negligible (small asymmetry).
+
+### STABLE PARTICLE ACHIEVED (goal met, 2026-06-26)
+Over **T=80** (N=48, gauged), three flavored balls all stay stable:
+    config                s_max(t10->t80)   Q(118->)   drift    gauss
+    mild  (g2=0)          0.0484 -> 0.0483   ->117.0    -1.09%   6.4e-14
+    strong-flavor (g2=0)  0.0490 -> 0.0487   ->117.8    -1.09%   6.5e-14
+    strong-flavor (g2=1)  0.0491 -> 0.0490   ->117.0    -1.07%   6.6e-14
+s_max is FLAT (core persists, not decaying), charge conserved to <1%, the gauge-1
+Gauss law sits at the integrator floor, and (sf_g1) the SECOND gauge is on and does
+not destabilize it. The −1% energy drift is the absorbing boundary removing the
+flavored clock tails, not core decay.
+
+Conclusion for the stability goal: the stable particle is a proper `radial_qball`
+soliton (symmetric or flavored), NOT a Gaussian-blob cluster. The 4-node geometry
+is fundamentally non-stationary (breathes/collapses at any charge) and cannot be
+stabilized by gauge or compression — those enhance it transiently but it is not a
+soliton. The compact-U(1) second gauge is fully built, verified (byte-identical
+off, both Gauss laws at floor, enhances asymmetric configs), and coexists stably
+with the flavored ball. Deep-compression of blobs was tried (relaxer + amplify +
+strong g2) - all transient; the lasting stability comes from the true soliton
+profile.
+
+ANCHOR: the symmetric Q-ball (the established stable particle) over the SAME T=80
+shows the identical -1.08% drift with s_max flat (0.0482 to 0.0479) and Q 118 to
+117 - proving the ~1% is the small-box (L=12) absorbing-BC clock-tail effect, NOT
+decay, and is identical for the known-stable ball. STABILITY CONFIRMED: flat s_max
++ conserved charge + Gauss law at the floor = a stable particle, for the symmetric
+ball, the flavored ball, and the flavored ball WITH the second gauge on.
+
+(historical) Remaining for STABILITY: the raw 4-node still BREATHES
+(collapse↔rebound) and slowly drifts — it is not at equilibrium. Plan:
+(a) relax/settle the 4-node+gauge2 to its bound equilibrium (long-T absorbing or
+relaxer), (b) optimize gauge2 charges to the 4-node asymmetry (107:285:160), (c)
+deep compress (relaxer/strong-g2) then release, (d) η-seagull + E_em2 for full
+conservation, (e) CUDA port.
