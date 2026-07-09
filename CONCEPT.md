@@ -93,6 +93,39 @@ radial profile solves f″ + (2/r)f′ = (m² − ω²)f + 2Vt′(f⁶)f⁵.
   the gauge field A then supplies the long-range mediator that the mass
   removed. The standard package is therefore **gauged diagonal U(1) +
   m_θ > ω**.
+- **The η-coupled stationary state**: at η ≠ 0 the bare ball (Θ = 0) is not
+  stationary — Θ is sourced from zero and the transient sheds ~1.4% of the
+  energy over T = 60. The true particle is the triple (Φ, Θ, ω) that minimizes
+  E at fixed total charge Q = ω∫(|Φ|² + |Θ|²), with ω the Lagrange multiplier
+  ω = Q/N (computed by fixed-Q gradient flow, `sfa/seed/eta_qflow`; the
+  Q²/2N term is the charge pressure of §2). This state carries a transverse
+  Θ dressing holding a charge fraction ∝ η² (1.6% at η = 0.25, 6.2% at
+  η = 0.5), is VK-stable along its branch (dQ/dω < 0, measured Q = 88–210 at
+  η = 0.25), and radiates nothing: ungauged, its kernel drift over T = 60 is
+  −0.04% (η = 0.25) and −0.014% (η = 0.5) — below the interpolated η = 0
+  profile's −0.07% — and gauged at g = 0.05 (η = 0.25) it matches that floor
+  exactly, versus −1.4% to −5.6% for the same ball seeded with Θ = 0. Over
+  10³ t.u. (η = 0.5) the core density stays flat to 0.2% and the internal
+  clock stays locked to the variational ω to 4–5 decimals. The η coupling
+  costs no stability at any tested strength once the object is seeded as its
+  exact stationary state.
+- **Angular momentum — two distinct carriers (v73)**. Mechanical (orbital)
+  angular momentum exists in stable form only topologically: the spinning
+  Q-ring Φ_a = f(ρ,z) e^{i(ωt+nφ)} carries J = nQ = n·ℏ_eff as the winding
+  of a real-space charge circulation. It is kernel-stable at η = 0
+  (symmetry-protected: equivariance closes the fission channel) and at
+  g = 0.05, where it is a current loop that magnetizes itself — sustained
+  trapped flux through the hole and measured gyromagnetic ratio
+  g_factor ≈ 1.06 (classical extended rotor with a distribution anomaly;
+  not Dirac-like g = 2). Independently, the three complex components form a
+  polarization vector: a static relative phase Δ between components carries
+  continuous internal spin ℓ_z = (2/3)N sin Δ at exactly zero energy cost —
+  a flat band of degenerate stationary states, structurally analogous to
+  (not identified with) a spin-1 multiplet. Energetically the ring is a
+  K-isomer, ~3% of M above polarization-spin states of the same (Q, J); the
+  η coupling interconverts the two carriers (a spin-orbit coupling) and at
+  η > 0 opens the ring's fission channel (e-folding ~30 t.u. at η = 0.25).
+  Detailed record: v73/PROCESS.md §5–6.
 - **Formation**: a uniform charged condensate fragments into Q-balls below the
   amplitude threshold κA⁶ < 1/2 (A* = (2κ)^{−1/6} = 0.464) — the Affleck–Dine
   mechanism, confirmed in both directions (above-threshold condensates are
@@ -280,6 +313,29 @@ irreducibly collective, entanglement-bearing configuration of the field itself. 
 null result is equally sharp: it would bound how far the soliton-ℏ identity
 reaches. Concrete measurement steps are in FUTURE.md.
 
+**Measured status (v72).** Both halves of the prediction now hold on clean
+stationary states (η-coupled gauged balls, drift ≤ 0.04%, hrange = 1,
+`sfa_qfi --auto-T`):
+- a **single** stationary ball is a proper null — nQFI[ρ_Q] ≤ 4×10⁻⁵ at
+  η = 0.25 and 0.5 (a lone classical soliton factorizes; earlier single-ball
+  η-scan signals were the Θ-sourcing transient, not steady entanglement);
+- an interacting **pair** of stationary balls (in-phase, D ≈ 7.6) crosses the
+  bound decisively: nQFI[ρ_Q] = 3.9 (η = 0.25) / 3.5 (η = 0.5), peaked at the
+  inter-ball wavevector — the witness pattern appears in the inter-particle
+  correlation, where the theory predicted it.
+
+Both statements are protocol-specific and should be quoted as such: the
+witness is **nQFI computed on the charge density ρ_Q at hrange = 1**.
+Field-amplitude observables do NOT null on a single soliton (O(1) nQFI), so
+the operator family and the (h_max − h_min) normalization are part of the
+claim, not incidental choices. What is established so far is a *classical
+dynamical-structure diagnostic, computed with the soliton's own ℏ_eff, that
+reproduces the entanglement-witness phenomenology* (single → null, pair →
+bound crossing). Whether it certifies anything like Hilbert-space
+entanglement is exactly what the skeptical suite must decide: hrange scan,
+operator suite (ρ_Q, s, |Φ|², per-component), relative-phase taxonomy via
+`gen_sfa_pair`, and phase-randomized/time-shuffled surrogates (FUTURE.md).
+
 ---
 
 ## 10. Relation to Earlier Formulations (brief)
@@ -298,7 +354,9 @@ The U(1) reformulation (v66) replaced "long-lived" with **absolutely stable**:
 the charged Q-ball is the first object in this project whose existence density
 never blinks and whose charge cannot radiate away. Gauging the U(1) (v68–v69)
 restored the long-range force that stabilization had cost, and the
-substructure/nuclear program (v70–v71) was built on top of it. Algebraic
+substructure/nuclear program (v70–v71) was built on top of it. The stationary
+η-coupled dressing (v72) extended full stability to the torsion-coupled
+sector and delivered the first measured entanglement-witness crossing (§9). Algebraic
 side-tracks (v54–v63: octonionic mass relations, number-type maps,
 induced-metric gravity) are documented in their version directories and
 DISCOVERIES.md; their surviving constraints (e.g. genuine inputs = a_lepton
@@ -322,7 +380,10 @@ DISCOVERIES.md; their surviving constraints (e.g. genuine inputs = a_lepton
 - **Seed generators** (`sfa/seed/`): `gen_qball_pair/boost/bath/multi` (whole
   balls), `gen_qball_quark` (single components), `gen_qball_flavored`
   (per-component profiles and frequencies); radial profiles from
-  `radial_qball` and the gauged shooter (`v69/theory/`).
+  `radial_qball` and the gauged shooter (`v69/theory/`); `eta_qflow`
+  (fixed-Q relaxer — computes the stationary η-coupled (Φ, Θ, ω) state of
+  §3) and `radial_eta_soliton` (linear-BVP Θ partner). Profile convention:
+  f(r) is the PER-COMPONENT amplitude.
 - **Analysis** (`sfa/analysis/`): `sfa_qball_track` (cluster tracking),
   `sfa_qcomp` (per-component charge/clock bookkeeping), `sfa_slice` +
   `render_slices.py` (slice/lineout visual pipeline), plus legacy real-field

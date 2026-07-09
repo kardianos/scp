@@ -1,0 +1,12 @@
+# eta_qflow N=64 L=15 dx=0.4762 eta=0.050 m=1.500 mth=1.600 mu=-41.345 kappa=50
+# thinit=zero g_max=0.0000e+00  N_init=468.4242  Q=679.2151  omega_init=Q/N=1.450000  dtau=0.0090703 iters=20000
+# iter     omega      E_Q          maxF         s_max        N           
+  0        1.450000   1.005283e+03 9.3937e-02   4.3580e-02   468.4242    
+  4000     1.411258   1.003136e+03 4.4435e-04   4.6654e-02   481.2836    
+  8000     1.412379   1.002072e+03 1.5370e-02   5.8386e-02   480.9013    
+  12000    1.402952   9.854069e+02 4.8757e-03   7.0458e-02   484.1327    
+  16000    1.401805   9.849725e+02 2.1448e-03   6.9762e-02   484.5291    
+  20000    1.401477   9.848459e+02 1.3750e-03   6.9175e-02   484.6423    
+# final: omega=1.401477  Q_phi=678.9098  Q_theta=0.3053  Q_total=679.2151 (target 679.2151)
+# ring: L_z=0.0000  L_z/Q=0.0000 (target wind=1)  rho_peak=6.398  winding@peak=-0.00
+eta_qflow: wrote /tmp/claude-1000/-home-d-code-scp/95cef960-67b9-444b-86e6-bdaecc251a95/scratchpad/qflow/ring_eta005.sfa

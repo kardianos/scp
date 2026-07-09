@@ -1,0 +1,6 @@
+# final: omega=1.417101  Q_phi=600.0000  Q_theta=0.0000  Q_total=600.0000 (target 600.0000)
+# ring: L_z=596.5802  L_z/Q=0.9943 (target wind=1)  rho_peak=3.704  winding@peak=0.98
+# final: omega=1.406527  Q_phi=760.0000  Q_theta=0.0000  Q_total=760.0000 (target 760.0000)
+# ring: L_z=756.0344  L_z/Q=0.9948 (target wind=1)  rho_peak=3.941  winding@peak=0.98
+# final: omega=1.411378  Q_phi=679.2151  Q_theta=0.0000  Q_total=679.2151 (target 679.2151)
+# ring: L_z=675.5159  L_z/Q=0.9946 (target wind=1)  rho_peak=3.765  winding@peak=0.98

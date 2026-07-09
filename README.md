@@ -39,10 +39,12 @@ instructions and conventions.
 
 ## Simulation History
 
-Versioned experiment directories (v28/ ... v71/) contain per-run
+Versioned experiment directories (v28/ ... v73/) contain per-run
 plans, results, analysis, and generated data. Each version tests
 specific physics questions -- equations, parameters, and initial
 conditions vary between experiments by design. Key eras: real-field
 phenomenology (v28–v53), algebraic side-tracks (v54–v63), stability
 crisis (v64–v65), U(1) Q-balls (v66–v68), gauged kernel-v3 (v69),
-verification + substructure/nuclei/flavor (v70–v71).
+verification + substructure/nuclei/flavor (v70–v71), the stationary
+η-soliton via fixed-Q relaxation (v72), process-form stability and
+the spinning Q-ring (v73).

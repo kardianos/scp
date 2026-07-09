@@ -1441,3 +1441,231 @@ Full record: v71/COLLIDE.md.
    product along the internal frustration axis); frustrated flavor
    proportionally better retained. Infrastructure: one Vast.ai instance death
    (gpu9, 36 min), recovered with no data loss.
+
+---
+
+## V72 (2026-07-08): THE STATIONARY η-SOLITON — η-DRAIN CLOSED, FULL STABILITY AT η>0.
+
+Full record: v72/FINDINGS.md. New tool: sfa/seed/eta_qflow.c (fixed-Q gradient flow,
+ω = Q/N as the Lagrange multiplier — the variational principle behind CONCEPT.md §2).
+1. **The June-26 "intrinsic η-drain drift floor" was not physics.** Three defects:
+   (a) eta_relaxer fixed BOTH ω and the norm (over-constrained → charge leak → needed
+   the pressure cage); (b) radial_eta_soliton/eta_relaxer seeded Φ_a=f/√3 but the
+   radial_qball profile f is the PER-COMPONENT amplitude — all June-26 η-drift
+   baselines (−2.93/−2.66/−2.27%) ran on a ball off-shell by 27× in s (the relaxer's
+   "Q 118→39" is the factor 3); (c) eta_relaxer's SFA semantics were {1,3,2} not
+   {0,1,2} — every relaxer seed loaded SCRAMBLED (Φ→Θ, Θ→dropped); the "−8.1% and
+   dies" release run was a header bug, not instability. Fixed: (b) in both
+   eta_relaxer.c and radial_eta_soliton.c (per-component f, −√3ηf′ source;
+   g(r) verified identical to 1e-9), (c) in eta_relaxer.c; (a) is superseded by
+   the new fixed-Q tool.
+2. **eta_qflow converges to machine floor with no cage** (maxF 2.5e-2 → 9e-15 by
+   16k iters, 5.4e-15 at 20k — v72/results/qflow_w145_eta025_20k.log; the banked
+   seed is an 8k re-run at maxF 6.4e-10, same ω/E_Q to all printed digits;
+   monotone E_Q descent; N=64 ~4 min CPU). At η=0.25, Q=119.9: ω=1.444635,
+   Q_θ=1.89 (1.6% dressing), s_max 0.052.
+3. **Full stability at η=0.25** (N=64, L=15, T=60): stationary seed drifts −0.038%
+   — BELOW the η=0 floor (−0.072%); Θ=0 seed −1.361%; correctly-normalized BVP-Θ
+   −0.111% (removes ≈92% of the drift, not the reported ~25%). Gauged g=0.05:
+   stationary −0.072% vs Θ=0 −1.427% (20×). Kernel omega_core=1.44464 matches the
+   relaxer's Lagrange multiplier to 5 decimals. **Strong coupling η=0.5: stationary
+   −0.014% vs Θ=0 −5.63% (400×)** — no intrinsic drain at any tested coupling;
+   Q_θ dressing ∝ η² (1.6% → 6.2% of Q).
+4. **The η-coupled branch is VK-stable**: ω(Q) monotone decreasing over
+   Q=88→210 (1.4679→1.4167), smooth, Θ-dressing 1.5–2% of Q throughout.
+5. **QFI implication**: the η*≈0.25 feasibility limit (drift<0.5%) no longer binds
+   when experiments seed stationary η-solitons — the goal-function/limiter tension
+   dissolves; re-run the η-scan and two-ball witness from stationary seeds.
+
+### V72 continued (same day): branch properties proven + the QFI witness crossing
+
+Full record: v72/FINDINGS.md §5–7. New tools: sfa/seed/gen_sfa_pair.c (superpose
+a relaxed seed at ±D/2 with relative U(1) phase), v72/analysis/seed_aniso.c.
+6. **Canonical-family proof**: dE/dQ = ω(Q) along the η=0.25 branch to 0.1–0.3%
+   (Legendre identity; error is finite-difference truncation) — the fixed points
+   form the thermodynamically consistent one-parameter Q-ball family.
+7. **Dressing binding energy** (same-grid η=0 controls, Q=118/140): the Θ
+   dressing binds ≈0.30% of M at fixed Q and moves the E=mQ crossing from
+   Q*≈139.7 to Q*≈132.6.
+8. **The dressing EXTENDS the existence window**: Q=84,86,87 converge (Q=84 with
+   fold-approach critical slowing), Q=80 has no solution (ω→m, dressing
+   evaporates) — Q_min(η=0.25) ∈ (80,84), below the η=0 minimum 86.7.
+9. **Geometry measured** (seed_aniso): prolate matter core along û=(1,1,1)/√3
+   (aspect 1.026 → 1.105, Q20 ∝ η²) inside an oblate toroidal Θ belt (aspect
+   0.71); ẑ-control Q20 = 0.00000 exactly (û·ẑ = 1/√3 is the P2 = 0 magic
+   angle) — pure û-axisymmetry, confirming the June-26 2D-geometry prediction.
+10. **QFI witness on clean states** (gauged, T=40, snap 0.25, hrange=1):
+    single stationary ball = proper NULL (nQFI ≤ 4e-5 at η=0.25 AND 0.5;
+    the June single-ball η-scan signal was the Θ-sourcing transient);
+    stationary in-phase pair (D≈7.6) CROSSES the bound at nQFI[ρ_Q] = 3.9
+    (η=0.25) / 3.5 (η=0.5), peaked at the inter-ball wavevector — 3.5× the June
+    transient pair (1.12). The entanglement witness lives in inter-particle
+    correlation; CONCEPT §9 updated with measured status.
+11. **10³-t.u. endurance (η=0.5 stationary, T=1000)**: s_max flat to 0.2%
+    (0.0572→0.0571), E/Q each −0.25% (linear BC tail absorption, no
+    acceleration), omega_core locked to the relaxer ω to 4.7 decimals after
+    ~230 rotations (1.430773 vs 1.430696). The strongest-coupling η-soliton
+    meets the CONCEPT "stable = flat over ~10³ t.u." standard.
+
+---
+
+## V73 (2026-07-08): PROCESS-FORM STABILITY (fabric uptake/layment) + THE SPINNING Q-RING.
+
+Full record: v73/PROCESS.md. New tools: v73/analysis/{flux_profile,ring_check}.c,
+eta_qflow winding mode (smoke-ring seeds). User thesis formalized: a particle is
+a CLOSED PROCESS on the fabric — it maintains itself by taking fabric up into
+motion and laying it back down; motion is constitutive (T>0 by definition).
+1. **P1 (constitutive motion) measured**: 2E_kin = ωQ to 0.01–0.03% — the
+   particle runs through EXACTLY h_eff = 2πQ of action per internal clock
+   period. Quantization is throughput: one action quantum per re-constitution
+   cycle. (Derrick = "no motion, no particle" is the static limit of P1.)
+2. **P2 (the ledger must close) measured**: time-averaged outward power P(r)
+   — stationary η-ball: |P| ≲ 2e-3, alternating sign at every radius (closed
+   ledger); Θ=0 drain seed: sustained one-signed wind, peak +0.127 at r≈8,
+   far-shell value ≈ the T=60 secular loss rate (0.04 vs 0.047/t.u.) —
+   radiation IS unclosed layment, quantitatively. Profile resolves simultaneous
+   INWARD uptake at r<4 (building the missing Θ loan) + outward shedding.
+3. **Pass-through (conduction) measured**: v=0.3 ball over fixed probes — the
+   same waveform passes each probe (peaks match 0.3%; ρ_Q peak = boosted
+   prediction to 1%), speed 0.31 (known lattice dispersion), fabric swings to
+   FULL ball amplitude then returns to vacuum: **layment completeness 99.75%**
+   (residue = the wake). The medium is not transported; the process is
+   conducted. de Broglie tilt = re-constitution phase lag along the motion.
+4. **VK as ledger feedback (P3)**: dQ/dω<0 = "adding inventory must slow the
+   clock" — negative feedback on the fabric ledger; branch end = the rate
+   window's edge (ω→m).
+5. **THE NEW OPERATING MECHANIC — the spinning Q-ring exists and is STABLE.**
+   Φ_a = f_tube(ρ,z)e^{i(ωt+nφ)} (n=1, torus R₀≈3.8, all components): fixed-Q
+   flow converges (maxF→1e-9) WITH the winding intact; kernel T=60 drift
+   −0.072% = the BC floor, s_max flat, ω locked 5 decimals; L_z/Q = 0.9946
+   and winding and J_φ = −0.287 all FROZEN t=0→60. **L_z = nQ = n·ℏ_eff:
+   spin = the winding number of a real-space charge circulation** — the first
+   spin-carrying particle in the theory, operating as a fabric CIRCUIT (real
+   circulating current) rather than an internal-plane rotation. Ring branch:
+   Q=600→ω=1.41710, Q=679→1.41138 (dQ/dω<0 ✓); a ring at ω≈1.41 holds ~2.5×
+   the ball-branch charge. Thin rings (κs≪1) do NOT bind (delocalize, ω→m) —
+   rings must be seeded fat (ring_thin_negative.log).
+   Open: n=2 (J=2ℏ_eff), the GAUGED ring (circulating charge = current loop →
+   magnetic moment, the magneton analog), η-dressed ring, ring collisions.
+
+### V73 continued (same day): the poloidal-twist ring — user's "missing dimension"
+
+Full record: v73/PROCESS.md §4.2. Phase = ωt + nφ + mχ (twist m around the tube;
+zero-set = Hopf link; circulation lines = (n,m) torus knots; handedness = a
+chirality; gauged prospect: poloidal current = anapole/toroidal moment).
+12. **(1,1) is NOT a fixed-Q minimum**: the flow unwinds m at R₀=4 (loses both
+    windings → ball) and at R₀=6 (keeps n: heavier plain ring Q=1233,
+    L_z/Q=0.996; loses m). The twist has no conserved charge — only an energy
+    barrier, insufficient against unconstrained descent.
+13. **But dynamically METASTABLE**: kernel dynamics (E-conserving — cannot
+    descend, must radiate) holds the raw seed's twist at 1.000/1.000/0.967
+    over t=0/10/20 even while shedding 30% of E (badly off-shell seed);
+    diagnostic ambiguous by t=40 (geometry churning). Meanwhile **n and
+    L_z/Q≈0.99 survive the entire violent evolution — spin is a good quantum
+    number even 30% off-shell.**
+14. Fair trial needs a twist-constrained relaxation (fixed Q + helicity
+    constraint, or 2D reduced flow with m as a protected cross-section
+    vortex) — next build if the (n,m) taxonomy is pursued.
+
+### V73 continued-2 (same day): fabric swirl → ring fission; the symmetry audit;
+### the gauged ring closes the densification mechanism
+
+Full record: v73/PROCESS.md §4.3, §5. User direction: a combination of the
+added dimensions should make the fabric locally DENSER, driving the particle
+tighter and faster until a natural equilibrium — valid only as a true
+minimum, derived backwards from the stability equation through a
+fabric-density forming function.
+
+15. **The η-dressed ring FISSIONS (swirl hypothesis negative).** At fixed
+    Q=679.2, the flow at η=0.25/0.5 does not dress the rotating ring — it
+    migrates to a standing azimuthal wave (v=−u pointwise, arg const, L_z→0:
+    two opposite-phase dressed lumps at antipodes), then separates. Energy
+    ledger: E_flow_final=982.56 vs two FREE dressed balls at Q/2 = 2×491.205
+    = 982.41 → unbound by +0.15, still descending. Kernel on the two-lobe
+    state: −1.62%/60 t.u., lobes separating — slow fission, not a particle.
+    NO THRESHOLD: η=0.05 and 0.1 fission completely (L_z=0.0000). Beware:
+    the winding probe reads 1.00 on standing waves (two π node-jumps sum to
+    2π) — use the mode decomposition (azi_profile) instead.
+16. **Symmetry audit (the structural discovery):** V(s)=Π|Φ_a|² breaks
+    internal rotation; the η curl term breaks spatial-only rotation; their
+    combination leaves NO exact continuous rotational symmetry at η>0 —
+    angular momentum is only quasi-conserved (equal-component states kill
+    the potential torque to first order). At η=0, spatial rotation is exact
+    AND equivariance means dynamics/flow cannot even generate the asymmetric
+    fission mode from a symmetric ring — the plain ring's stability is
+    symmetry-protected, not barrier-protected.
+17. **Measured spin leak at η=0.25** (ring_eta_k, T=120): L_z/Q 0.995 → 0.984
+    (≈1%/120 t.u.), but the counter-rotating admixture grows 1.4%(t=60) →
+    12%(t=120): e-folding ~30 t.u. The η-dressed spinning ring is a
+    RESONANCE (~10² t.u.), not a stable particle. η=0 control: A_v/A_u =
+    1.0000 at t=60. Densification via η and spin protection are in
+    structural tension.
+18. **Two-multiplier stability equation derived** (the backwards design):
+    minimize E at fixed (Q, J) with rigidly-spinning ansatz
+    Φ = R(Ωt)φ(R(−Ωt)x)e^{iωt}; Q=ωN−Ωℓ, J=ωℓ−ΩK, ℓ=2∫uᵀĴv, K=∫|Ĵφ|²,
+    Ĵ=∂_φ−ẑ×; E_kin=(ωQ−ΩJ)/2; Coriolis+centrifugal force terms; 2×2 VK
+    matrix ∂(Q,J)/∂(ω,Ω). Closes the standing channel by construction.
+    Designed here; implemented the next day as eta_qflow's fixJ mode —
+    see V73 continued-3 below (PROCESS.md §6 is the authoritative record).
+19. **THE GAUGED SPINNING RING IS STABLE (mechanism closed).** The gauge
+    sector is the unique dressing in the kernel that rewards circulation
+    density with EXACT rotational symmetry. gring_k (g=0.05, η=0, T=120):
+    L_z/Q 0.9946→0.9925 (−0.2%), A_v/A_u=1.0004 at t=120 (zero fission-mode
+    growth), winding 0.981 frozen, E_em≈4.7 sustained (~0.5% of M),
+    gauss_max=7.6e-14 throughout. **First object with conserved charge +
+    integer spin (J=nQ=n·ℏ_eff) + a real magnetic current loop.** Open:
+    gauged fixed-(Q,J) exact state, spin-branch VK matrix, magnetic moment
+    (magneton/g-factor analog).
+
+### V73 continued-3 (2026-07-09): the fixed-(Q,J) relaxer; SPIN IS POLARIZATION;
+### the yrast + isomer band structure
+
+Full record: v73/PROCESS.md §6. Tool: eta_qflow fixJ mode (two multipliers
+(ω,Ω) solved 2×2 each step from Q=ωN−Ωℓ, J=ωℓ−ΩK; Ĵ=∂_φ−ẑ×; Coriolis +
+centrifugal force terms; light-cylinder mask ρ=11, |Ω|≤0.15; fixJ=0
+regression byte-identical). All at Q=679.2151, η=0, N=64.
+
+20. **Spin is internal polarization, and it is FREE (exact flat band).** The
+    Φ triplet is a complex 3-vector = a polarization. A static relative
+    phase Δ between components x,y carries ℓ_z=(2/3)N·sinΔ of spin with NO
+    spatial rotation and NO energy cost. Measured at machine precision:
+    E(J=0)=E(Q/4)=E(Q/2)=963.8322; Δ measured 22.02°/48.59° = predicted;
+    ℓ_z measured 123.0212/246.0424 vs 123.02/246.05. **The SCP ball carries
+    spin-1-like polarization structure; η acts as its spin-orbit coupling**
+    (structural analogy — representation content only; exchange/statistics
+    unexamined). Tool: `v73/analysis/comp_phase.c`.
+21. **Spin-orbital interconversion defeats J-protection of the ring.** The
+    η=0.25 ring at fixed (Q, J=Q) converts orbital→spin (L_z 675→217, spin
+    ℓ_z 0→317, phase ladder 0/39.5/79°) and fissions anyway (E→983.5 ≈
+    fission plateau + 1.1). Fixing total J cannot hold a ring: spin is the
+    cheaper carrier. **The ring is the theory's K-ISOMER** — all-orbital,
+    +29.3 (~3% of M) above the yrast state at the same (Q,J), protected by
+    symmetry (η=0) / gauge (g>0), NOT by energetics.
+22. **Band structure (nuclear-physics form).** Yrast band: flat (free spin)
+    to saturation Δ=90° (J≈0.67Q), then magnitude trading (norm moves into
+    the spinning pair: ℓ_z=361>328=(2/3)N, |Φ_z|²/|Φ_x|²=0.72) + rigid
+    rotation: E(0.75Q)=965.5, E(Q)=973.9. Ring bands: n=1 at 1003.258
+    broadened FLAT by free spin over J∈[Q−453, Q+453] (measured E(1.5Q) =
+    1003.258 exactly, orbital 675.5 + spin 343.3); n=2 winding held at
+    J=2Q, E≈1016.8 (+13.5 for +Q of J). Overlapping bands, constant
+    configuration gap — rotational bands on different intrinsic states.
+23. **Kernel exactness cut (yrast_k).** Exact stationary solutions: flat-band
+    spin balls (equal pair magnitudes, static phases, Ω=0), rings ± spin.
+    NOT exact: the Ω≠0 magnitude-traded rotors — V=Π|Φ_a|² breaks joint
+    rotation, unequal |Φ_a| → unequal ω_a → polarization precesses; kernel
+    sheds the forced orbital part in ~30 t.u. (L_z 159→5, E −3.9%) while
+    spin ℓ_z HOLDS (361.6→349.8, pair symmetry locks it). **Mechanical
+    angular momentum exists in stable form only topologically quantized as
+    ring winding J=nQ=n·ℏ_eff; polarization spin is continuous, internal,
+    η-convertible.** The theory generates its own spin/orbital distinction.
+24. **Magneton measured (2026-07-09, review action E1).** Tool
+    `v73/analysis/magneton.c` (B from plaquettes, gauge-corrected matter
+    current, calibrates against kernel E_em to 4 decimals). The gauged ring
+    self-magnetizes from its B=0 Gauss-projected seed within ~60 t.u. and
+    holds: B_z(0) −0.0349→−0.0352, trapped hole flux −0.374→−0.380 (units
+    of g), textbook current-loop profile (sign flip at ρ≈4.5). Gyromagnetic
+    ratio g_factor = μ_z/(Q·L_z/2M) = 1.052/1.059/1.060 at t=0/60/120 — a
+    classical extended rotor (+6% charge-vs-energy distribution anomaly),
+    NOT Dirac g=2. E_em is mostly electric (E_B≈0.09 vs E_E≈4.65); trapped
+    flux ≪ 2π/g ≈ 126 (no vorton-style flux quantization — weak loop).
+    Caveat: μ-vs-B relative sign pends a kernel link-convention audit.

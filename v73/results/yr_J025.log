@@ -1,0 +1,12 @@
+# eta_qflow N=64 L=15 dx=0.4762 eta=0.000 m=1.500 mth=1.600 mu=-41.345 kappa=50
+# thinit=zero g_max=0.0000e+00  N_init=480.7366  Q=679.2151  omega_init=Q/N=1.412863  dtau=0.0090703 iters=16000
+# fixJ: J_target=169.8038  (two multipliers w,Om; Jhat = d_phi - zhat x)
+# iter     omega      Omega      E_QJ         maxF         s_max        N            J_act      cond      
+  0        1.412863   -0.150000  1.034538e+03 1.0996e+00   1.0138e+01   480.7366     48.0781    1.000e+00 
+  4000     1.380280   -0.000000  9.638322e+02 2.4228e-06   6.6435e-02   492.0848     169.8038   9.063e-01 
+  8000     1.380281   -0.000000  9.638322e+02 2.4697e-08   6.6435e-02   492.0847     169.8038   9.063e-01 
+  12000    1.380281   -0.000000  9.638322e+02 1.6011e-09   6.6435e-02   492.0847     169.8038   9.063e-01 
+  16000    1.380281   -0.000000  9.638322e+02 9.9488e-11   6.6435e-02   492.0847     169.8038   9.063e-01 
+# final: omega=1.380281  Q_phi=679.2151  Q_theta=0.0000  Q_total=679.2151 (target 679.2151)
+# fixJ final: Omega=-0.000000  J_actual=169.8038 (target 169.8038)  Q_actual=679.2151  cond=9.063e-01  w_eff(Q/N)=1.380281
+eta_qflow: wrote /tmp/claude-1000/-home-d-code-scp/95cef960-67b9-444b-86e6-bdaecc251a95/scratchpad/qflow/yr_J025.sfa

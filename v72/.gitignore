@@ -1,0 +1,4 @@
+# keep experiment records (negates root rules): logs, diagnostics, analyses
+!*.tsv
+!*.txt
+!*.log

@@ -1,16 +1,19 @@
 /*  radial_eta_soliton.c — consistent (Phi, Theta) seed for the stationary
  *  eta-coupled Q-ball (the radiation-free geometry; FUTURE.md drift-floor work).
  *
- *  A symmetric ball Phi_a = f(r) u_a  (u = (1,1,1)/sqrt3, so the triple product
- *  s = prod|Phi_a|^2 = f^6/27 != 0 -> binding survives) has curl
- *      (curl Phi)_a = f'(r) (rhat x u)_a ,
- *  which sources a TRANSVERSE torsion partner Theta_a = g(r) (rhat x u)_a.
- *  Seeding Theta=0 leaves an ongoing eta-drain (~1.5% drift over T=30). Seeding
- *  Theta = (1/2)curl Phi (g = f'/2) only removes the EARLY transient. The EXACT
- *  stationary g(r) solves the linear radial BVP (vector Laplacian of an l=1
- *  transverse field gives the -2/r^2 centrifugal term):
+ *  CONVENTION (fixed 2026-07-08, v72): the radial_qball profile f(r) is the
+ *  PER-COMPONENT amplitude (gen_qball_boost convention): Phi_a = f(r) for each
+ *  a, i.e. the component-space vector is sqrt(3) f(r) uhat, uhat=(1,1,1)/sqrt3,
+ *  and s = prod|Phi_a|^2 = f^6. (This tool previously seeded Phi_a = f/sqrt3 —
+ *  off-shell by 27x in s; all June-26 drift baselines carried that bug.) Curl:
+ *      curl Phi = sqrt(3) f'(r) (rhat x uhat),
+ *  which sources a TRANSVERSE torsion partner Theta = g(r) (rhat x uhat).
+ *  Seeding Theta=0 leaves a ~1.4% drift over T=60 (the "eta-drain", actually an
+ *  inconsistent-IC transient). The EXACT stationary g(r) solves the linear
+ *  radial BVP (vector Laplacian of an l=1 transverse field gives the -2/r^2
+ *  centrifugal term):
  *
- *      g'' + (2/r) g' - (2/r^2) g - (m_theta^2 - omega^2) g = -eta f'
+ *      g'' + (2/r) g' - (2/r^2) g - (m_theta^2 - omega^2) g = -sqrt(3) eta f'
  *      g(0)=0  (g ~ r near origin),   g(r_max)=0  (Yukawa decay, kappa^2>0)
  *
  *  This tool reads a radial_qball profile (r f), solves g(r) by the Thomas
@@ -63,7 +66,7 @@ int main(int argc, char **argv) {
     if (!strcmp(mode,"zero")) {
         /* g stays 0 */
     } else if (!strcmp(mode,"half")) {
-        for(int i=0;i<np;i++) g[i]=0.5*df[i];
+        for(int i=0;i<np;i++) g[i]=0.5*sqrt(3.0)*df[i];   /* |(1/2)curl Phi| */
     } else { /* bvp */
         double *A=malloc(np*sizeof(double)),*B=malloc(np*sizeof(double)),*C=malloc(np*sizeof(double)),*D=malloc(np*sizeof(double));
         double *cp=malloc(np*sizeof(double)),*dp=malloc(np*sizeof(double));
@@ -71,7 +74,7 @@ int main(int argc, char **argv) {
             A[i]=1.0/(dr*dr) - 1.0/(r*dr);
             B[i]=-2.0/(dr*dr) - 2.0/(r*r) - k2;
             C[i]=1.0/(dr*dr) + 1.0/(r*dr);
-            D[i]=-eta*df[i];
+            D[i]=-sqrt(3.0)*eta*df[i];
         }
         /* Dirichlet g_0=0, g_{np-1}=0 : fold into ends */
         int lo=1, hi=np-2;
@@ -88,7 +91,8 @@ int main(int argc, char **argv) {
     FILE *tf=fopen(tab,"w"); if(tf){ fprintf(tf,"r\tf\tdf\tg\n");
         for(int i=0;i<np;i++) fprintf(tf,"%.4f\t%.6e\t%.6e\t%.6e\n",pr[i],pf[i],df[i],g[i]); fclose(tf); }
 
-    /* write seed: Phi_a=f(r)/sqrt3 (real), Theta_a=g(r)(rhat x u)_a (real), rotate@omega */
+    /* write seed: Phi_a=f(r) per component (real), Theta_a=g(r)(rhat x uhat)_a
+     * (real), both rotating at omega */
     long N3=(long)N*N*N; double dx=2.0*L/(N-1), inv=1.0/sqrt(3.0);
     double ux=inv,uy=inv,uz=inv;
     float *cols[NCOLS]; for(int c=0;c<NCOLS;c++) cols[c]=calloc((size_t)N3,sizeof(float));
@@ -101,8 +105,8 @@ int main(int argc, char **argv) {
         if(r>=rmax){ f=0; gg=0; }
         else { double t=r/dr; int idx=(int)t; if(idx>=np-1)idx=np-2; double frac=t-idx;
                f=pf[idx]+frac*(pf[idx+1]-pf[idx]); gg=g[idx]+frac*(g[idx+1]-g[idx]); }
-        /* Phi_a = f * u_a */
-        double pa[3]={f*ux,f*uy,f*uz};
+        /* Phi_a = f per component (f is the per-component amplitude) */
+        double pa[3]={f,f,f};
         /* rhat x u */
         double rx=(r>1e-9)?x/r:0, ry=(r>1e-9)?y/r:0, rz=(r>1e-9)?z/r:0;
         double cx=ry*uz-rz*uy, cy=rz*ux-rx*uz, cz=rx*uy-ry*ux;

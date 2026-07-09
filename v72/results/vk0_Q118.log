@@ -1,0 +1,7 @@
+# eta_qflow N=48 L=12 dx=0.5106 eta=0.000 m=1.500 mth=1.600 mu=-41.345 kappa=50
+# thinit=zero g_max=0.0000e+00  N_init=81.4075  Q=118.0000  omega_init=Q/N=1.449499  dtau=0.01043 iters=8000
+# iter     omega      E_Q          maxF         s_max        N           
+  0        1.449499   1.781455e+02 1.5585e-02   4.9577e-02   81.4075     
+  8000     1.449429   1.781273e+02 2.3732e-10   4.9642e-02   81.4114     
+# final: omega=1.449429  Q_phi=118.0000  Q_theta=0.0000  Q_total=118.0000 (target 118.0000)
+eta_qflow: wrote vk0_Q118.sfa

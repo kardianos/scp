@@ -1,0 +1,9 @@
+# eta_qflow N=64 L=15 dx=0.4762 eta=0.250 m=1.500 mth=1.600 mu=-41.345 kappa=50
+# thinit=bvp g_max=7.2288e-02  N_init=82.7134  Q=339.6076  omega_init=Q/N=4.105836  dtau=0.0090703 iters=12000
+# iter     omega      E_Q          maxF         s_max        N           
+  0        4.105836   8.154481e+02 8.9634e+00   1.0628e-01   82.7134     
+  4000     1.398752   4.912049e+02 6.1496e-07   6.9511e-02   242.7933    
+  8000     1.398752   4.912049e+02 1.2147e-10   6.9511e-02   242.7933    
+  12000    1.398752   4.912049e+02 2.7794e-14   6.9511e-02   242.7933    
+# final: omega=1.398752  Q_phi=335.9584  Q_theta=3.6492  Q_total=339.6076 (target 339.6076)
+eta_qflow: wrote /tmp/claude-1000/-home-d-code-scp/95cef960-67b9-444b-86e6-bdaecc251a95/scratchpad/qflow/ball_eta025_Q340.sfa

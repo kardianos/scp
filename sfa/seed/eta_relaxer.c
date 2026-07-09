@@ -107,11 +107,14 @@ int main(int argc,char**argv){
         char ln[512]; while(fgets(ln,sizeof(ln),fp)){ if(ln[0]=='#'||ln[0]=='\n')continue; double a,b;
             if(sscanf(ln,"%lf %lf",&a,&b)==2){ if(np>=cap){cap*=2;pr=realloc(pr,cap*sizeof(double));pf=realloc(pf,cap*sizeof(double));} pr[np]=a;pf[np]=b;np++; } }
         fclose(fp); double prdr=pr[1]-pr[0], rmax=pr[np-1];
+        /* BUG FIX (2026-07-08, v72): the radial_qball profile f is the
+         * PER-COMPONENT amplitude (gen_qball_boost convention) — was f/sqrt3,
+         * off-shell by 27x in s. */
         #pragma omp parallel for
         for(long ii=0;ii<N3;ii++){ int i=(int)(ii/NN),j=(int)((ii/N)%N),k=(int)(ii%N);
             double x=-L+i*dx,y=-L+j*dx,z=-L+k*dx,r=sqrt(x*x+y*y+z*z); double f=0;
             if(r<rmax){ double t=r/prdr; int id=(int)t; if(id>=np-1)id=np-2; double fr=t-id; f=pf[id]+fr*(pf[id+1]-pf[id]); }
-            for(int a=0;a<3;a++) u[a][ii]=f*inv;
+            for(int a=0;a<3;a++) u[a][ii]=f;
         }
         free(pr); free(pf);
     }
@@ -249,7 +252,10 @@ int main(int argc,char**argv){
     }
     double dt=0.025*dx; SFA*sfa=sfa_create(out,N,N,N,L,L,L,dt);
     const char*nm[24]={"phi_x","phi_y","phi_z","theta_x","theta_y","theta_z","phi_vx","phi_vy","phi_vz","theta_vx","theta_vy","theta_vz","phiim_x","phiim_y","phiim_z","thetaim_x","thetaim_y","thetaim_z","phiim_vx","phiim_vy","phiim_vz","thetaim_vx","thetaim_vy","thetaim_vz"};
-    int sem[24]={1,1,1,3,3,3,2,2,2,2,2,2,1,1,1,3,3,3,2,2,2,2,2,2};
+    /* semantics: SFA_POSITION=0 (phi), SFA_ANGLE=1 (theta), SFA_VELOCITY=2.
+     * BUG FIX (2026-07-08): was {1,3,2} — phi landed in the kernel's theta and
+     * theta was tagged ACCELERATION; every relaxer seed loaded scrambled. */
+    int sem[24]={0,0,0,1,1,1,2,2,2,2,2,2,0,0,0,1,1,1,2,2,2,2,2,2};
     int cmp[24]={0,1,2,0,1,2,0,1,2,3,4,5,3,4,5,3,4,5,6,7,8,9,10,11};
     for(int c=0;c<24;c++) sfa_add_column(sfa,nm[c],SFA_F32,sem[c],cmp[c]);
     sfa_finalize_header(sfa); void*fc[NCOLS]; for(int c=0;c<NCOLS;c++) fc[c]=cols[c];

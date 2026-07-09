@@ -20,10 +20,13 @@
   standards as CONCEPT.md — cohesive, not chronological). NOTE: the photon analog is
   the gauge field A (v68+); the old θ-polariton mapping is historical.
 - **FUTURE.md** tracks open questions and proposed experiments.
-- **Version directories** (v28/ … v71/) contain per-experiment plans, results,
+- **Version directories** (v28/ … v73/) contain per-experiment plans, results,
   analysis, and generated data. Current era: v66 (complexified U(1) Q-balls),
   v67–v68 (characterization + gauge design), v69 (gauged kernel-v3), v70 (skeptical
-  verification + existence dynamics), v71 (quark substructure, nuclei, flavor).
+  verification + existence dynamics), v71 (quark substructure, nuclei, flavor),
+  v72 (stationary η-soliton via fixed-Q relaxation — η-drain closed),
+  v73 (process-form stability: fabric uptake/layment ledger; the spinning
+  Q-ring — spin = winding of real-space circulation, L_z = nQ).
 
 ## Data Format Policy
 - **ALL simulation output MUST use SFA format** (`.sfa` files via `sfa.h`)
@@ -154,9 +157,15 @@ returns instantly with cached state.
   `gen_qball_bath.c` (ball + θ bath), `gen_qball_multi.c` (N balls — nuclei),
   `gen_qball_quark.c` (single-COMPONENT lumps, mask + per-component centers),
   `gen_qball_flavored.c` (per-component profiles/frequencies; multi-ball;
-  accepts 2-col symmetric or 4-col flavored profiles). Profiles from
-  `radial_qball` (ungauged) or the v69 gauged shooter. NOTE: seed writers MUST
-  call `sfa_finalize_header()` before `sfa_write_frame()`.
+  accepts 2-col symmetric or 4-col flavored profiles),
+  `eta_qflow.c` (fixed-Q relaxer: the stationary η-coupled (Φ,Θ,ω) state —
+  REQUIRED for any η>0 particle experiment; Θ=0 seeds shed 1.4–5.6%),
+  `radial_eta_soliton.c` (linear-BVP Θ partner). Profiles from
+  `radial_qball` (ungauged) or the v69 gauged shooter; profile f(r) is the
+  PER-COMPONENT amplitude (v72 convention fix). NOTE: seed writers MUST
+  call `sfa_finalize_header()` before `sfa_write_frame()`, and SFA semantics
+  are SFA_POSITION=0/ANGLE=1/VELOCITY=2 (numeric {1,3,2} was the v72-found
+  scrambled-seed bug).
 - Seed generators (real-field era, historical): `gen_braid.c`, `gen_oscillon.c`,
   `gen_phase_confined.c` (UUD/UDD), `gen_proton_analytical.c`, `gen_composite.c`
 - **Analytical seed warning**: `gen_proton_analytical` (Level 2) produces baryons

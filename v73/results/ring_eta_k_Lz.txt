@@ -1,0 +1,8 @@
+frame 0 (t=0.00): Q=679.2151  L_z=675.5159  L_z/Q=0.9946  rho_peak=3.765  winding=0.979  J_phi(rho_pk)=-2.8699e-01
+frame 2 (t=10.00): Q=647.2136  L_z=643.6139  L_z/Q=0.9944  rho_peak=3.765  winding=0.978  J_phi(rho_pk)=-2.9005e-01
+frame 4 (t=20.00): Q=669.9710  L_z=666.1881  L_z/Q=0.9944  rho_peak=3.765  winding=0.976  J_phi(rho_pk)=-2.8765e-01
+frame 8 (t=40.00): Q=659.1144  L_z=655.8793  L_z/Q=0.9951  rho_peak=3.765  winding=0.978  J_phi(rho_pk)=-2.8900e-01
+frame 12 (t=60.00): Q=658.3134  L_z=656.2254  L_z/Q=0.9968  rho_peak=3.941  winding=0.981  J_phi(rho_pk)=-2.6936e-01
+frame 16 (t=80.00): Q=662.6244  L_z=659.8589  L_z/Q=0.9958  rho_peak=4.110  winding=0.981  J_phi(rho_pk)=-2.5624e-01
+frame 20 (t=100.00): Q=662.6449  L_z=656.6638  L_z/Q=0.9910  rho_peak=4.055  winding=0.978  J_phi(rho_pk)=-2.5316e-01
+frame 24 (t=120.00): Q=660.7153  L_z=649.9448  L_z/Q=0.9837  rho_peak=4.377  winding=0.976  J_phi(rho_pk)=-2.0994e-01

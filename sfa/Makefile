@@ -21,7 +21,9 @@ analysis/%: analysis/%.c format/sfa.h format/vecstream.h
 
 # ---- Seed generators ----
 
-SEED_TOOLS = gen_braid gen_oscillon gen_phase_confined gen_proton_analytical gen_composite gen_temporal_seed
+SEED_TOOLS = gen_braid gen_oscillon gen_phase_confined gen_proton_analytical gen_composite gen_temporal_seed \
+             gen_qball_pair gen_qball_boost gen_qball_bath gen_qball_multi gen_qball_quark gen_qball_flavored \
+             gen_blob_field gen_sfa_pair eta_qflow eta_relaxer radial_eta_soliton
 SEED_BINS = $(addprefix seed/, $(SEED_TOOLS))
 
 seed/%: seed/%.c format/sfa.h

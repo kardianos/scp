@@ -349,7 +349,7 @@ Honest caveats: viability is over T=16 only (drift 1.1% could grow at long T —
 a proven eternal soliton); nQFI=2.0 used `--auto-T` at coarse cadence; it is a
 local optimum of this fitness/genome. 
 
-### Scale-up campaign + the η-drain drift floor (2026-06-26)
+### Scale-up campaign + the η-drain drift floor (2026-06-26) — SUPERSEDED by v72 (see RESOLVED below: the floor was tooling, not physics)
 
 Scaled the search: **persistence fitness** (viability = √(S_mean·S_final)·alive,
 so the core must survive to the END of the run, not just on average),
@@ -486,6 +486,34 @@ requiring explicit authorization. The relaxer (`sfa/seed/eta_relaxer.c`) now
 contains the full coupled Φ–Θ + Higgs-bag energy and the pressure/norm/pre-dig
 machinery; it is a correct testbed, but it is not producing a bound
 self-compressing soliton.
+
+### RESOLVED (2026-07-08, v72): the stationary η-soliton exists — fixed-Q flow closes the drain
+
+The whole 2026-06-26 stationary-η-soliton arc above is superseded by v72/FINDINGS.md.
+The "intrinsic η-drain drift floor," the "BVP removes only ~25%," and the relaxer's
+cage-or-die behavior were artifacts of (a) the over-constrained fixed-ω+fixed-norm
+flow, (b) a √3 seed mis-normalization (radial_qball's f is PER-COMPONENT; the
+relaxer/BVP tools seeded f/√3 — off-shell 27× in s), and (c) an SFA semantic bug
+({1,3,2}: every eta_relaxer seed loaded scrambled). The correct variational principle
+— gradient flow on E_Q = E + Q²/(2N) at fixed Q, ω = Q/N the Lagrange multiplier
+(`sfa/seed/eta_qflow.c`) — converges to machine floor with NO external pressure, and
+its kernel drift at η=0.25 is −0.038% over T=60, BELOW the η=0 floor (−0.072%);
+gauged g=0.05: −0.072% vs −1.427% for the Θ=0 seed; at η=0.5 the stationary state
+drifts −0.014% vs −5.63% for Θ=0 (400×). Branch VK-stable (dQ/dω<0, Q=88–210).
+Consequence for the QFI program: the drift<0.5% limiter that pinned η*≈0.25 no
+longer binds for stationary seeds. **Executed same day (v72/FINDINGS.md §6):**
+the single stationary ball is a proper NULL (nQFI ≤ 4e-5 at η=0.25 AND 0.5 —
+so the June single-ball η-scan signal, nQFI ~ η^3–4, was the Θ-sourcing
+transient, not steady entanglement); the stationary PAIR (in-phase, D≈7.6,
+gauged) crosses the bound at nQFI = 3.9 (η=0.25) / 3.5 (η=0.5), peaked at the
+inter-ball wavevector — 3.5× the June transient-pair value. The witness lives in
+inter-particle correlation. Open: hrange normalization; Δφ pair taxonomy
+(gen_sfa_pair); f_Q across fusion; flavored-GDR witness (needs multi-frequency
+eta_qflow). Additional v72 branch properties: dE/dQ = ω (Legendre, 0.1–0.3%);
+dressing binding −0.3% of M (same-grid control), E=mQ crossing Q* 139.7→132.6;
+branch extends BELOW the η=0 window (Q_min(0.25) ∈ (80,84) vs 86.7); prolate
+matter core (aspect ∝ η², 1.03–1.10) + oblate toroidal Θ belt (0.71), exactly
+û-axisymmetric (ẑ-control Q20 = 0 at the P2 magic angle).
 
 ---
 
@@ -841,3 +869,41 @@ v59 Koide bridge. Resolution routes (task #10):
    gauge; Gauss law pins charge to matter. The η curl coupling is already
    A·J-shaped. Deepest fix; design doc before any code.
 4. **sigma_cross complexified**: density-dependent θ mass (interim).
+
+## v73: The Gauged Spinning Ring Program (2026-07-08)
+
+The spinning Q-ring (spin = winding of real-space circulation, J = nQ =
+n·ℏ_eff) survives gauging and is the theory's first charge+spin+magnetic
+object (PROCESS.md §4–5; DISCOVERIES V73). The η fabric coupling, by
+contrast, fissions rings (no exact rotation symmetry at η>0 — the
+symmetry audit of PROCESS.md §5.3). Open experiments, in value order:
+
+1. **Magneton / g-factor analog** — DONE 2026-07-09 (`v73/analysis/
+   magneton.c`, PROCESS.md §5.4): the gauged ring self-magnetizes within
+   ~60 t.u. and holds B_z(0) ≈ −0.035 and trapped hole flux ≈ −0.38 (units
+   of g) steady to t = 120; g_factor = μ_z/(Q·L_z/2M) = 1.05–1.06
+   (classical extended rotor with a +6% distribution anomaly; NOT Dirac
+   g = 2); E_B + E_E reproduces the kernel E_em to 4 decimals. Follow-ups:
+   link-sign convention audit (μ vs B relative sign), box-size control on
+   the return flux, μ on the exact gauged (Q,J) state.
+2. **η + gauge coexistence window** (top open experiment) — map
+   lifetime(η, g) for rings and balls: is there a window where gauge hoop
+   stress outruns the η fission drive (e-fold ~30 t.u. at η = 0.25, g = 0)?
+   Success: L_z/Q flat and A_v/A_u ≈ 1 for ≫10² t.u. at some (η > 0,
+   g > 0). Decides whether η is a viable dressed-matter coupling or only a
+   transient/spin-orbit channel.
+3. **Skeptical QFI suite** — hrange scan; operator suite (ρ_Q, s, |Φ|²,
+   per-component ρ — map which observables null on single solitons);
+   relative-phase Δφ taxonomy via gen_sfa_pair; time-window dependence;
+   phase-randomized / time-shuffled surrogates. Success: single-null +
+   pair-crossing stable across the suite. Falsifier: crossing only at
+   hrange = 1 or only for one operator → protocol artifact, not physics.
+4. **Gauged fixed-(Q,J) relaxer** — extend eta_qflow's fixJ mode
+   (PROCESS.md §5.2) to complex_gauge = 1 for the EXACT stationary gauged
+   spinning ring; map the spin branch and its 2×2 VK matrix
+   det ∂(Q,J)/∂(ω,Ω) — the multi-charge stability criterion.
+5. **n = 2 ring** (J = 2ℏ_eff) gauged; ring–ball and ring–ring collisions
+   (does spin transfer in integer units?).
+6. Twist-constrained relaxation for the (n,m) taxonomy (low priority
+   unless chirality becomes a goal — the twist is a different quantum
+   number from spin; carried over from §4.2).

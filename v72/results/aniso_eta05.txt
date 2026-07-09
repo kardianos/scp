@@ -1,0 +1,4 @@
+s(x)     axis u=(1,1,1)/sqrt3     Q20= +0.08296  r_par=0.9971  r_perp=0.9026  aspect=1.10466
+s(x)     axis z (control)         Q20= -0.00000  r_par=0.9351  r_perp=0.9351  aspect=1.00000
+|Theta|2 axis u=(1,1,1)/sqrt3     Q20= -0.37215  r_par=1.9423  r_perp=2.6611  aspect=0.72989
+|Theta|2 axis z (control)         Q20= -0.00000  r_par=2.4451  r_perp=2.4451  aspect=1.00000
