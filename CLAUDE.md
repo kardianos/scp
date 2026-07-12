@@ -1,5 +1,43 @@
 # SCP Project Conventions
 
+## Standing Goal (current) — Carbon from fabric
+
+**Primary program goal until superseded:** produce a **Carbon atom** (structural
+analog) from the space-time fabric alone — the gauged complex Cosserat field
+content — not by importing chemistry or external particle species.
+
+Carbon is a **scale stack**. Work the stages in order; do not skip to
+chemistry geometry or hand-waved shells. Until Stage 3 exists, the honest
+product is fabric **carbon nuclei**, not atoms.
+
+| Stage | Target | Status / notes |
+|-------|--------|----------------|
+| **0** | **Carbon mapping spec** — what \(Z\), \(A\), electron count, and observables count as success (binding, multipoles, shell radii). Map via conserved bookkeeping (\(Q\), \(Q_a\), \(\omega_a\), Gauss flux), not real-world chemistry. | **Done** — `v74/CARBON_MAP.md` |
+| **1** | **Nucleon template** — stationary gauged Q-ball (fixed-\(Q\) / \(\eta\)-state when \(\eta>0\); ledger-closed; per-component clocks). Formation via Affleck–Dine condensate is the fabric-only path. | Largely done (v66–v73) |
+| **2A** | **Liquid-drop carbon nucleus** — `v74/CARBON_MAP.md` + `v74/RESULTS.md`. **c6_light** Z-carbon parks (Q→650); **c12_light** A=12 stays super-critical (Q→1411>921). Both rendered. | **Done (primary)** |
+| **2B** | **True multi-center carbon** (optional research) — retain \(A\) substructure: gauged interlock molecule, cold fission channel, flavored GDR. | After 2A; may need new binding |
+| **3** | **Electron sector** — light **opposite-charge** stable solitons; prove **positronium analog** (long-lived opposite-charge orbit) first. No atom without this. Kernel change only with explicit user authorization. | Blocking for atoms |
+| **4** | **Atom** — C-nucleus + 6 light opposite charges, Coulomb-bound via \(A\); large box; force \(n=2\); multi-clock stability. | After 2 + 3 |
+| **5** | **Spontaneous production** — condensate → fusion tree → recombination; abundance peak near carbon inventory. Fabric-only, not hand-placed. | After engineered seeds work |
+
+**Success criteria (structural):** conserved-quantity bookkeeping at machine
+precision; objects on the measured Q-ball / fusion branch; closed fabric
+ledger where process-form applies; no fatal radiation. Parallels to real
+carbon are structural, not quantitative (see CONCEPT.md).
+
+**Default next work when the user does not specify otherwise:** Stage 2A per
+`v74/CARBON_MAP.md` (c6_light primary; c12_light supercritical control).
+Open side questions remain in **FUTURE.md**; this section overrides them as
+the priority stack.
+
+**Tools (existing):** `radial_qball` / gauged shooter, `gen_qball_multi`,
+`gen_qball_flavored`, `eta_qflow`, collision/pair seeds, SFA charge/flavor
+views, `scp-runner` for local/remote runs. Do **not** modify `scp_sim` /
+`sfa.h` unless the user explicitly requests kernel/format changes (Stage 3
+may eventually need a design discussion).
+
+---
+
 ## Document Roles — CRITICAL
 - **CONCEPT.md** is the THEORY DOCUMENT — it presents the current best understanding
   of the physics as a cohesive, replicable description. Write it like a textbook chapter,
