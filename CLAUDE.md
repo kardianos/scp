@@ -65,7 +65,9 @@ may eventually need a design discussion).
   verification + existence dynamics), v71 (quark substructure, nuclei, flavor),
   v72 (stationary η-soliton via fixed-Q relaxation — η-drain closed),
   v73 (process-form stability: fabric uptake/layment ledger; the spinning
-  Q-ring — spin = winding of real-space circulation, L_z = nQ).
+  Q-ring — spin = winding of real-space circulation, L_z = nQ),
+  v74 (carbon Stage 0–2A: Z-carbon parks; A=12 evaporates),
+  v75 (multi-fabric proposal toward atoms — three fabrics C/Q/L first).
 
 ## Data Format Policy
 - **ALL simulation output MUST use SFA format** (`.sfa` files via `sfa.h`)
