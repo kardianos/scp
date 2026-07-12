@@ -475,48 +475,95 @@ pre-solved) so the composite tracks the joint branch — multi-fabric analog of
 
 ---
 
-## 6. Suggested v75 work plan (design → numerics)
+## 6. Simulation fidelity ladder (L0–L3) — CRITICAL
 
-### Phase 0 — Paper design (this document + freeze)
+Hardware (larger than V100) and multi-adaptive / nested grids change **cost**,
+not **when** reduced models lie. Geometry-sensitive claims need 3D.
 
-- [x] Option catalog  
-- [ ] Freeze Option B field content and engagement table  
-- [ ] Write charge/symmetry table (P1–P2) as non-negotiable  
-- [ ] Parameter sketch: \(m_C,m_Q,m_L,g_Q,g_L,\varepsilon_{CQ}\)
+| Layer | What | Authoritative for | Not authoritative for |
+|-------|------|-------------------|------------------------|
+| **L0** | Full **3D** multi-field PDE (gauged kernel; later multi-fabric) | Engagement discovery; fusion vs orbit; winding/spin; multi-center | — (truth layer) |
+| **L1** | **Nested / multi-adaptive 3D** grids (see `sfa/MULTI_RESOLUTION.md`) | Atom hierarchy \(r_N \ll a_0 \ll L\); long-range EM + fine cores | New physics not in L0 |
+| **L2** | Radial / 1D / BO **shooters** | Spherical existence windows; order-of-magnitude \(E_b(g,m)\) | Knots, spin, impact parameter, multi-center standoff, multipole radiation |
+| **L3** | **Kinematic n-bar** (point/rigid bodies + allowed force graph) | Many-body population, “chemistry-scale” constructs **after** L0 forces known | Inventing engagement; replacing topology/ledgers |
 
-### Phase 1 — Reduced math (no full 3D kernel yet)
+**Rules**
 
-1. **Radial two-sector atom ODE:** fixed nuclear Q-ball background + light
-   complex radial profile + \(A_0(r)\) (Born–Oppenheimer).  
-2. **Positronium radial:** two opposite light charges, no nuclear fabric.  
-3. Existence windows and binding energy curves vs \(g\), \(m_L\).
+1. Selective engagement is defined in the **Lagrangian (L0 design)**, not as an
+   n-bar UI switch.
+2. L2 shooters are **design thermometers** — stamp every result
+   “not topology-safe.” Knots can slip/bind wrong when angular structure is
+   averaged away.
+3. L3 n-bar is **not a distraction** only after L0 shows: stable N, stable L
+   (or ±Q), Coulomb \(\sim 1/r^2\), **no** N–L fusion. Then n-bar *inherits*
+   the engagement graph for multi-electron / abundance runs.
+4. Larger GPUs + adaptive grids → invest in **L0/L1 3D**, not more L2 alone.
 
-Deliverable: `v75/RADIAL_ATOM.md` + shooter scripts (like gauged_shooter).
+**Effective L3 Hamiltonian (only after L0 validation):**
 
-### Phase 2 — Implementation decision (needs user authorization)
+\[
+H_{\mathrm{eff}}
+=
+\sum_i \sqrt{p_i^2+M_i^2}
++
+\sum_{i<j}
+V_{ij}^{\mathrm{allowed}}(r_{ij},\mathrm{phase}_{ij},\mathrm{fabric}_{ij})
+\]
 
-Only after Phase 1 shows binding:
-
-- Either **Option E-lite** (add opposite-charge light field to current kernel),  
-- Or true three-block multi-fabric kernel extension.
-
-**Kernel changes require explicit user request** (CLAUDE.md policy).
-
-### Phase 3 — 3D experiments (after kernel)
-
-1. Light Q-ball existence (L alone).  
-2. Positronium / opposite-charge orbit (FUTURE #5, now well-posed).  
-3. Hydrogenoid: v74 Z-carbon or single N-ball + one L.  
-4. Multi-L shells if cheap.
-
-### Phase 4 — Revisit carbon atom goal
-
-Carbon atom = v74 Z-carbon nucleus (or true A=12 at lower \(g\)) + 6 light
-opposite charges, if Phase 3 succeeds.
+with e.g. \(V_{NL}^{\mathrm{fusion}}\equiv 0\) *because PDE said so*, not by hope.
 
 ---
 
-## 7. Risks and null results that would kill Option B
+## 7. Suggested v75 work plan (fidelity-aware)
+
+Detail and checklists: **`v75/FIRST_STEPS.md`**. Setup/findings log:
+**`v75/FINDINGS.md`**.
+
+### Phase 0 — Design freeze (docs)
+
+- [x] Option catalog + three-fabric primary  
+- [x] Fidelity ladder L0–L3  
+- [x] First principles for engagement + co-design in phase  
+- [ ] Freeze Option B charge/symmetry table as non-negotiable  
+- [ ] Parameter sketch \(m_C,m_Q,m_L,g_Q,g_L,\varepsilon_{CQ}\)
+
+### Phase 1 — L0 3D with **existing kernel** (no kernel edit)
+
+Opposite-charge already seedable (`gen_qball_multi`: negative \(\omega\) = opposite
+charge). Same fabric, two signs = Option **E-lite** probe of EM engagement.
+
+1. **±Q pair at rest** (D large): measure force sign/exponent (attraction).  
+2. **±Q with tangential velocity**: orbit vs annihilation (positronium analog).  
+3. **Document nulls** (slow annihilation known CONCEPT §5) as bounds on “atom
+   without multi-fabric.”
+
+### Phase 2 — L2 radial scouts (parallel, labeled)
+
+Spherical BO / light-ball windows only — **not** atom proof. Deliverable
+`v75/RADIAL_SCOUT.md` if pursued.
+
+### Phase 3 — L1 nested 3D (large GPU)
+
+Once ± binding is clean: fine core + coarse cloud, \(L \gtrsim 4a_0\). Use
+nested-grid design; rent hardware beyond V100 as needed.
+
+### Phase 4 — Multi-fabric kernel (needs **explicit user authorization**)
+
+True C/Q/L field split only if Phase 1 shows EM binding is real but same-fabric
+annihilation/fusion blocks atoms.
+
+### Phase 5 — L3 n-bar (optional)
+
+Multi-electron / carbon-atom packing only after L0 engagement graph is measured.
+
+### Phase 6 — Carbon atom goal
+
+v74 Z-carbon (or A=12 at lower \(g\)) + 6 light opposite charges under validated
+engagement.
+
+---
+
+## 8. Risks and null results that would kill Option B
 
 | Null | Meaning |
 |------|---------|

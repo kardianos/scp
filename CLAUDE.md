@@ -25,11 +25,12 @@ precision; objects on the measured Q-ball / fusion branch; closed fabric
 ledger where process-form applies; no fatal radiation. Parallels to real
 carbon are structural, not quantitative (see CONCEPT.md).
 
-**Default next work when the user does not specify otherwise:** **v75** multi-fabric
-design (`v75/PROPOSAL.md`) — freeze Option B (C/Q/L), Phase 1 radial
-Born–Oppenheimer atom math; no kernel edits unless explicitly requested.
-v74 nuclear baseline is done. Open side questions remain in **FUTURE.md**;
-this section overrides them as the priority stack.
+**Default next work when the user does not specify otherwise:** **v75**
+(`v75/PROPOSAL.md`, `FIRST_STEPS.md`, `FINDINGS.md`) — fidelity ladder L0–L3;
+three-fabric (C/Q/L) architecture; **first sprint = L0 3D ±Q pair** with
+existing kernel (no kernel edits unless explicitly requested). Radial scouts
+are L2 only (not topology-safe). Nested grids / large GPUs for L1 atoms.
+n-bar (L3) only after L0 engagement is measured. v74 nuclear baseline is done.
 
 **Tools (existing):** `radial_qball` / gauged shooter, `gen_qball_multi`,
 `gen_qball_flavored`, `eta_qflow`, collision/pair seeds, SFA charge/flavor
