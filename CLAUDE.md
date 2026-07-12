@@ -16,7 +16,7 @@ product is fabric **carbon nuclei**, not atoms.
 | **1** | **Nucleon template** — stationary gauged Q-ball (fixed-\(Q\) / \(\eta\)-state when \(\eta>0\); ledger-closed; per-component clocks). Formation via Affleck–Dine condensate is the fabric-only path. | Largely done (v66–v73) |
 | **2A** | **Liquid-drop carbon nucleus** — `v74/CARBON_MAP.md` + `v74/RESULTS.md`. **c6_light** Z-carbon parks (Q→650); **c12_light** A=12 stays super-critical (Q→1411>921). Both rendered. | **Done (primary)** |
 | **2B** | **True multi-center carbon** (optional research) — retain \(A\) substructure: gauged interlock molecule, cold fission channel, flavored GDR. | After 2A; may need new binding |
-| **3** | **Electron sector** — light **opposite-charge** stable solitons; prove **positronium analog** (long-lived opposite-charge orbit) first. No atom without this. Kernel change only with explicit user authorization. | Blocking for atoms |
+| **3** | **Electron / multi-fabric sector** — light **opposite-charge** stable solitons; prove **positronium analog** first. Architecture: **v75 three-fabric (C/Q/L)** — see `v75/PROPOSAL.md`. Kernel change only with explicit user authorization. | **Blocking for atoms** — v75 design |
 | **4** | **Atom** — C-nucleus + 6 light opposite charges, Coulomb-bound via \(A\); large box; force \(n=2\); multi-clock stability. | After 2 + 3 |
 | **5** | **Spontaneous production** — condensate → fusion tree → recombination; abundance peak near carbon inventory. Fabric-only, not hand-placed. | After engineered seeds work |
 
@@ -25,10 +25,11 @@ precision; objects on the measured Q-ball / fusion branch; closed fabric
 ledger where process-form applies; no fatal radiation. Parallels to real
 carbon are structural, not quantitative (see CONCEPT.md).
 
-**Default next work when the user does not specify otherwise:** Stage 2A per
-`v74/CARBON_MAP.md` (c6_light primary; c12_light supercritical control).
-Open side questions remain in **FUTURE.md**; this section overrides them as
-the priority stack.
+**Default next work when the user does not specify otherwise:** **v75** multi-fabric
+design (`v75/PROPOSAL.md`) — freeze Option B (C/Q/L), Phase 1 radial
+Born–Oppenheimer atom math; no kernel edits unless explicitly requested.
+v74 nuclear baseline is done. Open side questions remain in **FUTURE.md**;
+this section overrides them as the priority stack.
 
 **Tools (existing):** `radial_qball` / gauged shooter, `gen_qball_multi`,
 `gen_qball_flavored`, `eta_qflow`, collision/pair seeds, SFA charge/flavor
