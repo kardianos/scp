@@ -577,37 +577,39 @@ Any of these is publishable as a boundary on multi-fabric atoms.
 
 ---
 
-## 8. Relation to standing goal and docs
+## 9. Relation to standing goal and docs
 
 | Doc | Role after v75 starts |
 |-----|------------------------|
 | CLAUDE.md standing goal | Still carbon atom; Stage 3 = multi-fabric light sector |
 | v74/RESULTS.md | Nuclear-only baseline (Z-carbon, A=12 control) |
-| v75/PROPOSAL.md | This file — architecture |
-| FUTURE.md | Positronium / electron items become v75 Phase 3 |
+| v75/PROPOSAL.md | This file — architecture + fidelity ladder |
+| v75/FIRST_STEPS.md | Concrete sprint checklist |
+| v75/FINDINGS.md | Setup + findings log |
+| FUTURE.md | Positronium / electron items → v75 L0 ±Q first |
 | CONCEPT.md | Update only when a fabric split is **measured**, not at proposal |
 
 ---
 
-## 9. Decision requested from user
+## 10. Decision requested from user
 
-1. **Freeze Option B (C/Q/L)** as the design target?  
-2. Proceed Phase 1 **radial Born–Oppenheimer atom** (no kernel change)?  
-3. Or prefer **Option A minimal** (N+e+A) for faster path to 3D?
+1. **Freeze Option B (C/Q/L)** as the long-term design target?  
+2. **Run FIRST_STEPS Step 1** (3D ±Q force, existing kernel) now?  
+3. Or prefer doc-only freeze of charge/off-list tables first?
 
-Default if uninstructed: **Option B design freeze + Phase 1 radial math**, no
-kernel edits.
+Default if uninstructed: Option B remains architecture; **next executable work
+is L0 ±Q (FIRST_STEPS Step 1)** — not radial-as-proof; kernel only with auth.
 
 ---
 
-## 10. One-page summary
+## 11. One-page summary
 
 - **Problem:** one fabric ⇒ nuclei, not atoms (v74).  
-- **Proposal:** multi-fabric with selective engagement.  
-- **All options:** A (N+e+A), **B (C/Q/L primary)**, C (triple Cosserat), D
-  (neutral third), E (two reps), F (extra dim).  
-- **Engagement from principles:** symmetry/reps, conservation, EFT decoupling,
-  stability, ledgers, locality, minimal coupling, discrete/topology rules.  
-- **Co-design in phase:** joint fixed-multi-Q variational principle, commensurate
-  / BO clocks, scale and charge tables, adiabatic ramp, cross-ledger diagnostics.  
-- **First work:** radial multi-sector atom ODEs; kernel only with authorization.
+- **Proposal:** multi-fabric with selective engagement; **3 fabrics first (C/Q/L)**.  
+- **Options:** A–F catalogued; B primary.  
+- **Engagement principles:** symmetry, conservation, EFT, stability, ledgers,
+  locality, minimal coupling.  
+- **Co-design in phase:** multi-Q variational, BO, scale/charge tables.  
+- **Fidelity:** L0 3D truth → L1 nested → L2 radial scout → L3 n-bar later.  
+- **First executable step:** 3D ±Q with existing seeds (E-lite probe).  
+- **Kernel multi-fabric:** only with explicit authorization.
