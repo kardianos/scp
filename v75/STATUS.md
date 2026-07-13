@@ -1,22 +1,30 @@
 # v75 Status
 
-**Updated**: 2026-07-12
+**Updated**: 2026-07-13
 
 ## Done
 
-- Multi-fabric architecture proposal (`PROPOSAL.md`) — options A–F, C/Q/L primary
-- First-principles selective engagement + co-design in phase
-- **Fidelity ladder L0–L3** (3D PDE → nested → radial scout → n-bar)
-- Setup + findings log (`FINDINGS.md`) including v74 baseline
-- Concrete first steps (`FIRST_STEPS.md`) — ±Q L0 sprint with existing kernel
+- Multi-fabric architecture (`PROPOSAL.md`) — C/Q/L primary, options A–F
+- Fidelity ladder L0–L3; FIRST_STEPS checklist
+- **Step 1 force campaign COMPLETE (PASS)** — FINDINGS F8–F9
+  - pm/pp × D=16,20; light ω=1.46; N=192 L=48 T=100
+  - Opposite attract; same repel at D=20; 2 clusters always
+  - a_C ≈ 0.57–0.63 × naive Coulomb (box systematics OK for signs)
+- Instance torn down; tracks+diags on `/space/scp/v75/results/`
 
-## Next (not started)
+## Multi-fabric process impact (F9)
 
-1. Freeze Option B charge/off-list tables (docs only)
-2. **Step 1:** 3D opposite-charge force run (`pm_force_D16`)
-3. Step 2: orbit / positronium attempt
-4. Decision gate → multi-fabric kernel auth or Option E-lite path
+- Shared **A** + opposite charge **validated** in 3D without new kernel
+- Full C/Q/L kernel **deferred** until Step 2 (orbit) fails or bag isolation needed
+- Near-term path: **E-lite** (±ω) → orbits → lighter L → then multi-fabric if required
+
+## Next
+
+1. **Step 2:** ± orbit / capture dynamics (tangential boost or fall)
+2. Optional: re-pull/re-render good SFAs (pp_D16, pm_D20)
+3. Freeze Option B charge table (docs)
+4. Multi-fabric kernel only after Step 2 gate
 
 ## Instance
 
-No active remote (doc-only update).
+No active remote.

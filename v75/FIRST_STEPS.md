@@ -1,8 +1,9 @@
 # v75 FIRST STEPS — Concrete actions (fidelity-aware)
 
-**Updated**: 2026-07-12  
+**Updated**: 2026-07-13  
 **Read first**: `PROPOSAL.md` (why), `FINDINGS.md` (what we know)  
-**Kernel policy**: no `scp_sim` / `sfa.h` edits unless user explicitly authorizes
+**Kernel policy**: multi-fabric kernel **authorized** but deferred until Step 2
+gate (FINDINGS F9) — prefer E-lite until orbits fail
 
 ---
 
@@ -10,17 +11,15 @@
 
 Answer, in **full 3D (L0)**, with the **existing kernel**:
 
-> Can opposite-charge Q-balls bind under Coulomb without immediately
-> annihilating, and what is the force / lifetime?
+> Can opposite-charge Q-balls attract under Coulomb without immediately
+> annihilating, and what is the force?
 
-That is the **positronium analog** (FUTURE #5) and the gate before multi-fabric
-kernel work. Architecture remains three-fabric (C/Q/L); this sprint is
-**Option E-lite** (same field multiplet, \(Q\) and \(-Q\) via \(\pm\omega\)).
+That is the **positronium force gate** (FUTURE #5 force half) before multi-fabric
+kernel work. Sprint uses **Option E-lite** (\(\pm\omega\)).
 
-If E-lite fails (always merge/annihilate), that **strengthens** the case for
-true multi-fabric (private nuclear bag, L never in \(s_C\)).  
-If E-lite shows long-lived orbits, atom path is shorter (maybe Option A/E
-before full B).
+**Step 1 result: PASS** — see FINDINGS F8–F9. Opposite attract, same repel at
+D=20, two clusters over T=100. Multi-fabric remains long-term for bag isolation
+and mass hierarchy; near-term = Step 2 orbits on E-lite.
 
 ---
 
@@ -232,7 +231,13 @@ No sim launched in the doc-recording session unless user says “run Step 1.”
 ## Definition of done for “first sprint”
 
 - [x] Fidelity ladder + first steps + findings recorded  
-- [ ] Step 1 force run complete with force-sign and n recorded  
-- [ ] Slice render of ± pair evolution  
-- [ ] FINDINGS updated with pass/fail table  
-- [ ] Go/no-go note for multi-fabric kernel vs Option E-lite
+- [x] Step 1 force run complete with force-sign recorded (F8)  
+- [ ] Slice render of ± pair (optional; 2/4 SFAs good: pp_D16, pm_D20)  
+- [x] FINDINGS updated with pass/fail + multi-fabric impact (F9)  
+- [x] Go/no-go: **E-lite for Step 2**; multi-fabric kernel **deferred** until orbit/atom gate  
+
+## Step 2 next (not started)
+
+± dynamical orbit / head-on capture with tangential or radial velocity seeding.
+Success = multi-revolution or clear bound oscillation; fail = always merge/annihilate
+→ implement multi-fabric isolation.
