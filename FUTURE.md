@@ -22,7 +22,8 @@ Pursue multi-fabric **Phases 1–3** on B1 (private bags + shared \(A\)):
 3. **P3** — A≈12-class core + multi-L → **time-stable visual C₁₂**  
    (no merge / fission / disperse)
 
-**Stretch:** radioactive C₁₂ variant with **calculated and simulated** decay rates.
+**Stretch:** radioactive **isotope** (prefer **+N at fixed Z** — requires firm p/n analogs)
+with **calculated and simulated** decay rates. See `v75/C12_ATOM_GOAL.md` §P/N.
 
 Baseline closed: F11–F16 (isolation, packaging, pair Coulomb scan, Z6+L6 PASS_park).
 

@@ -122,10 +122,10 @@ static FabricView fabric_L(Grid *g) {
 }
 
 /* B1 lock: copy C → Q (fields + velocities; acc optional). */
-static void mf_lock_copy_CQ(Grid *g) {
-    if (g->n_fabrics != 3 || !g->mf_lock_CQ) return;
-    const long N3 = g->N3;
-    const size_t bytes = (size_t)N3 * sizeof(double);
+/* Unconditional C→Q copy (also used once for mf_seed_Q at B2 init). */
+static void mf_copy_CQ(Grid *g) {
+    if (g->n_fabrics != 3) return;
+    size_t bytes = (size_t)g->N3 * sizeof(double);
     for (int a = 0; a < NFIELDS; a++) {
         memcpy(g->Q_phi[a], g->phi[a], bytes);
         memcpy(g->Q_phi_vel[a], g->phi_vel[a], bytes);
@@ -140,6 +140,11 @@ static void mf_lock_copy_CQ(Grid *g) {
         memcpy(g->Q_theta_im_vel[a], g->theta_im_vel[a], bytes);
         memcpy(g->Q_theta_im_acc[a], g->theta_im_acc[a], bytes);
     }
+}
+
+static void mf_lock_copy_CQ(Grid *g) {
+    if (g->n_fabrics != 3 || !g->mf_lock_CQ) return;
+    mf_copy_CQ(g);
 }
 
 /* Noether charge density at voxel for one fabric (phi+theta sectors). */
@@ -439,6 +444,7 @@ static void load_sfa_into_fabric(Grid *g, FabricView *F, const char *path,
 static void mf_post_init(Grid *g, const Config *c) {
     if (g->n_fabrics != 3) return;
     FabricView L = fabric_L(g);
+    FabricView Q = fabric_Q(g);
     if (c->init_sfa_L[0]) {
         /* L-only seed: do not overwrite gauge (already from C / heavy seed) */
         load_sfa_into_fabric(g, &L, c->init_sfa_L, c->init_frame, 0);
@@ -447,7 +453,15 @@ static void mf_post_init(Grid *g, const Config *c) {
     }
     if (g->mf_lock_CQ) {
         mf_lock_copy_CQ(g);
-        printf("Multi-fab: Q ← C lock applied after init\n");
+        printf("Multi-fab: Q ← C lock applied after init (B1)\n");
+    } else if (c->init_sfa_Q[0]) {
+        load_sfa_into_fabric(g, &Q, c->init_sfa_Q, c->init_frame, 0);
+        printf("Multi-fab: Q loaded from init_sfa_Q (B2 / P/N)\n");
+    } else if (c->mf_seed_Q) {
+        mf_copy_CQ(g); /* one-shot C→Q without ongoing lock */
+        printf("Multi-fab: Q seeded once from C (mf_seed_Q=1, unlocked)\n");
+    } else {
+        printf("Multi-fab: Q left zero (B2 neutron-friendly / no charge fabric)\n");
     }
 }
 
@@ -2119,6 +2133,24 @@ static void compute_gauss(Grid *g, const Config *c, double *gauss_max,
     *q_flux    = (GG != 0) ? (fsum - OFF*(double)nC*dV)/GG : 0.0;
 }
 
+/* Multi-fabric bookkeeping: integrated Noether per fabric + EM charge.
+ * Q_C / Q_Q / Q_L = ∫ ρ_f dV; Q_em = ∫ sum_f q_f ρ_f dV (= q·Q vector). */
+static void compute_mf_charges(Grid *g, double *QC, double *QQ, double *QL, double *Qem) {
+    const long N3 = g->N3;
+    const double dV = g->dx * g->dx * g->dx;
+    FabricView C = fabric_C(g), Q = fabric_Q(g), L = fabric_L(g);
+    double sc = 0, sq = 0, sl = 0, se = 0;
+    #pragma omp parallel for reduction(+:sc,sq,sl,se) schedule(static)
+    for (long idx = 0; idx < N3; idx++) {
+        double rc = fabric_rho_at(&C, idx);
+        double rq = fabric_rho_at(&Q, idx);
+        double rl = fabric_rho_at(&L, idx);
+        sc += rc; sq += rq; sl += rl;
+        se += g->q_fab[0]*rc + g->q_fab[1]*rq + g->q_fab[2]*rl;
+    }
+    *QC = sc * dV; *QQ = sq * dV; *QL = sl * dV; *Qem = se * dV;
+}
+
 /* §1.2 runtime net-charge check (bc_type=2 only) */
 static void net_charge_check(Grid *g, const Config *c) {
     (void)c;
@@ -2811,6 +2843,7 @@ int main(int argc, char **argv) {
     if (c.complex_phi) fprintf(fp, "\tQ_phi\tQ_theta\tQ_total\ts_max\tr_core"
                                    "\tomega_core\tQ_core\tthp1u\tthp1v\tthp2u\tthp2v");
     if (c.complex_gauge) fprintf(fp, "\tgauss_max\tgauss_l2\tE_em\tQ_flux");
+    if (c.n_fabrics == 3) fprintf(fp, "\tQ_C\tQ_Q\tQ_L\tQ_em");
     fprintf(fp, "\n");
 
     int n_steps = (int)lround(c.T / g->dt);
@@ -2849,6 +2882,12 @@ int main(int argc, char **argv) {
     if (c.complex_gauge) {
         compute_gauss(g,&c,&gmax,&gl2,&gem,&qflux);
         fprintf(fp,"\t%.6e\t%.6e\t%.12e\t%.12e",gmax,gl2,gem,qflux);
+    }
+    if (c.n_fabrics == 3) {
+        double QC=0,QQ=0,QL=0,Qem=0;
+        compute_mf_charges(g,&QC,&QQ,&QL,&Qem);
+        fprintf(fp,"\t%.12e\t%.12e\t%.12e\t%.12e",QC,QQ,QL,Qem);
+        printf("MF charges: Q_C=%.4e Q_Q=%.4e Q_L=%.4e Q_em=%.4e\n",QC,QQ,QL,Qem);
     }
     fprintf(fp,"\n");
 
@@ -2997,6 +3036,11 @@ int main(int argc, char **argv) {
                 compute_gauss(g,&c,&gmax,&gl2,&gem,&qflux);
                 fprintf(fp,"\t%.6e\t%.6e\t%.12e\t%.12e",gmax,gl2,gem,qflux);
             }
+            if (c.n_fabrics == 3) {
+                double QC=0,QQ=0,QL=0,Qem=0;
+                compute_mf_charges(g,&QC,&QQ,&QL,&Qem);
+                fprintf(fp,"\t%.12e\t%.12e\t%.12e\t%.12e",QC,QQ,QL,Qem);
+            }
             fprintf(fp,"\n");
             fflush(fp);
 
@@ -3007,6 +3051,11 @@ int main(int argc, char **argv) {
                        t,et,drift,ep,pm,trms);
                 if (c.complex_phi) printf("Q=%.6e s_max=%.4e ", Qp+Qt, smax);
                 if (c.complex_gauge) printf("gauss=%.1e E_em=%.3e ", gmax, gem);
+                if (c.n_fabrics == 3) {
+                    double QC=0,QQ=0,QL=0,Qem=0;
+                    compute_mf_charges(g,&QC,&QQ,&QL,&Qem);
+                    printf("Qem=%.3e ", Qem);
+                }
                 printf("[%.0f%% %.1fs %.2fms/step]\n",
                        100.0*step/n_steps,wall,1000*wall/step);
                 fflush(stdout);
@@ -3053,6 +3102,11 @@ int main(int argc, char **argv) {
     if (c.complex_gauge)
         printf("gauss_max=%.3e gauss_l2=%.3e E_em=%.6e Q_flux=%.6e\n",
                gmax, gl2, gem, qflux);
+    if (c.n_fabrics == 3) {
+        double QC=0,QQ=0,QL=0,Qem=0;
+        compute_mf_charges(g,&QC,&QQ,&QL,&Qem);
+        printf("MF: Q_C=%.6e Q_Q=%.6e Q_L=%.6e Q_em=%.6e\n", QC, QQ, QL, Qem);
+    }
     printf("SFA: %s (%u frames)\n", c.output, nf);
     printf("[%s] theta_rms grew: %.2e -> %.2e\n", (trms>trms0+1e-10)?"OK":"WARN", trms0, trms);
     printf("Wall: %.1fs (%.1f min) %.2fms/step\n", wall, wall/60, 1000*wall/n_steps);

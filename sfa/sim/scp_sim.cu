@@ -336,8 +336,9 @@ typedef struct {
     double L, dx, dt;
 } Grid;
 
-static void mf_lock_copy_CQ_host(Grid *g) {
-    if (g->n_fabrics != 3 || !g->mf_lock_CQ) return;
+/* Unconditional C→Q host copy (B1 lock each step; B2 mf_seed_Q once). */
+static void mf_copy_CQ_host(Grid *g) {
+    if (g->n_fabrics != 3) return;
     size_t bytes = (size_t)g->N3 * sizeof(double);
     for (int a = 0; a < NFIELDS; a++) {
         memcpy(g->Q_phi[a], g->phi[a], bytes);
@@ -349,6 +350,11 @@ static void mf_lock_copy_CQ_host(Grid *g) {
         memcpy(g->Q_theta_im[a], g->theta_im[a], bytes);
         memcpy(g->Q_theta_im_vel[a], g->theta_im_vel[a], bytes);
     }
+}
+
+static void mf_lock_copy_CQ_host(Grid *g) {
+    if (g->n_fabrics != 3 || !g->mf_lock_CQ) return;
+    mf_copy_CQ_host(g);
 }
 
 static inline double fabric_rho_host(double *const phi[3], double *const phi_vel[3],
@@ -506,6 +512,47 @@ static void load_sfa_into_L(Grid *g, const char *path, int frame) {
     free(buf); sfa_close(sfa);
 }
 
+/* Load SFA matter into Q fabric (host); same column map as L. */
+static void load_sfa_into_Q(Grid *g, const char *path, int frame) {
+    printf("Init Q fabric: SFA '%s' frame=%d\n", path, frame);
+    SFA *sfa = sfa_open(path);
+    if (!sfa) { fprintf(stderr, "FATAL: cannot open SFA '%s'\n", path); exit(1); }
+    if ((int)sfa->Nx != g->N) {
+        fprintf(stderr, "FATAL: Q SFA N mismatch\n"); exit(1);
+    }
+    if (frame < 0) frame = (int)sfa->total_frames + frame;
+    void *buf = malloc(sfa->frame_bytes);
+    sfa_read_frame(sfa, frame, buf);
+    uint64_t off = 0;
+    int nload = 0;
+    for (uint32_t col = 0; col < sfa->n_columns; col++) {
+        int dtype = sfa->columns[col].dtype;
+        int sem = sfa->columns[col].semantic;
+        int comp = sfa->columns[col].component;
+        int es = sfa_dtype_size[dtype];
+        uint8_t *src = (uint8_t*)buf + off;
+        double *target = NULL;
+        if (sem == SFA_POSITION && comp < 3) target = g->Q_phi[comp];
+        else if (sem == SFA_ANGLE && comp < 3) target = g->Q_theta[comp];
+        else if (sem == SFA_VELOCITY && comp < 3) target = g->Q_phi_vel[comp];
+        else if (sem == SFA_VELOCITY && comp >= 3 && comp < 6) target = g->Q_theta_vel[comp-3];
+        else if (sem == SFA_POSITION && comp >= 3 && comp < 6) target = g->Q_phi_im[comp-3];
+        else if (sem == SFA_ANGLE && comp >= 3 && comp < 6) target = g->Q_theta_im[comp-3];
+        else if (sem == SFA_VELOCITY && comp >= 6 && comp < 9) target = g->Q_phi_im_vel[comp-6];
+        else if (sem == SFA_VELOCITY && comp >= 9 && comp < 12) target = g->Q_theta_im_vel[comp-9];
+        if (target) {
+            long N3 = g->N3;
+            if (dtype == SFA_F64) for (long i=0;i<N3;i++) target[i]=((double*)src)[i];
+            else if (dtype == SFA_F32) for (long i=0;i<N3;i++) target[i]=(double)((float*)src)[i];
+            else if (dtype == SFA_F16) for (long i=0;i<N3;i++) target[i]=f16_to_f64(((uint16_t*)src)[i]);
+            nload++;
+        }
+        off += (uint64_t)g->N3 * es;
+    }
+    printf("  Loaded %d columns into Q\n", nload);
+    free(buf); sfa_close(sfa);
+}
+
 static void mf_post_init(Grid *g, const Config *c) {
     if (g->n_fabrics != 3) return;
     if (c->init_sfa_L[0])
@@ -514,7 +561,15 @@ static void mf_post_init(Grid *g, const Config *c) {
         printf("WARNING: n_fabrics=3 but init_sfa_L empty — L is zero\n");
     if (g->mf_lock_CQ) {
         mf_lock_copy_CQ_host(g);
-        printf("Multi-fab: Q ← C lock applied after init (host)\n");
+        printf("Multi-fab: Q ← C lock applied after init (host, B1)\n");
+    } else if (c->init_sfa_Q[0]) {
+        load_sfa_into_Q(g, c->init_sfa_Q, c->init_frame);
+        printf("Multi-fab: Q loaded from init_sfa_Q (B2 / P/N)\n");
+    } else if (c->mf_seed_Q) {
+        mf_copy_CQ_host(g);
+        printf("Multi-fab: Q seeded once from C (mf_seed_Q=1, unlocked)\n");
+    } else {
+        printf("Multi-fab: Q left zero (B2 neutron-friendly)\n");
     }
 }
 
@@ -3716,32 +3771,70 @@ static void run_gpu_diagnostics(const FieldState *state, DiagHookCtx *ctx) {
                 ctx->d_results);
         }
         if (ctx->gauge_mode) {
-            /* v69 gauss/Q_flux; multi-fab: rho_EM = qC*rho_C + qL*rho_L */
+            /* v69 gauss/Q_flux; multi-fab rho_EM:
+             * B1 lock: (q_C+q_Q)*rho_C + q_L*rho_L  (Q≡C)
+             * B2 unlock (q_C=0 default): q_Q*rho_Q + q_L*rho_L via primary=Q
+             * (full three-fabric Gauss when q_C≠0 needs a wider kernel — not used in v75 defaults) */
             int mf = (state->n_fabrics == 3 && state->L_phi[0] != NULL);
-            double qC = mf ? (gpu_mf_lock_CQ ? (gpu_q_fab[0]+gpu_q_fab[1]) : gpu_q_fab[0]) : 1.0;
-            double qL = mf ? gpu_q_fab[2] : 0.0;
-            reduce_gauss_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
-                state->phi[0], state->phi[1], state->phi[2],
-                state->phi_im[0], state->phi_im[1], state->phi_im[2],
-                state->theta[0], state->theta[1], state->theta[2],
-                state->theta_im[0], state->theta_im[1], state->theta_im[2],
-                state->vel_phi[0], state->vel_phi[1], state->vel_phi[2],
-                state->vel_phi_im[0], state->vel_phi_im[1], state->vel_phi_im[2],
-                state->vel_theta[0], state->vel_theta[1], state->vel_theta[2],
-                state->vel_theta_im[0], state->vel_theta_im[1], state->vel_theta_im[2],
-                state->Efield[0], state->Efield[1], state->Efield[2],
-                state->th[0], state->th[1], state->th[2],
-                mf ? state->L_phi[0] : NULL, mf ? state->L_phi[1] : NULL, mf ? state->L_phi[2] : NULL,
-                mf ? state->L_phi_im[0] : NULL, mf ? state->L_phi_im[1] : NULL, mf ? state->L_phi_im[2] : NULL,
-                mf ? state->L_theta[0] : NULL, mf ? state->L_theta[1] : NULL, mf ? state->L_theta[2] : NULL,
-                mf ? state->L_theta_im[0] : NULL, mf ? state->L_theta_im[1] : NULL, mf ? state->L_theta_im[2] : NULL,
-                mf ? state->L_vel_phi[0] : NULL, mf ? state->L_vel_phi[1] : NULL, mf ? state->L_vel_phi[2] : NULL,
-                mf ? state->L_vel_phi_im[0] : NULL, mf ? state->L_vel_phi_im[1] : NULL, mf ? state->L_vel_phi_im[2] : NULL,
-                mf ? state->L_vel_theta[0] : NULL, mf ? state->L_vel_theta[1] : NULL, mf ? state->L_vel_theta[2] : NULL,
-                mf ? state->L_vel_theta_im[0] : NULL, mf ? state->L_vel_theta_im[1] : NULL, mf ? state->L_vel_theta_im[2] : NULL,
-                qC, qL,
-                ctx->g_gauge, ctx->G_offset, ctx->Rint2, ctx->Rcube, ctx->dV,
-                ctx->d_results + GAUSS_BASE);
+            int use_Q_as_primary = (mf && !gpu_mf_lock_CQ && d_Q_phi[0] != NULL);
+            double qPrimary = 1.0, qL = 0.0;
+            if (mf) {
+                if (gpu_mf_lock_CQ) {
+                    qPrimary = gpu_q_fab[0] + gpu_q_fab[1];
+                    qL = gpu_q_fab[2];
+                } else {
+                    qPrimary = gpu_q_fab[1];
+                    qL = gpu_q_fab[2];
+                }
+            }
+            if (use_Q_as_primary) {
+                /* device globals d_Q_* hold charge fabric under B2 */
+                reduce_gauss_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                    d_Q_phi[0], d_Q_phi[1], d_Q_phi[2],
+                    d_Q_phi_im[0], d_Q_phi_im[1], d_Q_phi_im[2],
+                    d_Q_theta[0], d_Q_theta[1], d_Q_theta[2],
+                    d_Q_theta_im[0], d_Q_theta_im[1], d_Q_theta_im[2],
+                    d_Q_vel_phi[0], d_Q_vel_phi[1], d_Q_vel_phi[2],
+                    d_Q_vel_phi_im[0], d_Q_vel_phi_im[1], d_Q_vel_phi_im[2],
+                    d_Q_vel_theta[0], d_Q_vel_theta[1], d_Q_vel_theta[2],
+                    d_Q_vel_theta_im[0], d_Q_vel_theta_im[1], d_Q_vel_theta_im[2],
+                    state->Efield[0], state->Efield[1], state->Efield[2],
+                    state->th[0], state->th[1], state->th[2],
+                    state->L_phi[0], state->L_phi[1], state->L_phi[2],
+                    state->L_phi_im[0], state->L_phi_im[1], state->L_phi_im[2],
+                    state->L_theta[0], state->L_theta[1], state->L_theta[2],
+                    state->L_theta_im[0], state->L_theta_im[1], state->L_theta_im[2],
+                    state->L_vel_phi[0], state->L_vel_phi[1], state->L_vel_phi[2],
+                    state->L_vel_phi_im[0], state->L_vel_phi_im[1], state->L_vel_phi_im[2],
+                    state->L_vel_theta[0], state->L_vel_theta[1], state->L_vel_theta[2],
+                    state->L_vel_theta_im[0], state->L_vel_theta_im[1], state->L_vel_theta_im[2],
+                    qPrimary, qL,
+                    ctx->g_gauge, ctx->G_offset, ctx->Rint2, ctx->Rcube, ctx->dV,
+                    ctx->d_results + GAUSS_BASE);
+            } else {
+                reduce_gauss_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                    state->phi[0], state->phi[1], state->phi[2],
+                    state->phi_im[0], state->phi_im[1], state->phi_im[2],
+                    state->theta[0], state->theta[1], state->theta[2],
+                    state->theta_im[0], state->theta_im[1], state->theta_im[2],
+                    state->vel_phi[0], state->vel_phi[1], state->vel_phi[2],
+                    state->vel_phi_im[0], state->vel_phi_im[1], state->vel_phi_im[2],
+                    state->vel_theta[0], state->vel_theta[1], state->vel_theta[2],
+                    state->vel_theta_im[0], state->vel_theta_im[1], state->vel_theta_im[2],
+                    state->Efield[0], state->Efield[1], state->Efield[2],
+                    state->th[0], state->th[1], state->th[2],
+                    mf ? state->L_phi[0] : NULL, mf ? state->L_phi[1] : NULL, mf ? state->L_phi[2] : NULL,
+                    mf ? state->L_phi_im[0] : NULL, mf ? state->L_phi_im[1] : NULL, mf ? state->L_phi_im[2] : NULL,
+                    mf ? state->L_theta[0] : NULL, mf ? state->L_theta[1] : NULL, mf ? state->L_theta[2] : NULL,
+                    mf ? state->L_theta_im[0] : NULL, mf ? state->L_theta_im[1] : NULL, mf ? state->L_theta_im[2] : NULL,
+                    mf ? state->L_vel_phi[0] : NULL, mf ? state->L_vel_phi[1] : NULL, mf ? state->L_vel_phi[2] : NULL,
+                    mf ? state->L_vel_phi_im[0] : NULL, mf ? state->L_vel_phi_im[1] : NULL, mf ? state->L_vel_phi_im[2] : NULL,
+                    mf ? state->L_vel_theta[0] : NULL, mf ? state->L_vel_theta[1] : NULL, mf ? state->L_vel_theta[2] : NULL,
+                    mf ? state->L_vel_theta_im[0] : NULL, mf ? state->L_vel_theta_im[1] : NULL, mf ? state->L_vel_theta_im[2] : NULL,
+                    mf ? qPrimary : 1.0, mf ? qL : 0.0,
+                    ctx->g_gauge, ctx->G_offset, ctx->Rint2, ctx->Rcube, ctx->dV,
+                    ctx->d_results + GAUSS_BASE);
+            }
         }
         cudaMemcpy(ctx->h_results, ctx->d_results, nvals * sizeof(double),
                    cudaMemcpyDeviceToHost);

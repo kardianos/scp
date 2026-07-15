@@ -142,7 +142,11 @@ typedef struct {
     int    mf_lock_CQ;         /* 1=Φ_Q←Φ_C each step (B1); 0=independent (B2) */
     double eps_CQ;             /* C–Q portal (B2; ignored when lock=1) */
     double q_C, q_Q, q_L;      /* EM charge weights under A */
-    char   init_sfa_L[512];    /* optional L-fabric seed SFA (B1); empty = L from main if multi-col */
+    char   init_sfa_L[512];    /* optional L-fabric seed SFA (B1); empty = L zero */
+    char   init_sfa_Q[512];    /* optional Q-fabric seed (B2 / P/N); empty + unlock = Q zero
+                                * (neutron-friendly). B1 lock ignores this (Q←C). */
+    int    mf_seed_Q;          /* 1=if unlock and init_sfa_Q empty, copy C→Q once at init
+                                * (proton-friendly B2 start). Default 0. */
 } Config;
 
 static Config cfg_defaults(void) {
@@ -191,6 +195,8 @@ static Config cfg_defaults(void) {
     c.eps_CQ = 0.0;
     c.q_C = 0.0;  c.q_Q = 1.0;  c.q_L = -1.0;
     c.init_sfa_L[0] = '\0';
+    c.init_sfa_Q[0] = '\0';
+    c.mf_seed_Q = 0;
     return c;
 }
 
@@ -302,6 +308,8 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"q_C"))         c->q_C = atof(val);
     else if (!strcmp(key,"q_Q"))         c->q_Q = atof(val);
     else if (!strcmp(key,"q_L"))         c->q_L = atof(val);
+    else if (!strcmp(key,"init_sfa_Q"))  strncpy(c->init_sfa_Q, val, 511);
+    else if (!strcmp(key,"mf_seed_Q"))   c->mf_seed_Q = atoi(val);
     else if (!strcmp(key,"init_sfa_L"))  strncpy(c->init_sfa_L, val, 511);
     else fprintf(stderr, "WARNING: unknown config key '%s'\n", key);
 }
@@ -363,6 +371,10 @@ static void cfg_print(const Config *c) {
                    c->q_C, c->q_Q, c->q_L);
             if (c->init_sfa_L[0])
                 printf("Multi-fab: init_sfa_L=%s\n", c->init_sfa_L);
+            if (c->init_sfa_Q[0])
+                printf("Multi-fab: init_sfa_Q=%s\n", c->init_sfa_Q);
+            if (!c->mf_lock_CQ)
+                printf("Multi-fab: B2 unlock  mf_seed_Q=%d\n", c->mf_seed_Q);
         }
     }
     printf("Mode:    %d", c->mode);

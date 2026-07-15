@@ -690,3 +690,61 @@ nuclei (Z2–Z6) never PASSed seed-Q score. Option C not required for this claim
 **Orbit + multi-Z (F16):** B4 pair scan shows Coulomb ordering (sub inspiral /
 super expand; true v_c < naive). Z6+L6 R=22 **PASS_park** with stable L —
 multi-Z packaging works when park is scored correctly.
+
+---
+
+## F17 — P/N (Z/N) firm distinction [measured 2026-07-15]
+
+**Goal (C12_ATOM_GOAL P2.0):** two nuclear species so \(Q_\mathrm{em}\propto Z\) and
+\(N\) adds bag mass without EM charge.
+
+**Data:** `/space/scp/v75/pn/` · GPU `v75f16` · plan `PN_EXPERIMENT.md`  
+**Kernel:** B2 unlock (`mf_lock_CQ=0`), `init_sfa_Q`, fabric charges  
+`q_C=0,q_Q=+1,q_L=−1`; seed `gen_pn_core` (Z on C+Q, N on C only).
+
+### Relations tested
+
+| ID | Relation | Result |
+|----|----------|--------|
+| F17a | Single-fabric symmetric ball | \(Q_\mathrm{flux}\approx 209=Q_\phi\), stable |
+| F17b | Flavored multiplet \(\omega=(1.38,1.42,1.42)\) | \(Q_a=(76.7,103.7,103.7)\), \(Q_\mathrm{flux}\approx 284\) **still fully charged** |
+| F17c | Cancel multiplet \(\omega=(+1.42,+1.42,-1.42)\) | \(Q_a=(+70,+70,-70)\), net \(Q\approx 70\neq 0\) (1/3 residual); stable but **not neutral** |
+| F17d | **B2 neutron** C-only, Q=0 | \(Q_\mathrm{flux}=0\), \(E_\mathrm{em}=0\), bag \(Q_C\approx 209.6\), T=100 **STABLE** |
+| F17e | **B2 proton** C+Q co-located | \(Q_\mathrm{flux}\approx Q_\phi\approx 209.2\), \(E_\mathrm{em}\approx 1\), T=100 **STABLE** |
+| F17f | Z=1 N=1 (sep ±4) | \(Q_\phi\approx 440\) (2 balls), \(Q_\mathrm{flux}\approx 206\) (≈1 ball) |
+| F17g | Z=2 N=0 | \(Q_\mathrm{flux}\approx 423\) |
+| F17h | Z=2 N=2 | \(Q_\mathrm{flux}\approx 387\) (within ~8% of g); **E ≈ 2.4× g** (mass tracks A) |
+
+### Scorecard
+
+| Criterion | Verdict | Evidence |
+|-----------|---------|----------|
+| **S1** n EM-neutral | **PASS** | F17d: \(Q_\mathrm{flux}/Q_C=0\) exactly; Gauss=0 |
+| **S2** p charged | **PASS** | F17e: \(Q_\mathrm{flux}/Q_C=0.998\) |
+| **S3** \(Q_\mathrm{em}(Z,N)\approx Q_\mathrm{em}(Z,0)\) | **PASS** (≈) | Z1N1 flux≈1p; Z2N2 vs Z2N0 flux 387 vs 423 (−8%); mass E 1617 vs 663 |
+| **S4** lumps survive | **PASS** | Q retention ≥0.94 single; ≥0.94 multi (T=100–120) |
+| **S5** flavor ≠ Z/N | **PASS (null)** | F17b still \(Q_\mathrm{em}\sim 284\); F17c residual 70 |
+
+### Design freeze (P/N)
+
+| Species | Fabric content | EM |
+|---------|----------------|-----|
+| **Proton analog** | \(\Phi_C\) bag + \(\Phi_Q\) charge (co-located seed) | \(q_Q\rho_Q\) |
+| **Neutron analog** | \(\Phi_C\) bag only (\(\Phi_Q=0\) at that site) | **0** |
+| **Electron analog** | \(\Phi_L\) (unchanged B1) | \(q_L\rho_L\) |
+
+**Do not use** flavored \(\Delta\omega\) alone for isotopes.  
+**Do use** B2 unlock + selective Q seeding (`gen_pn_core` / `init_sfa_Q`).
+
+### Caveats / follow-ups
+
+1. Multi-ball cores at D=8–10 still park/evaporate mildly (same as F14–16 nuclear); P/N is about **charge bookkeeping**, not yet carbon packaging.  
+2. GPU diag lacks CPU `Q_C,Q_Q,Q_em` columns — use \(Q_\mathrm{flux}\) (Gauss cube) + \(Q_\phi\) (C) as proxies; local CPU smoke confirmed exact fabric charges.  
+3. B2 Q self-bag still on (same \(V_t\)); optional later: bag only on C.  
+4. Exact net-zero flavored cancel needs amplitude weights (e.g. \(Q_2=-Q_0-Q_1\)), not equal \(f\) with one flipped \(\omega\).
+
+### Bottom line
+
+**P2.0 closed for charge structure:** neutron-analogs are EM-silent C lumps;
+proton-analogs are C+Q; **Z and N are independently seedable** and
+\(Q_\mathrm{em}\) tracks Z under dynamics at T≳100.
