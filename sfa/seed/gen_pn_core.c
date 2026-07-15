@@ -139,6 +139,7 @@ int main(int argc, char **argv) {
         fprintf(stderr,
             "Usage: %s N L profile omega out_C out_Q out_L \\\n"
             "         nZ xz0 yz0 zz0 [...]  nN xn0 yn0 zn0 [...]  nL xl0 yl0 zl0 [...]\n"
+            "         [profL omegaL]   # optional light hierarchy (default: same as nuclear)\n"
             "  nL may be 0 (empty light fabric).\n", argv[0]);
         return 1;
     }
@@ -168,11 +169,27 @@ int main(int argc, char **argv) {
     double Lx[MAXB], Ly[MAXB], Lz[MAXB];
     if (read_centers(argc, argv, &argi, nL, Lx, Ly, Lz, "L")) return 1;
 
+    /* Optional light hierarchy: profL omegaL */
+    Profile profL = prof;
+    int free_profL = 0;
+    double omegaL = omega;
+    if (argi + 1 < argc) {
+        const char *pl = argv[argi];
+        load_profile(pl, &profL);
+        free_profL = 1;
+        omegaL = atof(argv[argi + 1]);
+        argi += 2;
+        printf("  light hierarchy: profile=%s omegaL=%.4f f0=%.4f\n",
+               pl, omegaL, profL.f[0]);
+    }
+
     printf("  Z=%d (protons on C+Q)  N=%d (neutrons on C only)  L=%d\n", nZ, nN, nL);
     for (int b = 0; b < nZ; b++)
         printf("    p%d center=(%.2f,%.2f,%.2f)\n", b, Zx[b], Zy[b], Zz[b]);
     for (int b = 0; b < nN; b++)
         printf("    n%d center=(%.2f,%.2f,%.2f)\n", b, Nx_[b], Ny_[b], Nz_[b]);
+    for (int b = 0; b < nL; b++)
+        printf("    e%d center=(%.2f,%.2f,%.2f)\n", b, Lx[b], Ly[b], Lz[b]);
 
     long N3 = (long)N*N*N;
     float *cC[NCOLS], *cQ[NCOLS], *cL[NCOLS];
@@ -197,20 +214,21 @@ int main(int argc, char **argv) {
     /* Q charge: protons only */
     stamp_balls(N, L, &prof, omega, nZ, Zx, Zy, Zz, cQ);
 
-    /* L light: optional */
+    /* L light: optional (same-sign ω; fabric q_L=-1 provides opposite EM) */
     if (nL > 0)
-        stamp_balls(N, L, &prof, omega, nL, Lx, Ly, Lz, cL);
+        stamp_balls(N, L, &profL, omegaL, nL, Lx, Ly, Lz, cL);
 
     write_sfa(outC, N, L, cC);
     write_sfa(outQ, N, L, cQ);
     write_sfa(outL, N, L, cL);
 
-    printf("gen_pn_core: done  A=%d Z=%d N=%d  (EM charge sources = Z balls on Q)\n",
-           nZ + nN, nZ, nN);
+    printf("gen_pn_core: done  A=%d Z=%d N=%d L=%d  (EM nuclear sources = Z)\n",
+           nZ + nN, nZ, nN, nL);
 
     for (int c = 0; c < NCOLS; c++) {
         free(cC[c]); free(cQ[c]); free(cL[c]);
     }
     free(prof.r); free(prof.f);
+    if (free_profL) { free(profL.r); free(profL.f); }
     return 0;
 }

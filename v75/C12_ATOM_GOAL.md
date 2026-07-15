@@ -141,6 +141,6 @@ Fallback stretch (if P/N not yet firm): super-Q or deformed seed at fixed compos
 | `FINDINGS.md` | Measured results (F17+) |
 | `FUTURE.md` | Pointer to this goal |
 
-**Start state (2026-07-15 late):** Phase 1 open (F16 pair kinematics; multi-rev open). **Phase 2.0 P/N DONE (F17):** B2 C-only neutron + C+Q proton; \(Q_\mathrm{em}\propto Z\). Phase 2 packaging + isotope smoke remain. Phase 3 not started.
+**Start state (2026-07-15 F18):** Phase 1 open. **P2.0 DONE (F17).** **P2.1–P2.2–P2.5 smoke PASS at Z=2 (F18):** parked (Z,N) cores, L count=Z, isotope Q_em fixed under +N. Scale to Z=6 + long-T still open. Phase 3 not started.
 
-**Critical path note:** P2.0 closed — stretch “+N at fixed Z” is now seedable. Next bottleneck is multi-ball park + L cloud co-design (P2.1–P2.5), not charge species.
+**Critical path note:** Next bottleneck is **Z≈6 park + multi-L shell diagnostics**, then P3 A≈12 assemble.

@@ -748,3 +748,69 @@ multi-Z packaging works when park is scored correctly.
 **P2.0 closed for charge structure:** neutron-analogs are EM-silent C lumps;
 proton-analogs are C+Q; **Z and N are independently seedable** and
 \(Q_\mathrm{em}\) tracks Z under dynamics at T≳100.
+
+---
+
+## F18 — P2 park + L-from-Z + isotope smoke [measured 2026-07-15]
+
+**Follows F17 freeze:** B2, `gen_pn_core`, q_C=0 / q_Q=+1 / q_L=−1.  
+**Data:** `/space/scp/v75/pn/p2/` · GPU `v75f16` · T=400, N=128, L=32  
+**Score:** `v75/analysis/score_pn_park.py`
+
+### Runs
+
+| ID | Content | Geometry |
+|----|---------|----------|
+| p2_z2n0_nuc | Z=2 N=0 rest core | p at (±5,0,0) |
+| p2_z2n2_nuc | Z=2 N=2 rest core | p (±5,0,0), n (0,±5,0) |
+| p2_a_z2n0 | Z2N0 + **L=2** shell | L at (0,±18,0), ω_L=1.46 |
+| p2_a_z2n2 | Z2N2 + **same L=2** | L tracks **Z not A** |
+
+### Nuclear park (P2.1) — **PASS**
+
+| Metric | Z2N0 | Z2N2 | Notes |
+|--------|------|------|-------|
+| Q_phi 0→mid→end | 439→391→**380** | 1170→1117→**1093** | bag tracks A |
+| Q_flux 0→mid→end | 421→378→**372** | 421→378→**372** | **identical EM** |
+| c_Q_park | 0.028 | 0.021 | ≤0.15 |
+| c_Qem_park | 0.017 | 0.017 | ≤0.20 |
+| E end | 711 | 1958 | mass tracks A (×2.75) |
+| PASS_nuc | **True** | **True** | Gauss floor |
+
+**Isotope nuclear smoke:** \(Q_\mathrm{flux}(Z{=}2,N{=}0)=Q_\mathrm{flux}(Z{=}2,N{=}2)\) to reported precision; bag \(Q\) and \(E\) grow with N.
+
+### Atom L-from-Z (P2.2) + isotope (P2.5) — **PASS on sector metrics**
+
+| Metric | a_z2n0 | a_z2n2 |
+|--------|--------|--------|
+| massL 0→end (track) | 140.4→**139.6** (−0.6%) | **same** |
+| Ql 0→end | 205.0→**204.7** | **same** |
+| nuclear Q_phi park | same as nuc | same as nuc |
+| Q_flux end (net) | 170.8 | **170.8** |
+| Gauss | floor | floor |
+
+**Interpretation of net \(Q_\mathrm{flux}\):** cube net ≈ parked nuclear EM (~372) minus L charge (~205) → ~167–171. Late drop t≳300 is **L registering in the flux cube**, not L death (massL/Ql flat).  
+Do **not** apply nuclear-only `c_Qem_park` to net atom flux; use track **massL + Ql** + nuclear **Q_phi** park.
+
+**Isotope atom smoke:** same L package for +N; L sector and net EM **unchanged**; core bag \(Q\) and \(E\) larger for N=2.
+
+### Scorecard vs C12 goal
+
+| Gate | Result |
+|------|--------|
+| P2.1 parked p+n templates, report Z,N | **PASS** (Z2 class) |
+| P2.2 L count = Z | **PASS** (L=2 for Z=2; massL/Ql hold) |
+| P2.5 fixed Z, +ΔN | **PASS** (Q_em proxy fixed; mass↑) |
+| P2.3 soft kinematics around droplet | not run (rest only) |
+| P2.4 long-T visual C₁₂ | not yet (Z2 smoke, not Z6) |
+| P3 A≈12 | not started |
+
+### Caveats
+
+1. Soft energy drift (E up 10–25% over T=400) — morphology holds; soft fail only.  
+2. D_COM≈0 for concentric L shell — need shell-radius diagnostic (P1.3) for multi-L structure.  
+3. Scale next to **Z=6 N=6** before claiming carbon.
+
+### Bottom line
+
+**B2 P/N packages park; L sized to Z survives; +N at fixed Z is a working isotope control on Z=2.**
