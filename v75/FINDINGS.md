@@ -576,6 +576,66 @@ nucleus + light composite?
 | 2026-07-14 14:02 | Campaign start |
 | 2026-07-14 22:43 | B4_full PASS → **DEFINITIVE_SUCCESS** |
 
+### F16 — B4 orbit kinematics + multi-Z park-aware [2026-07-15]
+
+**Plans:** `B4_ORBIT_PLAN.md`, `MULTI_Z_PLAN.md`  
+**Data:** `/space/scp/v75/b4o_mz/` · instance `v75f16` (V100-16GB)  
+**Tools:** `gen_mf_shell_orbit`, `park_aware_score.py`
+
+**Questions**
+
+1. Does frozen B4 θ (single heavy C@1.42 + light L@1.46) show **Coulomb orbit kinematics** (sub/circ/super) without L death?  
+2. Does **Z6 + L6 R=22 rest** package under **park-aware** scoring?
+
+#### A — Pair orbit scan (C origin + one L @ R=18)
+
+v_c naive ≈ 0.071. T=400 (~¼–½ period scale).
+
+| Run | vt | D₀ → D_end | ΔD | massL | Qc | Morphology |
+|-----|-----|------------|-----|-------|-----|------------|
+| **pair_sub** | 0.7 v_c | 18.00 → **15.72** | **−2.28** | 78.5→78.8 | held | **inspiral** |
+| **pair_vc** | 1.0 v_c | 18.00 → **24.90** | **+6.90** | 78.4→78.9 | held | **outspiral** |
+| **pair_super** | 1.3 v_c | 18.00 → **33.94** | **+15.9** | 78.2→78.9 | held | **strong expand** |
+
+**PASS kinematics:** ordered ΔD (sub < vc < super); L mass/Q stable; gauss floor.  
+**Caveat:** naive v_c is **too high** — true circular vt lies **between 0.05 and 0.07** (sub shrinks, nominal “vc” expands). Same class as F10 estimator ~0.6× naive.
+
+#### B — Co-rotating L6 shell (vt=v_c)
+
+| Metric | Result |
+|--------|--------|
+| massL | 471 → 474 (**stable**) |
+| Qc / Ql | held |
+| COM D | ~0 (concentric; track is single L centroid — not shell radius) |
+
+Packaging under co-rot seed **OK**. Orbit of multi-lump shell needs a multi-cluster L tracker (not available this run).
+
+#### C — Multi-Z rest: Z6 ω=1.46 octa + L6 R=22
+
+| Metric | t=0 | mid | t=400 |
+|--------|-----|-----|-------|
+| Qc | 907.8 | 695.7 | **636.4** (park) |
+| massL | 471.6 | — | **474.0** stable |
+| Ql | 688.5 | — | **688.5** |
+| gauss | — | — | 8e-14 floor |
+
+| Score | Result |
+|-------|--------|
+| PASS_seed (vs seed Q) | **FAIL** (c_Q_seed=0.30) |
+| **PASS_park** (post mid-run) | **PASS** (c_Q_park=0.085, c_L=0) |
+
+#### Claims
+
+1. **B4 frozen θ supports Coulomb pair kinematics** with intact L (inspiral/expand ordering).  
+2. **True circular speed** needs retune below naive 0.071 (box/screening as F8/F10).  
+3. **Z6+L6 R=22 packages** under private bags when nuclear parking is not penalized.  
+4. **Park-aware cost** is the correct multi-Z scorecard; seed-Q score false-fails droplets.  
+5. Multi-rev immortal orbit and multi-lump shell radius evolution remain open.
+
+#### Campaign note
+
+Interrupted once on dead `v75st`; completed on `v75f16` 2026-07-15.
+
 ## 4. Chronology
 
 | When | Event |
@@ -595,6 +655,7 @@ nucleus + light composite?
 | 2026-07-14 | F14 Atom ladder A1–A3: orbit+dual-L PASS; Z6+L6 atom FAIL (L −35%) |
 | 2026-07-14 | Self-tune Stage 1 start (v75st); soft θ + ledger |
 | 2026-07-14 | F15 interim mid-tree; then B4_full PASS → DEFINITIVE_SUCCESS |
+| 2026-07-15 | F16: B4 orbit scan + Z6+L6 park-aware PASS on v75f16 |
 
 | 2026-07-13 | B1 MF kernel CPU+GPU; energy L-add; G2 wrong_opp_omega null force |
 | 2026-07-13 | Corrected same-ω seeds; G2 force D20b + G3 headon queue |
@@ -624,4 +685,8 @@ nuclear Q evaporates). Isolation holds; multi-Z packaging hard at g=0.05.
 
 **Self-tune (F15): DEFINITIVE SUCCESS** — soft θ B4 (single heavy C + L6 shell
 R=18) holds massC/L and Qc/Ql to T=400 under B1; scorecard PASS. Multi-ball
-nuclei (Z2–Z6) never PASSed (seed→park). Option C not required for this claim.
+nuclei (Z2–Z6) never PASSed seed-Q score. Option C not required for this claim.
+
+**Orbit + multi-Z (F16):** B4 pair scan shows Coulomb ordering (sub inspiral /
+super expand; true v_c < naive). Z6+L6 R=22 **PASS_park** with stable L —
+multi-Z packaging works when park is scored correctly.

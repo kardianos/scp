@@ -1,31 +1,39 @@
 # v75 Status
 
-**Updated**: 2026-07-15 — F15 done; F16 orbit + multi-Z park-aware **running**
+**Updated**: 2026-07-15 — **Goal set: Phases 1–3 → time-stable C₁₂**
 
-## Closed
+## Active goal
+
+**`C12_ATOM_GOAL.md`** — pursue multi-fabric Phases **1–3**.
+
+| End state | Definition |
+|-----------|------------|
+| **Ideal** | Time-stable **C₁₂ analog**: multi-particle nuclear core + light cloud; **no merge / fission / disperse**; visual volview package of bound structure + related fields |
+| **Stretch** | Radioactive C₁₂ variant: **calculate + simulate** decay rates |
+
+**Live phase:** **P1** (bound hydrogenoid multi-rev) → then P2 → P3.
+
+## Closed baseline (do not re-litigate)
 
 | Item | Result |
 |------|--------|
-| B1 MF + atom ladder F11–F14 | isolation OK; Z6+L6 rest atom fail |
-| **Self-tune Stage 1 F15** | **PASS** — B4 single heavy + L6 shell |
-| Git | `29530c2` MF B1 + F11–F15 |
+| B1 MF isolation + Coulomb (F11–F13) | PASS |
+| Self-tune F15 (B4 packaging) | PASS |
+| F16 pair kinematics + Z6+L6 PASS_park | PASS |
 
-## Park-aware re-score (F16 partial)
+Data: `/space/scp/v75/b4o_mz/` · instance `v75f16` (idle after F16).
 
-| Trial | PASS_park |
-|-------|-----------|
-| B2_full Z4 | **YES** |
-| B3a_full Z2 | **YES** |
-| B1a_full Z6 | no |
-| B4_full | YES (also seed PASS) |
+## Phase checklist (summary)
 
-## Active campaign (`v75st`)
+| Phase | Focus | Status |
+|-------|--------|--------|
+| **P1** | Retuned v_c, multi-rev B4, shell-radius diag, binding | **OPEN** (next) |
+| **P2** | Parked multi-Z + L long-T + soft orbit | OPEN (rest opened by F16) |
+| **P3** | A≈12 core + multi-L; visual C₁₂; stretch decay | NOT STARTED |
 
-`run_b4o_mz_campaign.sh`: b4o_pair_{sub,vc,super}, b4o_shell_vc, mz2_z6_L6_R22  
-Log: remote `/root/b4o_mz_campaign.log` · seeds `/space/scp/v75/b4o_mz/`
+## Ops
 
-## Next after F16 runs
+1. Teardown or reuse `v75f16` for P1.1–P1.2  
+2. Park-aware scorecard mandatory for multi-ball  
+3. B2 / Option C only if blocked  
 
-1. Analyze D(t) for sub/vc/super; massL integrity  
-2. Park-aware score mz2; finalize FINDINGS F16  
-3. Teardown GPU when idle  

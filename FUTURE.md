@@ -11,6 +11,23 @@ has no stable particles (CONCEPT.md §2/§9).
 
 ---
 
+## Active goal (v75 multi-fabric → C₁₂) — 2026-07-15
+
+**Doc:** `v75/C12_ATOM_GOAL.md` · **Status:** `v75/STATUS.md`
+
+Pursue multi-fabric **Phases 1–3** on B1 (private bags + shared \(A\)):
+
+1. **P1** — Bound hydrogenoid (retuned multi-rev C+L on B4 θ)  
+2. **P2** — Parked multi-Z nucleus + light cloud, long-T stable  
+3. **P3** — A≈12-class core + multi-L → **time-stable visual C₁₂**  
+   (no merge / fission / disperse)
+
+**Stretch:** radioactive C₁₂ variant with **calculated and simulated** decay rates.
+
+Baseline closed: F11–F16 (isolation, packaging, pair Coulomb scan, Z6+L6 PASS_park).
+
+---
+
 ## Current Open Questions (post-v71, 2026-06-11)
 
 1. **ℓ=2-perturbed cold fission test** — super-critical balls survive the
