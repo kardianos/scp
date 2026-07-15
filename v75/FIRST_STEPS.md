@@ -2,8 +2,9 @@
 
 **Updated**: 2026-07-13  
 **Read first**: `PROPOSAL.md` (why), `FINDINGS.md` (what we know)  
-**Kernel policy**: multi-fabric kernel **authorized** but deferred until Step 2
-gate (FINDINGS F9) — prefer E-lite until orbits fail
+**Kernel policy**: multi-fabric kernel **authorized**. Path locked:
+`MULTIFABRIC_SPEC.md` — **B(1) Shape β** (C/Q/L arrays, Φ_Q≡Φ_C), then **B(2)**.
+E-lite Step 1–2 done; next is B1 implementation + G0–G3.
 
 ---
 
@@ -18,8 +19,12 @@ That is the **positronium force gate** (FUTURE #5 force half) before multi-fabri
 kernel work. Sprint uses **Option E-lite** (\(\pm\omega\)).
 
 **Step 1 result: PASS** — see FINDINGS F8–F9. Opposite attract, same repel at
-D=20, two clusters over T=100. Multi-fabric remains long-term for bag isolation
-and mass hierarchy; near-term = Step 2 orbits on E-lite.
+D=20, two clusters over T=100.
+
+**Step 2 result: PARTIAL PASS** — see FINDINGS F10. Coulomb sub/circ/super orbit
+scan behaves classically at D=20 (2 clusters, T=400, ~0.12 rev on circular);
+head-on merges at contact. Multi-fabric still deferred for wide orbits; required
+before overlapping N+e.
 
 ---
 
@@ -142,6 +147,20 @@ Check first:
 
 T ≥ 200–400; large L; absorb boundaries.
 
+### 2.3 Results (2026-07-13) — PARTIAL PASS
+
+Seed: `bin/gen_qball_pair_boost`, D=20, ω=±1.46, N=192 L=48 T=400.
+
+| Run | vt/vr | Result |
+|-----|-------|--------|
+| vc | vt=0.0193 (naive circ.) | D 20.02→20.46, φ=43°, 2 clusters — near-circular arc |
+| v05 | vt=0.010 | D→15.95 — inspiral |
+| v15 | vt=0.029 | D→26.55 — outspiral |
+| headon | vr=0.01 | Merge by T=400 (s_max→0.13, E_pot→−40) |
+
+True circular from Step 1 a_C: **vt≈0.0154**. Period ~3300 → multi-rev needs
+T≳3500 (Step 2b). Details: FINDINGS F10; `v75/analysis/*_Dt.tsv`.
+
 ---
 
 ## Step 3 — L2 radial scout (parallel, optional)
@@ -234,10 +253,13 @@ No sim launched in the doc-recording session unless user says “run Step 1.”
 - [x] Step 1 force run complete with force-sign recorded (F8)  
 - [ ] Slice render of ± pair (optional; 2/4 SFAs good: pp_D16, pm_D20)  
 - [x] FINDINGS updated with pass/fail + multi-fabric impact (F9)  
-- [x] Go/no-go: **E-lite for Step 2**; multi-fabric kernel **deferred** until orbit/atom gate  
+- [x] Step 2 orbit/capture complete (F10 PARTIAL PASS)  
+- [x] Go/no-go: E-lite continues for wide orbits; multi-fabric for contact-scale N+e  
 
-## Step 2 next (not started)
+## Step 2b / next
 
-± dynamical orbit / head-on capture with tangential or radial velocity seeding.
-Success = multi-revolution or clear bound oscillation; fail = always merge/annihilate
-→ implement multi-fabric isolation.
+1. **Primary:** implement B(1) Shape β per `MULTIFABRIC_SPEC.md`; gates G0–G3  
+2. After G3 PASS: lighter L and/or B(2) unlock — outcome-driven (§6 of SPEC)  
+3. Optional non-blocking: E-lite multi-rev vt≈0.0154, T≥3500  
+
+G3 success = head-on contact **without** merge (inverts F10 same-fabric merge).

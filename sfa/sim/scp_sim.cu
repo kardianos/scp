@@ -5,6 +5,7 @@
  *
  *  Build: nvcc -O3 -arch=sm_70 -o scp_sim_cuda scp_sim.cu -lzstd -lm -lpthread
  *  Run:   ./scp_sim_cuda config.cfg [-key value ...]
+ *  v75: multi-fabric B1 Shape β (n_fabrics=3, mf_lock_CQ, private bags).
  */
 
 #define SFA_IMPLEMENTATION
@@ -196,6 +197,12 @@ typedef struct {
     /* v69 gauge sector (device pointers; NULL when gauge_mode=0) */
     int gauge_mode;
     double *th[3], *Efield[3], *E_acc[3];
+    /* v75 multi-fabric L (device; NULL when n_fabrics!=3) */
+    int n_fabrics;
+    double *L_phi[3], *L_vel_phi[3], *L_acc_phi[3];
+    double *L_theta[3], *L_vel_theta[3], *L_acc_theta[3];
+    double *L_phi_im[3], *L_vel_phi_im[3], *L_acc_phi_im[3];
+    double *L_theta_im[3], *L_vel_theta_im[3], *L_acc_theta_im[3];
     long N3;
     int N;
     double L, dx, dt;
@@ -312,9 +319,61 @@ typedef struct {
     double G_offset;              /* frozen uniform Gauss offset, measured post-init (§4.1) */
     double *th[3];                /* link angles theta_i(x) on link (x, x+i), wrapped (-pi,pi] */
     double *Efield[3];            /* E_i(x) on the same link (noncompact) */
+    /* v75 multi-fabric B1: primary = C; Q+L host buffers when n_fabrics==3 */
+    int    n_fabrics;
+    int    mf_lock_CQ;
+    double q_fab[3];              /* q_C, q_Q, q_L */
+    double *mf_mem;
+    double *Q_phi[NFIELDS], *Q_phi_vel[NFIELDS], *Q_phi_acc[NFIELDS];
+    double *Q_theta[NFIELDS], *Q_theta_vel[NFIELDS], *Q_theta_acc[NFIELDS];
+    double *Q_phi_im[NFIELDS], *Q_phi_im_vel[NFIELDS], *Q_phi_im_acc[NFIELDS];
+    double *Q_theta_im[NFIELDS], *Q_theta_im_vel[NFIELDS], *Q_theta_im_acc[NFIELDS];
+    double *L_phi[NFIELDS], *L_phi_vel[NFIELDS], *L_phi_acc[NFIELDS];
+    double *L_theta[NFIELDS], *L_theta_vel[NFIELDS], *L_theta_acc[NFIELDS];
+    double *L_phi_im[NFIELDS], *L_phi_im_vel[NFIELDS], *L_phi_im_acc[NFIELDS];
+    double *L_theta_im[NFIELDS], *L_theta_im_vel[NFIELDS], *L_theta_im_acc[NFIELDS];
     int N; long N3;
     double L, dx, dt;
 } Grid;
+
+static void mf_lock_copy_CQ_host(Grid *g) {
+    if (g->n_fabrics != 3 || !g->mf_lock_CQ) return;
+    size_t bytes = (size_t)g->N3 * sizeof(double);
+    for (int a = 0; a < NFIELDS; a++) {
+        memcpy(g->Q_phi[a], g->phi[a], bytes);
+        memcpy(g->Q_phi_vel[a], g->phi_vel[a], bytes);
+        memcpy(g->Q_theta[a], g->theta[a], bytes);
+        memcpy(g->Q_theta_vel[a], g->theta_vel[a], bytes);
+        memcpy(g->Q_phi_im[a], g->phi_im[a], bytes);
+        memcpy(g->Q_phi_im_vel[a], g->phi_im_vel[a], bytes);
+        memcpy(g->Q_theta_im[a], g->theta_im[a], bytes);
+        memcpy(g->Q_theta_im_vel[a], g->theta_im_vel[a], bytes);
+    }
+}
+
+static inline double fabric_rho_host(double *const phi[3], double *const phi_vel[3],
+    double *const phi_im[3], double *const phi_im_vel[3],
+    double *const theta[3], double *const theta_vel[3],
+    double *const theta_im[3], double *const theta_im_vel[3], long idx) {
+    double rho = 0;
+    for (int a = 0; a < NFIELDS; a++)
+        rho += phi[a][idx]*phi_im_vel[a][idx] - phi_im[a][idx]*phi_vel[a][idx]
+             + theta[a][idx]*theta_im_vel[a][idx] - theta_im[a][idx]*theta_vel[a][idx];
+    return rho;
+}
+
+static inline double em_rho_at(Grid *g, long idx) {
+    if (g->n_fabrics != 3)
+        return fabric_rho_host(g->phi, g->phi_vel, g->phi_im, g->phi_im_vel,
+                               g->theta, g->theta_vel, g->theta_im, g->theta_im_vel, idx);
+    double rC = fabric_rho_host(g->phi, g->phi_vel, g->phi_im, g->phi_im_vel,
+                                g->theta, g->theta_vel, g->theta_im, g->theta_im_vel, idx);
+    double rQ = fabric_rho_host(g->Q_phi, g->Q_phi_vel, g->Q_phi_im, g->Q_phi_im_vel,
+                                g->Q_theta, g->Q_theta_vel, g->Q_theta_im, g->Q_theta_im_vel, idx);
+    double rL = fabric_rho_host(g->L_phi, g->L_phi_vel, g->L_phi_im, g->L_phi_im_vel,
+                                g->L_theta, g->L_theta_vel, g->L_theta_im, g->L_theta_im_vel, idx);
+    return g->q_fab[0]*rC + g->q_fab[1]*rQ + g->q_fab[2]*rL;
+}
 
 static Grid *grid_alloc(const Config *c) {
     Grid *g = (Grid*)calloc(1, sizeof(Grid));
@@ -325,6 +384,10 @@ static Grid *grid_alloc(const Config *c) {
     g->gauge_mode   = c->complex_gauge;
     g->g_gauge      = c->g_gauge;
     g->G_offset     = 0.0;
+    g->n_fabrics    = c->n_fabrics;
+    g->mf_lock_CQ   = c->mf_lock_CQ;
+    g->q_fab[0] = c->q_C; g->q_fab[1] = c->q_Q; g->q_fab[2] = c->q_L;
+    g->mf_mem = NULL;
     /* gauge adds 6 host blocks (th 36-38, E 39-41) after the 36 complex blocks */
     long nblocks = g->gauge_mode ? 42 : (g->complex_mode ? 36 : 18);
     long total = nblocks * g->N3;
@@ -362,6 +425,28 @@ static Grid *grid_alloc(const Config *c) {
             g->th[i] = g->Efield[i] = NULL;
         }
     }
+    /* Multi-fabric Q+L host (72 blocks) */
+    if (g->n_fabrics == 3) {
+        long mf_blocks = 72;
+        g->mf_mem = (double*)malloc(mf_blocks * g->N3 * sizeof(double));
+        if (!g->mf_mem) { fprintf(stderr, "FATAL: multi-fab host malloc\n"); exit(1); }
+        memset(g->mf_mem, 0, mf_blocks * g->N3 * sizeof(double));
+        double *base = g->mf_mem;
+        for (int a = 0; a < NFIELDS; a++) {
+            g->Q_phi[a]=base+(0+a)*g->N3; g->Q_phi_vel[a]=base+(3+a)*g->N3; g->Q_phi_acc[a]=base+(6+a)*g->N3;
+            g->Q_theta[a]=base+(9+a)*g->N3; g->Q_theta_vel[a]=base+(12+a)*g->N3; g->Q_theta_acc[a]=base+(15+a)*g->N3;
+            g->Q_phi_im[a]=base+(18+a)*g->N3; g->Q_phi_im_vel[a]=base+(21+a)*g->N3; g->Q_phi_im_acc[a]=base+(24+a)*g->N3;
+            g->Q_theta_im[a]=base+(27+a)*g->N3; g->Q_theta_im_vel[a]=base+(30+a)*g->N3; g->Q_theta_im_acc[a]=base+(33+a)*g->N3;
+        }
+        base = g->mf_mem + 36 * g->N3;
+        for (int a = 0; a < NFIELDS; a++) {
+            g->L_phi[a]=base+(0+a)*g->N3; g->L_phi_vel[a]=base+(3+a)*g->N3; g->L_phi_acc[a]=base+(6+a)*g->N3;
+            g->L_theta[a]=base+(9+a)*g->N3; g->L_theta_vel[a]=base+(12+a)*g->N3; g->L_theta_acc[a]=base+(15+a)*g->N3;
+            g->L_phi_im[a]=base+(18+a)*g->N3; g->L_phi_im_vel[a]=base+(21+a)*g->N3; g->L_phi_im_acc[a]=base+(24+a)*g->N3;
+            g->L_theta_im[a]=base+(27+a)*g->N3; g->L_theta_im_vel[a]=base+(30+a)*g->N3; g->L_theta_im_acc[a]=base+(33+a)*g->N3;
+        }
+        printf("Host multi-fab: +%.2f GB (Q+L)\n", mf_blocks * g->N3 * 8.0 / 1e9);
+    }
     return g;
 }
 static void grid_free(Grid *g) {
@@ -369,6 +454,7 @@ static void grid_free(Grid *g) {
         free(g->pin_phi[a]); free(g->pin_vel[a]);
         free(g->pin_theta[a]); free(g->pin_tvel[a]);
     }
+    free(g->mf_mem);
     free(g->mem); free(g);
 }
 
@@ -378,6 +464,59 @@ static void grid_free(Grid *g) {
  * the Grid above provides the phi_im/theta_im members they reference. */
 #define SCP_COMPLEX_FIELDS 1
 #include "scp_init.h"
+
+/* Load SFA matter into L fabric (host); gauge stays from C seed. */
+static void load_sfa_into_L(Grid *g, const char *path, int frame) {
+    printf("Init L fabric: SFA '%s' frame=%d\n", path, frame);
+    SFA *sfa = sfa_open(path);
+    if (!sfa) { fprintf(stderr, "FATAL: cannot open SFA '%s'\n", path); exit(1); }
+    if ((int)sfa->Nx != g->N) {
+        fprintf(stderr, "FATAL: L SFA N mismatch\n"); exit(1);
+    }
+    if (frame < 0) frame = (int)sfa->total_frames + frame;
+    void *buf = malloc(sfa->frame_bytes);
+    sfa_read_frame(sfa, frame, buf);
+    uint64_t off = 0;
+    int nload = 0;
+    for (uint32_t col = 0; col < sfa->n_columns; col++) {
+        int dtype = sfa->columns[col].dtype;
+        int sem = sfa->columns[col].semantic;
+        int comp = sfa->columns[col].component;
+        int es = sfa_dtype_size[dtype];
+        uint8_t *src = (uint8_t*)buf + off;
+        double *target = NULL;
+        if (sem == SFA_POSITION && comp < 3) target = g->L_phi[comp];
+        else if (sem == SFA_ANGLE && comp < 3) target = g->L_theta[comp];
+        else if (sem == SFA_VELOCITY && comp < 3) target = g->L_phi_vel[comp];
+        else if (sem == SFA_VELOCITY && comp >= 3 && comp < 6) target = g->L_theta_vel[comp-3];
+        else if (sem == SFA_POSITION && comp >= 3 && comp < 6) target = g->L_phi_im[comp-3];
+        else if (sem == SFA_ANGLE && comp >= 3 && comp < 6) target = g->L_theta_im[comp-3];
+        else if (sem == SFA_VELOCITY && comp >= 6 && comp < 9) target = g->L_phi_im_vel[comp-6];
+        else if (sem == SFA_VELOCITY && comp >= 9 && comp < 12) target = g->L_theta_im_vel[comp-9];
+        if (target) {
+            long N3 = g->N3;
+            if (dtype == SFA_F64) for (long i=0;i<N3;i++) target[i]=((double*)src)[i];
+            else if (dtype == SFA_F32) for (long i=0;i<N3;i++) target[i]=(double)((float*)src)[i];
+            else if (dtype == SFA_F16) for (long i=0;i<N3;i++) target[i]=f16_to_f64(((uint16_t*)src)[i]);
+            nload++;
+        }
+        off += (uint64_t)g->N3 * es;
+    }
+    printf("  Loaded %d columns into L\n", nload);
+    free(buf); sfa_close(sfa);
+}
+
+static void mf_post_init(Grid *g, const Config *c) {
+    if (g->n_fabrics != 3) return;
+    if (c->init_sfa_L[0])
+        load_sfa_into_L(g, c->init_sfa_L, c->init_frame);
+    else
+        printf("WARNING: n_fabrics=3 but init_sfa_L empty — L is zero\n");
+    if (g->mf_lock_CQ) {
+        mf_lock_copy_CQ_host(g);
+        printf("Multi-fab: Q ← C lock applied after init (host)\n");
+    }
+}
 
 #if 0 /* deleted — now in scp_init.h */
 /* ================================================================
@@ -603,16 +742,12 @@ static void do_init(Grid *g, const Config *c) {
    so the device starts from the exact projected state.
    ================================================================ */
 
-/* G(x) = (1/a) sum_i [E_i(x) - E_i(x-i)] - g*rho_Q(x) at voxel idx */
+/* G(x) = (1/a) sum_i [E_i(x) - E_i(x-i)] - g*rho_EM(x) at voxel idx */
 static inline double gauss_residual_at(Grid *g, long idx, const long nm[3]) {
     double divE = (g->Efield[0][idx]-g->Efield[0][nm[0]]
                   +g->Efield[1][idx]-g->Efield[1][nm[1]]
                   +g->Efield[2][idx]-g->Efield[2][nm[2]]) / g->dx;
-    double rho = 0;
-    for (int a=0;a<NFIELDS;a++)
-        rho += g->phi[a][idx]  *g->phi_im_vel[a][idx] - g->phi_im[a][idx]  *g->phi_vel[a][idx]
-             + g->theta[a][idx]*g->theta_im_vel[a][idx] - g->theta_im[a][idx]*g->theta_vel[a][idx];
-    return divE - g->g_gauge*rho;
+    return divE - g->g_gauge * em_rho_at(g, idx);
 }
 
 /* §1.2 runtime net-charge check (bc_type=2 only) */
@@ -621,10 +756,7 @@ static void net_charge_check(Grid *g, const Config *c) {
     const long N3=g->N3; const double dV=g->dx*g->dx*g->dx;
     double qn=0, qa=0;
     for (long idx=0;idx<N3;idx++) {
-        double rho=0;
-        for (int a=0;a<NFIELDS;a++)
-            rho += g->phi[a][idx]  *g->phi_im_vel[a][idx] - g->phi_im[a][idx]  *g->phi_vel[a][idx]
-                 + g->theta[a][idx]*g->theta_im_vel[a][idx] - g->theta_im[a][idx]*g->theta_vel[a][idx];
+        double rho = em_rho_at(g, idx);
         qn += rho*dV; qa += fabs(rho)*dV;
     }
     if (fabs(qn) > 1e-6 * fmax(qa, 1.0)) {
@@ -1183,7 +1315,8 @@ __global__ void compute_forces_complex_gauge_kernel(
     double *acc_tu0, double *acc_tu1, double *acc_tu2,
     double *acc_tv0, double *acc_tv1, double *acc_tv2,
     double *Eacc0, double *Eacc1, double *Eacc2,
-    double GG, double STP, double inva)
+    double GG, double STP, double inva,
+    double q_em, int e_mode)
 {
     long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= d_N3) return;
@@ -1212,15 +1345,17 @@ __global__ void compute_forces_complex_gauge_kernel(
         fu[3+a] = tu[a][idx];  fv[3+a] = tv[a][idx];
     }
 
-    /* transported neighbors (SPEC §3.1) per direction d, field f */
+    /* transported neighbors (SPEC §3.1) per direction d, field f.
+     * Multi-fabric: matter of charge q_em uses U^{q} = exp(i q_em * th).
+     * q_em=0 → ordinary derivatives; q_em=-1 → conjugate links. */
     double TRp[3][6], TIp[3][6], TRm[3][6], TIm[3][6];
     /* raw +d theta neighbors needed for the symmetrized eta current */
     double tup[3][3], tvp[3][3];
-    /* forward-link cos/sin at x (CPU link_c/link_s scratch, inline) */
+    /* forward-link cos/sin at x for THIS fabric's charge */
     double cPd[3], sPd[3];
     for (int d = 0; d < 3; d++) {
-        double cP = cos(th[d][idx]),   sP = sin(th[d][idx]);
-        double cM = cos(th[d][nm[d]]), sM = sin(th[d][nm[d]]);
+        double cP = cos(q_em * th[d][idx]),   sP = sin(q_em * th[d][idx]);
+        double cM = cos(q_em * th[d][nm[d]]), sM = sin(q_em * th[d][nm[d]]);
         cPd[d] = cP;  sPd[d] = sP;
         for (int a = 0; a < 3; a++) {
             double upn = u[a][np[d]],   vpn = v[a][np[d]];
@@ -1318,7 +1453,12 @@ __global__ void compute_forces_complex_gauge_kernel(
         double T21 = (fu[3+d2]*TIp[d][d1] - fv[3+d2]*TRp[d][d1])
                    + (tup[d][d2]*WpI2     - tvp[d][d2]*WpR2);
         double Jlat = inva*Jg - 0.5*d_ETA*(T12 - T21);
-        Eacc[d][idx] = STP*st[d] + GG*Jlat;
+        /* q_em: EM charge weight; e_mode 0=set (mag+qJ), 1=add qJ only (multi-fab) */
+        double jterm = GG * q_em * Jlat;
+        if (e_mode == 0)
+            Eacc[d][idx] = STP*st[d] + jterm;
+        else
+            Eacc[d][idx] += jterm;
     }
 }
 
@@ -2042,6 +2182,139 @@ __global__ void reduce_diagnostics_complex_gauge_kernel(
     }
 }
 
+/* v75 multi-fab: add one fabric's matter energy into existing CDIAG slots
+ * (0-7 sum energy, 8/9/14 max, 10 P_int). Covariant gradients when th!=NULL.
+ * Does NOT touch charge/centroid slots 12-19 (those stay C-centric for now). */
+__global__ void reduce_energy_add_fabric_kernel(
+    const double *u0, const double *u1, const double *u2,
+    const double *v0, const double *v1, const double *v2,
+    const double *tu0, const double *tu1, const double *tu2,
+    const double *tv0, const double *tv1, const double *tv2,
+    const double *vu0, const double *vu1, const double *vu2,
+    const double *vv0, const double *vv1, const double *vv2,
+    const double *vtu0, const double *vtu1, const double *vtu2,
+    const double *vtv0, const double *vtv1, const double *vtv2,
+    const double *th0, const double *th1, const double *th2, /* NULL => plain ∂ */
+    double dV, double idx1,
+    double mass2, double mtheta2, double eta, double mu, double kappa,
+    double *d_results)
+{
+    __shared__ double sdata[11 * 256]; /* slots 0-10 only */
+    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    int tid = threadIdx.x;
+    double local[11];
+    for (int vv = 0; vv < 11; vv++) local[vv] = 0.0;
+
+    if (idx < d_N3) {
+        int N = d_N, NN = d_NN;
+        int i = (int)(idx / NN), j = (int)((idx / N) % N), k = (int)(idx % N);
+        long np[3], nm[3];
+        np[0]=(long)((i+1)%N)*NN+(long)j*N+k;   nm[0]=(long)((i-1+N)%N)*NN+(long)j*N+k;
+        np[1]=(long)i*NN+(long)((j+1)%N)*N+k;   nm[1]=(long)i*NN+(long)((j-1+N)%N)*N+k;
+        np[2]=(long)i*NN+(long)j*N+(k+1)%N;     nm[2]=(long)i*NN+(long)j*N+(k-1+N)%N;
+
+        const double *u[3]={u0,u1,u2}, *v[3]={v0,v1,v2};
+        const double *tu[3]={tu0,tu1,tu2}, *tv[3]={tv0,tv1,tv2};
+        const double *vu[3]={vu0,vu1,vu2}, *vv_[3]={vv0,vv1,vv2};
+        const double *vtu[3]={vtu0,vtu1,vtu2}, *vtv[3]={vtv0,vtv1,vtv2};
+        double fu[6], fv[6];
+        for (int a=0;a<3;a++) {
+            fu[a]=u[a][idx]; fv[a]=v[a][idx];
+            fu[3+a]=tu[a][idx]; fv[3+a]=tv[a][idx];
+        }
+        double DcU[3][6], DcV[3][6];
+        for (int d=0; d<3; d++) {
+            double cP=1, sP=0, cM=1, sM=0;
+            if (th0) {
+                const double *th[3]={th0,th1,th2};
+                cP=cos(th[d][idx]); sP=sin(th[d][idx]);
+                cM=cos(th[d][nm[d]]); sM=sin(th[d][nm[d]]);
+            }
+            for (int a=0;a<3;a++) {
+                double upn=u[a][np[d]], vpn=v[a][np[d]];
+                double umn=u[a][nm[d]], vmn=v[a][nm[d]];
+                double tpn=tu[a][np[d]], wpn=tv[a][np[d]];
+                double tmn=tu[a][nm[d]], wmn=tv[a][nm[d]];
+                DcU[d][a]   = ((cP*upn - sP*vpn) - (cM*umn + sM*vmn))*idx1;
+                DcV[d][a]   = ((cP*vpn + sP*upn) - (cM*vmn - sM*umn))*idx1;
+                DcU[d][3+a] = ((cP*tpn - sP*wpn) - (cM*tmn + sM*wmn))*idx1;
+                DcV[d][3+a] = ((cP*wpn + sP*tpn) - (cM*wmn - sM*tmn))*idx1;
+            }
+        }
+        double s2[3];
+        double s_epk=0,s_etk=0,s_eg=0,s_em=0,s_etg=0,s_etm=0,s_ec=0,s_pm=0;
+        const int ci1[3]={1,2,0}, ci2[3]={2,0,1};
+        for (int a=0;a<3;a++) {
+            s2[a]=fu[a]*fu[a]+fv[a]*fv[a];
+            s_epk+=0.5*(vu[a][idx]*vu[a][idx]+vv_[a][idx]*vv_[a][idx])*dV;
+            s_etk+=0.5*(vtu[a][idx]*vtu[a][idx]+vtv[a][idx]*vtv[a][idx])*dV;
+            s_eg+=0.5*(DcU[0][a]*DcU[0][a]+DcU[1][a]*DcU[1][a]+DcU[2][a]*DcU[2][a]
+                      +DcV[0][a]*DcV[0][a]+DcV[1][a]*DcV[1][a]+DcV[2][a]*DcV[2][a])*dV;
+            s_em+=0.5*mass2*s2[a]*dV;
+            s_etg+=0.5*(DcU[0][3+a]*DcU[0][3+a]+DcU[1][3+a]*DcU[1][3+a]+DcU[2][3+a]*DcU[2][3+a]
+                       +DcV[0][3+a]*DcV[0][3+a]+DcV[1][3+a]*DcV[1][3+a]+DcV[2][3+a]*DcV[2][3+a])*dV;
+            s_etm+=0.5*mtheta2*(fu[3+a]*fu[3+a]+fv[3+a]*fv[3+a])*dV;
+            double mod=sqrt(s2[a]); if(mod>s_pm) s_pm=mod;
+            double reDxT=DcU[ci1[a]][3+ci2[a]]-DcU[ci2[a]][3+ci1[a]];
+            double imDxT=DcV[ci1[a]][3+ci2[a]]-DcV[ci2[a]][3+ci1[a]];
+            s_ec-=eta*(fu[a]*reDxT+fv[a]*imDxT)*dV;
+        }
+        double sv=s2[0]*s2[1]*s2[2];
+        local[0]=s_epk; local[1]=s_etk; local[2]=s_eg; local[3]=s_em;
+        local[4]=(mu/2.0)*sv/(1.0+kappa*sv)*dV;
+        local[5]=s_etg; local[6]=s_etm; local[7]=s_ec;
+        local[8]=s_pm; local[9]=sqrt(sv); local[10]=sqrt(sv)*dV;
+    }
+    for (int vv=0; vv<11; vv++) sdata[vv*blockDim.x+tid]=local[vv];
+    __syncthreads();
+    for (int s=blockDim.x/2; s>0; s>>=1) {
+        if (tid < s) {
+            for (int vv=0; vv<11; vv++) {
+                int si=vv*blockDim.x;
+                if (vv==8 || vv==9) {
+                    double other=sdata[si+tid+s];
+                    if (other>sdata[si+tid]) sdata[si+tid]=other;
+                } else {
+                    sdata[si+tid]+=sdata[si+tid+s];
+                }
+            }
+        }
+        __syncthreads();
+    }
+    if (tid==0) {
+        for (int vv=0; vv<11; vv++) {
+            if (vv==8 || vv==9) {
+                unsigned long long *addr=(unsigned long long*)&d_results[vv];
+                unsigned long long old_val=*addr, assumed;
+                double new_val=sdata[vv*blockDim.x];
+                do {
+                    assumed=old_val;
+                    double cur=__longlong_as_double(assumed);
+                    if (new_val<=cur) break;
+                    old_val=atomicCAS(addr, assumed, __double_as_longlong(new_val));
+                } while (assumed!=old_val);
+            } else {
+                atomicAdd(&d_results[vv], sdata[vv*blockDim.x]);
+            }
+        }
+        /* also max-update s_max slot 14 with fabric s */
+        {
+            double s_max_cand = sdata[9*blockDim.x]; /* sqrt(s) stored in 9; want s itself */
+            /* re-read local max sqrt(s)^2 from block — use s from max of local[9]^2 */
+            double smax_block = sdata[9*blockDim.x];
+            smax_block = smax_block * smax_block; /* s = (sqrt s)^2 */
+            unsigned long long *addr=(unsigned long long*)&d_results[14];
+            unsigned long long old_val=*addr, assumed;
+            do {
+                assumed=old_val;
+                double cur=__longlong_as_double(assumed);
+                if (smax_block<=cur) break;
+                old_val=atomicCAS(addr, assumed, __double_as_longlong(smax_block));
+            } while (assumed!=old_val);
+        }
+    }
+}
+
 /* ================================================================
    v69 Gauss / gauge diagnostics reduction (mirrors CPU compute_gauss):
    6 values into d_out[0..5]:
@@ -2067,6 +2340,16 @@ __global__ void reduce_gauss_kernel(
     const double *vtv0, const double *vtv1, const double *vtv2,
     const double *E0, const double *E1, const double *E2,
     const double *th0, const double *th1, const double *th2,
+    /* multi-fab L (NULL = single fabric); rho_EM = qC*rho_C + qL*rho_L */
+    const double *Lu0, const double *Lu1, const double *Lu2,
+    const double *Lv0, const double *Lv1, const double *Lv2,
+    const double *Ltu0, const double *Ltu1, const double *Ltu2,
+    const double *Ltv0, const double *Ltv1, const double *Ltv2,
+    const double *Lvu0, const double *Lvu1, const double *Lvu2,
+    const double *Lvv0, const double *Lvv1, const double *Lvv2,
+    const double *Lvtu0, const double *Lvtu1, const double *Lvtu2,
+    const double *Lvtv0, const double *Lvtv1, const double *Lvtv2,
+    double qC, double qL,
     double GG, double OFF, double Rint2, double Rcube, double dV,
     double *d_out)
 {
@@ -2090,13 +2373,23 @@ __global__ void reduce_gauss_kernel(
         double divE = (E0[idx]-E0[nm[0]]
                       +E1[idx]-E1[nm[1]]
                       +E2[idx]-E2[nm[2]]) / d_dx;
-        /* rho_Q at idx (Noether density) */
-        double rho = (u0[idx]*vv0[idx] - v0[idx]*vu0[idx])
+        /* rho at idx (Noether density), multi-fab: weighted C + L */
+        double rhoC = (u0[idx]*vv0[idx] - v0[idx]*vu0[idx])
                    + (u1[idx]*vv1[idx] - v1[idx]*vu1[idx])
                    + (u2[idx]*vv2[idx] - v2[idx]*vu2[idx])
                    + (tu0[idx]*vtv0[idx] - tv0[idx]*vtu0[idx])
                    + (tu1[idx]*vtv1[idx] - tv1[idx]*vtu1[idx])
                    + (tu2[idx]*vtv2[idx] - tv2[idx]*vtu2[idx]);
+        double rho = qC * rhoC;
+        if (Lu0) {
+            double rhoL = (Lu0[idx]*Lvv0[idx] - Lv0[idx]*Lvu0[idx])
+                        + (Lu1[idx]*Lvv1[idx] - Lv1[idx]*Lvu1[idx])
+                        + (Lu2[idx]*Lvv2[idx] - Lv2[idx]*Lvu2[idx])
+                        + (Ltu0[idx]*Lvtv0[idx] - Ltv0[idx]*Lvtu0[idx])
+                        + (Ltu1[idx]*Lvtv1[idx] - Ltv1[idx]*Lvtu1[idx])
+                        + (Ltu2[idx]*Lvtv2[idx] - Ltv2[idx]*Lvtu2[idx]);
+            rho += qL * rhoL;
+        }
         double G = divE - GG*rho;
 
         if (x*x + y*y + z*z < Rint2) {
@@ -2241,17 +2534,33 @@ static double *d_theta_im[3], *d_vel_theta_im[3], *d_acc_theta_im[3];
 /* v69 gauge sector device arrays (allocated only when complex_gauge=1):
  * +9 f64 blocks — links th_i, E_i, E-kick E_acc_i (CPU layout, no scratch) */
 static double *d_th[3], *d_E[3], *d_E_acc[3];
+/* v75 multi-fabric L (and Q when lock — for device copy) */
+static double *d_L_phi[3], *d_L_vel_phi[3], *d_L_acc_phi[3];
+static double *d_L_theta[3], *d_L_vel_theta[3], *d_L_acc_theta[3];
+static double *d_L_phi_im[3], *d_L_vel_phi_im[3], *d_L_acc_phi_im[3];
+static double *d_L_theta_im[3], *d_L_vel_theta_im[3], *d_L_acc_theta_im[3];
+static double *d_Q_phi[3], *d_Q_vel_phi[3], *d_Q_acc_phi[3];
+static double *d_Q_theta[3], *d_Q_vel_theta[3], *d_Q_acc_theta[3];
+static double *d_Q_phi_im[3], *d_Q_vel_phi_im[3], *d_Q_acc_phi_im[3];
+static double *d_Q_theta_im[3], *d_Q_vel_theta_im[3], *d_Q_acc_theta_im[3];
 static int gpu_blocks;
 static int gpu_has_intermediates = 0;  /* nonzero if intermediate arrays allocated */
 static int gpu_complex_mode = 0;       /* nonzero if complex arrays allocated (v66) */
 static int gpu_gauge_mode = 0;         /* nonzero if gauge arrays allocated (v69) */
+static int gpu_n_fabrics = 1;
+static int gpu_mf_lock_CQ = 1;
+static double gpu_q_fab[3] = {0, 1, -1};
 static double gpu_g_gauge = 0.0;       /* cached coupling for verlet dispatch */
 static double gpu_dx_cached = 0.0;     /* cached dx for the link-drift prefactor */
+static long gpu_N3_host = 0;           /* host-side N3 for D2D lock copy */
 
-static void gpu_alloc(long N3, int need_intermediates, int complex_mode, int gauge_mode) {
+static void gpu_alloc(long N3, int need_intermediates, int complex_mode, int gauge_mode,
+                      int n_fabrics) {
     size_t bytes = N3 * sizeof(double);
     gpu_complex_mode = complex_mode;
     gpu_gauge_mode = gauge_mode;
+    gpu_n_fabrics = n_fabrics;
+    gpu_N3_host = N3;
     for (int a = 0; a < 3; a++) {
         cudaMalloc(&d_phi[a], bytes);       cudaMalloc(&d_vel_phi[a], bytes);   cudaMalloc(&d_acc_phi[a], bytes);
         cudaMalloc(&d_theta[a], bytes);     cudaMalloc(&d_vel_theta[a], bytes); cudaMalloc(&d_acc_theta[a], bytes);
@@ -2294,32 +2603,63 @@ static void gpu_alloc(long N3, int need_intermediates, int complex_mode, int gau
     } else {
         for (int a = 0; a < 3; a++) d_th[a] = d_E[a] = d_E_acc[a] = NULL;
     }
+    if (n_fabrics == 3) {
+        /* Q + L: 36 arrays each */
+        for (int a = 0; a < 3; a++) {
+            cudaMalloc(&d_L_phi[a], bytes); cudaMalloc(&d_L_vel_phi[a], bytes); cudaMalloc(&d_L_acc_phi[a], bytes);
+            cudaMalloc(&d_L_theta[a], bytes); cudaMalloc(&d_L_vel_theta[a], bytes); cudaMalloc(&d_L_acc_theta[a], bytes);
+            cudaMalloc(&d_L_phi_im[a], bytes); cudaMalloc(&d_L_vel_phi_im[a], bytes); cudaMalloc(&d_L_acc_phi_im[a], bytes);
+            cudaMalloc(&d_L_theta_im[a], bytes); cudaMalloc(&d_L_vel_theta_im[a], bytes); cudaMalloc(&d_L_acc_theta_im[a], bytes);
+            cudaMalloc(&d_Q_phi[a], bytes); cudaMalloc(&d_Q_vel_phi[a], bytes); cudaMalloc(&d_Q_acc_phi[a], bytes);
+            cudaMalloc(&d_Q_theta[a], bytes); cudaMalloc(&d_Q_vel_theta[a], bytes); cudaMalloc(&d_Q_acc_theta[a], bytes);
+            cudaMalloc(&d_Q_phi_im[a], bytes); cudaMalloc(&d_Q_vel_phi_im[a], bytes); cudaMalloc(&d_Q_acc_phi_im[a], bytes);
+            cudaMalloc(&d_Q_theta_im[a], bytes); cudaMalloc(&d_Q_vel_theta_im[a], bytes); cudaMalloc(&d_Q_acc_theta_im[a], bytes);
+            cudaMemset(d_L_phi[a], 0, bytes); cudaMemset(d_L_vel_phi[a], 0, bytes); cudaMemset(d_L_acc_phi[a], 0, bytes);
+            cudaMemset(d_L_theta[a], 0, bytes); cudaMemset(d_L_vel_theta[a], 0, bytes); cudaMemset(d_L_acc_theta[a], 0, bytes);
+            cudaMemset(d_L_phi_im[a], 0, bytes); cudaMemset(d_L_vel_phi_im[a], 0, bytes); cudaMemset(d_L_acc_phi_im[a], 0, bytes);
+            cudaMemset(d_L_theta_im[a], 0, bytes); cudaMemset(d_L_vel_theta_im[a], 0, bytes); cudaMemset(d_L_acc_theta_im[a], 0, bytes);
+            cudaMemset(d_Q_phi[a], 0, bytes); cudaMemset(d_Q_vel_phi[a], 0, bytes); cudaMemset(d_Q_acc_phi[a], 0, bytes);
+            cudaMemset(d_Q_theta[a], 0, bytes); cudaMemset(d_Q_vel_theta[a], 0, bytes); cudaMemset(d_Q_acc_theta[a], 0, bytes);
+            cudaMemset(d_Q_phi_im[a], 0, bytes); cudaMemset(d_Q_vel_phi_im[a], 0, bytes); cudaMemset(d_Q_acc_phi_im[a], 0, bytes);
+            cudaMemset(d_Q_theta_im[a], 0, bytes); cudaMemset(d_Q_vel_theta_im[a], 0, bytes); cudaMemset(d_Q_acc_theta_im[a], 0, bytes);
+        }
+        total_gb += 72.0*bytes/1e9;
+    } else {
+        for (int a = 0; a < 3; a++) {
+            d_L_phi[a]=d_L_vel_phi[a]=d_L_acc_phi[a]=NULL;
+            d_L_theta[a]=d_L_vel_theta[a]=d_L_acc_theta[a]=NULL;
+            d_L_phi_im[a]=d_L_vel_phi_im[a]=d_L_acc_phi_im[a]=NULL;
+            d_L_theta_im[a]=d_L_vel_theta_im[a]=d_L_acc_theta_im[a]=NULL;
+            d_Q_phi[a]=d_Q_vel_phi[a]=d_Q_acc_phi[a]=NULL;
+            d_Q_theta[a]=d_Q_vel_theta[a]=d_Q_acc_theta[a]=NULL;
+            d_Q_phi_im[a]=d_Q_vel_phi_im[a]=d_Q_acc_phi_im[a]=NULL;
+            d_Q_theta_im[a]=d_Q_vel_theta_im[a]=d_Q_acc_theta_im[a]=NULL;
+        }
+    }
     gpu_blocks = (int)((N3 + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK);
-    printf("GPU: allocated %.2f GB (physics%s%s%s), %d blocks × %d threads\n",
+    printf("GPU: allocated %.2f GB (physics%s%s%s%s), %d blocks × %d threads\n",
            total_gb, need_intermediates ? "+Cosserat" : "",
            complex_mode ? ", complex 36 arrays" : "",
            gauge_mode ? " + U(1) links 9 arrays" : "",
+           n_fabrics == 3 ? " + multi-fab Q+L 72" : "",
            gpu_blocks, THREADS_PER_BLOCK);
     if (complex_mode) {
-        /* v66 memory guard: 36 N^3 doubles of physics, plus snapshot staging
-         * (24 N^3 f32/f16). Physics alone: N=320 -> 9.4 GB, N=384 -> 16.3 GB,
-         * N=400 -> 18.4 GB. Practical limits: N<=320 on 16 GB, N<=400 on 32 GB.
-         * v69 gauged: +9 blocks -> 45 N^3 doubles (N=320 -> 11.8 GB,
-         * N=384 -> 20.4 GB) plus 30-column staging; N<=288 on 16 GB,
-         * N<=384 on 32 GB. */
         size_t free_b = 0, total_b = 0;
         cudaMemGetInfo(&free_b, &total_b);
         int nphys = gauge_mode ? 45 : 36;
+        if (n_fabrics == 3) nphys += 72;
         double need_gb = (double)nphys*bytes/1e9;
-        if (gauge_mode)
+        if (n_fabrics == 3)
+            printf("Multi-fab gauged: %.2f GB physics; need ~24+ GB GPU for N=192\n", need_gb);
+        else if (gauge_mode)
             printf("Gauged mode: %.2f GB physics (45 N^3 arrays); max N<=288 on 16 GB, N<=384 on 32 GB\n",
                    need_gb);
         else
             printf("Complex mode: %.2f GB physics (36 N^3 arrays); max N<=320 on 16 GB, N<=400 on 32 GB\n",
                    need_gb);
         if (need_gb*1e9 > (double)total_b)
-            printf("WARNING: %s physics arrays (%.2f GB) exceed GPU memory (%.2f GB)\n",
-                   gauge_mode ? "gauged" : "complex", need_gb, total_b/1e9);
+            printf("WARNING: physics arrays (%.2f GB) exceed GPU memory (%.2f GB)\n",
+                   need_gb, total_b/1e9);
     }
 }
 
@@ -2351,6 +2691,30 @@ static void gpu_upload(Grid *g) {
             cudaMemset(d_E_acc[a], 0, bytes);
         }
     }
+    if (gpu_n_fabrics == 3) {
+        for (int a = 0; a < 3; a++) {
+            cudaMemcpy(d_L_phi[a], g->L_phi[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_L_vel_phi[a], g->L_phi_vel[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_L_theta[a], g->L_theta[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_L_vel_theta[a], g->L_theta_vel[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_L_phi_im[a], g->L_phi_im[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_L_vel_phi_im[a], g->L_phi_im_vel[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_L_theta_im[a], g->L_theta_im[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_L_vel_theta_im[a], g->L_theta_im_vel[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_Q_phi[a], g->Q_phi[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_Q_vel_phi[a], g->Q_phi_vel[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_Q_theta[a], g->Q_theta[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_Q_vel_theta[a], g->Q_theta_vel[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_Q_phi_im[a], g->Q_phi_im[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_Q_vel_phi_im[a], g->Q_phi_im_vel[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_Q_theta_im[a], g->Q_theta_im[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_Q_vel_theta_im[a], g->Q_theta_im_vel[a], bytes, cudaMemcpyHostToDevice);
+            cudaMemset(d_L_acc_phi[a], 0, bytes); cudaMemset(d_L_acc_theta[a], 0, bytes);
+            cudaMemset(d_L_acc_phi_im[a], 0, bytes); cudaMemset(d_L_acc_theta_im[a], 0, bytes);
+            cudaMemset(d_Q_acc_phi[a], 0, bytes); cudaMemset(d_Q_acc_theta[a], 0, bytes);
+            cudaMemset(d_Q_acc_phi_im[a], 0, bytes); cudaMemset(d_Q_acc_theta_im[a], 0, bytes);
+        }
+    }
 }
 
 static void gpu_download(Grid *g) {
@@ -2375,6 +2739,40 @@ static void gpu_download(Grid *g) {
             cudaMemcpy(g->Efield[a], d_E[a], bytes, cudaMemcpyDeviceToHost);
         }
     }
+    if (gpu_n_fabrics == 3) {
+        for (int a = 0; a < 3; a++) {
+            cudaMemcpy(g->L_phi[a], d_L_phi[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->L_phi_vel[a], d_L_vel_phi[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->L_theta[a], d_L_theta[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->L_theta_vel[a], d_L_vel_theta[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->L_phi_im[a], d_L_phi_im[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->L_phi_im_vel[a], d_L_vel_phi_im[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->L_theta_im[a], d_L_theta_im[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->L_theta_im_vel[a], d_L_vel_theta_im[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->Q_phi[a], d_Q_phi[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->Q_phi_vel[a], d_Q_vel_phi[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->Q_theta[a], d_Q_theta[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->Q_theta_vel[a], d_Q_vel_theta[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->Q_phi_im[a], d_Q_phi_im[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->Q_phi_im_vel[a], d_Q_vel_phi_im[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->Q_theta_im[a], d_Q_theta_im[a], bytes, cudaMemcpyDeviceToHost);
+            cudaMemcpy(g->Q_theta_im_vel[a], d_Q_vel_theta_im[a], bytes, cudaMemcpyDeviceToHost);
+        }
+    }
+}
+
+static void gpu_mf_lock_CQ_device(size_t bytes) {
+    if (gpu_n_fabrics != 3 || !gpu_mf_lock_CQ) return;
+    for (int a = 0; a < 3; a++) {
+        cudaMemcpy(d_Q_phi[a], d_phi[a], bytes, cudaMemcpyDeviceToDevice);
+        cudaMemcpy(d_Q_vel_phi[a], d_vel_phi[a], bytes, cudaMemcpyDeviceToDevice);
+        cudaMemcpy(d_Q_theta[a], d_theta[a], bytes, cudaMemcpyDeviceToDevice);
+        cudaMemcpy(d_Q_vel_theta[a], d_vel_theta[a], bytes, cudaMemcpyDeviceToDevice);
+        cudaMemcpy(d_Q_phi_im[a], d_phi_im[a], bytes, cudaMemcpyDeviceToDevice);
+        cudaMemcpy(d_Q_vel_phi_im[a], d_vel_phi_im[a], bytes, cudaMemcpyDeviceToDevice);
+        cudaMemcpy(d_Q_theta_im[a], d_theta_im[a], bytes, cudaMemcpyDeviceToDevice);
+        cudaMemcpy(d_Q_vel_theta_im[a], d_vel_theta_im[a], bytes, cudaMemcpyDeviceToDevice);
+    }
 }
 
 static void gpu_free(void) {
@@ -2396,6 +2794,18 @@ static void gpu_free(void) {
     if (gpu_gauge_mode) {
         for (int a = 0; a < 3; a++) {
             cudaFree(d_th[a]); cudaFree(d_E[a]); cudaFree(d_E_acc[a]);
+        }
+    }
+    if (gpu_n_fabrics == 3) {
+        for (int a = 0; a < 3; a++) {
+            cudaFree(d_L_phi[a]); cudaFree(d_L_vel_phi[a]); cudaFree(d_L_acc_phi[a]);
+            cudaFree(d_L_theta[a]); cudaFree(d_L_vel_theta[a]); cudaFree(d_L_acc_theta[a]);
+            cudaFree(d_L_phi_im[a]); cudaFree(d_L_vel_phi_im[a]); cudaFree(d_L_acc_phi_im[a]);
+            cudaFree(d_L_theta_im[a]); cudaFree(d_L_vel_theta_im[a]); cudaFree(d_L_acc_theta_im[a]);
+            cudaFree(d_Q_phi[a]); cudaFree(d_Q_vel_phi[a]); cudaFree(d_Q_acc_phi[a]);
+            cudaFree(d_Q_theta[a]); cudaFree(d_Q_vel_theta[a]); cudaFree(d_Q_acc_theta[a]);
+            cudaFree(d_Q_phi_im[a]); cudaFree(d_Q_vel_phi_im[a]); cudaFree(d_Q_acc_phi_im[a]);
+            cudaFree(d_Q_theta_im[a]); cudaFree(d_Q_vel_theta_im[a]); cudaFree(d_Q_acc_theta_im[a]);
         }
     }
 }
@@ -2435,12 +2845,32 @@ static void gpu_set_constants(const Config *c, double dx) {
     cudaMemcpyToSymbol(d_N3, &N3, sizeof(long));
 }
 
+/* Helper: launch gauged force for one fabric's 12 matter + shared A */
+static void gpu_launch_gauged_force(
+    double *u0, double *u1, double *u2,
+    double *v0, double *v1, double *v2,
+    double *tu0, double *tu1, double *tu2,
+    double *tv0, double *tv1, double *tv2,
+    double *au0, double *au1, double *au2,
+    double *av0, double *av1, double *av2,
+    double *atu0, double *atu1, double *atu2,
+    double *atv0, double *atv1, double *atv2,
+    double GG, double STP, double inva, double q_em, int e_mode)
+{
+    compute_forces_complex_gauge_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+        u0, u1, u2, v0, v1, v2, tu0, tu1, tu2, tv0, tv1, tv2,
+        d_th[0], d_th[1], d_th[2],
+        au0, au1, au2, av0, av1, av2, atu0, atu1, atu2, atv0, atv1, atv2,
+        d_E_acc[0], d_E_acc[1], d_E_acc[2],
+        GG, STP, inva, q_em, e_mode);
+}
+
 /* GPU Verlet step */
 static void gpu_verlet_step(double dt) {
     double hdt = 0.5 * dt;
-    /* v69 §1.3/§3.5: gauge sector active only when complex_gauge && g != 0 */
     const int gauged = gpu_gauge_mode && gpu_g_gauge != 0.0;
-    /* stage 1: half-kick (matter velocities AND E) */
+    const int mf = (gpu_n_fabrics == 3);
+    /* stage 1: half-kick C (+ im) */
     verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_vel_phi[0], d_vel_phi[1], d_vel_phi[2],
         d_vel_theta[0], d_vel_theta[1], d_vel_theta[2],
@@ -2452,11 +2882,35 @@ static void gpu_verlet_step(double dt) {
             d_vel_theta_im[0], d_vel_theta_im[1], d_vel_theta_im[2],
             d_acc_phi_im[0], d_acc_phi_im[1], d_acc_phi_im[2],
             d_acc_theta_im[0], d_acc_theta_im[1], d_acc_theta_im[2], hdt);
+    if (mf) {
+        verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_L_vel_phi[0], d_L_vel_phi[1], d_L_vel_phi[2],
+            d_L_vel_theta[0], d_L_vel_theta[1], d_L_vel_theta[2],
+            d_L_acc_phi[0], d_L_acc_phi[1], d_L_acc_phi[2],
+            d_L_acc_theta[0], d_L_acc_theta[1], d_L_acc_theta[2], hdt);
+        verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_L_vel_phi_im[0], d_L_vel_phi_im[1], d_L_vel_phi_im[2],
+            d_L_vel_theta_im[0], d_L_vel_theta_im[1], d_L_vel_theta_im[2],
+            d_L_acc_phi_im[0], d_L_acc_phi_im[1], d_L_acc_phi_im[2],
+            d_L_acc_theta_im[0], d_L_acc_theta_im[1], d_L_acc_theta_im[2], hdt);
+        if (!gpu_mf_lock_CQ) {
+            verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                d_Q_vel_phi[0], d_Q_vel_phi[1], d_Q_vel_phi[2],
+                d_Q_vel_theta[0], d_Q_vel_theta[1], d_Q_vel_theta[2],
+                d_Q_acc_phi[0], d_Q_acc_phi[1], d_Q_acc_phi[2],
+                d_Q_acc_theta[0], d_Q_acc_theta[1], d_Q_acc_theta[2], hdt);
+            verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                d_Q_vel_phi_im[0], d_Q_vel_phi_im[1], d_Q_vel_phi_im[2],
+                d_Q_vel_theta_im[0], d_Q_vel_theta_im[1], d_Q_vel_theta_im[2],
+                d_Q_acc_phi_im[0], d_Q_acc_phi_im[1], d_Q_acc_phi_im[2],
+                d_Q_acc_theta_im[0], d_Q_acc_theta_im[1], d_Q_acc_theta_im[2], hdt);
+        }
+    }
     if (gauged)
         gauge_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
             d_E[0], d_E[1], d_E[2],
             d_E_acc[0], d_E_acc[1], d_E_acc[2], hdt);
-    /* stage 2: drift (fields AND link angles, wrapped to (-pi,pi]) */
+    /* stage 2: drift */
     verlet_drift_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_phi[0], d_phi[1], d_phi[2],
         d_theta[0], d_theta[1], d_theta[2],
@@ -2468,31 +2922,92 @@ static void gpu_verlet_step(double dt) {
             d_theta_im[0], d_theta_im[1], d_theta_im[2],
             d_vel_phi_im[0], d_vel_phi_im[1], d_vel_phi_im[2],
             d_vel_theta_im[0], d_vel_theta_im[1], d_vel_theta_im[2], dt);
+    if (mf) {
+        verlet_drift_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_L_phi[0], d_L_phi[1], d_L_phi[2],
+            d_L_theta[0], d_L_theta[1], d_L_theta[2],
+            d_L_vel_phi[0], d_L_vel_phi[1], d_L_vel_phi[2],
+            d_L_vel_theta[0], d_L_vel_theta[1], d_L_vel_theta[2], dt);
+        verlet_drift_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_L_phi_im[0], d_L_phi_im[1], d_L_phi_im[2],
+            d_L_theta_im[0], d_L_theta_im[1], d_L_theta_im[2],
+            d_L_vel_phi_im[0], d_L_vel_phi_im[1], d_L_vel_phi_im[2],
+            d_L_vel_theta_im[0], d_L_vel_theta_im[1], d_L_vel_theta_im[2], dt);
+        if (!gpu_mf_lock_CQ) {
+            verlet_drift_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                d_Q_phi[0], d_Q_phi[1], d_Q_phi[2],
+                d_Q_theta[0], d_Q_theta[1], d_Q_theta[2],
+                d_Q_vel_phi[0], d_Q_vel_phi[1], d_Q_vel_phi[2],
+                d_Q_vel_theta[0], d_Q_vel_theta[1], d_Q_vel_theta[2], dt);
+            verlet_drift_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                d_Q_phi_im[0], d_Q_phi_im[1], d_Q_phi_im[2],
+                d_Q_theta_im[0], d_Q_theta_im[1], d_Q_theta_im[2],
+                d_Q_vel_phi_im[0], d_Q_vel_phi_im[1], d_Q_vel_phi_im[2],
+                d_Q_vel_theta_im[0], d_Q_vel_theta_im[1], d_Q_vel_theta_im[2], dt);
+        }
+    }
     if (gauged) {
-        const double gad = -gpu_g_gauge * gpu_dx_cached * dt;  /* th_dot = -g*a*E */
+        const double gad = -gpu_g_gauge * gpu_dx_cached * dt;
         gauge_link_drift_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
             d_th[0], d_th[1], d_th[2],
             d_E[0], d_E[1], d_E[2], gad);
     }
-    /* stage 3: forces (matter accs + E_acc) */
+    /* stage 3: forces */
     if (gauged) {
         const double GG  = gpu_g_gauge;
         const double STP = 1.0 / (GG * gpu_dx_cached * gpu_dx_cached * gpu_dx_cached);
         const double inva = 1.0 / gpu_dx_cached;
-        compute_forces_complex_gauge_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
-            d_phi[0], d_phi[1], d_phi[2],
-            d_phi_im[0], d_phi_im[1], d_phi_im[2],
-            d_theta[0], d_theta[1], d_theta[2],
-            d_theta_im[0], d_theta_im[1], d_theta_im[2],
-            d_th[0], d_th[1], d_th[2],
-            d_acc_phi[0], d_acc_phi[1], d_acc_phi[2],
-            d_acc_phi_im[0], d_acc_phi_im[1], d_acc_phi_im[2],
-            d_acc_theta[0], d_acc_theta[1], d_acc_theta[2],
-            d_acc_theta_im[0], d_acc_theta_im[1], d_acc_theta_im[2],
-            d_E_acc[0], d_E_acc[1], d_E_acc[2],
-            GG, STP, inva);
+        if (mf) {
+            /* C bag + charge weight (lock: q_C+q_Q on C fields) */
+            double qC = gpu_mf_lock_CQ ? (gpu_q_fab[0] + gpu_q_fab[1]) : gpu_q_fab[0];
+            gpu_launch_gauged_force(
+                d_phi[0], d_phi[1], d_phi[2],
+                d_phi_im[0], d_phi_im[1], d_phi_im[2],
+                d_theta[0], d_theta[1], d_theta[2],
+                d_theta_im[0], d_theta_im[1], d_theta_im[2],
+                d_acc_phi[0], d_acc_phi[1], d_acc_phi[2],
+                d_acc_phi_im[0], d_acc_phi_im[1], d_acc_phi_im[2],
+                d_acc_theta[0], d_acc_theta[1], d_acc_theta[2],
+                d_acc_theta_im[0], d_acc_theta_im[1], d_acc_theta_im[2],
+                GG, STP, inva, qC, 0);
+            if (!gpu_mf_lock_CQ) {
+                gpu_launch_gauged_force(
+                    d_Q_phi[0], d_Q_phi[1], d_Q_phi[2],
+                    d_Q_phi_im[0], d_Q_phi_im[1], d_Q_phi_im[2],
+                    d_Q_theta[0], d_Q_theta[1], d_Q_theta[2],
+                    d_Q_theta_im[0], d_Q_theta_im[1], d_Q_theta_im[2],
+                    d_Q_acc_phi[0], d_Q_acc_phi[1], d_Q_acc_phi[2],
+                    d_Q_acc_phi_im[0], d_Q_acc_phi_im[1], d_Q_acc_phi_im[2],
+                    d_Q_acc_theta[0], d_Q_acc_theta[1], d_Q_acc_theta[2],
+                    d_Q_acc_theta_im[0], d_Q_acc_theta_im[1], d_Q_acc_theta_im[2],
+                    GG, STP, inva, gpu_q_fab[1], 1);
+            }
+            gpu_launch_gauged_force(
+                d_L_phi[0], d_L_phi[1], d_L_phi[2],
+                d_L_phi_im[0], d_L_phi_im[1], d_L_phi_im[2],
+                d_L_theta[0], d_L_theta[1], d_L_theta[2],
+                d_L_theta_im[0], d_L_theta_im[1], d_L_theta_im[2],
+                d_L_acc_phi[0], d_L_acc_phi[1], d_L_acc_phi[2],
+                d_L_acc_phi_im[0], d_L_acc_phi_im[1], d_L_acc_phi_im[2],
+                d_L_acc_theta[0], d_L_acc_theta[1], d_L_acc_theta[2],
+                d_L_acc_theta_im[0], d_L_acc_theta_im[1], d_L_acc_theta_im[2],
+                GG, STP, inva, gpu_q_fab[2], 1);
+            gpu_mf_lock_CQ_device((size_t)gpu_N3_host * sizeof(double));
+        } else {
+            compute_forces_complex_gauge_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                d_phi[0], d_phi[1], d_phi[2],
+                d_phi_im[0], d_phi_im[1], d_phi_im[2],
+                d_theta[0], d_theta[1], d_theta[2],
+                d_theta_im[0], d_theta_im[1], d_theta_im[2],
+                d_th[0], d_th[1], d_th[2],
+                d_acc_phi[0], d_acc_phi[1], d_acc_phi[2],
+                d_acc_phi_im[0], d_acc_phi_im[1], d_acc_phi_im[2],
+                d_acc_theta[0], d_acc_theta[1], d_acc_theta[2],
+                d_acc_theta_im[0], d_acc_theta_im[1], d_acc_theta_im[2],
+                d_E_acc[0], d_E_acc[1], d_E_acc[2],
+                GG, STP, inva, 1.0, 0);
+        }
     } else if (gpu_complex_mode) {
-        /* v66: 12-field minimal loop; intermediates guarded off by cfg_validate */
         compute_forces_complex_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
             d_phi[0], d_phi[1], d_phi[2],
             d_phi_im[0], d_phi_im[1], d_phi_im[2],
@@ -2503,7 +3018,6 @@ static void gpu_verlet_step(double dt) {
             d_acc_theta[0], d_acc_theta[1], d_acc_theta[2],
             d_acc_theta_im[0], d_acc_theta_im[1], d_acc_theta_im[2]);
     } else {
-        /* Intermediates (Cosserat mismatch + hardening Q) */
         if (gpu_has_intermediates) {
             compute_intermediates_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
                 d_phi[0], d_phi[1], d_phi[2],
@@ -2520,7 +3034,7 @@ static void gpu_verlet_step(double dt) {
             d_mismatch[0], d_mismatch[1], d_mismatch[2],
             d_harden_Q[0], d_harden_Q[1], d_harden_Q[2]);
     }
-    /* stage 4: half-kick (matter + E) */
+    /* stage 4: half-kick */
     verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_vel_phi[0], d_vel_phi[1], d_vel_phi[2],
         d_vel_theta[0], d_vel_theta[1], d_vel_theta[2],
@@ -2532,11 +3046,36 @@ static void gpu_verlet_step(double dt) {
             d_vel_theta_im[0], d_vel_theta_im[1], d_vel_theta_im[2],
             d_acc_phi_im[0], d_acc_phi_im[1], d_acc_phi_im[2],
             d_acc_theta_im[0], d_acc_theta_im[1], d_acc_theta_im[2], hdt);
+    if (mf) {
+        verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_L_vel_phi[0], d_L_vel_phi[1], d_L_vel_phi[2],
+            d_L_vel_theta[0], d_L_vel_theta[1], d_L_vel_theta[2],
+            d_L_acc_phi[0], d_L_acc_phi[1], d_L_acc_phi[2],
+            d_L_acc_theta[0], d_L_acc_theta[1], d_L_acc_theta[2], hdt);
+        verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_L_vel_phi_im[0], d_L_vel_phi_im[1], d_L_vel_phi_im[2],
+            d_L_vel_theta_im[0], d_L_vel_theta_im[1], d_L_vel_theta_im[2],
+            d_L_acc_phi_im[0], d_L_acc_phi_im[1], d_L_acc_phi_im[2],
+            d_L_acc_theta_im[0], d_L_acc_theta_im[1], d_L_acc_theta_im[2], hdt);
+        if (!gpu_mf_lock_CQ) {
+            verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                d_Q_vel_phi[0], d_Q_vel_phi[1], d_Q_vel_phi[2],
+                d_Q_vel_theta[0], d_Q_vel_theta[1], d_Q_vel_theta[2],
+                d_Q_acc_phi[0], d_Q_acc_phi[1], d_Q_acc_phi[2],
+                d_Q_acc_theta[0], d_Q_acc_theta[1], d_Q_acc_theta[2], hdt);
+            verlet_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                d_Q_vel_phi_im[0], d_Q_vel_phi_im[1], d_Q_vel_phi_im[2],
+                d_Q_vel_theta_im[0], d_Q_vel_theta_im[1], d_Q_vel_theta_im[2],
+                d_Q_acc_phi_im[0], d_Q_acc_phi_im[1], d_Q_acc_phi_im[2],
+                d_Q_acc_theta_im[0], d_Q_acc_theta_im[1], d_Q_acc_theta_im[2], hdt);
+        }
+        gpu_mf_lock_CQ_device((size_t)gpu_N3_host * sizeof(double));
+    }
     if (gauged)
         gauge_halfkick_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
             d_E[0], d_E[1], d_E[2],
             d_E_acc[0], d_E_acc[1], d_E_acc[2], hdt);
-    /* stage 5: boundary — type set externally before calling gpu_verlet_step */
+    /* stage 5: boundary */
     absorbing_boundary_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
         d_vel_phi[0], d_vel_phi[1], d_vel_phi[2],
         d_vel_theta[0], d_vel_theta[1], d_vel_theta[2]);
@@ -2544,10 +3083,25 @@ static void gpu_verlet_step(double dt) {
         absorbing_boundary_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
             d_vel_phi_im[0], d_vel_phi_im[1], d_vel_phi_im[2],
             d_vel_theta_im[0], d_vel_theta_im[1], d_vel_theta_im[2]);
-        /* v69 §3.6: damp E in the sponge (links NOT damped) */
         if (gpu_gauge_mode)
             absorbing_boundary_gauge_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
                 d_E[0], d_E[1], d_E[2]);
+    }
+    if (mf) {
+        absorbing_boundary_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_L_vel_phi[0], d_L_vel_phi[1], d_L_vel_phi[2],
+            d_L_vel_theta[0], d_L_vel_theta[1], d_L_vel_theta[2]);
+        absorbing_boundary_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            d_L_vel_phi_im[0], d_L_vel_phi_im[1], d_L_vel_phi_im[2],
+            d_L_vel_theta_im[0], d_L_vel_theta_im[1], d_L_vel_theta_im[2]);
+        if (!gpu_mf_lock_CQ) {
+            absorbing_boundary_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                d_Q_vel_phi[0], d_Q_vel_phi[1], d_Q_vel_phi[2],
+                d_Q_vel_theta[0], d_Q_vel_theta[1], d_Q_vel_theta[2]);
+            absorbing_boundary_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                d_Q_vel_phi_im[0], d_Q_vel_phi_im[1], d_Q_vel_phi_im[2],
+                d_Q_vel_theta_im[0], d_Q_vel_theta_im[1], d_Q_vel_theta_im[2]);
+        }
     }
 }
 
@@ -2848,10 +3402,11 @@ static void *snap_writer_thread(void *arg) {
         ctx->writer_busy = 1;
         pthread_mutex_unlock(&ctx->mutex);
 
-        /* Compress and write frame to SFA (nf = 12 real, 24 complex, 30 gauged) */
-        void *cols[30];
+        /* Compress and write frame to SFA (nf = 12/24/30, or 54 multi-fab) */
+        void *cols[64];
         long N3 = ctx->N3;
         int nf = ctx->nf;
+        if (nf > 64) { fprintf(stderr, "FATAL: snap nf=%d > 64\n", nf); exit(1); }
         if (ctx->precision == 0) {
             /* f16: h_pin_buf is uint16_t[nf*N3] */
             uint16_t *base = (uint16_t *)ctx->h_pin_buf;
@@ -2961,21 +3516,38 @@ static void snap_hook(int step, double t, const FieldState *state, void *vctx) {
     int blocks = (int)((N3 + THREADS_PER_BLOCK - 1) / THREADS_PER_BLOCK);
     int nf = ctx->nf;
 
-    /* Order MUST match column registration: 12 real arrays, then the
-       imaginary copy (phi_im, theta_im, phi_im_vel, theta_im_vel) — v66,
-       then the v69 gauge sector (th links, E). */
-    const double *src[30] = {
-        state->phi[0], state->phi[1], state->phi[2],
-        state->theta[0], state->theta[1], state->theta[2],
-        state->vel_phi[0], state->vel_phi[1], state->vel_phi[2],
-        state->vel_theta[0], state->vel_theta[1], state->vel_theta[2],
-        state->phi_im[0], state->phi_im[1], state->phi_im[2],
-        state->theta_im[0], state->theta_im[1], state->theta_im[2],
-        state->vel_phi_im[0], state->vel_phi_im[1], state->vel_phi_im[2],
-        state->vel_theta_im[0], state->vel_theta_im[1], state->vel_theta_im[2],
-        state->th[0], state->th[1], state->th[2],
-        state->Efield[0], state->Efield[1], state->Efield[2]
-    };
+    /* Order MUST match column registration: C (12/24) + gauge (6) + L (24 if mf). */
+    const double *src[64];
+    int k = 0;
+    src[k++]=state->phi[0]; src[k++]=state->phi[1]; src[k++]=state->phi[2];
+    src[k++]=state->theta[0]; src[k++]=state->theta[1]; src[k++]=state->theta[2];
+    src[k++]=state->vel_phi[0]; src[k++]=state->vel_phi[1]; src[k++]=state->vel_phi[2];
+    src[k++]=state->vel_theta[0]; src[k++]=state->vel_theta[1]; src[k++]=state->vel_theta[2];
+    if (state->complex_mode) {
+        src[k++]=state->phi_im[0]; src[k++]=state->phi_im[1]; src[k++]=state->phi_im[2];
+        src[k++]=state->theta_im[0]; src[k++]=state->theta_im[1]; src[k++]=state->theta_im[2];
+        src[k++]=state->vel_phi_im[0]; src[k++]=state->vel_phi_im[1]; src[k++]=state->vel_phi_im[2];
+        src[k++]=state->vel_theta_im[0]; src[k++]=state->vel_theta_im[1]; src[k++]=state->vel_theta_im[2];
+    }
+    if (state->gauge_mode) {
+        src[k++]=state->th[0]; src[k++]=state->th[1]; src[k++]=state->th[2];
+        src[k++]=state->Efield[0]; src[k++]=state->Efield[1]; src[k++]=state->Efield[2];
+    }
+    if (state->n_fabrics == 3) {
+        src[k++]=state->L_phi[0]; src[k++]=state->L_phi[1]; src[k++]=state->L_phi[2];
+        src[k++]=state->L_theta[0]; src[k++]=state->L_theta[1]; src[k++]=state->L_theta[2];
+        src[k++]=state->L_vel_phi[0]; src[k++]=state->L_vel_phi[1]; src[k++]=state->L_vel_phi[2];
+        src[k++]=state->L_vel_theta[0]; src[k++]=state->L_vel_theta[1]; src[k++]=state->L_vel_theta[2];
+        src[k++]=state->L_phi_im[0]; src[k++]=state->L_phi_im[1]; src[k++]=state->L_phi_im[2];
+        src[k++]=state->L_theta_im[0]; src[k++]=state->L_theta_im[1]; src[k++]=state->L_theta_im[2];
+        src[k++]=state->L_vel_phi_im[0]; src[k++]=state->L_vel_phi_im[1]; src[k++]=state->L_vel_phi_im[2];
+        src[k++]=state->L_vel_theta_im[0]; src[k++]=state->L_vel_theta_im[1]; src[k++]=state->L_vel_theta_im[2];
+    }
+    if (k != nf) {
+        /* Hard fail: wrong column packing would corrupt SFA frames */
+        fprintf(stderr, "FATAL: snap col pack k=%d nf=%d\n", k, nf);
+        exit(1);
+    }
 
     if (ctx->precision == 0) {
         /* f16 path: convert on GPU, DMA f16 */
@@ -3125,8 +3697,29 @@ static void run_gpu_diagnostics(const FieldState *state, DiagHookCtx *ctx) {
                 ctx->m2, ctx->mtheta2, ctx->eta, ctx->mu, ctx->kappa,
                 ctx->qdiag_R2, ctx->d_results);
         }
+        /* v75 multi-fab: add L-fabric matter energy into slots 0–10,14 */
+        if (state->n_fabrics == 3 && state->L_phi[0] != NULL) {
+            reduce_energy_add_fabric_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                state->L_phi[0], state->L_phi[1], state->L_phi[2],
+                state->L_phi_im[0], state->L_phi_im[1], state->L_phi_im[2],
+                state->L_theta[0], state->L_theta[1], state->L_theta[2],
+                state->L_theta_im[0], state->L_theta_im[1], state->L_theta_im[2],
+                state->L_vel_phi[0], state->L_vel_phi[1], state->L_vel_phi[2],
+                state->L_vel_phi_im[0], state->L_vel_phi_im[1], state->L_vel_phi_im[2],
+                state->L_vel_theta[0], state->L_vel_theta[1], state->L_vel_theta[2],
+                state->L_vel_theta_im[0], state->L_vel_theta_im[1], state->L_vel_theta_im[2],
+                ctx->gauged ? state->th[0] : NULL,
+                ctx->gauged ? state->th[1] : NULL,
+                ctx->gauged ? state->th[2] : NULL,
+                ctx->dV, idx1,
+                ctx->m2, ctx->mtheta2, ctx->eta, ctx->mu, ctx->kappa,
+                ctx->d_results);
+        }
         if (ctx->gauge_mode) {
-            /* v69 gauss/Q_flux reduction (also when g==0: gauss cols still written) */
+            /* v69 gauss/Q_flux; multi-fab: rho_EM = qC*rho_C + qL*rho_L */
+            int mf = (state->n_fabrics == 3 && state->L_phi[0] != NULL);
+            double qC = mf ? (gpu_mf_lock_CQ ? (gpu_q_fab[0]+gpu_q_fab[1]) : gpu_q_fab[0]) : 1.0;
+            double qL = mf ? gpu_q_fab[2] : 0.0;
             reduce_gauss_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
                 state->phi[0], state->phi[1], state->phi[2],
                 state->phi_im[0], state->phi_im[1], state->phi_im[2],
@@ -3138,6 +3731,15 @@ static void run_gpu_diagnostics(const FieldState *state, DiagHookCtx *ctx) {
                 state->vel_theta_im[0], state->vel_theta_im[1], state->vel_theta_im[2],
                 state->Efield[0], state->Efield[1], state->Efield[2],
                 state->th[0], state->th[1], state->th[2],
+                mf ? state->L_phi[0] : NULL, mf ? state->L_phi[1] : NULL, mf ? state->L_phi[2] : NULL,
+                mf ? state->L_phi_im[0] : NULL, mf ? state->L_phi_im[1] : NULL, mf ? state->L_phi_im[2] : NULL,
+                mf ? state->L_theta[0] : NULL, mf ? state->L_theta[1] : NULL, mf ? state->L_theta[2] : NULL,
+                mf ? state->L_theta_im[0] : NULL, mf ? state->L_theta_im[1] : NULL, mf ? state->L_theta_im[2] : NULL,
+                mf ? state->L_vel_phi[0] : NULL, mf ? state->L_vel_phi[1] : NULL, mf ? state->L_vel_phi[2] : NULL,
+                mf ? state->L_vel_phi_im[0] : NULL, mf ? state->L_vel_phi_im[1] : NULL, mf ? state->L_vel_phi_im[2] : NULL,
+                mf ? state->L_vel_theta[0] : NULL, mf ? state->L_vel_theta[1] : NULL, mf ? state->L_vel_theta[2] : NULL,
+                mf ? state->L_vel_theta_im[0] : NULL, mf ? state->L_vel_theta_im[1] : NULL, mf ? state->L_vel_theta_im[2] : NULL,
+                qC, qL,
                 ctx->g_gauge, ctx->G_offset, ctx->Rint2, ctx->Rcube, ctx->dV,
                 ctx->d_results + GAUSS_BASE);
         }
@@ -4387,6 +4989,7 @@ int main(int argc, char **argv) {
     printf("dx=%.4f dt=%.6f\n\n", g->dx, g->dt);
 
     do_init(g, &c);
+    mf_post_init(g, &c);
 
     /* v69: net-charge refusal (§1.2) + mandatory Gauss projection (§5.4),
      * HOST-side on the freshly initialized grid, BEFORE gpu_upload */
@@ -4414,9 +5017,11 @@ int main(int argc, char **argv) {
     }
 
     /* GPU setup */
-    gpu_alloc(g->N3, (c.alpha_cs != 0 || c.beta_h != 0), c.complex_phi, c.complex_gauge);
+    gpu_alloc(g->N3, (c.alpha_cs != 0 || c.beta_h != 0), c.complex_phi, c.complex_gauge, c.n_fabrics);
     gpu_g_gauge = c.g_gauge;
     gpu_dx_cached = g->dx;
+    gpu_mf_lock_CQ = c.mf_lock_CQ;
+    gpu_q_fab[0] = c.q_C; gpu_q_fab[1] = c.q_Q; gpu_q_fab[2] = c.q_L;
     gpu_set_constants(&c, g->dx);
     cudaMemcpyToSymbol(d_BC_TYPE, &c.bc_type, sizeof(int));
     cudaMemcpyToSymbol(d_GRAD_MARGIN, &c.gradient_margin, sizeof(int));
@@ -4427,16 +5032,38 @@ int main(int argc, char **argv) {
     /* Initial force computation on GPU */
     if (gauged) {
         const double STP = 1.0 / (c.g_gauge * g->dx * g->dx * g->dx);
-        compute_forces_complex_gauge_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
-            d_phi[0],d_phi[1],d_phi[2], d_phi_im[0],d_phi_im[1],d_phi_im[2],
-            d_theta[0],d_theta[1],d_theta[2], d_theta_im[0],d_theta_im[1],d_theta_im[2],
-            d_th[0],d_th[1],d_th[2],
-            d_acc_phi[0],d_acc_phi[1],d_acc_phi[2],
-            d_acc_phi_im[0],d_acc_phi_im[1],d_acc_phi_im[2],
-            d_acc_theta[0],d_acc_theta[1],d_acc_theta[2],
-            d_acc_theta_im[0],d_acc_theta_im[1],d_acc_theta_im[2],
-            d_E_acc[0],d_E_acc[1],d_E_acc[2],
-            c.g_gauge, STP, 1.0/g->dx);
+        const double inva = 1.0 / g->dx;
+        if (c.n_fabrics == 3) {
+            double qC = c.mf_lock_CQ ? (c.q_C + c.q_Q) : c.q_C;
+            gpu_launch_gauged_force(
+                d_phi[0],d_phi[1],d_phi[2], d_phi_im[0],d_phi_im[1],d_phi_im[2],
+                d_theta[0],d_theta[1],d_theta[2], d_theta_im[0],d_theta_im[1],d_theta_im[2],
+                d_acc_phi[0],d_acc_phi[1],d_acc_phi[2],
+                d_acc_phi_im[0],d_acc_phi_im[1],d_acc_phi_im[2],
+                d_acc_theta[0],d_acc_theta[1],d_acc_theta[2],
+                d_acc_theta_im[0],d_acc_theta_im[1],d_acc_theta_im[2],
+                c.g_gauge, STP, inva, qC, 0);
+            gpu_launch_gauged_force(
+                d_L_phi[0],d_L_phi[1],d_L_phi[2], d_L_phi_im[0],d_L_phi_im[1],d_L_phi_im[2],
+                d_L_theta[0],d_L_theta[1],d_L_theta[2], d_L_theta_im[0],d_L_theta_im[1],d_L_theta_im[2],
+                d_L_acc_phi[0],d_L_acc_phi[1],d_L_acc_phi[2],
+                d_L_acc_phi_im[0],d_L_acc_phi_im[1],d_L_acc_phi_im[2],
+                d_L_acc_theta[0],d_L_acc_theta[1],d_L_acc_theta[2],
+                d_L_acc_theta_im[0],d_L_acc_theta_im[1],d_L_acc_theta_im[2],
+                c.g_gauge, STP, inva, c.q_L, 1);
+            gpu_mf_lock_CQ_device((size_t)g->N3 * sizeof(double));
+        } else {
+            compute_forces_complex_gauge_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+                d_phi[0],d_phi[1],d_phi[2], d_phi_im[0],d_phi_im[1],d_phi_im[2],
+                d_theta[0],d_theta[1],d_theta[2], d_theta_im[0],d_theta_im[1],d_theta_im[2],
+                d_th[0],d_th[1],d_th[2],
+                d_acc_phi[0],d_acc_phi[1],d_acc_phi[2],
+                d_acc_phi_im[0],d_acc_phi_im[1],d_acc_phi_im[2],
+                d_acc_theta[0],d_acc_theta[1],d_acc_theta[2],
+                d_acc_theta_im[0],d_acc_theta_im[1],d_acc_theta_im[2],
+                d_E_acc[0],d_E_acc[1],d_E_acc[2],
+                c.g_gauge, STP, inva, 1.0, 0);
+        }
     } else if (c.complex_phi) {
         compute_forces_complex_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
             d_phi[0],d_phi[1],d_phi[2], d_phi_im[0],d_phi_im[1],d_phi_im[2],
@@ -4538,10 +5165,37 @@ int main(int argc, char **argv) {
         sfa_add_column(sfa,"E_y", sfa_dtype,SFA_VELOCITY,13);
         sfa_add_column(sfa,"E_z", sfa_dtype,SFA_VELOCITY,14);
     }
+    if (c.n_fabrics == 3) {
+        sfa_add_column(sfa,"lphi_x",sfa_dtype,SFA_POSITION,0);
+        sfa_add_column(sfa,"lphi_y",sfa_dtype,SFA_POSITION,1);
+        sfa_add_column(sfa,"lphi_z",sfa_dtype,SFA_POSITION,2);
+        sfa_add_column(sfa,"lth_x",sfa_dtype,SFA_ANGLE,0);
+        sfa_add_column(sfa,"lth_y",sfa_dtype,SFA_ANGLE,1);
+        sfa_add_column(sfa,"lth_z",sfa_dtype,SFA_ANGLE,2);
+        sfa_add_column(sfa,"lphi_vx",sfa_dtype,SFA_VELOCITY,0);
+        sfa_add_column(sfa,"lphi_vy",sfa_dtype,SFA_VELOCITY,1);
+        sfa_add_column(sfa,"lphi_vz",sfa_dtype,SFA_VELOCITY,2);
+        sfa_add_column(sfa,"lth_vx",sfa_dtype,SFA_VELOCITY,3);
+        sfa_add_column(sfa,"lth_vy",sfa_dtype,SFA_VELOCITY,4);
+        sfa_add_column(sfa,"lth_vz",sfa_dtype,SFA_VELOCITY,5);
+        sfa_add_column(sfa,"lphiim_x",sfa_dtype,SFA_POSITION,3);
+        sfa_add_column(sfa,"lphiim_y",sfa_dtype,SFA_POSITION,4);
+        sfa_add_column(sfa,"lphiim_z",sfa_dtype,SFA_POSITION,5);
+        sfa_add_column(sfa,"lthim_x",sfa_dtype,SFA_ANGLE,3);
+        sfa_add_column(sfa,"lthim_y",sfa_dtype,SFA_ANGLE,4);
+        sfa_add_column(sfa,"lthim_z",sfa_dtype,SFA_ANGLE,5);
+        sfa_add_column(sfa,"lphiim_vx",sfa_dtype,SFA_VELOCITY,6);
+        sfa_add_column(sfa,"lphiim_vy",sfa_dtype,SFA_VELOCITY,7);
+        sfa_add_column(sfa,"lphiim_vz",sfa_dtype,SFA_VELOCITY,8);
+        sfa_add_column(sfa,"lthim_vx",sfa_dtype,SFA_VELOCITY,9);
+        sfa_add_column(sfa,"lthim_vy",sfa_dtype,SFA_VELOCITY,10);
+        sfa_add_column(sfa,"lthim_vz",sfa_dtype,SFA_VELOCITY,11);
+    }
     sfa_finalize_header(sfa);
     const char *pn[]={"f16","f32","f64"};
-    printf("SFA: %s (%d cols, %s, colzstd)\n\n", c.output,
-           c.complex_gauge ? 30 : (c.complex_phi ? 24 : 12), pn[c.precision]);
+    int ncols = c.complex_gauge ? 30 : (c.complex_phi ? 24 : 12);
+    if (c.n_fabrics == 3) ncols += 24;
+    printf("SFA: %s (%d cols, %s, colzstd)\n\n", c.output, ncols, pn[c.precision]);
 
     /* Timing, step counts — use lround to avoid truncation errors */
     int n_steps=(int)lround(c.T/g->dt);
@@ -4553,15 +5207,23 @@ int main(int argc, char **argv) {
 
     /* Build FieldState from device pointers */
     FieldState fstate;
+    memset(&fstate, 0, sizeof(fstate));
     for (int a = 0; a < 3; a++) {
         fstate.phi[a] = d_phi[a]; fstate.vel_phi[a] = d_vel_phi[a]; fstate.acc_phi[a] = d_acc_phi[a];
         fstate.theta[a] = d_theta[a]; fstate.vel_theta[a] = d_vel_theta[a]; fstate.acc_theta[a] = d_acc_theta[a];
         fstate.phi_im[a] = d_phi_im[a]; fstate.vel_phi_im[a] = d_vel_phi_im[a]; fstate.acc_phi_im[a] = d_acc_phi_im[a];
         fstate.theta_im[a] = d_theta_im[a]; fstate.vel_theta_im[a] = d_vel_theta_im[a]; fstate.acc_theta_im[a] = d_acc_theta_im[a];
         fstate.th[a] = d_th[a]; fstate.Efield[a] = d_E[a]; fstate.E_acc[a] = d_E_acc[a];
+        if (c.n_fabrics == 3) {
+            fstate.L_phi[a]=d_L_phi[a]; fstate.L_vel_phi[a]=d_L_vel_phi[a]; fstate.L_acc_phi[a]=d_L_acc_phi[a];
+            fstate.L_theta[a]=d_L_theta[a]; fstate.L_vel_theta[a]=d_L_vel_theta[a]; fstate.L_acc_theta[a]=d_L_acc_theta[a];
+            fstate.L_phi_im[a]=d_L_phi_im[a]; fstate.L_vel_phi_im[a]=d_L_vel_phi_im[a]; fstate.L_acc_phi_im[a]=d_L_acc_phi_im[a];
+            fstate.L_theta_im[a]=d_L_theta_im[a]; fstate.L_vel_theta_im[a]=d_L_vel_theta_im[a]; fstate.L_acc_theta_im[a]=d_L_acc_theta_im[a];
+        }
     }
     fstate.complex_mode = c.complex_phi;
     fstate.gauge_mode = c.complex_gauge;
+    fstate.n_fabrics = c.n_fabrics;
     fstate.N3 = g->N3; fstate.N = g->N;
     fstate.L = g->L; fstate.dx = g->dx; fstate.dt = g->dt;
 
@@ -4570,8 +5232,7 @@ int main(int argc, char **argv) {
     fw_init(&frame_writer, sfa);
 
     /* Create hooks */
-    SnapHookCtx snap_ctx = create_snap_hook(&frame_writer, c.precision, snap_every, g->N3,
-                                            c.complex_gauge ? 30 : (c.complex_phi ? 24 : 12));
+    SnapHookCtx snap_ctx = create_snap_hook(&frame_writer, c.precision, snap_every, g->N3, ncols);
     start_snap_writer(&snap_ctx);
     register_hook(snap_hook, &snap_ctx);
 

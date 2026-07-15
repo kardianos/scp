@@ -131,6 +131,18 @@ typedef struct {
     int vec_iframe_interval;
     double vec_delta_tol;
     int vec_block_size;
+
+    /* v75 multi-fabric Option B (MULTIFABRIC_SPEC.md) — B(1) Shape β.
+     * n_fabrics=1: legacy single Cosserat (G0 byte path).
+     * n_fabrics=3: C,Q,L full arrays; mf_lock_CQ=1 ⇒ Φ_Q≡Φ_C each step.
+     * Charges under shared A: q_C, q_Q, q_L (multiples of g_gauge).
+     * L never enters C bag; each fabric has private s = ∏|Φ_a|². */
+    int    n_fabrics;          /* 1 (default) or 3 */
+    int    mf_stage;           /* 0=legacy, 1=B1 lock, 2=B2 free Q (reserved) */
+    int    mf_lock_CQ;         /* 1=Φ_Q←Φ_C each step (B1); 0=independent (B2) */
+    double eps_CQ;             /* C–Q portal (B2; ignored when lock=1) */
+    double q_C, q_Q, q_L;      /* EM charge weights under A */
+    char   init_sfa_L[512];    /* optional L-fabric seed SFA (B1); empty = L from main if multi-col */
 } Config;
 
 static Config cfg_defaults(void) {
@@ -175,6 +187,10 @@ static Config cfg_defaults(void) {
     c.vec_snap_dt = 0;
     c.vec_iframe_interval = 100;
     c.vec_delta_tol = 0.01;  c.vec_block_size = 8;
+    c.n_fabrics = 1;  c.mf_stage = 0;  c.mf_lock_CQ = 1;
+    c.eps_CQ = 0.0;
+    c.q_C = 0.0;  c.q_Q = 1.0;  c.q_L = -1.0;
+    c.init_sfa_L[0] = '\0';
     return c;
 }
 
@@ -279,6 +295,14 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"vec_output")) {}           /* deprecated */
     else if (!strcmp(key,"vec_kframe_interval")) {}  /* deprecated */
     else if (!strcmp(key,"vec_n_fields")) {}         /* deprecated */
+    else if (!strcmp(key,"n_fabrics"))   c->n_fabrics = atoi(val);
+    else if (!strcmp(key,"mf_stage"))    c->mf_stage = atoi(val);
+    else if (!strcmp(key,"mf_lock_CQ"))  c->mf_lock_CQ = atoi(val);
+    else if (!strcmp(key,"eps_CQ"))      c->eps_CQ = atof(val);
+    else if (!strcmp(key,"q_C"))         c->q_C = atof(val);
+    else if (!strcmp(key,"q_Q"))         c->q_Q = atof(val);
+    else if (!strcmp(key,"q_L"))         c->q_L = atof(val);
+    else if (!strcmp(key,"init_sfa_L"))  strncpy(c->init_sfa_L, val, 511);
     else fprintf(stderr, "WARNING: unknown config key '%s'\n", key);
 }
 
@@ -331,6 +355,14 @@ static void cfg_print(const Config *c) {
                 printf("Gauge:   second ball at (%.2f,%.2f,%.2f) sign=%+d phase=%.4f\n",
                        c->qball2_x0, c->qball2_y0, c->qball2_z0,
                        c->qball2_sign, c->qball2_phase);
+        }
+        if (c->n_fabrics == 3) {
+            printf("Multi-fab: n=3 (C/Q/L) stage=%d lock_CQ=%d eps_CQ=%.4g\n",
+                   c->mf_stage, c->mf_lock_CQ, c->eps_CQ);
+            printf("Multi-fab: q_C=%.3g q_Q=%.3g q_L=%.3g  (× g_gauge)\n",
+                   c->q_C, c->q_Q, c->q_L);
+            if (c->init_sfa_L[0])
+                printf("Multi-fab: init_sfa_L=%s\n", c->init_sfa_L);
         }
     }
     printf("Mode:    %d", c->mode);
@@ -413,6 +445,31 @@ static void cfg_validate(const Config *c) {
         if (c->qball_profile[0] == '\0') {
             fprintf(stderr, "ERROR: init=qball requires a non-empty qball_profile\n");
             exit(1);
+        }
+    }
+    /* v75 multi-fabric B(1) */
+    if (c->n_fabrics != 1 && c->n_fabrics != 3) {
+        fprintf(stderr, "ERROR: n_fabrics must be 1 or 3 (got %d)\n", c->n_fabrics);
+        exit(1);
+    }
+    if (c->n_fabrics == 3) {
+        if (c->complex_phi == 0 || c->complex_gauge == 0) {
+            fprintf(stderr, "ERROR: n_fabrics=3 requires complex_phi=1 and complex_gauge=1\n");
+            exit(1);
+        }
+        if (c->higgs_v > 0.0) {
+            fprintf(stderr, "ERROR: n_fabrics=3 does not yet support higgs_v (B1)\n");
+            exit(1);
+        }
+        if (c->g_gauge2 != 0.0) {
+            fprintf(stderr, "ERROR: n_fabrics=3 does not yet support g_gauge2 (B1)\n");
+            exit(1);
+        }
+        if (c->mf_stage == 2 && c->mf_lock_CQ) {
+            fprintf(stderr, "WARNING: mf_stage=2 with mf_lock_CQ=1 — Q remains locked\n");
+        }
+        if (c->eps_CQ != 0.0 && c->mf_lock_CQ) {
+            fprintf(stderr, "WARNING: eps_CQ ignored while mf_lock_CQ=1 (B1)\n");
         }
     }
 }

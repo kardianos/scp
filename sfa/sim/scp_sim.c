@@ -63,9 +63,105 @@ typedef struct {
     double qg2[3];               /* per-component charges under gauge2 */
     double *th2[3], *Efield2[3], *E_acc2[3];
     double *link2_c[3], *link2_s[3], *plaq2_s[3];
+    /* v75 multi-fabric B(1): primary arrays above = fabric C (heavy).
+     * When n_fabrics==3: Q and L each have a full complex 36-block set.
+     * B1 lock: Q ← C after each force; bag private per fabric. */
+    int    n_fabrics;            /* 1 or 3 */
+    int    mf_lock_CQ;
+    double q_fab[3];             /* EM weights q_C, q_Q, q_L */
+    double *mf_mem;              /* Q+L matter blocks (NULL if n_fabrics==1) */
+    double *Q_phi[NFIELDS], *Q_phi_vel[NFIELDS], *Q_phi_acc[NFIELDS];
+    double *Q_theta[NFIELDS], *Q_theta_vel[NFIELDS], *Q_theta_acc[NFIELDS];
+    double *Q_phi_im[NFIELDS], *Q_phi_im_vel[NFIELDS], *Q_phi_im_acc[NFIELDS];
+    double *Q_theta_im[NFIELDS], *Q_theta_im_vel[NFIELDS], *Q_theta_im_acc[NFIELDS];
+    double *L_phi[NFIELDS], *L_phi_vel[NFIELDS], *L_phi_acc[NFIELDS];
+    double *L_theta[NFIELDS], *L_theta_vel[NFIELDS], *L_theta_acc[NFIELDS];
+    double *L_phi_im[NFIELDS], *L_phi_im_vel[NFIELDS], *L_phi_im_acc[NFIELDS];
+    double *L_theta_im[NFIELDS], *L_theta_im_vel[NFIELDS], *L_theta_im_acc[NFIELDS];
     int N; long N3;
     double L, dx, dt;
 } Grid;
+
+/* View of one fabric's matter arrays (C uses primary Grid pointers). */
+typedef struct {
+    double *phi[NFIELDS], *phi_vel[NFIELDS], *phi_acc[NFIELDS];
+    double *theta[NFIELDS], *theta_vel[NFIELDS], *theta_acc[NFIELDS];
+    double *phi_im[NFIELDS], *phi_im_vel[NFIELDS], *phi_im_acc[NFIELDS];
+    double *theta_im[NFIELDS], *theta_im_vel[NFIELDS], *theta_im_acc[NFIELDS];
+} FabricView;
+
+static FabricView fabric_C(Grid *g) {
+    FabricView f;
+    for (int a = 0; a < NFIELDS; a++) {
+        f.phi[a]=g->phi[a]; f.phi_vel[a]=g->phi_vel[a]; f.phi_acc[a]=g->phi_acc[a];
+        f.theta[a]=g->theta[a]; f.theta_vel[a]=g->theta_vel[a]; f.theta_acc[a]=g->theta_acc[a];
+        f.phi_im[a]=g->phi_im[a]; f.phi_im_vel[a]=g->phi_im_vel[a]; f.phi_im_acc[a]=g->phi_im_acc[a];
+        f.theta_im[a]=g->theta_im[a]; f.theta_im_vel[a]=g->theta_im_vel[a]; f.theta_im_acc[a]=g->theta_im_acc[a];
+    }
+    return f;
+}
+static FabricView fabric_Q(Grid *g) {
+    FabricView f;
+    for (int a = 0; a < NFIELDS; a++) {
+        f.phi[a]=g->Q_phi[a]; f.phi_vel[a]=g->Q_phi_vel[a]; f.phi_acc[a]=g->Q_phi_acc[a];
+        f.theta[a]=g->Q_theta[a]; f.theta_vel[a]=g->Q_theta_vel[a]; f.theta_acc[a]=g->Q_theta_acc[a];
+        f.phi_im[a]=g->Q_phi_im[a]; f.phi_im_vel[a]=g->Q_phi_im_vel[a]; f.phi_im_acc[a]=g->Q_phi_im_acc[a];
+        f.theta_im[a]=g->Q_theta_im[a]; f.theta_im_vel[a]=g->Q_theta_im_vel[a]; f.theta_im_acc[a]=g->Q_theta_im_acc[a];
+    }
+    return f;
+}
+static FabricView fabric_L(Grid *g) {
+    FabricView f;
+    for (int a = 0; a < NFIELDS; a++) {
+        f.phi[a]=g->L_phi[a]; f.phi_vel[a]=g->L_phi_vel[a]; f.phi_acc[a]=g->L_phi_acc[a];
+        f.theta[a]=g->L_theta[a]; f.theta_vel[a]=g->L_theta_vel[a]; f.theta_acc[a]=g->L_theta_acc[a];
+        f.phi_im[a]=g->L_phi_im[a]; f.phi_im_vel[a]=g->L_phi_im_vel[a]; f.phi_im_acc[a]=g->L_phi_im_acc[a];
+        f.theta_im[a]=g->L_theta_im[a]; f.theta_im_vel[a]=g->L_theta_im_vel[a]; f.theta_im_acc[a]=g->L_theta_im_acc[a];
+    }
+    return f;
+}
+
+/* B1 lock: copy C → Q (fields + velocities; acc optional). */
+static void mf_lock_copy_CQ(Grid *g) {
+    if (g->n_fabrics != 3 || !g->mf_lock_CQ) return;
+    const long N3 = g->N3;
+    const size_t bytes = (size_t)N3 * sizeof(double);
+    for (int a = 0; a < NFIELDS; a++) {
+        memcpy(g->Q_phi[a], g->phi[a], bytes);
+        memcpy(g->Q_phi_vel[a], g->phi_vel[a], bytes);
+        memcpy(g->Q_phi_acc[a], g->phi_acc[a], bytes);
+        memcpy(g->Q_theta[a], g->theta[a], bytes);
+        memcpy(g->Q_theta_vel[a], g->theta_vel[a], bytes);
+        memcpy(g->Q_theta_acc[a], g->theta_acc[a], bytes);
+        memcpy(g->Q_phi_im[a], g->phi_im[a], bytes);
+        memcpy(g->Q_phi_im_vel[a], g->phi_im_vel[a], bytes);
+        memcpy(g->Q_phi_im_acc[a], g->phi_im_acc[a], bytes);
+        memcpy(g->Q_theta_im[a], g->theta_im[a], bytes);
+        memcpy(g->Q_theta_im_vel[a], g->theta_im_vel[a], bytes);
+        memcpy(g->Q_theta_im_acc[a], g->theta_im_acc[a], bytes);
+    }
+}
+
+/* Noether charge density at voxel for one fabric (phi+theta sectors). */
+static inline double fabric_rho_at(const FabricView *F, long idx) {
+    double rho = 0;
+    for (int a = 0; a < NFIELDS; a++)
+        rho += F->phi[a][idx]*F->phi_im_vel[a][idx] - F->phi_im[a][idx]*F->phi_vel[a][idx]
+             + F->theta[a][idx]*F->theta_im_vel[a][idx] - F->theta_im[a][idx]*F->theta_vel[a][idx];
+    return rho;
+}
+
+/* EM charge density under shared A: sum_f q_f ρ_f. Single fabric: ρ_C. */
+static inline double em_rho_at(Grid *g, long idx) {
+    if (g->n_fabrics != 3) {
+        FabricView C = fabric_C(g);
+        return fabric_rho_at(&C, idx);
+    }
+    FabricView C = fabric_C(g), Q = fabric_Q(g), L = fabric_L(g);
+    return g->q_fab[0]*fabric_rho_at(&C, idx)
+         + g->q_fab[1]*fabric_rho_at(&Q, idx)
+         + g->q_fab[2]*fabric_rho_at(&L, idx);
+}
 
 static Grid *grid_alloc(const Config *c) {
     Grid *g = calloc(1, sizeof(Grid));
@@ -79,6 +175,10 @@ static Grid *grid_alloc(const Config *c) {
     g->gauge_mode   = c->complex_gauge;
     g->g_gauge      = c->g_gauge;
     g->G_offset     = 0.0;
+    g->n_fabrics    = c->n_fabrics;
+    g->mf_lock_CQ   = c->mf_lock_CQ;
+    g->q_fab[0] = c->q_C;  g->q_fab[1] = c->q_Q;  g->q_fab[2] = c->q_L;
+    g->mf_mem = NULL;
     /* v71 Higgs: only in the gauged-complex path; off => byte-identical */
     g->higgs_mode = (c->higgs_v > 0.0 && g->gauge_mode) ? 1 : 0;
     g->higgs_v = c->higgs_v;  g->higgs_lam = c->higgs_lam;  g->higgs_kap = c->higgs_kap;
@@ -94,12 +194,20 @@ static Grid *grid_alloc(const Config *c) {
     long nblocks = g->gauge_mode ? (base2 + (g->gauge2_mode ? 18 : 0))
                                  : (g->complex_mode ? 36 : 18);
     long total = nblocks * g->N3;
-    printf("Allocating %.2f GB (%ld doubles, N=%d, %d fields%s)\n",
-           total*8.0/1e9, total, c->N, g->complex_mode ? 12 : 6,
-           g->gauge_mode ? " + U(1) links" : "");
+    long mf_blocks = (g->n_fabrics == 3) ? 72 : 0; /* Q 36 + L 36 */
+    long total_all = total + mf_blocks * g->N3;
+    printf("Allocating %.2f GB (%ld doubles, N=%d, %d fields%s%s)\n",
+           total_all*8.0/1e9, total_all, c->N, g->complex_mode ? 12 : 6,
+           g->gauge_mode ? " + U(1) links" : "",
+           g->n_fabrics == 3 ? " + multi-fab Q+L" : "");
     g->mem = malloc(total * sizeof(double));
     if (!g->mem) { fprintf(stderr, "FATAL: malloc failed\n"); exit(1); }
     memset(g->mem, 0, total * sizeof(double));
+    if (mf_blocks) {
+        g->mf_mem = malloc(mf_blocks * g->N3 * sizeof(double));
+        if (!g->mf_mem) { fprintf(stderr, "FATAL: multi-fabric malloc failed\n"); exit(1); }
+        memset(g->mf_mem, 0, mf_blocks * g->N3 * sizeof(double));
+    }
 
     for (int a = 0; a < NFIELDS; a++) {
         g->phi[a]       = g->mem + (0  + a) * g->N3;
@@ -165,6 +273,50 @@ static Grid *grid_alloc(const Config *c) {
         g->mismatch[a] = calloc(g->N3, sizeof(double));
         g->harden_Q[a] = calloc(g->N3, sizeof(double));
     }
+    /* Multi-fabric Q then L: each 36 blocks (same layout as complex matter) */
+    if (g->n_fabrics == 3 && g->mf_mem) {
+        double *base = g->mf_mem;
+        for (int a = 0; a < NFIELDS; a++) {
+            g->Q_phi[a]       = base + (0  + a) * g->N3;
+            g->Q_phi_vel[a]   = base + (3  + a) * g->N3;
+            g->Q_phi_acc[a]   = base + (6  + a) * g->N3;
+            g->Q_theta[a]     = base + (9  + a) * g->N3;
+            g->Q_theta_vel[a] = base + (12 + a) * g->N3;
+            g->Q_theta_acc[a] = base + (15 + a) * g->N3;
+            g->Q_phi_im[a]       = base + (18 + a) * g->N3;
+            g->Q_phi_im_vel[a]   = base + (21 + a) * g->N3;
+            g->Q_phi_im_acc[a]   = base + (24 + a) * g->N3;
+            g->Q_theta_im[a]     = base + (27 + a) * g->N3;
+            g->Q_theta_im_vel[a] = base + (30 + a) * g->N3;
+            g->Q_theta_im_acc[a] = base + (33 + a) * g->N3;
+        }
+        base = g->mf_mem + 36 * g->N3;
+        for (int a = 0; a < NFIELDS; a++) {
+            g->L_phi[a]       = base + (0  + a) * g->N3;
+            g->L_phi_vel[a]   = base + (3  + a) * g->N3;
+            g->L_phi_acc[a]   = base + (6  + a) * g->N3;
+            g->L_theta[a]     = base + (9  + a) * g->N3;
+            g->L_theta_vel[a] = base + (12 + a) * g->N3;
+            g->L_theta_acc[a] = base + (15 + a) * g->N3;
+            g->L_phi_im[a]       = base + (18 + a) * g->N3;
+            g->L_phi_im_vel[a]   = base + (21 + a) * g->N3;
+            g->L_phi_im_acc[a]   = base + (24 + a) * g->N3;
+            g->L_theta_im[a]     = base + (27 + a) * g->N3;
+            g->L_theta_im_vel[a] = base + (30 + a) * g->N3;
+            g->L_theta_im_acc[a] = base + (33 + a) * g->N3;
+        }
+    } else {
+        for (int a = 0; a < NFIELDS; a++) {
+            g->Q_phi[a]=g->Q_phi_vel[a]=g->Q_phi_acc[a]=NULL;
+            g->Q_theta[a]=g->Q_theta_vel[a]=g->Q_theta_acc[a]=NULL;
+            g->Q_phi_im[a]=g->Q_phi_im_vel[a]=g->Q_phi_im_acc[a]=NULL;
+            g->Q_theta_im[a]=g->Q_theta_im_vel[a]=g->Q_theta_im_acc[a]=NULL;
+            g->L_phi[a]=g->L_phi_vel[a]=g->L_phi_acc[a]=NULL;
+            g->L_theta[a]=g->L_theta_vel[a]=g->L_theta_acc[a]=NULL;
+            g->L_phi_im[a]=g->L_phi_im_vel[a]=g->L_phi_im_acc[a]=NULL;
+            g->L_theta_im[a]=g->L_theta_im_vel[a]=g->L_theta_im_acc[a]=NULL;
+        }
+    }
     return g;
 }
 
@@ -176,6 +328,7 @@ static void grid_free(Grid *g) {
         free(g->pin_phi_im[a]); free(g->pin_vel_im[a]);
         free(g->pin_theta_im[a]); free(g->pin_tvel_im[a]);
     }
+    free(g->mf_mem);
     free(g->mem); free(g);
 }
 
@@ -223,6 +376,80 @@ static inline double curl_component(double *F[3], int a,
 #include "scp_init.h"
 
 /* Forces start below — init functions are in scp_init.h */
+
+/* Load a (complex/gauged) SFA into an arbitrary fabric view.
+ * load_gauge: if 1 and columns present, also fill g->th / g->Efield. */
+static void load_sfa_into_fabric(Grid *g, FabricView *F, const char *path,
+                                 int frame, int load_gauge) {
+    printf("Init fabric: SFA '%s' frame=%d%s\n", path, frame,
+           load_gauge ? " (+gauge if present)" : "");
+    SFA *sfa = sfa_open(path);
+    if (!sfa) { fprintf(stderr, "FATAL: cannot open SFA '%s'\n", path); exit(1); }
+    if ((int)sfa->Nx != g->N || (int)sfa->Ny != g->N || (int)sfa->Nz != g->N) {
+        fprintf(stderr, "FATAL: SFA grid %ux%ux%u != sim %d^3\n",
+                sfa->Nx, sfa->Ny, sfa->Nz, g->N);
+        exit(1);
+    }
+    if (frame < 0) frame = (int)sfa->total_frames + frame;
+    if (frame < 0 || frame >= (int)sfa->total_frames) {
+        fprintf(stderr, "FATAL: frame %d out of range [0,%u)\n", frame, sfa->total_frames);
+        exit(1);
+    }
+    void *buf = malloc(sfa->frame_bytes);
+    if (!buf) { fprintf(stderr, "FATAL: frame buffer alloc\n"); exit(1); }
+    sfa_read_frame(sfa, frame, buf);
+    uint64_t off = 0;
+    int nload = 0;
+    for (uint32_t col = 0; col < sfa->n_columns; col++) {
+        int dtype = sfa->columns[col].dtype;
+        int sem   = sfa->columns[col].semantic;
+        int comp  = sfa->columns[col].component;
+        int es    = sfa_dtype_size[dtype];
+        uint8_t *src = (uint8_t*)buf + off;
+        double *target = NULL;
+        if (sem == SFA_POSITION && comp < 3) target = F->phi[comp];
+        else if (sem == SFA_ANGLE && comp < 3) target = F->theta[comp];
+        else if (sem == SFA_VELOCITY && comp < 3) target = F->phi_vel[comp];
+        else if (sem == SFA_VELOCITY && comp >= 3 && comp < 6) target = F->theta_vel[comp-3];
+        else if (sem == SFA_POSITION && comp >= 3 && comp < 6) target = F->phi_im[comp-3];
+        else if (sem == SFA_ANGLE && comp >= 3 && comp < 6) target = F->theta_im[comp-3];
+        else if (sem == SFA_VELOCITY && comp >= 6 && comp < 9) target = F->phi_im_vel[comp-6];
+        else if (sem == SFA_VELOCITY && comp >= 9 && comp < 12) target = F->theta_im_vel[comp-9];
+        else if (load_gauge && sem == SFA_ANGLE && comp >= 6 && comp < 9)
+            target = g->th[comp-6];
+        else if (load_gauge && sem == SFA_VELOCITY && comp >= 12 && comp < 15)
+            target = g->Efield[comp-12];
+        if (target) {
+            long N3 = g->N3;
+            if (dtype == SFA_F64)
+                for (long i = 0; i < N3; i++) target[i] = ((double*)src)[i];
+            else if (dtype == SFA_F32)
+                for (long i = 0; i < N3; i++) target[i] = (double)((float*)src)[i];
+            else if (dtype == SFA_F16)
+                for (long i = 0; i < N3; i++) target[i] = f16_to_f64(((uint16_t*)src)[i]);
+            nload++;
+        }
+        off += (uint64_t)g->N3 * es;
+    }
+    printf("  Loaded %d columns into fabric from %s\n", nload, path);
+    free(buf);
+    sfa_close(sfa);
+}
+
+static void mf_post_init(Grid *g, const Config *c) {
+    if (g->n_fabrics != 3) return;
+    FabricView L = fabric_L(g);
+    if (c->init_sfa_L[0]) {
+        /* L-only seed: do not overwrite gauge (already from C / heavy seed) */
+        load_sfa_into_fabric(g, &L, c->init_sfa_L, c->init_frame, 0);
+    } else {
+        printf("WARNING: n_fabrics=3 but init_sfa_L empty — L fabric is zero\n");
+    }
+    if (g->mf_lock_CQ) {
+        mf_lock_copy_CQ(g);
+        printf("Multi-fab: Q ← C lock applied after init\n");
+    }
+}
 
 /*  init_oscillon through do_init deleted — now in scp_init.h */
 
@@ -932,6 +1159,176 @@ static void compute_forces_complex_gauge(Grid *g, const Config *c) {
 }
 
 /* ================================================================
+   v75 multi-fabric gauged forces (B1 Shape β)
+   Private bag per fabric; shared A with EM charge sum_f q_f J_f.
+   ================================================================ */
+
+/* Matter acc for fabric F + lattice current contribution q_em * J_lat.
+ * mode=0: set E_acc = STP*staple + GG*q_em*J (first fabric; includes magnetics)
+ * mode=1: E_acc += GG*q_em*J (additional fabrics; no staple re-add)
+ * Requires link_c/s and plaq_s already filled. */
+static void force_fabric_gauged_accum(Grid *g, const Config *c, FabricView *F,
+                                      double q_em, int mode) {
+    const int N = g->N, NN = N * N;
+    const long N3 = g->N3;
+    const double dx = g->dx;
+    const double idx2 = 1.0 / (dx * dx);
+    const double idx1 = 1.0 / (2.0 * dx);
+    const double inva = 1.0 / dx;
+    const double MU = c->mu, KAPPA = c->kappa, MASS2 = c->m2;
+    const double MTHETA2 = c->mtheta2, ETA = c->eta;
+    const double GG = g->g_gauge;
+    const double STP = 1.0 / (GG * dx * dx * dx);
+    const int ci1[3] = {1,2,0}, ci2[3] = {2,0,1};
+
+    #pragma omp parallel for schedule(static)
+    for (long idx = 0; idx < N3; idx++) {
+        int i = (int)(idx/NN), j = (int)((idx/N)%N), k = (int)(idx%N);
+        long np[3], nm[3];
+        np[0] = (long)((i+1)%N)*NN + (long)j*N + k;
+        nm[0] = (long)((i-1+N)%N)*NN + (long)j*N + k;
+        np[1] = (long)i*NN + (long)((j+1)%N)*N + k;
+        nm[1] = (long)i*NN + (long)((j-1+N)%N)*N + k;
+        np[2] = (long)i*NN + (long)j*N + (k+1)%N;
+        nm[2] = (long)i*NN + (long)j*N + (k-1+N)%N;
+
+        double fu[6], fv[6];
+        for (int a = 0; a < 3; a++) {
+            fu[a]   = F->phi[a][idx];    fv[a]   = F->phi_im[a][idx];
+            fu[3+a] = F->theta[a][idx];  fv[3+a] = F->theta_im[a][idx];
+        }
+        double TRp[3][6], TIp[3][6], TRm[3][6], TIm[3][6];
+        double tup[3][3], tvp[3][3];
+        /* Charge-q links: U^q = exp(i q_em * th). q=0 → free derivatives;
+         * q=-1 → conjugate. Precomputed link_c/s are for unit charge only. */
+        for (int d = 0; d < 3; d++) {
+            double cP = cos(q_em * g->th[d][idx]),   sP = sin(q_em * g->th[d][idx]);
+            double cM = cos(q_em * g->th[d][nm[d]]), sM = sin(q_em * g->th[d][nm[d]]);
+            for (int a = 0; a < 3; a++) {
+                double upn = F->phi[a][np[d]],     vpn = F->phi_im[a][np[d]];
+                double umn = F->phi[a][nm[d]],     vmn = F->phi_im[a][nm[d]];
+                double tpn = F->theta[a][np[d]],   wpn = F->theta_im[a][np[d]];
+                double tmn = F->theta[a][nm[d]],   wmn = F->theta_im[a][nm[d]];
+                TRp[d][a]   = cP*upn - sP*vpn;   TIp[d][a]   = cP*vpn + sP*upn;
+                TRm[d][a]   = cM*umn + sM*vmn;   TIm[d][a]   = cM*vmn - sM*umn;
+                TRp[d][3+a] = cP*tpn - sP*wpn;   TIp[d][3+a] = cP*wpn + sP*tpn;
+                TRm[d][3+a] = cM*tmn + sM*wmn;   TIm[d][3+a] = cM*wmn - sM*tmn;
+                tup[d][a] = tpn;  tvp[d][a] = wpn;
+            }
+        }
+        /* private bag for this fabric only */
+        double s2_0 = fu[0]*fu[0] + fv[0]*fv[0];
+        double s2_1 = fu[1]*fu[1] + fv[1]*fv[1];
+        double s2_2 = fu[2]*fu[2] + fv[2]*fv[2];
+        double s    = s2_0 * s2_1 * s2_2;
+        double den  = 1.0 + KAPPA*s;
+        double Vp   = 0.5*MU / (den*den);
+        double prod_rest[3] = { s2_1*s2_2, s2_0*s2_2, s2_0*s2_1 };
+
+        double DcU[3][6], DcV[3][6];
+        for (int d = 0; d < 3; d++)
+            for (int f = 0; f < 6; f++) {
+                DcU[d][f] = (TRp[d][f] - TRm[d][f]) * idx1;
+                DcV[d][f] = (TIp[d][f] - TIm[d][f]) * idx1;
+            }
+        for (int a = 0; a < 3; a++) {
+            int d1 = ci1[a], d2 = ci2[a];
+            double reDxT = DcU[d1][3+ci2[a]] - DcU[d2][3+ci1[a]];
+            double imDxT = DcV[d1][3+ci2[a]] - DcV[d2][3+ci1[a]];
+            double reDxP = DcU[d1][ci2[a]]   - DcU[d2][ci1[a]];
+            double imDxP = DcV[d1][ci2[a]]   - DcV[d2][ci1[a]];
+            double lapU_P = (TRp[0][a]+TRm[0][a] + TRp[1][a]+TRm[1][a]
+                           + TRp[2][a]+TRm[2][a] - 6.0*fu[a]) * idx2;
+            double lapV_P = (TIp[0][a]+TIm[0][a] + TIp[1][a]+TIm[1][a]
+                           + TIp[2][a]+TIm[2][a] - 6.0*fv[a]) * idx2;
+            double lapU_T = (TRp[0][3+a]+TRm[0][3+a] + TRp[1][3+a]+TRm[1][3+a]
+                           + TRp[2][3+a]+TRm[2][3+a] - 6.0*fu[3+a]) * idx2;
+            double lapV_T = (TIp[0][3+a]+TIm[0][3+a] + TIp[1][3+a]+TIm[1][3+a]
+                           + TIp[2][3+a]+TIm[2][3+a] - 6.0*fv[3+a]) * idx2;
+            F->phi_acc[a][idx]      = lapU_P - MASS2*fu[a]
+                                    - 2.0*Vp*fu[a]*prod_rest[a] + ETA*reDxT;
+            F->phi_im_acc[a][idx]   = lapV_P - MASS2*fv[a]
+                                    - 2.0*Vp*fv[a]*prod_rest[a] + ETA*imDxT;
+            F->theta_acc[a][idx]    = lapU_T - MTHETA2*fu[3+a] + ETA*reDxP;
+            F->theta_im_acc[a][idx] = lapV_T - MTHETA2*fv[3+a] + ETA*imDxP;
+        }
+        double st[3];
+        st[0] =  (g->plaq_s[0][idx] - g->plaq_s[0][nm[1]])
+               - (g->plaq_s[2][idx] - g->plaq_s[2][nm[2]]);
+        st[1] = -(g->plaq_s[0][idx] - g->plaq_s[0][nm[0]])
+               + (g->plaq_s[1][idx] - g->plaq_s[1][nm[2]]);
+        st[2] =  (g->plaq_s[2][idx] - g->plaq_s[2][nm[0]])
+               - (g->plaq_s[1][idx] - g->plaq_s[1][nm[1]]);
+        for (int d = 0; d < 3; d++) {
+            double cP = cos(q_em * g->th[d][idx]), sP = sin(q_em * g->th[d][idx]);
+            double Jg = 0.0;
+            for (int a = 0; a < 3; a++) {
+                Jg += fu[a]  *TIp[d][a]   - fv[a]  *TRp[d][a];
+                Jg += fu[3+a]*TIp[d][3+a] - fv[3+a]*TRp[d][3+a];
+            }
+            int d1 = ci1[d], d2 = ci2[d];
+            double WpR1 = cP*fu[d2] + sP*fv[d2], WpI1 = cP*fv[d2] - sP*fu[d2];
+            double WpR2 = cP*fu[d1] + sP*fv[d1], WpI2 = cP*fv[d1] - sP*fu[d1];
+            double T12 = (fu[3+d1]*TIp[d][d2] - fv[3+d1]*TRp[d][d2])
+                       + (tup[d][d1]*WpI1     - tvp[d][d1]*WpR1);
+            double T21 = (fu[3+d2]*TIp[d][d1] - fv[3+d2]*TRp[d][d1])
+                       + (tup[d][d2]*WpI2     - tvp[d][d2]*WpR2);
+            double Jlat = inva*Jg - 0.5*ETA*(T12 - T21);
+            double jterm = GG * q_em * Jlat;
+            if (mode == 0)
+                g->E_acc[d][idx] = STP*st[d] + jterm;
+            else
+                g->E_acc[d][idx] += jterm;
+        }
+    }
+}
+
+static void compute_forces_complex_gauge_mf(Grid *g, const Config *c) {
+    const int N = g->N, NN = N * N;
+    const long N3 = g->N3;
+    /* pass A: link cos/sin */
+    for (int i = 0; i < 3; i++) {
+        double *thp = g->th[i], *cp = g->link_c[i], *sp = g->link_s[i];
+        #pragma omp parallel for schedule(static)
+        for (long idx = 0; idx < N3; idx++) {
+            cp[idx] = cos(thp[idx]);
+            sp[idx] = sin(thp[idx]);
+        }
+    }
+    /* pass B: plaquette sines */
+    #pragma omp parallel for schedule(static)
+    for (long idx = 0; idx < N3; idx++) {
+        int i = (int)(idx/NN), j = (int)((idx/N)%N), k = (int)(idx%N);
+        long np[3];
+        np[0] = (long)((i+1)%N)*NN + (long)j*N + k;
+        np[1] = (long)i*NN + (long)((j+1)%N)*N + k;
+        np[2] = (long)i*NN + (long)j*N + (k+1)%N;
+        const int pa[3] = {0,1,2}, pb[3] = {1,2,0};
+        for (int p = 0; p < 3; p++) {
+            int a = pa[p], b = pb[p];
+            double ang = g->th[a][idx] + g->th[b][np[a]]
+                       - g->th[a][np[b]] - g->th[b][idx];
+            g->plaq_s[p][idx] = sin(ang);
+        }
+    }
+    FabricView C = fabric_C(g), Q = fabric_Q(g), L = fabric_L(g);
+    /* C heavy bag; EM weight q_C (usually 0). Magnetics set here. */
+    force_fabric_gauged_accum(g, c, &C, g->q_fab[0], 0);
+    /* Q charge carrier — B1 lock: same state as C, add q_Q * J_Q (= J_C) */
+    if (g->mf_lock_CQ) {
+        /* Q fields mirror C after lock; use C view with weight q_Q for current only.
+         * Matter acc for Q not used in verlet when locked — still write for diagnostics. */
+        force_fabric_gauged_accum(g, c, &C, g->q_fab[1], 1);
+        /* matter acc already on C; Q acc filled by lock copy */
+    } else {
+        force_fabric_gauged_accum(g, c, &Q, g->q_fab[1], 1);
+    }
+    /* L light bag private; weight q_L */
+    force_fabric_gauged_accum(g, c, &L, g->q_fab[2], 1);
+    if (g->mf_lock_CQ) mf_lock_copy_CQ(g);
+}
+
+/* ================================================================
    Boundary conditions
    ================================================================ */
 
@@ -957,6 +1354,15 @@ static void apply_damping(Grid *g, const Config *c) {
                  * positions and are NOT damped */
                 if (g->gauge_mode)
                     for (int a=0;a<3;a++) g->Efield[a][idx]*=d;
+                /* multi-fabric: damp Q/L velocities the same way */
+                if (g->n_fabrics == 3) {
+                    for (int a=0;a<NFIELDS;a++) {
+                        g->Q_phi_vel[a][idx]*=d; g->Q_theta_vel[a][idx]*=d;
+                        g->Q_phi_im_vel[a][idx]*=d; g->Q_theta_im_vel[a][idx]*=d;
+                        g->L_phi_vel[a][idx]*=d; g->L_theta_vel[a][idx]*=d;
+                        g->L_phi_im_vel[a][idx]*=d; g->L_theta_im_vel[a][idx]*=d;
+                    }
+                }
             }
         }
     }
@@ -1048,20 +1454,50 @@ static void apply_gradient_bc(Grid *g, const Config *c) {
    Verlet integrator
    ================================================================ */
 
+/* Half-kick or drift one fabric's matter (real+im). */
+static void fabric_half_kick(FabricView *F, long N3, double hdt) {
+    for (int a=0;a<NFIELDS;a++) {
+        double *vp=F->phi_vel[a],*ap=F->phi_acc[a],*vt=F->theta_vel[a],*at=F->theta_acc[a];
+        #pragma omp parallel for schedule(static)
+        for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
+        vp=F->phi_im_vel[a]; ap=F->phi_im_acc[a]; vt=F->theta_im_vel[a]; at=F->theta_im_acc[a];
+        #pragma omp parallel for schedule(static)
+        for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
+    }
+}
+static void fabric_drift(FabricView *F, long N3, double dt) {
+    for (int a=0;a<NFIELDS;a++) {
+        double *pp=F->phi[a],*vp=F->phi_vel[a],*pt=F->theta[a],*vt=F->theta_vel[a];
+        #pragma omp parallel for schedule(static)
+        for (long i=0;i<N3;i++) { pp[i]+=dt*vp[i]; pt[i]+=dt*vt[i]; }
+        pp=F->phi_im[a]; vp=F->phi_im_vel[a]; pt=F->theta_im[a]; vt=F->theta_im_vel[a];
+        #pragma omp parallel for schedule(static)
+        for (long i=0;i<N3;i++) { pp[i]+=dt*vp[i]; pt[i]+=dt*vt[i]; }
+    }
+}
+
 static void verlet_step(Grid *g, const Config *c) {
     const long N3=g->N3; const double hdt=0.5*g->dt, dt=g->dt;
     /* v69 §1.3/§3.5: gauge sector active only when complex_gauge && g != 0 */
     const int gauged = g->gauge_mode && g->g_gauge != 0.0;
+    const int mf = (g->n_fabrics == 3);
+    FabricView C = fabric_C(g);
     /* stage 1: half-kick (matter velocities AND E) */
-    for (int a=0;a<NFIELDS;a++) {
-        double *vp=g->phi_vel[a],*ap=g->phi_acc[a],*vt=g->theta_vel[a],*at=g->theta_acc[a];
-        #pragma omp parallel for schedule(static)
-        for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
-    }
-    if (g->complex_mode) for (int a=0;a<NFIELDS;a++) {
-        double *vp=g->phi_im_vel[a],*ap=g->phi_im_acc[a],*vt=g->theta_im_vel[a],*at=g->theta_im_acc[a];
-        #pragma omp parallel for schedule(static)
-        for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
+    if (mf) {
+        fabric_half_kick(&C, N3, hdt);
+        if (!g->mf_lock_CQ) { FabricView Q = fabric_Q(g); fabric_half_kick(&Q, N3, hdt); }
+        { FabricView L = fabric_L(g); fabric_half_kick(&L, N3, hdt); }
+    } else {
+        for (int a=0;a<NFIELDS;a++) {
+            double *vp=g->phi_vel[a],*ap=g->phi_acc[a],*vt=g->theta_vel[a],*at=g->theta_acc[a];
+            #pragma omp parallel for schedule(static)
+            for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
+        }
+        if (g->complex_mode) for (int a=0;a<NFIELDS;a++) {
+            double *vp=g->phi_im_vel[a],*ap=g->phi_im_acc[a],*vt=g->theta_im_vel[a],*at=g->theta_im_acc[a];
+            #pragma omp parallel for schedule(static)
+            for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
+        }
     }
     if (gauged) for (int a=0;a<3;a++) {
         double *E=g->Efield[a],*K=g->E_acc[a];
@@ -1077,15 +1513,21 @@ static void verlet_step(Grid *g, const Config *c) {
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) vH[i]+=hdt*aH[i]; }
     /* stage 2: drift (fields AND link angles, wrapped to (-pi,pi]) */
-    for (int a=0;a<NFIELDS;a++) {
-        double *pp=g->phi[a],*vp=g->phi_vel[a],*pt=g->theta[a],*vt=g->theta_vel[a];
-        #pragma omp parallel for schedule(static)
-        for (long i=0;i<N3;i++) { pp[i]+=dt*vp[i]; pt[i]+=dt*vt[i]; }
-    }
-    if (g->complex_mode) for (int a=0;a<NFIELDS;a++) {
-        double *pp=g->phi_im[a],*vp=g->phi_im_vel[a],*pt=g->theta_im[a],*vt=g->theta_im_vel[a];
-        #pragma omp parallel for schedule(static)
-        for (long i=0;i<N3;i++) { pp[i]+=dt*vp[i]; pt[i]+=dt*vt[i]; }
+    if (mf) {
+        fabric_drift(&C, N3, dt);
+        if (!g->mf_lock_CQ) { FabricView Q = fabric_Q(g); fabric_drift(&Q, N3, dt); }
+        { FabricView L = fabric_L(g); fabric_drift(&L, N3, dt); }
+    } else {
+        for (int a=0;a<NFIELDS;a++) {
+            double *pp=g->phi[a],*vp=g->phi_vel[a],*pt=g->theta[a],*vt=g->theta_vel[a];
+            #pragma omp parallel for schedule(static)
+            for (long i=0;i<N3;i++) { pp[i]+=dt*vp[i]; pt[i]+=dt*vt[i]; }
+        }
+        if (g->complex_mode) for (int a=0;a<NFIELDS;a++) {
+            double *pp=g->phi_im[a],*vp=g->phi_im_vel[a],*pt=g->theta_im[a],*vt=g->theta_im_vel[a];
+            #pragma omp parallel for schedule(static)
+            for (long i=0;i<N3;i++) { pp[i]+=dt*vp[i]; pt[i]+=dt*vt[i]; }
+        }
     }
     if (gauged) {
         const double gad = -g->g_gauge * g->dx * dt;   /* th_dot = -g*a*E */
@@ -1113,19 +1555,27 @@ static void verlet_step(Grid *g, const Config *c) {
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) pH[i]+=dt*vH[i]; }
     /* stage 3: forces (matter accs + E_acc) */
-    if (gauged)               compute_forces_complex_gauge(g, c);
+    if (gauged && mf)         compute_forces_complex_gauge_mf(g, c);
+    else if (gauged)          compute_forces_complex_gauge(g, c);
     else if (g->complex_mode) compute_forces_complex(g, c);
     else                      compute_forces(g, c);
     /* stage 4: half-kick (matter + E) */
-    for (int a=0;a<NFIELDS;a++) {
-        double *vp=g->phi_vel[a],*ap=g->phi_acc[a],*vt=g->theta_vel[a],*at=g->theta_acc[a];
-        #pragma omp parallel for schedule(static)
-        for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
-    }
-    if (g->complex_mode) for (int a=0;a<NFIELDS;a++) {
-        double *vp=g->phi_im_vel[a],*ap=g->phi_im_acc[a],*vt=g->theta_im_vel[a],*at=g->theta_im_acc[a];
-        #pragma omp parallel for schedule(static)
-        for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
+    if (mf) {
+        fabric_half_kick(&C, N3, hdt);
+        if (!g->mf_lock_CQ) { FabricView Q = fabric_Q(g); fabric_half_kick(&Q, N3, hdt); }
+        { FabricView L = fabric_L(g); fabric_half_kick(&L, N3, hdt); }
+        if (g->mf_lock_CQ) mf_lock_copy_CQ(g);
+    } else {
+        for (int a=0;a<NFIELDS;a++) {
+            double *vp=g->phi_vel[a],*ap=g->phi_acc[a],*vt=g->theta_vel[a],*at=g->theta_acc[a];
+            #pragma omp parallel for schedule(static)
+            for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
+        }
+        if (g->complex_mode) for (int a=0;a<NFIELDS;a++) {
+            double *vp=g->phi_im_vel[a],*ap=g->phi_im_acc[a],*vt=g->theta_im_vel[a],*at=g->theta_im_acc[a];
+            #pragma omp parallel for schedule(static)
+            for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
+        }
     }
     if (gauged) for (int a=0;a<3;a++) {
         double *E=g->Efield[a],*K=g->E_acc[a];
@@ -1406,6 +1856,61 @@ static void compute_energy_complex_gauge(Grid *g, const Config *c,
             s_ehg += (0.5*hv*hv + 0.5*(gx*gx+gy*gy+gz*gz) + 0.25*HLAM*hd*hd + 0.5*HKAP*s*h*h)*dV;
         }
     }
+    /* v75 multi-fabric: L-fabric matter energy (C counted above; Q≡C when locked) */
+    if (g->n_fabrics == 3) {
+        FabricView Lv = fabric_L(g);
+        double l_epk=0,l_eg=0,l_em=0,l_ep=0,l_etk=0,l_etg=0,l_etm=0,l_ec=0;
+        #pragma omp parallel for reduction(+:l_epk,l_eg,l_em,l_ep,l_etk,l_etg,l_etm,l_ec) schedule(static)
+        for (long idx=0;idx<N3;idx++) {
+            int i=(int)(idx/NN),j=(int)((idx/N)%N),k=(int)(idx%N);
+            long np[3], nm[3];
+            np[0]=(long)((i+1)%N)*NN+(long)j*N+k;   nm[0]=(long)((i-1+N)%N)*NN+(long)j*N+k;
+            np[1]=(long)i*NN+(long)((j+1)%N)*N+k;   nm[1]=(long)i*NN+(long)((j-1+N)%N)*N+k;
+            np[2]=(long)i*NN+(long)j*N+(k+1)%N;     nm[2]=(long)i*NN+(long)j*N+(k-1+N)%N;
+            double fu[6], fv[6];
+            for (int a=0;a<3;a++) {
+                fu[a]=Lv.phi[a][idx];    fv[a]=Lv.phi_im[a][idx];
+                fu[3+a]=Lv.theta[a][idx]; fv[3+a]=Lv.theta_im[a][idx];
+            }
+            double DcU[3][6], DcV[3][6];
+            for (int d=0; d<3; d++) {
+                double cP=g->link_c[d][idx],  sP=g->link_s[d][idx];
+                double cM=g->link_c[d][nm[d]], sM=g->link_s[d][nm[d]];
+                for (int a=0;a<3;a++) {
+                    double upn=Lv.phi[a][np[d]],   vpn=Lv.phi_im[a][np[d]];
+                    double umn=Lv.phi[a][nm[d]],   vmn=Lv.phi_im[a][nm[d]];
+                    double tpn=Lv.theta[a][np[d]], wpn=Lv.theta_im[a][np[d]];
+                    double tmn=Lv.theta[a][nm[d]], wmn=Lv.theta_im[a][nm[d]];
+                    DcU[d][a]   = ((cP*upn - sP*vpn) - (cM*umn + sM*vmn))*idx1;
+                    DcV[d][a]   = ((cP*vpn + sP*upn) - (cM*vmn - sM*umn))*idx1;
+                    DcU[d][3+a] = ((cP*tpn - sP*wpn) - (cM*tmn + sM*wmn))*idx1;
+                    DcV[d][3+a] = ((cP*wpn + sP*tpn) - (cM*wmn - sM*tmn))*idx1;
+                }
+            }
+            double s2[3];
+            const int ci1[3]={1,2,0}, ci2[3]={2,0,1};
+            for (int a=0;a<NFIELDS;a++) {
+                s2[a] = fu[a]*fu[a] + fv[a]*fv[a];
+                l_epk+=0.5*(Lv.phi_vel[a][idx]*Lv.phi_vel[a][idx]
+                           +Lv.phi_im_vel[a][idx]*Lv.phi_im_vel[a][idx])*dV;
+                l_etk+=0.5*(Lv.theta_vel[a][idx]*Lv.theta_vel[a][idx]
+                           +Lv.theta_im_vel[a][idx]*Lv.theta_im_vel[a][idx])*dV;
+                l_eg+=0.5*(DcU[0][a]*DcU[0][a]+DcU[1][a]*DcU[1][a]+DcU[2][a]*DcU[2][a]
+                          +DcV[0][a]*DcV[0][a]+DcV[1][a]*DcV[1][a]+DcV[2][a]*DcV[2][a])*dV;
+                l_em+=0.5*MASS2*s2[a]*dV;
+                l_etg+=0.5*(DcU[0][3+a]*DcU[0][3+a]+DcU[1][3+a]*DcU[1][3+a]+DcU[2][3+a]*DcU[2][3+a]
+                           +DcV[0][3+a]*DcV[0][3+a]+DcV[1][3+a]*DcV[1][3+a]+DcV[2][3+a]*DcV[2][3+a])*dV;
+                l_etm+=0.5*MTHETA2*(fu[3+a]*fu[3+a]+fv[3+a]*fv[3+a])*dV;
+                double reDxT = DcU[ci1[a]][3+ci2[a]] - DcU[ci2[a]][3+ci1[a]];
+                double imDxT = DcV[ci1[a]][3+ci2[a]] - DcV[ci2[a]][3+ci1[a]];
+                l_ec-=ETA*(fu[a]*reDxT + fv[a]*imDxT)*dV;
+            }
+            double s = s2[0]*s2[1]*s2[2];
+            l_ep+=(MU/2.0)*s/(1.0+KAPPA*s)*dV;
+        }
+        s_epk+=l_epk; s_etk+=l_etk; s_eg+=l_eg; s_em+=l_em; s_ep+=l_ep;
+        s_etg+=l_etg; s_etm+=l_etm; s_ec+=l_ec;
+    }
     *epk=s_epk;*etk=s_etk;*eg=s_eg;*em=s_em;*ep=s_ep;
     *etg=s_etg;*etm=s_etm;*ec=s_ec;*e_em=s_eem;
     *et=s_epk+s_etk+s_eg+s_em+s_ep+s_etg+s_etm+s_ec+s_eem+s_ehg;
@@ -1544,16 +2049,12 @@ static void compute_charges(Grid *g, const Config *c,
    v69 Gauss / gauge diagnostics (SPEC §4)
    ================================================================ */
 
-/* G(x) = (1/a) sum_i [E_i(x) - E_i(x-i)] - g*rho_Q(x) at voxel idx */
+/* G(x) = (1/a) sum_i [E_i(x) - E_i(x-i)] - g*rho_EM(x) at voxel idx */
 static inline double gauss_residual_at(Grid *g, long idx, const long nm[3]) {
     double divE = (g->Efield[0][idx]-g->Efield[0][nm[0]]
                   +g->Efield[1][idx]-g->Efield[1][nm[1]]
                   +g->Efield[2][idx]-g->Efield[2][nm[2]]) / g->dx;
-    double rho = 0;
-    for (int a=0;a<NFIELDS;a++)
-        rho += g->phi[a][idx]  *g->phi_im_vel[a][idx] - g->phi_im[a][idx]  *g->phi_vel[a][idx]
-             + g->theta[a][idx]*g->theta_im_vel[a][idx] - g->theta_im[a][idx]*g->theta_vel[a][idx];
-    return divE - g->g_gauge*rho;
+    return divE - g->g_gauge * em_rho_at(g, idx);
 }
 
 /* gauss_max/gauss_l2 over interior Omega (sponge excluded for bc_type=0),
@@ -1625,10 +2126,7 @@ static void net_charge_check(Grid *g, const Config *c) {
     double qn=0, qa=0;
     #pragma omp parallel for reduction(+:qn,qa) schedule(static)
     for (long idx=0;idx<N3;idx++) {
-        double rho=0;
-        for (int a=0;a<NFIELDS;a++)
-            rho += g->phi[a][idx]  *g->phi_im_vel[a][idx] - g->phi_im[a][idx]  *g->phi_vel[a][idx]
-                 + g->theta[a][idx]*g->theta_im_vel[a][idx] - g->theta_im[a][idx]*g->theta_vel[a][idx];
+        double rho = em_rho_at(g, idx);
         qn += rho*dV; qa += fabs(rho)*dV;
     }
     if (fabs(qn) > 1e-6 * fmax(qa, 1.0)) {
@@ -2006,30 +2504,44 @@ static void *cast_buf = NULL;
 
 static void sfa_snap(SFA *sfa, Grid *g, double t, int precision) {
     long n = g->N3;
+    /* base 12/24/30; multi-fab adds 24 L-matter columns (Q omitted when locked) */
     int nf = g->gauge_mode ? 30 : (g->complex_mode ? 24 : 12);
-    /* Order MUST match column registration: 12 real arrays, then the
-       imaginary copy (phi_im, theta_im, phi_im_vel, theta_im_vel),
-       then the v69 gauge sector (th links, E). */
-    double *arrays[30] = {
-        g->phi[0], g->phi[1], g->phi[2],
-        g->theta[0], g->theta[1], g->theta[2],
-        g->phi_vel[0], g->phi_vel[1], g->phi_vel[2],
-        g->theta_vel[0], g->theta_vel[1], g->theta_vel[2],
-        g->phi_im[0], g->phi_im[1], g->phi_im[2],
-        g->theta_im[0], g->theta_im[1], g->theta_im[2],
-        g->phi_im_vel[0], g->phi_im_vel[1], g->phi_im_vel[2],
-        g->theta_im_vel[0], g->theta_im_vel[1], g->theta_im_vel[2],
-        g->th[0], g->th[1], g->th[2],
-        g->Efield[0], g->Efield[1], g->Efield[2]
-    };
+    if (g->n_fabrics == 3) nf += 24;
+    double *arrays[64];
+    int k = 0;
+    arrays[k++]=g->phi[0]; arrays[k++]=g->phi[1]; arrays[k++]=g->phi[2];
+    arrays[k++]=g->theta[0]; arrays[k++]=g->theta[1]; arrays[k++]=g->theta[2];
+    arrays[k++]=g->phi_vel[0]; arrays[k++]=g->phi_vel[1]; arrays[k++]=g->phi_vel[2];
+    arrays[k++]=g->theta_vel[0]; arrays[k++]=g->theta_vel[1]; arrays[k++]=g->theta_vel[2];
+    if (g->complex_mode) {
+        arrays[k++]=g->phi_im[0]; arrays[k++]=g->phi_im[1]; arrays[k++]=g->phi_im[2];
+        arrays[k++]=g->theta_im[0]; arrays[k++]=g->theta_im[1]; arrays[k++]=g->theta_im[2];
+        arrays[k++]=g->phi_im_vel[0]; arrays[k++]=g->phi_im_vel[1]; arrays[k++]=g->phi_im_vel[2];
+        arrays[k++]=g->theta_im_vel[0]; arrays[k++]=g->theta_im_vel[1]; arrays[k++]=g->theta_im_vel[2];
+    }
+    if (g->gauge_mode) {
+        arrays[k++]=g->th[0]; arrays[k++]=g->th[1]; arrays[k++]=g->th[2];
+        arrays[k++]=g->Efield[0]; arrays[k++]=g->Efield[1]; arrays[k++]=g->Efield[2];
+    }
+    if (g->n_fabrics == 3) {
+        arrays[k++]=g->L_phi[0]; arrays[k++]=g->L_phi[1]; arrays[k++]=g->L_phi[2];
+        arrays[k++]=g->L_theta[0]; arrays[k++]=g->L_theta[1]; arrays[k++]=g->L_theta[2];
+        arrays[k++]=g->L_phi_vel[0]; arrays[k++]=g->L_phi_vel[1]; arrays[k++]=g->L_phi_vel[2];
+        arrays[k++]=g->L_theta_vel[0]; arrays[k++]=g->L_theta_vel[1]; arrays[k++]=g->L_theta_vel[2];
+        arrays[k++]=g->L_phi_im[0]; arrays[k++]=g->L_phi_im[1]; arrays[k++]=g->L_phi_im[2];
+        arrays[k++]=g->L_theta_im[0]; arrays[k++]=g->L_theta_im[1]; arrays[k++]=g->L_theta_im[2];
+        arrays[k++]=g->L_phi_im_vel[0]; arrays[k++]=g->L_phi_im_vel[1]; arrays[k++]=g->L_phi_im_vel[2];
+        arrays[k++]=g->L_theta_im_vel[0]; arrays[k++]=g->L_theta_im_vel[1]; arrays[k++]=g->L_theta_im_vel[2];
+    }
+    if (k != nf) {
+        fprintf(stderr, "FATAL: sfa_snap col count mismatch k=%d nf=%d\n", k, nf);
+        exit(1);
+    }
 
-    /* For f64, we can pass pointers directly. For f16/f32, we need to
-       downcast each column into separate buffers since sfa_write_frame
-       uses all pointers simultaneously. */
     if (precision == 2) {
         sfa_write_frame(sfa, t, (void**)arrays);
     } else {
-        void *cols[30];
+        void *cols[64];
         int es = (precision == 0) ? 2 : 4;
         for (int c = 0; c < nf; c++) {
             cols[c] = malloc(n * es);
@@ -2137,12 +2649,16 @@ int main(int argc, char **argv) {
     }
     /* v69: net-charge refusal (§1.2) + mandatory Gauss projection (§5.4) */
     const int gauged = (c.complex_gauge && c.g_gauge != 0.0);
+    /* v75 multi-fabric: load L seed + Q←C lock before Gauss */
+    mf_post_init(g, &c);
+
     if (gauged) {
         if (c.bc_type == 2) net_charge_check(g, &c);
         init_gauss_project(g, &c);
         if (g->gauge2_mode) init_gauss2_project(g);
     }
-    if (gauged)              compute_forces_complex_gauge(g, &c);
+    if (gauged && g->n_fabrics == 3) compute_forces_complex_gauge_mf(g, &c);
+    else if (gauged)              compute_forces_complex_gauge(g, &c);
     else if (g->complex_mode) compute_forces_complex(g, &c);
     else                      compute_forces(g, &c);
     if (c.test_gauge_xform) {
@@ -2204,10 +2720,38 @@ int main(int argc, char **argv) {
         sfa_add_column(sfa, "E_y",  sfa_dtype, SFA_VELOCITY, 13);
         sfa_add_column(sfa, "E_z",  sfa_dtype, SFA_VELOCITY, 14);
     }
+    if (c.n_fabrics == 3) {
+        /* L fabric: same semantic/component scheme as C (tools match by name) */
+        sfa_add_column(sfa, "lphi_x",    sfa_dtype, SFA_POSITION, 0);
+        sfa_add_column(sfa, "lphi_y",    sfa_dtype, SFA_POSITION, 1);
+        sfa_add_column(sfa, "lphi_z",    sfa_dtype, SFA_POSITION, 2);
+        sfa_add_column(sfa, "lth_x",     sfa_dtype, SFA_ANGLE,    0);
+        sfa_add_column(sfa, "lth_y",     sfa_dtype, SFA_ANGLE,    1);
+        sfa_add_column(sfa, "lth_z",     sfa_dtype, SFA_ANGLE,    2);
+        sfa_add_column(sfa, "lphi_vx",   sfa_dtype, SFA_VELOCITY, 0);
+        sfa_add_column(sfa, "lphi_vy",   sfa_dtype, SFA_VELOCITY, 1);
+        sfa_add_column(sfa, "lphi_vz",   sfa_dtype, SFA_VELOCITY, 2);
+        sfa_add_column(sfa, "lth_vx",    sfa_dtype, SFA_VELOCITY, 3);
+        sfa_add_column(sfa, "lth_vy",    sfa_dtype, SFA_VELOCITY, 4);
+        sfa_add_column(sfa, "lth_vz",    sfa_dtype, SFA_VELOCITY, 5);
+        sfa_add_column(sfa, "lphiim_x",  sfa_dtype, SFA_POSITION, 3);
+        sfa_add_column(sfa, "lphiim_y",  sfa_dtype, SFA_POSITION, 4);
+        sfa_add_column(sfa, "lphiim_z",  sfa_dtype, SFA_POSITION, 5);
+        sfa_add_column(sfa, "lthim_x",   sfa_dtype, SFA_ANGLE,    3);
+        sfa_add_column(sfa, "lthim_y",   sfa_dtype, SFA_ANGLE,    4);
+        sfa_add_column(sfa, "lthim_z",   sfa_dtype, SFA_ANGLE,    5);
+        sfa_add_column(sfa, "lphiim_vx", sfa_dtype, SFA_VELOCITY, 6);
+        sfa_add_column(sfa, "lphiim_vy", sfa_dtype, SFA_VELOCITY, 7);
+        sfa_add_column(sfa, "lphiim_vz", sfa_dtype, SFA_VELOCITY, 8);
+        sfa_add_column(sfa, "lthim_vx",  sfa_dtype, SFA_VELOCITY, 9);
+        sfa_add_column(sfa, "lthim_vy",  sfa_dtype, SFA_VELOCITY, 10);
+        sfa_add_column(sfa, "lthim_vz",  sfa_dtype, SFA_VELOCITY, 11);
+    }
     sfa_finalize_header(sfa);
     const char *pn[] = {"f16","f32","f64"};
-    printf("SFA: %s (%d cols, %s, BSS+zstd)\n\n", c.output,
-           c.complex_gauge ? 30 : (c.complex_phi ? 24 : 12), pn[c.precision]);
+    int ncols = c.complex_gauge ? 30 : (c.complex_phi ? 24 : 12);
+    if (c.n_fabrics == 3) ncols += 24;
+    printf("SFA: %s (%d cols, %s, BSS+zstd)\n\n", c.output, ncols, pn[c.precision]);
 
     sfa_snap(sfa, g, 0.0, c.precision);
 

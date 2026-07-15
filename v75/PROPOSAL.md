@@ -125,6 +125,11 @@ poetry; room to keep v66–v74 nuclear results inside C+Q.
 
 **v75 works this option first.**
 
+**Staging (2026-07-13 lock):** implement as **B(1) Shape β → B(2)** — see
+`MULTIFABRIC_SPEC.md`. B(1) allocates full C, Q, L with \(\Phi_Q\equiv\Phi_C\);
+B(2) unlocks independent Q and \(\varepsilon_{CQ}\). Outcome-driven gates;
+not pure Option A first.
+
 ---
 
 ### Option C — Three parallel Cosserat copies (symmetric triple)
