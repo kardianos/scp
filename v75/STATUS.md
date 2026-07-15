@@ -1,26 +1,31 @@
 # v75 Status
 
-**Updated**: 2026-07-14 — **Self-tune Stage 1 CLOSED (PASS)**
+**Updated**: 2026-07-15 — F15 done; F16 orbit + multi-Z park-aware **running**
 
-## Multi-fabric B1 + atom ladder
+## Closed
 
-| Gate | Result |
+| Item | Result |
 |------|--------|
-| G2/G3, H1, H2 force | PASS |
-| A1–A2 | PASS |
-| A3 Z6+L6 | FAIL atom (F14) |
-| **Self-tune Stage 1** | **PASS (F15)** — B4_full |
+| B1 MF + atom ladder F11–F14 | isolation OK; Z6+L6 rest atom fail |
+| **Self-tune Stage 1 F15** | **PASS** — B4 single heavy + L6 shell |
+| Git | `29530c2` MF B1 + F11–F15 |
 
-## Winning soft θ (freeze)
+## Park-aware re-score (F16 partial)
 
-**Single heavy C @ ω=1.42 + 6×L shell @ ω=1.46, R=18**, g=0.05, B1 lock.  
-massC/L and Qc/Ql stable T=400; cost=0.112 PASS.
+| Trial | PASS_park |
+|-------|-----------|
+| B2_full Z4 | **YES** |
+| B3a_full Z2 | **YES** |
+| B1a_full Z6 | no |
+| B4_full | YES (also seed PASS) |
 
-Docs: `SELF_TUNE_LOG.md`, `FINDINGS.md` F15, `/space/scp/v75/self_tune/VERDICT.md`
+## Active campaign (`v75st`)
 
-## Next
+`run_b4o_mz_campaign.sh`: b4o_pair_{sub,vc,super}, b4o_shell_vc, mz2_z6_L6_R22  
+Log: remote `/root/b4o_mz_campaign.log` · seeds `/space/scp/v75/b4o_mz/`
 
-1. Orbit / binding kinematics on frozen B4 θ (not rest-only)  
-2. Multi-Z: park-aware cost or lower-g / parked nuclear templates  
-3. Option C deferred (not needed for single-C + L cloud)  
-4. Archive ledger; teardown `v75st` when idle  
+## Next after F16 runs
+
+1. Analyze D(t) for sub/vc/super; massL integrity  
+2. Park-aware score mz2; finalize FINDINGS F16  
+3. Teardown GPU when idle  
