@@ -141,6 +141,8 @@ Fallback stretch (if P/N not yet firm): super-Q or deformed seed at fixed compos
 | `FINDINGS.md` | Measured results (F17+) |
 | `FUTURE.md` | Pointer to this goal |
 
-**Start state (2026-07-15 F18):** Phase 1 open. **P2.0 DONE (F17).** **P2.1–P2.2–P2.5 smoke PASS at Z=2 (F18):** parked (Z,N) cores, L count=Z, isotope Q_em fixed under +N. Scale to Z=6 + long-T still open. Phase 3 not started.
+**Start state (2026-07-16 checkpoint):** Phase 1 open. **P2.0 DONE (F17).** **Z2 package DONE (F18).** **Z6 isotope EM PASS (F19)**; Z6N6 park PASS; Z6N0 soft; L −12.5%; multi-ball **nuclear cores merge to a single droplet** by t∼400. Phase 3 not started.
 
-**Critical path note:** Next bottleneck is **Z≈6 park + multi-L shell diagnostics**, then P3 A≈12 assemble.
+**Canonical physics snapshot:** `STATE.md` (equations, charge table, P/N freeze).
+
+**Critical path note:** Bottleneck is **droplet park quality + L hold + shell diagnostics**, then P3 long-T visual C₁₂ — not inventing Z/N.

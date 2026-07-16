@@ -11,21 +11,21 @@ has no stable particles (CONCEPT.md §2/§9).
 
 ---
 
-## Active goal (v75 multi-fabric → C₁₂) — 2026-07-15
+## Active goal (v75 multi-fabric → C₁₂) — 2026-07-16 checkpoint
 
-**Doc:** `v75/C12_ATOM_GOAL.md` · **Status:** `v75/STATUS.md`
+**Docs:** `v75/STATE.md` (equations + freeze) · `v75/C12_ATOM_GOAL.md` · `v75/STATUS.md` · `v75/FINDINGS.md`
 
-Pursue multi-fabric **Phases 1–3** on B1 (private bags + shared \(A\)):
+Pursue multi-fabric **Phases 1–3** toward time-stable C₁₂:
 
-1. **P1** — Bound hydrogenoid (retuned multi-rev C+L on B4 θ)  
-2. **P2** — Parked multi-Z nucleus + light cloud, long-T stable  
-3. **P3** — A≈12-class core + multi-L → **time-stable visual C₁₂**  
-   (no merge / fission / disperse)
+1. **P1** — Bound hydrogenoid (retuned multi-rev C+L) — still OPEN  
+2. **P2** — Parked multi-Z + L cloud; **P/N firm (F17)**; Z2 package **PASS (F18)**; Z6 isotope EM **PASS (F19)**, park/L partial  
+3. **P3** — A≈12 long-T visual C₁₂ — NOT STARTED  
 
-**Stretch:** radioactive **isotope** (prefer **+N at fixed Z** — requires firm p/n analogs)
-with **calculated and simulated** decay rates. See `v75/C12_ATOM_GOAL.md` §P/N.
+**Architecture freeze:** B2 unlock for P/N — \(q_C=0,q_Q=+1,q_L=-1\); proton = C+Q, neutron = C-only; L count tracks Z.
 
-Baseline closed: F11–F16 (isolation, packaging, pair Coulomb scan, Z6+L6 PASS_park).
+**Stretch:** radioactive **isotope (+N at fixed Z)** + decay calc/sim (P/N path is open; package stability is the wall).
+
+Baseline closed: F11–F19 (see `v75/STATE.md` §4).
 
 ---
 
