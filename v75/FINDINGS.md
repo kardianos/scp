@@ -814,3 +814,71 @@ Do **not** apply nuclear-only `c_Qem_park` to net atom flux; use track **massL +
 ### Bottom line
 
 **B2 P/N packages park; L sized to Z survives; +N at fixed Z is a working isotope control on Z=2.**
+
+---
+
+## F19 — Z6 park + L=6 atom + isotope (N=192 L=48) [measured 2026-07-15/16]
+
+**Grid:** N=192, L=48, damp_width=5 → \(R_\mathrm{damp}=43\); L shell R=22; p octa R=8; n octa R=5.5.  
+See `PN_GRID.md`. **Data:** `/space/scp/v75/pn/z6/`, scores `v75/results/pn_z6/`.  
+**Instance:** `v75f16` V100-16GB (~8 GB used; physics 6.6 GB + snap staging).
+
+### Runs (all rc=0, ~48 min each)
+
+| ID | Content | Wall |
+|----|---------|------|
+| z6_n0_nuc | Z=6 N=0 rest core | 48.3 min |
+| z6_n6_nuc | Z=6 N=6 rest core | 48.0 min |
+| z6_a_n0 | Z6N0 + L=6 R=22 | 48.3 min |
+| z6_a_n6 | Z6N6 + same L=6 | 48.2 min |
+
+### Nuclear (isotope EM) — **PASS on \(Q_\mathrm{em}\)**
+
+| Metric | Z6N0 | Z6N6 |
+|--------|------|------|
+| Q_phi end | 1057 | **4921** (tracks A) |
+| Q_flux end | **990.3** | **990.3** (**identical**) |
+| Qem/Z | 165 | 165 |
+| c_Q_park | **0.184** (soft fail vs 0.15) | **0.046** PASS |
+| c_Qem_park | 0.007 | 0.007 |
+| E end | 2302 | 9915 |
+| Gauss | floor | floor |
+
+**Isotope control holds at Z=6:** neutrons add bag mass/charge, not EM flux.  
+Z6N0 sheds more bag Q post-mid (park borderline); Z6N6 parks cleaner.
+
+### Atom L=Z=6 — **partial**
+
+| Metric | a_n0 | a_n6 |
+|--------|------|------|
+| massL 0→end | 421→**369** (−12.5%) | **same** |
+| Ql 0→end | 615→**542** (−12%) | **same** |
+| c_L | 0.125 | 0.125 |
+| nuclear Q_phi | same as nuc twin | same |
+| Q_flux end (net) | **670** | **670** (identical) |
+| PASS_atom (strict) | False | False |
+
+Strict FAIL drivers: (1) nuclear c_Q_park on N0 twin; (2) net Q_flux mid→end (L cancel in cube — same as F18).  
+**Sector metrics:** L survival ~87.5% mass; **identical L evolution** for +N; **identical net EM** for isotope pair. Gauss floor.
+
+### vs F18 Z2
+
+| | F18 Z2 | F19 Z6 |
+|--|--------|--------|
+| Nuclear Q_flux isotope | identical | identical |
+| c_Q_park N0 | 0.028 PASS | 0.184 soft |
+| L mass loss | −0.6% | −12.5% |
+| Box margin L→sponge | 10 | ~17 |
+
+L loss larger at carbon-class shell — still not sponge death (R=22 ≪ 43). Soft energy drift continues.
+
+### Verdict
+
+| Gate | Result |
+|------|--------|
+| Z/N EM at Z=6 | **PASS** |
+| Z6N6 nuclear park | **PASS** |
+| Z6N0 nuclear park | **soft fail** (c_Q=0.18) |
+| L=6 hold + isotope L fixed | **PASS sector** / strict scorecard soft |
+| Ready for P3 long-T C₁₂ | **partial** — retune park (spacing/g) for Z6N0; tighten L hold |
+

@@ -41,13 +41,13 @@ def load_track(path: Path):
                 continue
             if len(vals) < 6:
                 continue
-            # frame t nC nL massC massL Qc Ql ...
+            # mf_pair_track: frame t massC massL Qc Ql [cxC cyC czC cxL cyL czL D]
             rows.append({
-                "t": vals[1] if len(vals) > 1 else vals[0],
-                "massC": vals[4] if len(vals) > 4 else float("nan"),
-                "massL": vals[5] if len(vals) > 5 else float("nan"),
-                "Qc": vals[6] if len(vals) > 6 else float("nan"),
-                "Ql": vals[7] if len(vals) > 7 else float("nan"),
+                "t": vals[1],
+                "massC": vals[2],
+                "massL": vals[3],
+                "Qc": vals[4],
+                "Ql": vals[5],
             })
     return rows
 
