@@ -1,0 +1,111 @@
+{
+  "demo_id": "D-DYN-j5-formfactor",
+  "alias": "D-DYN-J5",
+  "round": 2,
+  "agent": "ND",
+  "theory_default": "J5-beta",
+  "j5_alpha_status": "FAIL",
+  "j5_beta_status": "LOCKED_DOCUMENTED",
+  "tautology_flag": false,
+  "protocol": "A2_boost_energy",
+  "baseline": {
+    "A": 0.4,
+    "sigma": 1.0,
+    "s": 1.0,
+    "kappa": 1.0,
+    "c": 1.0,
+    "m_ledger": 6.299843978288953,
+    "U": 0.890953413690212,
+    "form_factor": 0.1414213562373095,
+    "m_field": 0.890953413690212,
+    "m_boost_xi1": 0.890953413690212,
+    "m_ray": 6.299843978288953,
+    "s_star_per_shape": 7.0710678118654755
+  },
+  "form_factor_law": "ff = M/(8 pi sigma sqrt(pi)) = 0.141421356237*(A/0.4)*sigma^2  [s=kappa=1]",
+  "ND_G1_naive_kill": {
+    "pass": true,
+    "rel_split_field_vs_ledger": 0.8585786437626905,
+    "threshold": 0.25,
+    "kill_naive_m_eq_int_rho_b": true
+  },
+  "ND_G2_shape_invariance": {
+    "shape_invariance_ok": false,
+    "test": "two widths sigma=1.0 and 1.5 at A=0.4",
+    "widths": [
+      {
+        "sigma": 1.0,
+        "M": 6.299843978288953,
+        "ff": 0.1414213562373095,
+        "s_star": 7.0710678118654755,
+        "U": 0.890953413690212
+      },
+      {
+        "sigma": 1.5,
+        "M": 21.261973426575,
+        "ff": 0.318198051533946,
+        "s_star": 3.142696805470,
+        "U": 6.765686234
+      }
+    ],
+    "apply_s_star_of_sigma1_to_both": [
+      {"sigma": 1.0, "U_over_Mc2": 1.0, "triad_closed": true},
+      {"sigma": 1.5, "U_over_Mc2": 2.25, "triad_closed": false, "note": "ff scales sigma^2; s* from sigma=1 overshoots by 2.25"}
+    ],
+    "apply_s_star_of_sigma15_to_both": [
+      {"sigma": 1.5, "U_over_Mc2": 1.0, "triad_closed": true},
+      {"sigma": 1.0, "U_over_Mc2": 0.444444, "triad_closed": false}
+    ],
+    "beta1_universal": "FAIL",
+    "beta1_per_shape": "PASS",
+    "shape_scope_tag": "fixed_form_factor"
+  },
+  "L_triad": {
+    "E_ref_ledger": {
+      "L": 0.8585786437626905,
+      "m_boost_over_M": 0.1414213562373095,
+      "m_ray_over_M": 1.0
+    },
+    "E_ref_U_beta2": {
+      "L_inertia_field": 0.0,
+      "m_ray_over_U_c2": 7.0710678118654755,
+      "note": "closes inertia; opens ray unless path-cost retagged"
+    },
+    "E_ref_ledger_with_s_star_per_shape": {
+      "L": 0.0,
+      "note": "three-way closed after per-shape R1_s"
+    }
+  },
+  "renorm_options": {
+    "recommended_default": {
+      "theory": "J5-beta",
+      "renorm_tag": "R1_s",
+      "shape_scope": "fixed_form_factor",
+      "E_star_def_path_cost": "integral_rho_b",
+      "E_star_def_inertia": "free_U_or_renormed_Mc2"
+    },
+    "beta2_alt": {
+      "renorm_tag": "ledger_as_U",
+      "E_star_def_inertia": "free_U",
+      "requires_TU_accept_dual_bookkeeping": true
+    },
+    "j5_alpha": {
+      "status": "FAIL_at_default_s",
+      "aspirational": true
+    }
+  },
+  "pass_fail": {
+    "non_tautology": "PASS",
+    "ND_G1_naive_kill": "PASS",
+    "tier_A_ray_ledger": "PASS",
+    "tier_C_boost_field": "PASS",
+    "tier_B_J5_alpha_raw": "FAIL",
+    "beta1_per_shape": "PASS",
+    "beta1_shape_invariant": "FAIL",
+    "J5_beta_documentation": "PASS",
+    "V77_3_full_close": "PARTIAL"
+  },
+  "doc": "work/ND/j5_beta_numeric.md",
+  "FOR_TD": "J5-β locked numerically; shape_invariance_ok=false quantifies ND-G2 fail for universal s*",
+  "FOR_TU": "V77-3 path: accept J5-β + shape_scope OR beta2 dual ledger; do not claim J5-α"
+}

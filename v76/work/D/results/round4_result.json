@@ -1,0 +1,48 @@
+{
+  "round": 4,
+  "b_round4_files": [],
+  "inertia_export": "ABSENT — used R3 ray-ledger + R2 deferred note",
+  "ray_package": {
+    "source": "B round3_rays + round3_result",
+    "M_ledger": 6.299787,
+    "m_ray": 6.299787,
+    "m_ray_formula": "alpha_M / alpha_eff",
+    "free_deficit_core": 0.174,
+    "multipole_ratio": 0.25,
+    "phi_origin": "free_capacity_3d_green",
+    "gravity_solver": null,
+    "B_monist_3d_1r_pass": true,
+    "score_winner": "monist_3d_free_capacity",
+    "models": {
+      "monist_3d_free_capacity": {"L_fit": 0.0, "S": 0.0, "N_sectors": 1},
+      "dualist_3d_poisson_iso": {"L_fit": 0.0, "S": 1.5, "N_sectors": 2},
+      "dualist_2d_log_noniso": {"L_fit": 3.24, "S": 4.74, "N_sectors": 2},
+      "softE_poisson_as_monist": {"L_fit": 0.0, "S": 100.0}
+    }
+  },
+  "J5": {
+    "status": "PARTIAL",
+    "m_ledger": 6.299787,
+    "m_ray": 6.299787,
+    "m_inertial": null,
+    "rel_err_ray_vs_ledger": 0.0,
+    "independent_inertial": false,
+    "note": "Ray amplitude mass matches ledger; independent free-drag m_push not delivered"
+  },
+  "final_verdict": {
+    "monist_preferred": true,
+    "goal2_minimal": "PASS",
+    "goal2_PC3D_partial": true,
+    "goal2_PC3D_workable": true,
+    "goal2_full": false,
+    "aligns_with_C_018": true,
+    "note": "Monist F1-3D package preferred under Occam+fit with documented residuals. goal2_PC3D_workable YES (O-005 optional J5 deferral). goal2_full NO without independent inertia."
+  },
+  "honest_residuals": [
+    "Free-capacity PDE is Poisson-form; monism = free/bound identity + single sector + free-origin, not different PDE",
+    "Ray L_fit ties monist vs dualist 3D twin; Occam+tags required",
+    "J5 independent inertia ABSENT (ray↔ledger only PARTIAL)",
+    "B R3 analytic Green + Born; mini SOR parent-verified R2~0.93 (O-005)",
+    "Einstein factor 4GM/c^2b not claimed"
+  ]
+}

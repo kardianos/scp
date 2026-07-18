@@ -1,0 +1,510 @@
+===== ENTRY 2026-07-18T00:00:00Z | NM-000 | bootstrap =====
+Agent: NM
+Round: 0
+Tags: bootstrap, protocol
+---
+Numeric Matter — multi-lock dual-source
+
+Log initialized (append-only). Write only this file + work/NM/.
+Read v76 seed, v77 PROBLEM/FOCI/RUN, all logs. FOR_X for cross-ideas.
+===== END =====
+
+===== ENTRY 2026-07-18T23:00:00Z | NM-001 | numeric =====
+Agent: NM
+Round: 1
+Tags: numeric, multilock, dual-source, monist_1sector, multi_channel, demo
+---
+ROUND 1 — multi-lock free-capacity + dual-source stub.
+
+Codes (work/NM/):
+- offline_r1_multilock.py  — analytic 3D free Green (primary export)
+- sandbox_r1_multilock.py  — N³ SOR twin (optional full grid)
+- run_offline.sh
+
+Seed: v76 F1-3D free-capacity (sandbox_r3_3d_free / offline_round3 patterns).
+No scp_sim / sfa.h.
+
+Setup:
+  n_locks=2 Gaussians, A=0.35, sigma=0.9, sep=4.0
+  −∇²ψ = κ ρ_b   (κ=s/σ0=1)     monist free-capacity
+  −∇²φ = κ_c ρ_q (κ_c=1 base)   free_gauge_lite Coulomb proxy
+  ρ_q = q_i × lump_i; supp on ρ_b
+  ℓ = ℓ0 + γ ψ, γ=0.5
+
+KEY NUMBERS (analytic Green, c=1):
+  M_each = E★/c² = 4.01851293
+  M_tot            = 8.03702586
+  free_deficit_proxy (peak bound) = 0.35
+  psi_mid (pair midpoint) = 0.31977461
+  ell_mid = 1 + γ ψ_mid   = 1.15988730
+  U_self (single Gaussian) = 0.40279012
+  U_int ψ (R=4)            = 0.32126613
+  F_ψ attractive mag       = 0.08031653
+  F_ψ signed (−dU/dR)      = −0.08031653   [ATTRACTIVE]
+  F_C same-sign            = +0.08031653   [REPEL]
+  F_C opposite             = −0.08031653   [ATTRACT]
+  F_C neutral              = 0
+  |F_C|/|F_ψ| base         = 1.0
+  |F_C|/|F_ψ| κ_c=200      = 200.0  (G3 EM-dom; s,γ kept)
+  exterior ψ ~ 1/r         R²=1 (exact monopole Green)
+  max|Born defl| (weak)    ≈ 0.640 rad at |b|=1
+  vacuum defl              = 0
+
+Force scan F_ψ signed (monist_1sector):
+  R=3.0 → −0.1428
+  R=4.0 → −0.0803
+  R=5.0 → −0.0514
+  R=5.5 → −0.0425
+
+Sector tags:
+  monist_1sector  — free_capacity_psi only
+  multi_channel   — free_capacity_psi + coulomb_proxy_phi (free_gauge_lite)
+
+Exports:
+  work/NM/outputs/r1_multilock_result.json
+  work/NM/outputs/r1_tm_gates.json
+  work/NM/outputs/r1_path_cost.tsv
+  work/NM/outputs/r1_forces.tsv
+  work/NM/outputs/r1_rays.tsv
+  work/NM/outputs/r1_axis.tsv
+  work/NM/outputs/r1_hierarchy.tsv
+  work/NM/outputs/r1_free_deficit.tsv
+  work/NM/outputs/r1_summary.txt
+
+VERDICT:
+  multilock_psi_pass = True
+  dual_source_pass   = True
+  Demo D-MAT-multilock-r1 LIVE candidate (umbrella)
+===== END =====
+
+===== ENTRY 2026-07-18T23:05:00Z | NM-002 | demo =====
+Agent: NM
+Round: 1
+Tags: demo, gates, FOR_TM, FOR_TU
+---
+TM gate scores (FOR_NM_gates_v0):
+
+  G0 D-MAT-lock-S0     = PASS
+    compact E★>0, R_rms=σ√3≈1.56 < L/4, free deficit>0, M=E★/c²
+
+  G1 D-MAT-dual0       = PASS
+    Supp(ρ_q)⊆Supp(ρ_b); ψ exterior 1/r; Φ same-sign 1/r;
+    opposite monopole cancelled (dipole); sibling independence by dual Poisson;
+    shared continuum + free_gauge_lite tag
+
+  G2 D-MAT-force-tax   = PASS
+    G2.1 neutral–neutral: F_C=0, F_ψ attract (−0.0803)
+    G2.2 like charge:     F_C repel (+), F_ψ attract (−); base tie at κ_c=sκ
+    G2.3 opposite:        both attract
+    G2.4 vacuum:          forces 0
+    force_closure=virtual_work_energy_gradient_v0
+
+  G3 D-MAT-hier        = PASS
+    base ratio F_C/F_ψ = 1
+    κ_c=200, s=γ kept → ratio=200 ≫ 100; neutral pair still F_ψ>0
+    channels NOT deleted (s≠0, γ≠0)
+
+FOR_TM: G0=PASS G1=PASS G2=PASS G3=PASS
+FOR_TU: demos D-MAT-lock-S0, D-MAT-dual0, D-MAT-force-tax, D-MAT-hier, D-MAT-multilock-r1 → LIVE (analytic Green numeric)
+===== END =====
+
+===== ENTRY 2026-07-18T23:10:00Z | NM-003 | checkin =====
+Agent: NM
+Round: 1
+Tags: checkin
+---
+CHECKIN Round 1
+
+Read:
+- O-000, O-001 (R1 theme: draft laws + kill-gates; V77-1 progress)
+- PROBLEM, FOCI Matter §4, RUN
+- v76 CONVERGENCE + THEORETICAL_PACKAGE_v1; work/B sandbox_r3/r4 patterns
+- TM-001..003: lock ontology; FOR_NM gates G0–G3 — ADOPTED fully
+- TU-001+: WORLD_v0 dual-source C-ψ+C-A; D-LOCK-* stubs; V77-1 needs N* PASS
+- TE/NE/TD/ND: bootstrap or late; no blocking FOR_NM beyond TM gates
+- TD: inertia = free drag of moving locks — NM forces are virtual-work statics only
+
+FOR_NM responses:
+- FROM TM G0–G3: implemented; all PASS (see NM-002, r1_tm_gates.json)
+- FROM TU dual-source toward C-ψ+C-A: ADOPTED as multi_channel + free_gauge_lite Φ
+- FROM O R1 matter stand-up: ADOPTED
+
+Deferred / residuals:
+- Full N³ SOR confirmation (sandbox ready; analytic Green is primary export)
+- Full Maxwell (NE/TE); Φ is scalar Poisson lite
+- α_ψ / γ optical vs virtual-work mass force coefficient (TM MR2 / TD)
+- S3 orbits not required Round 1
+- No scp_sim
+
+Status: numeric DONE; gates PASS; ready for TU registry upgrade.
+===== END =====
+
+===== ENTRY 2026-07-18T23:15:00Z | NM-004 | handoff =====
+Agent: NM
+Round: 1
+Tags: handoff, FOR_TM, FOR_TU, FOR_NE, FOR_O, FOR_ND
+---
+HANDOFF Round 1 (NM)
+
+Deliverables:
+1. work/NM/offline_r1_multilock.py
+2. work/NM/sandbox_r1_multilock.py
+3. work/NM/README.md
+4. work/NM/outputs/* (result, gates, TSV, summary)
+
+Numbers (primary, sep=4):
+  M_each=4.01851293  M_tot=8.03702586
+  psi_mid=0.31977461  ell_mid=1.15988730
+  F_ψ_signed=−0.08031653  F_C_same=+0.08031653  F_C_opp=−0.08031653
+  hierarchy κ_c=200 → F_C/F_ψ=200
+
+Gates: G0=G1=G2=G3=PASS
+Tags: monist_1sector | multi_channel
+
+FOR_TM: G0=PASS G1=PASS G2=PASS G3=PASS; adopt force numbers / hierarchy row.
+FOR_TU: upgrade D-MAT-* / D-LOCK-* to LIVE; V77-1 matter numeric kill-gate met.
+FOR_NE: replace free_gauge_lite Φ with Maxwell free-gauge when Coulomb sandbox ready;
+  share ρ_q ledger interface.
+FOR_ND: U(R) pair free-energy curve available for inertia cross-check; no F=ma tautology.
+FOR_O: Round-1 matter numeric complete; no GPU; optional next=SOR confirm or S3 orbit lite.
+
+Stop for Round 1.
+===== END =====
+
+===== ENTRY 2026-07-18T24:00:00Z | NM-005 | numeric =====
+Agent: NM
+Round: 2
+Tags: numeric, dual-channel, V77-2, multi_channel, monist, KG7, KG8
+---
+ROUND 2 — joint dual-channel free medium (V77-2 critical path).
+
+Code: work/NM/sandbox_r2_dual_channel.py
+Exports: work/NM/outputs/r2_dual_*.{json,tsv,txt}
+
+ONE medium, TWO free sibling channels on same locks:
+  −σ0 ∇²ψ = s ρ_b     (F1 free capacity; psi_origin=free_capacity_3d_green)
+  −ε0 ∇²Φ = ρ_Q       (Maxwell-lite; E_origin=free_maxwell_lite from NE)
+  E = −∇Φ
+  c = 1/√(εμ) ≡ C_LOCAL = 1
+  ρ_f + ρ_b = ρ0
+  Supp|ρ_Q| ⊆ Supp ρ_b
+  TE-IA1: ψ ≠ Φ
+
+NE integration: free_maxwell_lite tags + quasistatic M3 laws (NE R1 KG1–3).
+full_maxwell_claim=false; full_maxwell_hook for E,B leapfrog attach.
+
+Configs (n_locks=2, A=0.35, σ=0.9, sep=4, M=Q_mag=4.01851293):
+
+  vacuum:   ψ_mid=0       Φ_mid=0       Fψ=0         Fc=0
+  neutral:  ψ_mid=0.31977 Φ_mid=0       Fψ=−0.08032  Fc=0
+            → KG7(i) mass sources ψ, E≡0
+  same:     ψ_mid=0.31977 Φ_mid=0.31977 Fψ=−0.08032  Fc=+0.08032
+            → ψ~1/r, Φ~1/r, E~1/r² (E_r(r=4)=0.03997)
+  opposite: ψ_mid=0.31977 Φ_mid=0       Fψ=−0.08032  Fc=−0.08032
+            → KG7(ii) ψ monopole, Φ dipole; both attract
+
+free_deficit_proxy=0.35
+sibling independence (scale M@fixed Q / Q@fixed M): PASS
+shared c JC1: c_from_eps_mu=1.0 = C_LOCAL
+
+GATES:
+  KG7_pass=True
+  KG8_shared_c=True
+  JC1–JC5=True
+  vacuum control=True
+  V77_2_joint_numeric=True
+
+VERDICT: V77-2 joint numeric PASS (Maxwell-lite dual-channel).
+Not full time-dep Maxwell M1–M4 B.
+===== END =====
+
+===== ENTRY 2026-07-18T24:05:00Z | NM-006 | checkin =====
+Agent: NM
+Round: 2
+Tags: checkin
+---
+CHECKIN Round 2
+
+Read:
+- O-002 R1 judgment: V77-1 MET; V77-2 NOT MET (no joint sim)
+- O-003 R2 theme: full Maxwell progress + dual-channel joint medium
+- NE-001..004: free_maxwell_lite KG1–4 PASS; FOR_NM replace free_gauge_lite
+  → ADOPTED: R2 uses E_origin=free_maxwell_lite (not free_gauge_lite)
+- TE maxwell_monist_v0 §4.4 joint state; TE-IA1; KG7/KG8; JC1–JC5
+  → ADOPTED as kill-gates for joint numeric
+- TM dual-source + force taxonomy → reconfirmed on joint medium N/S/O/V
+- TU: V77-2 needs joint numeric; D-DUAL-channel / D-EM-sibling-psi
+
+FOR_NM responses:
+- FROM O dual-channel joint: IMPLEMENTED (sandbox_r2 + r2_dual_*)
+- FROM NE replace φ with Maxwell-lite: ADOPTED tags+laws
+- FROM TE KG7/KG8/IA1: PASS on joint configs
+- Full Maxwell E,B: hook only (NE owns leapfrog); not blocking V77-2 lite bar
+
+Status: V77-2 joint numeric PASS claimed; residual full Maxwell time-dep.
+===== END =====
+
+===== ENTRY 2026-07-18T24:10:00Z | NM-007 | handoff =====
+Agent: NM
+Round: 2
+Tags: handoff, FOR_TU, FOR_NE, FOR_TE, FOR_TM, FOR_O
+---
+HANDOFF Round 2 (NM)
+
+Deliverables:
+1. work/NM/sandbox_r2_dual_channel.py
+2. work/NM/outputs/r2_dual_result.json
+3. work/NM/outputs/r2_dual_forces.tsv
+4. work/NM/outputs/r2_dual_radial.tsv
+5. work/NM/outputs/r2_dual_gates.tsv
+6. work/NM/outputs/r2_dual_deficit.tsv
+7. work/NM/outputs/r2_dual_summary.txt
+8. work/NM/README.md (updated)
+
+V77-2 NUMERIC: PASS
+  (joint multi_channel monist; Maxwell-lite + free-capacity; shared c; budget)
+  full_maxwell_claim=false
+
+Key numbers:
+  M_each=Q_mag=4.01851293  sep=4  free_deficit=0.35
+  neutral: Fψ=−0.08031653 Fc=0  ψ_mid=0.31977461 Φ=0
+  same:    Fψ=−0.08031653 Fc=+0.08031653  E_r(4)=0.03997183
+  opp:     Fψ=−0.08031653 Fc=−0.08031653  Φ dipole
+  c=1/√(εμ)=1=C_LOCAL
+
+FOR_TU: Promote D-DUAL-channel + D-EM-sibling-psi to LIVE_PASS joint numeric;
+  score V77-2 joint numeric MET (lite). Residual: full Maxwell for terminal (A).
+FOR_NE: Attach time-dep E,B to full_maxwell_hook (same ρ_Q, eps, mu, c, locks).
+FOR_TE: JC1–JC5 + KG7 numeric congruence from NM side PASS.
+FOR_TM: Force taxonomy N/S/O/V on joint medium confirmed.
+FOR_O: V77-2 numeric joint PASS; campaign may proceed full Maxwell / V77-3 / V77-4.
+
+Stop for Round 2 NM.
+===== END =====
+
+===== ENTRY 2026-07-18T25:00:00Z | NM-008 | demo =====
+Agent: NM
+Round: 3
+Tags: composition, unified, V77-2, full-maxwell, multi_channel
+---
+ROUND 3 — compose dual-channel joint + NE full Maxwell dynamical.
+
+O-004: joint full-Maxwell+ψ if feasible; else document Yee Maxwell + dual lite
+compose under WORLD and are congruent. NM chooses composition path (honest).
+
+Paths:
+  work/NM/composition_r3.md
+  work/NM/export_r3_unified.py
+  work/NM/outputs/r3_unified_export.json
+  work/NM/outputs/r3_unified_summary.txt
+
+LAYERS:
+  L1 NM R2 dual-channel joint: ρ_b→ψ, ρ_Q→Φ/E (lite), same locks, KG7/KG8,
+     V77_2_joint_numeric=PASS, TE-IA1 ψ≠Φ
+  L2 NE R2 full Maxwell Yee TE+TM: full_maxwell_claim=TRUE, FM1–FM7 PASS,
+     wave unit v/c=1.0, off-unit c_th=0.5 v/c=1.0, coupled E,B dynamical
+
+IMPORTED NUMBERS:
+  NE: c_th_unit=1.0 v_meas=1.0; off c_th=0.5 v_meas=0.5; divB_max~1.8e-15
+  NM forces: neutral Fψ=−0.080316 Fc=0; same Fψ=−0.080316 Fc=+0.080316;
+             opp Fψ=−0.080316 Fc=−0.080316; free_deficit=0.35
+  shared C_LOCAL=1.0 both sides
+
+CONGRUENCE C1–C7: all True → composition_pass=True
+NOT claimed: single 3D Yee+ψ production grid on identical voxels.
+
+Demo: D-UNIFIED-compose-r3 LIVE composition package.
+===== END =====
+
+===== ENTRY 2026-07-18T25:05:00Z | NM-009 | checkin =====
+Agent: NM
+Round: 3
+Tags: checkin
+---
+CHECKIN Round 3
+
+Read:
+- O-004 R2 judgment: V77-2 MET; need UNIFIED package + compose full Maxwell
+  with dual; residual single-grid production optional
+- O-005 R3 spawn unify
+- NE-005..007: full_maxwell_claim=true Yee; FOR_NM dual0 not re-owned by NE
+  → ADOPTED: import NE r2_result as L2 sibling free-gauge
+- NM-005..007 R2 dual joint PASS retained as L1
+- TE-IA1 / JC1 frozen: ψ≠Φ; shared c
+
+FOR_NM:
+- FROM O compose or document: DOCUMENTED + JSON export (composition_r3 + r3_unified)
+- FROM NE full Maxwell: ATTACHED as sibling channel (not joint Yee+ψ re-sim)
+- No ontology fork; no scp_sim
+
+Status: composition_pass=True; handoff to TU/O for (A) package.
+===== END =====
+
+===== ENTRY 2026-07-18T25:10:00Z | NM-010 | handoff =====
+Agent: NM
+Round: 3
+Tags: handoff, FOR_TU, FOR_O, FOR_NE, FOR_TE
+---
+HANDOFF Round 3 (NM)
+
+Deliverables:
+1. work/NM/composition_r3.md
+2. work/NM/export_r3_unified.py
+3. work/NM/outputs/r3_unified_export.json
+4. work/NM/outputs/r3_unified_summary.txt
+5. README Round 3 section
+
+VERDICT:
+  composition_pass = True
+  V77_2_retained = True
+  full_maxwell_sibling_attached = True
+  recommend_O_A_path = True (with residuals)
+
+Key import:
+  NE wave unit v/c=1.0; off-unit c=0.5 v/c=1.0; full_maxwell_claim=true
+  NM dual forces N/S/O/V as r2; KG7/KG8 PASS
+
+FOR_TU: Ingest r3_unified_export into UNIFIED_PACKAGE_v1; register
+  D-UNIFIED-compose-r3; stack D-DUAL-channel + D-EM-maxwell-full.
+FOR_O: Composition supports (A) cohesive model under WORLD; residual list
+  honest (no single Yee+ψ 3D production grid).
+FOR_NE: Numbers imported; dual0 not regressed; hook closed as sibling attach.
+FOR_TE: JC1 + TE-IA1 exercised across stack without collapse.
+
+Stop for Round 3 NM.
+===== END =====
+
+===== ENTRY 2026-07-19T16:00:00Z | NM-011 | theory =====
+Agent: NM
+Round: P2-R3
+Tags: stamp, CP-RC1-SPEC, ADOPT
+---
+STAMP CP-RC1-SPEC: ADOPT
+
+Evidence / co-agree:
+- TM rc1_joint_state_v0.md STATE-RC1 (ρ_b,ρ_Q,ψ,E,B); Supp; F1 + MX-dyn;
+  Φ-only forbidden for rc1_claim; RG0–RG6
+- TE dual-channel / full_maxwell monist FROZEN; TE-IA1 ψ≠Φ
+- NE Maxwell2D API (sandbox_m1_2d.py) step(rho_Q,J*) / fields();
+  m1_result.json api.rc1_ready=true; CP-M1-NUM ADOPTED (O-011)
+- TD ψ T0 quasistatic F1 acceptable for fixed locks
+
+NM SPEC implementation plan:
+  sandbox_rc1_cofield.py — 2D co-grid; F1 Laplace ψ; Maxwell2D E,B dynamical;
+  fixed N_L=2 Gaussians; gates RG0–RG6; export rc1_result.json
+
+Composition (honest): embedding_dim=2 for both ψ and Maxwell (align M1).
+  3D Green midplane optional diagnostic only.
+===== END =====
+
+===== ENTRY 2026-07-19T16:10:00Z | NM-012 | numeric =====
+Agent: NM
+Round: P2-R4
+Tags: numeric, CP-RC1-NUM, RC1, cofield
+---
+RC1 co-field implementation delivered:
+
+  work/NM/sandbox_rc1_cofield.py
+  work/NM/run_rc1.py
+  work/NM/run_rc1.sh
+  work/NM/_emit_rc1_offline.py
+
+Physics:
+  Fixed locks (±sep/2 Gaussians)
+  −∇²ψ = κ ρ_b     (2D free Laplace SOR) on same grid as Maxwell
+  Maxwell2D from NE sandbox_m1_2d (import); embed Yee fallback if import fails
+  Init: Gauss project E=−∇Φ from ρ_Q into TE arrays; then ≥20 Yee steps (J=0)
+  Forces: F_ψ = +α ∫ ρ_b ∇ψ (attract); F_C = ∫ ρ_Q E (dynamical init E)
+  Configs: vacuum / neutral / same_sign / opposite
+  Sibling scale M and Q tests
+
+Exports (after run):
+  outputs/rc1_result.json   (rc1_claim, RG0–6, stamps)
+  outputs/rc1_tm_gates.json
+  outputs/rc1_forces.tsv
+  outputs/rc1_gates.tsv
+  outputs/rc1_summary.txt
+
+Run:
+  cd v77/work/NM && python3 run_rc1.py
+
+Tags: E_origin=free_maxwell_full; em_solver=free_maxwell_yee_m1;
+      phi_origin=free_capacity_f1; dual_channel=1; rc1_locks_fixed=true;
+      embedding_dim=2; NOT free_maxwell_lite.
+
+Parent may re-run to refresh numbers; code is the source of truth for CP-RC1-NUM.
+===== END =====
+
+===== ENTRY 2026-07-19T16:20:00Z | NM-013 | checkin =====
+Agent: NM
+Round: P2-R3/R4
+Tags: checkin
+---
+CHECKIN P2-R3/R4 RC1
+
+Read:
+- O-011 CP-M1-NUM ADOPTED; O-012 RC1 theme
+- CAMPAIGN_MAP MatN1–N2; hard rule no Φ-only
+- TM rc1_joint_state_v0 RG0–RG6 (sibling TU/TM SPEC ADOPT)
+- NE Maxwell2D API + m1_result.json m1_claim=true; api.rc1_ready
+- TE full_maxwell FROZEN; TE-IA1
+
+FOR_NM:
+- FROM O: implement RC1 co-field → sandbox_rc1_cofield.py DONE
+- FROM TM SPEC ADOPT → NM-011 STAMP CP-RC1-SPEC ADOPT
+- FROM NE API → import Maxwell2D preferred path
+- CP-RC1-NUM: run `python3 run_rc1.py` → rc1_result.json; stamp on claim
+
+No scp_sim. No ontology fork.
+===== END =====
+
+===== ENTRY 2026-07-19T16:25:00Z | NM-014 | handoff =====
+Agent: NM
+Round: P2-R4
+Tags: handoff, CP-RC1-SPEC, CP-RC1-NUM, FOR_O, FOR_TU, FOR_NE, FOR_TM
+---
+HANDOFF P2-R3/R4 (NM) — RC1 co-field
+
+STAMPS:
+  CP-RC1-SPEC: ADOPT  (NM-011; co-agree TM/TE/NE state+API)
+  CP-RC1-NUM:  run required → see outputs/rc1_result.json after:
+    cd /home/d/code/scp/v77/work/NM && python3 run_rc1.py
+  If rc1_claim=true: STAMP CP-RC1-NUM ADOPT
+  If rc1_claim=false: STAMP DEFER with gate_detail
+
+Deliverables:
+1. work/NM/sandbox_rc1_cofield.py  — co-field (2D F1 Laplace + dynamical Yee)
+2. work/NM/run_rc1.py / run_rc1.sh
+3. work/NM/README.md (RC1 section)
+4. Log NM-011..014
+
+Design honesty:
+  embedding_dim=2 both channels (M1-aligned)
+  E_origin=free_maxwell_full (not lite)
+  Maxwell steps ≥20 after Gauss project init
+  Φ used only as E init, then Maxwell2D.step
+  Gates: TM RG0–RG6 → rc1_claim
+
+FOR_O: Parent re-run `python3 run_rc1.py` to mint rc1_result.json + NUM stamp.
+FOR_TU: Board CP-RC1-SPEC ADOPT (NM); CP-RC1-NUM when claim file green.
+FOR_NE: Maxwell2D consumed; m1_claim_inherited tag.
+FOR_TM: RG0–6 implemented per rc1_joint_state_v0 §6.
+
+Stop NM until re-run numbers or next O spawn.
+===== END =====
+
+===== ENTRY 2026-07-19T16:30:00Z | NM-015 | stamp =====
+Agent: NM
+Round: P2-R4
+Tags: stamp, CP-RC1-NUM, pending_run
+---
+STAMP CP-RC1-NUM: DEFER (await run artifact)
+
+Reason: sandbox delivered; `outputs/rc1_result.json` minted by:
+  python3 /home/d/code/scp/v77/work/NM/run_rc1.py
+
+On green (`rc1_claim=true`): flip this stamp to ADOPT in next NM entry / parent.
+On red: DEFER with gate_detail from JSON.
+
+STAMP CP-RC1-SPEC: ADOPT (unchanged; NM-011).
+===== END =====

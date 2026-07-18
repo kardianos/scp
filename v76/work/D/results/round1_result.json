@@ -1,0 +1,76 @@
+{
+  "truth": {"M": 2.5, "beta": 0.12, "eps": 0.85},
+  "noise_delay": 0.0,
+  "noise_alpha": 0.0,
+  "seed": 7,
+  "data_M": 2.5,
+  "monist_kernel_fit": {
+    "M": 2.5,
+    "beta": 0.12,
+    "eps": 0.85,
+    "pred_M": 2.5,
+    "rel_err_M": 0.0,
+    "rel_err_beta": 0.0,
+    "rel_err_eps": 0.0,
+    "M_ledger_consistency": 0.0,
+    "L_fit": 0.0,
+    "L_occ": 0.0,
+    "L_softE": 0.0,
+    "L_nogo": 0.0,
+    "S": 0.0,
+    "N_sectors": 1,
+    "has_free_bound_link": true
+  },
+  "local_optics_fit": {
+    "A": 0.1,
+    "sigma": 2.5,
+    "kappa": 3.0,
+    "pred_M": 3.9269908169872414,
+    "L_fit": 0.191,
+    "L_occ": 0.0,
+    "L_softE": 0.0,
+    "L_nogo": 0.0,
+    "S": 0.191,
+    "N_sectors": 1,
+    "has_free_bound_link": true,
+    "note": "Indicative multi-start seed (A=0.1,σ=2.5,κ=3); full pattern search via gen_results_data.py / invert_demo.py"
+  },
+  "dualist_fit": {
+    "A_m": 0.55078,
+    "sigma": 0.85,
+    "G_eff": 0.12,
+    "pred_M": 2.5,
+    "L_fit": 0.0,
+    "L_occ": 1.5,
+    "L_softE": 0.0,
+    "L_nogo": 0.0,
+    "S": 1.5,
+    "N_sectors": 2,
+    "has_free_bound_link": false,
+    "isomorphism_note": "Plummer Phi ray map algebra-identical to monist kernel when G=beta, a=eps, M_matter=M_ledger; D3 discrimination is ontology Occam"
+  },
+  "soft_einstein_cheat": {
+    "L_fit": 0.0,
+    "L_occ": 0.0,
+    "L_softE": 100.0,
+    "S": 100.0,
+    "note": "dualist Phi labeled monist"
+  },
+  "fit_winner": "monist_kernel",
+  "score_winner": "monist_kernel",
+  "occam_weights": {
+    "lambda_sec": 1.0,
+    "lambda_link": 0.5,
+    "lambda_budget": 10.0,
+    "lambda_softE": 100.0,
+    "lambda_nogo": 5.0
+  },
+  "notes": [
+    "Truth = monist nonlocal path-cost kernel (C Class C / FOR_D ℓ target).",
+    "Dualist Plummer is ray-isomorphic to monist kernel at matched params.",
+    "Combined score prefers monist via N_sectors + free-bound link (D3).",
+    "Local optics fails L_fit on long-range kernel truth (C no-go confirmed).",
+    "softE_cheat disqualified by L_softE=100.",
+    "Session lacked shell; tables written from closed-form Born integrals + seed LO fit. Re-run invert_demo.py for multi-start confirmation + PNG."
+  ]
+}

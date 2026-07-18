@@ -1,0 +1,88 @@
+{
+  "round": 4,
+  "design": "non-tautological inertia triad on F1-3D free capacity",
+  "numeric_method": "analytic Gaussian self-energy + boost model + R3 ray map; optional grid SOR in sandbox_r4_inertia.py",
+  "c_local": 1.0,
+  "kappa": 1.0,
+  "sigma0": 1.0,
+  "s_const": 1.0,
+  "gamma": 0.5,
+  "A": 0.4,
+  "sigma": 1.0,
+  "m_ledger": 6.299843978,
+  "m_ledger_formula": "A (2 pi sigma^2)^{3/2}",
+  "U_analytic": 0.89095,
+  "U_formula": "s kappa M^2 / (8 pi sigma sqrt(pi))  [F1 infinite-space Gaussian self-energy]",
+  "triad": {
+    "m_ledger": 6.299843978,
+    "m_from_field_energy_U_over_c2": 0.89095,
+    "m_from_field_2U_over_c2": 1.7819,
+    "m_from_boost_xi1": 0.89095,
+    "m_from_boost_xi4over3": 1.18793,
+    "m_from_rays": 6.299843978,
+    "E_unlock_field_U": 0.89095,
+    "E_ledger_Mc2": 6.299843978
+  },
+  "ratios": {
+    "m_field_over_m_ledger": 0.14142,
+    "m_boost_xi1_over_m_ledger": 0.14142,
+    "m_ray_over_m_ledger": 1.0,
+    "m_field_over_m_ray": 0.14142,
+    "U_over_E_ledger": 0.14142
+  },
+  "boost_model": {
+    "model": "E(v)=U/sqrt(1-v^2/c^2) free-field energy boost (hyperbolic free capacity / EM analog)",
+    "tautology_check": "does NOT use F=ma; uses free-field energy–velocity relation only",
+    "m_boost_xi1": 0.89095,
+    "m_boost_xi4over3": 1.18793,
+    "small_v_curve": [
+      {"v": 0.05, "gamma": 1.00125078, "K": 0.001114, "m_est_2K_v2": 0.8912},
+      {"v": 0.10, "gamma": 1.00503782, "K": 0.004488, "m_est_2K_v2": 0.8976},
+      {"v": 0.15, "gamma": 1.011314, "K": 0.01008, "m_est_2K_v2": 0.896},
+      {"v": 0.20, "gamma": 1.0206207, "K": 0.01837, "m_est_2K_v2": 0.918}
+    ],
+    "note": "m_est→U/c² as v→0; finite-v includes O(v²) relativistic corrections"
+  },
+  "ray_model": {
+    "alpha_eff": 0.0397887,
+    "slope_analytic": 0.50133,
+    "m_ray": 6.299843978,
+    "note": "R3 weak Born defl~-2 alpha_eff M/b; m_ray≡m_ledger by F1 lensing construction"
+  },
+  "pair_force_analytic": {
+    "formula": "F = s kappa M1 M2 / (4 pi R^2)",
+    "example_M_each": 3.14992,
+    "R": 4.0,
+    "F": 0.04947,
+    "note": "free-medium force from energy gradient; not used as F=ma mass extractor"
+  },
+  "renormalization_R1": {
+    "s_original": 1.0,
+    "s_renorm_for_U_eq_Mc2": 7.071,
+    "m_field_renorm": 6.299843978,
+    "m_boost_renorm": 6.299843978,
+    "interpretation": "Free constitutive s chosen so free-field self-energy U equals bound ledger Mc² closes triad (A route R1). Documents required calibration — not a dynamics-free proof of coefficient 1."
+  },
+  "j5": {
+    "tier_A_ray_ledger": true,
+    "tier_B_boost_ledger_raw": false,
+    "tier_C_boost_field": true,
+    "J5_pass_raw_no_renorm": false,
+    "J5_pass_with_renorm_R1": true,
+    "note": "Raw: m_ray=m_ledger PASS; m_field=U/c² ≪ m_ledger (form factor 0.141). Boost=field PASS. Full raw three-way FAIL without renorm. With s_renorm, triad closes."
+  },
+  "verdict": {
+    "J5_raw": false,
+    "J5_with_free_const_renorm": true,
+    "J5_operational_status": "PARTIAL — ray–ledger closed; inertia–ledger needs R1 renorm or E_star:=U",
+    "summary": "Non-tautological tests: (1) free-field unlock energy U; (2) boost E(v)=U/γ free-field model m_boost=U/c²; (3) m_ray from R3 F1 map. No F:=ma tautology. Raw J5 three-way FAIL because Gaussian self-energy form factor U/Mc²≈0.141. Ray–ledger PASS. R1 free-constant renormalization closes triad. Parent re-run grid: python3 sandbox_r4_inertia.py --N 24"
+  },
+  "codes": {
+    "sandbox": "sandbox_r4_inertia.py",
+    "run_analytic": "python3 sandbox_r4_inertia.py --skip-grid",
+    "run_grid": "python3 sandbox_r4_inertia.py --N 24 --iters 350"
+  },
+  "FOR_A": "Form factor U/Mc²=1/(8πσ√π)*M = M/(8πσ√π)≈0.141; s_renorm≈7.07 closes U=Mc² — formalize R1",
+  "FOR_C": "J5 raw FAIL field=ledger; PASS ray=ledger + boost=field; renorm path for full J5",
+  "FOR_D": "round4_inertia_triad.tsv for scoring; independent m_boost≠m_ledger raw"
+}

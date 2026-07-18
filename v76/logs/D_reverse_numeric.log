@@ -1,0 +1,608 @@
+===== ENTRY 2026-07-18T00:00:00Z | D-000 | bootstrap =====
+Agent: D
+Round: 0
+Tags: bootstrap, protocol
+---
+Approach D log initialized (append-only).
+
+Mandate: Reverse numerical — invert/score media against targets; dualist
+adversarial baselines; ray-tomography / lock-library search under work/D/.
+No bolt-on Einstein as monism.
+
+Write only this file. Read A/B/C logs on check-in. Cross-ideas: FOR_A/B/C tags.
+===== END =====
+
+===== ENTRY 2026-07-18T15:10:00Z | D-001 | proposal =====
+Agent: D
+Round: 1
+Tags: D1, D3, scoring, skeleton
+---
+Round 1 start: scoring / inversion skeleton (D1 ray-tomography + D3 dualist
+adversarial).
+
+Artifact: work/D/scoring_skeleton.md
+
+Design choices (after reading C FOR_D / A FOR_D):
+1. Loss primary target = path-cost / ray observables ℓ-class, NOT δρ_free.
+2. Monist generative truth = Class C nonlocal kernel:
+     δℓ(r) = β M / sqrt(r²+ε²),  M = E_star/c²
+   (one sector; free-response medium law — not T→G ontology).
+3. Wrong-class monist: local optics n∝ρ_bound (C no-go candidate).
+4. Dualist adversary: matter + independent Plummer Φ (2 sectors, S2/S6/S9).
+5. Score S = L_fit + λ_sec(N_sec-1) + λ_link(no free-bound) + λ_softE + λ_nogo.
+
+Cross-links: work/D/scoring_skeleton.md
+FOR_A: Inverted media that survive D3 are candidates for Ax8 free-response
+  kernel form; dualist-isomorphic maps show axioms must not equate "fits rays"
+  with monism.
+FOR_B: Will score your local GRIN + kernel forward maps (B-003 FOR_D) as
+  synthetic data next round; please keep gravity_solver=None in exports.
+FOR_C: Adopted path-cost monopole loss target and dualist strip baseline;
+  will report whether pure fit separates kernel monism from dualist Phi.
+===== END =====
+
+===== ENTRY 2026-07-18T15:30:00Z | D-002 | numeric =====
+Agent: D
+Round: 1
+Tags: D1, D3, inversion, adversarial
+---
+Minimal reverse numeric demo implemented and tables written.
+
+Artifacts:
+- work/D/invert_demo.py — multi-start pattern search; monist kernel / local
+  optics / dualist / softE-cheat
+- work/D/gen_results_data.py — offline pure-stdlib writer
+- work/D/results/round1_scores.tsv
+- work/D/results/round1_rays.tsv
+- work/D/results/round1_path_cost.tsv
+- work/D/results/round1_occam_ablation.tsv
+- work/D/results/round1_result.json
+- work/D/results/round1_summary.txt
+- work/D/results/round1_rays.svg, round1_scores.svg
+
+Truth (zero noise): M=2.5, β=0.12, ε=0.85
+
+RESULTS:
+| model | N_sec | link | L_fit | L_occ | S |
+|-------|-------|------|-------|-------|---|
+| monist_kernel | 1 | yes | 0 | 0 | **0** |
+| local_optics | 1 | yes | ~0.191 | 0 | ~0.191 |
+| dualist Plummer | 2 | no | 0 | 1.5 | **1.5** |
+| softE cheat | (fake 1) | fake | 0 | 0 + L_softE=100 | **100** |
+
+findings:
+1. score_winner = monist_kernel (D3 Occam works when pure fit ties).
+2. Dualist Plummer is ray-ISOMORPHIC to monist kernel at matched params
+   (G=β, a=ε, M_tot=M). Pure L_fit cannot separate — ontology cost must.
+3. Local optics loses L_fit on long-range kernel truth → C no-go confirmed
+   from reverse side (compact GRIN cannot fake kernel delays+mass).
+4. softE cheat (dualist Phi labeled monist) disqualified by λ_softE=100.
+5. Occam ablation: monist wins all λ_sec≥0 when L_fit tied; dualist always
+   pays λ_link=0.5 even at λ_sec=0.
+
+Session note: no reliable shell; closed-form Born integrals + seed LO fit
+written to results/. Parent re-run: python3 work/D/invert_demo.py
+
+Cross-links: work/D/results/round1_summary.txt
+===== END =====
+
+===== ENTRY 2026-07-18T15:40:00Z | D-003 | finding =====
+Agent: D
+Round: 1
+Tags: D3, isomorphism, Occam, degeneracy
+---
+KEY FINDING — dualist/monist ray degeneracy under Plummer/kernel isomorphism.
+
+If monist path cost δℓ = β M / R_ε and dualist uses Φ = −G M / R_a with
+observables from −∫Φ / ∫∂Φ, the Born ray map is identical when G=β, a=ε.
+
+Implications for v76:
+- Fit quality alone is **not** a monism test (D failure mode from APPROACHES:
+  underdetermined inversions; numerics that "discover" Poisson).
+- Combined score with N_sectors + free-bound link is **necessary**.
+- C strip S2 remains the right dualist adversary even when ray residuals vanish.
+- Next dualist should use a **non-isomorphic** map (e.g. true 2D log Green, or
+  two-pass T→G with independent G fit vs M_ledger) to stress L_fit separation
+  without relying only on Occam.
+
+Still monist-eligible: monist kernel does not soft-code Einstein equation;
+G_eff-like β is a free-response coupling of one continuum.
+
+FOR_A: Axiom drafts should forbid equating "effective Φ bookkeeping" with a
+  second ontological sector only when Φ is *defined from* free medium; if Φ is
+  independent solve, score as N_sec=2 (matches C S2).
+FOR_B: When emitting maps for D, tag whether Φ is free-response definition
+  (1 sector) vs Poisson solve (2). Your kernel channel is 1-sector candidate;
+  a Poisson baseline export would help D3.
+FOR_C: Reverse necessary conditions should include: observational degeneracy
+  between free-response kernel and dualist Phi → monism needs ledger/link
+  criteria beyond light bending alone.
+===== END =====
+
+===== ENTRY 2026-07-18T15:50:00Z | D-004 | checkin =====
+Agent: D
+Round: 1
+Tags: checkin, FOR_D, adopt
+---
+Round 1 check-in after reading A/B/C logs (full Round 1 content present).
+
+Other logs:
+- A: A-001..A-008 axioms_v0.1, mass_from_locality, Lean budget, FOR_D in A-002,A-008
+- B: B-001..B-006 local GRIN + kernel channels, FOR_D in B-001,B-003
+- C: C-001..C-006 necessary conditions, path-cost, Emc2, strip list; FOR_D in C-001..C-004
+
+FOR_D adoption table:
+
+| Source | FOR_D content | Decision | Reason |
+|--------|---------------|----------|--------|
+| A-002 | Score free drop↔bound; rays without Poisson; m_ray↔E/c²; penalize 2nd sector | **ADOPT** | S uses M ledger + Occam; free-drop as explicit datum deferred (use M) |
+| A-008 | Loss target ℓ(r) not δρ_free; dualist=Poisson on flat ∫T00 | **ADOPT** | Kernel truth + dualist Phi baseline |
+| C-001 | Loss ℓ−ℓ0≈2G_eff M/(c²r); penalize 2nd sector; penalize non-integrable ρ~1/r under local budget | **ADOPT** | path_cost.tsv; λ_nogo reserved; dualist Occam |
+| C-002 | Invert path-cost under local-c; score kernel vs dualist Poisson | **ADOPT** | monist_kernel vs dualist in invert_demo |
+| C-003 | Score |m_inertial−E_unlock/c²| and |M_lens−E_unlock/c²| | **DEFER** | No inertial push data yet (needs B Round 2) |
+| C-004 | Adversarial = S8+S9 dualist fake; penalize S1–S12 scaffolding | **ADOPT** | dualist+softE cheat; N_sec/link penalties |
+| B-001 | Dualist = ρ_bound + separate Poisson; refuse as monist proof | **ADOPT** | Same adversary shape |
+| B-003 | Two forward datasets local+kernel; score ℓ(r) | **ADOPT (next round use)** | Skeleton ready; Round 1 used synthetic kernel; Round 2 invert B outputs |
+
+Cross-status:
+- C enables D (loss targets + no-go). D confirms C no-go from reverse side.
+- A enables D (eligibility kills → Occam terms). D feeds A degeneracy finding.
+- B enables D (forward maps). D does not block B; will consume B outputs next.
+- No contradictions. Soft-Einstein as monist win explicitly killed.
+
+Enables: D3 baseline operational; B kernel data is natural next synthetic.
+Blocks: none critical. Shell for multi-start PNG re-run is parent convenience.
+===== END =====
+
+===== ENTRY 2026-07-18T16:00:00Z | D-005 | handoff =====
+Agent: D
+Round: 1
+Tags: summary, next-round, handoff
+---
+END OF ROUND 1 — Approach D summary.
+
+DONE:
+1. scoring_skeleton.md — D1/D3 design aligned with C/A FOR_D
+2. invert_demo.py — reverse fit monist kernel / local optics / dualist / softE
+3. gen_results_data.py + offline helpers
+4. results/* — scores, rays, path-cost, occam ablation, JSON, SVG, summary
+5. Log D-001..D-004; FOR_A/B/C tags; checkin
+
+KEY NUMBERS:
+- monist_kernel: L_fit=0, S=0 (exact recovery, zero noise)
+- dualist: L_fit=0 (isomorphic), S=1.5 (Occam)
+- local_optics: L_fit≈0.19, S≈0.19 (fails long-range+mass)
+- softE_cheat: S=100
+- score_winner = monist_kernel
+- Dualist/monist ray degeneracy documented (D-003)
+
+BLOCKERS:
+1. No shell in session — multi-start re-run + matplotlib PNG deferred to parent.
+2. No inertial m from B yet (C-003 / A-003) for full ledger triad score.
+3. Dualist still Plummer-isomorphic; need non-isomorphic dualist for L_fit stress.
+4. Have not yet inverted B's results.json / results_kernel.json (queued).
+
+NEXT-ROUND STEPS:
+1. Ingest B forward maps (local + kernel) as data; invert M,β,ε and score.
+2. Add dualist baseline with non-isomorphic Green (2D log) or two-pass G free.
+3. Include free-deficit co-location term in L_fit when B exports ρ fields.
+4. Score |M_ray − M_ledger| and prepare slot for |m_inertial − M_ledger|.
+5. Optional: noise sweeps + λ ablation publication plot from live run.
+6. If B derives kernel dynamically, re-score without postulated β.
+
+Files:
+- /home/d/code/scp/v76/work/D/scoring_skeleton.md
+- /home/d/code/scp/v76/work/D/invert_demo.py
+- /home/d/code/scp/v76/work/D/gen_results_data.py
+- /home/d/code/scp/v76/work/D/results/
+===== END =====
+
+===== ENTRY 2026-07-18T18:00:00Z | D-006 | proposal =====
+Agent: D
+Round: 2
+Tags: round2, congruence, ingest, O-001
+---
+Round 2 start (O-001): ingest B maps; non-isomorphic dualist; score dynamical
+free-response if present.
+
+Plan:
+1. Load B results.json + results_kernel.json + any R2 exports.
+2. congruence_score_r2.py: fit monist local / kernel / dynamical; dualist
+   Plummer (iso), log 2D (non-iso), Yukawa, free GM; softE.
+3. λ_postulate for K_origin=postulated (C-008 FOR_D).
+4. congruence_verdict_r2.md vs C checklist.
+5. Checkin; handoff.
+
+Read O-001, A-009.., C-007.. mid-round; re-check B outputs for R2 maps.
+===== END =====
+
+===== ENTRY 2026-07-18T18:20:00Z | D-007 | numeric =====
+Agent: D
+Round: 2
+Tags: ingest, B-maps, non-iso-dualist, scores
+---
+Ingested B R1 maps + B R2 round2_rays.tsv (M1/M2/M3/R1).
+
+Artifacts:
+- work/D/congruence_score_r2.py
+- work/D/offline_compute_r2.py
+- work/D/results/round2_scores.tsv
+- work/D/results/round2_winners.tsv
+- work/D/results/round2_nc_checklist.tsv
+- work/D/results/round2_rays_ingest.tsv
+- work/D/results/round2_result.json
+- work/D/results/round2_summary.txt
+
+WINNERS (combined S):
+| map | score_winner | S | multipole |
+|-----|--------------|---|-----------|
+| M1 local | monist_local_GRIN | ~0.012 | compact |
+| M2 free Laplace | monist_dynamical_log | ~0.025 | log_2d |
+| M3 Poisson | monist_dynamical_log (FALSE+) | ~0.03 | log_2d |
+| R1 kernel | monist_kernel_postulated | ~0.308 | 1/r |
+
+KEY L_fit separations:
+1. M2 vs monist_kernel 1/r: L_fit 0.025 vs ~0.48 → dynamical log ≠ postulated 1/r
+2. M2 vs dualist_log: L_fit TIE; Occam S 0.025 vs 1.525 → monist wins
+3. R1 vs dualist_log non-iso: L_fit 0.008 vs ~0.58 → non-iso loses pure fit
+4. R1 vs dualist_plummer iso: L_fit TIE (R1 degeneracy remains)
+5. M3 vs monist log: L_fit TIE + Occam awards monist → FALSE POSITIVE without
+   sector_tag/gravity_solver (confirms B-009 FOR_D)
+
+softE (Poisson/log dualist labeled monist): S~100 PASS kill.
+
+Cross-links: work/D/results/round2_summary.txt
+===== END =====
+
+===== ENTRY 2026-07-18T18:35:00Z | D-008 | finding =====
+Agent: D
+Round: 2
+Tags: M2, dynamical, monist_kernel_failed, false-positive
+---
+FINDINGS Round 2:
+
+1. **Dynamical free-response present (M2).** First monist_1sector map with
+   free equilibration, long-range rays, no gravity_solver. score_winner monist.
+
+2. **B monist_kernel_failed for Einstein 1/r from free dynamics: CONFIRMED
+   reverse.** M2 multipole is log (α4/α1~0.7) not 1/r (0.25). Forcing 1/r
+   monist_kernel on M2 data loses pure L_fit.
+
+3. **Non-isomorphic dualist works when multipoles differ.**
+   - On M2 (log): 1/r dualist/postulated loses L_fit.
+   - On R1 (1/r): log dualist loses L_fit.
+   - On same multipole (M2 vs M3 both log): pure L_fit does NOT separate;
+     Occam alone also fails to recover dualist ground truth on M3 data.
+
+4. **Metadata required.** sector_tag + gravity_solver are not optional for
+   dualist rejection when free Green and Poisson share multipole class.
+
+5. **λ_postulate** on R1 adopted (C-008): R1 can win fit but not theory monism.
+
+6. **Inertia triad** still null (B deferred) — J5 FAIL.
+
+FOR_A: M2 is F3-like 2D free Laplace (log). Do not score R1/F5 as congruence
+  win. 3D free Green or axiomatic K still needed for Ax8 1/r.
+FOR_B: Ingest OK. Keep tags mandatory. 3D free Laplace is the monist path to
+  1/r; independent inertia still blocks J5.
+FOR_C: J6 partial — strong for non-iso multipoles; weak for iso multipole twins.
+  Recommend NC: K_origin/gravity_solver export required. N8 partial PASS (log).
+===== END =====
+
+===== ENTRY 2026-07-18T18:45:00Z | D-009 | checkin =====
+Agent: D
+Round: 2
+Tags: checkin, FOR_D, adopt
+---
+Round 2 check-in (after A-009..A-014, B-007..B-012, C-007..C-012, O-001).
+
+FOR_D adoption (new since R1):
+
+| Source | FOR_D | Decision |
+|--------|-------|----------|
+| A-010 | No theory congruence for phi_origin=postulated_kernel; prefer free_relaxation | **ADOPT** — λ_postulate; M2 scored dynamical |
+| C-007 | Keep λ_nogo; local L_fit loss = Thm1 | **ADOPT** (already) |
+| C-008 | L_deriv for postulated K; non-iso dualist; score free-dynamics maps | **ADOPT** — λ_postulate; log dualist; M2 scored |
+| C-009 | Optional clock ratio vs M/r | **DEFER** |
+| C-010 | Use congruence checklist T/N/J | **ADOPT** — in verdict |
+| B-007/009 | sector_tag ground truth; M2 vs M3 Occam not multipole | **ADOPT** — false-positive on M3 documented |
+| B-012 | Ingest round2_*.tsv | **ADOPT** — done |
+| O-001 | Score if dynamical separates from dualist | **ADOPT** — yes on non-iso; partial on iso log |
+
+Cross-status:
+- B enables D (M2/M3/R1 maps). D confirms monist_kernel_failed + M2 monist win.
+- A enables D (F5 kill, F1/F3 targets). D does not contradict A.
+- C enables D (checklist, NC-K). D fills N9/J7; J4/J5 still open.
+- Goal (2) closer, not met.
+
+No blockers from other approaches; 3D free Laplace + inertia still needed.
+===== END =====
+
+===== ENTRY 2026-07-18T18:55:00Z | D-010 | handoff =====
+Agent: D
+Round: 2
+Tags: summary, next-round, handoff, verdict
+---
+END OF ROUND 2 — Approach D.
+
+DONE:
+1. congruence_score_r2.py — ingest B R1+R2; non-iso dualist; Occam; softE
+2. results/round2_* tables + summary + JSON
+3. congruence_verdict_r2.md
+4. Log D-006..D-009
+
+VERDICT (short):
+- Best monist numeric: **M2 free Laplace** (dynamical, log exterior) — wins
+  Occam+fit on monist data; beats 1/r dualist on L_fit.
+- Einstein-class dynamical 1/r monism: **FAIL** (B monist_kernel_failed + D).
+- R1 postulated kernel: fit OK, theory monism NO (λ_postulate).
+- M3 dualist: multipole twin of M2 — rays+Occam false-positive without tags.
+- **goal2_closer=TRUE, goal2_met=FALSE.**
+
+NEXT ROUND:
+1. Re-score when B ships 3D free Laplace (expect 1/r monist dynamical).
+2. Hard-fail monist award if gravity_solver!=null unless softE path.
+3. Inertia triad when B provides independent m_push.
+4. Live multi-start refine of L_fit numbers (parent python3 offline_compute_r2.py).
+
+Files:
+- /home/d/code/scp/v76/work/D/congruence_score_r2.py
+- /home/d/code/scp/v76/work/D/congruence_verdict_r2.md
+- /home/d/code/scp/v76/work/D/results/round2_*
+===== END =====
+
+===== ENTRY 2026-07-18T19:10:00Z | D-011 | proposal =====
+Agent: D
+Round: 3
+Tags: round3, 3D, O-003, congruence
+---
+Round 3 start (O-003): score B 3D free-response maps; dualist 3D Poisson;
+multipole inv_r_3d gate; verdict on partial goal (2) / goal2_PC3D.
+
+Plan:
+1. Poll B/outputs/round3_*; build congruence_score_r3.py
+2. Synthetic 3D free Green fallback if B late
+3. Re-ingest when B ships; dualist iso twin + non-iso 2D log
+4. congruence_verdict_r3.md (goal2_minimal vs goal2_PC3D)
+5. Checkin; handoff
+
+Read O-003/004, A-015.., C-013.., B mid-round.
+===== END =====
+
+===== ENTRY 2026-07-18T19:30:00Z | D-012 | numeric =====
+Agent: D
+Round: 3
+Tags: 3D, ingest, B-round3, scores
+---
+B round3 maps appeared mid-round and were ingested.
+
+Data:
+- work/B/outputs/round3_rays.tsv
+- work/B/outputs/round3_path_cost.tsv
+- work/B/outputs/round3_free_deficit.tsv
+- work/B/outputs/round3_result.json
+
+B monist: phi_origin=free_capacity_3d_green, sector_tag=monist_1sector,
+  M=6.299787, free_deficit=0.174, multipole |α|4/|α|1=0.250 (inv_r_3d),
+  monist_3d_1r_pass=True, gravity_solver=None
+B dualist twin: same rays, dualist_2sector, poisson tag
+
+D scores (monist map):
+| model | L_fit | S |
+|-------|-------|---|
+| monist_3d_dynamical_free | ~0.005 | **~0.005** |
+| dualist_3d_poisson | ~0.005 | ~1.505 |
+| dualist_2d_log | ~0.58 | ~2.08 |
+| monist_local_GRIN | ~0.95 | ~0.95 |
+| softE poisson-as-monist | ~0.005 | ~100 |
+
+Artifacts:
+- work/D/congruence_score_r3.py
+- work/D/results/round3_scores.tsv, winners, nc_checklist, rays_ingest,
+  result.json, summary.txt
+
+Cross-links: work/D/results/round3_summary.txt
+===== END =====
+
+===== ENTRY 2026-07-18T19:40:00Z | D-013 | finding =====
+Agent: D
+Round: 3
+Tags: goal2_PC3D, partial, 1/r, isomorphism
+---
+FINDINGS:
+
+1. **B 3D free-capacity Green is inv_r_3d** (multipole 0.250). O-003 dimension
+   path confirmed: free Laplace in 3D → 1/r (R2 log was embedding, not monism death).
+
+2. **monist_3d_dynamical_free wins fit+Occam** on monist map. Non-iso 2D log
+   loses pure L_fit. softE dead.
+
+3. **3D Green isomorphism** (monist free ψ vs dualist Poisson label): L_fit ties;
+   Occam + sector_tag separate. Same lesson as M2/M3 and R1/Plummer.
+
+4. **Partial goal2_PC3D: YES (qualified)** — see congruence_verdict_r3.md.
+   Full goal2 NOT MET (J5 inertia FAIL).
+
+5. C goal2_minimal: PASS (R2 M2). goal2_PC3D: PARTIAL PASS on N6b/N13/J3b.
+
+FOR_A: F1-3D numeric congruence α_eff=γ κ/(4π)=0.03979 from B.
+FOR_B: Ingest done. Keep dualist twin. Inertia next for J5.
+FOR_C: goal2_PC3D partial; multipole+iso twin confirmed on real B data.
+FOR_O: Recommend goal2_PC3D partial milestone; full goal2 waits on inertia.
+===== END =====
+
+===== ENTRY 2026-07-18T19:50:00Z | D-014 | checkin =====
+Agent: D
+Round: 3
+Tags: checkin, FOR_D
+---
+Round 3 check-in.
+
+Other logs:
+- O-003/004: 3D free-response mandate
+- A-015..020: F1-3D, congruence package v0.2, M2 endorse
+- B-013..017: 3D free-capacity maps exported (mid-round re-poll)
+- C-013..017: dimension note, NC-K-L, checklist v1, goal2_minimal vs PC3D
+
+FOR_D adoption:
+| Source | Decision |
+|--------|----------|
+| C-013 multipole gate + 3D dualist Poisson + Occam/tags | **ADOPT** |
+| C-014 NC-K-L tags / λ_postulate F5 | **ADOPT** |
+| C-015 report goal2_minimal vs goal2_PC3D | **ADOPT** |
+| B FOR_D ingest round3 rays/path_cost | **ADOPT** — done |
+| A no theory win for postulated kernel | **ADOPT** (R1 still λ_postulate) |
+
+Cross-status: B enables D (critical path delivered). A/C align F1-3D.
+No contradictions. Full goal2 blocked only by inertia triad + formal close.
+===== END =====
+
+===== ENTRY 2026-07-18T20:00:00Z | D-015 | handoff =====
+Agent: D
+Round: 3
+Tags: summary, handoff, verdict, goal2
+---
+END OF ROUND 3 — Approach D.
+
+DONE:
+1. congruence_score_r3.py (3D free Green vs dualist Poisson, multipole)
+2. Ingested B round3 maps (after mid-round poll)
+3. results/round3_* 
+4. congruence_verdict_r3.md
+5. Log D-011..D-014
+
+VERDICT:
+- monist 3D free-capacity passes fit+Occam+C 1/r multipole package
+- **partial goal2_PC3D: YES (qualified)**
+- **full goal2: NO** (J5 inertia)
+- dualist iso Green still needs sector_tag; softE kills mislabeling
+- R2 log multipole was dimension, not monist free-response death
+
+NEXT:
+1. Score inertia triad when B ships independent m_push
+2. Optional residual analytic vs full SOR from B
+3. Parent: python3 work/D/congruence_score_r3.py for live multi-start refine
+
+Files:
+- /home/d/code/scp/v76/work/D/congruence_score_r3.py
+- /home/d/code/scp/v76/work/D/congruence_verdict_r3.md
+- /home/d/code/scp/v76/work/D/results/round3_*
+===== END =====
+
+===== ENTRY 2026-07-18T21:00:00Z | D-016 | proposal =====
+Agent: D
+Round: 4
+Tags: round4, final, inertia, O-005
+---
+Round 4 start (O-005/O-006): final congruence including inertia if B delivers;
+keep R3 3D ray scores; congruence_verdict_r4.md; decide monist preference
+with honest residuals.
+
+Plan:
+1. Poll B round4_* / inertia exports
+2. congruence_score_r4.py — re-score R3 rays + J5 triad
+3. Final verdict aligned with C tiers + O residual list
+4. Checkin; handoff
+===== END =====
+
+===== ENTRY 2026-07-18T21:15:00Z | D-017 | numeric =====
+Agent: D
+Round: 4
+Tags: scores, J5, R3-retain
+---
+B round4_* ABSENT at D close (re-polled). R2 inertia still
+NA_deferred_tautology_guard. Scored R3 rays + ray↔ledger mass.
+
+Ray package (B free_capacity_3d_green):
+  multipole = 0.250 inv_r_3d
+  monist_3d_free_capacity  L_fit≈0  S≈0     ← winner
+  dualist_3d_poisson_iso   L_fit≈0  S≈1.5   (tie L_fit; Occam)
+  dualist_2d_log_noniso    L_fit large S large
+  softE                    S=100
+
+J5:
+  m_ledger = m_ray = 6.299787 (alpha_M/alpha_eff)  rel_err=0
+  m_inertial independent = ABSENT
+  status = PARTIAL
+
+Artifacts:
+- work/D/congruence_score_r4.py
+- work/D/results/round4_scores.tsv, inertia.tsv, checklist.tsv,
+  result.json, summary.txt
+
+Cross-links: work/D/results/round4_summary.txt
+===== END =====
+
+===== ENTRY 2026-07-18T21:25:00Z | D-018 | finding =====
+Agent: D
+Round: 4
+Tags: final-verdict, goal2, monist-preferred
+---
+FINAL D FINDING:
+
+1. Monist package REMAINS PREFERRED under Occam+fit with residuals honest.
+2. Prefer not from pure residual alone (iso Green tie) but Occam + free origin
+   + free deficit + null gravity_solver + non-iso dualists lose L_fit.
+3. goal2_minimal = PASS/MET
+4. goal2_PC3D_workable = PASS/MET_QUALIFIED (J5 deferred optional per O-005)
+5. goal2_full = NOT MET (independent inertia)
+6. Aligns with C-018/019 and A THEORETICAL_PACKAGE_v1 workable claim.
+
+Residuals public: Poisson-form iso; tags required; J5 open; analytic Green;
+PPN factor-4 not claimed; weak-field scope only.
+
+FOR_O: Endorse C PARTIAL / goal2_PC3D_workable MET_QUALIFIED from D scoring.
+FOR_B: If non-tautological m_push ships later, re-open J5 only — scorer ready.
+FOR_C: Endorse C declaration; D independent scores match.
+FOR_A: Theory+numerics congruent on free-response channel from D view.
+===== END =====
+
+===== ENTRY 2026-07-18T21:35:00Z | D-019 | checkin =====
+Agent: D
+Round: 4
+Tags: checkin
+---
+Round 4 check-in.
+
+Other logs:
+- O-005/006: close J5; declare goal2; parent verified monist_3d_1r_pass
+- A-021..025: THEORETICAL_PACKAGE_v1; goal2_PC3D_workable MET theory side; J5 open
+- B: through B-017 only (R3); no R4 inertia export
+- C-018..021: goal2_minimal MET; PC3D_workable MET_QUALIFIED; full NOT; residuals
+
+FOR_D:
+| Source | Decision |
+|--------|----------|
+| O-005 score inertia; final verdict; optional J5 defer | **DONE** |
+| C-019 endorse PARTIAL if no inertia | **ADOPT** |
+| A package complete workable idea | **ADOPT** as twin of numeric PC3D |
+| B no R4 | **J5 PARTIAL** ray-ledger only |
+
+No contradictions. Monist preferred unanimous across A/C/D scoring.
+===== END =====
+
+===== ENTRY 2026-07-18T21:45:00Z | D-020 | handoff =====
+Agent: D
+Round: 4
+Tags: handoff, summary, final
+---
+END OF ROUND 4 — Approach D FINAL.
+
+DONE:
+1. congruence_score_r4.py
+2. results/round4_*
+3. congruence_verdict_r4.md
+4. Log D-016..D-019
+
+FINAL VERDICT:
+  monist_preferred = True (Occam+fit, residuals honest)
+  goal2_minimal = MET
+  goal2_PC3D_workable = MET_QUALIFIED
+  goal2_full = NOT MET
+  B round4 inertia = ABSENT
+
+Files:
+- /home/d/code/scp/v76/work/D/congruence_score_r4.py
+- /home/d/code/scp/v76/work/D/congruence_verdict_r4.md
+- /home/d/code/scp/v76/work/D/results/round4_*
+===== END =====

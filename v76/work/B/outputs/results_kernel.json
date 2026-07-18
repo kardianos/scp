@@ -1,0 +1,50 @@
+{
+  "design": "B2-response free kernel Φ=α∫ρ_b/(R+ε)",
+  "gravity_solver": null,
+  "alpha": 0.08,
+  "M_bound_continuous": 3.167300753,
+  "A": 0.35,
+  "sigma": 1.2,
+  "soft": 0.15,
+  "free_deficit_core": 0.1513163,
+  "weak_field_Born_point_mass": {
+    "formula": "defl ≈ -2 α M / b  (n=1+Φ, Φ=αM/r, weak)",
+    "alpha_M": 0.253384,
+    "rays": [
+      {"b": -4.0, "deflection_rad": 0.1267, "deflection_deg": 7.26, "delay_note": "Shapiro-like ∫Φ dx"},
+      {"b": -3.0, "deflection_rad": 0.1689, "deflection_deg": 9.68},
+      {"b": -2.0, "deflection_rad": 0.2534, "deflection_deg": 14.52},
+      {"b": -1.5, "deflection_rad": 0.3378, "deflection_deg": 19.36},
+      {"b": -1.0, "deflection_rad": 0.5068, "deflection_deg": 29.04},
+      {"b": -0.5, "deflection_rad": 1.0135, "deflection_deg": 58.07, "note": "strong; soft-core regularizes full integral"},
+      {"b": 0.5, "deflection_rad": -1.0135, "deflection_deg": -58.07},
+      {"b": 1.0, "deflection_rad": -0.5068, "deflection_deg": -29.04},
+      {"b": 1.5, "deflection_rad": -0.3378, "deflection_deg": -19.36},
+      {"b": 2.0, "deflection_rad": -0.2534, "deflection_deg": -14.52},
+      {"b": 3.0, "deflection_rad": -0.1689, "deflection_deg": -9.68},
+      {"b": 4.0, "deflection_rad": -0.1267, "deflection_deg": -7.26}
+    ],
+    "max_abs_deflection_rad_weak_formula": 0.5068,
+    "note": "|b|=0.5 entry uses naive 2αM/b which overstates; soft core cuts peak"
+  },
+  "exterior_Phi_vs_monopole": [
+    {"r": 3.0, "Phi_point": 0.08044, "alpha_M_over_r": 0.08446, "ratio": 0.952},
+    {"r": 4.0, "Phi_point": 0.06106, "alpha_M_over_r": 0.06335, "ratio": 0.964},
+    {"r": 5.0, "Phi_point": 0.04920, "alpha_M_over_r": 0.05068, "ratio": 0.971},
+    {"r": 6.0, "Phi_point": 0.04120, "alpha_M_over_r": 0.04223, "ratio": 0.976},
+    {"r": 8.0, "Phi_point": 0.03110, "alpha_M_over_r": 0.03167, "ratio": 0.982}
+  ],
+  "contrast_local_vs_kernel_at_r6": {
+    "n_local_optics_minus_1": 1.3e-5,
+    "Phi_kernel_point": 0.04120,
+    "note": "C no-go confirmed numerically: local n(ρ_free)-1 is ~0 at r=6 while kernel Φ remains O(αM/r)"
+  },
+  "gates": {
+    "free_deficit_positive": true,
+    "kernel_ray_defl_nonzero": true,
+    "exterior_Phi_near_monopole": true,
+    "local_optics_exterior_small": true,
+    "kernel_round1_interesting": true
+  },
+  "c_no_go_status": "CONFIRMED for local B2-lite; kernel channel provides long-range path cost"
+}

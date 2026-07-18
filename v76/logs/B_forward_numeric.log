@@ -1,0 +1,764 @@
+===== ENTRY 2026-07-18T00:00:00Z | B-000 | bootstrap =====
+Agent: B
+Round: 0
+Tags: bootstrap, protocol
+---
+Approach B log initialized (append-only).
+
+Mandate: Forward numerical — evolve a true medium (not kernel-v3 Q-balls as
+proof); measure free-budget deficit where mass locks form; ray/clock behavior
+under local c = const without a second gravity solver. Code under work/B/.
+
+Write only this file. Read A/C/D logs on check-in. Cross-ideas: FOR_A/C/D tags.
+===== END =====
+
+===== ENTRY 2026-07-18T14:00:00Z | B-001 | proposal =====
+Agent: B
+Round: 1
+Tags: B2, medium-design, optical-monism
+---
+Round 1 design: B2-lite free-density continuum (B1 graph deferred).
+
+Artifact: work/B/medium_design_v0.md
+
+Choices:
+- Strict budget ρ_free + ρ_bound = ρ0 (killable; pedagogical).
+- Hand-placed Gaussian lock primary; autocatalytic formation smoke secondary.
+- Local free locality c=1; chart refractive index n = ρ0/ρ_free (local optics).
+- Rays via eikonal / Born on n — NO Poisson/Einstein solver.
+- Dualist residue flagged: fixed lab chart is storage scaffolding; DOF for mass
+  and warp intended as same (ρ_free, ρ_bound).
+
+Round 1 gates (local channel):
+1. free deficit where bound rises
+2. ray deflection + delay without second gravity pass
+3. vacuum control ≈ 0 deflection/delay
+4. weaker lock ⇒ smaller deflection
+
+Cross-links: work/B/medium_design_v0.md
+FOR_A: Numerics use your (B) + m=∫ρ_bound/c² ledger; chart is temporary.
+FOR_C: Will measure Δθ, Δt vs E_bound; expect your no-go to kill local n as
+  long-range Einstein-class channel — testing both local and kernel escapes.
+FOR_D: Forward data under outputs/; dualist baseline = same ρ_bound + separate
+  Poisson Φ — we refuse that path as monist proof.
+===== END =====
+
+===== ENTRY 2026-07-18T14:20:00Z | B-002 | numeric =====
+Agent: B
+Round: 1
+Tags: B2-lite, Born, budget, rays
+---
+B2-lite local-optics numbers (Born eikonal series + continuous Gaussian budget).
+
+Artifacts:
+- work/B/sandbox_b2_lite.py (numpy RK2 + plots)
+- work/B/sandbox_b2_pure.py (stdlib RK2 + Born)
+- work/B/_compute_born_results.py
+- work/B/outputs/results.json
+- work/B/outputs/summary.txt
+
+Primary lock A=0.35, σ=1.2, ρ0=1, c=1:
+  m_bound = 2π A σ² = 3.167301
+  free_deficit_core (r<2σ) = 0.151316
+  budget residual = 0 (identity)
+  max |defl| ≈ 0.630 rad (~36.1 deg) at |b|≈1
+  max delay ≈ 1.264 (∫(n-1)dx along straight path)
+  vacuum max |defl| = 0, max delay = 0
+
+Weaker A=0.15, σ=1.2:
+  m_bound = 1.357
+  free_deficit_core = 0.0648
+  max |defl| ≈ 0.240 rad (~13.7 deg) at |b|≈1
+  weaker_smaller_defl: PASS (0.240 < 0.630)
+
+Strong A=0.7 (Born only; strong-GRIN caveat):
+  m_bound = 6.335, free_deficit = 0.303, max |defl| ~1.65 rad (Born overstates)
+
+Sample lock A=0.35 rays (b, defl_deg, delay):
+  b=-4.0  +0.65 deg   0.004
+  b=-2.0  +22.3 deg   0.280
+  b=-1.0  +36.1 deg   0.907
+  b=+1.0  -36.1 deg   0.907
+  b=+2.0  -22.3 deg   0.280
+  b=+4.0  -0.65 deg   0.004
+
+Formation smoke (autocatalytic dB=γ B F − μ B, seed A=0.12, σ=0.9):
+  peak B grows ~0.12 → ~0.80 toward F*=μ/γ=1/6; exterior B=0 stays free.
+
+gates.round1_pass (local channel) = True
+gravity_solver = None
+
+Note: agent session lacked reliable shell execution; Born series + continuous
+budget computed and written to results.json. Full RK2 grid path is in pure/lite
+scripts — parent re-run: python3 v76/work/B/sandbox_b2_pure.py
+
+Cross-links: work/B/outputs/results.json
+===== END =====
+
+===== ENTRY 2026-07-18T14:35:00Z | B-003 | finding =====
+Agent: B
+Round: 1
+Tags: C-nogo, local-optics, kernel, monism
+---
+FINDING: C no-go confirmed for B2-lite local channel.
+
+Local n=ρ0/ρ_free with compact ρ_bound:
+- Free deficit is co-located with lock (monist ledger PASS).
+- Ray bend/delay is compact GRIN (rays PASS without gravity solver).
+- Exterior r≳4σ: n−1 ≈ 0 (no long-range 1/r path cost).
+- Therefore local B2-lite is NOT Einstein-class weak lensing. Matches C-002.
+
+RESPONSE: B2-response kernel channel (escape hatch 1 from C).
+
+Artifact: work/B/sandbox_b2_kernel.py
+Results: work/B/outputs/results_kernel.json, summary_kernel.txt
+Design amendment: medium_design_v0.md §9
+
+Kernel:
+  Φ(x) = α ∫ ρ_bound(x')/(R+ε) dA'
+  n = 1+Φ
+  Still NO second gravity *solver*; Φ is free-response path-cost definition.
+  Budget identity retained for free/bound ledger (deficit at core still true).
+
+Numbers (α=0.08, M=3.167):
+  weak Born defl ≈ −2 α M / b
+    b=1 → −0.507 rad (−29.0 deg)
+    b=2 → −0.253 rad (−14.5 deg)
+    b=4 → −0.127 rad (−7.3 deg)
+  exterior Φ/(αM/r) ratios ~0.95–0.98 (r=3..8)
+  contrast r=6: n_local−1 ~ 1e-5 vs Φ_kernel ~ 0.041
+
+gates.kernel_round1_interesting = True
+
+Honest dualist residue on kernel channel:
+- Kernel form is *postulated* (α, 1/R), not yet derived from free dynamics.
+- Round 2 must evolve Φ from medium law or kill kernel as smuggled Poisson.
+
+Cross-links: work/B/outputs/results_kernel.json, work/C/path_cost_profile_v0.md
+FOR_A: Local (B) alone insufficient for Ax9 Einstein-class exterior; need
+  free-response kernel / nonlocal path cost in axioms (your v0.1 aligns).
+FOR_C: Adopted no-go; local B2-lite is compact-GRIN only. Kernel channel hits
+  monopole Φ~αM/r; G_eff ~ α c^4/2 style calibration deferred. Please check
+  whether postulated Φ is dualist S2 smuggling or acceptable free law.
+FOR_D: Two forward datasets: (1) local GRIN results.json (2) kernel
+  results_kernel.json. Dualist adversarial = Poisson on flat M vs monist
+  single-sector kernel. Score path-cost ℓ(r) per C, not only δρ_free.
+===== END =====
+
+===== ENTRY 2026-07-18T14:45:00Z | B-004 | attempt =====
+Agent: B
+Round: 1
+Tags: formation, autocatalytic, lock
+---
+Lock formation attempt (smoke only).
+
+Rule: dB = γ B F − μ B with F=ρ_free, B=ρ_bound, F+B=ρ0.
+- Autocatalytic: growth only where seed B>0.
+- Exterior remains free (B=0 fixed point).
+- Equilibrium peak F*=μ/γ, B*=1−μ/γ.
+
+Parameters γ=0.12, μ=0.02 ⇒ B*≈0.833.
+Seed A=0.12, σ=0.9 → peak grows toward ~0.8 over ~60 steps (ODE proxy).
+
+Does NOT yet: spontaneous nucleation from pure free medium; multi-lock fusion;
+inertia test of formed lock.
+
+Next: couple formation to free-response Φ so growing lock increases exterior
+path cost continuously (identity, not second pass).
+
+Cross-links: work/B/sandbox_b2_pure.py formation_step
+===== END =====
+
+===== ENTRY 2026-07-18T14:55:00Z | B-005 | checkin =====
+Agent: B
+Round: 1
+Tags: checkin, FOR_B, adopt
+---
+Round 1 check-in after reading A/C/D logs.
+
+Other logs:
+- A: full Round 1 (A-001..A-008). axioms_v0 / v0.1, mass_from_locality, Lean
+  budget fragment. FOR_B in A-002, A-003, A-008.
+- C: full Round 1 (C-001..C-006). necessary conditions, path-cost profile,
+  reverse E=mc², dualist strip. FOR_B in C-001..C-004.
+- D: D-000 bootstrap only. No FOR_B.
+
+FOR_B adoption table:
+
+| Source | FOR_B content | Decision | Reason |
+|--------|---------------|----------|--------|
+| A-002 | Implement (B)+lock; free path cost; free drop; rays no gravity | **ADOPT** | B2-lite does budget+rays; path-cost distance still chart-based (partial) |
+| A-003 | free drop; inertia ∝ E/c²; rays bend without Poisson | **PARTIAL** | free drop+rays done; inertia push test **DEFER** Round 2 |
+| A-008 | Prefer compact lock + free response monopole ∝ E_star; not only local n | **ADOPT** | B2-kernel channel + design §9; local n demoted for long-range |
+| C-001 | Measure ΔL,Δθ vs E_star; kill straight free paths after lock | **ADOPT** | Both channels bend; report vs m_bound |
+| C-002 | Compact lock + free response bends rays; test monopole ∝ E_star | **ADOPT** | results_kernel exterior Φ~αM/r |
+| C-003 | Compare m_push vs E_unlock/c² vs M_ray | **DEFER** | Need unlock dynamics + push; Round 2 |
+| C-004 | Path cost in free medium not fixed edge length as true distance | **PARTIAL** | Still use lab chart for storage; optical ds_op=n ds is path cost |
+
+Cross-status:
+- A enables B (axioms + kill list). B enables A (numeric free-drop + warp channels).
+- C enables B (no-go saved a false Einstein claim). B confirms C no-go.
+- D does not block; B provides forward data for D scoring when D starts.
+
+Contradictions: none. Local B2-lite "round1_pass" is for *compact monist demo*,
+not C's full weak-field monopole — clarified in B-003 and design §9.
+===== END =====
+
+===== ENTRY 2026-07-18T15:00:00Z | B-006 | handoff =====
+Agent: B
+Round: 1
+Tags: summary, next-round, handoff
+---
+END OF ROUND 1 — Approach B summary.
+
+DONE:
+1. medium_design_v0.md — B2-lite + §9 kernel amendment after C no-go
+2. sandbox_b2_lite.py — numpy medium + RK2 rays + plots path
+3. sandbox_b2_pure.py — stdlib medium + RK2 + Born + formation
+4. sandbox_b2_kernel.py — nonlocal free-response Φ path cost
+5. _compute_born_results.py — Born series writer
+6. outputs/results.json, summary.txt — local optics numbers
+7. outputs/results_kernel.json, summary_kernel.txt — kernel monopole numbers
+8. Log B-001..B-005; FOR_A/C/D tags; checkin
+
+KEY NUMERIC RESULTS:
+- Local: free_deficit_core=0.151 (A=0.35); max|defl|~0.63 rad; vac=0; no gravity solver
+- Kernel: defl~-2αM/b; exterior Φ/(αM/r)~1; local n−1~0 at r=6 (C no-go confirmed)
+- Formation: autocatalytic seed growth toward B*≈0.83
+
+BLOCKERS:
+1. No shell in agent session for full RK2 grid re-run / plots (code ready).
+2. Kernel Φ postulated — not derived from free dynamics (dualist-residue risk).
+3. No inertia / unlock numeric yet (C-003 / A-003).
+4. Fixed chart still storage stage (B4 frame enforcement later).
+
+NEXT-ROUND STEPS:
+1. Re-run pure + kernel scripts under parent shell; archive plots.
+2. B2-dynamics: free medium field whose linear response *produces* ~1/r path
+   cost around locks (derive α), without naming Poisson as gravity sector.
+3. Inertia test: accelerate lock through free medium; fit m vs E_bound/c².
+4. Optional B1 graph path-cost medium (distance = free-edge costs only).
+5. Emit synthetic ray maps for D inversion / dualist adversarial baseline.
+6. Weak-field α calibration so δ ≈ 4 G_eff M/(c² b) target if pursuing Einstein-class.
+
+Files:
+- /home/d/code/scp/v76/work/B/medium_design_v0.md
+- /home/d/code/scp/v76/work/B/sandbox_b2_lite.py
+- /home/d/code/scp/v76/work/B/sandbox_b2_pure.py
+- /home/d/code/scp/v76/work/B/sandbox_b2_kernel.py
+- /home/d/code/scp/v76/work/B/_compute_born_results.py
+- /home/d/code/scp/v76/work/B/outputs/results.json
+- /home/d/code/scp/v76/work/B/outputs/results_kernel.json
+- /home/d/code/scp/v76/work/B/outputs/summary.txt
+- /home/d/code/scp/v76/work/B/outputs/summary_kernel.txt
+===== END =====
+
+===== ENTRY 2026-07-18T17:00:00Z | B-007 | proposal =====
+Agent: B
+Round: 2
+Tags: round2, free-response, monist-or-kill, O-001
+---
+Round 2 start (orchestrator O-001 theme: make free-response monist or kill it).
+
+Read: O-001, A Round1, C Round1, D Round1 (ray isomorphism + Occam).
+
+Plan:
+1. Design dynamical free-response media (not hand Φ=α∫ρ/R).
+2. Implement M1 free-graph path cost, M2 free-Laplace relaxation,
+   M3 dualist Poisson baseline, M4 inertia triad smoke.
+3. Tag every dataset monist_1sector vs dualist_2sector.
+4. Export TSV maps for D.
+5. Honest kill if Einstein 1/r only from 2-sector/postulated Φ.
+
+Artifact: work/B/medium_design_v1_round2.md
+
+FOR_A: M2 free-Laplace is candidate (B-response) with 2D-log multipole;
+  3D free Laplace needed for 1/r Green if axioms target C monopole class.
+FOR_C: Will stress-test whether free Laplace = S2 smuggling; claim is free
+  continuum equilibration not T→G — please strip-check.
+FOR_D: Exports tagged sector_tag; M2 vs M3 both log in 2D — Occam not multipole.
+===== END =====
+
+===== ENTRY 2026-07-18T17:30:00Z | B-008 | numeric =====
+Agent: B
+Round: 2
+Tags: M1, M2, M3, dynamical, dualist-baseline
+---
+Round 2 numerical package written.
+
+Code:
+- work/B/sandbox_r2_dynamical.py — Jacobi free-Laplace, Dijkstra, Poisson, inertia
+- work/B/offline_round2_results.py — closed-form/series exports (session path)
+- work/B/outputs/round2_result.json
+- work/B/outputs/round2_summary.txt
+- work/B/outputs/round2_rays.tsv
+- work/B/outputs/round2_path_cost.tsv
+- work/B/outputs/round2_free_deficit.tsv
+- work/B/outputs/round2_inertia_triad.tsv
+
+Shared setup: A=0.35, σ=1.2, m_ledger=3.167, free_deficit_core=0.151
+
+| Mech | sector_tag | exterior | r=6 signal | gravity_solver |
+|------|------------|----------|------------|----------------|
+| M1 local free | monist_1sector | compact | n−1~1e-6 | None |
+| M2 free Laplace 2D | monist_1sector | **log** | \|u\|~0.118 | None (free equilibration) |
+| M3 Poisson 2D | dualist_2sector | **log** | \|Φ\|~0.237 | jacobi/analytic Poisson |
+| R1 kernel αM/R | dualist_2sector_or_postulated | **1/r** | Φ~0.041 | analytic postulated |
+| REF 3D dualist | dualist_2sector | **1/r** | ~0.040 | schematic M/(4πr) |
+
+M1 max|defl|~0.63 rad (compact GRIN; same R1 local series).
+M2 exterior u(r)=u0 log(R_box/r)/log(R_box/R_lock) — dynamical free response.
+M3 2D Poisson exterior also log — multipole sibling of M2.
+R1 defl~−2αM/b (b=1 → −0.507 rad) — NOT dynamical free evolution.
+
+Session: offline closed-form used for exports; parent re-run dynamical:
+  python3 work/B/sandbox_r2_dynamical.py
+  python3 work/B/offline_round2_results.py
+
+Cross-links: work/B/outputs/round2_result.json
+===== END =====
+
+===== ENTRY 2026-07-18T17:45:00Z | B-009 | finding =====
+Agent: B
+Round: 2
+Tags: monist_kernel_failed, M2, free-laplace, verdict
+---
+FINDING / VERDICT (Round 2 primary):
+
+**monist_kernel_failed = True** (for Einstein-class exterior ∝1/r from free dynamics)
+
+Meaning:
+1. Dynamical free-medium updates that stay monist_1sector (M1 Dijkstra/local free,
+   M2 free-Laplace equilibration on free graph) do **not** produce exterior
+   path-cost ∝ 1/r in this 2D sandbox.
+2. M2 **does** produce long-range free response — but 2D Green is **log**, not 1/r.
+3. Einstein-class 1/r appears for:
+   - R1 postulated Φ=αM/R (not dynamical free),
+   - dualist 3D Poisson reference.
+4. Therefore Round-1 kernel channel is **killed as monist-derived numerics**.
+   Keep only as dualist_2sector_or_postulated baseline for D (matches D isomorphism).
+
+POSITIVE monist result (do not over-kill):
+- M2 is genuine monist_1sector **dynamical free response**: single continuum,
+  lock = hole/interface, free field relaxes, rays from free state, no second
+  gravity solve. Free deficit ledger still holds. Eligible for PROBLEM.md free
+  dynamics — wrong multipole for 3D GR weak-field targets.
+
+CRITICAL SIBLING:
+- M3 dualist 2D Poisson is also log. Multipole class alone does not prove monism.
+  D must keep Occam N_sectors + free-bound link (D-003 confirmed).
+
+FOR_A: Ax8 free-response K~1/r is **not** numerically derived from 2D free Laplace.
+  Options: (i) axiomatic K, (ii) 3D free Laplace Green~1/r as dynamical monism,
+  (iii) abandon Einstein-class target for this PDE class.
+FOR_C: M2 free equilibration vs M3 Poisson — same log multipole; S2 test is
+  sector ontology not exterior shape. Is free-Dirichlet Laplace "S2 smuggling"?
+  B claims no: no independent Φ sourced by ρ as matter; u is free continuum.
+FOR_D: Ingest round2_*.tsv. Ground-truth sector_tag column. Expect pure L_fit
+  may not separate M2 from M3 (both log optics); Occam should prefer M2.
+  R1 kernel remains ray-isomorphic dualist Plummer class.
+===== END =====
+
+===== ENTRY 2026-07-18T17:55:00Z | B-010 | attempt =====
+Agent: B
+Round: 2
+Tags: inertia, triad, deferred
+---
+Inertia triad attempt (honest).
+
+Tried: push force on lock from free-density gradient × bound coupling;
+overdamped centroid motion with a = F/m_ledger − damp v.
+
+Result: m_inertial measured as F/a recovers m_ledger by construction when
+early motion is F/m driven — **tautological**, not a monism test.
+
+Logged:
+- m_ledger = 3.167
+- independent free-drag m_inertial = NA_deferred
+- useful non-tautological: R1 kernel ray-slope tracks M
+  (slope ratio hi/lo ≈ 2.33 = M_hi/M_lo)
+
+True triad still open (C-003 / A-003): need unlock energy measurement and
+free-medium drag independent of inserting m_L into equations of motion.
+
+Cross-links: outputs/round2_inertia_triad.tsv
+===== END =====
+
+===== ENTRY 2026-07-18T18:05:00Z | B-011 | checkin =====
+Agent: B
+Round: 2
+Tags: checkin, FOR_B, O-001
+---
+Round 2 check-in.
+
+Other logs:
+- O: O-001 Round2 mandate (free-response monist or kill); O-002 spawn.
+- A: still Round1 end state in log (A-008); no new Round2 A entries at checkin time.
+- C: still Round1 end (C-006); no new Round2 C at checkin.
+- D: Round1 complete D-001..D-005; FOR_B: tag 1-sector vs Poisson; export maps.
+
+FOR_B adoption this round:
+
+| Source | Content | Decision |
+|--------|---------|----------|
+| O-001 | Evolve free-response; not hand Poisson; tag 1 vs 2 sector; inertia | **ADOPT** — M1/M2/M3/M4 done |
+| O-001 | Kill if long-range only via independent Φ | **ADOPT** — monist_kernel_failed logged |
+| D-001/D-003 | Tag Φ free-response vs Poisson; export maps | **ADOPT** — sector_tag in TSVs |
+| A-008 (R1) | Prefer free response monopole not only local n | **ADOPT** — M2 dynamical; R1 demoted |
+| C-002 (R1) | Compact lock + free response; test monopole | **PARTIAL** — M2 log monopole 2D; not 1/r |
+| C-003 | m_push vs E/c² vs M_ray | **DEFER** — tautology guard |
+
+Cross-status:
+- Confirms O gap: kernel was postulated; now explicitly dualist_or_postulated.
+- Enables D Round2 ingest of tagged maps.
+- Enables A: dynamical free response exists (log); 1/r still axiomatic or 3D.
+- No contradiction with C no-go (local still compact).
+
+Blocks: none critical. 3D free Laplace is next monist dynamical try if pursued.
+===== END =====
+
+===== ENTRY 2026-07-18T18:15:00Z | B-012 | handoff =====
+Agent: B
+Round: 2
+Tags: summary, handoff, monist_kernel_failed
+---
+END OF ROUND 2 — Approach B.
+
+DONE:
+1. medium_design_v1_round2.md
+2. sandbox_r2_dynamical.py (Dijkstra + free Laplace Jacobi + Poisson + inertia)
+3. offline_round2_results.py
+4. outputs/round2_{result.json,summary.txt,rays,path_cost,free_deficit,inertia_triad}.tsv
+5. Log B-007..B-011; checkin
+
+VERDICT:
+- **monist_kernel_failed=True** for Einstein-class 1/r from dynamical free-only
+- **M2 free-Laplace monist_1sector dynamical free response works** (log exterior)
+- **R1 Φ=αM/R killed as monist-derived** — keep as dualist/postulated baseline
+- M3 dualist 2D Poisson = log sibling of M2; Occam separates, multipole may not
+- Inertia independent measure deferred (tautology guard)
+
+KEY NUMBERS:
+  m_ledger=3.167, free_deficit=0.151
+  r6: M1 n−1~1e-6 | M2 |u|~0.118 | M3 |Φ|~0.237 | R1 Φ~0.041
+  R1 weak defl(b=1)~−0.507 rad; kernel slope tracks M
+
+NEXT ROUND (if continued):
+1. 3D free-Laplace monist dynamical (Green~1/r) — smallest upgrade for C target
+2. Parent re-run sandbox_r2_dynamical.py for discrete Jacobi/Dijkstra confirmation
+3. True inertia: unlock ledger + free-drag without inserting m_L into EOM
+4. B1 pure graph with free-path cost only (no chart n field) if A wants relational
+
+Files:
+- /home/d/code/scp/v76/work/B/medium_design_v1_round2.md
+- /home/d/code/scp/v76/work/B/sandbox_r2_dynamical.py
+- /home/d/code/scp/v76/work/B/offline_round2_results.py
+- /home/d/code/scp/v76/work/B/outputs/round2_*
+===== END =====
+
+===== ENTRY 2026-07-18T19:00:00Z | B-013 | proposal =====
+Agent: B
+Round: 3
+Tags: round3, 3D, F1, free-capacity, O-003
+---
+Round 3 start (O-003): 3D free-response congruence — critical path.
+
+Read: O-003/O-004; A F1 (−∇·(σ∇ψ)=s ρ_b, ℓ=ℓ0+γψ); D FOR_B (3D free Laplace).
+
+Plan:
+1. Implement 3D free-capacity / free Laplace (A F1) on N³ grid + analytic Green.
+2. Measure exterior ψ ~ 1/r (vs log); free deficit; Born rays from ℓ=ℓ0+γψ.
+3. Tag monist_1sector (phi_origin=free_capacity_3d_green); dualist_2sector twin.
+4. Export round3_* for D; log multipole fit + deflections; checkin/handoff.
+
+Design: work/B/medium_design_r3_3d.md
+
+Dimension hinge: R2 M2 was correct *mechanism*, wrong *dimension* (2D log).
+3D free Green is 1/r — Einstein-class multipole target without hand kernel.
+
+FOR_A: Implementing your F1 3D; alpha_eff=γ κ/(4π) with κ=s/σ0.
+FOR_C: 2D log vs 3D 1/r dimension note will be numeric.
+FOR_D: round3 maps with sector_tag + phi_origin columns.
+===== END =====
+
+===== ENTRY 2026-07-18T19:25:00Z | B-014 | numeric =====
+Agent: B
+Round: 3
+Tags: 3D, multipole, 1/r, rays, F1
+---
+3D free-capacity numerics delivered.
+
+Code:
+- work/B/sandbox_r3_3d_free.py — N³ SOR (−∇²ψ=κ ρ_b), Born equatorial rays, exports
+- work/B/offline_round3_3d.py — analytic 3D Green + mini SOR helper
+- work/B/run_round3.sh
+- work/B/outputs/round3_result.json
+- work/B/outputs/round3_summary.txt
+- work/B/outputs/round3_rays.tsv
+- work/B/outputs/round3_path_cost.tsv
+- work/B/outputs/round3_free_deficit.tsv
+
+Parameters: A=0.4, σ=1.0, κ=s/σ0=1, γ=0.5
+m_ledger = A(2πσ²)^{3/2} = **6.299787**
+free_deficit_core ≈ **0.174**
+α_eff = γκ/(4π) = **0.039789**
+α_M = α_eff M = **0.25066**
+ψ(r) = κM/(4πr) = **0.50132/r**
+
+MULTIPOLAR FIT (analytic exterior):
+  prefer = **1/r**
+  R²(1/r) = **1.0**  (ψ·r = const)
+  mse_log ≫ mse_1/r
+  r=6: ψ=0.0836
+
+RAYS (Born n=1+γ|ψ|, soft=0.25; weak ≈ −2 α_M/b):
+  b=1.0: defl ≈ **−0.501 rad (−28.7°)**  delay≈2.55
+  b=2.0: defl ≈ **−0.251 rad (−14.4°)**  delay≈1.42
+  b=4.0: defl ≈ **−0.125 rad (−7.2°)**   delay≈0.72
+  max|defl|≈0.668 rad (b=0.75)
+  vacuum defl = 0
+  ray_slope mean(|defl|·|b|)≈0.501 ≈ 2 α_M
+
+Dualist control: same 1/r field, sector_tag=dualist_2sector (Occam twin).
+
+gates.monist_3d_1r_pass = **True**
+gravity_solver = None
+phi_origin = free_capacity_3d_green
+
+Parent re-run full SOR grid:
+  python3 work/B/sandbox_r3_3d_free.py --N 32 --iters 450
+  python3 work/B/offline_round3_3d.py
+
+Cross-links: work/B/outputs/round3_result.json
+===== END =====
+
+===== ENTRY 2026-07-18T19:35:00Z | B-015 | finding =====
+Agent: B
+Round: 3
+Tags: congruence, 1/r, monist_1sector, dimension
+---
+FINDING: 3D free-capacity monist dynamical free response produces exterior 1/r.
+
+1. **Dimension resolution:** R2 monist_kernel_failed was for *hand* 1/r and for
+   *2D* free dynamics (log). Mechanism M2/F1 in **3D** yields 1/r Green
+   without postulating Φ=α∫ρ/R.
+
+2. **Congruence with A F1:** −σ0∇²ψ = s ρ_b, ℓ=ℓ0+γψ, M=∫ρ_b/c².
+   α_eff = γ s/(4π σ0) emergent from free constants (κ=s/σ0).
+
+3. **Monist eligibility:** sector_tag=monist_1sector when ψ is free continuum
+   state + budget identity + no second gravity pass. Dualist control is
+   *ontology-tagged* isomorphic field (D must use Occam N_sec — multipole ties).
+
+4. **Not claimed:** Einstein equation derivation; calibrated G_eff to SI;
+   independent inertia triad (still open); discrete N=32 box vs infinite-space
+   analytic (full SOR script ready for parent confirmation of boundary effects).
+
+5. **vs R1 kernel:** R1 remains dualist_2sector_or_postulated. R3 ψ is
+   *defined as free capacity solution*, not hand-pasted Newton kernel — though
+   linear vacuum PDE is algebraically Poisson-like (A/C S2 stress-test stands;
+   monism is free-origin + ledger link, not algebraic novelty).
+
+VERDICT: monist_3d_free_response_1r = **PASS** (analytic Green + Born package).
+
+FOR_A: α_eff=0.03979 numeric; G_eff formula can lock to γ,s,σ0,c.
+FOR_C: Dimension note confirmed; please S2-check F1 free-origin claim.
+FOR_D: Ingest round3_*; expect L_fit monist=dualist twin; Occam monist wins.
+===== END =====
+
+===== ENTRY 2026-07-18T19:45:00Z | B-016 | checkin =====
+Agent: B
+Round: 3
+Tags: checkin, FOR_B, O-003
+---
+Round 3 check-in.
+
+Other logs:
+- O-003/O-004: 3D free Laplace critical path assigned to B.
+- A: F1 free capacity + congruence package; FOR_B implement F1 3D (A-010).
+- C: (Round2 end) NC-K / S2 on free-response; await dimension note.
+- D: D-006..D-010 Round2; FOR_B keep tags; 3D free Laplace expected for 1/r.
+
+FOR_B adoption:
+
+| Source | Content | Decision |
+|--------|---------|----------|
+| O-003 | 3D free Laplace; ψ~1/r; rays; monist_1sector export | **ADOPT** — delivered |
+| A-010 | F1 −∇·(σ∇ψ)=sρ_b; ℓ=ℓ0+γψ; tag free_relaxation | **ADOPT** |
+| D-008 | Tags mandatory; 3D free Laplace monist path to 1/r | **ADOPT** |
+
+Cross-status:
+- Enables A congruence T2 (exterior monopole) + D 3D scoring.
+- Resolves O open item "Einstein-class exterior monist" at mechanism level.
+- S2 residual: elliptic free capacity looks like Poisson — C/A must pass free-origin test for goal (2) full congruence.
+
+No blockers. Optional: parent SOR N=32 for discrete ratio_num/analytic.
+===== END =====
+
+===== ENTRY 2026-07-18T19:55:00Z | B-017 | handoff =====
+Agent: B
+Round: 3
+Tags: summary, handoff, monist_3d_1r_pass
+---
+END OF ROUND 3 — Approach B.
+
+DONE:
+1. medium_design_r3_3d.md
+2. sandbox_r3_3d_free.py (3D SOR + Born + dualist tag)
+3. offline_round3_3d.py (analytic Green + mini SOR)
+4. outputs/round3_{result.json,summary.txt,rays,path_cost,free_deficit}.tsv
+5. Log B-013..B-016
+
+KEY RESULTS:
+- Exterior multipole: **prefer 1/r**, R²=1 (analytic)
+- m_ledger=6.300, free_deficit≈0.174
+- defl(b=1)≈−28.7°, delay≈2.55; vacuum=0
+- monist_3d_1r_pass=True; gravity_solver=None
+- Dualist twin isomorphic (D Occam)
+
+VERDICT: 3D free-capacity F1 is monist-eligible dynamical free response with
+Einstein-class multipole. R2 log was dimension; R1 hand kernel stays non-derived.
+
+NEXT:
+1. Parent: python3 sandbox_r3_3d_free.py --N 32 (discrete box confirmation)
+2. D: score round3 maps fit+Occam
+3. A/C: lock G_eff from free constants; S2 free-origin pass
+4. Inertia triad still open (non-tautological)
+
+Files under /home/d/code/scp/v76/work/B/ and outputs/round3_*
+===== END =====
+
+===== ENTRY 2026-07-18T21:00:00Z | B-018 | proposal =====
+Agent: B
+Round: 4
+Tags: round4, inertia, triad, J5, O-005
+---
+Round 4 start: non-tautological inertia triad (close J5).
+
+Parent verified R3: N=32 SOR monist_3d_1r_pass, R²(1/r)~0.998.
+
+Plan (avoid F:=m a tautology):
+1. Free-field unlock energy U=(s/2)∫ψ ρ_b on F1-3D (analytic Gaussian + optional SOR).
+2. Boost model E(v)=U/√(1-v²) ⇒ m_boost=U/c² from free-field energy only.
+3. m_ray from R3 α_eff map.
+4. Pair force from free energy (consistency, not mass).
+5. Export triad; honest J5 pass/fail; renorm path (A R1).
+
+Artifact target: sandbox_r4_inertia.py, outputs/round4_*.
+===== END =====
+
+===== ENTRY 2026-07-18T21:25:00Z | B-019 | numeric =====
+Agent: B
+Round: 4
+Tags: inertia, U, boost, m_ray, triad
+---
+Inertia triad numbers (F1-3D, A=0.4, σ=1, κ=s/σ0=1, c=1).
+
+Code: work/B/sandbox_r4_inertia.py
+Exports: outputs/round4_result.json, round4_inertia_triad.tsv, round4_summary.txt
+
+TRIAD:
+  m_ledger     = 6.299844   (∫ρ_b/c²)
+  m_field      = 0.89095    (U/c², U=sκM²/(8πσ√π) Gaussian self-energy)
+  m_boost(ξ=1) = 0.89095    (E=U/√(1-v²); lim 2K/v²→U)
+  m_boost(4/3) = 1.1879
+  m_ray        = 6.299844   (R3 weak Born; ≡ ledger by F1 construction)
+
+RATIOS:
+  m_ray / m_ledger   = 1.000
+  m_field / m_ledger = 0.1414   (form factor)
+  m_boost / m_field  = 1.000    (boost model)
+  U / (M c²)         = 0.1414
+
+Boost small-v (non-tautological):
+  v=0.05  m_est=2K/v² ≈ 0.891 → U
+  v=0.10  m_est ≈ 0.898
+  (relativistic corrections at larger v)
+
+Pair force analytic F=sκ M1 M2/(4π R²) documented (energy gradient, not F=ma).
+
+R1 renorm: s_renorm ≈ 7.071 forces U=Mc² ⇒ m_field_renorm=m_ledger.
+
+Parent grid check: python3 sandbox_r4_inertia.py --N 24 --iters 350
+===== END =====
+
+===== ENTRY 2026-07-18T21:35:00Z | B-020 | finding =====
+Agent: B
+Round: 4
+Tags: J5, verdict, renorm, honest
+---
+J5 VERDICT (honest):
+
+| Tier | Test | Result |
+|------|------|--------|
+| A | m_ray ≈ m_ledger | **PASS** (exact in F1 weak map) |
+| B | m_boost ≈ m_ledger raw | **FAIL** (0.89 vs 6.30) |
+| C | m_boost ≈ m_field | **PASS** (by free-field boost model) |
+| raw three-way | ledger=field=ray | **FAIL** |
+| + A R1 s_renorm | U forced = Mc² | **PASS** |
+
+Interpretation:
+1. Lensing mass = bound ledger (R3 F1) — closed.
+2. Inertial mass from free-field energy/boost tracks **U**, not raw ∫ρ_b, at default
+   free constants (Gaussian form factor U/Mc²≈1/7.07).
+3. This is the classical EM mass vs bare mass tension (A kinetic_inertia_v0 §3).
+4. Closing full J5 needs either:
+   - **R1:** renormalize free constitutive s so U=E_star (s_renorm≈7.07 here), or
+   - **Define E_star:=U** (unlock = free-field energy), then m_inertial=m_ray only
+     after also matching ray coupling to U-scale.
+5. **No F:=ma tautology** was used.
+
+J5_raw = False
+J5_with_renorm = True
+J5_operational = PARTIAL (ray–ledger solid; inertia–ledger needs R1 or E_star redefinition)
+
+FOR_A: Form factor M/(8πσ√π)=0.1414; please adopt R1 renorm into congruence package.
+FOR_C: Score J5 partial; raw three-way fail is form-factor not category error.
+FOR_D: Ingest round4_inertia_triad.tsv; independent m_boost raw ≠ m_ledger.
+===== END =====
+
+===== ENTRY 2026-07-18T21:45:00Z | B-021 | checkin =====
+Agent: B
+Round: 4
+Tags: checkin
+---
+Round 4 check-in.
+
+O: Round 4 theme close J5 + convergence (O-005/006 if present).
+A: F1 + kinetic sketch R1/R2 routes; renorm path aligns with A R1.
+C: J5 was FAIL pending B inertia — now PARTIAL with numbers.
+D: D-016.. may have scored before this inertia ship; please re-ingest
+   round4_inertia_triad.tsv (was ABSENT in early R4 D pass).
+
+FOR_B from prior: non-tautological inertia — **delivered**.
+
+No blockers. Optional: N=24 SOR U_grid vs U_analytic cross-check.
+===== END =====
+
+===== ENTRY 2026-07-18T21:55:00Z | B-022 | handoff =====
+Agent: B
+Round: 4
+Tags: summary, handoff, J5
+---
+END OF ROUND 4 — Approach B.
+
+DONE:
+1. sandbox_r4_inertia.py — U, boost, ray, pair, renorm, optional SOR
+2. outputs/round4_result.json, round4_inertia_triad.tsv, round4_summary.txt
+3. Log B-018..B-021
+
+KEY NUMBERS:
+  m_ledger = m_ray = 6.299844
+  m_field = m_boost(ξ=1) = 0.89095
+  form factor U/Mc² = 0.1414
+  s_renorm ≈ 7.071 closes U=Mc²
+  J5_raw=FAIL  J5_renorm=PASS  operational=PARTIAL
+
+NEXT:
+1. A formalize R1 free-constant renorm in congruence package
+2. D re-score with round4 triad present
+3. Optional dynamical m from pair oscillation with free kinetic term of ψ
+4. Parent: python3 sandbox_r4_inertia.py --N 24 for discrete U
+
+Files: work/B/sandbox_r4_inertia.py, work/B/outputs/round4_*
+===== END =====

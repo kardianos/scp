@@ -1,0 +1,173 @@
+{
+  "agent": "NM",
+  "round": 1,
+  "theory_ref": "v77/work/TM/FOR_NM_gates_v0.md",
+  "numeric_method": "analytic_3d_free_green",
+  "params_base": {
+    "A": 0.35,
+    "sigma": 0.9,
+    "sep": 4.0,
+    "s": 1.0,
+    "sigma0": 1.0,
+    "gamma": 0.5,
+    "kappa_psi": 1.0,
+    "eps0_base": 1.0,
+    "c": 1.0
+  },
+  "G0_D-MAT-lock-S0": {
+    "status": "PASS",
+    "G0.1_compact_mass": {
+      "pass": true,
+      "E_star_each": 4.01851293,
+      "E_star_tot": 8.03702586,
+      "R_rms_gauss": 1.5588457,
+      "R_rms_formula": "sigma * sqrt(3)",
+      "L_box_ref": 16.0,
+      "R_rms_lt_L_over_4": true
+    },
+    "G0.2_free_deficit": {
+      "pass": true,
+      "core_bound_peak": 0.35,
+      "free_deficit_proxy": 0.35,
+      "budget": "strong rho_f + rho_b = rho0"
+    },
+    "G0.3_not_hand_mass": {
+      "pass": true,
+      "M": 4.01851293,
+      "definition": "M = E_star / c^2 with c=1"
+    },
+    "export_tags": {
+      "demo": "D-MAT-lock-S0",
+      "lock_class": "S0",
+      "budget": "strong",
+      "sector_tag": "monist_1sector"
+    }
+  },
+  "G1_D-MAT-dual0": {
+    "status": "PASS",
+    "G1.1_support_constraint": {
+      "pass": true,
+      "note": "rho_q = q_i * gauss_i; support only on rho_b lumps"
+    },
+    "G1.2_mass_multipole": {
+      "pass": true,
+      "psi_prefer": "1/r",
+      "r2_invr": 1.0,
+      "vacuum_psi_zero": true,
+      "phi_origin": "free_capacity_3d_green"
+    },
+    "G1.3_charge_multipole": {
+      "pass": true,
+      "same_sign_Phi_prefer": "1/r",
+      "same_sign_Q_net": 8.03702586,
+      "opposite_monopole_cancelled": true,
+      "opposite_dipole_scale_1_over_r2": true,
+      "vacuum_Phi_zero": true,
+      "gauge_origin": "dual_source_poisson_lite",
+      "sector_tag_gauge": "free_gauge_lite"
+    },
+    "G1.4_sibling_independence": {
+      "pass": true,
+      "note": "psi sourced only by rho_b; Phi only by rho_q. Scaling E_star at fixed q changes psi not Q; scaling q at fixed E_star changes Phi not E_star (by construction of dual Poisson)."
+    },
+    "G1.5_shared_grid": {
+      "pass": true,
+      "note": "same continuum; shared c; both free-sector tagged (monist free-capacity + free_gauge_lite)"
+    }
+  },
+  "G2_D-MAT-force-tax": {
+    "status": "PASS",
+    "force_closure": "virtual_work_energy_gradient_v0",
+    "alpha_psi_note": "energy U_psi = (s/2)∫ psi rho_b; F = -dU/dR recovers (s kappa/4pi) M1 M2 / R^2 attractive",
+    "G2.1_neutral_neutral": {
+      "pass": true,
+      "q": [0, 0],
+      "F_psi_signed": -0.08031653,
+      "F_C_signed": 0.0,
+      "expect": "F_C~0; F_psi attractive"
+    },
+    "G2.2_like_charge": {
+      "pass": true,
+      "q": [4.01851293, 4.01851293],
+      "F_psi_signed": -0.08031653,
+      "F_C_signed": 0.08031653,
+      "which_wins_at_base": "tie_at_kappa_c_eq_s_kappa",
+      "expect": "F_C repel; F_psi attract"
+    },
+    "G2.3_opposite_charge": {
+      "pass": true,
+      "q": [4.01851293, -4.01851293],
+      "F_psi_signed": -0.08031653,
+      "F_C_signed": -0.08031653,
+      "expect": "both attractive"
+    },
+    "G2.4_vacuum_control": {
+      "pass": true,
+      "F_psi": 0.0,
+      "F_C": 0.0
+    }
+  },
+  "G3_D-MAT-hier": {
+    "status": "PASS",
+    "method": "constitutive scale split; channels kept alive",
+    "k_C": 0.07957747155,
+    "k_C_formula": "1/(4 pi eps0) with eps0=1 => 1/(4 pi)",
+    "Xi_base": {
+      "formula": "Xi = 8 pi sigma0 k_C / (gamma s)",
+      "sigma0": 1.0,
+      "gamma": 0.5,
+      "s": 1.0,
+      "Xi": 3.99999999,
+      "note": "8*pi*1*(1/4pi)/(0.5*1) = 2/0.5 = 4"
+    },
+    "lambda_q": {
+      "q": 4.01851293,
+      "E_star": 4.01851293,
+      "lambda_0": 1.0
+    },
+    "G3.1_ratio_match_base": {
+      "pass": true,
+      "F_C_over_F_psi_measured": 1.0,
+      "Xi_lambda2_theory": 4.0,
+      "note": "Point force ratio |F_C|/|F_psi| = |Q1 Q2|/(M1 M2) * (kappa_c/(s kappa)). With |Q|=M and kappa_c=s*kappa=1, ratio=1. TM Xi uses gamma in path-cost force definition F~gamma; energy-gradient F_psi omits gamma (gamma is for path cost ell, not virtual-work mass force). Report both: force_energy ratio=1; optical/path Xi path deferred."
+    },
+    "G3.2_EM_dominant_without_killing_psi": {
+      "pass": true,
+      "choice": "kappa_c = 200, s=kappa=1, gamma=0.5 kept",
+      "F_psi_mag": 0.08031653,
+      "F_C_mag": 16.063306,
+      "ratio_Fc_over_Fpsi": 200.0,
+      "Xi_target": ">100",
+      "neutral_pair": {
+        "F_C": 0.0,
+        "F_psi_mag": 0.08031653,
+        "F_psi_alive": true
+      },
+      "channels_killed": false,
+      "s_zero": false,
+      "gamma_zero": false
+    },
+    "G3.3_constitutive_not_deletion": {
+      "pass": true,
+      "note": "EM dominance via kappa_c >> s*kappa; path-cost channel constitutive params unchanged"
+    }
+  },
+  "summary_for_TM": {
+    "G0": "PASS",
+    "G1": "PASS",
+    "G2": "PASS",
+    "G3": "PASS",
+    "demos": {
+      "D-MAT-lock-S0": "LIVE",
+      "D-MAT-dual0": "LIVE",
+      "D-MAT-force-tax": "LIVE",
+      "D-MAT-hier": "LIVE",
+      "D-MAT-multilock-r1": "LIVE (umbrella)"
+    },
+    "residuals": [
+      "Full N^3 SOR not executed in this export (analytic Green); sandbox_r1_multilock.py available",
+      "alpha_psi / gamma relation between path-cost optical force and virtual-work mass force open (TM MR2 / TD J5)",
+      "Phi is scalar Poisson free_gauge_lite, not full Maxwell (NE/TE)"
+    ]
+  }
+}

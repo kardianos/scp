@@ -1,0 +1,123 @@
+{
+  "round": 1,
+  "agent": "NM",
+  "demo_id": "D-MAT-multilock-r1",
+  "numeric_method": "analytic_3d_free_green",
+  "codes": {
+    "offline": "work/NM/offline_r1_multilock.py",
+    "full_sor": "work/NM/sandbox_r1_multilock.py",
+    "note": "Exports from analytic Green (v76 offline_round3 pattern). Full N³ SOR available in sandbox_r1_multilock.py."
+  },
+  "design": "Multi-lock F1 free-capacity (≥2 Gaussians) + dual-source Coulomb proxy from related ρ_q. monist_1sector = ψ only; multi_channel = ψ+φ.",
+  "params": {
+    "A": 0.35,
+    "sigma": 0.9,
+    "sep_primary": 4.0,
+    "n_locks": 2,
+    "centers": [[-2.0, 0.0, 0.0], [2.0, 0.0, 0.0]],
+    "kappa_psi": 1.0,
+    "kappa_c": 1.0,
+    "sigma0": 1.0,
+    "s_const": 1.0,
+    "gamma_path": 0.5,
+    "ell0": 1.0,
+    "c_local": 1.0
+  },
+  "M_each": 4.01851293,
+  "M_tot": 8.03702586,
+  "m_ledger_formula": "A (2 pi sigma^2)^{3/2}",
+  "Q_same": [4.01851293, 4.01851293],
+  "Q_opp": [4.01851293, -4.01851293],
+  "free_deficit_proxy": 0.35,
+  "monist_1sector": {
+    "sector_tag": "monist_1sector",
+    "channel": "free_capacity_psi",
+    "phi_origin": "free_capacity_3d_green",
+    "gravity_solver": null,
+    "sector_count": 1,
+    "budget_identity": true,
+    "U_self": 0.40279012,
+    "U_self_formula": "s kappa M^2 / (8 pi sigma sqrt(pi))",
+    "U_int": 0.32126613,
+    "U_int_formula": "(s kappa / 4 pi) M1 M2 / R",
+    "U_pair_approx": 1.12684637,
+    "psi_mid": 0.31977461,
+    "ell_mid": 1.15988730,
+    "multipole_fit": {
+      "ok": true,
+      "prefer": "1/r",
+      "r2_invr": 1.0,
+      "note": "exact exterior monopole Green ψ = kappa M_tot / (4 pi r)"
+    },
+    "max_abs_defl": 0.63954922,
+    "max_delay": 2.8025,
+    "F_analytic_attractive": 0.08031653,
+    "F_fd_signed": -0.08031653,
+    "F_formula": "F_attr = (s kappa / 4 pi) M1 M2 / R^2; F_signed = -dU/dR",
+    "force_scan_seps": [3.0, 3.5, 4.0, 4.5, 5.0, 5.5],
+    "force_scan_F_signed": [-0.14278495, -0.10490323, -0.08031653, -0.06345998, -0.05140258, -0.04248150],
+    "note": "ψ free continuum state; ρ_b bound ledger of same continuum. Path cost and attraction from free response only."
+  },
+  "multi_channel": {
+    "sector_tag": "multi_channel",
+    "channels": ["free_capacity_psi", "coulomb_proxy_phi"],
+    "shared_ledger": "rho_b (mass); rho_q = signed_mask * rho_b_lump",
+    "sector_count": 2,
+    "constitutive": {
+      "psi": "-sigma0 Laplace psi = s rho_b; path cost ell = ell0 + gamma psi",
+      "phi": "-Laplace phi = kappa_c rho_q; Coulomb scalar proxy (not full Maxwell)"
+    },
+    "same_sign": {
+      "F_coulomb_signed": 0.08031653,
+      "U_phi_int": 0.32126613,
+      "exterior": "monopole ~ 1/r (net Q = 2M)",
+      "multipole_prefer": "1/r"
+    },
+    "opposite": {
+      "F_coulomb_signed": -0.08031653,
+      "U_phi_int": -0.32126613,
+      "exterior": "monopole cancelled; dipole ~ 1/r^2",
+      "dipole_moment_scale": 16.07405172,
+      "note": "p = Q * sep with |Q|=M"
+    },
+    "hierarchy_stub": {
+      "F_psi_mag": 0.08031653,
+      "F_c_mag_same": 0.08031653,
+      "ratio_Fc_over_Fpsi": 1.0,
+      "note": "O(1) at kappa_c = s*kappa = 1; EM>>path-cost needs constitutive scale split (TM)."
+    }
+  },
+  "vacuum_control": {
+    "max_abs_defl": 0.0,
+    "note": "rho_b=0 => psi=0 => zero Born deflection"
+  },
+  "gates": {
+    "n_locks_ge_2": true,
+    "budget_deficit_positive": true,
+    "psi_exterior_prefer_1r": true,
+    "psi_r2_invr_gt_0.85": true,
+    "rays_nonzero": true,
+    "vacuum_defl_near_zero": true,
+    "psi_mid_positive": true,
+    "force_psi_attractive_fd": true,
+    "dual_source_solved": true,
+    "coulomb_same_repels": true,
+    "coulomb_opposite_attracts": true,
+    "phi_same_prefer_1r": true,
+    "no_scp_sim": true,
+    "no_second_gravity_solver": true,
+    "analytic_green": true,
+    "multilock_psi_pass": true,
+    "dual_source_pass": true
+  },
+  "verdict": {
+    "multilock_psi_pass": true,
+    "dual_source_pass": true,
+    "summary": "≥2 locks: free-capacity ψ exterior ~1/r (Green), nonzero Born path costs, attractive free-energy force F_ψ=−∂U/∂R ∝ M1M2/R². Dual-source φ from related ρ_q: same-sign repels, opposite attracts; exterior monopole vs dipole. Tags: monist_1sector (ψ) vs multi_channel (ψ+φ). Full grid SOR: python3 work/NM/sandbox_r1_multilock.py"
+  },
+  "FOR_TM": "Numeric dual-force package: F_ψ attractive ∝ M1M2/R²; F_c signed ∝ Q1Q2/R². Hierarchy not automatic — need constitutive κ_c ≫ sκ or lock charge/mass split.",
+  "FOR_NE": "Scalar Coulomb proxy is Poisson twin of ψ; real Maxwell free-gauge + vector A should replace φ when EM channel ready. Interface: share ρ_q ledger.",
+  "FOR_TU": "Demo D-MAT-multilock-r1: LIVE candidate. monist_1sector path-cost + multi_channel dual-source stub. Does not claim Q-ball kernel monism.",
+  "FOR_O": "Round-1 matter numeric kill-gate done; no GPU needed.",
+  "FOR_ND": "Pair free-energy U(R) available for dynamics/inertia cross-checks; F≠ma tautology not used."
+}

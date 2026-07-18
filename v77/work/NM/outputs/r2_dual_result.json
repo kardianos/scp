@@ -1,0 +1,417 @@
+{
+  "round": 2,
+  "agent": "NM",
+  "demo_ids": [
+    "D-DUAL-channel",
+    "D-EM-sibling-psi",
+    "D-MAT-dual0",
+    "D-MAT-force-tax"
+  ],
+  "design": "Joint dual-channel free medium: F1 free-capacity \u03c8 from \u03c1_b + Maxwell-lite \u03a6/E from \u03c1_Q on same locks; shared c=1/\u221a(\u03b5\u03bc)=C_LOCAL; budget \u03c1_f+\u03c1_b=\u03c10; TE-IA1 \u03c8\u2260\u03a6.",
+  "numeric_method": "analytic_3d_green_joint",
+  "tags": {
+    "sector_tag": "multi_channel",
+    "monist": true,
+    "sector_count": 2,
+    "channels": [
+      "free_capacity_psi",
+      "free_maxwell_lite"
+    ],
+    "psi_origin": "free_capacity_3d_green",
+    "E_origin": "free_maxwell_lite",
+    "em_solver": "free_maxwell_lite",
+    "phi_origin_em": "free_gauge_poisson_3d",
+    "gauge_origin": "dual_source_maxwell_lite",
+    "gravity_solver": null,
+    "budget_identity": true,
+    "c_shared": true
+  },
+  "constitutive": {
+    "sigma0": 1.0,
+    "s": 1.0,
+    "kappa_psi": 1.0,
+    "gamma": 0.5,
+    "eps0": 1.0,
+    "mu0": 1.0,
+    "C_LOCAL": 1.0,
+    "c_from_eps_mu": 1.0,
+    "JC1_single_c": true
+  },
+  "params": {
+    "A": 0.35,
+    "sigma": 0.9,
+    "sep": 4.0,
+    "n_locks": 2,
+    "M_each": 4.018512977651075,
+    "Q_mag": 4.018512977651075
+  },
+  "free_deficit_proxy": 0.35,
+  "configs": {
+    "vacuum": {
+      "M1": 0.0,
+      "M2": 0.0,
+      "Q1": 0.0,
+      "Q2": 0.0,
+      "psi_mid": 0.0,
+      "Phi_mid": 0.0,
+      "ell_mid": 1.0,
+      "U_psi_int": 0.0,
+      "U_phi_int": 0.0,
+      "F_psi_signed": -0.0,
+      "F_c_signed": 0.0,
+      "prefer_psi": "1/r",
+      "prefer_phi": "null",
+      "prefer_E": "null",
+      "Q_net": 0.0,
+      "r2_psi": {
+        "1/r": NaN,
+        "log": NaN,
+        "1/r2": NaN
+      },
+      "r2_phi": {
+        "1/r": NaN,
+        "log": NaN,
+        "1/r2": NaN
+      },
+      "r2_E": {
+        "1/r2": NaN,
+        "1/r": NaN,
+        "log": NaN
+      }
+    },
+    "neutral": {
+      "M1": 4.018512977651075,
+      "M2": 4.018512977651075,
+      "Q1": 0.0,
+      "Q2": 0.0,
+      "psi_mid": 0.3197831021360499,
+      "Phi_mid": 0.0,
+      "ell_mid": 1.159891551068025,
+      "U_psi_int": 0.3212631364918089,
+      "U_phi_int": 0.0,
+      "F_psi_signed": -0.08031578412295222,
+      "F_c_signed": 0.0,
+      "prefer_psi": "1/r",
+      "prefer_phi": "null",
+      "prefer_E": "null",
+      "Q_net": 0.0,
+      "r2_psi": {
+        "1/r": 1.0,
+        "log": -1.7143096490644765,
+        "1/r2": 0.18711840246702294
+      },
+      "r2_phi": {
+        "1/r": NaN,
+        "log": NaN,
+        "1/r2": NaN
+      },
+      "r2_E": {
+        "1/r2": NaN,
+        "1/r": NaN,
+        "log": NaN
+      }
+    },
+    "same_sign": {
+      "M1": 4.018512977651075,
+      "M2": 4.018512977651075,
+      "Q1": 4.018512977651075,
+      "Q2": 4.018512977651075,
+      "psi_mid": 0.3197831021360499,
+      "Phi_mid": 0.29071191103277255,
+      "ell_mid": 1.159891551068025,
+      "U_psi_int": 0.3212631364918089,
+      "U_phi_int": 0.3212631364918089,
+      "F_psi_signed": -0.08031578412295222,
+      "F_c_signed": 0.08031578412295222,
+      "prefer_psi": "1/r",
+      "prefer_phi": "1/r",
+      "prefer_E": "1/r2",
+      "Q_net": 8.03702595530215,
+      "r2_psi": {
+        "1/r": 1.0,
+        "log": -1.7143096490644765,
+        "1/r2": 0.18711840246702294
+      },
+      "r2_phi": {
+        "1/r": 1.0,
+        "log": -1.7143096490644765,
+        "1/r2": 0.18711840246702294
+      },
+      "r2_E": {
+        "1/r2": 1.0,
+        "1/r": 0.7542888104206973,
+        "log": -0.6977633086585386
+      }
+    },
+    "opposite": {
+      "M1": 4.018512977651075,
+      "M2": 4.018512977651075,
+      "Q1": 4.018512977651075,
+      "Q2": -4.018512977651075,
+      "psi_mid": 0.3197831021360499,
+      "Phi_mid": 0.0,
+      "ell_mid": 1.159891551068025,
+      "U_psi_int": 0.3212631364918089,
+      "U_phi_int": -0.3212631364918089,
+      "F_psi_signed": -0.08031578412295222,
+      "F_c_signed": -0.08031578412295222,
+      "prefer_psi": "1/r",
+      "prefer_phi": "1/r2",
+      "prefer_E": "1/r2",
+      "Q_net": 0.0,
+      "r2_psi": {
+        "1/r": 1.0,
+        "log": -1.7143096490644765,
+        "1/r2": 0.18711840246702294
+      },
+      "r2_phi": {
+        "1/r": 0.7542888104206973,
+        "log": -0.6977633086585386,
+        "1/r2": 1.0
+      },
+      "r2_E": {
+        "1/r2": 0.9105581752254929,
+        "1/r": 0.5656284296664962,
+        "log": -0.419408064511712
+      }
+    }
+  },
+  "radial_same_sign": [
+    {
+      "r": 2.5,
+      "psi": 0.2558264817088399,
+      "Phi": 0.2558264817088399,
+      "E_r": 0.10233059268353596,
+      "phi_kind": "monopole"
+    },
+    {
+      "r": 3.0,
+      "psi": 0.21318873475736658,
+      "Phi": 0.21318873475736658,
+      "E_r": 0.07106291158578885,
+      "phi_kind": "monopole"
+    },
+    {
+      "r": 3.5,
+      "psi": 0.18273320122059994,
+      "Phi": 0.18273320122059994,
+      "E_r": 0.052209486063028554,
+      "phi_kind": "monopole"
+    },
+    {
+      "r": 4.0,
+      "psi": 0.15989155106802494,
+      "Phi": 0.15989155106802494,
+      "E_r": 0.039972887767006235,
+      "phi_kind": "monopole"
+    },
+    {
+      "r": 4.5,
+      "psi": 0.1421258231715777,
+      "Phi": 0.1421258231715777,
+      "E_r": 0.03158351626035061,
+      "phi_kind": "monopole"
+    },
+    {
+      "r": 5.0,
+      "psi": 0.12791324085441996,
+      "Phi": 0.12791324085441996,
+      "E_r": 0.02558264817088399,
+      "phi_kind": "monopole"
+    },
+    {
+      "r": 5.5,
+      "psi": 0.11628476441310906,
+      "Phi": 0.11628476441310906,
+      "E_r": 0.021142684438747103,
+      "phi_kind": "monopole"
+    },
+    {
+      "r": 6.0,
+      "psi": 0.10659436737868329,
+      "Phi": 0.10659436737868329,
+      "E_r": 0.017765727896447214,
+      "phi_kind": "monopole"
+    }
+  ],
+  "radial_opposite": [
+    {
+      "r": 2.5,
+      "psi": 0.2558264817088399,
+      "Phi": 0.20466118536707192,
+      "E_r": 0.16372894829365756,
+      "phi_kind": "dipole"
+    },
+    {
+      "r": 3.0,
+      "psi": 0.21318873475736658,
+      "Phi": 0.1421258231715777,
+      "E_r": 0.09475054878105182,
+      "phi_kind": "dipole"
+    },
+    {
+      "r": 3.5,
+      "psi": 0.18273320122059994,
+      "Phi": 0.10441897212605711,
+      "E_r": 0.05966798407203262,
+      "phi_kind": "dipole"
+    },
+    {
+      "r": 4.0,
+      "psi": 0.15989155106802494,
+      "Phi": 0.07994577553401247,
+      "E_r": 0.039972887767006235,
+      "phi_kind": "dipole"
+    },
+    {
+      "r": 4.5,
+      "psi": 0.1421258231715777,
+      "Phi": 0.06316703252070122,
+      "E_r": 0.028074236675867205,
+      "phi_kind": "dipole"
+    },
+    {
+      "r": 5.0,
+      "psi": 0.12791324085441996,
+      "Phi": 0.05116529634176798,
+      "E_r": 0.020466118536707194,
+      "phi_kind": "dipole"
+    },
+    {
+      "r": 5.5,
+      "psi": 0.11628476441310906,
+      "Phi": 0.042285368877494206,
+      "E_r": 0.015376497773634255,
+      "phi_kind": "dipole"
+    },
+    {
+      "r": 6.0,
+      "psi": 0.10659436737868329,
+      "Phi": 0.03553145579289443,
+      "E_r": 0.011843818597631478,
+      "phi_kind": "dipole"
+    }
+  ],
+  "radial_neutral": [
+    {
+      "r": 2.5,
+      "psi": 0.2558264817088399,
+      "Phi": 0.0,
+      "E_r": 0.0,
+      "phi_kind": "null"
+    },
+    {
+      "r": 3.0,
+      "psi": 0.21318873475736658,
+      "Phi": 0.0,
+      "E_r": 0.0,
+      "phi_kind": "null"
+    },
+    {
+      "r": 3.5,
+      "psi": 0.18273320122059994,
+      "Phi": 0.0,
+      "E_r": 0.0,
+      "phi_kind": "null"
+    },
+    {
+      "r": 4.0,
+      "psi": 0.15989155106802494,
+      "Phi": 0.0,
+      "E_r": 0.0,
+      "phi_kind": "null"
+    },
+    {
+      "r": 4.5,
+      "psi": 0.1421258231715777,
+      "Phi": 0.0,
+      "E_r": 0.0,
+      "phi_kind": "null"
+    },
+    {
+      "r": 5.0,
+      "psi": 0.12791324085441996,
+      "Phi": 0.0,
+      "E_r": 0.0,
+      "phi_kind": "null"
+    },
+    {
+      "r": 5.5,
+      "psi": 0.11628476441310906,
+      "Phi": 0.0,
+      "E_r": 0.0,
+      "phi_kind": "null"
+    },
+    {
+      "r": 6.0,
+      "psi": 0.10659436737868329,
+      "Phi": 0.0,
+      "E_r": 0.0,
+      "phi_kind": "null"
+    }
+  ],
+  "sibling_independence": {
+    "psi_scales_with_M_fixed_Q": true,
+    "Phi_unchanged_when_M_scales_fixed_Q": true,
+    "Phi_scales_with_Q_fixed_M": true,
+    "psi_unchanged_when_Q_scales_fixed_M": true,
+    "pass": true
+  },
+  "full_maxwell_hook": {
+    "full_maxwell_claim": false,
+    "static_B": 0.0,
+    "Faraday": "deferred_time_dep",
+    "Ampere_Maxwell": "deferred_time_dep",
+    "Gauss_B": "trivial_B0",
+    "note": "Quasistatic Maxwell-lite \u03a6/E co-present with \u03c8. Hook for NE full leapfrog E,B: same \u03c1_Q, shared c, same locks.",
+    "interface_for_NE": {
+      "rho_Q_ledger": "same as this sandbox",
+      "eps0": 1.0,
+      "mu0": 1.0,
+      "c": 1.0
+    }
+  },
+  "mini_sor": null,
+  "gates": {
+    "joint_same_locks_both_channels": true,
+    "budget_identity": true,
+    "shared_c_JC1": true,
+    "c_from_eps_mu": 1.0,
+    "C_LOCAL": 1.0,
+    "sources_independent_JC3": true,
+    "TE_IA1_psi_neq_Phi": true,
+    "psi_exterior_1r": true,
+    "E_exterior_1r2_same_sign": true,
+    "Phi_exterior_1r_same_sign": true,
+    "KG7_neutral_psi_nonzero_E_zero": true,
+    "KG7_opposite_psi_monopole_Phi_dipole": true,
+    "KG7_no_KEM5": true,
+    "vacuum_psi_zero": true,
+    "vacuum_E_zero": true,
+    "force_neutral_Fpsi_attract_Fc_zero": true,
+    "force_same_Fc_repel_Fpsi_attract": true,
+    "force_opposite_both_attract": true,
+    "sector_tags_JC5": true,
+    "no_second_gravity_solver": true,
+    "no_scp_sim": true,
+    "Supp_rhoQ_subset_rhob": true,
+    "full_maxwell_claim": false,
+    "maxwell_lite_channel": true,
+    "maxwell_hook_EB_ready": true,
+    "KG7_pass": true,
+    "KG8_shared_c": true,
+    "V77_2_joint_numeric": true
+  },
+  "verdict": {
+    "V77_2_joint_numeric_pass": true,
+    "KG7_sibling_pass": true,
+    "KG8_shared_c_pass": true,
+    "summary": "Joint dual-channel: free-capacity \u03c8 and Maxwell-lite \u03a6/E on same locks with shared c and budget. Neutral mass \u2192 \u03c8 only; opposite charges \u2192 \u03a6 dipole + \u03c8 monopole (TE-IA1). Forces match taxonomy. V77-2 joint numeric PASS. full_maxwell_claim=false (static lite; E,B hook ready)."
+  },
+  "FOR_TU": "D-DUAL-channel / D-EM-sibling-psi joint numeric PASS candidate. V77-2 joint numeric met under Maxwell-lite (not full time-dep M1\u2013M4).",
+  "FOR_NE": "Integrated free_maxwell_lite tags + E~1/r\u00b2. Please attach full Maxwell E,B leapfrog to same \u03c1_Q when R2 Maxwell ready; interface in full_maxwell_hook.",
+  "FOR_TE": "JC1\u2013JC5 + TE-IA1 exercised numerically; KG7 structure PASS.",
+  "FOR_TM": "Dual-source force taxonomy confirmed on joint medium (N/S/O/V).",
+  "FOR_O": "V77-2 numeric joint: PASS; residual full Maxwell time-dep.",
+  "wall_secs": 0.00048661231994628906
+}

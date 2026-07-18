@@ -1,0 +1,939 @@
+===== ENTRY 2026-07-18T00:00:00Z | TU-000 | bootstrap =====
+Agent: TU
+Round: 0
+Tags: bootstrap, protocol
+---
+Theory Unification — G1-G3, registry, kill
+
+Log initialized (append-only). Write only this file + work/TU/.
+Read v76 seed, v77 PROBLEM/FOCI/RUN, all logs. FOR_X for cross-ideas.
+===== END =====
+
+===== ENTRY 2026-07-18T21:10:00Z | TU-001 | theory =====
+Agent: TU
+Round: 1
+Tags: theory, world, G1, seed
+---
+WORLD_v0 written: work/TU/WORLD_v0.md (≤2 pages).
+
+Core claim (widely applicable):
+- One continuum; free vs bound; energy = ledger; mass = E★/c²;
+  c = free locality (constant in frame); warp = constant local c around locks.
+- Long-range path cost needs free-response channel ψ (F1-3D LIVE seed), not local GRIN.
+- Sibling free channels (C-ψ, C-A, C-W, optional C-Θ) share c + budget; different constitutive laws.
+- Foci plug into shared primitives table; private dualist stages are kill territory.
+
+Read: v76/CONVERGENCE.md, THEORETICAL_PACKAGE_v1, APPROACHES §1–2,
+v77 PROBLEM/FOCI/RUN/README, O-000/O-001.
+
+FOR_TE: Map Maxwell-lite into WORLD free-channel C-A; freeze FG-Q/FG-W or replace NE provisional.
+FOR_TD: Own J5/time-dep/C1 under same primitives; do not invent foreign mass.
+FOR_TM: Lock = bound continuum; dual-source design toward C-ψ + C-A.
+===== END =====
+
+===== ENTRY 2026-07-18T21:20:00Z | TU-002 | demo =====
+Agent: TU
+Round: 1
+Tags: demo, registry
+---
+DEMOS.md: work/TU/DEMOS.md
+
+LIVE:
+- D-ψ-3D (v76 F1-3D goal2_PC3D_workable) — primary seed; do not regress.
+
+DEAD (inherited):
+- D-ψ-local-GRIN, D-ψ-hand-Poisson (as monist proof), D-ψ-2D-log (as GR exterior).
+
+PROVISIONAL (mid-round NE design, not LIVE):
+- D-EM-coulomb, D-EM-wave-c — work/NE/design_r1_em_sandbox.md; gates designed;
+  full_maxwell_claim=false; shared-c constitutive only; no joint ψ+gauge solve yet.
+  Promote to LIVE only after numeric gate pass + TE equation match.
+
+DRAFT/PLANNED:
+- D-EM-maxwell-lite, D-EM-dualist-baseline, D-DUAL-channel (V77-2),
+  D-J5-inertia, D-ψ-timedep, D-C1-rods,
+  D-LOCK-ontology, D-LOCK-multi, D-LOCK-dual-source, D-SCP-vocab-bridge.
+
+Adopted FOR_TU from NE design §7: register EM demo IDs — done as PROVISIONAL not LIVE.
+===== END =====
+
+===== ENTRY 2026-07-18T21:25:00Z | TU-003 | kill =====
+Agent: TU
+Round: 1
+Tags: kill, V77-K
+---
+KILL_CRITERIA.md: work/TU/KILL_CRITERIA.md
+
+V77-K when K1 forced irreducible dualism OR K2 shared-c/budget contradiction after dual-channel attempt OR K3 ledger war OR K4 seed regression necessity.
+
+NOT kill: single gate fail, J5 renorm path, R1 Poisson iso, slow R1, out-of-scope GR/G/α.
+
+Process: focus kill proposal → partner contest → TU adjudicate → O declare.
+Quorum TU+O. Soft branch kills continue (v76 style).
+
+R1 adjudication: K1–K4 NOT MET. Premature V77-K forbidden.
+===== END =====
+
+===== ENTRY 2026-07-18T21:35:00Z | TU-004 | checkin =====
+Agent: TU
+Round: 1
+Tags: checkin, score, G1, G2, G3, V77-1, V77-2
+---
+CHECKIN — re-read all v77 logs + mid-round work/
+
+Logs:
+- O-000 bootstrap, O-001 R1 theme (V77-1 progress; V77-2 hard milestone later)
+- TE/TD/ND/TM/NM: bootstrap only (no R1 theory/numeric entries yet)
+- NE: bootstrap + design artifact (no log entry past NE-000 at re-read time)
+- TU: this thread
+
+Score toward tiers:
+
+| Tier | Bar | R1 status |
+|------|-----|-----------|
+| V77-1 | ≥2 foci written laws + ≥1 numeric kill-gate each | **NOT MET** — seed counts as 1 (ψ LIVE); EM provisional design only; Dyn/Matter no new laws |
+| V77-2 | dual-channel ψ + Maxwell-lite, shared c + budget, theory + joint numeric | **NOT MET** — no joint medium; NE plans independent free-gauge gates first |
+| V77-3 | J5 closed or renorm necessity | OPEN residual (v76); TD/ND not started R1 |
+| V77-4 | TU declares G1+G2 unity | NO |
+| V77-K | program kill | **NOT MET** (armed criteria only) |
+
+G1–G3 snapshot:
+- **G1** (widely applicable idea): **PARTIAL** — WORLD_v0 states the idea; multi-domain application not yet demonstrated by ≥2 new focus packages.
+- **G2** (unified multi-focus): **NO** — only seed + EM design sketch; no Dynamics/Matter laws; no dual-channel.
+- **G3** (build or kill): **BUILD path open** — kill criteria written; no force-to-kill; world map + registry standing.
+
+Progress toward O R1 theme: TU world map v0 DONE; focus stand-up incomplete elsewhere.
+
+FOR_NE: Accepted design IDs; keep PROVISIONAL until outputs/r1_result.json shows gate PASS; then FOR_TU for LIVE upgrade. Do not claim V77-2 from Coulomb alone.
+FOR_TE: Priority freeze monist Maxwell-lite so NE provisional can un-provisional.
+FOR_TD/ND/TM/NM: Need draft laws + first kill-gate designs this campaign for V77-1.
+===== END =====
+
+===== ENTRY 2026-07-18T21:40:00Z | TU-005 | handoff =====
+Agent: TU
+Round: 1
+Tags: handoff, FOR_O
+---
+HANDOFF Round 1 (TU)
+
+Deliverables:
+1. work/TU/WORLD_v0.md — primitives + free-channel table (C-ψ LIVE, C-A provisional)
+2. work/TU/DEMOS.md — registry; D-ψ-3D LIVE seed; EM demos PROVISIONAL
+3. work/TU/KILL_CRITERIA.md — K1–K4 + process
+4. G1 partial / G2 no / G3 build; V77-1 not met; V77-K not met
+
+FOR_O next-round theme (proposed):
+**"Close V77-1: freeze TE Maxwell-lite + NE gate PASSes; TD/TM draft laws;
+ND/NM first kill-gates; TU re-score. Do not require dual-channel joint solve
+yet — that is Round N for V77-2 after two foci are LIVE."**
+
+Alt if EM already LIVE by O's next read:
+**"Open dual-channel path: shared-c budget identity theory (TE+TD+TM) +
+one joint numeric (NE/ND) toward V77-2."**
+
+TU next: re-read partner hands-offs; upgrade DEMO statuses; WORLD_v1 if TE/TD/TM package.
+
+===== END =====
+
+===== ENTRY 2026-07-18T21:55:00Z | TU-006 | checkin =====
+Agent: TU
+Round: 1
+Tags: checkin, late, FOR_TD, score
+---
+LATE R1 RE-READ — TD advanced after TU-004/005.
+
+Adopted FOR_TU from TD-001/002:
+- Register D-DYN-J5, D-DYN-timedep, D-DYN-rods, D-DYN-cwave as DRAFT (laws + kill-gates ND-G0..G5).
+- J5 status PARTIAL pending ND; V77-3 = naïve kill + renorm doc OR raw triad pass.
+- Lorentz-from-c = residual/caution, not demo pass.
+- DEMOS.md updated; old D-J5 / D-ψ-timedep / D-C1 names → aliases to D-DYN-*.
+
+Re-score G1–G3 / tiers (final R1 TU snapshot):
+
+| Goal/Tier | Status | Note |
+|-----------|--------|------|
+| **G1** | **PARTIAL+** | WORLD_v0 + Dynamics package speak shared primitives; EM still provisional |
+| **G2** | **NO** | No multi-focus dual-channel or Matter lock package |
+| **G3** | **BUILD** | Kill criteria armed; no K1–K4 |
+| **V77-1** | **NOT MET** | Seed LIVE (1); Dynamics laws YES but ND gates not run in v77; EM not LIVE; Matter 0. Need second focus with numeric kill-gate. |
+| **V77-2** | **NOT MET** | Dual-channel not started |
+| **V77-3** | **OPEN** | Path specified (J5-β); ND-G1/G2 pending |
+| **V77-K** | **NOT MET** | |
+
+FOR_ND: Priority G0+G1 from TD-002 → Dynamics can complete second V77-1 slot.
+FOR_TD: Package accepted into WORLD_v0 interface (C-ψ + C-W); T3 hybrid notes sibling to C-A — good for later V77-2.
+
+Revised FOR_O theme (preferred):
+**"Finish V77-1 numeric half: ND G0+G1 (and NE Coulomb/wave PASS if ready);
+TE freeze Maxwell-lite; TM lock ontology draft. V77-2 dual-channel only after
+≥2 LIVE foci."**
+
+===== END =====
+
+===== ENTRY 2026-07-18T22:25:00Z | TU-007 | checkin =====
+Agent: TU
+Round: 1
+Tags: checkin, final, G1, G2, G3, V77-1, V77-2, FOR_O
+---
+FINAL R1 RE-READ — TE + TM packages landed; N* sandboxes present.
+
+Adopted:
+- FOR_TU from TE-001: register D-EM-* (maxwell-lite DRAFT theory PASS; coulomb/wave
+  PROVISIONAL; sibling-psi PLANNED for V77-2). ψ≠Φ collapse forbidden — WORLD aligned.
+- FOR_TU from TM-003: D-MAT-lock-S0 / dual0 / force-tax / hier DRAFT; D-LOCK-* aliases;
+  D-SCP-vocab-bridge theory-only no monism claim.
+
+DEMOS.md + WORLD_v0 free-channel C-A updated (TE theory DRAFT PASS).
+
+=== G1–G3 STATUS SNAPSHOT (authoritative for O R1) ===
+
+| Goal | Status | Evidence |
+|------|--------|----------|
+| **G1** Widely applicable idea | **PARTIAL → STRONG DRAFT** | WORLD_v0 + three focus law packages (TE/TD/TM) share free/bound, c, budget, sibling channels. Not multi-demo LIVE yet. |
+| **G2** Unified multi-focus application | **NO (path open)** | Shared language yes; no joint dual-channel numeric; Matter dual0 not run; no contradiction found. |
+| **G3** Build or kill | **BUILD** | KILL_CRITERIA armed; K1–K4 not met; positive stacking in progress. |
+
+=== TIER SCORE ===
+
+| Tier | Status | Gap |
+|------|--------|-----|
+| **V77-1** Multi-demo draft | **NOT MET (~80% theory)** | Laws: EM+Dyn+Matter all YES. Numeric kill-gate: only seed LIVE. Need ≥1 N* focus PASS with outputs+log. |
+| **V77-2** Dual-channel free medium | **NOT MET** | D-EM-sibling-psi / D-DUAL-channel planned; JC1–JC5 theory exists; no joint numeric. |
+| **V77-3** J5 | **OPEN** | J5-β path + ND sandbox; no outputs committed. |
+| **V77-4** Unified world | **NO** | |
+| **V77-K** | **NOT MET** | Premature kill forbidden. |
+
+Demo LIVE count: **1** (D-ψ-3D). DRAFT theory: EM, Dynamics, Matter. PROVISIONAL EM numeric. DEAD: v76 negative branches.
+
+FOR_NE / FOR_ND / FOR_NM: Run sandboxes → commit outputs/*_result.json → log PASS|FAIL with demo IDs → FOR_TU for LIVE upgrade. That is the V77-1 gate.
+
+FOR_O next-round theme (final):
+**"Numeric congruence round: NE KG1–4, ND J5+wave, NM G0–G1 produce PASS
+artifacts; TU upgrades LIVE demos and re-scores V77-1. Hold V77-2 joint
+sibling-ψ until ≥2 foci LIVE. No program kill."**
+
+===== END =====
+
+===== ENTRY 2026-07-19T00:10:00Z | TU-008 | theory =====
+Agent: TU
+Round: 2
+Tags: theory, world, WORLD_v1, full-maxwell
+---
+ROUND 2 — WORLD_v1 written: work/TU/WORLD_v1.md (supersedes v0 as current).
+
+Absorbed:
+- v76 F1-3D seed LIVE
+- TE maxwell_monist_v0 + constitutive JC1–JC5; ψ≠Φ sibling rule
+- TD dynamics package J5-β default path; free wave / timedep options
+- TM lock ontology DUAL-0; force taxonomy; hierarchy constitutive
+- NE/ND/NM R1 PASS numbers (parent O-002 re-score)
+
+WORLD_v1 core:
+  one continuum; free/bound; one c; sibling channels C-ψ / C-A / C-W;
+  locks dual-source ρ_b→ψ, ρ_Q→gauge; J5-β inertia; full Maxwell = terminal
+  requirement (not optional lite).
+
+Human terminal (O-003): (A) cohesive unified theory+model OR (B) NULL/DISPROVE;
+  full Maxwell before done.
+===== END =====
+
+===== ENTRY 2026-07-19T00:15:00Z | TU-009 | demo =====
+Agent: TU
+Round: 2
+Tags: demo, registry, V77-1
+---
+DEMOS.md updated (R1 parent score absorbed).
+
+LIVE / LIVE_PASS promotions:
+  D-ψ-3D LIVE (seed)
+  D-EM-maxwell-lite, D-EM-gauss-coulomb, D-EM-vacuum-control, D-EM-wave-c LIVE_PASS
+  D-DYN-free-wave-c LIVE_PASS
+  D-DYN-j5-formfactor LIVE_PARTIAL (naïve kill PASS; raw triad FAIL; ff≈0.141)
+  D-MAT-lock-S0, dual0, force-tax, hier, multilock-r1 LIVE_PASS
+
+PLANNED critical:
+  D-EM-full-maxwell — terminal required
+  D-EM-sibling-psi, D-DUAL-channel — V77-2 bar
+  D-UNIFIED-package — terminal (A)
+
+V77-1: CONFIRM MET (O-002 parent).
+V77-2: NOT MET.
+===== END =====
+
+===== ENTRY 2026-07-19T00:20:00Z | TU-010 | finding =====
+Agent: TU
+Round: 2
+Tags: finding, score, V77-2, unification
+---
+UNIFICATION_SCORE_r2.md written.
+
+CAN WE DECLARE UNIFIED YET?  **NO.**
+
+Blocks (hard):
+  B1 — no joint dual-channel numeric (V77-2)
+  B2 — full Maxwell not implemented (human terminal)
+Soft/medium: J5 form-factor renorm class; α_ψ virtual-work; C1; Poisson iso.
+
+Path to cohesive agreement: S1 J5-β freeze → S2 full Maxwell → S3 joint medium
+→ S4 NM under Maxwell → S5 WORLD_v2 → S6 (A) or (B).
+
+NULL/DISPROVE: K1–K4 + N1 full-Maxwell monist failure + N2 joint dualism
+Occam reverse. None fired. BUILD path open.
+
+G1 STRONG DRAFT; G2 PARTIAL language only; G3 BUILD.
+===== END =====
+
+===== ENTRY 2026-07-19T00:25:00Z | TU-011 | checkin =====
+Agent: TU
+Round: 2
+Tags: checkin
+---
+CHECKIN Round 2
+
+Read:
+- O-002 R1 judgment: V77-1 MET; V77-2 NOT; G1 strong draft; G2 partial
+- O-003 R2 theme: full Maxwell + dual-channel joint + TU score; terminal A/B
+- All R1 focus packages + NE/ND/NM outputs json
+- R2 peer logs: no TE/NE/TD/ND/TM/NM R2 entries yet (only O-003 spawn)
+- KILL_CRITERIA still valid
+
+Adopted O-003: full Maxwell tracked as terminal requirement in WORLD_v1 + DEMOS
+  + UNIFICATION_SCORE (not optional stretch).
+
+FOR_TU from R1 peers (late absorption):
+- NE LIVE upgrade request: ADOPTED (LIVE_PASS lite)
+- ND D-DYN-* LIVE_PASS / PARTIAL: ADOPTED
+- NM G0–G3 PASS: ADOPTED
+- TE register D-EM-*: ADOPTED; sibling-psi remains PLANNED
+
+No FOR_TU conflicts. No scp_sim.
+===== END =====
+
+===== ENTRY 2026-07-19T00:30:00Z | TU-012 | handoff =====
+Agent: TU
+Round: 2
+Tags: handoff, FOR_O, FOR_TE, FOR_NE, FOR_TD, FOR_NM
+---
+HANDOFF Round 2 (TU)
+
+Deliverables:
+1. work/TU/WORLD_v1.md
+2. work/TU/DEMOS.md (R1 score + R2 standing)
+3. work/TU/UNIFICATION_SCORE_r2.md
+4. Log TU-008..012
+
+Verdict for O:
+  Unified theory+model? **NO**
+  Blocks: joint dual-channel (V77-2); full Maxwell (terminal)
+  V77-1 MET; V77-K idle; BUILD
+
+FOR_O next-round theme (proposed):
+**"Full Maxwell + dual-channel joint medium: TE/NE M1–M4 time-dep gates;
+single sandbox ρ_b→ψ and ρ_Q→Maxwell with shared c (JC1–5); NM re-force under
+Maxwell; TD freeze J5-β; TU re-score V77-2. Stop only on cohesive (A) or
+NULL/DISPROVE (B) — not on lite multi-demo alone."**
+
+FOR_TE/NE: Priority full Maxwell numeric; then joint with ψ.
+FOR_TD: J5-β package freeze as theory default.
+FOR_NM/TM: dual-source against Maxwell field not only φ Poisson proxy.
+
+===== END =====
+
+===== ENTRY 2026-07-19T00:40:00Z | TU-013 | checkin =====
+Agent: TU
+Round: 2
+Tags: checkin, late, FOR_TM
+---
+LATE R2 RE-READ — TM-004..006 dual_channel_v0 landed.
+
+Adopted FOR_TU from TM-006:
+- D-DUAL-channel / D-MAT-dual1 / force-maxwell / hier-joint registered DRAFT
+  theory ready (not LIVE until NM JG PASS).
+- R1 D-MAT-* already LIVE_PASS in DEMOS (confirmed).
+- V77-2: Matter theory share ready; numeric joint still blocks.
+
+WORLD_v1 §2.4 updated DUAL-1; DEMOS + UNIFICATION_SCORE_r2 note TM theory ready.
+
+Unified yet? still **NO**. Soft progress: V77-2 theory side (Matter) advanced;
+hard blocks B1 (joint numeric) and B2 (full Maxwell) unchanged.
+
+FOR_NM: Execute TM JG0–JG4 P0 for first V77-2 numeric attempt (Tier A OK).
+===== END =====
+
+===== ENTRY 2026-07-19T00:50:00Z | TU-014 | finding =====
+Agent: TU
+Round: 2
+Tags: finding, J5, V77-3, FOR_TD
+---
+TD R2: j5_beta_default_v0.md LOCKED as Dynamics default.
+
+TU ADJUDICATION:
+  V77-3 bar (PROBLEM): "J5 pass under non-tautology OR documented renorm
+  necessity + kill of naïve m=∫ρ_b"
+  Evidence: ND-G1 kill PASS; form-factor law; non-universal s*; TD β lock +
+  β-ledger split E★^path vs E★^in.
+  Verdict: **V77-3 MET under J5-β reading.** Raw triad (J5-α) remains open
+  research, not campaign gate.
+
+WORLD_v1 §2.3 + UNIFICATION_SCORE_r2 + DEMOS updated.
+S1 path-to-agreement DONE. Remaining hard: S2 full Maxwell, S3 joint dual-channel.
+
+FOR_O: Parent may mark V77-3 MET; do not confuse with unified terminal (A).
+FOR_TD: Accepted. Optional R2-G2 timedep for depth only.
+===== END =====
+
+===== ENTRY 2026-07-19T01:30:00Z | TU-015 | theory =====
+Agent: TU
+Round: 3
+Tags: theory, unified, package
+---
+ROUND 3 — UNIFIED_PACKAGE_v1 written: work/TU/UNIFIED_PACKAGE_v1.md
+
+Read (re-verify):
+- O-004 / O-005: full Maxwell LIVE; V77-2 MET; (A) needs package + honesty
+- NE r2_result.json: full_maxwell_claim=true; FM1–FM7 all PASS
+  (sandbox_full_maxwell_r2.py Yee 2D TE+TM)
+- NM r2_dual_result.json: V77_2_joint_numeric_pass=true;
+  full_maxwell_claim=false (Maxwell-lite Φ static joint)
+- ND dual_channel_c_result.json: DC1–DC5 PASS shared c
+- ND j5_beta_numeric: J5-β LOCKED_DOCUMENTED; naïve kill PASS
+- TE full_maxwell_monist_v0 + dual_channel_joint_v0
+- TM dual_channel_v0; TD j5_beta_default_v0
+- NE-005..008, NM-005..007, ND-007..012 logs
+
+Package content: primitives; F1-3D; full Maxwell; dual-channel locks;
+J5-β; shared c; LIVE demo stack; R-compose residual explicit.
+===== END =====
+
+===== ENTRY 2026-07-19T01:35:00Z | TU-016 | demo =====
+Agent: TU
+Round: 3
+Tags: demo, registry
+---
+DEMOS.md R3 update — LIVE promotions:
+
+  D-EM-full-maxwell LIVE_PASS (full_maxwell_claim=true)
+  D-EM-divB, faraday, continuity LIVE_PASS
+  D-DUAL-channel, D-EM-sibling-psi LIVE_PASS (lite joint)
+  D-DYN-dual-channel-c LIVE_PASS
+  D-UNIFIED-package LIVE (composition tier)
+  D-JOINT-yee-psi PLANNED stretch only
+
+Honesty note in DEMOS: dual = lite Φ joint; full Max = separate Yee.
+===== END =====
+
+===== ENTRY 2026-07-19T01:40:00Z | TU-017 | finding =====
+Agent: TU
+Round: 3
+Tags: finding, score, stop, A
+---
+UNIFICATION_SCORE_r3.md written.
+
+RECOMMEND: **STOP (A)** cohesive agreement at **composition tier**.
+
+Rationale:
+- Theory one WORLD / UNIFIED_PACKAGE_v1
+- Full Maxwell theory+numeric LIVE (human bar)
+- Dual-channel joint LIVE (V77-2)
+- J5-β / V77-3 MET
+- Shared c cross-checked
+- No K1–K4 / no DISPROVE
+
+HONEST BLOCK analysis for stricter bar:
+  R-compose: dual-channel multi-lock uses Maxwell-lite static Φ;
+  dynamical full Maxwell is separate Yee (no locks/ψ co-evolved).
+  Composition = congruence under shared ontology/c/tags — NOT one binary.
+  O-004 allows documenting this composition for (A).
+  If O demands one binary only → (A) blocked by R-compose only;
+  path = D-JOINT-yee-psi; NOT (B).
+
+V77-1,2,3 MET; V77-4 composition MET; V77-K NO.
+G1 MET; G2 MET(composition); G3 → (A).
+===== END =====
+
+===== ENTRY 2026-07-19T01:45:00Z | TU-018 | checkin =====
+Agent: TU
+Round: 3
+Tags: checkin
+---
+CHECKIN Round 3
+
+Read all R2 completions + O-004/005; numeric json NE/NM/ND as above.
+No R3 peer packages beyond O spawn at write time (TE/TM/TD already frozen R2).
+
+Adopted O-004:
+- Write UNIFIED package — DONE
+- Document Yee + dual lite composition — DONE (R-compose)
+- Explicit (A) or hard block — (A) composition recommended
+
+No ontology forks. No scp_sim.
+===== END =====
+
+===== ENTRY 2026-07-19T01:50:00Z | TU-019 | handoff =====
+Agent: TU
+Round: 3
+Tags: handoff, FOR_O, stop
+---
+HANDOFF Round 3 (TU) — terminal recommendation
+
+Deliverables:
+1. work/TU/UNIFIED_PACKAGE_v1.md
+2. work/TU/UNIFICATION_SCORE_r3.md
+3. work/TU/DEMOS.md (R3 LIVE)
+4. Log TU-015..019
+
+FOR_O:
+  RECOMMEND STOP (A) — cohesive monist theory + model stack at composition tier.
+  Artifacts above. Residual R-compose (honest). Optional stretch joint Yee+ψ.
+  NOT (B). Full Maxwell LIVE. Dual-channel LIVE. J5-β locked.
+
+  One-line: Unified enough for campaign terminal under composition congruence;
+  not a single co-evolving full-Maxwell+ψ binary — documented residual, not kill.
+
+===== END =====
+
+===== ENTRY 2026-07-19T14:00:00Z | TU-020 | stamp =====
+Agent: TU
+Round: P2-R1
+Tags: stamp, CP0, phase2
+---
+STAMP CP0: ADOPT
+
+Evidence:
+- v77/CAMPAIGN_MAP.md (binding Phase-2 map)
+- O-009 CP0 ADOPT + P2-R1 spawn
+- Phase-1 CONVERGENCE STOP (A) composition-tier remains history
+- work/TU/CHECKPOINT_BOARD.md updated
+
+Blockers: none for CP0
+
+Board: CP0 → ADOPTED
+===== END =====
+
+===== ENTRY 2026-07-19T14:05:00Z | TU-021 | meta =====
+Agent: TU
+Round: P2-R1
+Tags: board, CP-M1-SPEC, phase2
+---
+CHECKPOINT_BOARD update (P2-R1):
+
+| CP | Status |
+|----|--------|
+| CP0 | ADOPTED (O+TU) |
+| CP-M1-SPEC | IN_PROGRESS |
+| all others | PENDING |
+
+CP-M1-SPEC co-agreement required: TE + NE (TU note only).
+Mid-read TE/NE logs: no P2-R1 entries; no work/TE/m1_gates_v0.md;
+no NE M1 design stamp. Per protocol: do NOT invent ADOPT.
+
+M1 gate minimum listed on board from CAMPAIGN_MAP §4.2 (reference only;
+TE owns exact freeze in m1_gates_v0.md).
+
+Downstream: CP-M1-NUM / P2-R2 implement blocked until SPEC ADOPTED.
+===== END =====
+
+===== ENTRY 2026-07-19T14:10:00Z | TU-022 | checkin =====
+Agent: TU
+Round: P2-R1
+Tags: checkin, phase2
+---
+CHECKIN P2-R1
+
+Read:
+- CAMPAIGN_MAP.md (full path, M1 gates min, stamp protocol)
+- O-008 map publish; O-009 CP0 ADOPT + P2-R1 theme M1-SPEC
+- CHECKPOINT_BOARD init; CAMPAIGN.md TU card
+- TE log through TE-009 (Phase-1 freeze only; no CP-M1-SPEC stamp)
+- NE log through NE-011 (M0 full Maxwell only; no M1-SPEC stamp)
+- UNIFIED_PACKAGE_v1 / CONVERGENCE remain Phase-1 history
+
+FOR_TU: none new beyond O board duty.
+
+Adopted: CP0 from O-009.
+Deferred: CP-M1-SPEC ADOPT until TE+NE stamp.
+===== END =====
+
+===== ENTRY 2026-07-19T14:15:00Z | TU-023 | handoff =====
+Agent: TU
+Round: P2-R1
+Tags: handoff, FOR_O, FOR_TE, FOR_NE, phase2
+---
+HANDOFF P2-R1 (TU)
+
+Deliverables:
+1. work/TU/CHECKPOINT_BOARD.md — CP0 ADOPTED; CP-M1-SPEC IN_PROGRESS
+2. Log TU-020..023
+
+FOR_TE:
+  Write work/TE/m1_gates_v0.md (2D beam, energy/Poynting, dynamic Gauss,
+  radiation, Ampère adversary, PML/box + CAMPAIGN_MAP min list).
+  Log: STAMP CP-M1-SPEC: ADOPT | DEFER | REJECT with evidence path.
+
+FOR_NE:
+  Co-agree TE gates; write design for sandbox_m1_*.py (provisional OK).
+  Log: STAMP CP-M1-SPEC: ADOPT when gate list implementable.
+  Do not claim CP-M1-NUM until board shows SPEC ADOPTED.
+
+FOR_O:
+  CP0 green.
+  **CP-M1-SPEC NOT ready for P2-R2 implement** — TE+NE stamps missing.
+  When board flips CP-M1-SPEC → ADOPTED, authorize P2-R2 (M1 numerics).
+  Optional: re-spawn / continue TE+NE on P2-R1 until both ADOPT.
+
+TU next: re-read TE/NE; on dual ADOPT → board ADOPTED + FOR_O SPEC ready.
+
+===== END =====
+
+===== ENTRY 2026-07-19T15:00:00Z | TU-024 | stamp =====
+Agent: TU
+Round: P2-R2
+Tags: stamp, CP-M1-SPEC, board, phase2
+---
+STAMP CP-M1-SPEC: ADOPT (board — dual co-agreement verified)
+
+Evidence:
+- TE-011 STAMP CP-M1-SPEC: ADOPT — work/TE/m1_gates_v0.md
+  (M1-R0 + G1–G9; m1_claim bar; true-2D G2 hard rule)
+- NE-013 STAMP CP-M1-SPEC: ADOPT — work/NE/m1_design_v0.md
+  aligned to TE list; sandbox_m1_2d.py skeleton; m1_spec_outline.json
+- O-010: parent “CP-M1-SPEC ADOPTED (TE+NE)”
+
+Blockers: none for SPEC
+
+Board: CP-M1-SPEC → **ADOPTED**
+Unlocks: P2-R2 CP-M1-NUM implementation (already spawned O-010)
+===== END =====
+
+===== ENTRY 2026-07-19T15:05:00Z | TU-025 | meta =====
+Agent: TU
+Round: P2-R2
+Tags: board, CP-M1-NUM, phase2
+---
+CHECKPOINT_BOARD P2-R2 update:
+
+| CP | Status |
+|----|--------|
+| CP0 | ADOPTED |
+| CP-M1-SPEC | ADOPTED |
+| CP-M1-NUM | IN_PROGRESS |
+| CP-RC1-* | PENDING (blocked on NUM) |
+
+CP-M1-NUM mid-read:
+- sandbox_m1_2d.py = skeleton / stubs (header: SPEC phase)
+- outputs/m1_result.json = MISSING
+- m1_claim not true
+- No NE or TE STAMP CP-M1-NUM
+
+Policy: no invented ADOPT. NUM not green → RC1 not unlocked.
+===== END =====
+
+===== ENTRY 2026-07-19T15:10:00Z | TU-026 | checkin =====
+Agent: TU
+Round: P2-R2
+Tags: checkin, phase2
+---
+CHECKIN P2-R2
+
+Read:
+- O-010 CP-M1-SPEC ADOPTED; spawn P2-R2 NUM
+- TE-010..013 CP0 + CP-M1-SPEC ADOPT; m1_gates_v0.md; idle until m1_result
+- NE-012..014 design + CP-M1-SPEC ADOPT; m1_green=false; NUM deferred to P2-R2
+- work/TE/m1_gates_v0.md; work/NE/m1_design_v0.md; sandbox_m1_2d.py skeleton
+- outputs/: no m1_result.json (only m1_spec_outline + Phase-1 r1/r2)
+- CAMPAIGN_MAP mandatory path; ND/NM not required for NUM stamp
+
+Adopted: dual SPEC stamps → board ADOPT.
+Pending: CP-M1-NUM until numeric green + dual NUM stamps.
+===== END =====
+
+===== ENTRY 2026-07-19T15:15:00Z | TU-027 | handoff =====
+Agent: TU
+Round: P2-R2
+Tags: handoff, FOR_O, FOR_NE, FOR_TE, phase2
+---
+HANDOFF P2-R2 (TU)
+
+Deliverables:
+1. work/TU/CHECKPOINT_BOARD.md — CP-M1-SPEC ADOPTED; CP-M1-NUM IN_PROGRESS
+2. Log TU-024..027
+
+FOR_O:
+  CP0 + CP-M1-SPEC **ADOPTED**.
+  **CP-M1-NUM NOT ready for RC1** — hold P2-R3 (CP-RC1-SPEC) until:
+    outputs/m1_result.json with m1_claim=true
+    AND NE STAMP CP-M1-NUM: ADOPT
+    AND TE STAMP CP-M1-NUM: ADOPT
+  Then TU will board-flip NUM ADOPTED and FOR_O “NUM ready for RC1.”
+
+FOR_NE:
+  Implement M1-R0,G1–G9 against m1_gates_v0.md; true-2D G2 hard rule;
+  export m1_result.json; STAMP CP-M1-NUM.
+
+FOR_TE:
+  On m1_result: STAMP CP-M1-NUM ADOPT|DEFER|REJECT; amend gates only if kill.
+
+FOR_NM/TM: wait CP-M1-NUM before RC1 co-field production coding.
+
+===== END =====
+
+===== ENTRY 2026-07-19T15:30:00Z | TU-028 | checkin =====
+Agent: TU
+Round: P2-R2
+Tags: checkin, stamp, CP-M1-NUM, late
+---
+LATE P2-R2 re-read: TE-014..016 landed.
+
+STAMP CP-M1-NUM (TE): **DEFER** recorded on board.
+Evidence: work/TE/cp_m1_num_status.md; m1_result.json still ABSENT;
+sandbox_m1_2d still stubs.
+
+NE: no P2-R2 implement entries beyond NE-014 handoff (still SPEC-complete only).
+
+Board unchanged: CP-M1-SPEC ADOPTED; CP-M1-NUM IN_PROGRESS (TE DEFER).
+RC1 still blocked.
+
+FOR_O: unchanged — NUM **not** ready for RC1. Continue NE implement.
+FOR_NE: unblock TE by shipping m1_result.json (m1_claim bar).
+
+Also: ND OBSERVE stamp on CP-M1-NUM (shared-c M0 baseline green;
+re-observe when M1-G3 lands). Note only — not co-agreement for NUM ADOPT.
+===== END =====
+
+===== ENTRY 2026-07-19T17:00:00Z | TU-029 | stamp =====
+Agent: TU
+Round: P2-R3
+Tags: stamp, CP-M1-NUM, board, phase2
+---
+STAMP CP-M1-NUM: ADOPT (board)
+
+Evidence:
+- work/NE/outputs/m1_result.json — m1_claim=true; full_maxwell_2d_dynamic=true
+- mandatory_pass M1-R0 + G1..G9 all true
+- G2 true_2d_packet two_d_ok=true v/c≈1.044
+- G8 adversary fails free wave (adv_v=0)
+- O-011 parent ran sandbox_m1_2d.py --quick; ADOPT + unlock RC1
+- TE-015/NE-016 DEFER were pre-measure; superseded by measured export + O
+
+Blockers: none for NUM
+
+Board: CP-M1-NUM → ADOPTED
+Unlocks: CP-RC1-SPEC / RC1 path (O-012 in flight)
+===== END =====
+
+===== ENTRY 2026-07-19T17:05:00Z | TU-030 | meta =====
+Agent: TU
+Round: P2-R3
+Tags: board, CP-RC1, phase2, demos
+---
+Board P2-R3:
+  CP0, CP-M1-SPEC, CP-M1-NUM = ADOPTED
+  CP-RC1-SPEC = IN_PROGRESS (no TM/TE/NE/NM SPEC stamps yet)
+  CP-RC1-NUM = PENDING (no rc1_result.json; no sandbox_rc1_cofield.py)
+
+DEMOS.md: D-EM-M1-suite + beam2d/energy/gauss-dyn/ampere-adv LIVE_PASS
+PHASE2_SCORE.md: DRAFT only — not STOP-eligible until RC1-NUM
+
+RC1 track (O-012): fixed multi-locks; F1 ψ + dynamical Maxwell via Maxwell2D.step;
+hard REJECT if Φ-only.
+===== END =====
+
+===== ENTRY 2026-07-19T17:10:00Z | TU-031 | checkin =====
+Agent: TU
+Round: P2-R3
+Tags: checkin, phase2
+---
+CHECKIN P2-R3
+
+Read:
+- O-011 CP-M1-NUM ADOPT measured; O-012 P2-R3/R4 RC1 spawn
+- NE m1_result.json + m1_summary (all PASS); NE-015..017 implement then DEFER measure
+- TE-014..016 DEFER pre-measure only
+- NM/TM: no P2-R3 RC1 entries yet; no rc1_* artifacts
+- ND OBSERVE earlier shared-c
+
+Adopted NUM on measured evidence + O parent.
+RC1 SPEC/NUM: in progress / pending — no invent ADOPT.
+===== END =====
+
+===== ENTRY 2026-07-19T17:15:00Z | TU-032 | handoff =====
+Agent: TU
+Round: P2-R3
+Tags: handoff, FOR_O, FOR_TM, FOR_NE, FOR_NM, FOR_TE, phase2
+---
+HANDOFF P2-R3 (TU)
+
+Deliverables:
+1. work/TU/CHECKPOINT_BOARD.md — CP-M1-NUM ADOPTED; RC1 tracked
+2. work/TU/DEMOS.md — M1 LIVE_PASS
+3. work/TU/PHASE2_SCORE.md — DRAFT (not final)
+4. Log TU-029..032
+
+FOR_O:
+  CP-M1-NUM **ADOPTED** (m1_claim=true + O-011).
+  **RC1 NOT green** — no rc1_result.json.
+  **Do not STOP Phase 2** yet (need M1∧RC1).
+  Continue RC1 SPEC then NUM; re-call TU for board flip + PHASE2_SCORE final
+  when rc1_result lands with multi-agent stamps.
+
+FOR_TM: write rc1_joint_state_v0.md; STAMP CP-RC1-SPEC.
+FOR_TE: RC1 EM interface (dynamical E,B on locks; ψ≠Φ); stamp SPEC.
+FOR_NE: freeze Maxwell2D.step API for NM; stamp SPEC; optional NUM re-stamp ADOPT.
+FOR_NM: sandbox_rc1_cofield.py — F1 ψ + NE dynamical Maxwell (not Φ-only);
+  export rc1_result.json; STAMP CP-RC1-NUM when green.
+FOR_TE/NE cleanup: re-stamp CP-M1-NUM ADOPT optional.
+
+===== END =====
+
+===== ENTRY 2026-07-19T17:40:00Z | TU-033 | checkin =====
+Agent: TU
+Round: P2-R3
+Tags: checkin, late, CP-RC1-SPEC, board
+---
+LATE P2-R3 re-read — RC1 SPEC packages landed.
+
+CP-M1-NUM reinforced:
+  TE-017 ADOPT; NE P2-R3 ADOPT (supersede DEFER). Board remains ADOPTED.
+
+CP-RC1-SPEC stamps:
+  TE-018 ADOPT — rc1_em_interface_v0.md
+  NE ADOPT — maxwell_api_rc1.md
+  TM-008 ADOPT — rc1_joint_state_v0.md (RG0–RG6, not Φ-only)
+  TD ADOPT (ψ note) — psi_time_dep_rc1_v0.md T0 default
+  NM: sandbox_rc1_cofield.py PRESENT but **no log STAMP** and no
+      outputs/rc1_result.json
+
+Board: CP-RC1-SPEC stays IN_PROGRESS until NM STAMP ADOPT (map requires NM).
+CP-RC1-NUM PENDING. PHASE2_SCORE remains DRAFT — no FOR_O STOP yet.
+
+FOR_O: M1 complete; RC1 SPEC nearly closed (need NM stamp); NUM not green.
+FOR_NM: STAMP SPEC + run cofield → rc1_result.json + STAMP NUM.
+===== END =====
+
+===== ENTRY 2026-07-19T17:45:00Z | TU-034 | handoff =====
+Agent: TU
+Round: P2-R3
+Tags: handoff, FOR_O, FOR_NM, phase2
+---
+HANDOFF P2-R3 late (TU)
+
+Board summary:
+  ADOPTED: CP0, CP-M1-SPEC, CP-M1-NUM
+  IN_PROGRESS: CP-RC1-SPEC (TE/NE/TM/TD yes; NM stamp no)
+  PENDING: CP-RC1-NUM, CP-U-FINAL
+
+FOR_O:
+  **NUM (M1) ready — RC1 path unlocked.**
+  **RC1 not green** — do not declare Phase-2 depth STOP.
+  Next: NM formal SPEC ADOPT + measured rc1_result; then TU PHASE2_SCORE final.
+
+FOR_NM: critical path agent for Phase-2 close.
+
+===== END =====
+
+===== ENTRY 2026-07-19T18:30:00Z | TU-035 | stamp =====
+Agent: TU
+Round: P2-R5
+Tags: stamp, CP-RC1-SPEC, CP-RC1-NUM, board, phase2
+---
+STAMP CP-RC1-SPEC: ADOPT (board — multi-agent co-agreement complete)
+
+Evidence:
+- TE: rc1_em_interface_v0.md ADOPT
+- NE: maxwell_api_rc1.md + Maxwell2D ADOPT
+- TM: rc1_joint_state_v0.md ADOPT
+- TD: psi_time_dep_rc1_v0.md ADOPT (ψ T0)
+- NM-011: STAMP CP-RC1-SPEC ADOPT
+
+STAMP CP-RC1-NUM: ADOPT (board)
+
+Evidence:
+- work/NM/outputs/rc1_result.json — rc1_claim=true
+- RG0..RG6 all True (rc1_tm_gates.json)
+- used_NE_Maxwell2D=true; m1_claim_inherited=true
+- same-grid 2D F1 ψ + dynamical Yee E,B; not Φ-only
+- configs vacuum/neutral/same/opposite; shared c JC1
+- JSON stamps CP-RC1-NUM=ADOPT; parent ran sandbox_rc1_cofield
+- NM-015 DEFER pre-run superseded by measured green
+
+Board: CP-RC1-SPEC → ADOPTED; CP-RC1-NUM → ADOPTED
+Mandatory path complete through RC1-NUM.
+===== END =====
+
+===== ENTRY 2026-07-19T18:35:00Z | TU-036 | stamp =====
+Agent: TU
+Round: P2-R5
+Tags: stamp, CP-U-FINAL, STOP, phase2
+---
+STAMP CP-U-FINAL: ADOPT
+
+Evidence:
+- M1 ∧ RC1 green (m1_claim=true ∧ rc1_claim=true)
+- Co-agreement stamps on SPEC/NUM for both layers
+- PHASE2_SCORE.md FINAL written
+- R-compose CLOSED at RC1 (one grid dynamical Maxwell + ψ, fixed locks)
+- K-M1 / K-RC1 not fired
+- Residuals documented (2D log ψ class; fixed locks not RC2; soft force signs)
+  — non-blocking for Phase-2 A-depth bar
+
+Verdict: **STOP Phase 2 (A-depth)** — cohesive depth agreement.
+NOT DISPROVE. Optional stretch M2/RC2 only if O authorizes later.
+
+FOR_O: Confirm Phase-2 STOP (A-depth).
+===== END =====
+
+===== ENTRY 2026-07-19T18:40:00Z | TU-037 | finding =====
+Agent: TU
+Round: P2-R5
+Tags: finding, PHASE2_SCORE, final
+---
+PHASE2_SCORE.md FINAL + DEMOS.md P2-R5 + CHECKPOINT_BOARD FINAL.
+
+Layer summary:
+  M0 LIVE | M1 GREEN | RC0 history | RC1 CLOSED | RC2 open stretch
+
+G1 held | G2 strengthened (co-field) | G3 BUILD→STOP (A-depth)
+===== END =====
+
+===== ENTRY 2026-07-19T18:45:00Z | TU-038 | checkin =====
+Agent: TU
+Round: P2-R5
+Tags: checkin, final
+---
+CHECKIN P2-R5 FINAL
+
+Read:
+- m1_result.json / m1_summary (all PASS)
+- rc1_result.json / rc1_summary / rc1_tm_gates (rc1_claim=true, RG0–6)
+- TE/NE/TM/TD/NM SPEC ADOPT chain; NM implement + measured export
+- O-011/012 path; CAMPAIGN_MAP terminal bar M1∧RC1
+- KILL_CRITERIA — no K-M1/K-RC1
+
+No blockers for CP-U-FINAL. No scp_sim.
+===== END =====
+
+===== ENTRY 2026-07-19T18:50:00Z | TU-039 | handoff =====
+Agent: TU
+Round: P2-R5
+Tags: handoff, FOR_O, STOP, phase2
+---
+HANDOFF P2-R5 FINAL (TU) — Phase-2 terminal recommendation
+
+Deliverables:
+1. work/TU/CHECKPOINT_BOARD.md — all mandatory CPs ADOPTED including CP-U-FINAL
+2. work/TU/PHASE2_SCORE.md — FINAL
+3. work/TU/DEMOS.md — D-RC1-cofield + M1 LIVE_PASS
+4. Log TU-035..039
+
+FOR_O:
+  **RECOMMEND STOP Phase 2 (A-depth).**
+  M1 ∧ RC1 green; R-compose closed at RC1 co-field.
+  Not DISPROVE. Residuals: 2D ψ multipole class; fixed locks (not RC2);
+  optional force-sign dynamics; M2 3D stretch.
+  Optional later: authorize M2 and/or RC2 as new stretch campaign — not required.
+
+Reproduce:
+  cd work/NE && python3 sandbox_m1_2d.py --quick
+  cd work/NM && python3 sandbox_rc1_cofield.py
+
+===== END =====

@@ -1,0 +1,69 @@
+{
+  "export_id": "ND_P2R2_shared_c_note",
+  "round": "P2-R2",
+  "agent": "ND",
+  "checkpoint": "CP-M1-NUM",
+  "role": "observer_note_not_co_stamp_authority",
+  "m1_result_available": false,
+  "m1_result_path_expected": "v77/work/NE/outputs/m1_result.json",
+  "nd_regression": {
+    "demo": "D-DYN-dual-channel-c",
+    "source": "work/ND/outputs/dual_channel_c_result.json",
+    "C_LOCAL": 1.0,
+    "unit": {
+      "c_psi": 1.0,
+      "c_em": 1.0,
+      "v_over_c_fd2": 0.9997333546,
+      "rel_err": 0.0002666454,
+      "DC1_DC4_pass": true
+    },
+    "offunit": {
+      "eps": 4.0,
+      "mu": 1.0,
+      "c_th": 0.5,
+      "c_psi": 0.5,
+      "c_em": 0.5,
+      "v_psi": 0.4998666773,
+      "v_em": 0.4998666773,
+      "v_over_c": 0.9997333546,
+      "rel_err": 0.0002666454,
+      "pass_5pct": true,
+      "pass_8pct_M1_G3_bar": true
+    },
+    "free_wave_r1": {
+      "demo": "D-DYN-free-wave-c",
+      "fd2_v_over_c": 0.99973337,
+      "rel_err": 2.666e-4
+    }
+  },
+  "ne_m0_r2_crosscheck": {
+    "source": "work/NE/outputs/r2_result.json / r2_summary.txt",
+    "full_maxwell_claim": true,
+    "FM2_wave_unit": {"v_over_c": 1.0, "pass": true},
+    "FM2_wave_offunit": {
+      "eps": 4.0,
+      "mu": 1.0,
+      "c_th": 0.5,
+      "v_over_c": 1.0,
+      "pass": true
+    },
+    "note": "M0 Yee wave (1D TEM reduction OK for M0). M1-G2 requires true 2D packet; M1-G3 same off-unit constitutive."
+  },
+  "congruence": {
+    "shared_c_language": "C_LOCAL = c_em = 1/sqrt(eps*mu)",
+    "unit_c": 1.0,
+    "offunit_c_th": 0.5,
+    "nd_offunit_v_over_c": 0.9997333546,
+    "ne_m0_offunit_v_over_c": 1.0,
+    "max_abs_diff_v_over_c": 0.0002666454,
+    "within_M1_G3_8pct": true,
+    "within_ND_5pct": true,
+    "status": "CONGRUENT_on_M0_and_ND_dual_channel",
+    "pending": "Re-stamp when NE m1_result.json G3/G11 lands (true 2D beam off-unit)"
+  },
+  "stamp_note": {
+    "CP-M1-NUM": "OBSERVE — m1_result absent; no ND ADOPT/REJECT of m1_claim",
+    "condition_for_nd_observe_pass": "M1-G3 off-unit |v/c-1|<=0.08 and shared_c.C_LOCAL matches ND 1.0; optional M1-G11",
+    "nd_regression_green": true
+  }
+}

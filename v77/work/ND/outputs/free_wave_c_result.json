@@ -1,0 +1,48 @@
+{
+  "demo_id": "D-DYN-free-wave-c",
+  "round": 1,
+  "agent": "ND",
+  "equation": "d2ψ/dt2 = c^2 d2ψ/dx2  (free medium, ρ_b=0)",
+  "c_default": 1.0,
+  "continuum_dalembert": {
+    "statement": "ψ=f(x±ct) solves free wave equation with speed exactly c",
+    "v_over_c": 1.0,
+    "pass": true
+  },
+  "discrete_dispersion_fd2": {
+    "c_target": 1.0,
+    "k": 0.8,
+    "dx": 0.1,
+    "v_phase": 0.999733368,
+    "v_over_c": 0.999733368,
+    "rel_err": 0.000266632,
+    "pass_5pct": true,
+    "pass_0.1pct": true
+  },
+  "pulse_speed_theory": {
+    "test": "right-going Gaussian exact continuum",
+    "c_target": 1.0,
+    "v_meas": 1.0,
+    "v_over_c": 1.0,
+    "rel_err": 0.0,
+    "pass_5pct": true,
+    "note": "continuum packet ψ=exp(-(x-ct)²/(2w²)) travels at exactly c; sandbox_free_wave_c.py leapfrogs discrete grid"
+  },
+  "c_control_scan_dispersion": [
+    {"c_target": 0.5, "v_phase_fd2": 0.499866684, "v_over_c": 0.999733368, "rel_err": 0.000266632, "pass_5pct": true},
+    {"c_target": 1.0, "v_phase_fd2": 0.999733368, "v_over_c": 0.999733368, "rel_err": 0.000266632, "pass_5pct": true},
+    {"c_target": 1.5, "v_phase_fd2": 1.499600052, "v_over_c": 0.999733368, "rel_err": 0.000266632, "pass_5pct": true},
+    {"c_target": 2.0, "v_phase_fd2": 1.999466736, "v_over_c": 0.999733368, "rel_err": 0.000266632, "pass_5pct": true}
+  ],
+  "verdict": {
+    "wave_speed_equals_c": true,
+    "pulse_pass_5pct": true,
+    "phase_pass_5pct": true,
+    "control_all_pass_5pct": true,
+    "status": "PASS",
+    "summary": "Free medium ∂²ψ/∂t²=c²∂²ψ/∂x²: continuum d'Alembert v=c exact; FD2 discrete phase speed rel_err=2.67e-4 at dx=0.1,k=0.8; control scan tracks c (v/c constant). PASS at 5% and 0.1%."
+  },
+  "FOR_TD": "Free hyperbolic medium realizes locality-c numerically; link to kinetic inertia μ~U/c²",
+  "FOR_NE": "Same free medium can host gauge waves at same c (sibling channel)",
+  "FOR_TU": "Demo D-DYN-free-wave-c PASS"
+}

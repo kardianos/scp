@@ -1,0 +1,729 @@
+===== ENTRY 2026-07-18T00:00:00Z | A-000 | bootstrap =====
+Agent: A
+Round: 0
+Tags: bootstrap, protocol
+---
+Approach A log initialized (append-only).
+
+Mandate: Forward theoretical / relational — axioms of medium → mass & warp;
+define c as field locality; derive m = E_bound/c^2 and warp from constant
+local c around locks. Lean/formal notes allowed under work/A/.
+
+Write only this file. Read B/C/D logs on check-in. Cross-ideas: FOR_B/C/D tags.
+===== END =====
+
+===== ENTRY 2026-07-18T12:00:00Z | A-001 | proposal =====
+Agent: A
+Round: 1
+Tags: A1, locality-c, axioms, monism
+---
+Round 1 start: locality-first axiom set (A1).
+
+Plan:
+1. Draft Ax1–Ax9 covering: one continuum; free/bound states; c as free-field
+   locality; budget identity; lock stability; energy ledger; observer frames
+   enforcing local c=const; influence→emergent geometry; warp as theorem schema.
+2. Derive / sketch m = E_bound/c^2 without dualist matter.
+3. Formalize ledger fragment in Lean (budget depletion + IsMass).
+4. Check in with B/C/D; tag FOR_* handoffs.
+
+Seed hinge (APPROACHES §2): mass = field locked; c = free locality constant in
+our frame; warp = global face of that constancy around locks.
+
+Kill conditions will be explicit: fixed g_μν stage, T→G ontology, circular
+Minkowski-c, locks that do not reduce free budget.
+===== END =====
+
+===== ENTRY 2026-07-18T12:25:00Z | A-002 | finding =====
+Agent: A
+Round: 1
+Tags: A1, axioms_v0, budget, warp-schema
+---
+Drafted locality-first axiom set v0.
+
+Artifact: work/A/axioms_v0.md
+
+Key axiom claims:
+- Ax1: one event continuum; no second distance carrier.
+- Ax2: free / bound / mixed local states (ρ_free, ρ_bound ≥ 0).
+- Ax3: c ≡ sup free-influence speed in a local free frame (not Minkowski input).
+- Ax4 (B): ρ_free + ρ_bound = ρ_tot (strong form ρ_tot=ρ_0 const optional).
+- Ax5: lock = stable bound region; unlock energy finite; stability predicate.
+- Ax6: energy = frame ledger of reconfiguration capacity.
+- Ax7: rods/clocks from free medium enforce local isotropic c=const.
+- Ax8: g_μν defined from free null structure given free budget + locks.
+- Ax9: warp theorem *schema* (local c + locks + budget ⇒ nontrivial free paths).
+
+Definition (M): m(L) ≡ E_bound(L;F_0)/c² in lock rest free-frame.
+
+Rejected smuggling listed (fixed stage, T→G, Q-ball-as-proof, circular c).
+
+Open: strong vs weak (B); rod/clock circularity; dynamics PDE deferred to B;
+Einstein recovery is target not axiom.
+
+Cross-links: work/A/axioms_v0.md
+FOR_B: Implement (B) + lock flag + free updates only within locality radius;
+  distance = free path cost, not fixed Euclidean. Measure free drop co-located
+  with bound; rays = fastest free paths under local c. No second gravity pass.
+FOR_C: Is strong local (B) forced by weak lensing, or only integral free deficit
+  ∝ M? Necessary rod/clock conditions from free medium (C1).
+FOR_D: Score by free drop ↔ bound; ray deflection without Poisson; consistency
+  m_ray ↔ E_bound/c²; penalize dualist second sector (D3).
+===== END =====
+
+===== ENTRY 2026-07-18T12:40:00Z | A-003 | attempt =====
+Agent: A
+Round: 1
+Tags: mass, E=mc2, locality-c, derivation
+---
+Mass-from-locality derivation sketch (not closed theorem).
+
+Artifact: work/A/mass_from_locality.md
+
+Argument structure:
+1. Units: free rods/clocks fix [c]=L/T from free locality alone (Ax3+Ax7).
+2. Unlock: E_unlock = E_bound by Ax5–Ax6 (rest energy = unlockable bound continuum).
+3. Inertia sketch: slow boost of a lock costs free-path surplus ~ E_0 v²/(2c²)
+   to keep Stable(L); coefficient of ½v² is m_inertial ⇒ m = E_bound/c².
+4. Free packets: ρ_bound=0 ⇒ m_rest=0; null free packets still E=pc via locality.
+5. Warp link: m>0 ⇒ ρ_free reduced (Ax4) ⇒ free paths nontrivial under Ax7–Ax9.
+   Mass on flat fixed stage with global free-path uniformity contradicts axioms.
+
+Honest gap: full O(v²) expansion needs free-path cost functional C[ρ_free,locks]
+and boost-as-automorphism — dynamics (B) + operational geometry. Until then (M)
+is definition + consistency requirement + exclusion of dualist free-floating mass.
+
+Killable claims K1–K4 logged in mass_from_locality.md §7.
+
+Cross-links: work/A/mass_from_locality.md, work/A/axioms_v0.md §3
+FOR_B: When a lock forms, test (i) free budget drop, (ii) inertial response of
+  lock under free-medium push scales as E_bound/c², (iii) free rays bend without
+  Poisson solver.
+FOR_C: Reverse of K1: what medium conditions force inertial m = unlock E / c²?
+===== END =====
+
+===== ENTRY 2026-07-18T12:55:00Z | A-004 | lean =====
+Agent: A
+Round: 1
+Tags: lean, budget, IsMass, formal
+---
+Lean fragment for ledger half of monism (no Mathlib, Int+omega).
+
+Artifacts:
+- work/A/lean/LocalityBudget.lean
+- work/A/lean/lakefile.lean
+- work/A/lean/lean-toolchain (v4.29.0, matches repo lean/)
+
+Contents:
+- structure MediumBudget (free, bound, nonneg proofs)
+- theorem budget_identity
+- theorem free_depleted_of_bound_gt  (fixed total + more bound ⇒ less free)
+- theorem free_le_of_bound_ge
+- def IsMass c E m := (m * c * c = E)   -- E = m c², no division
+- theorem energy_eq_mass_mul_c_sq
+- theorem mass_eq_energy_at_c_one
+- freeOnly / fullyLocked + mass_freeOnly
+- lock_step_depletes, lock_step_strict, lock_step_depletes_via_lemma
+
+What this does NOT formalize (Round 1 scope):
+- free-path cost / warp (Ax8–Ax9)
+- inertia expansion
+- observer rod/clock construction
+- continuous fields or dynamics
+
+Build note: lake build from work/A/lean/; not yet executed in this session
+(no guarantee until parent/agent runs lake). Structure is stdlib-only.
+
+Cross-links: work/A/lean/LocalityBudget.lean
+===== END =====
+
+===== ENTRY 2026-07-18T13:05:00Z | A-005 | checkin =====
+Agent: A
+Round: 1
+Tags: checkin, cross-approach
+---
+Periodic check-in (Round 1 end).
+
+Other logs since A-000:
+- B_forward_numeric.log: only B-000 bootstrap. No FOR_A.
+- C_reverse_theory.log: only C-000 bootstrap. No FOR_A.
+- D_reverse_numeric.log: only D-000 bootstrap. No FOR_A.
+
+FOR_A items: none present. Nothing to adopt/defer/reject.
+
+Cross-status:
+- B: does not block A; A→B rules ready for when B designs medium.
+- C: does not block A; C should stress-test strong (B) and rod/clock (Ax7).
+- D: does not block A; D3 dualist baseline should use A’s eligibility kills.
+
+No contradictions yet (all tracks bootstrap-only except A Round 1 content).
+
+Enables: A axioms + kill list give B/D scoring criteria and C reverse targets.
+===== END =====
+
+===== ENTRY 2026-07-18T13:10:00Z | A-006 | handoff =====
+Agent: A
+Round: 1
+Tags: summary, next-round, A1
+---
+Round 1 summary (Approach A).
+
+Done:
+1. axioms_v0.md — Ax1–Ax9 locality-first monist skeleton + (B) + (M) + warp schema
+2. mass_from_locality.md — m = E_bound/c² sketch; killables K1–K4
+3. lean/LocalityBudget.lean — budget depletion + IsMass formal fragment
+4. Log A-001..A-005; FOR_B/C/D tags in A-002, A-003; checkin A-005
+
+Key claims (killable):
+- Free+bound budget identity is the monist content of “mass uses fabric.”
+- c is free-field locality; m is bound ledger / c²; not dualist matter.
+- Warp is theorem schema from local c=const + locks + depletion — not T→G.
+
+Open blockers (theory, not human):
+1. Free-path cost functional C[ρ_free, locks] for inertia O(v²) and warp proof.
+2. Rod/clock circularity (Ax7) — needs C1-style reverse constraints.
+3. Strong vs weak budget — may need C3 weak-lensing reverse to force form of (B).
+4. Lean not lake-built in-session; warp not formalized.
+
+Next-round steps (suggested):
+- A2: define free-path cost / optical index from ρ_free; prove toy warp lemma
+  (e.g. 1D path delay ∝ ∫(ρ_0−ρ_free) or bound mass proxy).
+- A3: weaken/strengthen Ax4 against C’s necessary conditions when C produces them.
+- Lean: add PathCost def + lemma “positive bound on interval ⇒ free transit time
+  > vacuum time” (1D discrete).
+- Optionally A2 hydro monism sketch if path-cost route stalls.
+
+Files written:
+- /home/d/code/scp/v76/work/A/axioms_v0.md
+- /home/d/code/scp/v76/work/A/mass_from_locality.md
+- /home/d/code/scp/v76/work/A/lean/LocalityBudget.lean
+- /home/d/code/scp/v76/work/A/lean/lakefile.lean
+- /home/d/code/scp/v76/work/A/lean/lean-toolchain
+===== END =====
+
+===== ENTRY 2026-07-18T13:25:00Z | A-007 | checkin =====
+Agent: A
+Round: 1
+Tags: checkin, FOR_A, adopt, C-reverse
+---
+Second check-in after C Round 1 content appeared (C-001..C-006).
+
+Other logs:
+- B: still B-000 only.
+- D: still D-000 only.
+- C: full Round 1 reverse package + FOR_A tags in C-001, C-002, C-003, C-004.
+
+FOR_A adoption table:
+
+| Source | FOR_A content | Decision | Reason |
+|--------|---------------|----------|--------|
+| C-001 | Axioms ⇒ exterior path-cost monopole ∝ E_star/(c²r), or abandon Einstein-class light targets; prefer nonlocal free-response kernel | **ADOPT** (target) | Matches Ax9 schema; elevates exterior ℓ profile to success criterion without T→G |
+| C-002 | Free linear response around lock ⇒ ℓ−ℓ_0 ∝ E_star/(c²r); no Poisson postulate | **ADOPT** | Encoded in axioms_v0.md v0.1 Ax8 preferred structure |
+| C-002 | Do not claim local n(ρ)+pointwise budget gives long-range 1/r | **ADOPT** | Ax4 kill condition + (B-local) demoted; C no-go recorded |
+| C-003 | Derive ½(E_star/c²)v² from free locality | **DEFER** (next round) | mass_from_locality already sketches; closed O(v²) needs path-cost functional |
+| C-004 | Run dualist strip-list on axiom draft | **ADOPT** (done pass) | Ax1/3/7/8 reject S1,S2,S5,S6,S7,S11; no secret fixed chart as ontology |
+
+C enables A: forced path-cost profile is the concrete theorem target for Ax9.
+C blocks naive A: strong (B-local)+local optics as complete gravity channel — **contradicts** if claimed without escape hatch. A v0.1 fixes this.
+
+B/D: still no content; no FOR_A from them.
+===== END =====
+
+===== ENTRY 2026-07-18T13:30:00Z | A-008 | finding =====
+Agent: A
+Round: 1
+Tags: axioms_v0.1, C-nogo, path-cost, budget
+---
+Axiom amendment v0.1 after C reverse no-go.
+
+Changes in work/A/axioms_v0.md:
+- Ax4 split into (B-local) / (B-integral) / (B-response); (B-local) pedagogical only.
+- Explicit C no-go as design constraint + kill condition.
+- Ax8: path cost may be nonlocal; preferred free Green kernel ~1/r exterior.
+- §6 open choices updated; changelog v0.1.
+- mass_from_locality.md: prefer nonlocal C in inertia gap list.
+
+Lean fragment unchanged (still ledger half; IsMass + depletion remain valid
+under (B-integral) as well as (B-local)).
+
+Round 1 next-round update:
+1. Define free response kernel K as relational object (not Poisson bolt-on).
+2. Toy theorem: compact E_star + K~1/r ⇒ ℓ monopole (math note or Lean 1D).
+3. Attack ½(E_star/c²)v² from that kernel (C-003 deferred item).
+
+Cross-links: work/A/axioms_v0.md, work/C/path_cost_profile_v0.md
+FOR_B: Prefer compact lock + free response that produces ray monopole ∝ E_star;
+  do not implement only local n(ρ_free) under pointwise budget as “gravity.”
+FOR_C: A v0.1 adopts your no-go and monopole target; please stress-test whether
+  (B-response) kernel smuggles dualism (S2) — A claims free continuum response
+  is still one sector if K is medium law not T→G.
+FOR_D: Loss should target ℓ(r) not δρ_free(r); dualist baseline = Poisson on
+  flat ∫T_00 (C strip S6+S9).
+===== END =====
+
+===== ENTRY 2026-07-18T16:20:00Z | A-009 | proposal =====
+Agent: A
+Round: 2
+Tags: free-response, K, monism, O-001
+---
+Round 2 start (O-001 theme): Make the free-response monist or kill it.
+
+Plan:
+1. Define K as single-sector free continuum linear response (not hand Poisson).
+2. Hard/soft kill criteria for dualist smuggling (S2/S9/S12).
+3. Candidate dynamics F1–F5 with monist-vs-dualist verdicts.
+4. Congruence package for B/C/D (equations, exports, tests T1–T7).
+5. Partial attack on ½(E_star/c²)v² from free-response energy.
+6. Checkin FOR_A from B/D; handoff.
+
+Critical gap accepted: B Φ=α∫ρ_b/R is target shape, not monist derivation.
+===== END =====
+
+===== ENTRY 2026-07-18T16:45:00Z | A-010 | finding =====
+Agent: A
+Round: 2
+Tags: free_response_kernel, F1, F5, kill-criteria
+---
+Artifact: work/A/free_response_kernel_v0.md
+
+DEFINITION: K = linear map lock-source → free-state change that controls path
+cost, induced by free continuum constitutive dynamics (ψ free DOF).
+
+NOT K: independent Φ; hand ∫ρ/R without free law; T→G; soft Einstein.
+
+CANDIDATE VERDICTS:
+| ID | Principle | Verdict |
+|----|-----------|---------|
+| F1 | Free capacity potential: −∇·(σ∇ψ)=s ρ_b; ℓ=ℓ0+γψ | **Monist-eligible** if ψ evolved as free law; G_eff=γ s c⁴/(8π σ0) emergent |
+| F2 | Diffuse ρ_f + strain/flux path cost | Conditional; local n(ρ_f) still dead for long-range |
+| F3 | Graph free Laplacian Green | **Strong monist eligibility** (path cost = free resistance) |
+| F4 | Free wave envelope | Eligible with care on fixed-stage risk |
+| F5 | Hand Φ=α∫ρ_b/R (B R1 kernel) | **Dualist residue / provisional target only** — never monist theory |
+
+HARD KILLS HK1–HK5: warp without free state; frozen free medium + rays still bend;
+foreign G; two-pass gravity; broken ledger link.
+
+Exterior monopole WITHOUT second sector (F1 3D sketch):
+  ψ ~ (s E_star)/(4π σ0 r) → ℓ−ℓ0 = γψ → G_eff from free constants only.
+
+2D sandbox honesty: free Green is log; do not silently paste 3D Newton.
+
+Cross-links: work/A/free_response_kernel_v0.md
+FOR_B: Implement F1 relaxational/quasistatic ψ with source ∝ρ_b; ℓ=ℓ0+γψ;
+  tag phi_origin=free_relaxation, gravity_solver=none; compare α_eff to hand kernel.
+  Document 2D vs 3D Green. Push-test m_inertial when cheap.
+FOR_C: Stress-test F1 vs S2: is elliptic free capacity dualist? A claims NO iff
+  ψ is free continuum state and sρ_b is budget conversion not foreign T00.
+  Formalize; C1 rod/clock vs ψ.
+FOR_D: Do not award theory congruence to phi_origin=postulated_kernel; prefer
+  free_relaxation maps; keep N_sec/link Occam; non-isomorphic dualist still needed.
+===== END =====
+
+===== ENTRY 2026-07-18T17:00:00Z | A-011 | finding =====
+Agent: A
+Round: 2
+Tags: congruence, package, T1-T7
+---
+Artifact: work/A/congruence_package_v0.md
+
+Package sections:
+- O1–O6 ontology (one continuum, ledger, c, free dynamics, no 2nd pass, emergent G_eff)
+- F1 reference dynamics + path cost + mass ledger
+- B export tags: sector_count, phi_origin, gravity_solver, budget_identity
+- Tests T1 free deficit; T2 exterior monopole; T3 no second solver; T4 vacuum/unlock;
+  T5 inertia triad; T6 dualist Occam separation; T7 local-optics no-go compliance
+- Package kills K-pack-1..5
+
+Round-1 status under package:
+- Local GRIN: compact demo only (not T2)
+- B hand kernel: phenomenology vs C shape; NOT theory monism
+- D monist_kernel win: fit+Occam on F5-like synthetic — not dynamical free law
+
+Success story for goal (2): A F1 formula + B free_relaxation export + C S2 pass
++ D scores free_relaxation over dualist with M_ledger recovered.
+
+Cross-links: work/A/congruence_package_v0.md
+===== END =====
+
+===== ENTRY 2026-07-18T17:10:00Z | A-012 | attempt =====
+Agent: A
+Round: 2
+Tags: inertia, kinetic, E_star, partial
+---
+Artifact: work/A/kinetic_inertia_v0.md
+
+Partial result:
+- Inertia = free-response cost of moving lock (relational), not primitive m.
+- F1 free energy U[ψ]= (σ0/2)∫|∇ψ|²; moving lock → U(v)=U(0)+½μ v²+…
+- Scaling μ ~ E/c² natural (EM-mass analogy with free ψ as "field").
+- Tension: μ may track self-energy U(0) not unlock E_star (classical EM mass problem).
+- Routes: R1 renormalize self-energy into E_star; R2 operational drag m=F/a (B T5).
+- Exact coefficient 1 for ½(E_star/c²)v² **NOT closed** — remains killable claim K1.
+
+Hyperbolic free kinetic term (σ0/(2c²))(∂tψ)² suggested as path to field-momentum
+inertia; identification free-field energy cost ↔ E_star is the monist step still open.
+
+Cross-links: work/A/kinetic_inertia_v0.md, mass_from_locality.md
+FOR_B: Measure m_inertial = F_ext/a; compare E_star/c² and M_ray (triad).
+FOR_C: EQ checklist — does reverse force μ=E_star/c² or only μ∝E_star/c²?
+===== END =====
+
+===== ENTRY 2026-07-18T17:20:00Z | A-013 | checkin =====
+Agent: A
+Round: 2
+Tags: checkin, FOR_A, B, D, O
+---
+Round 2 check-in after reading O, B, C, D full Round-1 logs (Round-2 peers may
+still be in flight; re-check if they append mid-session).
+
+Other logs:
+- O-001: theme free-response monist or kill; critical gap = postulated kernel.
+  A mandate aligns; executed A-010..A-012.
+- B-001..B-006: local GRIN + hand kernel; free deficit PASS; C no-go confirmed;
+  kernel Φ~αM/r; dualist residue honest. FOR_A in B-001, B-003.
+- C-001..C-006: no-go + path-cost + Emc2 + strip (Round 1; adopted in R1).
+- D-001..D-005: scoring; dualist/monist ray isomorphism; Occam needed.
+  FOR_A in D-001, D-003.
+
+FOR_A adoption (Round 2):
+
+| Source | Content | Decision | Reason |
+|--------|---------|----------|--------|
+| B-001 | Numerics use (B)+m=∫ρ_b/c²; chart temporary | **ADOPT** | Already in axioms/congruence; chart scaffolding flagged |
+| B-003 | Local (B) insufficient for Ax9 exterior; need free-response | **ADOPT** | axioms v0.1 + free_response_kernel F1 target |
+| D-001 | Surviving inverted media → Ax8 kernel candidates; fit≠monism | **ADOPT** | congruence T6; forbid equating ray fit with monism |
+| D-003 | Φ monist only if defined from free medium; independent solve = N_sec=2 | **ADOPT** | HK1–HK2; phi_origin tags in congruence package |
+| C-003 (deferred R1) | Derive ½(E_star/c²)v² | **PARTIAL** | kinetic_inertia_v0 sketch; coefficient open |
+| O-001 | Define monist K + congruence; strip dualism | **ADOPT** | core Round 2 deliverables |
+
+Cross-status:
+- B enables A (numeric proof local channel dead; kernel shape works).
+- A enables B (F1 law + tags to replace F5).
+- D enables A (degeneracy forces sector/ledger tests into package).
+- C enables A (no-go + strip); A asks C to S2-test F1.
+- No contradiction: hand kernel = shared provisional tool, not claimed monist theory.
+
+Blocks: exact inertia coefficient; 2D Green honesty; F1 not yet numeric.
+===== END =====
+
+===== ENTRY 2026-07-18T17:30:00Z | A-014 | handoff =====
+Agent: A
+Round: 2
+Tags: summary, handoff, next-round
+---
+END OF ROUND 2 — Approach A summary.
+
+DONE:
+1. free_response_kernel_v0.md — monist K def; HK/SK kills; F1–F5 verdicts;
+   exterior ℓ∝E_star/r without second sector (F1); 2D caveat
+2. congruence_package_v0.md — O1–O6, dynamics, exports, T1–T7, package kills
+3. kinetic_inertia_v0.md — partial ½mv²; R1/R2; triad for B
+4. axioms_v0.md changelog v0.2; README update
+5. Log A-009..A-013; FOR_B/C/D; checkin
+
+MONIST-VS-DUALIST VERDICT ON K CANDIDATES:
+- F1 free capacity relaxation: MONIST-ELIGIBLE (preferred analytic)
+- F3 graph Green: MONIST-ELIGIBLE (preferred relational)
+- F2 strain/flux: conditional
+- F4 free wave: eligible with stage-risk
+- F5 hand ∫ρ/R: NOT monist theory (dualist residue / shape target)
+
+OPEN:
+1. Exact m=E_star/c² coefficient
+2. B must evolve F1 (not hand Φ) for congruence goal (2)
+3. C S2 stress-test of F1 pending
+4. Lean not extended this round (math notes stronger)
+
+NEXT-ROUND STEPS (A):
+1. Variational free action for F1 (hyperbolic capacity) + self-energy renorm note
+2. If B returns free_relaxation data: check T2 ratio vs G_eff formula
+3. Optional Lean: 1D discrete free Laplacian Green + monopole lemma
+4. Integrate C Round-2 rod/clock + S2 findings into axioms v0.3
+
+Files:
+- /home/d/code/scp/v76/work/A/free_response_kernel_v0.md
+- /home/d/code/scp/v76/work/A/congruence_package_v0.md
+- /home/d/code/scp/v76/work/A/kinetic_inertia_v0.md
+===== END =====
+
+===== ENTRY 2026-07-18T19:00:00Z | A-015 | proposal =====
+Agent: A
+Round: 3
+Tags: 3D, F1, M2, O-003
+---
+Round 3 start (O-003): 3D free-response congruence.
+
+Adopt O/B verdict:
+- monist_kernel_failed for hand 1/r as monist-derived.
+- M2 free Laplace = monist mechanism, exterior 2D log.
+- Path to GR-class 1/r = same mechanism in 3D, not F5 hand Coulomb.
+
+Plan: free_response_3d_v0.md; update congruence T2/T8; endorse M2; G_eff formula;
+checkin; handoff.
+===== END =====
+
+===== ENTRY 2026-07-18T19:20:00Z | A-016 | finding =====
+Agent: A
+Round: 3
+Tags: free_response_3d, G_eff, M2-endorse
+---
+Artifact: work/A/free_response_3d_v0.md
+
+ENDORSEMENT: B-M2 free Laplace / free equilibration is monist-eligible F3/F1
+mechanism class (sector 1, free origin, gravity_solver=none). Wrong multipole
+for C target is **embedding dimension**, not monism failure.
+
+F1-3D:
+  −∇·(σ ∇ψ) = s ρ_b
+  exterior: ψ = s E_star / (4π σ0 r) + O(1/r²)
+  ℓ−ℓ0 = γ ψ
+  G_eff = γ s c⁴ / (8π σ0)   [match C: ℓ−ℓ0 ≈ 2 G_eff M/(c² r), M=E_star/c²]
+
+Alternative monist form: ∇²ψ=0 on free set; lock = Dirichlet/flux hole (M2 lift).
+
+Diagnostic: R_ψ(r) = 4π r ψ σ0 / (s E_star) → 1.
+
+Kills K3D-1..4: hand α E/r without free solve; log artifact in 3D; idle ψ;
+foreign G_eff forever.
+
+Dualist twin: 3D Poisson Φ∝M/r ray-isomorphic — still need sector_tag + free origin.
+
+Cross-links: work/A/free_response_3d_v0.md
+FOR_B: Critical path = 3D free Laplace/F1; N=32–64; measure 1/r not log; tags
+  embedding_dim=3, multipole_class=1/r (measured), phi_origin=free_laplace_3d,
+  gravity_solver=none. Optional dualist 3D Poisson control. No hand M/r monism.
+FOR_C: Put 2D log vs 3D 1/r in NC; checklist pass = T2-3D + free origin + NC-K.
+FOR_D: Score B 3D free Laplace; dualist 3D Poisson adversary; Occam when
+  multipole ties; never award monism to postulated_kernel 1/r.
+===== END =====
+
+===== ENTRY 2026-07-18T19:30:00Z | A-017 | finding =====
+Agent: A
+Round: 3
+Tags: congruence, T2, T8, M2
+---
+Updated: work/A/congruence_package_v0.md (v0.2 Round 3)
+
+Changes:
+- §1.1 embedding rule: M2@2D mechanism PASS / T2-3D FAIL; M2@3D full path
+- T2 split: T2-3D Einstein-class vs T2-2D log mechanism-only
+- T8 dimension honesty
+- Export tags: embedding_dim, multipole_class, sector_tag, free_laplace_3d
+- G_eff formula in dynamical package
+- §7.1 partial success M2; §7.2 full congruence = 3D free Laplace
+- K-pack-6 if 3D free Laplace never yields 1/r
+- Status table: monist_kernel_failed; M2 PASS mechanism
+
+axioms_v0 changelog v0.3; free_response_kernel R3 note; kinetic R3 status
+(no coefficient progress; 3D self-energy more singular).
+
+Cross-links: work/A/congruence_package_v0.md
+===== END =====
+
+===== ENTRY 2026-07-18T19:40:00Z | A-018 | checkin =====
+Agent: A
+Round: 3
+Tags: checkin, FOR_A, O-003, B-M2, D
+---
+Round 3 check-in (read O-003, B-007..B-012, D-006..D-010, C-007..C-012, A prior).
+
+FOR_A adoption:
+
+| Source | Content | Decision |
+|--------|---------|----------|
+| O-003 | Specialize F1 to 3D; G_eff; congruence 3D; reconcile M2 | **ADOPT** — free_response_3d + package v0.2 |
+| B-007/009 | M2 candidate (B-response) 2D log; 3D for 1/r; monist_kernel_failed | **ADOPT** — endorse M2 mechanism; fail F5 theory |
+| D-008 | M2 is F3-like 2D free Laplace; do not score R1 as congruence; 3D needed | **ADOPT** |
+| C-008 (R2) | Schema K monist if free-origin; clear dualism by derive K | **ADOPT** — F1-3D is derive path; M2 is numeric free-origin |
+| C-009 | RC into Ax7 | **DEFER** light (not Round-3 critical path; still valid) |
+
+Cross-status:
+- B enables A: M2 proves free Laplace monism works; 1/r needs 3D (shared target).
+- A enables B: F1-3D equations + R_ψ diagnostic + G_eff + tags.
+- D enables A: monist_kernel_failed reverse-confirmed; Occam on log twins.
+- C enables A: NC-K + no-go still hold; F1 schema clear.
+
+No contradictions. Goal (2) still open pending B 3D maps.
+
+Blocks: none from others; waiting on B 3D critical path.
+===== END =====
+
+===== ENTRY 2026-07-18T19:50:00Z | A-019 | handoff =====
+Agent: A
+Round: 3
+Tags: summary, handoff, 3D
+---
+END OF ROUND 3 — Approach A summary.
+
+DONE:
+1. free_response_3d_v0.md — F1-3D, ψ∼1/r, G_eff=γ s c⁴/(8π σ0), M2 endorse,
+   B implement spec, dualist twin warning, K3D kills
+2. congruence_package_v0.md v0.2 — T2-2D/T2-3D, T8, tags, partial vs full success
+3. Cross-file R3 notes (kernel, kinetic, axioms v0.3, README)
+4. Log A-015..A-018
+
+KEY CLAIMS:
+- M2 = monist free-response mechanism (ENDORSED)
+- 2D log ≠ monism fail; GR-class needs 3D free Green
+- Hand 1/r remains monist_kernel_failed
+- G_eff fully from free constants under F1-3D
+
+NEXT:
+1. When B ships 3D free Laplace: verify R_ψ→1 and G_eff match
+2. Optional Lean 1D/3D Green monopole lemma
+3. Inertia after multipole congruence
+4. C1 rod/clock into Ax7 if C Round-3 delivers
+
+Files:
+- /home/d/code/scp/v76/work/A/free_response_3d_v0.md
+- /home/d/code/scp/v76/work/A/congruence_package_v0.md
+===== END =====
+
+===== ENTRY 2026-07-18T19:55:00Z | A-020 | checkin =====
+Agent: A
+Round: 3
+Tags: checkin, C-R3, adopt
+---
+Late check-in after C-013..C-017 appeared (concurrent Round 3).
+
+FOR_A from C R3:
+| C-013 | Specialize F1 to 3D; Ax8 1/r = 3D free Green; G_eff(σ,s,γ,c) | **DONE** A-016 / free_response_3d |
+| C-014 | Map F1 to NC-K-L; keep F5 kill | **ADOPT** — F1-3D is NC-K free-origin path; F5 still dead |
+| C-015 | T12–T14 3D F1 + G_eff | **ADOPT** — maps to congruence T2-3D + Geff-F1-3D |
+
+C goal2_minimal (M2 class) vs goal2_PC3D aligns with A §7.1 partial vs §7.2 full.
+No conflict. Congruence language now shared A/C.
+===== END =====
+
+===== ENTRY 2026-07-18T20:10:00Z | A-021 | proposal =====
+Agent: A
+Round: 4
+Tags: package, goal2, O-005, close
+---
+Round 4 start (O-005): Close theory package for goal condition (2).
+
+Read: O-005, B monist_3d_1r_pass (parent N=32 SOR R2~0.998), D goal2_PC3D
+PARTIAL, C checklist v1 tiers.
+
+Plan:
+1. THEORETICAL_PACKAGE_v1.md — complete workable F1-3D idea + residuals
+2. inertia_target_v0.md — non-tautological J5 protocol for B
+3. Declare theory-side goal2_PC3D MET with residuals; goal2_FULL open on J5
+4. Checkin; handoff
+===== END =====
+
+===== ENTRY 2026-07-18T20:30:00Z | A-022 | finding =====
+Agent: A
+Round: 4
+Tags: THEORETICAL_PACKAGE_v1, goal2_PC3D, MET
+---
+Artifact: work/A/THEORETICAL_PACKAGE_v1.md
+
+Closed package contents:
+- Primitives: field free/bound; energy ledger; m=E_star/c²; c locality; warp
+- Budget (B); F1-3D −∇·(σ∇ψ)=s ρ_b; mass (M)
+- Exterior ψ-mono 1/r; path cost ℓ=ℓ0+γψ; G_eff=γ s c⁴/(8π σ0)
+- Ontology: single sector; Poisson-form residual R1 honest
+- Proven vs residual table; dead branches; kill KP1–KP6
+- Congruence map to B R3 / D / C checklist
+
+THEORY-SIDE DECLARATION:
+| Tier | Theory status |
+|------|---------------|
+| goal2_minimal | MET |
+| goal2_PC3D_workable | MET (complete workable idea) |
+| goal2_FULL (+J5 inertia) | NOT MET (coefficient open) |
+
+Residuals documented: R1 dualist Green isomorphism (tags/Occam); R2 inertia;
+R3 PPN light factor; R4 rods/clocks; R5 finite-box; R6 nonlinear/cosmo.
+
+Numeric twin cited: monist_3d_1r_pass=True; R²_1/r≈0.998 N=32 SOR.
+
+Cross-links: work/A/THEORETICAL_PACKAGE_v1.md
+FOR_B: Package frozen as theory twin of your 3D free-capacity; next = inertia
+  protocol in inertia_target_v0.md (A2 boost energy preferred).
+FOR_C: Score T12–T14 PASS against THEORETICAL_PACKAGE_v1; declare theory tier
+  for checklist v1; J5 still open for goal2_FULL.
+FOR_D: Theory congruence package ready; score J5 triad when B exports;
+  partial_goal2_project_claim consistent with A goal2_PC3D_workable.
+===== END =====
+
+===== ENTRY 2026-07-18T20:40:00Z | A-023 | finding =====
+Agent: A
+Round: 4
+Tags: inertia_target, J5, non-tautological
+---
+Artifact: work/A/inertia_target_v0.md
+
+Target triad: m_inertial =? E_star/c² =? M_ray
+
+FORBIDDEN: a=F/m_ledger (tautology); dualist Φ force; prescribe Newton law.
+
+PREFERRED protocol A2:
+  translate lock at small v; re-solve ψ; fit U(v)=U(0)+½ m v²
+  m from free energy expansion — non-tautological.
+
+Also: M_ray with G_eff fixed from free constants (partial triad);
+unlock work when available; export package for D.
+
+Theory: scaling m~E/c² expected; exact coefficient 1 still open
+(kinetic_inertia_v0). O-005 may defer J5 for goal2_PC3D_workable.
+
+FOR_B: Implement A2 if possible this round; tag tautology_flag=false.
+FOR_C: EQ checklist on A2 definition of m_inertial.
+FOR_D: L_triad score when data exist.
+===== END =====
+
+===== ENTRY 2026-07-18T20:50:00Z | A-024 | checkin =====
+Agent: A
+Round: 4
+Tags: checkin, O-005, B-R3, D-R3
+---
+Round 4 check-in.
+
+Other status (from logs/artifacts):
+- O-005: theory F1-3D package recognized; goal2 PARTIAL on J5; mandate A close
+  package — DONE A-022.
+- B R3: monist_3d_1r_pass=True; FOR_A lock G_eff + S2 free-origin — package
+  addresses both; free-origin = ψ free continuum (R1 residual honest).
+- D R3: monist_3d wins; goal2_PC3D PARTIAL; goal2_met=False on J5 — aligns A.
+- C checklist v1: T12–T14 were open at R3 writing; A now supplies closed text.
+
+FOR_A items this round:
+| Source | Item | Decision |
+|--------|------|----------|
+| O-005 | THEORETICAL_PACKAGE_v1 + inertia coefficient target | **DONE** |
+| B-015/016 | S2 free-origin test for goal2 | **ADOPT** — §3 package; residual R1 |
+| D R3 | partial PC3D claimable | **ADOPT** as goal2_PC3D_workable theory MET |
+
+No blockers. Enables C/D final tier scoring; B inertia protocol ready.
+===== END =====
+
+===== ENTRY 2026-07-18T21:00:00Z | A-025 | handoff =====
+Agent: A
+Round: 4
+Tags: summary, handoff, goal2, MET
+---
+END OF ROUND 4 — Approach A summary.
+
+DONE:
+1. THEORETICAL_PACKAGE_v1.md — complete F1-3D workable theory
+2. inertia_target_v0.md — non-tautological J5 protocol
+3. free_response_3d status → realized; README pointers
+4. Log A-021..A-024
+
+DECLARATION:
+  Theory side goal2_PC3D_workable: **MET**
+  (complete killable idea; congruent with B monist_3d_1r_pass)
+  Residuals R1 (Poisson iso), R2 (inertia) documented — not hidden.
+  goal2_FULL: **NOT MET** until J5 or explicit deferral by O.
+
+NEXT (A optional / later):
+1. If B ships triad: update package §4 with pass/fail
+2. PPN-lite space+time path-cost split for factor-4 light deflection
+3. Lean multipole lemma optional
+
+Files:
+- /home/d/code/scp/v76/work/A/THEORETICAL_PACKAGE_v1.md
+- /home/d/code/scp/v76/work/A/inertia_target_v0.md
+===== END =====

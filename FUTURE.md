@@ -11,6 +11,25 @@ has no stable particles (CONCEPT.md §2/§9).
 
 ---
 
+## Multi-focus monist demos (v77) — 2026-07-18
+
+**Docs:** `v77/PROBLEM.md` · `v77/FOCI.md` · `v77/RUN.md` · `v77/README.md`  
+**Ops:** append-only `v77/logs/{TE,NE,TD,ND,TM,NM,TU,O}_*.log`; `work/{TE,…}/`.
+**Seed:** v76 F1-3D. **Phase 1 STOP (A)** composition-tier. **Phase 2 STOP
+(A-depth):** M1 true-2D dynamic Maxwell + RC1 co-field (ψ + dynamical Maxwell
+same grid) — `v77/PHASE2_CONVERGENCE.md`. R-compose closed at RC1. Optional
+stretch M2/RC2 only. No DISPROVE.
+
+---
+
+## Foundational problem (v76 monist fabric) — 2026-07-18 — STOP
+
+**Docs:** `v76/PROBLEM.md` · `v76/CONVERGENCE.md` · `v76/APPROACHES.md` · `v76/RUN.md`  
+**Status:** Rounds 1–4 complete; **goal2_PC3D_workable MET**. F1-3D free-capacity
+monism; local GRIN / hand kernel dead; J5 residual. Foundation for v77.
+
+---
+
 ## Active goal (v75 multi-fabric → C₁₂) — 2026-07-16 checkpoint
 
 **Docs:** `v75/STATE.md` (equations + freeze) · `v75/C12_ATOM_GOAL.md` · `v75/STATUS.md` · `v75/FINDINGS.md`

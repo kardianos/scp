@@ -1,0 +1,690 @@
+===== ENTRY 2026-07-18T00:00:00Z | TE-000 | bootstrap =====
+Agent: TE
+Round: 0
+Tags: bootstrap, protocol
+---
+Theory EM — Maxwell monist free gauge
+
+Log initialized (append-only). Write only this file + work/TE/.
+Read v76 seed, v77 PROBLEM/FOCI/RUN, all logs. FOR_X for cross-ideas.
+===== END =====
+
+===== ENTRY 2026-07-18T20:15:00Z | TE-001 | theory =====
+Agent: TE
+Round: 1
+Tags: maxwell-lite, free-gauge, monism, constitutive, demos, kill-gates
+---
+ROUND 1 DELIVERABLE — Maxwell-lite monist free-gauge package v0
+
+Seed assumed: v76 F1-3D goal2_PC3D_workable (ψ path-cost). TE owns Maxwell as
+SIBLING free channel of same continuum, not ψ itself.
+
+WORK WRITTEN:
+- work/TE/maxwell_monist_v0.md
+  Equations M1–M4 + Cont + Wave + Coulomb; charge = lock–gauge ledger ρ_Q;
+  ε,μ with c=1/√(εμ)= free locality; interface TE-IA1 (ψ ≠ Φ); kill K-EM1–7;
+  dualist strip SE1–SE12 (extends v76 S17).
+- work/TE/constitutive_table_v0.md
+  Free-capacity (σ,s,γ) vs free-gauge (ε,μ); joint constraints JC1–JC5.
+- work/TE/demo_ids_em_v0.md
+  D-EM-maxwell-lite, gauss-coulomb, wave-c, vacuum-control, continuity,
+  dualist-occam, sibling-psi, charge-ledger.
+- work/TE/for_ne_kill_gates_r1.md
+  KG1–KG8 concrete pass/fail numbers for NE R1–R2.
+
+CORE CLAIM (one line):
+  Same continuum hosts free-capacity ψ and free linear gauge (E,B); charge is
+  lock–gauge ledger; Maxwell-lite is sibling free law to F1-3D, not identical
+  to ψ; dual sources ρ_b → ψ and ρ_Q → E.
+
+DUAL LEDGERS:
+  ρ_b ≥ 0 → F1-3D path cost (always same-sign mass monopole)
+  ρ_Q signed → Gauss/Coulomb (repulsion possible)
+  Neutral mass: ψ on, E off. Opposite charges: E structure ≠ ψ monopole.
+
+STRIP (highlights): stage-EM, primitive particle q, two-pass EM solver,
+  ψ≡Φ collapse, soft dualist Coulomb as monism, Q-ball-on-grid as monism proof.
+
+RESIDUALS: R-EM1 Coulomb self-energy/renorm (J5-class); R-EM2 Poisson
+isomorphism (Occam/tags); R-EM5 kernel bridge vocabulary only.
+
+FOR_NE: Implement KG1–KG4 this round (see for_ne_kill_gates_r1.md). Units
+ε=μ=c=1 OK. Tag sector=1, E_origin=free_maxwell_lite. Dualist twin labeled
+sector=2. KG7 sibling-ψ is V77-2 critical — schedule when static EM green.
+
+FOR_TU: Register D-EM-* rows from demo_ids_em_v0.md. D-EM-maxwell-lite=DRAFT
+theory PASS; numeric demos PROPOSED until NE. Score dual-channel G2 only after
+KG7 path exists. Do not collapse EM into ψ for false unity.
+
+FOR_TM: Dual-source lock design — same support may carry (ρ_b, ρ_Q); TE forbids
+ρ_Q≡ρ_b identity. Hierarchy = constitutive (γ,s,σ) vs (ε,μ) + |Q|/E★, not hand
+α. Force taxonomy: path-cost attraction vs Coulomb Q_i Q_j is yours.
+
+FOR_TD: Shared c — wave speed 1/√(εμ) must match free locality c (JC1/KG8).
+EM free energy u_EM in free ledger; radiation = free in flight. Rods/clocks
+still your C1 residual; TE assumes medium connectivity for ∇.
+
+FOR_ND: Optional free-wave speed cross-check vs NE KG4 for shared c.
+
+FOR_NM: Dual-source multi-lock demos after NE static Coulomb green; coordinate
+D-EM-sibling-psi / D-EM-charge-ledger.
+
+FOR_O: R1 EM theory stood up. Blocks: numeric congruence. No program kill from
+TE. Toward V77-1: need NE ≥1 kill-gate PASS. Toward V77-2: dual-channel KG7.
+===== END =====
+
+===== ENTRY 2026-07-18T20:20:00Z | TE-002 | checkin =====
+Agent: TE
+Round: 1
+Tags: checkin, read-all-logs
+---
+CHECK-IN (read: O, NE, TD, ND, TM, NM, TU + own; v76 CONVERGENCE + PACKAGE)
+
+O-000/O-001: Round 1 theme = draft laws + first kill-gates; V77-1 progress;
+  first hard milestone V77-2 dual-channel. TE aligned: laws + gates done;
+  dual-channel deferred to sibling demo not forced this entry.
+
+Partner NE-000: bootstrap only — no provisional sandbox yet. TE gates ready
+  so NE need not wait; provisional Maxwell form OK if tagged.
+
+TD/ND/TM/NM/TU: bootstrap only at check-in time. No FOR_TE messages yet to
+  adopt/defer/reject.
+
+v76 residuals inherited and mapped:
+  Poisson isomorphism → R-EM2 for Coulomb twin (same Occam discipline).
+  J5 inertia open → R-EM1 Coulomb self-energy not Round-1 kill.
+  Local GRIN dead → do not resurrect via ε(ρ_b) as gravity substitute
+  (constitutive_table §4).
+
+No conflicts with other foci detected (nothing written beyond bootstrap).
+===== END =====
+
+===== ENTRY 2026-07-18T20:25:00Z | TE-003 | handoff =====
+Agent: TE
+Round: 1
+Tags: handoff, round1-complete
+---
+HANDOFF — TE Round 1 complete (theory side)
+
+DONE:
+1. maxwell_monist_v0.md — monist Maxwell-lite package
+2. constitutive_table_v0.md — free-capacity vs free-gauge
+3. demo_ids_em_v0.md — TU registry proposals
+4. for_ne_kill_gates_r1.md — KG1–KG8 numeric gates
+5. Log TE-001..003
+
+NEXT (not this agent unless re-spawned):
+- NE: KG1–KG4 sandboxes → congruence on D-EM-gauss-coulomb / wave-c
+- TU: ingest D-EM-* into DEMOS.md / WORLD.md
+- TE R2 (if spawned): revise equations from NE fails; dual-channel interface
+  polish with TM; optional potential-form gauge notes
+
+BLOCKERS: none internal. External: NE numeric for V77-1 EM half.
+
+STATUS: EM theory draft READY for pair protocol.
+===== END =====
+
+===== ENTRY 2026-07-18T23:30:00Z | TE-004 | theory =====
+Agent: TE
+Round: 2
+Tags: full-maxwell, dual-channel, congruence, Yee, FOR_NE, FOR_TU, FOR_TM, FOR_NM
+---
+ROUND 2 — Full Maxwell monist package + dual-channel interface
+
+O-003 theme: full Maxwell (not lite only); dual-channel joint; path to unified
+theory+model OR disprove. Terminal (A)/(B).
+
+## NE R1 CONGRUENCE STAMP
+Read NE-001..004 + work/NE/outputs/r1_result.json + r1_summary.txt.
+
+NE implements:
+  M3 quasistatic −ε∇²Φ=ρ_Q, E=−∇Φ; continuum Gauss; E~1/r²; vacuum;
+  wave (∂tt−c²∇²)A=0 with c=1/√(εμ) unit + off-unit ε=4→c=0.5.
+KG1–4 all PASS. full_maxwell_claim=false (honest).
+
+TE VERDICT: te_equation_match = YES for KG1–4 / Maxwell-lite subset.
+  Equations congruent with maxwell_monist_v0 §Coulomb+Wave and full package
+  §3.5–3.4 reduction. D-EM-gauss-coulomb, vacuum-control, wave-c numeric
+  LIVE_PASS accepted. R-EM2 dualist iso residual stands (not fatal).
+
+## WORK WRITTEN (R2)
+1. work/TE/full_maxwell_monist_v0.md
+   Complete M1 ∇·B=0, M2 Faraday, M3 Gauss E, M4 Ampère–Maxwell;
+   Cont; Const ε,μ,c; Wave; Poynting/Work; potential form;
+   monist free-gauge ontology; charge ρ_Q,J_Q lock ledgers;
+   TE-IA1 sibling ψ; Yee leapfrog discrete form; kills K-EM1–10;
+   demo IDs D-EM-maxwell-full, faraday, divB, ampere, wave-EB.
+2. work/TE/dual_channel_joint_v0.md
+   DUAL-0 static joint; DUAL-1 full Maxwell branch; JC1–JC7 freeze;
+   dualist strip DJ1–5; V77-2 scorecard for TU.
+3. work/TE/for_ne_kill_gates_r2.md
+   KG-F1 divB, KG-F2 Faraday, KG-F3 wave-with-B, KG-F4 Cont/Gauss,
+   KG-F5 Coulomb regression, KG-F6 displacement necessity;
+   KG7–9 dual-channel; full_maxwell_claim bar.
+4. README updated — full package authoritative.
+
+## THEORY COMPLETENESS ANSWER
+Is full Maxwell monist-complete on THEORY side?
+  YES — closed workable package (equations+ontology+constitutive+interface
+  +Yee+kills+residuals). Eligible monist free channel C-A of WORLD.
+Is campaign (A) cohesive unified theory+model done?
+  NO — needs NE full Maxwell numeric + dual-channel joint PASS (or honest
+  kill K-EM8–10). Lite channel already theory+numeric congruent.
+
+## FOR_NE
+1. Stamp te_equation_match=yes for R1 scope in next export if re-run.
+2. R2: implement Yee 2D TE/TM or 3D; gates KG-F1..F5 (F6 optional).
+3. Prefer 2D Faraday+wave-B first; keep R1 3D Coulomb; label embedding_dim.
+4. full_maxwell_claim=true only when §4 bar in for_ne_kill_gates_r2 met.
+5. Dual-channel: KG7/KG9 with NM (DUAL-0) for V77-2.
+6. Tags: em_solver=free_maxwell_yee, E_origin=free_maxwell_full, sector=1.
+
+## FOR_TU
+- Promote D-EM-maxwell-lite numeric LIVE (NE) + theory PASS; te match yes.
+- Register D-EM-maxwell-full theory READY; numeric PLANNED until NE R2.
+- Register D-EM-faraday, divB, ampere, wave-EB PROPOSED.
+- Ingest dual_channel_joint_v0 JC1–JC7 into WORLD free-channel table v1.
+- V77-2 still NOT MET until KG7+KG9 joint numeric.
+- C-A channel: upgrade from Maxwell-lite to full Maxwell theory ref
+  full_maxwell_monist_v0.md.
+
+## FOR_TM / FOR_NM
+- TE freezes Supp + dual ledgers aligned with TM DS-B lite / DUAL-0.
+- Maxwell static target is full package M3 (same as lite Coulomb) — NM may
+  cite TE full or lite; prefer E_origin=free_maxwell_lite until Yee, then full.
+- Joint constitutive: dual_channel_joint_v0.md is TE freeze for dual0.
+
+## FOR_TD / FOR_ND
+- JC1 shared c frozen; NE R1 + ND free-wave both support c=1 language.
+- u_EM free ledger + Work equation interfaces lock kinetic (J5 residual shared).
+
+## FOR_O
+- R2 TE theory complete for full Maxwell monism.
+- No K-EM8–10 evidence; no program kill proposal.
+- Blocking: NE Yee + joint dual-channel numeric for (A) path.
+- Theory does NOT block terminal (A); numerics do.
+
+No scp_sim. No real α claims.
+===== END =====
+
+===== ENTRY 2026-07-18T23:40:00Z | TE-005 | checkin =====
+Agent: TE
+Round: 2
+Tags: checkin, read-logs
+---
+CHECK-IN Round 2
+
+Read:
+- O-002 R1 judgment: V77-1 MET; V77-2 NOT MET; G3 BUILD
+- O-003 R2: full Maxwell + dual-channel; stop only (A) or (B)
+- NE-001..004: KG1–4 PASS; FOR_TE congruence request → ADOPTED (stamped yes)
+- TM-001..003: lock ontology; dual-source Supp; FOR_TE freeze Maxwell static
+  → ADOPTED via full package + dual_channel_joint (DUAL-0 = TM DUAL-0)
+- TU-001..007: WORLD C-A; DEMOS provisional at mid-R1; FOR_TE freeze lite
+  → ADOPTED and UPGRADED to full Maxwell theory; lite remains LIVE numeric
+- TD/ND: shared c free wave; J5 renorm path — ADOPTED JC1 alignment
+- NM: dual0 free_gauge_lite — TE offers Maxwell Φ as upgrade target
+
+FOR_TE responses:
+- FROM NE: congruence check → YES for lite; residual full M1–M4 to R2 gates
+- FROM TM: freeze Gauss static + shared c + siblings → DONE in joint note
+- FROM TU: freeze Maxwell-lite → DONE; full package supersedes for C-A law set
+- FROM O-003: full Maxwell progress → theory package delivered
+
+Conflicts: none. DEMOS.md mid-R1 stale vs NE outputs (TU will refresh).
+No FOR_TE requiring equation revision from failed gates (all R1 PASS).
+===== END =====
+
+===== ENTRY 2026-07-18T23:45:00Z | TE-006 | handoff =====
+Agent: TE
+Round: 2
+Tags: handoff, round2-complete
+---
+HANDOFF — TE Round 2 complete (theory side)
+
+DONE:
+1. full_maxwell_monist_v0.md — full M1–M4 monist package + Yee
+2. dual_channel_joint_v0.md — V77-2 constitutive freeze JC1–JC7
+3. for_ne_kill_gates_r2.md — KG-F* + KG7–9
+4. NE R1 congruence stamp (te_equation_match=yes lite)
+5. Log TE-004..006
+
+THEORY ANSWER (for parent):
+  Full Maxwell is monist-COMPLETE on theory side (workable closed package).
+  Campaign cohesive model NOT complete until NE full Maxwell + dual-channel
+  numeric congruence (or documented disprove via K-EM8–10).
+
+NEXT:
+- NE: Yee + KG-F1..F5; optional joint KG7/9 with NM
+- TU: WORLD/DEMOS update; V77-2 re-score when joint PASS
+- TE R3 only if NE fails force redesign or kill proposal
+
+BLOCKERS: external numeric only. No internal theory blocker for (A).
+
+STATUS: Full Maxwell monist theory READY; awaiting NE/NM congruence.
+===== END =====
+
+===== ENTRY 2026-07-19T01:15:00Z | TE-007 | theory =====
+Agent: TE
+Round: 3
+Tags: freeze, congruence, full-maxwell, dual-channel, composition, FOR_NE, FOR_TU, FOR_O
+---
+ROUND 3 — Freeze full Maxwell + stamp congruence + dual-channel composition
+
+O-004/O-005: unify or fail; freeze interfaces; no new ontology forks;
+parent V77-2 MET; full Maxwell numeric claimed; optional joint Yee+ψ.
+
+## FREEZE
+work/TE/full_maxwell_monist_v0.md → status FROZEN AUTHORITATIVE C-A law set.
+No further Maxwell ontology forks from TE unless kill-gate reverse.
+Lite maxwell_monist_v0 remains historical/static sector only.
+
+## FULL MAXWELL CONGRUENCE STAMP
+Read NE-005..008 + work/NE/outputs/r2_result.json + r2_summary.txt.
+
+NE scheme: Yee_staggered_2D_TE+TM; em_solver=free_maxwell_yee;
+E_origin=free_maxwell_full; sector=1; embedding_dim_dynamics=2;
+embedding_dim_coulomb=3 (honest labels per TE §4.6).
+
+Gate map (TE KG-F* ↔ NE FM*):
+  KG-F1 divB     ←→ FM3 PASS  divB_max~1e-15
+  KG-F2 Faraday  ←→ FM4 PASS  residual~1e-16 (Yee identity)
+  KG-F3 wave-EB  ←→ FM2 unit v/c=1.0; off ε=4 c_th=0.5 v/c=1.0 PASS
+  KG-F4 Cont     ←→ FM6 PASS  dQ_rel~1e-7
+  KG-F5 Coulomb  ←→ FM7+FM5 PASS (R1 recovery + TE Gauss)
+  FM1 vacuum     PASS
+  full_maxwell_claim = TRUE (NE) → TE ENDORSES
+
+VERDICT:
+  te_equation_match_r1   = YES (retained TE-004)
+  te_equation_match_full = YES  (this entry)
+  te_equation_match      = YES  under labeled 2D-dynamics + 3D-Coulomb scope
+  D-EM-maxwell-full      = theory+numeric CONGRUENT LIVE_PASS
+
+Doc: work/TE/congruence_stamp_r3.md
+
+## DUAL-CHANNEL COMPOSITION WITH ψ
+Read NM-005.. dual r2: KG7/8 PASS; V77_2_joint_numeric=true;
+ψ + free_maxwell_lite Φ; TE-IA1 held.
+
+COMP-1: Full Yee Maxwell and dual-channel lite are truncations of ONE C-A
+channel (static M3 sector vs dynamical M1–M4), sibling to C-ψ under JC1–JC7.
+Not two EM ontologies. Residual RC1 = optional single-box DUAL-1 (ψ+Yee
+together); does NOT block composition or force dualism (O-004 path).
+
+Docs:
+  work/TE/dual_channel_composition_r3.md
+  dual_channel_joint_v0.md scorecard updated V77-2 MET
+
+## WORK TOUCHED
+1. full_maxwell_monist_v0.md — freeze header + §1/§8/§11 congruence update
+2. congruence_stamp_r3.md — NEW
+3. dual_channel_composition_r3.md — NEW
+4. dual_channel_joint_v0.md — R3 scorecard
+5. README.md — authoritative freeze list
+
+## FOR_NE
+Stamp in any re-export:
+  te_equation_match_r1=true
+  te_equation_match_full=true
+  te_equation_match=true
+TE endorses full_maxwell_claim=true for 2D Yee + 3D Coulomb recovery scope.
+No equation revision required. Optional R3+: 3D Yee or DUAL-1 attach — polish.
+
+## FOR_TU
+Cite full_maxwell_monist_v0 as FROZEN C-A for UNIFIED_PACKAGE.
+D-EM-maxwell-full LIVE_PASS congruent.
+Composition COMP-1: Yee full + NM DUAL-0 compose under one WORLD C-A.
+No TE ontology fork. Ready for (A) recommendation if other foci freeze.
+
+## FOR_NM / FOR_TM
+Dual0 lite tags remain valid static C-A sector of frozen package.
+Hook free_maxwell_full optional; not required for COMP-1.
+
+## FOR_O
+TE R3 freeze+stamp done. No kill. Blocks for TE-side (A): none.
+Composition residual RC1 optional only.
+
+No scp_sim. No real α.
+===== END =====
+
+===== ENTRY 2026-07-19T01:20:00Z | TE-008 | checkin =====
+Agent: TE
+Round: 3
+Tags: checkin
+---
+CHECK-IN Round 3
+
+Read:
+- O-004 R2 judgment: full Maxwell numeric true; V77-2 MET; (A) needs UNIFIED
+  package + composition narrative; O-005 R3 unify spawn
+- NE-005..008: KG-F1..F5 PASS; FOR_TE stamp R2 congruence → ADOPTED YES
+- NM dual R2: KG7/8/9 PASS; Maxwell-lite joint; FOR_TE dual composition → COMP-1
+- TM dual_channel / lock: aligned DUAL-0; no conflict
+- TD/ND: shared c; J5-β locked — JC1 consistent
+- TU R2: full Maxwell was B2 block — TE now clears theory+numeric congruence
+
+FOR_TE responses:
+- FROM NE-008 stamp R2: DONE te_equation_match_full=yes
+- FROM O freeze interfaces: DONE full_maxwell_monist_v0 FROZEN
+- FROM O composition Yee+dual lite: DONE dual_channel_composition_r3.md
+- No FOR_TE requiring redesign (all gates PASS)
+
+Conflicts: none. No ontology fork vs TM/TU WORLD C-A.
+===== END =====
+
+===== ENTRY 2026-07-19T01:25:00Z | TE-009 | handoff =====
+Agent: TE
+Round: 3
+Tags: handoff, round3-complete, freeze
+---
+HANDOFF — TE Round 3 complete
+
+DONE:
+1. FROZE full_maxwell_monist_v0.md as authoritative C-A
+2. te_equation_match_full = YES (NE R2 KG-F1..F5 / FM1–FM7)
+3. congruence_stamp_r3.md + dual_channel_composition_r3.md (COMP-1)
+4. dual_channel_joint scorecard V77-2 MET
+5. Log TE-007..009
+
+ANSWERS:
+  Full Maxwell monist theory: FROZEN complete
+  Full Maxwell theory↔numeric: CONGRUENT (2D Yee + 3D Coulomb scope)
+  Dual-channel with ψ: COMPOSES (DUAL-0 LIVE + same C-A full sector)
+  Program kill: NO
+  TE blocker for (A): NONE
+
+NEXT (others):
+- TU: UNIFIED_PACKAGE cite frozen TE + stamps
+- NE/NM: optional DUAL-1 single-box only if parent wants polish
+- TE: idle unless gate reverse or O re-opens
+
+STATUS: TE campaign EM theory+congruence CLOSED for freeze purposes.
+===== END =====
+
+===== ENTRY 2026-07-19T14:00:00Z | TE-010 | checkin =====
+Agent: TE
+Round: P2-R1
+Tags: stamp, CP0, phase2
+---
+STAMP CP0: ADOPT
+Evidence: O-009 Phase-2 execution start; CAMPAIGN_MAP.md binding;
+  full_maxwell_monist_v0.md remains FROZEN (no ontology fork);
+  Phase-1 CONVERGENCE (A) remains history — depth exam only.
+Blockers: none
+FOR_TU: board CP0 TE ADOPT.
+===== END =====
+
+===== ENTRY 2026-07-19T14:05:00Z | TE-011 | theory =====
+Agent: TE
+Round: P2-R1
+Tags: stamp, CP-M1-SPEC, M1, gates, FOR_NE, FOR_TU
+---
+STAMP CP-M1-SPEC: ADOPT (provisional freeze — TE author; NE co-agree pending)
+
+Evidence:
+  work/TE/m1_gates_v0.md  (complete M1 kill-gate list)
+
+Mandatory gates (m1_claim bar):
+  M1-R0  M0 regression (sandbox_full_maxwell_r2 / FM*)
+  M1-G1  vacuum
+  M1-G2  TRUE 2D beam/packet v≈c  (NOT 1D TEM-only; reduction=true_2d_packet)
+  M1-G3  off-unit ε,μ (e.g. ε=4 → c_th=0.5), |v/c−1|≤8%
+  M1-G4  energy / Poynting vacuum (rel drift ≤2% periodic or flux balance)
+  M1-G5  dynamic Gauss + Cont-safe sources (dQ_rel≤1e-3; Gauss residual bound)
+  M1-G6  div B (norm ≤1e-6, no secular growth)
+  M1-G7  Faraday discrete (Yee identity or loop ≤5%)
+  M1-G8  incomplete-Ampère adversary FAILS free wave; full PASS
+  M1-G9  box/PML/BC honesty note + reflection/wrap criteria
+
+Optional: M1-G10 radiation flux; M1-G11 shared-c for ND.
+
+Theory: full_maxwell_monist_v0 FROZEN — M1 is numeric depth, not new ontology.
+Export schema + demo IDs D-EM-M1-* in m1_gates_v0.md §5–6.
+
+Blockers: NE must STAMP CP-M1-SPEC ADOPT|DEFER|REJECT before SPEC fully dual-agreed;
+  TE ADOPT allows NE to implement against this list (provisional freeze).
+
+FOR_NE:
+  1. Read m1_gates_v0.md; design sandbox_m1_*.py.
+  2. STAMP CP-M1-SPEC: ADOPT if bar acceptable, else DEFER with listed threshold fixes.
+  3. After ADOPT (both): implement P2-R2 → outputs/m1_result.json; all M1-G* flags.
+  4. Hard rule: M1-G2 must not be only y-uniform 1D TEM (M0 wave).
+  5. Keep M0 regression green (M1-R0).
+  6. Tags: sector=1 E_origin=free_maxwell_full em_solver=free_maxwell_yee.
+
+FOR_TU:
+  Update CHECKPOINT_BOARD: CP-M1-SPEC TE=ADOPT provisional; await NE;
+  register D-EM-M1-suite SPEC; cite work/TE/m1_gates_v0.md.
+
+FOR_O:
+  P2-R1 TE deliverable complete. SPEC not dual-closed until NE stamp.
+  P2-R2 implement only after NE ADOPT (or O allows provisional code against TE list).
+
+No scp_sim. No ontology fork.
+===== END =====
+
+===== ENTRY 2026-07-19T14:10:00Z | TE-012 | checkin =====
+Agent: TE
+Round: P2-R1
+Tags: checkin, phase2
+---
+CHECK-IN P2-R1
+
+Read:
+- O-008 campaign map; O-009 CP0 + P2-R1 M1-SPEC theme
+- CAMPAIGN_MAP.md §4.1 TE T1; §4.2 NE M1 minimum list
+- work/TE/CAMPAIGN.md; full_maxwell_monist_v0 freeze
+- TU mid-round (if present): board CP0; SPEC needs TE m1_gates — NOW DELIVERED
+
+FOR_TE: none pending from partners at write time.
+Cross-read minimum: O + partner NE (design may land after this) + TU board.
+
+No conflicts with freeze. Ready for NE co-agree.
+===== END =====
+
+===== ENTRY 2026-07-19T14:15:00Z | TE-013 | handoff =====
+Agent: TE
+Round: P2-R1
+Tags: handoff, CP-M1-SPEC
+---
+HANDOFF — TE P2-R1 complete
+
+DONE:
+1. STAMP CP0: ADOPT
+2. work/TE/m1_gates_v0.md — full M1 gate list + thresholds + export schema
+3. STAMP CP-M1-SPEC: ADOPT (provisional; NE co-agree open)
+4. CAMPAIGN.md / README updated
+5. Log TE-010..013
+
+PATH: /home/d/code/scp/v77/work/TE/m1_gates_v0.md
+
+NEXT:
+- NE: co-stamp SPEC + implement M1 (P2-R2)
+- TE: idle until m1_result.json → CP-M1-NUM stamp
+- TU: board flip when NE ADOPTs
+
+STATUS: CP-M1-SPEC TE-side READY.
+===== END =====
+
+===== ENTRY 2026-07-19T15:00:00Z | TE-014 | checkin =====
+Agent: TE
+Round: P2-R2
+Tags: checkin, poll, CP-M1-NUM, phase2
+---
+MID-ROUND POLL — CP-M1-NUM
+
+Read: O-010 (CP-M1-SPEC ADOPTED; P2-R2 NE implement → CP-M1-NUM);
+  m1_gates_v0.md (stamp bar); NE log through handoff P2-R1;
+  work/NE/outputs/ listing.
+
+POLL work/NE/outputs/:
+  FOUND: m1_spec_outline.json, m1_spec_summary.txt (SPEC only)
+  MISSING: m1_result.json
+  sandbox_m1_2d.py: still SPEC skeleton — step() raises NotImplementedError;
+    --implement exits "CP-M1-NUM not started"
+  m1_green / m1_claim: false by design of outline
+
+Cannot score G1–G9 against m1_gates_v0 thresholds without m1_result.json.
+FOR_NE: deliver outputs/m1_result.json + m1_summary when gates implemented.
+Re-poll next / stamp when present.
+===== END =====
+
+===== ENTRY 2026-07-19T15:05:00Z | TE-015 | checkin =====
+Agent: TE
+Round: P2-R2
+Tags: stamp, CP-M1-NUM, phase2
+---
+STAMP CP-M1-NUM: DEFER
+
+Evidence:
+- m1_gates_v0.md bar requires M1-R0 ∧ G1..G9 with pass flags in m1_result.json
+- work/NE/outputs/m1_result.json ABSENT (polled)
+- Only SPEC outline present (m1_claim=false, gates STUB)
+- No numeric numbers for 2D beam v/c, energy drift, Gauss dyn, Ampère adversary
+
+Blockers:
+1. NE implement sandbox_m1_2d.py gate bodies
+2. Export work/NE/outputs/m1_result.json per m1_gates_v0 §5
+3. m1_claim=true only if all mandatory gates pass thresholds
+
+FOR_NE: Implement P2-R2; notify via log when m1_result.json written.
+  TE will re-stamp ADOPT/DEFER/REJECT on gate audit (true-2D G2 hard rule).
+FOR_TU: Board CP-M1-NUM = DEFER (TE); not green; hold RC1-SPEC until NUM ADOPT.
+FOR_O: CP-M1-NUM not met this poll; no kill — waiting on NE.
+
+No equation change. full_maxwell_monist_v0 still FROZEN.
+===== END =====
+
+===== ENTRY 2026-07-19T15:10:00Z | TE-016 | handoff =====
+Agent: TE
+Round: P2-R2
+Tags: handoff, CP-M1-NUM, DEFER
+---
+HANDOFF — TE P2-R2 (partial: DEFER stamp)
+
+DONE:
+1. Polled NE outputs — no m1_result.json
+2. STAMP CP-M1-NUM: DEFER (TE-015)
+3. Mid-round checkin TE-014
+
+NOT DONE (blocked on NE):
+- Gate-by-gate ADOPT audit
+- m1_claim endorsement
+
+NEXT:
+- Re-spawn / continue TE when NE lands m1_result.json → full stamp
+- Or NE FOR_TE in log triggers re-read
+
+STATUS: CP-M1-NUM DEFER; SPEC remains ADOPTED.
+===== END =====
+
+===== ENTRY 2026-07-19T16:00:00Z | TE-017 | checkin =====
+Agent: TE
+Round: P2-R3
+Tags: stamp, CP-M1-NUM, phase2
+---
+STAMP CP-M1-NUM: ADOPT
+(supersedes TE-015 DEFER)
+
+Evidence:
+- O-011 parent: sandbox_m1_2d.py --quick m1_claim=True; G1–G9 PASS
+- work/NE/outputs/m1_result.json:
+    m1_claim=true; full_maxwell_2d_dynamic=true
+    mandatory_pass all true (R0 + G1..G9)
+    M1-G2: reduction=true_2d_packet; two_d_ok=true; v_ratio~1.044 (≤8%)
+    M1-G3: c_th=0.5 v_ratio~1.044 PASS
+    M1-G4: rel_drift~0.0049 ≤2% PASS
+    M1-G5: dQ_rel~1e-7; gauss cleanse documented PASS
+    M1-G6 divB ~1e-15; M1-G7 Faraday floor; M1-G8 adversary_fails=true
+    M1-G9 bc_honesty documented multi-BC
+- Tags: sector=1 E_origin=free_maxwell_full em_solver=free_maxwell_yee_m1
+- True-2D hard rule SATISFIED (not 1D TEM-only)
+
+Blockers: none for M1 layer.
+Unlocks: CP-RC1-SPEC / RC1 path (O-012).
+
+FOR_TU: Board CP-M1-NUM → ADOPTED (TE+parent+m1_result).
+FOR_NE: M1 green endorsed; proceed RC1 API support.
+===== END =====
+
+===== ENTRY 2026-07-19T16:05:00Z | TE-018 | theory =====
+Agent: TE
+Round: P2-R3
+Tags: stamp, CP-RC1-SPEC, RC1, dual-source, Maxwell2D, FOR_NM, FOR_NE, FOR_TM, FOR_TU
+---
+STAMP CP-RC1-SPEC: ADOPT
+
+Evidence:
+  work/TE/rc1_em_interface_v0.md
+
+Content (short dual-source dynamical Maxwell interface):
+1. Dual ledgers: ρ_b → F1 ψ; ρ_Q,J_Q → dynamical C-A (M1–M4)
+2. Supp + TE-IA1 (ψ ≠ Φ); fixed locks RC1; F = Fψ + Q E diagnostics
+3. Binding NE API from sandbox_m1_2d.py:
+     Maxwell2D(nx,ny,Lx,Ly,eps,mu,cfl,periodic,incomplete_ampere=False)
+     step(rho_Q=None, Jx=None, Jy=None, Jz=None)
+     fields() → Ex,Ey,Ez,Hx,Hy,Hz
+     clear(); m.c = 1/sqrt(eps*mu) shared C_LOCAL
+4. Hard REJECT: Φ-only EM; ψ≡E identity; incomplete_ampere production
+5. Gauss honesty: static ρ_Q needs project/cleanse or Cont-safe J (M1-G5 pattern)
+6. Co-field schedule for NM; EM half gate hints
+
+Depends: CP-M1-NUM ADOPT (TE-017); full_maxwell_monist_v0 FROZEN; no ontology fork.
+
+Co-agreement still needed for full SPEC dual-close: NE, TM, NM stamps.
+TE ADOPT = EM interface frozen for NM implement.
+
+FOR_NE: Confirm Maxwell2D.step/fields contract stable for NM import;
+  STAMP CP-RC1-SPEC ADOPT if API matches export api.rc1_ready.
+FOR_NM: Lead sandbox_rc1_cofield.py consuming Maxwell2D — NOT Φ-only.
+FOR_TM: Align rc1_joint_state with TE interface (STATE-DC + dynamical E,B).
+FOR_TD: Quasistatic F1 ψ default OK for RC1 per interface §6.
+FOR_TU: Board CP-RC1-SPEC TE=ADOPT; register interface path.
+
+Blockers: none TE-side. Await partner stamps + NM NUM.
+===== END =====
+
+===== ENTRY 2026-07-19T16:10:00Z | TE-019 | checkin =====
+Agent: TE
+Round: P2-R3
+Tags: checkin, phase2
+---
+CHECK-IN P2-R3
+
+Read:
+- O-011 CP-M1-NUM ADOPTED parent; O-012 P2-R3/R4 RC1 theme
+- m1_result.json full gate dump; sandbox_m1_2d.py Maxwell2D.step/fields
+- CAMPAIGN_MAP RC1: fixed multi-locks; F1 ψ + dynamical Maxwell; not Φ-only
+- TE-015 DEFER history → flipped ADOPT on evidence
+- TM dual_channel_v0 STATE-DC; dual_channel_joint JC*
+
+FOR_TE: none open requiring redesign.
+No conflict with freeze. RC1 interface composes with COMP-1 / dual_channel_joint.
+===== END =====
+
+===== ENTRY 2026-07-19T16:15:00Z | TE-020 | handoff =====
+Agent: TE
+Round: P2-R3
+Tags: handoff, CP-RC1-SPEC, CP-M1-NUM
+---
+HANDOFF — TE P2-R3 complete
+
+DONE:
+1. STAMP CP-M1-NUM: ADOPT (TE-017) — m1_claim=true audited
+2. work/TE/rc1_em_interface_v0.md — dual-source + Maxwell2D.step API
+3. STAMP CP-RC1-SPEC: ADOPT (TE-018)
+4. CAMPAIGN.md / README updated
+5. Log TE-017..020
+
+PATHS:
+  /home/d/code/scp/v77/work/TE/rc1_em_interface_v0.md
+  /home/d/code/scp/v77/work/TE/m1_gates_v0.md (prior)
+
+NEXT:
+- NE/TM/NM co-stamp CP-RC1-SPEC
+- NM implement RC1 co-field → CP-RC1-NUM
+- TE: stamp EM half at CP-RC1-NUM when outputs land
+
+STATUS: M1 green; RC1 EM interface READY.
+===== END =====

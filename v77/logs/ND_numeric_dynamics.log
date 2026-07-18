@@ -1,0 +1,626 @@
+===== ENTRY 2026-07-18T00:00:00Z | ND-000 | bootstrap =====
+Agent: ND
+Round: 0
+Tags: bootstrap, protocol
+---
+Numeric Dynamics — J5, waves, time-dep
+
+Log initialized (append-only). Write only this file + work/ND/.
+Read v76 seed, v77 PROBLEM/FOCI/RUN, all logs. FOR_X for cross-ideas.
+===== END =====
+
+===== ENTRY 2026-07-18T21:30:00Z | ND-001 | attempt =====
+Agent: ND
+Round: 1
+Tags: attempt, port, J5, form-factor
+---
+ROUND 1 START — port/extend v76 inertia + free-wave c
+
+READ:
+- v76 CONVERGENCE, THEORETICAL_PACKAGE_v1, sandbox_r4_inertia.py + R4 outputs
+- v76 inertia_target_v0, kinetic_inertia_v0
+- v77 PROBLEM/FOCI/RUN; O-001 Round-1 theme
+- TD-001..003 dynamics_package_v0 + FOR_ND kill-gates ND-G0..G5
+- TE-001 FOR_ND optional free-wave cross-check vs NE KG4
+- TU-001.. registry D-DYN-*; priority G0+G1
+
+PLAN:
+1. Port triad to work/ND/sandbox_j5_formfactor.py (+ form-factor scan)
+2. Non-tautological mass vs ledger (ND-G1 kill naïve)
+3. Free wave ∂ttψ=c²∇²ψ (ND-G3 wavefront; TE shared-c)
+4. Document renorm universality (ND-G2)
+5. Log numbers + checkin + handoff
+
+No scp_sim. No v76 log edits.
+===== END =====
+
+===== ENTRY 2026-07-18T21:45:00Z | ND-002 | numeric =====
+Agent: ND
+Round: 1
+Tags: numeric, J5, ND-G1, form-factor, demo
+---
+DEMO D-DYN-j5-formfactor — non-tautological mass vs ledger
+
+CODES:
+  work/ND/sandbox_j5_formfactor.py
+  work/ND/outputs/j5_formfactor_result.json
+  work/ND/outputs/j5_triad.tsv
+  work/ND/outputs/form_factor_scan.tsv
+  work/ND/outputs/j5_formfactor_summary.txt
+
+BASELINE (A=0.4, σ=1, s=κ=σ0=1, γ=0.5, c=1) — matches v76 R4:
+
+| quantity | value |
+|----------|------:|
+| m_ledger = ∫ρ_b/c² | 6.29984398 |
+| U free self-energy | 0.89095341 |
+| form_factor ff=U/(M c²) | 0.14142136 |
+| m_field = U/c² | 0.89095341 |
+| m_boost ξ=1 | 0.89095341 |
+| m_boost ξ=4/3 | 1.18793788 |
+| m_ray (F1 Born) | 6.29984398 |
+| ratio m_field/m_ledger | 0.141421 |
+| s_renorm (U→Mc²) | 7.071068 |
+| m_field after renorm | 6.29984398 |
+
+BOOST small-v (2K/v² → U as v→0), tautology_flag=False:
+  v=0.05  m_est≈0.8914
+  v=0.10  m_est≈0.8976
+  v=0.15  m_est≈0.8962
+  v=0.20  m_est≈0.9187
+
+FORM FACTOR LAW (s=κ=1):
+  ff = M / (8 π σ √π) = 0.141421356237 × (A/0.4) × σ²
+  Verified on 18-point (A,σ) scan. U = ff × M; m_boost = m_field = U/c².
+
+NON-TAUTOLOGICAL MASS ESTIMATE vs LEDGER (ND-G1):
+  protocol: A2 free-field boost + unlock U; NO F:=ma
+  m_inertial_field = 0.89095
+  m_ledger         = 6.29984
+  rel_split        = 0.8586  (85.9%)
+  kill_naive m=∫ρ_b/c² as inertia: **PASS (killed)**
+  verdict: **FAIL naïve equality**; inertia tracks free-field U not raw ledger
+
+J5 GATES:
+  tier_A ray=ledger:           **PASS**
+  tier_B boost=ledger raw:     **FAIL**
+  tier_C boost=field:          **PASS**
+  J5_raw three-way:            **FAIL**
+  J5_with_R1_renorm (fixed shape): **PASS**
+  operational status:          **PARTIAL**
+
+ND-G2 RENORM UNIVERSALITY (scan finding):
+  s_renorm = 1/ff ranges ~1.18–39.3 over scan (A,σ).
+  At fixed A=0.4: σ=0.6→s*=19.64; σ=1→7.07; σ=2→1.77.
+  **Single universal s* does NOT close triad for all shapes** —
+  renorm is form-factor (shape) dependent. Per-shape calibration works;
+  shape-by-shape fudge = residual (TD ND-G2 caution confirmed).
+  One scan point enters 25% band raw: A=0.6 σ=2 ff≈0.849 → J5_raw True
+  (parameter tuning ≈ accidental renorm, not free proof of coefficient 1).
+
+PASS/FAIL TABLE:
+  ray_vs_ledger                    PASS
+  boost_vs_field_U                 PASS
+  boost_vs_ledger_raw              FAIL
+  field_vs_ledger_raw              FAIL
+  field_vs_ledger_after_s_renorm   PASS (per-shape)
+  naive_m_inertial_eq_∫ρ_b         FAIL (killed)  ← ND-G1
+  universal_s*_all_shapes          FAIL           ← ND-G2 residual
+  non_tautology                    PASS
+===== END =====
+
+===== ENTRY 2026-07-18T21:50:00Z | ND-003 | numeric =====
+Agent: ND
+Round: 1
+Tags: numeric, free-wave, c, ND-G3, demo
+---
+DEMO D-DYN-free-wave-c — free medium wave speed = c
+
+CODES:
+  work/ND/sandbox_free_wave_c.py
+  work/ND/outputs/free_wave_c_result.json
+  work/ND/outputs/free_wave_c.tsv
+  work/ND/outputs/free_wave_dispersion.json
+  work/ND/outputs/free_wave_c_summary.txt
+
+EQUATION (ρ_b=0 free medium):
+  ∂²ψ/∂t² = c² ∂²ψ/∂x²
+
+CONTINUUM (d'Alembert):
+  ψ=f(x±ct) ⇒ v = c exact.  **PASS**
+
+DISCRETE FD2 PHASE SPEED (analytic, k=0.8, dx=0.1, c=1):
+  ω = (2c/dx) sin(k dx/2) = 0.79978668
+  v_phase = ω/k = 0.99973337
+  rel_err = 2.666e-04
+  pass_5% = **True**
+  pass_0.1% = **True**
+
+CONTROL (dispersion tracks c; v/c fixed):
+  c=0.5  v_phase=0.499867  v/c=0.999733  PASS
+  c=1.0  v_phase=0.999733  v/c=0.999733  PASS
+  c=1.5  v_phase=1.499600  v/c=0.999733  PASS
+  c=2.0  v_phase=1.999467  v/c=0.999733  PASS
+
+Leapfrog peak-track implementation in sandbox for online re-run:
+  python3 work/ND/sandbox_free_wave_c.py
+  python3 work/ND/sandbox_free_wave_c.py --skip-leapfrog
+
+OVERALL free-wave: **PASS**
+ND-G3 wavefront~c: **PASS** (hyperbolic free capacity)
+Shared locality-c with TE Maxwell-lite path (JC1/KG8 cross-check ready for NE).
+===== END =====
+
+===== ENTRY 2026-07-18T21:55:00Z | ND-004 | finding =====
+Agent: ND
+Round: 1
+Tags: finding, J5, form-factor, renorm
+---
+FINDING — form-factor clarity for J5 residual
+
+1. Free-field inertial mass m_inertial = U/c² is **not** the bound ledger
+   M=∫ρ_b/c² at default free constants. Split is the Gaussian form factor
+   ff = U/Mc² = s κ M/(8π σ √π). Default R4: ff≈0.1414.
+
+2. Boost model E(v)=U/√(1-v²/c²) is non-tautological (no F:=ma) and
+   **necessarily** gives m_boost=U/c² — so tier_C is structural PASS, not
+   independent dynamics proof of coefficient vs ledger.
+
+3. Closing triad to ledger requires either:
+   (β) free-constant renorm s* so U=Mc² — **shape-dependent** s*=1/ff; OR
+   (β′) redefine E_star := U (unlock free energy) as monist rest energy; OR
+   (α) derive coefficient 1 from free action + formation dynamics (open).
+
+4. ND-G1 **PASS**: naïve m_inertial=∫ρ_b/c² is **killed** at default s.
+5. ND-G2 **PARTIAL/FAIL as universal**: single s* fails across (A,σ) family.
+6. V77-3 path: honest = renorm necessity + naïve kill (J5-β), not raw triad.
+
+FOR_TD: Confirm J5-β default; propose whether E_star:=U is preferred over
+  shape-dependent s*; form-factor law ff∝A σ² ready for theory writeup.
+
+FOR_TU: Register:
+  D-DYN-j5-formfactor = LIVE PARTIAL (G1 pass, raw triad fail, renorm per-shape)
+  D-DYN-free-wave-c = LIVE PASS
+  (aliases D-DYN-J5 / D-DYN-cwave from TD stubs)
+===== END =====
+
+===== ENTRY 2026-07-18T22:00:00Z | ND-005 | checkin =====
+Agent: ND
+Round: 1
+Tags: checkin
+---
+CHECKIN Round 1
+
+Read:
+- O-000/O-001: R1 = draft laws + first kill-gates; V77-1 progress
+- TD-001..003: dynamics_package_v0; FOR_ND G0–G5 — **ADOPTED**
+  G1 naïve kill: DONE PASS
+  G2 renorm universality: tested → shape-dependent residual
+  G3 wavefront c: DONE PASS (hyperbolic)
+  G0 seed integrity: inherited from v76 R3 (not re-run full multipole)
+  G4 C1 lite: deferred R2
+  G5 no SR overclaim: observed (no Lorentz-group claim)
+- TE-001 FOR_ND free-wave cross-check: **ADOPTED** — D-DYN-free-wave-c PASS
+- TU registry / V77-3 OPEN: numbers now available for upgrade
+- NE/NM/TM: partner TE stood up; NE gates pending — no FOR_ND conflict
+
+FOR_ND messages: all adopted or completed this round.
+No blockers from other foci.
+===== END =====
+
+===== ENTRY 2026-07-18T22:05:00Z | ND-006 | handoff =====
+Agent: ND
+Round: 1
+Tags: handoff, round1-complete
+---
+HANDOFF — ND Round 1 complete
+
+DONE:
+| Gate | Result | Numbers |
+|------|--------|---------|
+| ND-G1 naïve kill | **PASS** | m_field/m_ledger=0.1414; rel_split=0.8586 |
+| ND-G2 renorm | **PARTIAL** | s*=7.071 baseline; not universal across σ |
+| ND-G3 free wave c | **PASS** | FD2 rel_err=2.67e-4; continuum exact |
+| J5 raw triad | **FAIL** | form factor |
+| J5 + per-shape renorm | **PASS** | s_renorm closes U=Mc² |
+| Non-tautology | **PASS** | tautology_flag=false |
+
+FILES:
+  work/ND/sandbox_j5_formfactor.py
+  work/ND/sandbox_free_wave_c.py
+  work/ND/_offline_compute_r1.py
+  work/ND/README.md
+  work/ND/outputs/* (json/tsv/txt)
+
+KEY NUMBERS (return):
+  m_ledger=6.29984398
+  U=0.89095341
+  ff=0.14142136
+  m_field=m_boost=0.89095341
+  m_ray=6.29984398
+  s_renorm=7.07106781
+  free-wave v/c=0.99973337 (FD2), continuum v/c=1
+
+FOR_TD: Theory write form-factor law; choose E_star:=U vs s*(shape).
+FOR_TU: Upgrade demos LIVE; V77-3 still OPEN (need G2 policy).
+FOR_NE: Free-wave c=1 available for KG4/shared-c compare.
+FOR_O: Dynamics numeric kill-gates G1+G3 green; J5 operational PARTIAL.
+
+NEXT ROUND candidates:
+- Time-dep T1/T2 wake (ND-G3 full) on F1 source
+- Quasi-static displaced-lock force (A1 control)
+- Joint c check with NE Maxwell wave once NE sandbox exists
+===== END =====
+
+===== ENTRY 2026-07-18T23:00:00Z | ND-007 | attempt =====
+Agent: ND
+Round: 2
+Tags: attempt, dual-channel, J5-beta, V77-2
+---
+ROUND 2 START — dual-channel shared c + J5-β lock
+
+READ:
+- O-002 R1 judgment: V77-1 MET; V77-2 NOT (need joint ψ+EM); V77-3 NOT
+- O-003 R2 theme: dual-channel joint medium; shared c; lock J5-β
+- NE-R1 FOR_ND: KG4 c_th tracks 1/√(εμ); optional KG8 cross-check
+- TD R1: J5-β default; ND-G2 shape-invariance caution
+- TE-IA1: ψ ≠ Φ; shared continuum + c
+- Own R1: D-DYN-free-wave-c PASS; J5 form factor 0.1414; naïve kill PASS
+
+TASKS:
+1. Dual-channel sandbox: free-capacity T2 wave + EM wave same C_LOCAL
+2. Tighten J5-β numeric (shape invariance two-width test)
+3. Joint export for TU
+4. Checkin / handoff
+
+No scp_sim. No edits outside log + work/ND/.
+===== END =====
+
+===== ENTRY 2026-07-18T23:20:00Z | ND-008 | numeric =====
+Agent: ND
+Round: 2
+Tags: numeric, dual-channel, shared-c, demo, V77-2
+---
+DEMO D-DYN-dual-channel-c — joint free-capacity + free-gauge shared c
+
+CODES:
+  work/ND/sandbox_dual_channel_c.py
+  work/ND/outputs/dual_channel_c_result.json
+  work/ND/outputs/dual_channel_c.tsv
+  work/ND/outputs/dual_channel_c_summary.txt
+  work/ND/outputs/joint_dual_channel_export.json   ← TU export
+
+SETUP (one continuum language):
+  Channel ψ (T2 hyperbolic free capacity):  ∂tt ψ = c_ψ² ∇²ψ
+  Channel A (EM free-gauge wave):           ∂tt A = c_em² ∇²A
+  c_ψ := C_LOCAL
+  c_em := 1/√(ε μ)  with ε,μ so c_em = C_LOCAL (unit) or 0.5 (off-unit)
+  Static dual-source: −σ0∇²ψ = s ρ_b ; −ε∇²Φ = ρ_Q ; cross-talk = 0
+
+NUMBERS (unit ε=μ=1, C_LOCAL=1, k=0.8, dx=0.1):
+  c_ψ = 1.0
+  c_em = 1.0
+  FD2 v_ψ = 0.9997333546
+  FD2 v_em = 0.9997333546
+  v/c = 0.9997333546
+  rel_err = 2.666e-04
+  |v_ψ − v_em|/c = 0
+
+OFF-UNIT (ε=4, μ=1 → c_th=0.5; c_ψ set = c_em):
+  v_ψ = 0.4998666773
+  v_em = 0.4998666773
+  v/c = 0.9997333546  (both track)
+
+STATIC DUAL (r=4 continuum):
+  M_b=6.299844 (ND R1 ledger), Q=11.481536 (NE R1)
+  ψ = (s/σ0) M_b/(4π r) = 0.125333
+  Φ = Q/(4π ε r) = 0.228418
+  dψ/dQ = 0, dΦ/dM_b = 0  → independent
+
+GATES:
+  DC1 constitutive c_ψ=c_em:     **PASS**
+  DC2 both phase near c:         **PASS**
+  DC3 channel agreement:         **PASS**
+  DC4 off-unit both track:       **PASS**
+  DC5 static dual independence:  **PASS**
+  OVERALL:                       **PASS**
+
+CROSSCHECK:
+  NE D-EM-wave-c unit v/c_th=1.0 PASS; offunit c_th=0.5 PASS
+  ND R1 D-DYN-free-wave-c FD2 rel_err=2.67e-4 PASS
+  Language aligned: free locality = 1/√(εμ) free-gauge = C_LOCAL free-capacity
+
+V77-2 support: shared-c dual-channel numeric **PASS**
+Residual: not full nonlinear coupled Maxwell+F1 production integrator.
+===== END =====
+
+===== ENTRY 2026-07-18T23:30:00Z | ND-009 | numeric =====
+Agent: ND
+Round: 2
+Tags: numeric, J5-beta, renorm, ND-G2
+---
+J5-β LOCKED — numeric documentation package
+
+CODES:
+  work/ND/j5_beta_numeric.md
+  work/ND/outputs/j5_beta_numeric.json
+
+THEORY DEFAULT: **J5-β** (renorm necessity + naïve kill). J5-α FAIL at default s.
+
+BASELINE (unchanged R1):
+  m_ledger=6.29984398  U=0.89095341  ff=0.14142136
+  m_field=m_boost=0.89095341  m_ray=6.29984398
+  s_star(per-shape)=7.07106781
+
+ND-G1 naïve kill: **PASS** (rel_split=0.8586)
+
+ND-G2 SHAPE INVARIANCE (two-width, A=0.4):
+  σ=1.0: ff=0.141421  s*=7.07107
+  σ=1.5: ff=0.318198  s*=3.14270
+
+  Apply s*(σ=1) to both:
+    σ=1.0 → U/Mc²=1.000 triad YES
+    σ=1.5 → U/Mc²=2.250 triad NO   (overshoot = (1.5/1)²)
+
+  Apply s*(σ=1.5) to both:
+    σ=1.5 → U/Mc²=1.000 YES
+    σ=1.0 → U/Mc²=0.444 NO
+
+  shape_invariance_ok = **false**
+  β1 universal s*: **FAIL**
+  β1 per-shape (fixed form-factor family): **PASS**
+
+L_triad:
+  E_ref=ledger raw:     L=0.8586
+  E_ref=U (β2):         L_inertia=0; M_ray/(U/c²)=7.071
+  E_ref=ledger + s*:    L=0.000 (per-shape)
+
+RECOMMENDED TAG:
+  theory=J5-beta
+  renorm_tag=R1_s
+  shape_scope=fixed_form_factor
+  OR beta2 ledger_as_U for inertia with dual bookkeeping (TU accept)
+
+V77-3: PARTIAL — documentation + naïve kill MET; universal renorm NOT;
+  needs TU policy on shape_scope / β2.
+===== END =====
+
+===== ENTRY 2026-07-18T23:40:00Z | ND-010 | finding =====
+Agent: ND
+Round: 2
+Tags: finding, V77-2, shared-c
+---
+FINDING — dual-channel shared c is numerically trivial once constitutive
+
+1. Setting c_ψ := C_LOCAL and c_em := 1/√(εμ) with ε,μ enforcing equality
+   makes DC1 automatic; FD2 dispersion then forces v_ψ=v_em to machine
+   identity on the same grid. This is **constitutive shared c**, not an
+   emergent accident.
+
+2. That is the **correct monist requirement** (JC1 / TE shared locality):
+   one free-field speed in the free medium. Sibling channels (ψ capacity
+   vs gauge A) differ in **what they source and how they couple to locks**,
+   not in free signal speed.
+
+3. Non-trivial content for V77-2 beyond shared c:
+   - dual-source independence (DC5) — PASS linear
+   - joint forces / budget identity — NM/TM ownership
+   - full Maxwell time-dep + F1 in one integrator — residual
+
+4. NE KG4 and ND free-wave are **congruent siblings** under one C_LOCAL.
+===== END =====
+
+===== ENTRY 2026-07-18T23:45:00Z | ND-011 | checkin =====
+Agent: ND
+Round: 2
+Tags: checkin
+---
+CHECKIN Round 2
+
+Read:
+- O-002/O-003: V77-2 dual-channel theme; J5-β lock; full Maxwell path
+- NE R1 FOR_ND shared-c cross-check: **ADOPTED** → DC1–DC4 + export
+- TD J5-β default + ND-G2: **ADOPTED** → shape_invariance quantified FAIL
+- TE-IA1 ψ≠Φ: **PRESERVED** in dual-channel ontology tags
+- TM dual_channel_v0 (peer R2): dual-source language aligns with DC5
+- TU prior: wants joint export → **joint_dual_channel_export.json**
+
+FOR_ND from NE: satisfied (KG8-class cross-check delivered as dual-channel).
+No conflicting FOR_ND blocking work.
+===== END =====
+
+===== ENTRY 2026-07-18T23:50:00Z | ND-012 | handoff =====
+Agent: ND
+Round: 2
+Tags: handoff, round2-complete
+---
+HANDOFF — ND Round 2 complete
+
+DONE:
+| Deliverable | Status | Key numbers |
+|-------------|--------|-------------|
+| D-DYN-dual-channel-c | **PASS** | v_ψ=v_em=0.99973335; offunit c=0.5 |
+| DC1–DC5 gates | **all PASS** | constitutive + phase + agreement + offunit + dual-source |
+| J5-β package | **LOCKED** | ff=0.1414; naïve kill; shape_inv=false |
+| Joint TU export | **written** | outputs/joint_dual_channel_export.json |
+
+FILES:
+  work/ND/sandbox_dual_channel_c.py
+  work/ND/j5_beta_numeric.md
+  work/ND/outputs/dual_channel_c_*
+  work/ND/outputs/joint_dual_channel_export.json
+  work/ND/outputs/j5_beta_numeric.json
+  work/ND/README.md
+
+KEY NUMBERS (return):
+  shared c_ψ = c_em = 1.0 (unit); 0.5 (off-unit)
+  FD2 v/c both channels = 0.9997333546  (rel_err=2.666e-4)
+  |v_ψ-v_em|/c = 0
+  dual-source cross-talk = 0
+  m_ledger=6.29984398  U=0.89095341  ff=0.14142136
+  s*(σ=1)=7.07107  s*(σ=1.5)=3.14270
+  shape_invariance_ok = false
+  L_triad(raw)=0.8586  L_triad(s* per-shape)=0
+
+FOR_TU:
+  Register D-DYN-dual-channel-c LIVE_PASS
+  V77-2 shared-c numeric half supported (linear sibling channels)
+  V77-3: accept J5-β + shape_scope=fixed_form_factor OR β2 dual ledger
+
+FOR_NE: Dual-channel matches KG4; ready for full Maxwell upgrade sibling
+FOR_TD: J5-β numeric locked; ND-G2 fail universal s* quantified
+FOR_TM/NM: DC5 independence baseline for dual-source joint state
+FOR_O: R2 ND complete; V77-2 shared-c green; V77-3 still PARTIAL
+
+NEXT:
+- Optional T1 relaxational wake with shared-c EM radiation
+- Coupled nonlinear budget if TU demands stronger V77-2
+===== END =====
+
+===== ENTRY 2026-07-19T15:00:00Z | ND-013 | attempt =====
+Agent: ND
+Round: P2-R2
+Tags: P2-R2, CP-M1-NUM, shared-c, observe
+---
+P2-R2 START — shared-c observe for CP-M1-NUM
+
+READ:
+- O-010: CP-M1-SPEC ADOPTED (TE+NE); P2-R2 = M1 numeric → CP-M1-NUM;
+  ND note shared-c
+- CAMPAIGN_MAP Dyn2: shared-c regression when NE M1 changes media (observe)
+- work/ND/CAMPAIGN.md: CP-M1-NUM re-check shared c if NE media change
+- TE m1_gates_v0: M1-G3 off-unit |v/c−1|≤8%; optional M1-G11 shared-c for ND
+- NE FOR_ND (P2-R1): shared-c unit c=1 + off-unit 0.5 will appear in m1_result G3/G11
+- NE outputs: m1_result.json **ABSENT** (only m1_spec_outline.json);
+  M0 r2_result full_maxwell_claim=true available as interim
+
+ROLE: observer note on CP-M1-NUM — not co-stamp authority (TE+NE own m1_claim).
+
+PLAN:
+1. Read NE M1 when available; else interim M0 + ND dual-channel
+2. Off-unit shared-c congruence table
+3. Optional small ND regression (DC1–DC4 numbers)
+4. STAMP note CP-M1-NUM; checkin; handoff
+===== END =====
+
+===== ENTRY 2026-07-19T15:15:00Z | ND-014 | numeric =====
+Agent: ND
+Round: P2-R2
+Tags: numeric, shared-c, off-unit, regression
+---
+SHARED-c CONGRUENCE + ND REGRESSION (P2-R2)
+
+## NE M1 status
+  m1_result.json: **NOT AVAILABLE** (CP-M1-NUM implement in flight / pending)
+  m1_spec_outline.json: m1_claim=false (SPEC only)
+  Interim baseline: NE M0 R2/R3 `r2_result.json` / `r2_summary.txt`
+
+## NE M0 off-unit (interim G3 twin)
+  FM2 wave unit:   v/c = **1.0**  PASS  (c_th=1)
+  FM2 wave off:    c_th=**0.5** (ε=4, μ=1), v/c=**1.0**  PASS
+  full_maxwell_claim = true
+
+## ND dual-channel regression (re-cited, no media change)
+  source: outputs/dual_channel_c_result.json
+  Unit:   c_ψ=c_em=**1.0**; FD2 v/c=**0.9997333546**; rel_err=**2.666e-4**
+  Off-unit: ε=4, μ=1 → c_th=**0.5**; c_ψ=c_em=0.5
+            v_ψ=v_em=**0.4998666773**; v/c=**0.9997333546**
+  DC1–DC4: all PASS (R2); within M1-G3 8% bar: **PASS** (err≪0.08)
+  D-DYN-free-wave-c: FD2 v/c=0.99973337  PASS
+
+## Congruence table (off-unit c_th=0.5)
+
+| Channel | Source | c_th | v/c | |v/c−1| |
+|---------|--------|-----:|----:|--------:|
+| free-capacity ψ | ND dual DC4 | 0.5 | 0.999733 | 2.67e-4 |
+| free-gauge EM (ND dual) | ND dual DC4 | 0.5 | 0.999733 | 2.67e-4 |
+| Maxwell Yee M0 | NE FM2 off | 0.5 | 1.0 | 0 |
+| max |Δ(v/c)| ND vs NE M0 | — | — | **2.67e-4** |
+
+VERDICT: **CONGRUENT** under shared language
+  C_LOCAL = c_em = 1/√(εμ)
+  unit c=1; off-unit c=0.5 both media track
+  no shared-c contradiction → K2 kill path not triggered on this evidence
+
+PENDING: re-run table when NE exports m1_result M1-G3 (true 2D beam off-unit)
+  and optional M1-G11 shared_c block.
+
+export: work/ND/outputs/shared_c_p2r2_note.json
+===== END =====
+
+===== ENTRY 2026-07-19T15:20:00Z | ND-015 | stamp =====
+Agent: ND
+Round: P2-R2
+Tags: stamp, CP-M1-NUM
+---
+STAMP CP-M1-NUM: **OBSERVE** (not ADOPT / not REJECT)
+
+Authority: TE+NE co-stamp m1_claim; ND is Dyn2 observer (CAMPAIGN_MAP).
+
+Note:
+1. m1_result.json **absent** → cannot ADOPT m1_claim=true.
+2. Shared-c **interim congruence PASS** on NE M0 off-unit + ND dual-channel
+   (unit c=1, off-unit c=0.5, |v/c−1| ≤ 2.67e-4 ND / 0 NE M0).
+3. ND regression **green** (no media change required this round).
+4. When m1_result lands with M1-G3 (+G11): ND will re-note congruence;
+   if |v/c−1|>8% or C_LOCAL≠ND shared value → flag FOR_NE/FOR_TU.
+
+Condition for later ND observe-pass on NUM:
+  M1-G3 pass ∧ shared c_th unit=1.0 matches C_LOCAL ∧ off-unit tracks 0.5
+
+Evidence:
+  work/ND/outputs/shared_c_p2r2_note.json
+  work/ND/outputs/dual_channel_c_result.json
+  work/NE/outputs/r2_summary.txt
+===== END =====
+
+===== ENTRY 2026-07-19T15:25:00Z | ND-016 | checkin =====
+Agent: ND
+Round: P2-R2
+Tags: checkin
+---
+CHECKIN P2-R2
+
+Read:
+- O-010 P2-R2 spawn (NE implement M1; ND note shared-c)
+- TE m1_gates M1-G3/G11; TE idle for NUM until m1_result
+- NE P2-R1 ADOPT SPEC; FOR_ND G3/G11 promise; m1_result not yet
+- TU board (may lag): CP-M1-SPEC dual ADOPT per O-010; CP-M1-NUM pending
+- Own R2 dual-channel + J5-β exports stable
+
+FOR_ND from NE-P2-R1: **ADOPTED** as observe duty; blocked only on m1_result
+  for final G3/G11 numbers — interim M0 used.
+
+No FOR_ND conflicts. No scp_sim. No kernel.
+===== END =====
+
+===== ENTRY 2026-07-19T15:30:00Z | ND-017 | handoff =====
+Agent: ND
+Round: P2-R2
+Tags: handoff, CP-M1-NUM
+---
+HANDOFF — ND P2-R2 complete (observe lane)
+
+DONE:
+| Item | Status |
+|------|--------|
+| Read NE M1 results | **ABSENT** — noted; interim M0 used |
+| Off-unit shared-c congruence | **PASS** (ND dual + NE FM2 off) |
+| ND regression DC1–DC4 | **green** |
+| STAMP CP-M1-NUM | **OBSERVE** (not ADOPT) |
+| Export note | outputs/shared_c_p2r2_note.json |
+
+KEY NUMBERS:
+  ND off-unit: c_th=0.5, v/c=0.9997333546, rel_err=2.666e-4
+  NE M0 off-unit: c_th=0.5, v/c=1.0
+  |Δ(v/c)| ND vs NE = 2.67e-4 ≪ 0.08 (M1-G3 bar)
+  unit C_LOCAL = c_em = 1.0 both sides
+
+FOR_NE: When m1_result.json ready, include shared_c + M1-G3 off-unit
+  for ND re-stamp observe-pass; FOR_ND again.
+FOR_TE: No ND objection to G3 8% bar; ND already tighter (5%/0.1% FD2).
+FOR_TU: Board CP-M1-NUM — ND OBSERVE logged; await TE+NE m1_claim stamps.
+FOR_O: ND P2-R2 observe lane done; not blocking NE implement.
+
+NEXT: idle until m1_result → re-note shared-c; then CP-RC1 free-capacity time-dep.
+===== END =====

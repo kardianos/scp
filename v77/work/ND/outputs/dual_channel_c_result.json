@@ -1,0 +1,126 @@
+{
+  "demo_id": "D-DYN-dual-channel-c",
+  "round": 2,
+  "agent": "ND",
+  "focus": "Dynamics + EM interface (shared c)",
+  "design": "joint free-capacity T2 wave + free-gauge EM wave; same C_LOCAL",
+  "ontology": {
+    "sector": 1,
+    "psi_origin": "free_capacity_hyperbolic_T2",
+    "E_origin": "free_maxwell_lite",
+    "em_solver": "free_maxwell_lite",
+    "gravity_solver": "none",
+    "channels": ["free_capacity_psi", "free_gauge_A"],
+    "sibling_not_identical": true,
+    "te_ia1": "psi ≠ Phi (different constitutive; shared continuum + c)"
+  },
+  "unit": {
+    "c_local": 1.0,
+    "eps": 1.0,
+    "mu": 1.0,
+    "c_psi": 1.0,
+    "c_em": 1.0,
+    "c_em_def": "1/sqrt(eps*mu)",
+    "c_psi_def": "C_LOCAL free-capacity locality",
+    "dx": 0.1,
+    "k": 0.8,
+    "dispersion_psi": {
+      "c_target": 1.0,
+      "k": 0.8,
+      "dx": 0.1,
+      "omega_fd2": 0.7997866837,
+      "v_phase": 0.9997333546,
+      "v_over_c": 0.9997333546,
+      "rel_err": 0.0002666454,
+      "pass_5pct": true,
+      "pass_0.1pct": true
+    },
+    "dispersion_em": {
+      "c_target": 1.0,
+      "k": 0.8,
+      "dx": 0.1,
+      "omega_fd2": 0.7997866837,
+      "v_phase": 0.9997333546,
+      "v_over_c": 0.9997333546,
+      "rel_err": 0.0002666454,
+      "pass_5pct": true,
+      "pass_0.1pct": true
+    },
+    "continuum_psi": {"v_over_c": 1.0, "pass": true},
+    "continuum_em": {"v_over_c": 1.0, "pass": true},
+    "static_dual": {
+      "r": 4.0,
+      "M_b": 6.299843978288953,
+      "Q": 11.48153604302067,
+      "psi": 0.125333,
+      "phi": 0.228418,
+      "dpsi_dQ": 0.0,
+      "dphi_dMb": 0.0,
+      "independent": true
+    },
+    "gates": {
+      "DC1_constitutive_c_equal": {"pass": true, "c_psi": 1.0, "c_em": 1.0, "rel_diff": 0.0},
+      "DC2_both_phase_near_c": {"pass": true, "psi_rel_err": 0.0002666454, "em_rel_err": 0.0002666454},
+      "DC3_channel_agreement": {"pass": true, "v_psi": 0.9997333546, "v_em": 0.9997333546, "rel_diff": 0.0},
+      "DC5_static_dual_source_independent": {"pass": true, "dpsi_dQ": 0.0, "dphi_dMb": 0.0}
+    },
+    "all_pass_unit": true
+  },
+  "offunit": {
+    "eps": 4.0,
+    "mu": 1.0,
+    "c_em": 0.5,
+    "c_psi": 0.5,
+    "dispersion_psi": {
+      "v_phase": 0.4998666773,
+      "v_over_c": 0.9997333546,
+      "rel_err": 0.0002666454,
+      "pass_5pct": true
+    },
+    "dispersion_em": {
+      "v_phase": 0.4998666773,
+      "v_over_c": 0.9997333546,
+      "rel_err": 0.0002666454,
+      "pass_5pct": true
+    },
+    "channel_rel_diff": 0.0,
+    "gates": {
+      "DC4_offunit_both_track_c": {
+        "pass": true,
+        "c_th": 0.5,
+        "v_psi_over_c": 0.9997333546,
+        "v_em_over_c": 0.9997333546
+      }
+    },
+    "all_pass_offunit": true
+  },
+  "ne_nd_crosscheck": {
+    "ne_demo": "D-EM-wave-c",
+    "ne_unit": {"c_th": 1.0, "v_meas": 1.0, "v_ratio": 1.0, "pass": true},
+    "ne_offunit": {"c_th": 0.5, "v_meas": 0.5, "v_ratio": 1.0, "pass": true},
+    "nd_r1_free_wave": {
+      "demo": "D-DYN-free-wave-c",
+      "fd2_v_over_c": 0.99973337,
+      "rel_err": 2.666e-4,
+      "pass": true
+    }
+  },
+  "gates_summary": {
+    "DC1": true,
+    "DC2": true,
+    "DC3": true,
+    "DC4": true,
+    "DC5": true,
+    "all_pass": true
+  },
+  "verdict": {
+    "status": "PASS",
+    "shared_c": true,
+    "summary": "Dual-channel shared c: c_ψ=1.0, c_em=1.0; FD2 v_ψ=v_em=0.99973335; off-unit c=0.5 both track. DC1–DC5 all PASS."
+  },
+  "v77_2_note": "Joint shared-c + dual-source independence on one medium. Linear sibling channels; not full coupled Maxwell+F1 production sim.",
+  "FOR_TU": "D-DYN-dual-channel-c PASS — joint export for V77-2 shared-c bar",
+  "FOR_NE": "ND dual-channel matches NE KG4 unit+offunit c tracking language",
+  "FOR_TE": "TE-IA1 preserved: ψ ≠ Φ; c shared via constitutive",
+  "FOR_TD": "T2 free-capacity + T3 EM sibling share C_LOCAL numerically"
+}

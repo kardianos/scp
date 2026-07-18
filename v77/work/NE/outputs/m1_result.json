@@ -1,0 +1,173 @@
+{
+  "round": "P2-R2",
+  "layer": "M1",
+  "checkpoint": "CP-M1-NUM",
+  "agent": "NE",
+  "te_ref": "v77/work/TE/m1_gates_v0.md",
+  "theory_ref": "v77/work/TE/full_maxwell_monist_v0.md",
+  "design": "v77/work/NE/m1_design_v0.md",
+  "sandbox": "sandbox_m1_2d.py",
+  "tags": {
+    "sector": 1,
+    "E_origin": "free_maxwell_full",
+    "em_solver": "free_maxwell_yee_m1",
+    "gravity_solver": "none",
+    "embedding_dim_dynamics": 2,
+    "monist_channel": "free_gauge",
+    "m1_wave_is_true_2d": true
+  },
+  "m0_regression": {
+    "gate": "M1-R0",
+    "pass": true,
+    "source": "r2_result.json",
+    "full_maxwell_claim": true,
+    "bc": "n/a"
+  },
+  "gates": {
+    "M1_G1_vacuum": {
+      "gate": "M1-G1",
+      "pass": true,
+      "max_E": 0.0,
+      "max_H": 0.0,
+      "bc": "pec"
+    },
+    "M1_G2_beam2d": {
+      "gate": "M1-G2",
+      "pass": true,
+      "v_meas": 1.0443377936283351,
+      "c_th": 1.0,
+      "v_ratio": 1.0443377936283351,
+      "v_front": 1.0443377936283351,
+      "v_rms": 0.8974284963771638,
+      "sigma": 1.0,
+      "reduction": "true_2d_packet",
+      "two_d_ok": true,
+      "moment_y0": 0.5000000000000001,
+      "peak_end": 0.18312998578635922,
+      "nsteps": 33,
+      "bc": "pec_large_box"
+    },
+    "M1_G3_offunit": {
+      "gate": "M1-G3",
+      "pass": true,
+      "eps": 4.0,
+      "mu": 1.0,
+      "c_th": 0.5,
+      "v_meas": 0.5221688968141676,
+      "v_ratio": 1.0443377936283351,
+      "bc": "pec_large_box"
+    },
+    "M1_G4_energy_poynting": {
+      "gate": "M1-G4",
+      "pass": true,
+      "U0": 1.2723450247038646,
+      "U_end": 1.2785227114545847,
+      "rel_drift": 0.004855354979014447,
+      "bc": "periodic"
+    },
+    "M1_G5_gauss_dynamic": {
+      "gate": "M1-G5",
+      "pass": true,
+      "dQ_rel": 1.1452078765013615e-07,
+      "gauss_rel_init": 2.4297442259540344e-06,
+      "gauss_rel_max": 0.05121115783768176,
+      "cont_residual_max": 0.0040991921618370175,
+      "cont_rel_max": 0.5595902238305978,
+      "Q0": 5.089379491526743,
+      "Q_end": 5.089380074366491,
+      "bc": "pec",
+      "cleanse_every": 8,
+      "note": "Prescribed Cont-safe \u03c1,J; mild Poisson cleanse documented"
+    },
+    "M1_G6_divB": {
+      "gate": "M1-G6",
+      "pass": true,
+      "divB_max": 6.522560269672795e-16,
+      "divB_norm": 9.308745373061032e-16,
+      "divB0": 0.0,
+      "bc": "pec_large_box"
+    },
+    "M1_G7_faraday": {
+      "gate": "M1-G7",
+      "pass": true,
+      "faraday_discrete_max": 2.6020852139652106e-17,
+      "bc": "pec_large_box"
+    },
+    "M1_G8_ampere_adversary": {
+      "gate": "M1-G8",
+      "pass": true,
+      "full_pass": true,
+      "adversary_fails": true,
+      "full_v_ratio": 1.0443377936283351,
+      "adv_v_ratio": 0.0,
+      "full_v_meas": 1.0443377936283351,
+      "adv_v_meas": 0.0,
+      "adversary": "incomplete_ampere",
+      "bc": "pec_large_box"
+    },
+    "M1_G9_bc_honesty": {
+      "gate": "M1-G9",
+      "pass": true,
+      "bc_honesty": "G2/G3/G6\u2013G8: pec large-box free-flight (G2 nsteps=33). G4: periodic for energy. G1/G5: pec. Documented multi-BC; no silent open.",
+      "per_gate_bc": {
+        "G1": "pec",
+        "G2": "pec_large_box",
+        "G3": "pec_large_box",
+        "G4": "periodic",
+        "G5": "pec",
+        "G6": "pec_large_box",
+        "G7": "pec_large_box",
+        "G8": "pec_large_box",
+        "G9": "documented"
+      }
+    }
+  },
+  "mandatory_pass": {
+    "M1_R0": true,
+    "M1_G1": true,
+    "M1_G2": true,
+    "M1_G3": true,
+    "M1_G4": true,
+    "M1_G5": true,
+    "M1_G6": true,
+    "M1_G7": true,
+    "M1_G8": true,
+    "M1_G9": true
+  },
+  "bc_honesty": "G2/G3/G6\u2013G8: pec large-box free-flight (G2 nsteps=33). G4: periodic for energy. G1/G5: pec. Documented multi-BC; no silent open.",
+  "m1_claim": true,
+  "full_maxwell_2d_dynamic": true,
+  "shared_c": {
+    "C_LOCAL": 1.0,
+    "c_from_eps_mu_unit": 1.0,
+    "c_th_offunit": 0.5,
+    "v_ratio_unit": 1.0443377936283351,
+    "v_ratio_offunit": 1.0443377936283351
+  },
+  "api": {
+    "class": "Maxwell2D",
+    "step": "step(rho_Q=None, Jx=None, Jy=None, Jz=None)",
+    "fields": "fields() \u2192 Ex,Ey,Ez,Hx,Hy,Hz",
+    "rc1_ready": true
+  },
+  "demos": {
+    "D-EM-M1-suite": {
+      "status": "LIVE_PASS",
+      "m1_claim": true
+    },
+    "D-EM-M1-beam2d": {
+      "status": "LIVE_PASS"
+    },
+    "D-EM-M1-energy": {
+      "status": "LIVE_PASS"
+    },
+    "D-EM-M1-gauss-dyn": {
+      "status": "LIVE_PASS"
+    },
+    "D-EM-M1-ampere-adv": {
+      "status": "LIVE_PASS"
+    }
+  },
+  "elapsed_s": 0.7116355895996094,
+  "quick": true
+}

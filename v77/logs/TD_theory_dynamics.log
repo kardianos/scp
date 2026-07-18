@@ -1,0 +1,338 @@
+===== ENTRY 2026-07-18T00:00:00Z | TD-000 | bootstrap =====
+Agent: TD
+Round: 0
+Tags: bootstrap, protocol
+---
+Theory Dynamics — inertia, time, frames
+
+Log initialized (append-only). Write only this file + work/TD/.
+Read v76 seed, v77 PROBLEM/FOCI/RUN, all logs. FOR_X for cross-ideas.
+===== END =====
+
+===== ENTRY 2026-07-18T20:30:00Z | TD-001 | theory =====
+Agent: TD
+Round: 1
+Tags: theory, dynamics, J5, timedep, package
+---
+ROUND 1 — dynamics_package_v0 written.
+
+Path: v77/work/TD/dynamics_package_v0.md
+
+Contents:
+1. Time-dep free response options T0–T4 (quasistatic / relaxational /
+   hyperbolic / hybrid / graph). Preference: T1 or T2 for true dynamics;
+   T0 only as A2 control. Hard recovery of F1-3D when static (TD-S).
+2. J5 non-tautological targets. Inherit v76 R4 facts:
+   M_ray=M_ledger PASS; m_boost~U/c² PASS; m_boost vs M_ledger raw FAIL
+   (form factor U/Mc²≈0.141); R1 s_renorm closes triad as calibration.
+   Theory fork: J5-α raw coefficient 1 (aspirational) vs J5-β renorm
+   necessity (Round-1 default). V77-3 path = kill naïve m=∫ρ_b/c² +
+   document renorm or unexpected raw pass.
+3. Rods/clocks C1 sketch (from v76 C): free oscillators + free-signal rods;
+   lattice Δx = storage not ontology.
+4. Lorentz-from-c caution: local causal c and operational isotropy ≠ full
+   SR / Lorentz group derivation. Anti-overclaim policy explicit.
+
+Seed residuals owned: J5 partial, C1 unfinished. No scp_sim.
+
+Demo stubs: D-DYN-J5, D-DYN-timedep, D-DYN-rods, D-DYN-cwave.
+===== END =====
+
+===== ENTRY 2026-07-18T20:35:00Z | TD-002 | handoff =====
+Agent: TD
+Round: 1
+Tags: handoff, FOR_ND, kill-gates
+---
+FOR_ND — Round-1 kill-gates (full tables in dynamics_package_v0.md §8):
+
+  ND-G0  Seed integrity: F1 multipole 1/r, free deficit, vacuum control.
+  ND-G1  P0 Naïve inertia KILL via A2 boost energy ΔU(v):
+         expect m_inertial ≈ U/c² ≠ ∫ρ_b/c² at default free constants;
+         tautology_flag=false mandatory.
+  ND-G2  P1 Renorm necessity: single s* (or σ0*) closes triad for lock
+         family; fail if shape-by-shape fudge only.
+  ND-G3  P1 Time-dep T1 or T2: static→F1 recovery; wake and/or wavefront~c.
+  ND-G4  P2 C1 lite: c_op constant in free patch after free-signal calib.
+  ND-G5  Meta: no “SR derived from c” overclaim tags.
+
+Adapt: v76/work/B/sandbox_r4_inertia.py → work/ND/.
+Priority: G0+G1 first (V77-3 path), then G2+G3.
+
+FOR_TE: Free-wave sibling (T3) may share c with Maxwell-lite; ψ path-cost
+channel stays distinct. Do not identify A with ψ.
+
+FOR_TU: Register D-DYN-* stubs; J5 status = PARTIAL pending ND-G1/G2;
+Lorentz caution = residual (not demo pass). V77-3 = naïve kill + renorm
+doc or raw triad pass.
+
+FOR_TM: Inertia is free-response cost of moving locks; lock microphysics
+not required for G1–G3 gates.
+
+FOR_O: Round-1 TD theory complete for Dynamics draft laws + kill-gates.
+Blocking on ND numerics for V77-1/V77-3 dynamics credit.
+===== END =====
+
+===== ENTRY 2026-07-18T20:40:00Z | TD-003 | checkin =====
+Agent: TD
+Round: 1
+Tags: checkin
+---
+CHECKIN Round 1
+
+Read:
+- O-000 bootstrap, O-001 Round-1 theme (laws + kill-gates; V77-1 progress)
+- PROBLEM G1–G3; FOCI Dynamics §3; RUN ownership
+- ND-000 bootstrap only (no FOR_TD yet; no ND results)
+- Other focus logs: bootstrap-only at checkin time (TE/NE/TM/NM/TU-000)
+- v76 CONVERGENCE; THEORETICAL_PACKAGE_v1; inertia_target_v0;
+  kinetic_inertia_v0; rods_clocks_C1_v0; B/D round4 J5 PARTIAL
+
+FOR_TD from others: none yet (round-start).
+
+Adopted from seed:
+- F1-3D + path-cost package as frozen input
+- J5 raw FAIL / renorm PASS as factual residual to close or kill honestly
+- C1 operational rods/clocks as Dynamics ownership for completion sketch
+
+Deferred:
+- Full SR derivation
+- Hyperbolic free-action coefficient theorem (J5-α)
+- Joint ψ+Maxwell numeric (TE/NE + later dual-channel)
+
+Status: theory draft DONE; waiting ND gates; handoff in TD-002.
+===== END =====
+
+===== ENTRY 2026-07-18T22:30:00Z | TD-004 | theory =====
+Agent: TD
+Round: 2
+Tags: theory, J5-beta, lock, dual-channel, maxwell-interface
+---
+ROUND 2 — J5-β LOCKED as Dynamics default theory.
+
+Path: v77/work/TD/j5_beta_default_v0.md
+(Parent still: dynamics_package_v0.md for R1 options/gates.)
+
+LOCK DECLARATION:
+  J5-β is default. Naïve m_inertial=∫ρ_b/c² KILLED (ND-G1).
+  Free inertia m_inertial = ξ U[ψ]/c² (default ξ=1).
+  Path-cost mass M_ray = ∫ρ_b/c² via F1 HELD.
+  Raw three-way triad NOT required for V77-3.
+  J5-α DEFERRED (not default).
+
+ADOPTED FROM ND-004 FOR_TD:
+  - Form-factor law ff = s κ M/(8π σ √π) = 0.141421 at R4 baseline — WRITTEN.
+  - Universal s* FAIL (ND-G2) — REJECTED as theorem; β-class per-family
+    renorm allowed only with renorm_tag=R1_class.
+  - Preferred closure: β-ledger / β-U-rest —
+    E_star^path = ∫ρ_b (sources ψ multipole);
+    E_star^in = U (inertial rest from free stress).
+    Same continuum; two monist bookkeepings — NOT dualist sectors.
+
+TIME-DEP FREE RESPONSE (dual-channel world):
+  State: (ρ_b, ρ_f, ψ, ρ_Q, J_Q, E, B) one continuum.
+  C-ψ: T1 relaxational and/or T2 hyperbolic; static → F1-3D.
+  C-A: full Maxwell M1–M4 (TE R2 / NE); static → Coulomb/Gauss.
+  Shared c: c_ψ-wave = c_EM = 1/√(εμ) (JC1).
+  Forces: F_ψ + F_EM virtual work; path cost stays on ψ not Φ.
+  Charged inertia: m ~ (U_ψ + U_EM)/c² same β logic.
+
+FULL MAXWELL INTERFACE (§4 of j5_beta_default_v0):
+  TD needs M1–M4, Cont, vacuum waves, Poynting/u_EM from TE/NE.
+  Sibling table: ψ ≠ Φ; ρ_b ≠ ρ_Q; same c; free ledger sum.
+  Forbidden: ψ:=Φ, foreign G/m, SR-from-c slogan alone.
+  C1 rods: prefer EM free signals once full leapfrog exists;
+  capacity T2 remains sibling free-signal control (ND R1 PASS).
+
+V77-3 under lock = naïve kill (done) + this theory + honest no-universal-s*.
+===== END =====
+
+===== ENTRY 2026-07-18T22:35:00Z | TD-005 | checkin =====
+Agent: TD
+Round: 2
+Tags: checkin
+---
+CHECKIN Round 2
+
+Read:
+- O-002 R1 judgment: V77-1 MET; V77-2/3 NOT; J5-β path live; universal
+  s* FAIL sharpened residual. R2 theme dual-channel + lock J5-β.
+- O-003 R2 spawn: full Maxwell; dual-channel joint; Dynamics lock J5-β;
+  time-dep free response if free; stop only on cohesive (A) or null (B).
+- ND-001..006: G1 naïve kill PASS (ff=0.1414, rel_split=0.8586);
+  G2 universal s* FAIL; G3 free-wave v≈c PASS; FOR_TD confirm β +
+  E_star:=U vs s*(shape) — ANSWERED in TD-004 / j5_beta_default_v0
+  (β-ledger preferred; β-class allowed tagged).
+- TE-001..003: Maxwell-lite; JC1 shared c; FOR_TD rods/clocks + u_EM —
+  ADOPTED into dual-channel §3–4; full Maxwell is R2 TE/NE target.
+- TU WORLD_v0: C-ψ, C-A, C-W channels; Dynamics owns J5/C1 — aligned.
+- TM: force_closure residual → TD/J5 — β applies to multi-lock free stress.
+- NE: R1 lite gates; full M1–M4 residual honest — joint shared-c pending.
+
+FOR_TD from ND-004/006: ADOPTED (β lock + form factor + renorm policy).
+FOR_TD from TE-001: ADOPTED (shared c, u_EM free ledger, C1 still TD).
+No conflicting FOR_TD rejects.
+
+Deferred this entry:
+- ND implementing R2-G2 sourced T1/T2 (partner)
+- Joint ND–NE shared-c numeric (needs NE full Maxwell)
+- C1 operational numeric (G4) still soft residual
+===== END =====
+
+===== ENTRY 2026-07-18T22:40:00Z | TD-006 | handoff =====
+Agent: TD
+Round: 2
+Tags: handoff, FOR_ND, round2-complete
+---
+HANDOFF — TD Round 2 complete (theory)
+
+DONE:
+1. work/TD/j5_beta_default_v0.md — J5-β LOCKED; (FF) law; dual-channel
+   time-dep T1/T2 + Maxwell; full M1–M4 interface; V77-3 criteria
+2. work/TD/README.md updated
+3. Log TD-004 theory, TD-005 checkin, TD-006 handoff
+
+FOR_ND — Round 2 gates (full tables j5_beta_default_v0.md §6):
+
+  ND-R2-G0  P0  Tag exports j5_theory_default=beta; dual equalities;
+                no raw triad claim at baseline; no universal s* theorem.
+  ND-R2-G1  P1  Cite form-factor identity (R1 scan OK if unchanged).
+  ND-R2-G2  P0  T1 or T2 with sourced ρ_b: cold start → F1 recovery;
+                optional moving-lock wake. (primary new Dynamics numeric)
+  ND-R2-G3  P0* Shared-c joint with NE full Maxwell vacuum waves
+                (defer + tag if NE not ready).
+  ND-R2-G4  P2  Optional charged inertia U_ψ+U_EM.
+  ND-R2-G5      Standing anti-overclaim.
+
+FOR_TE: Full Maxwell free energy is β-class sibling of U_ψ; interface §4.
+FOR_NE: Export v_E/c and U_EM when leapfrog M1–M4 up (R2-G3/G4).
+FOR_TU: Mark J5-β LOCKED; D-DYN-j5-formfactor LIVE under β; V77-3 =
+  naïve kill + theory lock (not raw triad). V77-2 still needs joint sim.
+FOR_TM: Multi-lock inertia sums free-channel field energies (β).
+FOR_O: Dynamics theory R2 done as ordered. Numeric block: ND R2-G2;
+  V77-2 block: joint ψ+Maxwell shared-c with NE full Maxwell.
+
+No scp_sim. No SR overclaim.
+===== END =====
+
+===== ENTRY 2026-07-19T16:00:00Z | TD-007 | theory =====
+Agent: TD
+Round: P2-R3
+Tags: theory, RC1, psi, T0, T1, CP-RC1-SPEC
+---
+P2-R3 — ψ time-dep for RC1 fixed locks
+
+READ:
+- O-011: CP-M1-NUM ADOPTED (parent); unlocks RC1
+- O-012: P2-R3+R4 RC1 co-field — fixed multi-locks, F1 ψ + dynamical Maxwell
+- CAMPAIGN_MAP §4.3 D1: psi_time_dep_rc1_v0.md at CP-RC1-SPEC
+- dynamics_package_v0 §2 T0–T4; j5_beta_default dual-channel sketch
+- TM dual_channel: ψ from ρ_b; Maxwell from ρ_Q; TE-IA1 ψ≠Φ
+
+DELIVERABLE:
+  work/TD/psi_time_dep_rc1_v0.md
+
+RECOMMENDATION (LOCKED for RC1):
+  Primary:  T0 quasistatic F1 — re-solve −∇·(σ∇ψ)=s ρ_b for fixed ρ_b
+  Allowed:  T1 relaxational cold-start → F1 (optional ND/NM probe)
+  Deferred: T2 hyperbolic ψ (not required for fixed-lock co-field)
+  Dual-channel default = T3 hybrid: T0/T1 ψ + dynamical Maxwell (shared c)
+
+RATIONALE:
+  RC1 locks FIXED ⇒ path-cost sector is stationary F1 (TD-S exact under T0).
+  Shared c already owned by Maxwell (NE M1) + ND dual-channel — not by T0 ψ.
+  Occam: avoid extra κ/Courant on ψ while NM integrates Yee + dual sources.
+  T2 remains valid free-capacity wave law for ND regression / RC2 wake later.
+
+HARD: TD-S stationary recovery for any chosen law.
+KILL: ψ≡Φ; wrong multipole; requiring T2 falsely for RC1 fixed locks.
+
+GATES (theory): RC1-ψ-0..4, RC1-ψ-K — see doc §4.
+===== END =====
+
+===== ENTRY 2026-07-19T16:05:00Z | TD-008 | stamp =====
+Agent: TD
+Round: P2-R3
+Tags: stamp, CP-RC1-SPEC
+---
+STAMP CP-RC1-SPEC: **ADOPT**
+
+Scope of TD ADOPT (ψ sector only):
+  RC1 free-capacity law = T0 primary | T1 allowed | T2 deferred
+  TD-S mandatory; T3 hybrid with dynamical Maxwell
+  Evidence: work/TD/psi_time_dep_rc1_v0.md
+
+Does NOT alone close full board CP-RC1-SPEC:
+  Still need TM (joint state/forces), TE (EM attach), NE (API),
+  NM (implementability) co-stamps per CAMPAIGN_MAP.
+
+TD co-agree partners for ψ law: TM, NM (CAMPAIGN.md).
+J5-β remains default; not reopened.
+===== END =====
+
+===== ENTRY 2026-07-19T16:10:00Z | TD-009 | checkin =====
+Agent: TD
+Round: P2-R3
+Tags: checkin
+---
+CHECKIN P2-R3
+
+Read:
+- O-011/O-012 RC1 unlock + co-field theme
+- CP-M1-NUM green (parent m1_claim=true) — Maxwell half ready for RC1
+- ND P2-R2 OBSERVE shared-c; dual-channel green — aligned with T3 hybrid
+- TE-IA1 / JC1 frozen — ψ≠Φ; c shared via Maxwell constitutive
+- TM dual_channel / force taxonomy — F^ψ on F1 ψ; F^EM on gauge
+- No FOR_TD conflict requiring T2 for fixed locks
+
+Adopted:
+- Campaign D1 deliverable path
+- T0 as NM default ψ solver for fixed multi-locks
+
+Deferred:
+- lock_motion_rc2_v0 (which m in F=ma) — RC2
+- T1 κ calibration vs c
+- ND Dyn1 T1 probe (after SPEC full board ADOPT)
+===== END =====
+
+===== ENTRY 2026-07-19T16:15:00Z | TD-010 | handoff =====
+Agent: TD
+Round: P2-R3
+Tags: handoff, CP-RC1-SPEC, FOR_NM, FOR_TM, FOR_ND
+---
+HANDOFF — TD P2-R3 complete
+
+DONE:
+1. work/TD/psi_time_dep_rc1_v0.md — RC1 ψ law freeze
+2. STAMP CP-RC1-SPEC: ADOPT (ψ sector)
+3. README + CAMPAIGN track consistent
+
+RECOMMENDATION ONE-LINER:
+  RC1 fixed locks → T0 quasistatic F1 (primary); T1 optional; T2 deferred;
+  dynamical Maxwell carries shared c (T3 hybrid).
+
+FOR_NM:
+  Default psi_law="T0_quasistatic_F1" in sandbox_rc1_cofield.
+  Implement RC1-ψ-1 multipole + RC1-ψ-2 sibling independence.
+  Do not block on T1/T2.
+
+FOR_TM:
+  Joint state: tag psi_law; forces F^ψ from T0 ψ gradients.
+  Align rc1_joint_state with T0 primary.
+
+FOR_ND:
+  Dyn1 optional: T1 cold-start residual drop OR keep vacuum T2 regression.
+  Shared-c stamp on RC1-NUM joint grid when NM ready.
+  No need to replace dual-channel T2 vacuum demo.
+
+FOR_TE/NE:
+  Maxwell remains free-signal / shared-c channel; ψ T0 does not set c_ψ≠c_EM.
+
+FOR_TU:
+  Board: TD stamp CP-RC1-SPEC ADOPT (ψ); await TM/TE/NE/NM for full SPEC.
+
+FOR_O:
+  TD RC1 ψ constitutive ready. Numeric RC1 blocked only on full SPEC
+  co-stamps + NM co-field implement (P2-R4).
+
+No scp_sim. No SR overclaim. J5-β untouched.
+===== END =====

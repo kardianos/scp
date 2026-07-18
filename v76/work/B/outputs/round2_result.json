@@ -1,0 +1,84 @@
+{
+  "round": 2,
+  "numeric_method": "offline_closed_form_plus_R1_series; dynamical code in sandbox_r2_dynamical.py",
+  "design_doc": "medium_design_v1_round2.md",
+  "m_ledger": 3.167300753,
+  "free_deficit_core": 0.1513163,
+  "A": 0.35,
+  "sigma": 1.2,
+  "mechanisms": {
+    "M1": {
+      "mechanism": "M1_local_free_optics_proxy_dijkstra",
+      "sector_tag": "monist_1sector",
+      "gravity_solver": null,
+      "max_abs_defl_rad": 0.6298,
+      "max_delay": 1.264,
+      "r6_signal": 1.3e-06,
+      "exterior_class": "compact"
+    },
+    "M2": {
+      "mechanism": "M2_free_laplace_2d_log",
+      "sector_tag": "monist_1sector",
+      "gravity_solver": null,
+      "note": "Dynamical free equilibration; lock=interface Dirichlet; 2D Green = log",
+      "u0": -0.42,
+      "R_lock": 1.8,
+      "R_box": 9.6,
+      "r6_abs_u": 0.1179,
+      "exterior_fit_prefer": "log",
+      "exterior_class": "log_2d",
+      "produces_einstein_1r": false
+    },
+    "M3": {
+      "mechanism": "M3_dualist_poisson_2d",
+      "sector_tag": "dualist_2sector",
+      "gravity_solver": "poisson_2d_Phi_from_M",
+      "r6_abs_phi": 0.2369,
+      "exterior_fit_prefer": "log",
+      "exterior_class": "log_2d",
+      "note": "multipole-sibling of M2 in 2D; not monist success"
+    },
+    "R1_kernel": {
+      "mechanism": "R1_postulated_kernel",
+      "sector_tag": "dualist_2sector_or_postulated",
+      "gravity_solver": "analytic_Phi_eq_alpha_M_over_R",
+      "alpha": 0.08,
+      "r6_Phi": 0.0409,
+      "exterior_fit_prefer": "1/r",
+      "is_dynamical_free_evolution": false,
+      "max_abs_defl_weak_b1": 0.5068
+    },
+    "REF_3d_dualist": {
+      "sector_tag": "dualist_2sector",
+      "exterior_fit_prefer": "1/r",
+      "note": "schematic M/(4 pi r)"
+    }
+  },
+  "inertia_triad": {
+    "m_ledger": 3.167300753,
+    "m_ledger_weak": 1.357414608,
+    "m_inertial_independent": null,
+    "m_inertial_status": "deferred — F/a with a=F/m_L tautological",
+    "kernel_slope_tracks_M": true,
+    "kernel_slope_ratio": 2.333,
+    "M_ratio": 2.333
+  },
+  "verdict": {
+    "monist_kernel_failed": true,
+    "monist_1sector_dynamical_free_response_exists": true,
+    "dynamical_channel": "M2_free_laplace_2d",
+    "dynamical_exterior_multipole": "log",
+    "einstein_1r_from_dynamical_free": false,
+    "R1_kernel_is_monist_derived": false,
+    "summary": "M2 free-Laplace is monist_1sector dynamical free response (rays without second gravity field) but 2D-log exterior, not Einstein 1/r. Einstein-class 1/r appears only for postulated R1 kernel or dualist 3D Poisson — monist_kernel_failed for that target from local free dynamics. M3 2D Poisson is log-sibling of M2; sector tags needed for Occam (D).",
+    "recommendation": "Next: 3D free Laplace (Green~1/r) as monist dynamical attempt; and/or axiomatic free-response K (A); never rebrand R1 Φ=αM/R as monist-derived."
+  },
+  "exports": {
+    "rays": "outputs/round2_rays.tsv",
+    "path_cost": "outputs/round2_path_cost.tsv",
+    "free_deficit": "outputs/round2_free_deficit.tsv",
+    "inertia": "outputs/round2_inertia_triad.tsv",
+    "summary": "outputs/round2_summary.txt"
+  },
+  "FOR_D": "Ingest round2_*.tsv; sector_tag is ontology ground truth. Use path_cost for multipole class (compact/log/1r). M2 vs M3 both log in 2D — score Occam not multipole alone."
+}

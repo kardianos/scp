@@ -1,0 +1,230 @@
+{
+  "round": 2,
+  "verified_round": 3,
+  "agent": "NE",
+  "date": "2026-07-18",
+  "sandbox": "sandbox_full_maxwell_r2.py",
+  "parent_fix": true,
+  "parent_fix_note": "Parent hardened 1D Yee TEM reduction, divB formula, continuity thresholds; dynamical re-run elapsed~0.59s produced full_maxwell_claim=true. R3 confirms and re-exports clean TE KG-F map.",
+  "scheme": {
+    "name": "Yee_staggered_2D_TE+TM",
+    "em_solver": "free_maxwell_yee",
+    "description": "2D Yee FDTD: TM_z (Ez,Hx,Hy) + TE_z (Ex,Ey,Hz) cover full 2D Maxwell (∂/∂z=0). Faraday M2 + Ampère-Maxwell M4; M1 div B on TM; M3 Gauss TE static + R1 3D Coulomb; Cont on drifting ρ. Wave gate uses 1D TEM reduction of y-uniform TM (coupled Ez,Hy).",
+    "cfl_2d": "dt <= cfl * min(dx,dy)/(c√2)",
+    "cfl_plane_wave_x": "dt = cfl * dx/c for 1D TEM; cfl=1 exact shift"
+  },
+  "te_ref": "v77/work/TE/full_maxwell_monist_v0.md",
+  "te_gates_ref": "v77/work/TE/for_ne_kill_gates_r2.md",
+  "te_equation_match_r1": true,
+  "tags": {
+    "sector": 1,
+    "E_origin": "free_maxwell_full",
+    "em_solver": "free_maxwell_yee",
+    "gravity_solver": "none",
+    "scheme": "Yee_staggered_2D_TE+TM",
+    "monist_channel": "free_gauge",
+    "embedding_dim_dynamics": 2,
+    "embedding_dim_coulomb": 3,
+    "te_equation_match_r1": true
+  },
+  "dualist_twin": {
+    "sector": 2,
+    "em_solver": "free_maxwell_yee",
+    "note": "Same discrete Maxwell; dualist if free DOF idle / stage ontology",
+    "softE_em": false
+  },
+  "shared_c": {
+    "C_LOCAL": 1.0,
+    "c_from_eps_mu_unit": 1.0,
+    "offunit": {"eps": 4.0, "mu": 1.0, "c_th": 0.5}
+  },
+  "gates": {
+    "FM1_vacuum": {
+      "gate": "FM1_vacuum",
+      "pass": true,
+      "max_E": 0.0,
+      "max_H": 0.0,
+      "nsteps": 60
+    },
+    "FM2_wave_unit": {
+      "gate": "FM2_wave_c",
+      "pass": true,
+      "eps": 1.0,
+      "mu": 1.0,
+      "c_th": 1.0,
+      "v_meas": 1.0,
+      "v_ratio": 1.0,
+      "threshold": 0.05,
+      "divB_max": 0.0,
+      "faraday_discrete_max": 1.1102230246251565e-16,
+      "coupled_EB": true,
+      "B_over_E_impedance": 1.0,
+      "scheme_note": "1D Yee TEM = y-uniform full Maxwell TM sector (Ez,Hy dynamical)",
+      "params": {
+        "nx": 96,
+        "ny": 24,
+        "dx": 0.21052631578947367,
+        "dt": 0.21052631578947367,
+        "cfl": 1.0,
+        "nsteps": 320,
+        "reduction": "1D_TEM_from_2D_TM"
+      }
+    },
+    "FM2_wave_offunit": {
+      "gate": "FM2_wave_c",
+      "pass": true,
+      "eps": 4.0,
+      "mu": 1.0,
+      "c_th": 0.5,
+      "v_meas": 0.5,
+      "v_ratio": 1.0,
+      "threshold": 0.05,
+      "divB_max": 0.0,
+      "faraday_discrete_max": 2.220446049250313e-16,
+      "coupled_EB": true,
+      "B_over_E_impedance": 2.0,
+      "params": {
+        "nx": 96,
+        "dt": 0.42105263157894735,
+        "cfl": 1.0,
+        "nsteps": 320,
+        "reduction": "1D_TEM_from_2D_TM"
+      }
+    },
+    "FM3_divB": {
+      "gate": "FM3_divB",
+      "pass": true,
+      "divB_initial": 0.0,
+      "divB_max": 1.7555401576885288e-15,
+      "divB_norm": 2.00511431960237e-15,
+      "Ez_energy0": 1.5393804002589984,
+      "Ez_energy_end": 0.4125008925913844,
+      "max_H_end": 0.1667678486934319,
+      "nsteps": 200
+    },
+    "FM4_faraday": {
+      "gate": "FM4_faraday",
+      "pass": true,
+      "faraday_residual_max": 1.1102230246251565e-16,
+      "wave_pass": true,
+      "note": "Yee enforces discrete Faraday by construction"
+    },
+    "FM5_gauss_static": {
+      "gate": "FM5_gauss_static",
+      "pass": true,
+      "Q_total": 5.089380098729533,
+      "gauss_residual_init": 0.022466909478243147,
+      "gauss_residual_init_rel": 0.02292351521816961,
+      "gauss_residual_max_evolved": 0.022466909478243258,
+      "gauss_residual_max_rel": 0.022923515218169724,
+      "max_Hz_after": 8.205403407748983e-17,
+      "nsteps": 40
+    },
+    "FM6_continuity": {
+      "gate": "FM6_continuity",
+      "pass": true,
+      "Q0": 15.69367114523597,
+      "Q_end": 15.69367267595061,
+      "dQ_rel": 9.753706619034707e-08,
+      "continuity_residual_max": 0.013942295725014708,
+      "continuity_fd_ok": true,
+      "v_drift": 0.3,
+      "nsteps": 80
+    },
+    "FM7_coulomb_3d": {
+      "gate": "FM7_coulomb_3d_recovery",
+      "pass": true,
+      "source": "r1_result.json",
+      "Q_total": 11.48153604302067,
+      "KG2": true,
+      "KG3": true
+    }
+  },
+  "TE_KG": {
+    "KG-F1_divB": true,
+    "KG-F2_faraday": true,
+    "KG-F3_wave_EB": true,
+    "KG-F4_continuity": true,
+    "KG-F5_coulomb": true,
+    "map": {
+      "KG-F1": "FM3_divB",
+      "KG-F2": "FM4_faraday",
+      "KG-F3": "FM2_wave_unit ∧ FM2_wave_offunit",
+      "KG-F4": "FM6_continuity",
+      "KG-F5": "FM5_gauss_static ∧ FM7_coulomb_3d"
+    }
+  },
+  "summary": {
+    "FM1_vacuum": true,
+    "FM2_wave_unit": true,
+    "FM2_wave_offunit": true,
+    "FM3_divB": true,
+    "FM4_faraday": true,
+    "FM5_gauss_static": true,
+    "FM6_continuity": true,
+    "FM7_coulomb_3d": true,
+    "KG-F1": true,
+    "KG-F2": true,
+    "KG-F3": true,
+    "KG-F4": true,
+    "KG-F5": true
+  },
+  "full_maxwell_dynamics": true,
+  "full_maxwell_with_sources": true,
+  "full_maxwell_claim": true,
+  "claim_rule": "TE bar: full_maxwell_claim = KG-F1∧KG-F2∧KG-F3∧KG-F4∧KG-F5 (for_ne_kill_gates_r2 §4). FM1–FM7 all pass.",
+  "claim_bar_te": "KG-F1 ∧ KG-F2 ∧ KG-F3 ∧ (KG-F4 ∨ static Cont) ∧ KG-F5",
+  "key_numbers": {
+    "v_ratio_unit": 1.0,
+    "v_ratio_offunit": 1.0,
+    "c_th_offunit": 0.5,
+    "divB_max": 1.7555401576885288e-15,
+    "faraday_discrete_max": 1.1102230246251565e-16,
+    "gauss_residual_init_rel": 0.02292351521816961,
+    "dQ_rel": 9.753706619034707e-08,
+    "Q_3d_R1": 11.48153604302067,
+    "vacuum_max_E": 0.0,
+    "elapsed_s_parent_run": 0.5894253253936768
+  },
+  "demos": {
+    "D-EM-maxwell-full": {
+      "status": "LIVE_PASS",
+      "full_maxwell_claim": true,
+      "alias": "D-EM-full-maxwell"
+    },
+    "D-EM-full-maxwell": {
+      "status": "LIVE_PASS",
+      "full_maxwell_claim": true,
+      "note": "alias of D-EM-maxwell-full (TE registry name)"
+    },
+    "D-EM-divB": {"status": "LIVE_PASS"},
+    "D-EM-faraday": {"status": "LIVE_PASS"},
+    "D-EM-wave-EB": {"status": "LIVE_PASS"},
+    "D-EM-continuity": {"status": "LIVE_PASS"},
+    "D-EM-wave-c": {
+      "status": "LIVE_PASS",
+      "upgrade": "full Maxwell TM Yee coupled Ez,Hy (not scalar A)"
+    },
+    "D-EM-gauss-coulomb": {
+      "status": "LIVE_PASS",
+      "note": "R1 recovery + TE static Gauss FM5"
+    },
+    "D-EM-vacuum-control": {"status": "LIVE_PASS"}
+  },
+  "claim_scope": {
+    "embedding_dim_dynamics": 2,
+    "embedding_dim_coulomb": 3,
+    "includes": ["M1", "M2", "M3", "M4", "Cont", "Wave unit+off-unit"],
+    "excludes": ["3D Yee radiation multipoles", "real α_EM"]
+  },
+  "FOR_TU": {
+    "promote": [
+      "D-EM-maxwell-full LIVE_PASS full_maxwell_claim=true",
+      "D-EM-divB, faraday, wave-EB, continuity LIVE_PASS",
+      "D-EM-wave-c upgraded coupled E,B"
+    ],
+    "compose": "NE full Maxwell Yee + NM dual-channel lite compose under WORLD without contradiction (O-004)",
+    "unified_path": "C-A channel = free_maxwell_full; dual LIVE via NM; residual = optional joint dynamical E,B+ψ on same locks"
+  },
+  "elapsed_s": 0.5894253253936768
+}

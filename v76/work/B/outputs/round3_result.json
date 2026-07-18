@@ -1,0 +1,552 @@
+{
+  "round": 3,
+  "design": "3D free-capacity F1: -sigma0 Laplace psi = s rho_b; ell=ell0+gamma psi",
+  "grid_N": 32,
+  "L": 16.0,
+  "dx": 0.5161290322580641,
+  "A": 0.4,
+  "sigma": 1.0,
+  "kappa_s_over_sigma0": 1.0,
+  "gamma_path": 0.5,
+  "sor_iters": 450,
+  "omega": 1.55,
+  "wall_secs_setup": 0.014822006225585938,
+  "wall_secs_sor": 7.492024898529053,
+  "wall_secs_total": 7.552827596664429,
+  "m_ledger": 6.299843978288953,
+  "free_deficit_core": 0.12743176926595756,
+  "monist_channel": {
+    "sector_tag": "monist_1sector",
+    "phi_origin": "free_relaxation",
+    "gravity_solver": null,
+    "sector_count": 1,
+    "budget_identity": true,
+    "radial": [
+      {
+        "r": 1.5,
+        "mean": 0.23378164642800192,
+        "abs_mean": 0.23378164642800192,
+        "n": 50
+      },
+      {
+        "r": 2.0,
+        "mean": 0.18411218418397213,
+        "abs_mean": 0.18411218418397213,
+        "n": 50
+      },
+      {
+        "r": 2.5,
+        "mean": 0.14302662946864783,
+        "abs_mean": 0.14302662946864783,
+        "n": 50
+      },
+      {
+        "r": 3.0,
+        "mean": 0.11186338857365326,
+        "abs_mean": 0.11186338857365326,
+        "n": 50
+      },
+      {
+        "r": 3.5,
+        "mean": 0.08832193075615825,
+        "abs_mean": 0.08832193075615825,
+        "n": 50
+      },
+      {
+        "r": 4.0,
+        "mean": 0.07044096803702345,
+        "abs_mean": 0.07044096803702345,
+        "n": 50
+      },
+      {
+        "r": 4.5,
+        "mean": 0.05652560834052694,
+        "abs_mean": 0.05652560834052694,
+        "n": 50
+      },
+      {
+        "r": 5.0,
+        "mean": 0.04533918115748588,
+        "abs_mean": 0.04533918115748588,
+        "n": 50
+      },
+      {
+        "r": 5.5,
+        "mean": 0.03611238210766142,
+        "abs_mean": 0.03611238210766142,
+        "n": 50
+      },
+      {
+        "r": 6.0,
+        "mean": 0.028441642201365646,
+        "abs_mean": 0.028441642201365646,
+        "n": 50
+      }
+    ],
+    "radial_vs_analytic": [
+      {
+        "r": 1.5,
+        "psi_num": 0.23378164642800192,
+        "psi_analytic_inf": 0.3342171032841326,
+        "ratio_num_over_analytic": 0.6994903735649156
+      },
+      {
+        "r": 2.0,
+        "psi_num": 0.18411218418397213,
+        "psi_analytic_inf": 0.2506628274630995,
+        "ratio_num_over_analytic": 0.7345013460804259
+      },
+      {
+        "r": 2.5,
+        "psi_num": 0.14302662946864783,
+        "psi_analytic_inf": 0.20053026197047957,
+        "ratio_num_over_analytic": 0.7132421214794157
+      },
+      {
+        "r": 3.0,
+        "psi_num": 0.11186338857365326,
+        "psi_analytic_inf": 0.1671085516420663,
+        "ratio_num_over_analytic": 0.6694055299650735
+      },
+      {
+        "r": 3.5,
+        "psi_num": 0.08832193075615825,
+        "psi_analytic_inf": 0.1432359014074854,
+        "ratio_num_over_analytic": 0.6166186681430875
+      },
+      {
+        "r": 4.0,
+        "psi_num": 0.07044096803702345,
+        "psi_analytic_inf": 0.12533141373154974,
+        "ratio_num_over_analytic": 0.5620376084474926
+      },
+      {
+        "r": 4.5,
+        "psi_num": 0.05652560834052694,
+        "psi_analytic_inf": 0.11140570109471087,
+        "ratio_num_over_analytic": 0.5073852395800825
+      },
+      {
+        "r": 5.0,
+        "psi_num": 0.04533918115748588,
+        "psi_analytic_inf": 0.10026513098523979,
+        "ratio_num_over_analytic": 0.45219290806252815
+      },
+      {
+        "r": 5.5,
+        "psi_num": 0.03611238210766142,
+        "psi_analytic_inf": 0.09115011907749072,
+        "ratio_num_over_analytic": 0.3961857918908553
+      },
+      {
+        "r": 6.0,
+        "psi_num": 0.028441642201365646,
+        "psi_analytic_inf": 0.08355427582103316,
+        "ratio_num_over_analytic": 0.3403972079452338
+      }
+    ],
+    "multipole_fit": {
+      "ok": true,
+      "A_log": -0.14063011555081054,
+      "B_log": 0.27174628275896534,
+      "C_inv": 0.47274041166761716,
+      "D_inv": -0.04849564030476648,
+      "mse_log": 3.605721396940295e-05,
+      "mse_invr": 4.126456900060063e-06,
+      "r2_invr": 0.9983201126591471,
+      "prefer": "1/r",
+      "n_pts": 9,
+      "ratio_mse_log_over_invr": 8.73805660465716
+    },
+    "rays": [
+      {
+        "b": -4.0,
+        "deflection_rad": 0.09896272516189575,
+        "deflection_deg": 5.670146480889743,
+        "delay": 0.28029636702770716
+      },
+      {
+        "b": -3.0,
+        "deflection_rad": 0.13693019524362524,
+        "deflection_deg": 7.8455222753620655,
+        "delay": 0.40572791689759474
+      },
+      {
+        "b": -2.5,
+        "deflection_rad": 0.16235136095406144,
+        "deflection_deg": 9.302047780872748,
+        "delay": 0.4866855820215336
+      },
+      {
+        "b": -2.0,
+        "deflection_rad": 0.18711147207135823,
+        "deflection_deg": 10.720697648168803,
+        "delay": 0.5815426175302987
+      },
+      {
+        "b": -1.5,
+        "deflection_rad": 0.19792970936137783,
+        "deflection_deg": 11.34053698665797,
+        "delay": 0.6861611478213864
+      },
+      {
+        "b": -1.0,
+        "deflection_rad": 0.17482949226282923,
+        "deflection_deg": 10.016992041075195,
+        "delay": 0.7873540719475915
+      },
+      {
+        "b": -0.75,
+        "deflection_rad": 0.12924988271433044,
+        "deflection_deg": 7.405472782092026,
+        "delay": 0.8338261158205166
+      },
+      {
+        "b": 0.75,
+        "deflection_rad": -0.1292498802601554,
+        "deflection_deg": -7.405472641478156,
+        "delay": 0.8338261178198095
+      },
+      {
+        "b": 1.0,
+        "deflection_rad": -0.17482948985665206,
+        "deflection_deg": -10.016991903211398,
+        "delay": 0.7873540745821629
+      },
+      {
+        "b": 1.5,
+        "deflection_rad": -0.19792970709929902,
+        "deflection_deg": -11.340536857050402,
+        "delay": 0.6861611516783038
+      },
+      {
+        "b": 2.0,
+        "deflection_rad": -0.18711147003965947,
+        "deflection_deg": -10.720697531761038,
+        "delay": 0.5815426224972399
+      },
+      {
+        "b": 2.5,
+        "deflection_rad": -0.16235135923897814,
+        "deflection_deg": -9.302047682605712,
+        "delay": 0.4866855879513897
+      },
+      {
+        "b": 3.0,
+        "deflection_rad": -0.1369301939225784,
+        "deflection_deg": -7.845522199671658,
+        "delay": 0.40572792361070703
+      },
+      {
+        "b": 4.0,
+        "deflection_rad": -0.09896272481895146,
+        "deflection_deg": -5.670146461240483,
+        "delay": 0.28029637465233903
+      }
+    ],
+    "max_abs_defl": 0.19792970936137783,
+    "max_delay": 0.8338261178198095,
+    "ray_slope_proxy": 0.3325231959013742
+  },
+  "analytic_infinite_space": {
+    "sector_tag": "monist_1sector_analytic_reference",
+    "psi": "kappa M / (4 pi r)",
+    "rays": [
+      {
+        "b": -4.0,
+        "deflection_rad": 0.10829122107907536,
+        "deflection_deg": 6.204629926149155,
+        "delay": 1.4591585694516813,
+        "alpha_eff": 0.039788735772973836
+      },
+      {
+        "b": -3.0,
+        "deflection_rad": 0.13849071506906138,
+        "deflection_deg": 7.934933475206049,
+        "delay": 1.5878367346192963,
+        "alpha_eff": 0.039788735772973836
+      },
+      {
+        "b": -2.5,
+        "deflection_rad": 0.1607335527036207,
+        "deflection_deg": 9.209354196061048,
+        "delay": 1.6672835698394595,
+        "alpha_eff": 0.039788735772973836
+      },
+      {
+        "b": -2.0,
+        "deflection_rad": 0.19125955546710546,
+        "deflection_deg": 10.958365319813414,
+        "delay": 1.761777447101296,
+        "alpha_eff": 0.039788735772973836
+      },
+      {
+        "b": -1.5,
+        "deflection_rad": 0.23558035985709774,
+        "deflection_deg": 13.497760355984862,
+        "delay": 1.8782426122834155,
+        "alpha_eff": 0.039788735772973836
+      },
+      {
+        "b": -1.0,
+        "deflection_rad": 0.3048338768044356,
+        "deflection_deg": 17.46569459350504,
+        "delay": 2.0297155727444545,
+        "alpha_eff": 0.039788735772973836
+      },
+      {
+        "b": -0.75,
+        "deflection_rad": 0.35510714237987534,
+        "deflection_deg": 20.346140533318067,
+        "delay": 2.1263413894468965,
+        "alpha_eff": 0.039788735772973836
+      },
+      {
+        "b": 0.75,
+        "deflection_rad": -0.35510714237987534,
+        "deflection_deg": -20.346140533318067,
+        "delay": 2.1263413894468965,
+        "alpha_eff": 0.039788735772973836
+      },
+      {
+        "b": 1.0,
+        "deflection_rad": -0.3048338768044356,
+        "deflection_deg": -17.46569459350504,
+        "delay": 2.0297155727444545,
+        "alpha_eff": 0.039788735772973836
+      },
+      {
+        "b": 1.5,
+        "deflection_rad": -0.23558035985709774,
+        "deflection_deg": -13.497760355984862,
+        "delay": 1.8782426122834155,
+        "alpha_eff": 0.039788735772973836
+      },
+      {
+        "b": 2.0,
+        "deflection_rad": -0.19125955546710546,
+        "deflection_deg": -10.958365319813414,
+        "delay": 1.761777447101296,
+        "alpha_eff": 0.039788735772973836
+      },
+      {
+        "b": 2.5,
+        "deflection_rad": -0.1607335527036207,
+        "deflection_deg": -9.209354196061048,
+        "delay": 1.6672835698394595,
+        "alpha_eff": 0.039788735772973836
+      },
+      {
+        "b": 3.0,
+        "deflection_rad": -0.13849071506906138,
+        "deflection_deg": -7.934933475206049,
+        "delay": 1.5878367346192963,
+        "alpha_eff": 0.039788735772973836
+      },
+      {
+        "b": 4.0,
+        "deflection_rad": -0.10829122107907536,
+        "deflection_deg": -6.204629926149155,
+        "delay": 1.4591585694516813,
+        "alpha_eff": 0.039788735772973836
+      }
+    ],
+    "max_abs_defl": 0.35510714237987534,
+    "ray_slope_proxy": 0.3716059108981058,
+    "alpha_eff": 0.039788735772973836
+  },
+  "dualist_control": {
+    "sector_tag": "dualist_2sector",
+    "note": "Same discrete field as monist channel; ontology = independent Phi sector (D Occam). Math isomorphic in vacuum linear F1.",
+    "gravity_solver": "poisson_3d_tagged_dualist",
+    "phi_origin": "dualist_poisson_label",
+    "sector_count": 2,
+    "budget_identity": false,
+    "rays": [
+      {
+        "b": -4.0,
+        "deflection_rad": 0.09896272516189575,
+        "deflection_deg": 5.670146480889743,
+        "delay": 0.28029636702770716
+      },
+      {
+        "b": -3.0,
+        "deflection_rad": 0.13693019524362524,
+        "deflection_deg": 7.8455222753620655,
+        "delay": 0.40572791689759474
+      },
+      {
+        "b": -2.5,
+        "deflection_rad": 0.16235136095406144,
+        "deflection_deg": 9.302047780872748,
+        "delay": 0.4866855820215336
+      },
+      {
+        "b": -2.0,
+        "deflection_rad": 0.18711147207135823,
+        "deflection_deg": 10.720697648168803,
+        "delay": 0.5815426175302987
+      },
+      {
+        "b": -1.5,
+        "deflection_rad": 0.19792970936137783,
+        "deflection_deg": 11.34053698665797,
+        "delay": 0.6861611478213864
+      },
+      {
+        "b": -1.0,
+        "deflection_rad": 0.17482949226282923,
+        "deflection_deg": 10.016992041075195,
+        "delay": 0.7873540719475915
+      },
+      {
+        "b": -0.75,
+        "deflection_rad": 0.12924988271433044,
+        "deflection_deg": 7.405472782092026,
+        "delay": 0.8338261158205166
+      },
+      {
+        "b": 0.75,
+        "deflection_rad": -0.1292498802601554,
+        "deflection_deg": -7.405472641478156,
+        "delay": 0.8338261178198095
+      },
+      {
+        "b": 1.0,
+        "deflection_rad": -0.17482948985665206,
+        "deflection_deg": -10.016991903211398,
+        "delay": 0.7873540745821629
+      },
+      {
+        "b": 1.5,
+        "deflection_rad": -0.19792970709929902,
+        "deflection_deg": -11.340536857050402,
+        "delay": 0.6861611516783038
+      },
+      {
+        "b": 2.0,
+        "deflection_rad": -0.18711147003965947,
+        "deflection_deg": -10.720697531761038,
+        "delay": 0.5815426224972399
+      },
+      {
+        "b": 2.5,
+        "deflection_rad": -0.16235135923897814,
+        "deflection_deg": -9.302047682605712,
+        "delay": 0.4866855879513897
+      },
+      {
+        "b": 3.0,
+        "deflection_rad": -0.1369301939225784,
+        "deflection_deg": -7.845522199671658,
+        "delay": 0.40572792361070703
+      },
+      {
+        "b": 4.0,
+        "deflection_rad": -0.09896272481895146,
+        "deflection_deg": -5.670146461240483,
+        "delay": 0.28029637465233903
+      }
+    ],
+    "radial": [
+      {
+        "r": 1.5,
+        "mean": 0.23378164642800192,
+        "abs_mean": 0.23378164642800192,
+        "n": 50
+      },
+      {
+        "r": 2.0,
+        "mean": 0.18411218418397213,
+        "abs_mean": 0.18411218418397213,
+        "n": 50
+      },
+      {
+        "r": 2.5,
+        "mean": 0.14302662946864783,
+        "abs_mean": 0.14302662946864783,
+        "n": 50
+      },
+      {
+        "r": 3.0,
+        "mean": 0.11186338857365326,
+        "abs_mean": 0.11186338857365326,
+        "n": 50
+      },
+      {
+        "r": 3.5,
+        "mean": 0.08832193075615825,
+        "abs_mean": 0.08832193075615825,
+        "n": 50
+      },
+      {
+        "r": 4.0,
+        "mean": 0.07044096803702345,
+        "abs_mean": 0.07044096803702345,
+        "n": 50
+      },
+      {
+        "r": 4.5,
+        "mean": 0.05652560834052694,
+        "abs_mean": 0.05652560834052694,
+        "n": 50
+      },
+      {
+        "r": 5.0,
+        "mean": 0.04533918115748588,
+        "abs_mean": 0.04533918115748588,
+        "n": 50
+      },
+      {
+        "r": 5.5,
+        "mean": 0.03611238210766142,
+        "abs_mean": 0.03611238210766142,
+        "n": 50
+      },
+      {
+        "r": 6.0,
+        "mean": 0.028441642201365646,
+        "abs_mean": 0.028441642201365646,
+        "n": 50
+      }
+    ],
+    "multipole_fit": {
+      "ok": true,
+      "A_log": -0.14063011555081054,
+      "B_log": 0.27174628275896534,
+      "C_inv": 0.47274041166761716,
+      "D_inv": -0.04849564030476648,
+      "mse_log": 3.605721396940295e-05,
+      "mse_invr": 4.126456900060063e-06,
+      "r2_invr": 0.9983201126591471,
+      "prefer": "1/r",
+      "n_pts": 9,
+      "ratio_mse_log_over_invr": 8.73805660465716
+    }
+  },
+  "vacuum_control": {
+    "max_abs_defl": 0.0
+  },
+  "ratio_num_over_analytic_mid": {
+    "mean": 0.5868136792796134,
+    "std": 0.09012896770732942
+  },
+  "gates": {
+    "budget_deficit_positive": true,
+    "exterior_prefer_1r": true,
+    "r2_invr_gt_0.9": true,
+    "mse_log_gt_mse_invr": true,
+    "rays_nonzero": true,
+    "vacuum_defl_near_zero": true,
+    "no_second_gravity_solver": true,
+    "phi_origin_free_relaxation": true,
+    "monist_3d_1r_pass": true
+  },
+  "verdict": {
+    "monist_3d_free_response_1r": true,
+    "summary": "3D free-capacity relaxation (F1) produces exterior ~1/r and Born rays without a second gravity pass. \u03c8 is free continuum state; \u03c1_b is bound ledger of same continuum. Dualist control is ontology-tagged twin for D."
+  },
+  "FOR_D": "Ingest round3_rays.tsv / path_cost; monist free_relaxation vs dualist_2sector twin + analytic",
+  "FOR_A": "F1 3D numeric: G_eff candidate from gamma*s/(4pi sigma0) via alpha_eff=gamma*kappa/(4pi)",
+  "FOR_C": "F1 3D Green 1/r confirmed on grid; S2 stress-test: monist only if psi=free state"
+}

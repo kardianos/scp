@@ -1,0 +1,240 @@
+{
+  "round": "P2-R4",
+  "layer": "RC1",
+  "checkpoint": "CP-RC1-NUM",
+  "agent": "NM",
+  "demo_id": "D-RC1-cofield",
+  "sandbox": "sandbox_rc1_cofield.py",
+  "design": "Co-field fixed multi-locks: 2D free Laplace \u03c8 from \u03c1_b + dynamical Maxwell2D E,B from \u03c1_Q (NE M1 API). Not \u03a6-only.",
+  "composition": {
+    "psi_dimension": 2,
+    "psi_solver": "2D_free_Laplace_SOR",
+    "psi_exterior_class": "log_2d",
+    "psi_3d_green_ref": "diagnostic_midplane_only",
+    "maxwell_dimension": 2,
+    "maxwell_solver": "Yee_TE+TM_dynamical",
+    "maxwell_api_source": "import_NE_sandbox_m1_2d.Maxwell2D",
+    "used_NE_Maxwell2D": true,
+    "note": "Allowed composition: 2D Maxwell + 2D F1 Laplace on same grid. 3D Green midplane numbers are reference only (not co-field DOF)."
+  },
+  "tags": {
+    "sector": 1,
+    "dual_channel": 1,
+    "sector_tag": "multi_channel",
+    "monist": true,
+    "phi_origin": "free_capacity_f1",
+    "psi_origin": "free_capacity_2d_laplace",
+    "E_origin": "free_maxwell_full",
+    "em_solver": "free_maxwell_yee_m1",
+    "gravity_solver": null,
+    "rc1_locks_fixed": true,
+    "embedding_dim": 2,
+    "c_shared": true,
+    "budget_identity": true,
+    "TE_IA1": true,
+    "rc1_not_phi_only": true,
+    "qE_from_dynamical_E_v0": true
+  },
+  "constitutive": {
+    "C_LOCAL": 1.0,
+    "eps": 1.0,
+    "mu": 1.0,
+    "c_from_eps_mu": 1.0,
+    "kappa_psi": 1.0,
+    "alpha_psi": 1.0,
+    "JC1": true
+  },
+  "params": {
+    "nx": 48,
+    "ny": 48,
+    "L": 16.0,
+    "A": 0.4,
+    "sigma": 0.9,
+    "sep": 4.0,
+    "n_locks": 2,
+    "maxwell_steps": 24,
+    "psi_iters": 350
+  },
+  "configs": {
+    "vacuum": {
+      "psi_mid": 0.0,
+      "Phi_init_mid": 0.0,
+      "max_E_after": 0.0,
+      "max_H_after": 0.0,
+      "free_deficit": 0.0,
+      "M_tot": 0.0,
+      "Q_net": 0.0,
+      "m_each": [
+        0.0,
+        0.0
+      ],
+      "q_each": [
+        0.0,
+        0.0
+      ],
+      "F_psi_x_lock0": 0.0,
+      "F_psi_x_lock1": 0.0,
+      "F_C_x_lock0": 0.0,
+      "F_C_x_lock1": 0.0,
+      "psi_attract_sign_ok": true,
+      "U_em_end": 0.0,
+      "U_psi": 0.0,
+      "E_star": 0.0,
+      "maxwell_t": 2.8886064252727053,
+      "maxwell_steps": 24,
+      "qE_from_dynamical_E_v0": true
+    },
+    "neutral": {
+      "psi_mid": 0.9371625691681852,
+      "Phi_init_mid": 0.0,
+      "max_E_after": 0.0,
+      "max_H_after": 0.0,
+      "free_deficit": 0.16890153353703596,
+      "M_tot": 4.071504079041398,
+      "Q_net": 0.0,
+      "m_each": [
+        2.035752039520701,
+        2.035752039520697
+      ],
+      "q_each": [
+        0.0,
+        0.0
+      ],
+      "F_psi_x_lock0": 0.14181612956681885,
+      "F_psi_x_lock1": -0.13915881667160293,
+      "F_C_x_lock0": 0.0,
+      "F_C_x_lock1": 0.0,
+      "psi_attract_sign_ok": true,
+      "U_em_end": 0.0,
+      "U_psi": 1.728479480724859,
+      "E_star": 4.071504079041398,
+      "maxwell_t": 2.8886064252727053,
+      "maxwell_steps": 24,
+      "qE_from_dynamical_E_v0": true
+    },
+    "same_sign": {
+      "psi_mid": 0.9371625691681852,
+      "Phi_init_mid": 0.9371625691681852,
+      "max_E_after": 0.23011782258398703,
+      "max_H_after": 0.008540113533385133,
+      "free_deficit": 0.16890153353703596,
+      "M_tot": 4.071504079041398,
+      "Q_net": 4.071504079041398,
+      "m_each": [
+        2.035752039520701,
+        2.035752039520697
+      ],
+      "q_each": [
+        2.035752039520701,
+        2.035752039520697
+      ],
+      "F_psi_x_lock0": 0.14181612956681885,
+      "F_psi_x_lock1": -0.13915881667160293,
+      "F_C_x_lock0": -0.16693835135075233,
+      "F_C_x_lock1": 0.16683679870518894,
+      "psi_attract_sign_ok": true,
+      "U_em_end": 1.6891633602055138,
+      "U_psi": 1.728479480724859,
+      "E_star": 4.071504079041398,
+      "maxwell_t": 2.8886064252727053,
+      "maxwell_steps": 24,
+      "qE_from_dynamical_E_v0": true
+    },
+    "opposite": {
+      "psi_mid": 0.9371625691681852,
+      "Phi_init_mid": 6.673442337664336e-05,
+      "max_E_after": 0.27810873571999,
+      "max_H_after": 0.008122432485940558,
+      "free_deficit": 0.16890153353703596,
+      "M_tot": 4.071504079041398,
+      "Q_net": 3.9968028886505635e-15,
+      "m_each": [
+        2.035752039520701,
+        2.035752039520697
+      ],
+      "q_each": [
+        2.035752039520701,
+        -2.035752039520697
+      ],
+      "F_psi_x_lock0": 0.14181612956681885,
+      "F_psi_x_lock1": -0.13915881667160293,
+      "F_C_x_lock0": 0.12762531106016708,
+      "F_C_x_lock1": -0.12764482692363155,
+      "psi_attract_sign_ok": true,
+      "U_em_end": 0.6372152802406921,
+      "U_psi": 1.728479480724859,
+      "E_star": 4.071504079041398,
+      "maxwell_t": 2.8886064252727053,
+      "maxwell_steps": 24,
+      "qE_from_dynamical_E_v0": true
+    }
+  },
+  "sibling_scale": {
+    "psi_mid_same": 0.9371625691681852,
+    "psi_mid_M1p5": 1.405743853752273,
+    "max_E_same": 0.23011782258398703,
+    "max_E_Q1p5": 0.3451320225875985
+  },
+  "gates": {
+    "RG0": true,
+    "RG1": true,
+    "RG2": true,
+    "RG3": true,
+    "RG4": true,
+    "RG5": true,
+    "RG6": true
+  },
+  "gate_detail": {
+    "RG0.1_joint_psi_and_EB": true,
+    "RG0.2_E_origin_full": true,
+    "RG0.3_budget_deficit": true,
+    "RG0.4_Supp": true,
+    "RG0.5_not_lite_only": true,
+    "RG1.1_psi_from_rhob": true,
+    "RG1.2_E_from_rhoQ": true,
+    "RG1.3_sibling_indep": true,
+    "RG1.4_nlocks_ge2": true,
+    "RG2.1_c_path_eq_cem": true,
+    "RG2.2_C_LOCAL": true,
+    "RG3.1_neutral": true,
+    "RG3.2_like": true,
+    "RG3.3_opposite": true,
+    "RG3.4_vacuum_F": true,
+    "RG3.5_qE_dynamical": true,
+    "RG4.1_neutral_no_E": true,
+    "RG4.2_opp_psi_same_sign": true,
+    "RG4.3_no_psi_E_id": true,
+    "RG5.1_nstep": true,
+    "RG5.2_gauss_doc": true,
+    "RG5.3_B_reported": true,
+    "RG5.4_m1_inherited": true,
+    "RG6.1_vacuum": true,
+    "RG6.2_energy_split": true,
+    "RG6.3_hierarchy_soft": true
+  },
+  "shared_c": {
+    "C_LOCAL": 1.0,
+    "c_from_eps_mu": 1.0,
+    "m1_claim_inherited": true,
+    "c_wave": "inherited_m1"
+  },
+  "m1_claim_inherited": true,
+  "mandatory_pass": true,
+  "soft_pass": true,
+  "rc1_claim": true,
+  "stamps": {
+    "CP-RC1-SPEC": "ADOPT",
+    "CP-RC1-NUM": "ADOPT",
+    "note": "SPEC: TM rc1_joint_state_v0 STATE-RC1 + NE Maxwell2D + 2D F1. NUM: rc1_claim = RG0\u2227\u2026\u2227RG6."
+  },
+  "verdict": {
+    "rc1_claim": true,
+    "summary": "RC1 co-field: fixed multi-locks; dynamical Maxwell E,B (import_NE_sandbox_m1_2d.Maxwell2D) + 2D free-capacity \u03c8 on same grid. RG0\u20136={'RG0': True, 'RG1': True, 'RG2': True, 'RG3': True, 'RG4': True, 'RG5': True, 'RG6': True} rc1_claim=True."
+  },
+  "wall_secs": 2.1631460189819336,
+  "FOR_TM": "RG0=True RG1=True RG2=True RG3=True RG4=True RG5=True RG6=True rc1_claim=True",
+  "FOR_TU": "Board CP-RC1-NUM ADOPT; D-RC1-cofield.",
+  "FOR_NE": "Consumed Maxwell2D via import_NE_sandbox_m1_2d.Maxwell2D; m1_claim_inherited=True.",
+  "FOR_TE": "TE-IA1 + dynamical free_maxwell_full on co-field.",
+  "FOR_O": "CP-RC1-NUM ADOPT; rc1_claim=True."
+}

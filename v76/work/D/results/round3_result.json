@@ -1,0 +1,55 @@
+{
+  "round": 3,
+  "used_synthetic": false,
+  "b_round3_files_polled": [
+    "/home/d/code/scp/v76/work/B/outputs/round3_rays.tsv",
+    "/home/d/code/scp/v76/work/B/outputs/round3_path_cost.tsv",
+    "/home/d/code/scp/v76/work/B/outputs/round3_free_deficit.tsv",
+    "/home/d/code/scp/v76/work/B/outputs/round3_result.json",
+    "/home/d/code/scp/v76/work/B/outputs/round3_summary.txt"
+  ],
+  "b_monist": {
+    "phi_origin": "free_capacity_3d_green",
+    "sector_tag": "monist_1sector",
+    "M_ledger": 6.299787,
+    "free_deficit_core": 0.174,
+    "multipole_ratio_b4_b1": 0.25,
+    "alpha_M": 0.25066,
+    "monist_3d_1r_pass": true,
+    "gravity_solver": null
+  },
+  "winners": {
+    "B_R3_free_capacity_3d_green": "monist_3d_dynamical_free",
+    "B_R3_dualist_poisson_label": "monist_3d_dynamical_free_FALSE_POSITIVE_without_tags"
+  },
+  "key_findings": [
+    "B 3D free-capacity Green multipole is exact inv_r_3d (0.250)",
+    "monist_3d_dynamical_free wins S≈0.005 on monist map",
+    "dualist_3d_poisson L_fit ties (iso Green); Occam separates",
+    "dualist_2d_log loses pure L_fit on 1/r data",
+    "softE kills dualist labeled monist",
+    "dualist twin still false-positive without sector_tag",
+    "partial goal2_PC3D claimable with qualifications; full goal2 not met (J5)"
+  ],
+  "summary": {
+    "goal2_minimal": "PASS",
+    "goal2_PC3D_partial": true,
+    "goal2_PC3D_partial_qualified": true,
+    "goal2_met": false,
+    "partial_goal2_project_claim": true,
+    "goal2_note": "Monist 3D free-capacity (F1/B) passes D fit+Occam+C 1/r multipole package with free-origin tags. Full goal (2) blocked by inertia triad (J5) and iso-Green dualist caveat (tags required). Round-2 log multipole was dimension, not monism death."
+  },
+  "c_checklist_v1": {
+    "goal2_minimal": "PASS",
+    "goal2_PC3D": "PARTIAL_PASS",
+    "N6b": "PASS",
+    "N8": "PARTIAL_PASS",
+    "N9": "PASS",
+    "N13": "PASS",
+    "J3b": "PASS",
+    "J4": "PARTIAL_PASS",
+    "J5": "FAIL",
+    "J6": "PARTIAL",
+    "J7": "PASS"
+  }
+}

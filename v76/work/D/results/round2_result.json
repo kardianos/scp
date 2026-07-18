@@ -1,0 +1,47 @@
+{
+  "round": 2,
+  "dynamical_free_response_present": true,
+  "dynamical_channel": "M2_free_laplace_2d",
+  "data_sources": [
+    "/home/d/code/scp/v76/work/B/outputs/results.json",
+    "/home/d/code/scp/v76/work/B/outputs/results_kernel.json",
+    "/home/d/code/scp/v76/work/B/outputs/round2_rays.tsv",
+    "/home/d/code/scp/v76/work/B/outputs/round2_result.json"
+  ],
+  "occam": {
+    "lambda_sec": 1.0,
+    "lambda_link": 0.5,
+    "lambda_softE": 100.0,
+    "lambda_postulate": 0.3
+  },
+  "winners": {
+    "M1_local": "monist_local_GRIN",
+    "M2_dynamical": "monist_dynamical_log",
+    "M3_dualist": "monist_dynamical_log_FALSE_POSITIVE_without_tags",
+    "R1_kernel": "monist_kernel_postulated"
+  },
+  "key_findings": [
+    "M2 dynamical free Laplace wins Occam+fit; dualist_log ties L_fit but loses S",
+    "M2 vs 1/r dualist/postulated: pure L_fit separates (log vs 1/r)",
+    "M3 dualist Poisson: rays+Occam alone false-award monist log — need sector_tag",
+    "R1: non-iso log dualist loses L_fit; iso Plummer ties; λ_postulate applies",
+    "B monist_kernel_failed for dynamical 1/r confirmed from reverse scoring"
+  ],
+  "summary": {
+    "goal2_closer": true,
+    "goal2_met": false,
+    "best_monist_numeric": "M2_free_laplace_2d (log exterior)",
+    "einstein_1r_monist_dynamical": false,
+    "goal2_note": "Dynamical monist free-response exists (M2) and beats non-iso 1/r dualist on L_fit; multipole is log not C 1/r; M3 shows tag requirement; goal (2) not met."
+  },
+  "c_checklist": {
+    "N8_free_dynamics_log": "PARTIAL_PASS",
+    "N8_free_dynamics_1r": "FAIL",
+    "N9_dualist_adversarial": "PASS",
+    "J4": "PARTIAL",
+    "J5": "FAIL",
+    "J6": "PARTIAL",
+    "J7": "PASS",
+    "C_package_monist_complete": "FAIL"
+  }
+}

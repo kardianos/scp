@@ -1,0 +1,345 @@
+===== ENTRY 2026-07-18T00:00:00Z | TM-000 | bootstrap =====
+Agent: TM
+Round: 0
+Tags: bootstrap, protocol
+---
+Theory Matter — locks, dual forces
+
+Log initialized (append-only). Write only this file + work/TM/.
+Read v76 seed, v77 PROBLEM/FOCI/RUN, all logs. FOR_X for cross-ideas.
+===== END =====
+
+===== ENTRY 2026-07-18T22:00:00Z | TM-001 | theory =====
+Agent: TM
+Round: 1
+Tags: theory, lock, dual-source, hierarchy, ontology
+---
+ROUND 1 — lock ontology package written.
+
+Paths:
+- v77/work/TM/lock_ontology_v0.md
+- v77/work/TM/FOR_NM_gates_v0.md
+- v77/work/TM/README.md
+
+Contents (lock_ontology_v0):
+1. Lock = compact bound/mass-form of one continuum; E★>0; free-depleting;
+   stable/metastable classes S0–S3 (ledger / quasistatic / metastable / multi-lock).
+2. Dual-source DUAL-0: −σ∇²ψ = s ρ_b and ∇·(εE) = ρ_q with
+   supp(|ρ_q|) ⊆ supp(ρ_b). Prefer DS-B lite (ρ_b + signed ρ_q) over
+   forcing q ∝ M. Sibling channels share c; ψ ≠ Φ_EM.
+3. Multi-lock force taxonomy: path-cost F^ψ always attract (M>0);
+   Coulomb F^C by q_i q_j. Total F = F^ψ + F^C (+ higher deferred).
+   force_closure=virtual_work_v0 (α_ψ dynamics residual → TD/J5).
+4. Hierarchy constitutive: F^C/F^ψ = Ξ λ_q,i λ_q,j with
+   Ξ = 8π σ0 k_C/(γ s), λ_q = |q|/E★. EM-dominant pairs = large Ξλ²;
+   neutral composites external force = path-cost only. Not r-running at
+   leading 1/r²; not fitted to real G/α.
+5. SCP vocabulary bridge (language only): ball↔lock, Q↔q analogy,
+   nucleus↔multi-lock. EXPLICIT NON-CLAIM: fixed-grid Q-balls do not
+   prove F1 monism; no scp_sim edits.
+
+Demo IDs: D-MAT-lock-S0, D-MAT-dual0, D-MAT-force-tax, D-MAT-hier
+  (align with TU D-LOCK-* stubs — recommend alias/merge in DEMOS).
+
+Seed used: v76 CONVERGENCE, THEORETICAL_PACKAGE_v1, APPROACHES §1,
+FOCI Matter §4, PROBLEM G1–G2 dual-channel.
+===== END =====
+
+===== ENTRY 2026-07-18T22:05:00Z | TM-002 | checkin =====
+Agent: TM
+Round: 1
+Tags: checkin
+---
+CHECKIN Round 1
+
+Read:
+- O-000, O-001 (R1 theme: draft laws + kill-gates; V77-1 progress; V77-2 later)
+- PROBLEM, FOCI Matter, RUN
+- v76 CONVERGENCE + THEORETICAL_PACKAGE_v1 + APPROACHES §1–2
+- NM-000 bootstrap only (no FOR_TM numeric yet)
+- TE-000 bootstrap only (Maxwell package not frozen in log at checkin)
+- TD-001..003: dynamics_package_v0; J5-β renorm default; FOR_TM inertia
+  = free-response cost of moving locks (lock microphysics not required
+  for ND-G1–G3)
+- TU-001..005: WORLD_v0 (lock = bound continuum; dual-source C-ψ+C-A);
+  DEMOS D-LOCK-* DRAFT; FOR_TM dual-source; V77-1 not met at TU checkin
+  time (pre-TM package)
+
+FOR_TM responses:
+- FROM TU: adopt lock = bound continuum; dual-source toward C-ψ + C-A.
+  ADOPTED in DUAL-0 / DS-B lite.
+- FROM TD: inertia is free drag of moving locks; microphysics not needed
+  for G1 inertia kill. ADOPTED — Matter Round-1 uses virtual-work forces;
+  does not block ND-G1. Residual MR2 = α_ψ not dynamics-derived.
+- FROM O: Matter stand-up for V77-1. ADOPTED — theory draft + NM gates.
+
+Deferred:
+- S3 orbits; full Maxwell joint solve (V77-2); SCP Q↔ρ_q identity proof;
+  real constants; scp_sim.
+
+Status: theory DONE; NM gates issued; blocked on NM for numeric credit.
+===== END =====
+
+===== ENTRY 2026-07-18T22:10:00Z | TM-003 | handoff =====
+Agent: TM
+Round: 1
+Tags: handoff, FOR_NM, FOR_TU, FOR_TE, FOR_O
+---
+HANDOFF Round 1 (TM)
+
+Deliverables:
+1. work/TM/lock_ontology_v0.md — lock + dual-force package
+2. work/TM/FOR_NM_gates_v0.md — G0–G3 kill-gates
+3. work/TM/README.md
+
+FOR_NM (P0 first):
+  G0 D-MAT-lock-S0: compact ρ_b, free deficit, M=E★/c²
+  G1 D-MAT-dual0: dual Poisson/F1 on same grid; Supp; sibling independence
+  G2 D-MAT-force-tax: neutral attract ψ; like-charge repel C; opposite attract
+  G3 D-MAT-hier: Ξλ²≫1 without killing ψ channel
+  Prefer 3D small-N; adapt v76 sandbox_r3_3d_free + second Poisson Φ.
+  Tag force_closure=virtual_work_v0 or sign_only.
+  Report FOR_TM gate PASS|FAIL|SKIP.
+
+FOR_TU:
+  Register / alias demos:
+    D-LOCK-ontology → D-MAT-lock-S0 (theory LIVE draft; numeric pending)
+    D-LOCK-dual-source → D-MAT-dual0
+    D-LOCK-multi → D-MAT-force-tax
+    D-SCP-vocab-bridge → covered in lock_ontology §6 (theory-only; no
+      monism claim)
+  Matter theory laws now exist for V77-1 score (was missing at TU-004).
+  Residual: MR1 Poisson iso both channels; MR2 force coeff open.
+
+FOR_TE:
+  Charge ledger ρ_q with Supp⊆ρ_b; shared c = 1/√(εμ) = c_path;
+  siblings not identical. Please freeze Maxwell-lite Gauss static so
+  NM dual0 can cite TE not only free_gauge_lite tag.
+
+FOR_TD:
+  Ack FOR_TM from TD-002: lock microphysics not needed for J5 gates.
+  When multi-lock moves, F^ψ should eventually match free-response
+  drag (handoff residual MR2).
+
+FOR_O:
+  Round-1 TM theory complete. Matter focus draft laws + kill-gate design
+  ready. Blocking numeric credit on NM. Aligns with O R1 theme and TU
+  proposal to close V77-1 before full dual-channel joint solve (V77-2).
+
+No scp_sim. No real G/α claims.
+===== END =====
+
+===== ENTRY 2026-07-18T23:50:00Z | TM-004 | theory =====
+Agent: TM
+Round: 2
+Tags: theory, dual-channel, V77-2, maxwell, forces
+---
+ROUND 2 — dual-channel matter package written.
+
+Path: v77/work/TM/dual_channel_v0.md
+README updated.
+
+Contents:
+1. STATE-DC joint medium {ρ_f, ρ_b, ρ_Q, J_Q, ψ, E, B, constitutive, c}.
+2. Ledgers: ρ_b → F1 ψ; ρ_Q → TE M3/M4; Supp(|ρ_Q|)⊆Supp(ρ_b);
+   forbid ρ_Q≡ρ_b and ψ≡Φ. Notation aligned to TE ρ_Q (was ρ_q R1).
+3. DUAL-1 = DUAL-0 + shared c_path = c_EM = 1/√(εμ) + JC1–JC5.
+4. Forces: F = F^ψ + F^EM (+ core deferred).
+   F^ψ = virtual-work energy gradient (R1 PASS form).
+   F^EM Tier A Coulomb; Tier B Lorentz Q(E+V×B) when full Maxwell ready.
+   Static limit B recovers A.
+5. Hierarchy constitutive H-ratio; keep both channels; γ optical vs
+   energy-gradient κ_ψ conventions explicit (R1 residual).
+6. FOR_NM joint gates JG0–JG6 for V77-2:
+   P0: JG0 state/budget, JG1 multipoles, JG2 shared c, JG3 force tax,
+       JG4 no sibling collapse
+   P1: JG5 Maxwell upgrade (A min / B full), JG6 hierarchy joint
+7. Demos: D-DUAL-channel, D-MAT-dual1, D-MAT-force-maxwell, D-MAT-hier-joint.
+   R1 D-MAT-* remain LIVE.
+
+Adopted R1 NM: G0–G3 all PASS (analytic Green dual0 / force / hierarchy).
+R2 does not re-litigate R1; upgrades free_gauge_lite → free_maxwell path.
+===== END =====
+
+===== ENTRY 2026-07-18T23:55:00Z | TM-005 | checkin =====
+Agent: TM
+Round: 2
+Tags: checkin
+---
+CHECKIN Round 2
+
+Read:
+- O-002 R1 judgment: V77-1 MET; V77-2 NOT MET; Matter TM+NM G0–G3 PASS
+- O-003 R2 theme: full Maxwell progress; dual-channel joint medium;
+  Matter dual-source forces using NE Maxwell when ready; stop on (A)/(B)
+- TE maxwell_monist_v0 + constitutive JC1–JC5; ρ_Q; sibling ≠ ψ;
+  FOR_TM dual-source (ρ_b,ρ_Q) independent — ADOPTED in DUAL-1
+- NM-002..004: G0=G1=G2=G3=PASS; free_gauge_lite residual; FOR_TM adopt
+  force numbers — ADOPTED as R1 LIVE baseline
+- TU WORLD free channels C-ψ LIVE, C-A provisional; D-DUAL-channel PLANNED
+- TD: J5-β; lock microphysics not required for inertia gates — still true
+  for static dual-channel
+
+FOR_TM responses:
+- FROM O-003 Matter task: dual-source forces + Maxwell when ready — DONE
+  in dual_channel_v0 (Tier A now / Tier B path).
+- FROM TE ρ_Q not ≡ ρ_b; hierarchy constitutive — ADOPTED.
+- FROM NM G0–G3 PASS — ACCEPTED; residual free_gauge_lite → JG5 upgrade.
+- FROM TU dual-source C-ψ+C-A — ADOPTED as STATE-DC / DUAL-1.
+
+Deferred:
+- Numeric joint JG* (NM); full Lorentz (NE+NM); S3 orbits; α_ψ=γ link;
+  scp_sim.
+
+Status: R2 theory DONE; blocking V77-2 Matter numeric on NM (+NE fields).
+===== END =====
+
+===== ENTRY 2026-07-19T00:00:00Z | TM-006 | handoff =====
+Agent: TM
+Round: 2
+Tags: handoff, FOR_NM, FOR_NE, FOR_TE, FOR_TU, FOR_O
+---
+HANDOFF Round 2 (TM)
+
+Deliverables:
+1. work/TM/dual_channel_v0.md — dual-channel matter + joint gates
+2. work/TM/README.md — R1/R2 index
+
+FOR_NM (V77-2 joint — P0 first):
+  Fork R1 multilock → sandbox_r2_dual_channel / offline_r2.
+  STATE-DC one medium; export JG0–JG4 minimum for V77-2 Matter numeric.
+  JG5.A: E from M3 on joint ρ_Q (replace pure κ_c proxy at least one row).
+  JG5.B: when NE full Maxwell available — Lorentz + Cont.
+  JG6: hierarchy |F_C/F_ψ|>100 without s=0.
+  Tags: phi_origin=free_capacity_*; gauge_origin=free_maxwell_* or
+    free_gauge_lite with deferred note.
+  Report FOR_TM JG0..JG6 = PASS|FAIL|SKIP.
+  Export outputs/r2_dual_result.json + r2_tm_joint_gates.json.
+
+FOR_NE:
+  Share E (Tier A) / (E,B) (Tier B) on same grid as ψ for joint runner.
+  Cont + Gauss residual floors; c=1/√(εμ) match NM c_path.
+  V77-2 does not require Matter to re-prove pure EM KG1–4.
+
+FOR_TE:
+  DUAL-1 interfaces TE joint §4.4; Matter owns Supp + multi-lock forces.
+  Notation ρ_Q frozen. Please keep M1–M4 stable for NM/NE.
+
+FOR_TU:
+  Theory D-DUAL-channel / D-MAT-dual1 DRAFT→ready for LIVE on NM JG PASS.
+  R1 D-MAT-* should be LIVE (NM G0–G3 PASS) if not yet upgraded in DEMOS.
+  V77-2 score: theory Matter share ready; numeric pending joint sandbox.
+  Residuals MR1–MR5 listed in dual_channel_v0 §9.
+
+FOR_TD:
+  Static dual-channel does not need J5 close. MR2 (γ vs F^ψ) remains
+  Dynamics when force dynamics claimed.
+
+FOR_O:
+  Round-2 TM complete for dual-channel matter package + FOR_NM joint gates.
+  Aligns O-003 items 2 and 5. Full Maxwell Matter force = JG5.B path after
+  NE; Tier A joint sufficient for first V77-2 Matter numeric attempt.
+  No scp_sim. No real G/α.
+
+Stop for Round 2 theory.
+===== END =====
+
+===== ENTRY 2026-07-19T15:30:00Z | TM-007 | theory =====
+Agent: TM
+Round: P2-R3
+Tags: theory, RC1, CP-RC1-SPEC, co-field
+---
+P2-R3 — RC1 joint state package written.
+
+Path: v77/work/TM/rc1_joint_state_v0.md
+Also: README.md, CAMPAIGN.md updated.
+
+Prerequisite: CP-M1-NUM ADOPTED (O-011; m1_claim=true;
+  work/NE/outputs/m1_result.json; Maxwell2D API rc1_ready).
+
+Contents (rc1_joint_state_v0):
+1. STATE-RC1 = {ρ_f, ρ_b, ρ_Q, J_Q, ψ, E, B, constitutive, c}
+   on ONE grid; fixed locks V=0; Supp(|ρ_Q|)⊆Supp(ρ_b).
+2. C-ψ: F1 quasistatic −σ₀∇²ψ = s ρ_b (T0 default).
+3. C-A: dynamical Maxwell M1–M4 (MX-dyn) via NE Maxwell2D.step —
+   NOT Φ-only for rc1_claim. Lite dual = regression only.
+4. Tags: E_origin=free_maxwell_full; phi_origin=free_capacity_f1;
+   gravity_solver=none; rc1_locks_fixed=true.
+5. Forces diagnostic only: F^ψ virtual-work; F^EM = Q E from
+   dynamical E (tag qE_from_dynamical_E_v0). No lock motion (RC2).
+6. FOR_NM gates RG0–RG6 → rc1_claim; demo D-RC1-cofield.
+7. API contract: Maxwell2D.step(rho_Q, J*); fields() → E,H.
+8. Kills K-RC1-a..e; residuals R-RC1-1..5 (2D, fixed J=0, MR2).
+
+Builds on dual_channel_v0 DUAL-1; raises EM bar from lite to M1 dyn.
+===== END =====
+
+===== ENTRY 2026-07-19T15:35:00Z | TM-008 | checkin =====
+Agent: TM
+Round: P2-R3
+Tags: checkin, stamp, CP-RC1-SPEC
+---
+CHECKIN P2-R3
+
+Read:
+- O-011: CP-M1-NUM ADOPTED (m1_claim=True); unlocks RC1; spawn P2-R3/R4
+- O-012: RC1 co-field theme — fixed multi-locks, F1 ψ + dynamical Maxwell
+- CAMPAIGN_MAP §4.5–4.6 Mat1/MatN1; hard rule no Φ-only RC1
+- NE m1_result.json: m1_claim=true; api Maxwell2D rc1_ready=true
+- TE dual_channel_joint JC1–JC7; full_maxwell FROZEN
+- dual_channel_v0 + NM R2 dual lite PASS (regression baseline)
+- TU board may lag; treat O-011 as NUM green for SPEC authoring
+
+FOR_TM:
+- FROM O: write RC1 joint state — DONE (rc1_joint_state_v0.md)
+- FROM map: CP-M1-NUM before RC1-SPEC — SATISFIED (ADOPTED)
+- FROM TE: ρ_Q ≠ ρ_b; ψ ≠ Φ — ADOPTED in STATE-RC1 / RG4
+- FROM NE: Maxwell2D API — ADOPTED as required EM module
+
+STAMP CP-RC1-SPEC: ADOPT
+Evidence:
+  work/TM/rc1_joint_state_v0.md
+  work/NE/outputs/m1_result.json (m1_claim=true; api.rc1_ready)
+  work/TM/dual_channel_v0.md (prior dual-source)
+  CAMPAIGN_MAP RC1 bar
+Blockers: none for SPEC content.
+  Downstream CP-RC1-NUM blocked until NM implements RG* + partner stamps
+  (TE/NE/NM co-agree on SPEC still required for board dual-close).
+
+FOR_NM: implement sandbox_rc1_cofield.py per §6 RG0–RG6; no Φ-only claim.
+FOR_NE: keep Maxwell2D.step/fields stable; optional helper for E init from ρ_Q.
+FOR_TE: stamp CP-RC1-SPEC ADOPT if JC1–JC7 + MX-dyn match FROZEN Maxwell.
+FOR_TU: board CP-RC1-SPEC TM=ADOPT; await TE/NE/NM; then NM → CP-RC1-NUM.
+===== END =====
+
+===== ENTRY 2026-07-19T15:40:00Z | TM-009 | handoff =====
+Agent: TM
+Round: P2-R3
+Tags: handoff, CP-RC1-SPEC, FOR_NM, FOR_O
+---
+HANDOFF P2-R3 (TM)
+
+Deliverables:
+1. work/TM/rc1_joint_state_v0.md — CP-RC1-SPEC package
+2. work/TM/README.md, CAMPAIGN.md
+3. STAMP CP-RC1-SPEC: ADOPT (TM-008)
+
+STAMP CP-RC1-SPEC: ADOPT
+Evidence: rc1_joint_state_v0.md complete; M1 green prerequisite met.
+Blockers: none (SPEC). NUM is NM lead.
+
+FOR_NM (P2-R4 / RC1-NUM):
+  sandbox_rc1_cofield.py
+  Import NE Maxwell2D; F1 ψ; fixed multi-locks; RG0–RG6
+  Export outputs/rc1_result.json with rc1_claim
+  FOR_TM: RG0..RG6 + rc1_claim
+  REJECT path if only free_maxwell_lite Φ
+
+FOR_NE: confirm API stamp CP-RC1-SPEC ADOPT; document E-init for ρ_Q.
+FOR_TE: co-stamp SPEC; no ontology fork.
+FOR_TD: T0 F1 OK for fixed locks (note only).
+FOR_TU: flip board when TE+NE+NM also stamp SPEC; then track NUM.
+FOR_O: TM P2-R3 SPEC done. Ready for NM co-field implementation.
+
+No scp_sim. No real G/α. Locks fixed (RC2 later).
+===== END =====

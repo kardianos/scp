@@ -1,0 +1,85 @@
+{
+  "demo_id": "D-DYN-j5-formfactor",
+  "round": 1,
+  "agent": "ND",
+  "design": "non-tautological J5 triad + form-factor scan (F1-3D)",
+  "inherited_from": "v76/work/B/sandbox_r4_inertia.py",
+  "c_local": 1.0,
+  "kappa": 1.0,
+  "sigma0": 1.0,
+  "s_const": 1.0,
+  "gamma": 0.5,
+  "baseline": {
+    "A": 0.4,
+    "sigma": 1.0,
+    "m_ledger": 6.299843978288953,
+    "U": 0.890953413690212,
+    "form_factor_U_over_Mc2": 0.1414213562373095,
+    "m_field": 0.890953413690212,
+    "m_boost_xi1": 0.890953413690212,
+    "m_boost_xi4over3": 1.1879378849202827,
+    "m_ray": 6.299843978288953,
+    "ratio_m_field_over_ledger": 0.1414213562373095,
+    "ratio_m_boost_over_ledger": 0.1414213562373095,
+    "ratio_m_ray_over_ledger": 1.0,
+    "s_renorm": 7.0710678118654755,
+    "m_field_renorm": 6.299843978288953,
+    "tier_A_ray_ledger": true,
+    "tier_B_boost_ledger_raw": false,
+    "tier_C_boost_field": true,
+    "J5_raw": false,
+    "J5_with_renorm": true,
+    "tautology_flag": false,
+    "boost_curve": [
+      {"v": 0.05, "gamma": 1.0012507815756226, "K": 0.001114305, "m_est_2K_v2": 0.891444},
+      {"v": 0.1, "gamma": 1.005037815259212, "K": 0.00448815, "m_est_2K_v2": 0.89763},
+      {"v": 0.15, "gamma": 1.011314110912773, "K": 0.0100823, "m_est_2K_v2": 0.896205},
+      {"v": 0.2, "gamma": 1.0206207261596576, "K": 0.0183744, "m_est_2K_v2": 0.91872}
+    ]
+  },
+  "naive_kill": {
+    "m_ledger": 6.299843978288953,
+    "m_inertial_from_field_U_c2": 0.890953413690212,
+    "m_inertial_from_boost": 0.890953413690212,
+    "relative_split_field_vs_ledger": 0.8585786437626905,
+    "naive_equality_m_inertial_eq_integral_rho": false,
+    "kill_naive_m_eq_int_rho_b": true,
+    "verdict": "KILL naïve m=∫ρ_b/c² as inertial mass without renorm",
+    "form_factor": 0.1414213562373095,
+    "protocol": "A2_boost_energy + free-field U; no F:=ma",
+    "tautology_flag": false
+  },
+  "form_factor_law": {
+    "formula": "ff = U/(M c²) = s κ M / (8 π σ √π)",
+    "formula_check_all_scan_points": true,
+    "baseline_ff": 0.1414213562373095,
+    "interpretation": "Free-field self-energy is form-factor suppressed vs bound ledger. Inertia from free energy tracks U, not raw ∫ρ_b, unless free constant s is renormalized (R1) or E_star is defined as unlock free energy U."
+  },
+  "j5_assessment": {
+    "tier_A_ray_ledger": true,
+    "tier_B_boost_ledger_raw": false,
+    "tier_C_boost_field": true,
+    "J5_raw_three_way": false,
+    "J5_with_R1_renorm": true,
+    "kill_naive_m_eq_int_rho": true,
+    "operational_status": "PARTIAL",
+    "pass_fail_table": {
+      "ray_vs_ledger": "PASS",
+      "boost_vs_field_U": "PASS",
+      "boost_vs_ledger_raw": "FAIL",
+      "field_vs_ledger_raw": "FAIL",
+      "field_vs_ledger_after_s_renorm": "PASS",
+      "naive_m_inertial_eq_integral_rho_b": "FAIL (killed)",
+      "non_tautology": "PASS (no F:=ma)"
+    }
+  },
+  "verdict": {
+    "J5_raw": false,
+    "J5_with_renorm": true,
+    "status": "PARTIAL",
+    "summary": "Baseline A=0.4 σ=1.0: m_ledger=6.299844, U=0.890953, ff=0.141421, m_field=m_boost=0.890953, m_ray=6.299844. J5 raw FAIL (form factor); J5 with s_renorm=7.0711 PASS. Naïve m=∫ρ_b killed. Non-tautological inertia tracks free-field U."
+  },
+  "FOR_TD": "Form factor law confirmed numerically; need theory statement of R1 renorm or E_star:=U for V77-3 close",
+  "FOR_TU": "Demo D-DYN-j5-formfactor PARTIAL; residual form-factor / renorm",
+  "FOR_NE": "Sibling free-wave c test in sandbox_free_wave_c.py — same locality-c"
+}

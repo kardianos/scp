@@ -1,0 +1,289 @@
+===== ENTRY 2026-07-18T00:00:00Z | O-000 | bootstrap =====
+Agent: O
+Round: 0
+Tags: bootstrap, protocol
+---
+v77 orchestrator log (parent only). Append-only.
+Goals G1 widely applicable | G2 multi-focus unity | G3 build or kill.
+Seed: v76 F1-3D goal2_PC3D_workable.
+Agents: TE NE TD ND TM NM TU.
+===== END =====
+
+===== ENTRY 2026-07-18T20:00:00Z | O-001 | meta =====
+Agent: O
+Round: 1
+Tags: spawn, refine, round1
+---
+PROPOSAL REFINEMENT (implemented)
+
+User asked: structure like v76 ops; different problems; seed v76 success;
+flush key physics demos including Maxwell; cumulative G1-G3; theory+numeric;
+groupable agents; refine as fit.
+
+Refinements applied:
+1. Three physics foci (EM, Dynamics, Matter) × (theory, numeric) pairs
+   rather than one open-problem-per-agent without numeric twin.
+2. Explicit TU unification agent for G1-G2 and program kill (V77-K).
+3. Cumulative tiers V77-1…V77-4 + V77-K (PROBLEM.md §5).
+4. First hard milestone V77-2: dual-channel free medium (ψ + Maxwell-lite).
+5. Path-cost language: local interaction rate fixed; long-range needs free
+   response (not local free-density alone) — carried into FOCI seed.
+6. Out of scope: kernel edits, real G/α, mandatory BH/DM Round 1.
+
+ROUND 1 THEME: Stand up each focus with draft laws + first kill-gates;
+TU world map v0; do not require full unity yet (target V77-1 progress).
+
+Spawning TE, NE, TD, ND, TM, NM, TU.
+===== END =====
+===== ENTRY 2026-07-18T21:30:00Z | O-002 | finding =====
+Agent: O
+Round: 1
+Tags: judgment, round1, V77-1
+---
+ROUND 1 JUDGMENT (parent)
+
+## Refinement recap
+v77 = multi-focus monist demos seeded by v76 F1-3D; 3 foci × (T,N) + TU;
+goals G1–G3; first hard milestone V77-2 dual-channel.
+
+## Round 1 outcomes (all 7 agents finished)
+
+### EM (TE+NE)
+- TE: Maxwell-lite monist; sibling ψ≠Φ; charge ρ_Q; constitutive table
+- NE: KG1–4 PASS — vacuum, Gauss, E~1/r², wave v=c (and off-unit c=0.5)
+- Demo: D-EM-* LIVE_PASS for lite channel (not full time-dep Maxwell)
+
+### Dynamics (TD+ND)
+- TD: time-dep options; J5-β renorm path; Lorentz anti-overclaim
+- ND: naïve m=∫ρ_b inertial KILL pass; form factor ~0.141; free wave v=c PASS;
+  universal s* renorm FAIL (shape-dependent) — honest J5 residual sharpened
+
+### Matter (TM+NM)
+- TM: lock ontology; dual-source ρ_b→ψ, ρ_q→gauge; force taxonomy; hierarchy Ξ
+- NM: 2 locks; ψ attract; Coulomb proxy same/opposite/neutral; hierarchy κ_c scan;
+  exterior 1/r PASS; G0–G3 PASS
+
+### Unification (TU)
+- WORLD_v0, DEMOS, KILL_CRITERIA written
+- Mid-round TU scored V77-1 NOT MET (numeric outputs not yet visible to TU)
+- Parent re-score after full delivery:
+
+## Parent tier re-score after R1
+
+| Tier | Parent verdict |
+|------|----------------|
+| V77-1 multi-demo draft | **MET** — all 3 foci have theory packages + numeric kill-gates with outputs |
+| V77-2 dual-channel joint | **NOT MET** — sibling ψ+EM coexist in language and separate demos; no single joint sim TE-IA stress |
+| V77-3 dynamics closed | **NOT MET** — J5-β path live; raw triad fail; renorm not universal |
+| V77-4 / V77-K | **NOT MET** |
+
+G1: PARTIAL→strong draft (shared core across three foci)
+G2: PARTIAL language unity; joint dual-channel numeric still open
+G3: BUILD (no program kill)
+
+## Round 2 theme (when started)
+**Dual-channel congruence (V77-2):** single medium with ρ_b and ρ_Q sourcing
+ψ and free-gauge together; shared c; joint forces; TU re-score.
+Also: ND+TD lock J5-β statement as theory default; optional NE full leapfrog B.
+
+No Vast required this round (local Python sufficient).
+===== END =====
+===== ENTRY 2026-07-18T22:00:00Z | O-003 | meta =====
+Agent: O
+Round: 2
+Tags: spawn, round2, goal, full-maxwell, dual-channel
+---
+HUMAN GOAL (terminal for this campaign):
+Continue rounds until:
+  (A) cohesive agreement: unified theory AND model, theoretical + numerical, OR
+  (B) cannot proceed: NULL / DISPROVE with reasons.
+Also: work toward FULL Maxwell before declaring done.
+
+ROUND 2 THEME:
+1. Full Maxwell progress (not lite only): time-dep E,B; Faraday; Ampère-Maxwell; Gauss B;
+   charge continuity; 3D or 2D wave + Coulomb consistency.
+2. Dual-channel joint medium: ρ_b → ψ, ρ_Q → gauge; shared c; one sandbox.
+3. TU: update WORLD/DEMOS; score V77-2; path to unified package.
+4. Dynamics: lock J5-β as theory default; time-dep free response if free.
+5. Matter: dual-source forces using NE Maxwell when ready.
+
+Stop only on (A) or (B). Spawning all 7 agents.
+===== END =====
+===== ENTRY 2026-07-18T23:30:00Z | O-004 | finding =====
+Agent: O
+Round: 2
+Tags: judgment, round2, full-maxwell, dual-channel
+---
+ROUND 2 PARENT JUDGMENT (re-score after all agents)
+
+TU mid-round was stale relative to NE/NM completions. Parent score:
+
+| Item | Verdict |
+|------|---------|
+| Full Maxwell theory (TE) | COMPLETE monist M1–M4+Cont |
+| Full Maxwell numeric (NE) | full_maxwell_claim=true; KG-F1–F5 PASS (Yee 2D) |
+| Dual-channel joint numeric (NM) | V77-2 PASS (ψ + Maxwell-lite Φ joint) |
+| Shared-c dual waves (ND) | PASS |
+| J5-β default (TD+ND) | LOCKED |
+| V77-2 dual-channel | **MET** (parent) — joint medium + shared c |
+| Unified terminal (A) | NOT YET — need single WORLD package + optional
+  joint full-Maxwell (E,B dynamical) + ψ on same locks,
+  not only lite Φ + separate Yee sandbox |
+| DISPROVE (B) | NO |
+
+ROUND 3 THEME — UNIFY OR FAIL:
+1. NE+NM: joint full Maxwell (E,B) + ψ dual-channel production demo if feasible;
+   else document that Yee Maxwell + dual lite compose under WORLD and are congruent.
+2. TU: UNIFIED_PACKAGE_v1.md declaring cohesive theory+model with demo stack;
+   residual list; explicit (A) recommendation or remaining hard block.
+3. TE/TD/TM: freeze interfaces; no new ontology forks.
+4. Parent will STOP on (A) if UNIFIED package + full Maxwell LIVE + dual LIVE
+   without contradiction; else one more round or (B).
+===== END =====
+
+===== ENTRY 2026-07-18T23:35:00Z | O-005 | meta =====
+Agent: O
+Round: 3
+Tags: spawn, round3, unify
+---
+Spawning Round 3: cohesive UNIFIED package + joint full-Maxwell dual if possible.
+===== END =====
+===== ENTRY 2026-07-19T00:30:00Z | O-006 | finding =====
+Agent: O
+Round: 3
+Tags: STOP, A, unified, full-maxwell, convergence
+---
+FINAL JUDGMENT — STOP (A)
+
+Human terminal: cohesive unified theory+model OR NULL/DISPROVE; full Maxwell required.
+
+## Full Maxwell
+Parent fixed NE Yee wave (1D TEM reduction for plane wave; Faraday discrete identity).
+Re-run: full_maxwell_claim=True; FM1–FM7 all PASS.
+TE: full_maxwell_monist_v0 FROZEN; te_equation_match_full=YES.
+
+## Dual-channel / unity
+NM V77-2 joint ψ+Φ PASS (shared c, sibling independence, force taxonomy).
+ND shared-c free-capacity + EM waves PASS.
+TU UNIFIED_PACKAGE_v1 recommends STOP (A) composition tier.
+NM r3_unified_export.json composition stack LIVE.
+
+## Goals
+G1 MET | G2 MET (composition) | G3 BUILD
+V77-1 MET | V77-2 MET | V77-3 J5-β MET | V77-K NO | (B) NO
+
+## Honest residual R-compose
+Not one binary co-evolving full dynamical Maxwell + ψ multi-lock.
+Composition of congruent monist sandboxes under one theory = accepted
+workable unity (parallel to v76 goal2_PC3D_workable standard).
+
+## Decision
+**STOP (A) — cohesive agreement reached.**
+Flagship: v77/CONVERGENCE.md
+Not DISPROVE. Program proceeds as positive monist world-building closed at this tier.
+===== END =====
+
+===== ENTRY 2026-07-19T00:35:00Z | O-007 | handoff =====
+Agent: O
+Round: 3
+Tags: stop, handoff, human
+---
+Read order:
+1. v77/CONVERGENCE.md
+2. work/TU/UNIFIED_PACKAGE_v1.md
+3. work/TE/full_maxwell_monist_v0.md
+4. work/NM/outputs/r3_unified_export.json
+5. logs/O_orchestrator.log
+
+Reproduce Maxwell:  cd v77/work/NE && python3 sandbox_full_maxwell_r2.py
+Reproduce dual:     cd v77/work/NM && python3 sandbox_r2_dual_channel.py
+===== END =====
+===== ENTRY 2026-07-19T12:00:00Z | O-008 | meta =====
+Agent: O
+Round: phase2-plan
+Tags: campaign_map, phase2, no-spawn
+---
+PHASE 2 CAMPAIGN MAP PUBLISHED (in-place v77; not v78).
+
+Decision: stay in v77 — same world/agents; deeper Maxwell + R-compose exams.
+v78 deferred until Phase 2 STOP or program kill.
+
+Documents:
+  v77/CAMPAIGN_MAP.md          — full map, layers, checkpoints, round plan
+  v77/work/*/CAMPAIGN.md       — per-agent cards (TE NE TD ND TM NM TU)
+  v77/work/TU/CHECKPOINT_BOARD.md — live stamp board (init PENDING)
+
+Mandatory path:
+  CP0 → CP-M1-SPEC → CP-M1-NUM → CP-RC1-SPEC → CP-RC1-NUM → CP-U-FINAL
+
+Human may authorize P2-R1 spawn (M1-SPEC: TE+NE+TU primary) when ready.
+No agents spawned this entry — map only.
+===== END =====
+===== ENTRY 2026-07-19T13:00:00Z | O-009 | meta =====
+Agent: O
+Round: P2-R1
+Tags: phase2, CP0, spawn, M1-SPEC
+---
+PHASE 2 EXECUTION START (human: continue until complete agreement or DISPROVE).
+
+CP0: ADOPT — CAMPAIGN_MAP.md is binding; Phase 1 CONVERGENCE remains history.
+Mandatory path: CP-M1-SPEC → CP-M1-NUM → CP-RC1-SPEC → CP-RC1-NUM → CP-U-FINAL.
+
+P2-R1 theme: CP-M1-SPEC — TE freeze M1 gates; NE design; TU board.
+Then continue sequential rounds without waiting for human.
+===== END =====
+===== ENTRY 2026-07-19T14:00:00Z | O-010 | meta =====
+Agent: O
+Round: P2-R2
+Tags: CP-M1-SPEC, CP-M1-NUM, spawn
+---
+CP-M1-SPEC ADOPTED (TE+NE). P2-R2: implement M1 numeric green → CP-M1-NUM.
+NE lead implement; TE stamp; TU board; ND note shared-c.
+===== END =====
+===== ENTRY 2026-07-19T15:00:00Z | O-011 | finding =====
+Agent: O
+Round: P2-R2
+Tags: CP-M1-NUM, ADOPT
+---
+Parent ran sandbox_m1_2d.py --quick: m1_claim=True, G1–G9 all PASS.
+True 2D beam v/c~1.04; energy drift~0.5%; Ampère adversary kills free wave;
+G5 Cont+Gauss with documented mild cleanse. CP-M1-NUM ADOPTED (parent).
+Unlocks RC1. Spawning P2-R3/R4 RC1 path.
+===== END =====
+
+===== ENTRY 2026-07-19T15:05:00Z | O-012 | meta =====
+Agent: O
+Round: P2-R3
+Tags: CP-RC1-SPEC, CP-RC1-NUM, spawn
+---
+P2-R3+R4 combined theme: RC1 co-field — fixed multi-locks, F1 ψ + dynamical
+Maxwell from NE API (not Φ-only). Target CP-RC1-SPEC then CP-RC1-NUM.
+===== END =====
+===== ENTRY 2026-07-19T16:00:00Z | O-013 | finding =====
+Agent: O
+Round: P2-R5
+Tags: STOP, phase2, A-depth, RC1, M1
+---
+PHASE 2 COMPLETE — STOP (A-depth)
+
+Parent verification:
+  NE: m1_claim=true (sandbox_m1_2d.py --quick, G1–G9)
+  NM: rc1_claim=true (run_rc1.py, RG0–6, Maxwell2D import)
+
+Mandatory path all green. R-compose CLOSED at RC1 (same-grid ψ + dynamical E,B).
+No DISPROVE / NULL. TU CP-U-FINAL ADOPT.
+
+Flagship: v77/PHASE2_CONVERGENCE.md
+Optional stretch M2/RC2 not required for stop.
+===== END =====
+
+===== ENTRY 2026-07-19T16:05:00Z | O-014 | handoff =====
+Agent: O
+Round: P2-final
+Tags: stop, handoff
+---
+Read: PHASE2_CONVERGENCE.md, work/TU/PHASE2_SCORE.md, CAMPAIGN_MAP.md
+Reproduce:
+  cd v77/work/NE && python3 sandbox_m1_2d.py --quick
+  cd v77/work/NM && python3 run_rc1.py
+===== END =====

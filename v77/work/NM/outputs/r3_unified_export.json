@@ -1,0 +1,187 @@
+{
+  "round": 3,
+  "agent": "NM",
+  "type": "unified_composition_export",
+  "demo_id": "D-UNIFIED-compose-r3",
+  "timestamp_utc": "2026-07-18T25:00:00Z",
+  "composition_doc": "work/NM/composition_r3.md",
+  "code": "work/NM/export_r3_unified.py",
+  "design": "Compose NM dual-channel joint (ψ + Maxwell-lite Φ/E on same locks) with NE full Maxwell dynamical (Yee E,B) as sibling free-gauge channel; shared c; TE-IA1 ψ≠Φ; no single-grid 3D Yee+ψ production claim.",
+  "layers": {
+    "L1_dual_channel_joint": {
+      "owner": "NM",
+      "artifact": "work/NM/outputs/r2_dual_result.json",
+      "channels": ["free_capacity_psi", "free_maxwell_lite"],
+      "claim": "V77-2 joint numeric PASS"
+    },
+    "L2_full_maxwell_dynamical": {
+      "owner": "NE",
+      "artifact": "work/NE/outputs/r2_result.json",
+      "channels": ["free_maxwell_full"],
+      "claim": "full_maxwell_claim=true (FM1–FM7)"
+    },
+    "shared_c": {
+      "C_LOCAL": 1.0,
+      "c_from_eps_mu_unit": 1.0,
+      "c_from_eps_mu_offunit": 0.5,
+      "JC1": true
+    }
+  },
+  "ne_full_maxwell_wave": {
+    "source": "v77/work/NE/outputs/r2_result.json",
+    "scheme": "Yee_staggered_2D_TE+TM",
+    "E_origin": "free_maxwell_full",
+    "em_solver": "free_maxwell_yee",
+    "full_maxwell_claim": true,
+    "full_maxwell_dynamics": true,
+    "unit": {
+      "eps": 1.0,
+      "mu": 1.0,
+      "c_th": 1.0,
+      "v_meas": 1.0,
+      "v_ratio": 1.0,
+      "pass": true,
+      "coupled_EB": true
+    },
+    "offunit": {
+      "eps": 4.0,
+      "mu": 1.0,
+      "c_th": 0.5,
+      "v_meas": 0.5,
+      "v_ratio": 1.0,
+      "pass": true
+    },
+    "FM_summary": {
+      "FM1_vacuum": true,
+      "FM2_wave_unit": true,
+      "FM2_wave_offunit": true,
+      "FM3_divB": true,
+      "FM4_faraday": true,
+      "FM5_gauss_static": true,
+      "FM6_continuity": true,
+      "FM7_coulomb_3d": true
+    },
+    "divB_max": 1.7555401576885288e-15,
+    "faraday_residual_max": 1.1102230246251565e-16,
+    "C_LOCAL": 1.0
+  },
+  "nm_dual_channel_forces": {
+    "source": "v77/work/NM/outputs/r2_dual_result.json",
+    "demo_ids": [
+      "D-DUAL-channel",
+      "D-EM-sibling-psi",
+      "D-MAT-dual0",
+      "D-MAT-force-tax"
+    ],
+    "tags": {
+      "sector_tag": "multi_channel",
+      "monist": true,
+      "psi_origin": "free_capacity_3d_green",
+      "E_origin": "free_maxwell_lite",
+      "c_shared": true,
+      "budget_identity": true
+    },
+    "params": {
+      "A": 0.35,
+      "sigma": 0.9,
+      "sep": 4.0,
+      "M_each": 4.018512977651075,
+      "Q_mag": 4.018512977651075
+    },
+    "free_deficit_proxy": 0.35,
+    "forces": {
+      "vacuum": {
+        "F_psi_signed": 0.0,
+        "F_c_signed": 0.0,
+        "psi_mid": 0.0,
+        "Phi_mid": 0.0
+      },
+      "neutral": {
+        "M1": 4.018512977651075,
+        "M2": 4.018512977651075,
+        "Q1": 0.0,
+        "Q2": 0.0,
+        "F_psi_signed": -0.08031578412295222,
+        "F_c_signed": 0.0,
+        "psi_mid": 0.3197831021360499,
+        "Phi_mid": 0.0,
+        "ell_mid": 1.159891551068025,
+        "prefer_psi": "1/r"
+      },
+      "same_sign": {
+        "M1": 4.018512977651075,
+        "M2": 4.018512977651075,
+        "Q1": 4.018512977651075,
+        "Q2": 4.018512977651075,
+        "F_psi_signed": -0.08031578412295222,
+        "F_c_signed": 0.08031578412295222,
+        "psi_mid": 0.3197831021360499,
+        "Phi_mid": 0.29071191103277255,
+        "prefer_psi": "1/r",
+        "prefer_phi": "1/r",
+        "prefer_E": "1/r2"
+      },
+      "opposite": {
+        "M1": 4.018512977651075,
+        "M2": 4.018512977651075,
+        "Q1": 4.018512977651075,
+        "Q2": -4.018512977651075,
+        "F_psi_signed": -0.08031578412295222,
+        "F_c_signed": -0.08031578412295222,
+        "psi_mid": 0.3197831021360499,
+        "Phi_mid": 0.0,
+        "prefer_psi": "1/r",
+        "prefer_phi": "1/r2"
+      }
+    },
+    "gates": {
+      "V77_2_joint_numeric": true,
+      "KG7_pass": true,
+      "KG8_shared_c": true,
+      "psi_exterior_1r": true,
+      "E_exterior_1r2_same_sign": true,
+      "TE_IA1_psi_neq_Phi": true
+    }
+  },
+  "congruence": {
+    "C1_shared_C_LOCAL": true,
+    "C_LOCAL_nm": 1.0,
+    "C_LOCAL_ne": 1.0,
+    "c_th_wave_unit": 1.0,
+    "C2_offunit_tracks_eps_mu": true,
+    "C3_TE_IA1_from_NM": true,
+    "C4_full_maxwell_ne": true,
+    "C5_dual_joint_nm": true,
+    "C6_no_psi_Phi_identification": true,
+    "C7_no_scp_sim": true,
+    "composition_pass": true
+  },
+  "unified_stack_tags": {
+    "sector_tag": "multi_channel",
+    "monist": true,
+    "psi_origin": "free_capacity_3d_green",
+    "E_origin_static_joint": "free_maxwell_lite",
+    "E_origin_dynamical": "free_maxwell_full",
+    "em_solver_dynamical": "free_maxwell_yee",
+    "gravity_solver": null,
+    "c_shared": true,
+    "budget_identity": true,
+    "TE_IA1": true
+  },
+  "residuals": [
+    "No single production grid with 3D Yee E,B + F1 ψ on identical voxels",
+    "NE dynamics embedding_dim=2 (complete 2D Maxwell); Coulomb 3D from quasistatic",
+    "J5-β renorm residual owned by Dynamics (not composition blocker)",
+    "Poisson isomorphism Occam residual (monism not from multipole fit alone)"
+  ],
+  "verdict": {
+    "composition_pass": true,
+    "V77_2_retained": true,
+    "full_maxwell_sibling_attached": true,
+    "recommend_O_A_path": true,
+    "summary": "Unified composition: NM dual-channel joint (ψ+Φ lite forces, KG7) + NE full Maxwell dynamical (wave v=c unit/off-unit, divB, Faraday) share c and monist free-channel ontology without ψ≡Φ. composition_pass=True → supports O unified (A) path with residuals."
+  },
+  "FOR_TU": "Ingest r3_unified_export.json into UNIFIED_PACKAGE; demos D-UNIFIED-compose-r3 + D-DUAL-channel + D-EM-maxwell-full LIVE composition stack.",
+  "FOR_O": "Composition congruence PASS; residual single-grid Yee+ψ production not required for (A) if TU WORLD freezes interfaces.",
+  "FOR_NE": "Full Maxwell numbers imported; no regression of NM dual0."
+}

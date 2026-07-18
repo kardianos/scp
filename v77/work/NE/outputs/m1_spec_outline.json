@@ -1,0 +1,49 @@
+{
+  "round": "P2-R1",
+  "checkpoint": "CP-M1-SPEC",
+  "agent": "NE",
+  "sandbox": "sandbox_m1_2d.py",
+  "design": "m1_design_v0.md",
+  "te_gates": "work/TE/m1_gates_v0.md",
+  "m0_regression": "sandbox_full_maxwell_r2.py",
+  "status": "SPEC_ALIGNED",
+  "stamp": "CP-M1-SPEC ADOPT",
+  "m1_green": false,
+  "m1_claim": false,
+  "tags": {
+    "sector": 1,
+    "E_origin": "free_maxwell_full",
+    "em_solver": "free_maxwell_yee_m1",
+    "gravity_solver": "none",
+    "embedding_dim_dynamics": 2,
+    "m1_wave_is_true_2d": true
+  },
+  "gate_plan": [
+    {"id": "M1-R0", "name": "M0 regression"},
+    {"id": "M1-G1", "name": "Vacuum", "export": "M1_G1_vacuum"},
+    {"id": "M1-G2", "name": "True 2D beam", "export": "M1_G2_beam2d"},
+    {"id": "M1-G3", "name": "Off-unit c", "export": "M1_G3_offunit"},
+    {"id": "M1-G4", "name": "Energy/Poynting", "export": "M1_G4_energy_poynting"},
+    {"id": "M1-G5", "name": "Dynamic Gauss+Cont", "export": "M1_G5_gauss_dynamic"},
+    {"id": "M1-G6", "name": "div B", "export": "M1_G6_divB"},
+    {"id": "M1-G7", "name": "Faraday", "export": "M1_G7_faraday"},
+    {"id": "M1-G8", "name": "Ampère adversary", "export": "M1_G8_ampere_adversary"},
+    {"id": "M1-G9", "name": "BC honesty", "export": "M1_G9_bc_honesty"},
+    {"id": "M1-G10", "name": "Radiation (optional)"},
+    {"id": "M1-G11", "name": "Shared-c note (optional)"}
+  ],
+  "m1_claim_bar": "M1-R0 ∧ G1 ∧ G2 ∧ G3 ∧ G4 ∧ G5 ∧ G6 ∧ G7 ∧ G8 ∧ G9",
+  "hard_rules": [
+    "M1-G2 true 2D packet only (not 1D TEM)",
+    "M1-G8 incomplete-Ampère adversary required",
+    "M1-G4 energy/Poynting required",
+    "No scp_sim; monist sector=1"
+  ],
+  "api_foreshadow": {
+    "class": "Maxwell2D",
+    "step": "step(rho_Q, Jx, Jy, Jz=None)",
+    "read": "fields() → Ex,Ey,Ez,Hx,Hy,Hz",
+    "rc1": "NM must call this module at CP-RC1 (not Φ-only)"
+  },
+  "next": "CP-M1-NUM implement gates → outputs/m1_result.json"
+}

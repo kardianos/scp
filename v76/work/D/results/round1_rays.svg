@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="320">
+  <rect width="100%" height="100%" fill="white"/>
+  <text x="40" y="22" font-size="13" font-family="sans-serif">Ray delay inversion (Round 1)</text>
+  <text x="40" y="40" font-size="11" font-family="sans-serif" fill="#000">black: truth / monist kernel</text>
+  <text x="220" y="40" font-size="11" font-family="sans-serif" fill="#080">green: local optics</text>
+  <text x="380" y="40" font-size="11" font-family="sans-serif" fill="#c00">red: dualist (on top of black)</text>
+  <!-- axes -->
+  <line x1="40" y1="280" x2="520" y2="280" stroke="#333" stroke-width="1"/>
+  <line x1="40" y1="50" x2="40" y2="280" stroke="#333" stroke-width="1"/>
+  <text x="260" y="305" font-size="11" font-family="sans-serif">impact parameter b</text>
+  <text x="10" y="170" font-size="11" font-family="sans-serif" transform="rotate(-90 10,170)">delay</text>
+  <!-- truth/mk/dualist (identical): b=0..4 delay 2.005..1.079 mapped y=60..260 -->
+  <polyline fill="none" stroke="#000" stroke-width="2.5"
+    points="40,60 70,65 100,78 130,95 160,112 190,128 220,144 250,157 280,170 310,181 340,192 370,202 400,211 430,219 460,227 490,234 520,241"/>
+  <!-- local optics -->
+  <polyline fill="none" stroke="#080" stroke-width="2" stroke-dasharray="6 3"
+    points="40,82 70,84 100,89 130,98 160,110 190,125 220,142 250,160 280,180 310,201 340,221 370,241 400,259 430,274 460,288 490,298 520,305"/>
+  <text x="40" y="55" font-size="10" font-family="sans-serif">δt≈2.0</text>
+  <text x="500" y="275" font-size="10" font-family="sans-serif">b=4</text>
+</svg>

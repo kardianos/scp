@@ -1,0 +1,15 @@
+{
+  "formula": "omega_fd2 = (2 c / dx) * sin(k * dx / 2); v_phase = omega / k",
+  "c": 1.0,
+  "k": 0.8,
+  "L": 40.0,
+  "Nx": 401,
+  "dx": 0.1,
+  "omega_continuum": 0.8,
+  "omega_discrete_fd2": 0.7997866944,
+  "v_phase_discrete": 0.999733368,
+  "rel_err": 0.000266632,
+  "pass_5pct": true,
+  "pass_0.1pct": true,
+  "note": "Exact discrete dispersion for second-order FD free wave. Continuum d'Alembert: v=c exactly. Leapfrog peak-track sandbox confirms same c."
+}

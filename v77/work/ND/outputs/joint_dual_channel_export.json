@@ -1,0 +1,66 @@
+{
+  "export_id": "ND_R2_joint_dual_channel",
+  "round": 2,
+  "agent": "ND",
+  "demo_id": "D-DYN-dual-channel-c",
+  "status": "LIVE_PASS",
+  "shared_c": {
+    "C_LOCAL": 1.0,
+    "c_psi": 1.0,
+    "c_em": 1.0,
+    "c_em_formula": "1/sqrt(eps*mu)",
+    "unit_v_psi": 0.9997333546,
+    "unit_v_em": 0.9997333546,
+    "unit_v_over_c": 0.9997333546,
+    "unit_rel_err": 0.0002666454,
+    "offunit_c": 0.5,
+    "offunit_v_over_c_psi": 0.9997333546,
+    "offunit_v_over_c_em": 0.9997333546
+  },
+  "dual_source_static": {
+    "independent": true,
+    "psi_from": "rho_b",
+    "phi_from": "rho_Q",
+    "cross_talk": 0.0,
+    "example": {
+      "r": 4.0,
+      "M_b": 6.299843978288953,
+      "Q": 11.48153604302067,
+      "psi": 0.125333,
+      "phi": 0.228418
+    }
+  },
+  "gates": {
+    "DC1": true,
+    "DC2": true,
+    "DC3": true,
+    "DC4": true,
+    "DC5": true,
+    "all_pass": true
+  },
+  "j5_beta_side": {
+    "status": "LOCKED_DOCUMENTED",
+    "export": "outputs/j5_beta_numeric.json",
+    "naive_kill": true,
+    "shape_invariance_ok": false,
+    "form_factor_baseline": 0.1414213562373095
+  },
+  "crosscheck_NE": {"c_th": 1.0, "v_meas": 1.0, "v_ratio": 1.0, "pass": true},
+  "crosscheck_ND_R1": {
+    "demo": "D-DYN-free-wave-c",
+    "fd2_v_over_c": 0.99973337,
+    "pass": true
+  },
+  "supports_V77_2": true,
+  "supports_V77_2_note": "Shared-c dual-channel numeric PASS. Residual: not full nonlinear coupled Maxwell+F1 time evolution.",
+  "residuals": [
+    "not full time-dep Maxwell M1–M4 coupled to F1 in one integrator",
+    "linear decoupling only; nonlinear budget coupling deferred"
+  ],
+  "related_demos": [
+    "D-DYN-dual-channel-c",
+    "D-DYN-free-wave-c",
+    "D-EM-wave-c",
+    "D-DYN-j5-formfactor"
+  ]
+}

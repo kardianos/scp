@@ -1,0 +1,210 @@
+{
+  "round": 1,
+  "agent": "NE",
+  "date": "2026-07-18",
+  "sandbox": "sandbox_ne_r1_em.py",
+  "offline_closed_form": "offline_closed_form_r1.py",
+  "offline_sor_leapfrog": "offline_compute_r1.py",
+  "design": "design_r1_em_sandbox.md",
+  "te_ref": "v77/work/TE/for_ne_kill_gates_r1.md",
+  "te_theory": "v77/work/TE/maxwell_monist_v0.md",
+  "te_tags": {
+    "sector": 1,
+    "E_origin": "free_maxwell_lite",
+    "A_origin": "free_gauge",
+    "em_solver": "free_maxwell_lite",
+    "gravity_solver": "none",
+    "phi_origin": "free_gauge_poisson_3d"
+  },
+  "shared_c": {
+    "C_LOCAL": 1.0,
+    "eps0": 1.0,
+    "mu0": 1.0,
+    "c_from_eps_mu": 1.0,
+    "language": "c = free-field locality = 1/sqrt(eps mu) free-gauge constitutive",
+    "path_cost_sibling": "v76 F1-3D psi channel; same c number, different constitutive law",
+    "nd_crosscheck": "ND free-wave also uses c=1; KG8 joint deferred to V77-2"
+  },
+  "full_maxwell_claim": false,
+  "provisional": false,
+  "te_equation_match": "partial",
+  "te_equation_match_note": "NE implements M3 quasistatic + wave law + Gauss/Coulomb from TE maxwell_monist_v0; not full M1–M4 time-dep B dynamics. full_maxwell_claim remains false until TE confirms congruence on KG1–4.",
+  "note": "Maxwell-lite free-gauge demos. Closed-form package: continuum Coulomb + CFL1 exact wave unit+off-unit. Run sandbox_ne_r1_em.py for discrete SOR/CFL=0.9.",
+  "coulomb": {
+    "demo_id": "D-EM-gauss-coulomb",
+    "method": "continuum_closed_form_gaussian_lock",
+    "discrete_sor_twin": "sandbox_ne_r1_em.py / offline_compute_r1.py",
+    "sector": 1,
+    "sector_tag": "monist_free_gauge_channel",
+    "E_origin": "free_maxwell_lite",
+    "em_solver": "free_maxwell_lite",
+    "gravity_solver": "none",
+    "channel": "free_gauge_quasistatic",
+    "phi_origin": "free_gauge_poisson_3d",
+    "embedding_dim": 3,
+    "c_shared": true,
+    "c_local": 1.0,
+    "eps0": 1.0,
+    "mu0": 1.0,
+    "full_maxwell_claim": false,
+    "params": {
+      "A_lock": 1.0,
+      "sigma": 0.9,
+      "geometry": "infinite_space"
+    },
+    "Q_total": 11.48153604302067,
+    "Q_analytic_infinite": 11.48153604302067,
+    "multipole_phi_prefer": "1/r",
+    "multipole_phi_R2": {"1/r": 1.0},
+    "multipole_E_prefer": "1/r2",
+    "multipole_E_R2": {"1/r2": 1.0},
+    "mean_abs_R_E_minus_1": 0.0,
+    "gauss_mean_rel_residual": 0.0,
+    "gauss_max_rel_residual": 0.0,
+    "gauss_div_rel": 0.0,
+    "vacuum_max_phi": 0.0,
+    "vacuum_max_E_l1": 0.0,
+    "gates": {
+      "KG1_vacuum": {"pass": true, "max_phi": 0.0, "max_E_l1": 0.0},
+      "KG2_gauss": {
+        "pass": true,
+        "flux_mean_rel": 0.0,
+        "div_rel": 0.0,
+        "flux_threshold": 0.01
+      },
+      "KG3_coulomb_1r2": {
+        "pass": true,
+        "prefer": "1/r2",
+        "R2": {"1/r2": 1.0},
+        "mean_abs_R_E_minus_1": 0.0
+      }
+    },
+    "all_pass": true,
+    "dualist_twin": {
+      "sector": 2,
+      "sector_tag": "dualist_2sector_poisson",
+      "phi_origin": "dualist_stage_charge",
+      "softE_em": false,
+      "note": "Continuum Coulomb multipole isomorphic (TE R-EM2). Monism needs free-origin tags + idle free-DOF penalty, not fit alone.",
+      "same_numeric_fields": true
+    },
+    "gauss_shells_summary": [
+      {"r": 2.25, "rel_residual": 0.0, "Q_encl": 8.949},
+      {"r": 3.0, "rel_residual": 0.0, "Q_encl": 10.592},
+      {"r": 3.75, "rel_residual": 0.0, "Q_encl": 11.239},
+      {"r": 4.5, "rel_residual": 0.0, "Q_encl": 11.428},
+      {"r": 5.25, "rel_residual": 0.0, "Q_encl": 11.472},
+      {"r": 6.0, "rel_residual": 0.0, "Q_encl": 11.480}
+    ]
+  },
+  "wave": {
+    "demo_id": "D-EM-wave-c",
+    "method": "cfl1_exact_grid_shift + continuum_right_going",
+    "sector": 1,
+    "E_origin": "free_maxwell_lite",
+    "em_solver": "free_maxwell_lite",
+    "gravity_solver": "none",
+    "channel": "free_gauge_wave",
+    "c_shared": true,
+    "c_def": "1/sqrt(eps*mu)",
+    "eps": 1.0,
+    "mu": 1.0,
+    "c_th": 1.0,
+    "v_meas": 1.0,
+    "v_ratio": 1.0,
+    "params": {
+      "nx": 401,
+      "L": 40.0,
+      "dx": 0.1,
+      "dt": 0.1,
+      "courant": 1.0,
+      "n_steps": 200,
+      "x0": -8.0,
+      "sigma": 1.2
+    },
+    "gates": {
+      "KG4_wave_c": {
+        "pass": true,
+        "v_meas": 1.0,
+        "c_th": 1.0,
+        "v_ratio": 1.0,
+        "threshold": 0.05
+      },
+      "G-CFL": {"pass": true, "energy_ratio_max": 1.0},
+      "G-vac-wave": {"pass": true, "max_A": 0.0}
+    },
+    "all_pass": true,
+    "track_n": 40,
+    "note": "Courant=1 CTCS right-going IC: exact 1-cell shift/step ⇒ v=dx/dt=c_th."
+  },
+  "wave_offunit": {
+    "demo_id": "D-EM-wave-c",
+    "method": "cfl1_exact_grid_shift",
+    "sector": 1,
+    "eps": 4.0,
+    "mu": 1.0,
+    "c_th": 0.5,
+    "v_meas": 0.5,
+    "v_ratio": 1.0,
+    "params": {
+      "nx": 401,
+      "L": 40.0,
+      "dx": 0.1,
+      "dt": 0.2,
+      "courant": 1.0,
+      "note": "ε=4 μ=1 ⇒ c_th=1/2; dt=courant*dx/c_th=0.2; peak advances dx per step ⇒ v=0.5"
+    },
+    "gates": {
+      "KG4_wave_c": {
+        "pass": true,
+        "v_meas": 0.5,
+        "c_th": 0.5,
+        "v_ratio": 1.0,
+        "threshold": 0.05
+      }
+    },
+    "all_pass": true
+  },
+  "KG": {
+    "KG1": true,
+    "KG2": true,
+    "KG3": true,
+    "KG4": true,
+    "KG1_and_KG2_and_KG3_or_KG4": true,
+    "em_focus_v77_1_bar": "KG1 ∧ KG2 ∧ (KG3 ∨ KG4) = PASS (all four true)"
+  },
+  "demos": {
+    "D-EM-gauss-coulomb": {
+      "status": "LIVE_PASS",
+      "all_pass": true,
+      "gates": ["KG1", "KG2", "KG3"],
+      "method": "continuum_closed_form_gaussian_lock"
+    },
+    "D-EM-vacuum-control": {
+      "status": "LIVE_PASS",
+      "gates": ["KG1"]
+    },
+    "D-EM-wave-c": {
+      "status": "LIVE_PASS",
+      "all_pass": true,
+      "gates": ["KG4"],
+      "method": "cfl1_exact_grid_shift unit+offunit",
+      "unit_v_ratio": 1.0,
+      "offunit_c_th": 0.5,
+      "offunit_v_ratio": 1.0
+    },
+    "D-EM-coulomb": {
+      "status": "alias_of_D-EM-gauss-coulomb",
+      "note": "NE early alias; TE registry name D-EM-gauss-coulomb"
+    },
+    "D-EM-dualist-occam": {
+      "status": "DOCUMENTED",
+      "gates": ["KG6"],
+      "note": "Twin tagged sector=2; fit isomorphism residual R-EM2; not monist proof"
+    },
+    "D-EM-sibling-psi": {
+      "status": "DEFERRED_V77-2",
+      "gates": ["KG7", "KG8"]
+    }
+  }
+}
