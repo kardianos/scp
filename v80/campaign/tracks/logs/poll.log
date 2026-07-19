@@ -1,0 +1,545 @@
+==== poll 1 2026-07-19T07:12:26-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T12:12:14+00:00
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+      00:12
+0 %, 4 MiB
+0
+==== poll 2 2026-07-19T07:15:28-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T12:12:14+00:00
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+      03:14
+0 %, 2620 MiB
+0
+==== poll 3 2026-07-19T07:18:30-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T12:12:14+00:00
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+      06:16
+0 %, 2620 MiB
+0
+==== poll 4 2026-07-19T07:21:32-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T12:12:14+00:00
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+      09:18
+0 %, 2620 MiB
+0
+==== poll 5 2026-07-19T07:24:34-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T12:12:14+00:00
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+      12:20
+0 %, 2620 MiB
+0
+==== poll 6 2026-07-19T07:27:36-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T12:12:14+00:00
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+      15:21
+0 %, 2620 MiB
+0
+==== poll 7 2026-07-19T07:30:37-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T12:12:14+00:00
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+      18:23
+0 %, 2620 MiB
+0
+==== poll 8 2026-07-19T07:33:39-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T12:12:14+00:00
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+OK F mf_force_D8 2026-07-19T12:31:58+00:00
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+      21:25
+0 %, 4 MiB
+1
+==== poll 9 2026-07-19T07:36:41-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T12:12:14+00:00
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+OK F mf_force_D8 2026-07-19T12:31:58+00:00
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+      24:27
+0 %, 2620 MiB
+1
+==== poll 10 2026-07-19T07:39:43-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T12:12:14+00:00
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+OK F mf_force_D8 2026-07-19T12:31:58+00:00
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+      27:29
+0 %, 2620 MiB
+1
+==== poll 11 2026-07-19T07:42:45-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T12:12:14+00:00
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+OK F mf_force_D8 2026-07-19T12:31:58+00:00
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+      30:31
+100 %, 2620 MiB
+1
+==== poll 12 2026-07-19T07:45:47-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T12:12:14+00:00
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+OK F mf_force_D8 2026-07-19T12:31:58+00:00
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+      33:32
+0 %, 2620 MiB
+1
+==== poll 13 2026-07-19T07:48:49-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T12:12:14+00:00
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+OK F mf_force_D8 2026-07-19T12:31:58+00:00
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+      36:34
+0 %, 2620 MiB
+1
+==== poll 14 2026-07-19T07:51:50-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+OK F mf_force_D8 2026-07-19T12:31:58+00:00
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+OK F mf_force_D12 2026-07-19T12:51:16+00:00
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+      39:36
+0 %, 4 MiB
+2
+==== poll 15 2026-07-19T07:55:04-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+OK F mf_force_D8 2026-07-19T12:31:58+00:00
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+OK F mf_force_D12 2026-07-19T12:51:16+00:00
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+      42:49
+0 %, 2620 MiB
+2
+==== poll 16 2026-07-19T07:58:05-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+OK F mf_force_D8 2026-07-19T12:31:58+00:00
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+OK F mf_force_D12 2026-07-19T12:51:16+00:00
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+      45:51
+96 %, 2620 MiB
+2
+==== poll 17 2026-07-19T08:01:07-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+OK F mf_force_D8 2026-07-19T12:31:58+00:00
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+OK F mf_force_D12 2026-07-19T12:51:16+00:00
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+      48:53
+0 %, 2620 MiB
+2
+==== poll 18 2026-07-19T08:04:09-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+OK F mf_force_D8 2026-07-19T12:31:58+00:00
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+OK F mf_force_D12 2026-07-19T12:51:16+00:00
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+      51:55
+0 %, 2620 MiB
+2
+==== poll 19 2026-07-19T08:07:11-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+OK F mf_force_D8 2026-07-19T12:31:58+00:00
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+OK F mf_force_D12 2026-07-19T12:51:16+00:00
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+      54:57
+100 %, 2620 MiB
+2
+==== poll 20 2026-07-19T08:10:13-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+OK F mf_force_D8 2026-07-19T12:31:58+00:00
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+OK F mf_force_D12 2026-07-19T12:51:16+00:00
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+      57:59
+0 %, 2620 MiB
+2
+==== poll 21 2026-07-19T08:13:15-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+OK F mf_force_D12 2026-07-19T12:51:16+00:00
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+OK F mf_force_D16 2026-07-19T13:12:37+00:00
+=== RUN F mf_force_D20 2026-07-19T13:12:37+00:00 ===
+   01:01:00
+0 %, 4 MiB
+3
+==== poll 22 2026-07-19T08:16:17-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+OK F mf_force_D12 2026-07-19T12:51:16+00:00
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+OK F mf_force_D16 2026-07-19T13:12:37+00:00
+=== RUN F mf_force_D20 2026-07-19T13:12:37+00:00 ===
+   01:04:02
+0 %, 2620 MiB
+3
+==== poll 23 2026-07-19T08:19:18-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+OK F mf_force_D12 2026-07-19T12:51:16+00:00
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+OK F mf_force_D16 2026-07-19T13:12:37+00:00
+=== RUN F mf_force_D20 2026-07-19T13:12:37+00:00 ===
+   01:07:04
+0 %, 2620 MiB
+3
+==== poll 24 2026-07-19T08:22:20-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+OK F mf_force_D12 2026-07-19T12:51:16+00:00
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+OK F mf_force_D16 2026-07-19T13:12:37+00:00
+=== RUN F mf_force_D20 2026-07-19T13:12:37+00:00 ===
+   01:10:06
+100 %, 2620 MiB
+3
+==== poll 25 2026-07-19T08:25:22-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+OK F mf_force_D12 2026-07-19T12:51:16+00:00
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+OK F mf_force_D16 2026-07-19T13:12:37+00:00
+=== RUN F mf_force_D20 2026-07-19T13:12:37+00:00 ===
+   01:13:08
+0 %, 2620 MiB
+3
+==== poll 26 2026-07-19T08:28:24-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+OK F mf_force_D12 2026-07-19T12:51:16+00:00
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+OK F mf_force_D16 2026-07-19T13:12:37+00:00
+=== RUN F mf_force_D20 2026-07-19T13:12:37+00:00 ===
+   01:16:10
+100 %, 2620 MiB
+3
+==== poll 27 2026-07-19T08:31:26-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+OK F mf_force_D12 2026-07-19T12:51:16+00:00
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+OK F mf_force_D16 2026-07-19T13:12:37+00:00
+=== RUN F mf_force_D20 2026-07-19T13:12:37+00:00 ===
+   01:19:12
+0 %, 2620 MiB
+3
+==== poll 28 2026-07-19T08:34:28-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+OK F mf_force_D16 2026-07-19T13:12:37+00:00
+=== RUN F mf_force_D20 2026-07-19T13:12:37+00:00 ===
+OK F mf_force_D20 2026-07-19T13:34:19+00:00
+=== RUN F mf_force_D24 2026-07-19T13:34:19+00:00 ===
+   01:22:13
+0 %, 4 MiB
+4
+==== poll 29 2026-07-19T08:37:29-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+OK F mf_force_D16 2026-07-19T13:12:37+00:00
+=== RUN F mf_force_D20 2026-07-19T13:12:37+00:00 ===
+OK F mf_force_D20 2026-07-19T13:34:19+00:00
+=== RUN F mf_force_D24 2026-07-19T13:34:19+00:00 ===
+   01:25:15
+0 %, 2620 MiB
+4
+==== poll 30 2026-07-19T08:40:31-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+OK F mf_force_D16 2026-07-19T13:12:37+00:00
+=== RUN F mf_force_D20 2026-07-19T13:12:37+00:00 ===
+OK F mf_force_D20 2026-07-19T13:34:19+00:00
+=== RUN F mf_force_D24 2026-07-19T13:34:19+00:00 ===
+   01:28:17
+0 %, 2620 MiB
+4
+==== poll 31 2026-07-19T08:43:33-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+OK F mf_force_D16 2026-07-19T13:12:37+00:00
+=== RUN F mf_force_D20 2026-07-19T13:12:37+00:00 ===
+OK F mf_force_D20 2026-07-19T13:34:19+00:00
+=== RUN F mf_force_D24 2026-07-19T13:34:19+00:00 ===
+   01:31:19
+0 %, 2620 MiB
+4
+==== poll 32 2026-07-19T08:46:35-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+OK F mf_force_D16 2026-07-19T13:12:37+00:00
+=== RUN F mf_force_D20 2026-07-19T13:12:37+00:00 ===
+OK F mf_force_D20 2026-07-19T13:34:19+00:00
+=== RUN F mf_force_D24 2026-07-19T13:34:19+00:00 ===
+   01:34:21
+0 %, 2620 MiB
+4
+==== poll 33 2026-07-19T08:49:37-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+OK F mf_force_D16 2026-07-19T13:12:37+00:00
+=== RUN F mf_force_D20 2026-07-19T13:12:37+00:00 ===
+OK F mf_force_D20 2026-07-19T13:34:19+00:00
+=== RUN F mf_force_D24 2026-07-19T13:34:19+00:00 ===
+   01:37:23
+0 %, 2620 MiB
+4
+==== poll 34 2026-07-19T08:52:39-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+OK F mf_force_D16 2026-07-19T13:12:37+00:00
+=== RUN F mf_force_D20 2026-07-19T13:12:37+00:00 ===
+OK F mf_force_D20 2026-07-19T13:34:19+00:00
+=== RUN F mf_force_D24 2026-07-19T13:34:19+00:00 ===
+   01:40:24
+99 %, 2620 MiB
+4
+==== poll 35 2026-07-19T08:55:40-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D20 2026-07-19T13:12:37+00:00 ===
+OK F mf_force_D20 2026-07-19T13:34:19+00:00
+=== RUN F mf_force_D24 2026-07-19T13:34:19+00:00 ===
+OK F mf_force_D24 2026-07-19T13:53:04+00:00
+=== RUN R elite_same_D12 2026-07-19T13:53:04+00:00 ===
+   01:43:26
+0 %, 1276 MiB
+5
+==== poll 36 2026-07-19T08:58:42-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D20 2026-07-19T13:12:37+00:00 ===
+OK F mf_force_D20 2026-07-19T13:34:19+00:00
+=== RUN F mf_force_D24 2026-07-19T13:34:19+00:00 ===
+OK F mf_force_D24 2026-07-19T13:53:04+00:00
+=== RUN R elite_same_D12 2026-07-19T13:53:04+00:00 ===
+   01:46:28
+0 %, 1276 MiB
+5
+==== poll 37 2026-07-19T09:01:44-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D24 2026-07-19T13:34:19+00:00 ===
+OK F mf_force_D24 2026-07-19T13:53:04+00:00
+=== RUN R elite_same_D12 2026-07-19T13:53:04+00:00 ===
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+   01:49:30
+0 %, 4 MiB
+6
+==== poll 38 2026-07-19T09:04:46-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D24 2026-07-19T13:34:19+00:00 ===
+OK F mf_force_D24 2026-07-19T13:53:04+00:00
+=== RUN R elite_same_D12 2026-07-19T13:53:04+00:00 ===
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+   01:52:32
+0 %, 1276 MiB
+6
+==== poll 39 2026-07-19T09:07:48-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN F mf_force_D24 2026-07-19T13:34:19+00:00 ===
+OK F mf_force_D24 2026-07-19T13:53:04+00:00
+=== RUN R elite_same_D12 2026-07-19T13:53:04+00:00 ===
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+   01:55:34
+100 %, 1276 MiB
+6
+==== poll 40 2026-07-19T09:10:50-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN R elite_same_D12 2026-07-19T13:53:04+00:00 ===
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+   01:58:36
+0 %, 1276 MiB
+7
+==== poll 41 2026-07-19T09:13:53-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN R elite_same_D12 2026-07-19T13:53:04+00:00 ===
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+   02:01:38
+0 %, 1276 MiB
+7
+==== poll 42 2026-07-19T09:16:55-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN R elite_same_D12 2026-07-19T13:53:04+00:00 ===
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+   02:04:41
+0 %, 1276 MiB
+7
+==== poll 43 2026-07-19T09:19:57-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+   02:07:43
+100 %, 2620 MiB
+8
+==== poll 44 2026-07-19T09:22:59-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+   02:10:45
+0 %, 2620 MiB
+8
+==== poll 45 2026-07-19T09:26:01-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+   02:13:47
+0 %, 2620 MiB
+8
+==== poll 46 2026-07-19T09:29:04-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+   02:16:49
+0 %, 2620 MiB
+8
+==== poll 47 2026-07-19T09:32:06-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+   02:19:52
+100 %, 2620 MiB
+8
+==== poll 48 2026-07-19T09:35:08-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+   02:22:54
+0 %, 2620 MiB
+8
+==== poll 49 2026-07-19T09:38:10-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+   02:25:56
+0 %, 2620 MiB
+8
+==== poll 50 2026-07-19T09:41:13-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+   02:28:58
+100 %, 2620 MiB
+8
+==== poll 51 2026-07-19T09:44:15-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+   02:32:01
+100 %, 2620 MiB
+8
+==== poll 52 2026-07-19T09:47:17-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+   02:35:03
+0 %, 4 MiB
+9

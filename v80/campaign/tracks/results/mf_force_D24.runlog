@@ -1,0 +1,87 @@
+GPU: Tesla V100-SXM2-32GB (34.1 GB, SM 7.0)
+
+=== scp_sim_c4: V44 + Cosserat + Curl²-Hardening (+ optional chiral) ===
+d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ) - α·curl(M) - 2curl(Q)
+d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ) + 2α·M - β|∇×φ|²θ
+  M = curl(φ)/2 - θ,  Q = (β/2)|θ|²curl(φ)
+
+Grid:    N=128 L=32.0 T=150 dt_factor=0.0250
+Physics: m²=2.2500 m_θ²=2.5600 η=0.000 μ=-41.345 κ=50.0 κ_h=0.000 α=0.000 β=0.000
+Complex: 12-field U(1) kernel (complex_phi=1)
+Q-diag:  radius=8.00 probes=(8.00,16.00)
+Gauge:   U(1) compact links, g=0.0500 (complex_gauge=1)
+Multi-fab: n=3 (C/Q/L) stage=1 lock_CQ=1 eps_CQ=0
+Multi-fab: q_C=0 q_Q=1 q_L=-1  (× g_gauge)
+Multi-fab: init_sfa_L=mf_force_D24_L.sfa
+Mode:    0
+BC:      absorbing sphere (width=4.0 rate=0.0100)
+Init:    sfa (mf_force_D24_C.sfa frame=-1)
+Output:  mf_force_D24.sfa (f32, snap=2.5 diag=0.5)
+
+Host multi-fab: +1.21 GB (Q+L)
+dx=0.5039 dt=0.012598
+
+Init: SFA file 'mf_force_D24_C.sfa' frame=-1
+  Grid: 128x128x128, 24 columns, 1 frames, reading frame 0
+  Loaded col 0 'phi_x' (sem=0 comp=0 dtype=1) -> slot 0
+  Loaded col 1 'phi_y' (sem=0 comp=1 dtype=1) -> slot 1
+  Loaded col 2 'phi_z' (sem=0 comp=2 dtype=1) -> slot 2
+  Loaded col 3 'theta_x' (sem=1 comp=0 dtype=1) -> slot 3
+  Loaded col 4 'theta_y' (sem=1 comp=1 dtype=1) -> slot 4
+  Loaded col 5 'theta_z' (sem=1 comp=2 dtype=1) -> slot 5
+  Loaded col 6 'phi_vx' (sem=2 comp=0 dtype=1) -> slot 6
+  Loaded col 7 'phi_vy' (sem=2 comp=1 dtype=1) -> slot 7
+  Loaded col 8 'phi_vz' (sem=2 comp=2 dtype=1) -> slot 8
+  Loaded col 9 'theta_vx' (sem=2 comp=3 dtype=1) -> slot 9
+  Loaded col 10 'theta_vy' (sem=2 comp=4 dtype=1) -> slot 10
+  Loaded col 11 'theta_vz' (sem=2 comp=5 dtype=1) -> slot 11
+  Loaded col 12 'phiim_x' (sem=0 comp=3 dtype=1) -> slot 12
+  Loaded col 13 'phiim_y' (sem=0 comp=4 dtype=1) -> slot 13
+  Loaded col 14 'phiim_z' (sem=0 comp=5 dtype=1) -> slot 14
+  Loaded col 15 'thetaim_x' (sem=1 comp=3 dtype=1) -> slot 15
+  Loaded col 16 'thetaim_y' (sem=1 comp=4 dtype=1) -> slot 16
+  Loaded col 17 'thetaim_z' (sem=1 comp=5 dtype=1) -> slot 17
+  Loaded col 18 'phiim_vx' (sem=2 comp=6 dtype=1) -> slot 18
+  Loaded col 19 'phiim_vy' (sem=2 comp=7 dtype=1) -> slot 19
+  Loaded col 20 'phiim_vz' (sem=2 comp=8 dtype=1) -> slot 20
+  Loaded col 21 'thetaim_vx' (sem=2 comp=9 dtype=1) -> slot 21
+  Loaded col 22 'thetaim_vy' (sem=2 comp=10 dtype=1) -> slot 22
+  Loaded col 23 'thetaim_vz' (sem=2 comp=11 dtype=1) -> slot 23
+  Loaded: 6/6 field arrays, 6/6 velocity arrays
+  WARNING: init=sfa: no gauge columns; E seeded by Gauss projection
+Init L fabric: SFA 'mf_force_D24_L.sfa' frame=-1
+  Loaded 24 columns into L
+Multi-fab: Q ← C lock applied after init (host, B1)
+Gauss projection: 455 CG iters, gauss_max(0)=9.87e-14 (offset -7.656e-23)
+GPU: allocated 1.96 GB (physics, complex 36 arrays + U(1) links 9 arrays + multi-fab Q+L 72), 8192 blocks × 256 threads
+Multi-fab gauged: 1.96 GB physics; need ~24+ GB GPU for N=192
+SFA: mf_force_D24.sfa (54 cols, f32, colzstd)
+
+Snap hook: 0.45 GB GPU staging + 0.45 GB pinned host
+INIT: E_total=3.4762e+02 E_pot=-17.7340 phi_max=0.6013 theta_rms=0.000e+00
+
+INIT charges: Q_phi=1.147273e+02 Q_theta=0.000000e+00 s_max=4.7263e-02 r_core=3.177 omega_core=1.4600 Q_core=1.222197e+00
+
+INIT gauge: gauss_max=9.865e-14 gauss_l2=1.683e-14 E_em=7.515890e-01 Q_flux=-2.980480e-14
+
+Async pipeline: snap every 198 steps, diag every 40 steps, 11906 total
+
+t=   12.6 E=3.476e+02 (drift +0.004%) Ep=-18.2 phi=0.602 θ_rms=0.00e+00 Q=1.147271e+02 s_max=4.7397e-02 gauss=9.9e-14 E_em=7.405e-01 [8% 107.1s 107.05ms/step]
+t=   25.2 E=3.478e+02 (drift +0.054%) Ep=-18.4 phi=0.603 θ_rms=0.00e+00 Q=1.147269e+02 s_max=4.8026e-02 gauss=9.9e-14 E_em=7.406e-01 [17% 187.0s 93.48ms/step]
+t=   37.8 E=3.481e+02 (drift +0.138%) Ep=-18.4 phi=0.603 θ_rms=0.00e+00 Q=1.147263e+02 s_max=4.8035e-02 gauss=9.9e-14 E_em=7.400e-01 [25% 266.6s 88.88ms/step]
+t=   50.4 E=3.485e+02 (drift +0.253%) Ep=-18.2 phi=0.602 θ_rms=0.00e+00 Q=1.147252e+02 s_max=4.7540e-02 gauss=9.9e-14 E_em=7.392e-01 [34% 347.9s 86.97ms/step]
+t=   63.0 E=3.490e+02 (drift +0.400%) Ep=-18.2 phi=0.602 θ_rms=0.00e+00 Q=1.147244e+02 s_max=4.7442e-02 gauss=9.9e-14 E_em=7.377e-01 [42% 427.0s 85.40ms/step]
+t=   75.6 E=3.497e+02 (drift +0.586%) Ep=-18.4 phi=0.603 θ_rms=0.00e+00 Q=1.147239e+02 s_max=4.7893e-02 gauss=9.9e-14 E_em=7.367e-01 [50% 508.7s 84.78ms/step]
+t=   88.2 E=3.504e+02 (drift +0.807%) Ep=-18.3 phi=0.603 θ_rms=0.00e+00 Q=1.147234e+02 s_max=4.8109e-02 gauss=9.9e-14 E_em=7.361e-01 [59% 588.0s 84.00ms/step]
+t=  100.8 E=3.513e+02 (drift +1.052%) Ep=-18.2 phi=0.602 θ_rms=0.00e+00 Q=1.147229e+02 s_max=4.7751e-02 gauss=9.9e-14 E_em=7.357e-01 [67% 669.3s 83.66ms/step]
+t=  113.4 E=3.522e+02 (drift +1.328%) Ep=-18.1 phi=0.602 θ_rms=0.00e+00 Q=1.147224e+02 s_max=4.7513e-02 gauss=9.9e-14 E_em=7.355e-01 [76% 750.8s 83.42ms/step]
+t=  126.0 E=3.533e+02 (drift +1.649%) Ep=-18.3 phi=0.603 θ_rms=0.00e+00 Q=1.147219e+02 s_max=4.7865e-02 gauss=9.9e-14 E_em=7.356e-01 [84% 832.7s 83.27ms/step]
+t=  138.6 E=3.546e+02 (drift +2.005%) Ep=-18.4 phi=0.603 θ_rms=0.00e+00 Q=1.147215e+02 s_max=4.8253e-02 gauss=9.9e-14 E_em=7.357e-01 [92% 913.0s 83.00ms/step]
+
+=== COMPLETE (GPU, async pipeline) ===
+E_total=3.5574e+02 (drift 2.338%) E_pot=-18.3200
+phi_max=0.6028 theta_rms=0.000e+00
+Q_phi=1.147212e+02 Q_theta=0.000000e+00 Q_total=1.147212e+02 s_max=4.7957e-02 r_core=3.152 omega_core=1.4447 Q_core=1.319885e+00
+gauss_max=9.866e-14 gauss_l2=1.683e-14 E_em=7.358767e-01 Q_flux=1.147867e-02
+SFA: mf_force_D24.sfa (62 frames)
+Wall: 1002.2s (16.7 min) 84.18ms/step

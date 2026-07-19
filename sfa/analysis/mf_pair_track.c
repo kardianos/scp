@@ -31,6 +31,7 @@ static double getf(void *base, int dtype, long i) {
     if (!base) return 0;
     if (dtype == SFA_F64) return ((double*)base)[i];
     if (dtype == SFA_F32) return (double)((float*)base)[i];
+    if (dtype == SFA_F16) return (double)sfa_f16_to_f32(((const uint16_t*)base)[i]);
     return 0;
 }
 

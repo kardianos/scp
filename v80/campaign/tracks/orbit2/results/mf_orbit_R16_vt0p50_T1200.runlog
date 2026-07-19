@@ -1,0 +1,124 @@
+GPU: Tesla V100-SXM2-32GB (34.1 GB, SM 7.0)
+
+=== scp_sim_c4: V44 + Cosserat + Curl²-Hardening (+ optional chiral) ===
+d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ) - α·curl(M) - 2curl(Q)
+d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ) + 2α·M - β|∇×φ|²θ
+  M = curl(φ)/2 - θ,  Q = (β/2)|θ|²curl(φ)
+
+Grid:    N=128 L=32.0 T=1200 dt_factor=0.0250
+Physics: m²=2.2500 m_θ²=2.5600 η=0.000 μ=-41.345 κ=50.0 κ_h=0.000 α=0.000 β=0.000
+Complex: 12-field U(1) kernel (complex_phi=1)
+Q-diag:  radius=8.00 probes=(8.00,16.00)
+Gauge:   U(1) compact links, g=0.0500 (complex_gauge=1)
+Multi-fab: n=3 (C/Q/L) stage=1 lock_CQ=1 eps_CQ=0
+Multi-fab: q_C=0 q_Q=1 q_L=-1  (× g_gauge)
+Multi-fab: init_sfa_L=mf_orbit_R16_vt0p50_L.sfa
+Mode:    0
+BC:      absorbing sphere (width=4.0 rate=0.0100)
+Init:    sfa (mf_orbit_R16_vt0p50_C.sfa frame=-1)
+Output:  mf_orbit_R16_vt0p50_T1200.sfa (f16, snap=10.0 diag=1.0)
+
+Host multi-fab: +1.21 GB (Q+L)
+dx=0.5039 dt=0.012598
+
+Init: SFA file 'mf_orbit_R16_vt0p50_C.sfa' frame=-1
+  Grid: 128x128x128, 24 columns, 1 frames, reading frame 0
+  Loaded col 0 'phi_x' (sem=0 comp=0 dtype=1) -> slot 0
+  Loaded col 1 'phi_y' (sem=0 comp=1 dtype=1) -> slot 1
+  Loaded col 2 'phi_z' (sem=0 comp=2 dtype=1) -> slot 2
+  Loaded col 3 'theta_x' (sem=1 comp=0 dtype=1) -> slot 3
+  Loaded col 4 'theta_y' (sem=1 comp=1 dtype=1) -> slot 4
+  Loaded col 5 'theta_z' (sem=1 comp=2 dtype=1) -> slot 5
+  Loaded col 6 'phi_vx' (sem=2 comp=0 dtype=1) -> slot 6
+  Loaded col 7 'phi_vy' (sem=2 comp=1 dtype=1) -> slot 7
+  Loaded col 8 'phi_vz' (sem=2 comp=2 dtype=1) -> slot 8
+  Loaded col 9 'theta_vx' (sem=2 comp=3 dtype=1) -> slot 9
+  Loaded col 10 'theta_vy' (sem=2 comp=4 dtype=1) -> slot 10
+  Loaded col 11 'theta_vz' (sem=2 comp=5 dtype=1) -> slot 11
+  Loaded col 12 'phiim_x' (sem=0 comp=3 dtype=1) -> slot 12
+  Loaded col 13 'phiim_y' (sem=0 comp=4 dtype=1) -> slot 13
+  Loaded col 14 'phiim_z' (sem=0 comp=5 dtype=1) -> slot 14
+  Loaded col 15 'thetaim_x' (sem=1 comp=3 dtype=1) -> slot 15
+  Loaded col 16 'thetaim_y' (sem=1 comp=4 dtype=1) -> slot 16
+  Loaded col 17 'thetaim_z' (sem=1 comp=5 dtype=1) -> slot 17
+  Loaded col 18 'phiim_vx' (sem=2 comp=6 dtype=1) -> slot 18
+  Loaded col 19 'phiim_vy' (sem=2 comp=7 dtype=1) -> slot 19
+  Loaded col 20 'phiim_vz' (sem=2 comp=8 dtype=1) -> slot 20
+  Loaded col 21 'thetaim_vx' (sem=2 comp=9 dtype=1) -> slot 21
+  Loaded col 22 'thetaim_vy' (sem=2 comp=10 dtype=1) -> slot 22
+  Loaded col 23 'thetaim_vz' (sem=2 comp=11 dtype=1) -> slot 23
+  Loaded: 6/6 field arrays, 6/6 velocity arrays
+  WARNING: init=sfa: no gauge columns; E seeded by Gauss projection
+Init L fabric: SFA 'mf_orbit_R16_vt0p50_L.sfa' frame=-1
+  Loaded 24 columns into L
+Multi-fab: Q ← C lock applied after init (host, B1)
+Gauss projection: 461 CG iters, gauss_max(0)=9.30e-14 (offset 5.035e-13)
+GPU: allocated 1.96 GB (physics, complex 36 arrays + U(1) links 9 arrays + multi-fab Q+L 72), 8192 blocks × 256 threads
+Multi-fab gauged: 1.96 GB physics; need ~24+ GB GPU for N=192
+SFA: mf_orbit_R16_vt0p50_T1200.sfa (54 cols, f16, colzstd)
+
+Snap hook: 0.23 GB GPU staging + 0.23 GB pinned host
+INIT: E_total=9.8729e+02 E_pot=-71.8616 phi_max=0.6342 theta_rms=0.000e+00
+
+INIT charges: Q_phi=3.154014e+02 Q_theta=0.000000e+00 s_max=6.5084e-02 r_core=3.394 omega_core=0.0000 Q_core=3.142195e+02
+
+INIT gauge: gauss_max=9.302e-14 gauss_l2=1.512e-14 E_em=4.536347e+00 Q_flux=3.150164e+02
+
+Async pipeline: snap every 794 steps, diag every 79 steps, 95250 total
+
+t=   24.9 E=9.815e+02 (drift -0.590%) Ep=-74.0 phi=0.634 θ_rms=0.00e+00 Q=3.154014e+02 s_max=6.5007e-02 gauss=9.3e-14 E_em=5.538e+00 [2% 55.1s 27.89ms/step]
+t=   49.8 E=8.813e+02 (drift -10.741%) Ep=-67.4 phi=0.639 θ_rms=0.00e+00 Q=3.153962e+02 s_max=6.8390e-02 gauss=9.3e-14 E_em=3.962e+00 [4% 106.7s 27.01ms/step]
+t=   74.6 E=4.702e+02 (drift -52.374%) Ep=-39.6 phi=0.633 θ_rms=0.00e+00 Q=3.153924e+02 s_max=6.4614e-02 gauss=9.3e-14 E_em=2.688e+00 [6% 164.7s 27.79ms/step]
+t=   99.5 E=4.676e+02 (drift -52.637%) Ep=-39.1 phi=0.634 θ_rms=0.00e+00 Q=3.153921e+02 s_max=6.5233e-02 gauss=9.3e-14 E_em=2.543e+00 [8% 216.2s 27.37ms/step]
+t=  124.4 E=4.665e+02 (drift -52.749%) Ep=-39.0 phi=0.635 θ_rms=0.00e+00 Q=3.153917e+02 s_max=6.5419e-02 gauss=9.3e-14 E_em=2.508e+00 [10% 273.9s 27.74ms/step]
+t=  149.3 E=4.651e+02 (drift -52.890%) Ep=-39.5 phi=0.634 θ_rms=0.00e+00 Q=3.153912e+02 s_max=6.4919e-02 gauss=9.3e-14 E_em=2.497e+00 [12% 325.5s 27.47ms/step]
+t=  174.2 E=4.637e+02 (drift -53.038%) Ep=-39.7 phi=0.633 θ_rms=0.00e+00 Q=3.153908e+02 s_max=6.4540e-02 gauss=9.3e-14 E_em=2.489e+00 [15% 383.2s 27.72ms/step]
+t=  199.1 E=4.626e+02 (drift -53.141%) Ep=-39.4 phi=0.634 θ_rms=0.00e+00 Q=3.153903e+02 s_max=6.4789e-02 gauss=9.3e-14 E_em=2.487e+00 [17% 434.4s 27.50ms/step]
+t=  223.9 E=4.621e+02 (drift -53.199%) Ep=-39.0 phi=0.635 θ_rms=0.00e+00 Q=3.153899e+02 s_max=6.5298e-02 gauss=9.3e-14 E_em=2.485e+00 [19% 492.1s 27.69ms/step]
+t=  248.8 E=4.617e+02 (drift -53.232%) Ep=-39.2 phi=0.634 θ_rms=0.00e+00 Q=3.153895e+02 s_max=6.5216e-02 gauss=9.3e-14 E_em=2.484e+00 [21% 543.5s 27.52ms/step]
+t=  273.7 E=4.615e+02 (drift -53.253%) Ep=-39.6 phi=0.634 θ_rms=0.00e+00 Q=3.153891e+02 s_max=6.4687e-02 gauss=9.3e-14 E_em=2.484e+00 [23% 600.8s 27.65ms/step]
+t=  298.6 E=4.614e+02 (drift -53.268%) Ep=-39.7 phi=0.633 θ_rms=0.00e+00 Q=3.153887e+02 s_max=6.4493e-02 gauss=9.3e-14 E_em=2.483e+00 [25% 651.8s 27.50ms/step]
+t=  323.5 E=4.613e+02 (drift -53.278%) Ep=-39.3 phi=0.634 θ_rms=0.00e+00 Q=3.153884e+02 s_max=6.4769e-02 gauss=9.3e-14 E_em=2.483e+00 [27% 709.0s 27.62ms/step]
+t=  348.3 E=4.612e+02 (drift -53.285%) Ep=-39.0 phi=0.635 θ_rms=0.00e+00 Q=3.153881e+02 s_max=6.5257e-02 gauss=9.3e-14 E_em=2.482e+00 [29% 760.1s 27.49ms/step]
+t=  373.2 E=4.612e+02 (drift -53.291%) Ep=-39.3 phi=0.634 θ_rms=0.00e+00 Q=3.153878e+02 s_max=6.5206e-02 gauss=9.3e-14 E_em=2.482e+00 [31% 817.3s 27.59ms/step]
+t=  398.1 E=4.611e+02 (drift -53.296%) Ep=-39.7 phi=0.634 θ_rms=0.00e+00 Q=3.153876e+02 s_max=6.4782e-02 gauss=9.3e-14 E_em=2.482e+00 [33% 868.3s 27.48ms/step]
+t=  423.0 E=4.611e+02 (drift -53.300%) Ep=-39.5 phi=0.634 θ_rms=0.00e+00 Q=3.153873e+02 s_max=6.4785e-02 gauss=9.3e-14 E_em=2.482e+00 [35% 925.4s 27.56ms/step]
+t=  447.9 E=4.610e+02 (drift -53.303%) Ep=-39.1 phi=0.634 θ_rms=0.00e+00 Q=3.153871e+02 s_max=6.5049e-02 gauss=9.3e-14 E_em=2.481e+00 [37% 976.4s 27.47ms/step]
+t=  472.8 E=4.610e+02 (drift -53.305%) Ep=-39.1 phi=0.634 θ_rms=0.00e+00 Q=3.153869e+02 s_max=6.5204e-02 gauss=9.3e-14 E_em=2.481e+00 [39% 1033.4s 27.54ms/step]
+t=  497.6 E=4.610e+02 (drift -53.307%) Ep=-39.5 phi=0.634 θ_rms=0.00e+00 Q=3.153867e+02 s_max=6.4987e-02 gauss=9.3e-14 E_em=2.481e+00 [41% 1084.5s 27.46ms/step]
+t=  522.5 E=4.610e+02 (drift -53.309%) Ep=-39.6 phi=0.634 θ_rms=0.00e+00 Q=3.153865e+02 s_max=6.4693e-02 gauss=9.3e-14 E_em=2.481e+00 [44% 1141.2s 27.52ms/step]
+t=  547.4 E=4.610e+02 (drift -53.311%) Ep=-39.4 phi=0.634 θ_rms=0.00e+00 Q=3.153864e+02 s_max=6.4783e-02 gauss=9.3e-14 E_em=2.481e+00 [46% 1191.6s 27.43ms/step]
+t=  572.3 E=4.610e+02 (drift -53.312%) Ep=-39.1 phi=0.634 θ_rms=0.00e+00 Q=3.153862e+02 s_max=6.5023e-02 gauss=9.3e-14 E_em=2.480e+00 [48% 1248.2s 27.48ms/step]
+t=  597.2 E=4.609e+02 (drift -53.313%) Ep=-39.2 phi=0.634 θ_rms=0.00e+00 Q=3.153860e+02 s_max=6.5080e-02 gauss=9.3e-14 E_em=2.480e+00 [50% 1298.9s 27.40ms/step]
+t=  622.0 E=4.609e+02 (drift -53.314%) Ep=-39.6 phi=0.634 θ_rms=0.00e+00 Q=3.153859e+02 s_max=6.4943e-02 gauss=9.3e-14 E_em=2.480e+00 [52% 1355.2s 27.45ms/step]
+t=  646.9 E=4.609e+02 (drift -53.315%) Ep=-39.6 phi=0.634 θ_rms=0.00e+00 Q=3.153857e+02 s_max=6.4879e-02 gauss=9.3e-14 E_em=2.480e+00 [54% 1406.1s 27.38ms/step]
+t=  671.8 E=4.609e+02 (drift -53.315%) Ep=-39.3 phi=0.634 θ_rms=0.00e+00 Q=3.153856e+02 s_max=6.5233e-02 gauss=9.3e-14 E_em=2.479e+00 [56% 1462.9s 27.43ms/step]
+t=  696.7 E=4.609e+02 (drift -53.316%) Ep=-39.1 phi=0.634 θ_rms=0.00e+00 Q=3.153855e+02 s_max=6.5239e-02 gauss=9.3e-14 E_em=2.479e+00 [58% 1513.4s 27.37ms/step]
+t=  721.6 E=4.609e+02 (drift -53.317%) Ep=-39.4 phi=0.634 θ_rms=0.00e+00 Q=3.153853e+02 s_max=6.5128e-02 gauss=9.3e-14 E_em=2.479e+00 [60% 1570.3s 27.42ms/step]
+t=  746.5 E=4.609e+02 (drift -53.317%) Ep=-39.6 phi=0.634 θ_rms=0.00e+00 Q=3.153852e+02 s_max=6.4846e-02 gauss=9.3e-14 E_em=2.478e+00 [62% 1621.0s 27.36ms/step]
+t=  771.3 E=4.609e+02 (drift -53.318%) Ep=-39.4 phi=0.634 θ_rms=0.00e+00 Q=3.153851e+02 s_max=6.4871e-02 gauss=9.3e-14 E_em=2.478e+00 [64% 1678.1s 27.41ms/step]
+t=  796.2 E=4.609e+02 (drift -53.318%) Ep=-39.2 phi=0.634 θ_rms=0.00e+00 Q=3.153850e+02 s_max=6.5141e-02 gauss=9.3e-14 E_em=2.477e+00 [66% 1728.7s 27.35ms/step]
+t=  821.1 E=4.609e+02 (drift -53.318%) Ep=-39.2 phi=0.635 θ_rms=0.00e+00 Q=3.153849e+02 s_max=6.5349e-02 gauss=9.3e-14 E_em=2.477e+00 [68% 1785.6s 27.40ms/step]
+t=  846.0 E=4.609e+02 (drift -53.319%) Ep=-39.5 phi=0.634 θ_rms=0.00e+00 Q=3.153848e+02 s_max=6.5228e-02 gauss=9.3e-14 E_em=2.477e+00 [70% 1836.6s 27.35ms/step]
+t=  870.9 E=4.609e+02 (drift -53.319%) Ep=-39.5 phi=0.634 θ_rms=0.00e+00 Q=3.153847e+02 s_max=6.4975e-02 gauss=9.3e-14 E_em=2.476e+00 [73% 1893.4s 27.39ms/step]
+t=  895.7 E=4.609e+02 (drift -53.319%) Ep=-39.3 phi=0.634 θ_rms=0.00e+00 Q=3.153846e+02 s_max=6.5039e-02 gauss=9.3e-14 E_em=2.475e+00 [75% 1944.3s 27.35ms/step]
+t=  920.6 E=4.609e+02 (drift -53.319%) Ep=-39.2 phi=0.635 θ_rms=0.00e+00 Q=3.153845e+02 s_max=6.5345e-02 gauss=9.3e-14 E_em=2.475e+00 [77% 2002.0s 27.40ms/step]
+t=  945.5 E=4.609e+02 (drift -53.320%) Ep=-39.3 phi=0.634 θ_rms=0.00e+00 Q=3.153844e+02 s_max=6.5213e-02 gauss=9.3e-14 E_em=2.474e+00 [79% 2053.0s 27.36ms/step]
+t=  970.4 E=4.609e+02 (drift -53.320%) Ep=-39.5 phi=0.634 θ_rms=0.00e+00 Q=3.153844e+02 s_max=6.4962e-02 gauss=9.3e-14 E_em=2.474e+00 [81% 2109.7s 27.39ms/step]
+t=  995.3 E=4.609e+02 (drift -53.320%) Ep=-39.5 phi=0.634 θ_rms=0.00e+00 Q=3.153843e+02 s_max=6.4941e-02 gauss=9.3e-14 E_em=2.473e+00 [83% 2160.9s 27.35ms/step]
+t= 1020.2 E=4.609e+02 (drift -53.320%) Ep=-39.3 phi=0.635 θ_rms=0.00e+00 Q=3.153842e+02 s_max=6.5408e-02 gauss=9.3e-14 E_em=2.472e+00 [85% 2211.9s 27.32ms/step]
+t= 1045.0 E=4.609e+02 (drift -53.320%) Ep=-39.2 phi=0.635 θ_rms=0.00e+00 Q=3.153842e+02 s_max=6.5474e-02 gauss=9.3e-14 E_em=2.471e+00 [87% 2268.6s 27.35ms/step]
+t= 1069.9 E=4.609e+02 (drift -53.321%) Ep=-39.4 phi=0.634 θ_rms=0.00e+00 Q=3.153841e+02 s_max=6.5029e-02 gauss=9.3e-14 E_em=2.470e+00 [89% 2319.5s 27.31ms/step]
+t= 1094.8 E=4.609e+02 (drift -53.321%) Ep=-39.5 phi=0.634 θ_rms=0.00e+00 Q=3.153840e+02 s_max=6.4857e-02 gauss=9.3e-14 E_em=2.470e+00 [91% 2376.4s 27.35ms/step]
+t= 1119.7 E=4.609e+02 (drift -53.321%) Ep=-39.4 phi=0.634 θ_rms=0.00e+00 Q=3.153840e+02 s_max=6.4961e-02 gauss=9.3e-14 E_em=2.468e+00 [93% 2427.2s 27.31ms/step]
+t= 1144.6 E=4.609e+02 (drift -53.321%) Ep=-39.2 phi=0.634 θ_rms=0.00e+00 Q=3.153839e+02 s_max=6.5215e-02 gauss=9.3e-14 E_em=2.467e+00 [95% 2483.9s 27.34ms/step]
+t= 1169.4 E=4.609e+02 (drift -53.321%) Ep=-39.3 phi=0.635 θ_rms=0.00e+00 Q=3.153839e+02 s_max=6.5371e-02 gauss=9.3e-14 E_em=2.466e+00 [97% 2534.7s 27.31ms/step]
+t= 1194.3 E=4.609e+02 (drift -53.321%) Ep=-39.4 phi=0.634 θ_rms=0.00e+00 Q=3.153839e+02 s_max=6.4845e-02 gauss=9.3e-14 E_em=2.465e+00 [100% 2591.1s 27.33ms/step]
+
+=== COMPLETE (GPU, async pipeline) ===
+E_total=4.6086e+02 (drift -53.321%) E_pot=-39.2503
+phi_max=0.6339 theta_rms=0.000e+00
+Q_phi=3.153838e+02 Q_theta=0.000000e+00 Q_total=3.153838e+02 s_max=6.4872e-02 r_core=3.395 omega_core=1.3976 Q_core=2.247395e+02
+gauss_max=9.305e-14 gauss_l2=1.513e-14 E_em=2.464211e+00 Q_flux=2.828910e+02
+SFA: mf_orbit_R16_vt0p50_T1200.sfa (121 frames)
+Wall: 2605.8s (43.4 min) 27.36ms/step

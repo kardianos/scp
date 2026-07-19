@@ -1,0 +1,825 @@
+==== POLL 2026-07-18T21:20:18-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+TIME:2026-07-19T02:20:20+00:00
+QUEUE_PID=2412 RUNNING
+0 %, 4 MiB
+--- STATUS ---
+QUEUE_START 2026-07-19T02:05:00+00:00
+=== RUN S0 smoke_mf 2026-07-19T02:05:00+00:00 ===
+OK S0 smoke_mf 2026-07-19T02:08:49+00:00
+=== RUN S1 mf_force_D12 2026-07-19T02:08:49+00:00 ===
+OK S1 mf_force_D12 2026-07-19T02:18:32+00:00
+=== RUN S1 elite_opp_D12 2026-07-19T02:18:33+00:00 ===
+--- DONE ---
+mf_force_D12.ok
+smoke_mf.ok
+--- DISK ---
+overlay         100G  974M  100G   1% /
+--- TAIL RUNLOG ---
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /
+==== POLL 2026-07-18T21:35:23-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+TIME:2026-07-19T02:35:25+00:00
+QUEUE_PID=2412 RUNNING
+0 %, 2620 MiB
+--- STATUS ---
+QUEUE_START 2026-07-19T02:05:00+00:00
+=== RUN S0 smoke_mf 2026-07-19T02:05:00+00:00 ===
+OK S0 smoke_mf 2026-07-19T02:08:49+00:00
+=== RUN S1 mf_force_D12 2026-07-19T02:08:49+00:00 ===
+OK S1 mf_force_D12 2026-07-19T02:18:32+00:00
+=== RUN S1 elite_opp_D12 2026-07-19T02:18:33+00:00 ===
+OK S1 elite_opp_D12 2026-07-19T02:24:25+00:00
+=== RUN S1 elite_same_D12 2026-07-19T02:24:25+00:00 ===
+OK S1 elite_same_D12 2026-07-19T02:30:17+00:00
+=== RUN S1 mf_force_D16 2026-07-19T02:30:17+00:00 ===
+--- DONE ---
+elite_opp_D12.ok
+elite_same_D12.ok
+mf_force_D12.ok
+smoke_mf.ok
+--- DISK ---
+overlay         100G  6.4G   94G   7% /
+--- TAIL RUNLOG ---
+
+t=    9.6 E=3.476e+02 (drift -0.001%) Ep=-18.4 phi=0.603 θ_rms=0.00e+00 Q=1.147274e+02 s_max=4.7844e-02 gauss=9.0e-14 E_em=7.027e-01 [10% 41.5s 54.56ms/step]
+t=   19.1 E=3.477e+02 (drift +0.028%) Ep=-18.3 phi=0.602 θ_rms=0.00e+00 Q=1.147274e+02 s_max=4.7381e-02 gauss=9.0e-14 E_em=7.033e-01 [19% 84.4s 55.55ms/step]
+t=   28.7 E=3.478e+02 (drift +0.078%) Ep=-18.2 phi=0.602 θ_rms=0.00e+00 Q=1.147274e+02 s_max=4.7605e-02 gauss=9.0e-14 E_em=7.034e-01 [29% 128.1s 56.16ms/step]
+t=   38.3 E=3.481e+02 (drift +0.144%) Ep=-18.5 phi=0.603 θ_rms=0.00e+00 Q=1.147271e+02 s_max=4.8035e-02 gauss=9.0e-14 E_em=7.032e-01 [38% 171.8s 56.52ms/step]
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /
+==== POLL 2026-07-18T21:50:28-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+TIME:2026-07-19T02:50:30+00:00
+QUEUE_PID=2412 RUNNING
+100 %, 1276 MiB
+--- STATUS ---
+QUEUE_START 2026-07-19T02:05:00+00:00
+=== RUN S0 smoke_mf 2026-07-19T02:05:00+00:00 ===
+OK S0 smoke_mf 2026-07-19T02:08:49+00:00
+=== RUN S1 mf_force_D12 2026-07-19T02:08:49+00:00 ===
+OK S1 mf_force_D12 2026-07-19T02:18:32+00:00
+=== RUN S1 elite_opp_D12 2026-07-19T02:18:33+00:00 ===
+OK S1 elite_opp_D12 2026-07-19T02:24:25+00:00
+=== RUN S1 elite_same_D12 2026-07-19T02:24:25+00:00 ===
+OK S1 elite_same_D12 2026-07-19T02:30:17+00:00
+=== RUN S1 mf_force_D16 2026-07-19T02:30:17+00:00 ===
+OK S1 mf_force_D16 2026-07-19T02:40:01+00:00
+=== RUN S1 elite_opp_D16 2026-07-19T02:40:03+00:00 ===
+OK S1 elite_opp_D16 2026-07-19T02:45:58+00:00
+=== RUN S1 elite_same_D16 2026-07-19T02:45:58+00:00 ===
+--- DONE ---
+elite_opp_D12.ok
+elite_opp_D16.ok
+elite_same_D12.ok
+mf_force_D12.ok
+mf_force_D16.ok
+smoke_mf.ok
+--- DISK ---
+overlay         100G  8.1G   92G   9% /
+--- TAIL RUNLOG ---
+t=   28.7 E=3.507e+02 (drift -0.013%) Ep=-18.4 phi=0.602 θ_rms=0.00e+00 Q=2.316139e+02 s_max=4.7707e-02 gauss=9.2e-14 E_em=8.163e-01 [29% 67.8s 29.73ms/step]
+t=   38.3 E=3.507e+02 (drift -0.015%) Ep=-18.6 phi=0.603 θ_rms=0.00e+00 Q=2.316132e+02 s_max=4.8191e-02 gauss=9.2e-14 E_em=8.171e-01 [38% 91.8s 30.18ms/step]
+t=   47.9 E=3.507e+02 (drift -0.015%) Ep=-18.3 phi=0.602 θ_rms=0.00e+00 Q=2.316120e+02 s_max=4.7492e-02 gauss=9.2e-14 E_em=8.169e-01 [48% 115.2s 30.32ms/step]
+t=   57.4 E=3.507e+02 (drift -0.016%) Ep=-18.5 phi=0.603 θ_rms=0.00e+00 Q=2.316107e+02 s_max=4.8149e-02 gauss=9.2e-14 E_em=8.163e-01 [57% 138.5s 30.37ms/step]
+t=   67.0 E=3.507e+02 (drift -0.017%) Ep=-18.5 phi=0.603 θ_rms=0.00e+00 Q=2.316095e+02 s_max=4.7842e-02 gauss=9.2e-14 E_em=8.154e-01 [67% 161.7s 30.39ms/step]
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /
+==== POLL 2026-07-18T22:05:33-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+TIME:2026-07-19T03:05:35+00:00
+QUEUE_PID=2412 RUNNING
+100 %, 1276 MiB
+--- STATUS ---
+QUEUE_START 2026-07-19T02:05:00+00:00
+=== RUN S0 smoke_mf 2026-07-19T02:05:00+00:00 ===
+OK S0 smoke_mf 2026-07-19T02:08:49+00:00
+=== RUN S1 mf_force_D12 2026-07-19T02:08:49+00:00 ===
+OK S1 mf_force_D12 2026-07-19T02:18:32+00:00
+=== RUN S1 elite_opp_D12 2026-07-19T02:18:33+00:00 ===
+OK S1 elite_opp_D12 2026-07-19T02:24:25+00:00
+=== RUN S1 elite_same_D12 2026-07-19T02:24:25+00:00 ===
+OK S1 elite_same_D12 2026-07-19T02:30:17+00:00
+=== RUN S1 mf_force_D16 2026-07-19T02:30:17+00:00 ===
+OK S1 mf_force_D16 2026-07-19T02:40:01+00:00
+=== RUN S1 elite_opp_D16 2026-07-19T02:40:03+00:00 ===
+OK S1 elite_opp_D16 2026-07-19T02:45:58+00:00
+=== RUN S1 elite_same_D16 2026-07-19T02:45:58+00:00 ===
+OK S1 elite_same_D16 2026-07-19T02:51:53+00:00
+=== RUN S1 mf_force_D20 2026-07-19T02:51:53+00:00 ===
+OK S1 mf_force_D20 2026-07-19T03:01:37+00:00
+=== RUN S1 elite_opp_D20 2026-07-19T03:01:39+00:00 ===
+--- DONE ---
+elite_opp_D12.ok
+elite_opp_D16.ok
+elite_same_D12.ok
+elite_same_D16.ok
+mf_force_D12.ok
+mf_force_D16.ok
+mf_force_D20.ok
+smoke_mf.ok
+--- DISK ---
+overlay         100G  9.7G   91G  10% /
+--- TAIL RUNLOG ---
+t=    9.6 E=3.475e+02 (drift -0.012%) Ep=-18.4 phi=0.603 θ_rms=0.00e+00 Q=-9.221402e-10 s_max=4.7895e-02 gauss=9.8e-14 E_em=7.281e-01 [10% 22.6s 29.77ms/step]
+t=   19.1 E=3.475e+02 (drift -0.012%) Ep=-18.2 phi=0.602 θ_rms=0.00e+00 Q=-3.978178e-09 s_max=4.7397e-02 gauss=9.8e-14 E_em=7.285e-01 [19% 46.4s 30.53ms/step]
+t=   28.7 E=3.475e+02 (drift -0.012%) Ep=-18.3 phi=0.602 θ_rms=0.00e+00 Q=-7.755266e-09 s_max=4.7730e-02 gauss=9.8e-14 E_em=7.286e-01 [29% 70.4s 30.90ms/step]
+t=   38.3 E=3.475e+02 (drift -0.013%) Ep=-18.4 phi=0.602 θ_rms=0.00e+00 Q=-8.339220e-09 s_max=4.7769e-02 gauss=9.8e-14 E_em=7.283e-01 [38% 93.7s 30.82ms/step]
+t=   47.9 E=3.475e+02 (drift -0.014%) Ep=-18.2 phi=0.602 θ_rms=0.00e+00 Q=7.298529e-09 s_max=4.7623e-02 gauss=9.8e-14 E_em=7.277e-01 [48% 116.3s 30.60ms/step]
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /
+==== POLL 2026-07-18T22:20:38-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+TIME:2026-07-19T03:20:39+00:00
+QUEUE_PID=2412 RUNNING
+100 %, 2620 MiB
+--- STATUS ---
+=== RUN S1 mf_force_D12 2026-07-19T02:08:49+00:00 ===
+OK S1 mf_force_D12 2026-07-19T02:18:32+00:00
+=== RUN S1 elite_opp_D12 2026-07-19T02:18:33+00:00 ===
+OK S1 elite_opp_D12 2026-07-19T02:24:25+00:00
+=== RUN S1 elite_same_D12 2026-07-19T02:24:25+00:00 ===
+OK S1 elite_same_D12 2026-07-19T02:30:17+00:00
+=== RUN S1 mf_force_D16 2026-07-19T02:30:17+00:00 ===
+OK S1 mf_force_D16 2026-07-19T02:40:01+00:00
+=== RUN S1 elite_opp_D16 2026-07-19T02:40:03+00:00 ===
+OK S1 elite_opp_D16 2026-07-19T02:45:58+00:00
+=== RUN S1 elite_same_D16 2026-07-19T02:45:58+00:00 ===
+OK S1 elite_same_D16 2026-07-19T02:51:53+00:00
+=== RUN S1 mf_force_D20 2026-07-19T02:51:53+00:00 ===
+OK S1 mf_force_D20 2026-07-19T03:01:37+00:00
+=== RUN S1 elite_opp_D20 2026-07-19T03:01:39+00:00 ===
+OK S1 elite_opp_D20 2026-07-19T03:07:33+00:00
+=== RUN S1 elite_same_D20 2026-07-19T03:07:33+00:00 ===
+OK S1 elite_same_D20 2026-07-19T03:13:23+00:00
+FORCE_OK=1
+=== RUN S2 mf_pair_rest_D20 2026-07-19T03:13:23+00:00 ===
+--- DONE ---
+elite_opp_D12.ok
+elite_opp_D16.ok
+elite_opp_D20.ok
+elite_same_D12.ok
+elite_same_D16.ok
+elite_same_D20.ok
+mf_force_D12.ok
+mf_force_D16.ok
+mf_force_D20.ok
+smoke_mf.ok
+--- DISK ---
+overlay         100G   14G   87G  14% /
+--- TAIL RUNLOG ---
+t=   24.9 E=3.478e+02 (drift +0.054%) Ep=-18.4 phi=0.603 θ_rms=0.00e+00 Q=1.147272e+02 s_max=4.8052e-02 gauss=9.7e-14 E_em=7.287e-01 [6% 65.6s 33.20ms/step]
+t=   49.8 E=3.485e+02 (drift +0.246%) Ep=-18.3 phi=0.602 θ_rms=0.00e+00 Q=1.147260e+02 s_max=4.7523e-02 gauss=9.7e-14 E_em=7.276e-01 [12% 118.6s 30.02ms/step]
+t=   74.6 E=3.496e+02 (drift +0.575%) Ep=-18.2 phi=0.603 θ_rms=0.00e+00 Q=1.147246e+02 s_max=4.7861e-02 gauss=9.7e-14 E_em=7.253e-01 [19% 171.6s 28.97ms/step]
+t=   99.5 E=3.512e+02 (drift +1.031%) Ep=-18.4 phi=0.603 θ_rms=0.00e+00 Q=1.147239e+02 s_max=4.8136e-02 gauss=9.7e-14 E_em=7.240e-01 [25% 224.8s 28.45ms/step]
+t=  124.4 E=3.532e+02 (drift +1.603%) Ep=-18.1 phi=0.602 θ_rms=0.00e+00 Q=1.147232e+02 s_max=4.7675e-02 gauss=9.7e-14 E_em=7.234e-01 [31% 292.1s 29.58ms/step]
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /
+==== POLL 2026-07-18T22:35:43-05:00 ====
+Connection closed by 3.80.126.57 port 19142
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /
+==== POLL 2026-07-18T22:51:17-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+TIME:2026-07-19T03:51:19+00:00
+QUEUE_PID=2412 RUNNING
+0 %, 2620 MiB
+--- STATUS ---
+OK S1 elite_same_D12 2026-07-19T02:30:17+00:00
+=== RUN S1 mf_force_D16 2026-07-19T02:30:17+00:00 ===
+OK S1 mf_force_D16 2026-07-19T02:40:01+00:00
+=== RUN S1 elite_opp_D16 2026-07-19T02:40:03+00:00 ===
+OK S1 elite_opp_D16 2026-07-19T02:45:58+00:00
+=== RUN S1 elite_same_D16 2026-07-19T02:45:58+00:00 ===
+OK S1 elite_same_D16 2026-07-19T02:51:53+00:00
+=== RUN S1 mf_force_D20 2026-07-19T02:51:53+00:00 ===
+OK S1 mf_force_D20 2026-07-19T03:01:37+00:00
+=== RUN S1 elite_opp_D20 2026-07-19T03:01:39+00:00 ===
+OK S1 elite_opp_D20 2026-07-19T03:07:33+00:00
+=== RUN S1 elite_same_D20 2026-07-19T03:07:33+00:00 ===
+OK S1 elite_same_D20 2026-07-19T03:13:23+00:00
+FORCE_OK=1
+=== RUN S2 mf_pair_rest_D20 2026-07-19T03:13:23+00:00 ===
+OK S2 mf_pair_rest_D20 2026-07-19T03:30:49+00:00
+=== RUN S2 mf_headon_D20 2026-07-19T03:30:51+00:00 ===
+OK S2 mf_headon_D20 2026-07-19T03:43:12+00:00
+PAIR_OK=1
+=== RUN S3 mf_orbit_R16_vt0p03 2026-07-19T03:43:13+00:00 ===
+--- DONE ---
+elite_opp_D12.ok
+elite_opp_D16.ok
+elite_opp_D20.ok
+elite_same_D12.ok
+elite_same_D16.ok
+elite_same_D20.ok
+mf_force_D12.ok
+mf_force_D16.ok
+mf_force_D20.ok
+mf_headon_D20.ok
+mf_pair_rest_D20.ok
+smoke_mf.ok
+--- DISK ---
+overlay         100G   16G   85G  16% /
+--- TAIL RUNLOG ---
+
+t=   24.9 E=3.478e+02 (drift +0.043%) Ep=-18.4 phi=0.605 θ_rms=0.00e+00 Q=1.147275e+02 s_max=4.9223e-02 gauss=9.6e-14 E_em=6.995e-01 [6% 79.7s 40.37ms/step]
+t=   49.8 E=3.483e+02 (drift +0.195%) Ep=-18.3 phi=0.603 θ_rms=0.00e+00 Q=1.147266e+02 s_max=4.7982e-02 gauss=9.6e-14 E_em=6.978e-01 [12% 147.2s 37.27ms/step]
+t=   74.6 E=3.491e+02 (drift +0.431%) Ep=-18.2 phi=0.605 θ_rms=0.00e+00 Q=1.147253e+02 s_max=4.8920e-02 gauss=9.6e-14 E_em=6.948e-01 [19% 230.9s 38.97ms/step]
+t=   99.5 E=3.501e+02 (drift +0.711%) Ep=-18.4 phi=0.604 θ_rms=0.00e+00 Q=1.147244e+02 s_max=4.8615e-02 gauss=9.6e-14 E_em=6.932e-01 [25% 298.3s 37.75ms/step]
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /
+==== POLL 2026-07-18T23:06:22-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+TIME:2026-07-19T04:06:24+00:00
+QUEUE_PID=2412 RUNNING
+0 %, 4 MiB
+--- STATUS ---
+OK S1 mf_force_D16 2026-07-19T02:40:01+00:00
+=== RUN S1 elite_opp_D16 2026-07-19T02:40:03+00:00 ===
+OK S1 elite_opp_D16 2026-07-19T02:45:58+00:00
+=== RUN S1 elite_same_D16 2026-07-19T02:45:58+00:00 ===
+OK S1 elite_same_D16 2026-07-19T02:51:53+00:00
+=== RUN S1 mf_force_D20 2026-07-19T02:51:53+00:00 ===
+OK S1 mf_force_D20 2026-07-19T03:01:37+00:00
+=== RUN S1 elite_opp_D20 2026-07-19T03:01:39+00:00 ===
+OK S1 elite_opp_D20 2026-07-19T03:07:33+00:00
+=== RUN S1 elite_same_D20 2026-07-19T03:07:33+00:00 ===
+OK S1 elite_same_D20 2026-07-19T03:13:23+00:00
+FORCE_OK=1
+=== RUN S2 mf_pair_rest_D20 2026-07-19T03:13:23+00:00 ===
+OK S2 mf_pair_rest_D20 2026-07-19T03:30:49+00:00
+=== RUN S2 mf_headon_D20 2026-07-19T03:30:51+00:00 ===
+OK S2 mf_headon_D20 2026-07-19T03:43:12+00:00
+PAIR_OK=1
+=== RUN S3 mf_orbit_R16_vt0p03 2026-07-19T03:43:13+00:00 ===
+OK S3 mf_orbit_R16_vt0p03 2026-07-19T04:05:40+00:00
+=== RUN S3 mf_orbit_R16_vt0p05 2026-07-19T04:05:43+00:00 ===
+--- DONE ---
+elite_opp_D12.ok
+elite_opp_D16.ok
+elite_opp_D20.ok
+elite_same_D12.ok
+elite_same_D16.ok
+elite_same_D20.ok
+mf_force_D12.ok
+mf_force_D16.ok
+mf_force_D20.ok
+mf_headon_D20.ok
+mf_orbit_R16_vt0p03.ok
+mf_pair_rest_D20.ok
+smoke_mf.ok
+--- DISK ---
+overlay         100G   12G   89G  12% /
+--- TAIL RUNLOG ---
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /
+==== POLL 2026-07-18T23:21:27-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+TIME:2026-07-19T04:21:30+00:00
+QUEUE_PID=2412 RUNNING
+0 %, 2620 MiB
+--- STATUS ---
+OK S1 mf_force_D16 2026-07-19T02:40:01+00:00
+=== RUN S1 elite_opp_D16 2026-07-19T02:40:03+00:00 ===
+OK S1 elite_opp_D16 2026-07-19T02:45:58+00:00
+=== RUN S1 elite_same_D16 2026-07-19T02:45:58+00:00 ===
+OK S1 elite_same_D16 2026-07-19T02:51:53+00:00
+=== RUN S1 mf_force_D20 2026-07-19T02:51:53+00:00 ===
+OK S1 mf_force_D20 2026-07-19T03:01:37+00:00
+=== RUN S1 elite_opp_D20 2026-07-19T03:01:39+00:00 ===
+OK S1 elite_opp_D20 2026-07-19T03:07:33+00:00
+=== RUN S1 elite_same_D20 2026-07-19T03:07:33+00:00 ===
+OK S1 elite_same_D20 2026-07-19T03:13:23+00:00
+FORCE_OK=1
+=== RUN S2 mf_pair_rest_D20 2026-07-19T03:13:23+00:00 ===
+OK S2 mf_pair_rest_D20 2026-07-19T03:30:49+00:00
+=== RUN S2 mf_headon_D20 2026-07-19T03:30:51+00:00 ===
+OK S2 mf_headon_D20 2026-07-19T03:43:12+00:00
+PAIR_OK=1
+=== RUN S3 mf_orbit_R16_vt0p03 2026-07-19T03:43:13+00:00 ===
+OK S3 mf_orbit_R16_vt0p03 2026-07-19T04:05:40+00:00
+=== RUN S3 mf_orbit_R16_vt0p05 2026-07-19T04:05:43+00:00 ===
+--- DONE ---
+elite_opp_D12.ok
+elite_opp_D16.ok
+elite_opp_D20.ok
+elite_same_D12.ok
+elite_same_D16.ok
+elite_same_D20.ok
+mf_force_D12.ok
+mf_force_D16.ok
+mf_force_D20.ok
+mf_headon_D20.ok
+mf_orbit_R16_vt0p03.ok
+mf_pair_rest_D20.ok
+smoke_mf.ok
+--- DISK ---
+overlay         100G   19G   82G  19% /
+--- TAIL RUNLOG ---
+t=  149.3 E=3.497e+02 (drift +0.564%) Ep=-18.3 phi=0.604 θ_rms=0.00e+00 Q=1.147234e+02 s_max=4.8413e-02 gauss=9.0e-14 E_em=6.988e-01 [37% 450.3s 38.00ms/step]
+t=  174.2 E=3.500e+02 (drift +0.626%) Ep=-18.3 phi=0.604 θ_rms=0.00e+00 Q=1.147231e+02 s_max=4.8478e-02 gauss=9.0e-14 E_em=6.993e-01 [44% 534.1s 38.63ms/step]
+t=  199.1 E=3.501e+02 (drift +0.669%) Ep=-18.2 phi=0.604 θ_rms=0.00e+00 Q=1.147229e+02 s_max=4.8587e-02 gauss=9.0e-14 E_em=6.995e-01 [50% 603.4s 38.19ms/step]
+t=  223.9 E=3.502e+02 (drift +0.710%) Ep=-18.3 phi=0.604 θ_rms=0.00e+00 Q=1.147228e+02 s_max=4.8765e-02 gauss=9.0e-14 E_em=6.989e-01 [56% 688.2s 38.72ms/step]
+t=  248.8 E=3.503e+02 (drift +0.725%) Ep=-18.2 phi=0.604 θ_rms=0.00e+00 Q=1.147227e+02 s_max=4.8496e-02 gauss=9.0e-14 E_em=6.989e-01 [62% 757.0s 38.33ms/step]
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /
+==== POLL 2026-07-18T23:36:36-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+TIME:2026-07-19T04:36:37+00:00
+QUEUE_PID=2412 RUNNING
+100 %, 2620 MiB
+--- STATUS ---
+OK S1 elite_opp_D16 2026-07-19T02:45:58+00:00
+=== RUN S1 elite_same_D16 2026-07-19T02:45:58+00:00 ===
+OK S1 elite_same_D16 2026-07-19T02:51:53+00:00
+=== RUN S1 mf_force_D20 2026-07-19T02:51:53+00:00 ===
+OK S1 mf_force_D20 2026-07-19T03:01:37+00:00
+=== RUN S1 elite_opp_D20 2026-07-19T03:01:39+00:00 ===
+OK S1 elite_opp_D20 2026-07-19T03:07:33+00:00
+=== RUN S1 elite_same_D20 2026-07-19T03:07:33+00:00 ===
+OK S1 elite_same_D20 2026-07-19T03:13:23+00:00
+FORCE_OK=1
+=== RUN S2 mf_pair_rest_D20 2026-07-19T03:13:23+00:00 ===
+OK S2 mf_pair_rest_D20 2026-07-19T03:30:49+00:00
+=== RUN S2 mf_headon_D20 2026-07-19T03:30:51+00:00 ===
+OK S2 mf_headon_D20 2026-07-19T03:43:12+00:00
+PAIR_OK=1
+=== RUN S3 mf_orbit_R16_vt0p03 2026-07-19T03:43:13+00:00 ===
+OK S3 mf_orbit_R16_vt0p03 2026-07-19T04:05:40+00:00
+=== RUN S3 mf_orbit_R16_vt0p05 2026-07-19T04:05:43+00:00 ===
+OK S3 mf_orbit_R16_vt0p05 2026-07-19T04:28:09+00:00
+=== RUN S3 mf_orbit_R16_vt0p08 2026-07-19T04:28:12+00:00 ===
+--- DONE ---
+elite_opp_D12.ok
+elite_opp_D16.ok
+elite_opp_D20.ok
+elite_same_D12.ok
+elite_same_D16.ok
+elite_same_D20.ok
+mf_force_D12.ok
+mf_force_D16.ok
+mf_force_D20.ok
+mf_headon_D20.ok
+mf_orbit_R16_vt0p03.ok
+mf_orbit_R16_vt0p05.ok
+mf_pair_rest_D20.ok
+smoke_mf.ok
+--- DISK ---
+overlay         100G   16G   85G  16% /
+--- TAIL RUNLOG ---
+t=   24.9 E=3.481e+02 (drift -0.007%) Ep=-18.4 phi=0.604 θ_rms=0.00e+00 Q=1.147275e+02 s_max=4.8595e-02 gauss=9.3e-14 E_em=7.037e-01 [6% 78.8s 39.89ms/step]
+t=   49.8 E=3.481e+02 (drift +0.003%) Ep=-18.3 phi=0.604 θ_rms=0.00e+00 Q=1.147266e+02 s_max=4.8430e-02 gauss=9.3e-14 E_em=7.029e-01 [12% 145.6s 36.86ms/step]
+t=   74.6 E=3.482e+02 (drift +0.022%) Ep=-18.1 phi=0.604 θ_rms=0.00e+00 Q=1.147253e+02 s_max=4.8647e-02 gauss=9.3e-14 E_em=7.024e-01 [19% 228.8s 38.62ms/step]
+t=   99.5 E=3.482e+02 (drift +0.037%) Ep=-18.3 phi=0.605 θ_rms=0.00e+00 Q=1.147244e+02 s_max=4.9205e-02 gauss=9.3e-14 E_em=7.037e-01 [25% 298.0s 37.73ms/step]
+t=  124.4 E=3.482e+02 (drift +0.039%) Ep=-18.1 phi=0.604 θ_rms=0.00e+00 Q=1.147238e+02 s_max=4.8472e-02 gauss=9.3e-14 E_em=7.055e-01 [31% 382.5s 38.74ms/step]
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /
+==== POLL 2026-07-18T23:51:40-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+TIME:2026-07-19T04:51:42+00:00
+QUEUE_PID=2412 RUNNING
+0 %, 4 MiB
+--- STATUS ---
+OK S1 elite_same_D16 2026-07-19T02:51:53+00:00
+=== RUN S1 mf_force_D20 2026-07-19T02:51:53+00:00 ===
+OK S1 mf_force_D20 2026-07-19T03:01:37+00:00
+=== RUN S1 elite_opp_D20 2026-07-19T03:01:39+00:00 ===
+OK S1 elite_opp_D20 2026-07-19T03:07:33+00:00
+=== RUN S1 elite_same_D20 2026-07-19T03:07:33+00:00 ===
+OK S1 elite_same_D20 2026-07-19T03:13:23+00:00
+FORCE_OK=1
+=== RUN S2 mf_pair_rest_D20 2026-07-19T03:13:23+00:00 ===
+OK S2 mf_pair_rest_D20 2026-07-19T03:30:49+00:00
+=== RUN S2 mf_headon_D20 2026-07-19T03:30:51+00:00 ===
+OK S2 mf_headon_D20 2026-07-19T03:43:12+00:00
+PAIR_OK=1
+=== RUN S3 mf_orbit_R16_vt0p03 2026-07-19T03:43:13+00:00 ===
+OK S3 mf_orbit_R16_vt0p03 2026-07-19T04:05:40+00:00
+=== RUN S3 mf_orbit_R16_vt0p05 2026-07-19T04:05:43+00:00 ===
+OK S3 mf_orbit_R16_vt0p05 2026-07-19T04:28:09+00:00
+=== RUN S3 mf_orbit_R16_vt0p08 2026-07-19T04:28:12+00:00 ===
+OK S3 mf_orbit_R16_vt0p08 2026-07-19T04:50:43+00:00
+=== RUN S4 mf_h1_orbit_N192 2026-07-19T04:50:46+00:00 ===
+--- DONE ---
+elite_opp_D12.ok
+elite_opp_D16.ok
+elite_opp_D20.ok
+elite_same_D12.ok
+elite_same_D16.ok
+elite_same_D20.ok
+mf_force_D12.ok
+mf_force_D16.ok
+mf_force_D20.ok
+mf_headon_D20.ok
+mf_orbit_R16_vt0p03.ok
+mf_orbit_R16_vt0p05.ok
+mf_orbit_R16_vt0p08.ok
+mf_pair_rest_D20.ok
+smoke_mf.ok
+--- DISK ---
+overlay         100G   12G   89G  12% /
+--- TAIL RUNLOG ---
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /
+==== POLL 2026-07-19T00:06:45-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+TIME:2026-07-19T05:06:47+00:00
+QUEUE_PID=2412 RUNNING
+0 %, 8094 MiB
+--- STATUS ---
+OK S1 elite_same_D16 2026-07-19T02:51:53+00:00
+=== RUN S1 mf_force_D20 2026-07-19T02:51:53+00:00 ===
+OK S1 mf_force_D20 2026-07-19T03:01:37+00:00
+=== RUN S1 elite_opp_D20 2026-07-19T03:01:39+00:00 ===
+OK S1 elite_opp_D20 2026-07-19T03:07:33+00:00
+=== RUN S1 elite_same_D20 2026-07-19T03:07:33+00:00 ===
+OK S1 elite_same_D20 2026-07-19T03:13:23+00:00
+FORCE_OK=1
+=== RUN S2 mf_pair_rest_D20 2026-07-19T03:13:23+00:00 ===
+OK S2 mf_pair_rest_D20 2026-07-19T03:30:49+00:00
+=== RUN S2 mf_headon_D20 2026-07-19T03:30:51+00:00 ===
+OK S2 mf_headon_D20 2026-07-19T03:43:12+00:00
+PAIR_OK=1
+=== RUN S3 mf_orbit_R16_vt0p03 2026-07-19T03:43:13+00:00 ===
+OK S3 mf_orbit_R16_vt0p03 2026-07-19T04:05:40+00:00
+=== RUN S3 mf_orbit_R16_vt0p05 2026-07-19T04:05:43+00:00 ===
+OK S3 mf_orbit_R16_vt0p05 2026-07-19T04:28:09+00:00
+=== RUN S3 mf_orbit_R16_vt0p08 2026-07-19T04:28:12+00:00 ===
+OK S3 mf_orbit_R16_vt0p08 2026-07-19T04:50:43+00:00
+=== RUN S4 mf_h1_orbit_N192 2026-07-19T04:50:46+00:00 ===
+--- DONE ---
+elite_opp_D12.ok
+elite_opp_D16.ok
+elite_opp_D20.ok
+elite_same_D12.ok
+elite_same_D16.ok
+elite_same_D20.ok
+mf_force_D12.ok
+mf_force_D16.ok
+mf_force_D20.ok
+mf_headon_D20.ok
+mf_orbit_R16_vt0p03.ok
+mf_orbit_R16_vt0p05.ok
+mf_orbit_R16_vt0p08.ok
+mf_pair_rest_D20.ok
+smoke_mf.ok
+--- DISK ---
+overlay         100G   12G   89G  12% /
+--- TAIL RUNLOG ---
+INIT gauge: gauss_max=9.463e-14 gauss_l2=1.749e-14 E_em=7.098598e-01 Q_flux=1.142280e+02
+
+Async pipeline: snap every 3979 steps, diag every 159 steps, 63667 total
+
+t=   49.9 E=3.483e+02 (drift +0.136%) Ep=-18.2 phi=0.603 θ_rms=0.00e+00 Q=1.147271e+02 s_max=4.7864e-02 gauss=9.5e-14 E_em=7.152e-01 [6% 307.6s 77.39ms/step]
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /
+==== POLL 2026-07-19T00:21:50-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+TIME:2026-07-19T05:21:52+00:00
+QUEUE_PID=2412 RUNNING
+100 %, 8094 MiB
+--- STATUS ---
+OK S1 elite_same_D16 2026-07-19T02:51:53+00:00
+=== RUN S1 mf_force_D20 2026-07-19T02:51:53+00:00 ===
+OK S1 mf_force_D20 2026-07-19T03:01:37+00:00
+=== RUN S1 elite_opp_D20 2026-07-19T03:01:39+00:00 ===
+OK S1 elite_opp_D20 2026-07-19T03:07:33+00:00
+=== RUN S1 elite_same_D20 2026-07-19T03:07:33+00:00 ===
+OK S1 elite_same_D20 2026-07-19T03:13:23+00:00
+FORCE_OK=1
+=== RUN S2 mf_pair_rest_D20 2026-07-19T03:13:23+00:00 ===
+OK S2 mf_pair_rest_D20 2026-07-19T03:30:49+00:00
+=== RUN S2 mf_headon_D20 2026-07-19T03:30:51+00:00 ===
+OK S2 mf_headon_D20 2026-07-19T03:43:12+00:00
+PAIR_OK=1
+=== RUN S3 mf_orbit_R16_vt0p03 2026-07-19T03:43:13+00:00 ===
+OK S3 mf_orbit_R16_vt0p03 2026-07-19T04:05:40+00:00
+=== RUN S3 mf_orbit_R16_vt0p05 2026-07-19T04:05:43+00:00 ===
+OK S3 mf_orbit_R16_vt0p05 2026-07-19T04:28:09+00:00
+=== RUN S3 mf_orbit_R16_vt0p08 2026-07-19T04:28:12+00:00 ===
+OK S3 mf_orbit_R16_vt0p08 2026-07-19T04:50:43+00:00
+=== RUN S4 mf_h1_orbit_N192 2026-07-19T04:50:46+00:00 ===
+--- DONE ---
+elite_opp_D12.ok
+elite_opp_D16.ok
+elite_opp_D20.ok
+elite_same_D12.ok
+elite_same_D16.ok
+elite_same_D20.ok
+mf_force_D12.ok
+mf_force_D16.ok
+mf_force_D20.ok
+mf_headon_D20.ok
+mf_orbit_R16_vt0p03.ok
+mf_orbit_R16_vt0p05.ok
+mf_orbit_R16_vt0p08.ok
+mf_pair_rest_D20.ok
+smoke_mf.ok
+--- DISK ---
+overlay         100G   14G   87G  14% /
+--- TAIL RUNLOG ---
+Async pipeline: snap every 3979 steps, diag every 159 steps, 63667 total
+
+t=   49.9 E=3.483e+02 (drift +0.136%) Ep=-18.2 phi=0.603 θ_rms=0.00e+00 Q=1.147271e+02 s_max=4.7864e-02 gauss=9.5e-14 E_em=7.152e-01 [6% 307.6s 77.39ms/step]
+t=   99.9 E=3.492e+02 (drift +0.397%) Ep=-18.3 phi=0.604 θ_rms=0.00e+00 Q=1.147254e+02 s_max=4.8406e-02 gauss=9.5e-14 E_em=7.144e-01 [12% 631.1s 79.38ms/step]
+t=  149.8 E=3.499e+02 (drift +0.597%) Ep=-18.4 phi=0.605 θ_rms=0.00e+00 Q=1.147241e+02 s_max=4.9069e-02 gauss=9.5e-14 E_em=7.173e-01 [19% 951.5s 79.79ms/step]
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /
+==== POLL 2026-07-19T00:36:55-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+TIME:2026-07-19T05:36:57+00:00
+QUEUE_PID=2412 RUNNING
+100 %, 8094 MiB
+--- STATUS ---
+OK S1 elite_same_D16 2026-07-19T02:51:53+00:00
+=== RUN S1 mf_force_D20 2026-07-19T02:51:53+00:00 ===
+OK S1 mf_force_D20 2026-07-19T03:01:37+00:00
+=== RUN S1 elite_opp_D20 2026-07-19T03:01:39+00:00 ===
+OK S1 elite_opp_D20 2026-07-19T03:07:33+00:00
+=== RUN S1 elite_same_D20 2026-07-19T03:07:33+00:00 ===
+OK S1 elite_same_D20 2026-07-19T03:13:23+00:00
+FORCE_OK=1
+=== RUN S2 mf_pair_rest_D20 2026-07-19T03:13:23+00:00 ===
+OK S2 mf_pair_rest_D20 2026-07-19T03:30:49+00:00
+=== RUN S2 mf_headon_D20 2026-07-19T03:30:51+00:00 ===
+OK S2 mf_headon_D20 2026-07-19T03:43:12+00:00
+PAIR_OK=1
+=== RUN S3 mf_orbit_R16_vt0p03 2026-07-19T03:43:13+00:00 ===
+OK S3 mf_orbit_R16_vt0p03 2026-07-19T04:05:40+00:00
+=== RUN S3 mf_orbit_R16_vt0p05 2026-07-19T04:05:43+00:00 ===
+OK S3 mf_orbit_R16_vt0p05 2026-07-19T04:28:09+00:00
+=== RUN S3 mf_orbit_R16_vt0p08 2026-07-19T04:28:12+00:00 ===
+OK S3 mf_orbit_R16_vt0p08 2026-07-19T04:50:43+00:00
+=== RUN S4 mf_h1_orbit_N192 2026-07-19T04:50:46+00:00 ===
+--- DONE ---
+elite_opp_D12.ok
+elite_opp_D16.ok
+elite_opp_D20.ok
+elite_same_D12.ok
+elite_same_D16.ok
+elite_same_D20.ok
+mf_force_D12.ok
+mf_force_D16.ok
+mf_force_D20.ok
+mf_headon_D20.ok
+mf_orbit_R16_vt0p03.ok
+mf_orbit_R16_vt0p05.ok
+mf_orbit_R16_vt0p08.ok
+mf_pair_rest_D20.ok
+smoke_mf.ok
+--- DISK ---
+overlay         100G   19G   82G  19% /
+--- TAIL RUNLOG ---
+t=   99.9 E=3.492e+02 (drift +0.397%) Ep=-18.3 phi=0.604 θ_rms=0.00e+00 Q=1.147254e+02 s_max=4.8406e-02 gauss=9.5e-14 E_em=7.144e-01 [12% 631.1s 79.38ms/step]
+t=  149.8 E=3.499e+02 (drift +0.597%) Ep=-18.4 phi=0.605 θ_rms=0.00e+00 Q=1.147241e+02 s_max=4.9069e-02 gauss=9.5e-14 E_em=7.173e-01 [19% 951.5s 79.79ms/step]
+t=  199.8 E=3.503e+02 (drift +0.728%) Ep=-18.3 phi=0.604 θ_rms=0.00e+00 Q=1.147234e+02 s_max=4.8694e-02 gauss=9.5e-14 E_em=7.203e-01 [25% 1273.6s 80.10ms/step]
+t=  249.7 E=3.506e+02 (drift +0.823%) Ep=-18.2 phi=0.604 θ_rms=0.00e+00 Q=1.147229e+02 s_max=4.8495e-02 gauss=9.5e-14 E_em=7.233e-01 [31% 1596.4s 80.32ms/step]
+t=  299.7 E=3.509e+02 (drift +0.903%) Ep=-18.2 phi=0.605 θ_rms=0.00e+00 Q=1.147226e+02 s_max=4.8892e-02 gauss=9.5e-14 E_em=7.273e-01 [37% 1920.1s 80.51ms/step]
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /
+==== POLL 2026-07-19T00:52:00-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+TIME:2026-07-19T05:52:02+00:00
+QUEUE_PID=2412 RUNNING
+100 %, 8094 MiB
+--- STATUS ---
+OK S1 elite_same_D16 2026-07-19T02:51:53+00:00
+=== RUN S1 mf_force_D20 2026-07-19T02:51:53+00:00 ===
+OK S1 mf_force_D20 2026-07-19T03:01:37+00:00
+=== RUN S1 elite_opp_D20 2026-07-19T03:01:39+00:00 ===
+OK S1 elite_opp_D20 2026-07-19T03:07:33+00:00
+=== RUN S1 elite_same_D20 2026-07-19T03:07:33+00:00 ===
+OK S1 elite_same_D20 2026-07-19T03:13:23+00:00
+FORCE_OK=1
+=== RUN S2 mf_pair_rest_D20 2026-07-19T03:13:23+00:00 ===
+OK S2 mf_pair_rest_D20 2026-07-19T03:30:49+00:00
+=== RUN S2 mf_headon_D20 2026-07-19T03:30:51+00:00 ===
+OK S2 mf_headon_D20 2026-07-19T03:43:12+00:00
+PAIR_OK=1
+=== RUN S3 mf_orbit_R16_vt0p03 2026-07-19T03:43:13+00:00 ===
+OK S3 mf_orbit_R16_vt0p03 2026-07-19T04:05:40+00:00
+=== RUN S3 mf_orbit_R16_vt0p05 2026-07-19T04:05:43+00:00 ===
+OK S3 mf_orbit_R16_vt0p05 2026-07-19T04:28:09+00:00
+=== RUN S3 mf_orbit_R16_vt0p08 2026-07-19T04:28:12+00:00 ===
+OK S3 mf_orbit_R16_vt0p08 2026-07-19T04:50:43+00:00
+=== RUN S4 mf_h1_orbit_N192 2026-07-19T04:50:46+00:00 ===
+--- DONE ---
+elite_opp_D12.ok
+elite_opp_D16.ok
+elite_opp_D20.ok
+elite_same_D12.ok
+elite_same_D16.ok
+elite_same_D20.ok
+mf_force_D12.ok
+mf_force_D16.ok
+mf_force_D20.ok
+mf_headon_D20.ok
+mf_orbit_R16_vt0p03.ok
+mf_orbit_R16_vt0p05.ok
+mf_orbit_R16_vt0p08.ok
+mf_pair_rest_D20.ok
+smoke_mf.ok
+--- DISK ---
+overlay         100G   19G   82G  19% /
+--- TAIL RUNLOG ---
+t=  249.7 E=3.506e+02 (drift +0.823%) Ep=-18.2 phi=0.604 θ_rms=0.00e+00 Q=1.147229e+02 s_max=4.8495e-02 gauss=9.5e-14 E_em=7.233e-01 [31% 1596.4s 80.32ms/step]
+t=  299.7 E=3.509e+02 (drift +0.903%) Ep=-18.2 phi=0.605 θ_rms=0.00e+00 Q=1.147226e+02 s_max=4.8892e-02 gauss=9.5e-14 E_em=7.273e-01 [37% 1920.1s 80.51ms/step]
+t=  349.6 E=3.512e+02 (drift +0.984%) Ep=-18.2 phi=0.603 θ_rms=0.00e+00 Q=1.147224e+02 s_max=4.8189e-02 gauss=9.5e-14 E_em=7.311e-01 [44% 2243.5s 80.63ms/step]
+t=  399.6 E=3.515e+02 (drift +1.069%) Ep=-18.2 phi=0.604 θ_rms=0.00e+00 Q=1.147222e+02 s_max=4.8759e-02 gauss=9.5e-14 E_em=7.352e-01 [50% 2565.2s 80.67ms/step]
+t=  449.5 E=3.518e+02 (drift +1.159%) Ep=-18.3 phi=0.604 θ_rms=0.00e+00 Q=1.147221e+02 s_max=4.8409e-02 gauss=9.5e-14 E_em=7.387e-01 [56% 2889.0s 80.75ms/step]
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /
+==== POLL 2026-07-19T01:07:05-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+TIME:2026-07-19T06:07:06+00:00
+QUEUE_PID=2412 RUNNING
+100 %, 8094 MiB
+--- STATUS ---
+OK S1 elite_same_D16 2026-07-19T02:51:53+00:00
+=== RUN S1 mf_force_D20 2026-07-19T02:51:53+00:00 ===
+OK S1 mf_force_D20 2026-07-19T03:01:37+00:00
+=== RUN S1 elite_opp_D20 2026-07-19T03:01:39+00:00 ===
+OK S1 elite_opp_D20 2026-07-19T03:07:33+00:00
+=== RUN S1 elite_same_D20 2026-07-19T03:07:33+00:00 ===
+OK S1 elite_same_D20 2026-07-19T03:13:23+00:00
+FORCE_OK=1
+=== RUN S2 mf_pair_rest_D20 2026-07-19T03:13:23+00:00 ===
+OK S2 mf_pair_rest_D20 2026-07-19T03:30:49+00:00
+=== RUN S2 mf_headon_D20 2026-07-19T03:30:51+00:00 ===
+OK S2 mf_headon_D20 2026-07-19T03:43:12+00:00
+PAIR_OK=1
+=== RUN S3 mf_orbit_R16_vt0p03 2026-07-19T03:43:13+00:00 ===
+OK S3 mf_orbit_R16_vt0p03 2026-07-19T04:05:40+00:00
+=== RUN S3 mf_orbit_R16_vt0p05 2026-07-19T04:05:43+00:00 ===
+OK S3 mf_orbit_R16_vt0p05 2026-07-19T04:28:09+00:00
+=== RUN S3 mf_orbit_R16_vt0p08 2026-07-19T04:28:12+00:00 ===
+OK S3 mf_orbit_R16_vt0p08 2026-07-19T04:50:43+00:00
+=== RUN S4 mf_h1_orbit_N192 2026-07-19T04:50:46+00:00 ===
+--- DONE ---
+elite_opp_D12.ok
+elite_opp_D16.ok
+elite_opp_D20.ok
+elite_same_D12.ok
+elite_same_D16.ok
+elite_same_D20.ok
+mf_force_D12.ok
+mf_force_D16.ok
+mf_force_D20.ok
+mf_headon_D20.ok
+mf_orbit_R16_vt0p03.ok
+mf_orbit_R16_vt0p05.ok
+mf_orbit_R16_vt0p08.ok
+mf_pair_rest_D20.ok
+smoke_mf.ok
+--- DISK ---
+overlay         100G   21G   80G  21% /
+--- TAIL RUNLOG ---
+t=  399.6 E=3.515e+02 (drift +1.069%) Ep=-18.2 phi=0.604 θ_rms=0.00e+00 Q=1.147222e+02 s_max=4.8759e-02 gauss=9.5e-14 E_em=7.352e-01 [50% 2565.2s 80.67ms/step]
+t=  449.5 E=3.518e+02 (drift +1.159%) Ep=-18.3 phi=0.604 θ_rms=0.00e+00 Q=1.147221e+02 s_max=4.8409e-02 gauss=9.5e-14 E_em=7.387e-01 [56% 2889.0s 80.75ms/step]
+t=  499.5 E=3.521e+02 (drift +1.251%) Ep=-18.3 phi=0.605 θ_rms=0.00e+00 Q=1.147220e+02 s_max=4.8836e-02 gauss=9.5e-14 E_em=7.422e-01 [62% 3209.8s 80.75ms/step]
+t=  549.4 E=3.525e+02 (drift +1.346%) Ep=-18.3 phi=0.605 θ_rms=0.00e+00 Q=1.147219e+02 s_max=4.8951e-02 gauss=9.5e-14 E_em=7.449e-01 [69% 3532.7s 80.79ms/step]
+t=  599.4 E=3.528e+02 (drift +1.444%) Ep=-18.3 phi=0.604 θ_rms=0.00e+00 Q=1.147218e+02 s_max=4.8537e-02 gauss=9.5e-14 E_em=7.476e-01 [75% 3854.7s 80.81ms/step]
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /
+==== POLL 2026-07-19T01:22:10-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+TIME:2026-07-19T06:22:11+00:00
+QUEUE_PID=2412 RUNNING
+0 %, 8094 MiB
+--- STATUS ---
+OK S1 elite_same_D16 2026-07-19T02:51:53+00:00
+=== RUN S1 mf_force_D20 2026-07-19T02:51:53+00:00 ===
+OK S1 mf_force_D20 2026-07-19T03:01:37+00:00
+=== RUN S1 elite_opp_D20 2026-07-19T03:01:39+00:00 ===
+OK S1 elite_opp_D20 2026-07-19T03:07:33+00:00
+=== RUN S1 elite_same_D20 2026-07-19T03:07:33+00:00 ===
+OK S1 elite_same_D20 2026-07-19T03:13:23+00:00
+FORCE_OK=1
+=== RUN S2 mf_pair_rest_D20 2026-07-19T03:13:23+00:00 ===
+OK S2 mf_pair_rest_D20 2026-07-19T03:30:49+00:00
+=== RUN S2 mf_headon_D20 2026-07-19T03:30:51+00:00 ===
+OK S2 mf_headon_D20 2026-07-19T03:43:12+00:00
+PAIR_OK=1
+=== RUN S3 mf_orbit_R16_vt0p03 2026-07-19T03:43:13+00:00 ===
+OK S3 mf_orbit_R16_vt0p03 2026-07-19T04:05:40+00:00
+=== RUN S3 mf_orbit_R16_vt0p05 2026-07-19T04:05:43+00:00 ===
+OK S3 mf_orbit_R16_vt0p05 2026-07-19T04:28:09+00:00
+=== RUN S3 mf_orbit_R16_vt0p08 2026-07-19T04:28:12+00:00 ===
+OK S3 mf_orbit_R16_vt0p08 2026-07-19T04:50:43+00:00
+=== RUN S4 mf_h1_orbit_N192 2026-07-19T04:50:46+00:00 ===
+--- DONE ---
+elite_opp_D12.ok
+elite_opp_D16.ok
+elite_opp_D20.ok
+elite_same_D12.ok
+elite_same_D16.ok
+elite_same_D20.ok
+mf_force_D12.ok
+mf_force_D16.ok
+mf_force_D20.ok
+mf_headon_D20.ok
+mf_orbit_R16_vt0p03.ok
+mf_orbit_R16_vt0p05.ok
+mf_orbit_R16_vt0p08.ok
+mf_pair_rest_D20.ok
+smoke_mf.ok
+--- DISK ---
+overlay         100G   23G   78G  23% /
+--- TAIL RUNLOG ---
+t=  549.4 E=3.525e+02 (drift +1.346%) Ep=-18.3 phi=0.605 θ_rms=0.00e+00 Q=1.147219e+02 s_max=4.8951e-02 gauss=9.5e-14 E_em=7.449e-01 [69% 3532.7s 80.79ms/step]
+t=  599.4 E=3.528e+02 (drift +1.444%) Ep=-18.3 phi=0.604 θ_rms=0.00e+00 Q=1.147218e+02 s_max=4.8537e-02 gauss=9.5e-14 E_em=7.476e-01 [75% 3854.7s 80.81ms/step]
+t=  649.3 E=3.532e+02 (drift +1.547%) Ep=-18.2 phi=0.604 θ_rms=0.00e+00 Q=1.147217e+02 s_max=4.8638e-02 gauss=9.5e-14 E_em=7.490e-01 [81% 4177.3s 80.84ms/step]
+t=  699.3 E=3.535e+02 (drift +1.652%) Ep=-18.2 phi=0.604 θ_rms=0.00e+00 Q=1.147216e+02 s_max=4.8692e-02 gauss=9.5e-14 E_em=7.501e-01 [87% 4497.8s 80.82ms/step]
+t=  749.2 E=3.539e+02 (drift +1.756%) Ep=-18.2 phi=0.604 θ_rms=0.00e+00 Q=1.147216e+02 s_max=4.8713e-02 gauss=9.5e-14 E_em=7.498e-01 [94% 4818.4s 80.81ms/step]
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /
+==== POLL 2026-07-19T01:37:14-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+TIME:2026-07-19T06:37:16+00:00
+QUEUE_PID=2412 DEAD
+0 %, 0 MiB
+--- STATUS ---
+OK S1 mf_force_D20 2026-07-19T03:01:37+00:00
+=== RUN S1 elite_opp_D20 2026-07-19T03:01:39+00:00 ===
+OK S1 elite_opp_D20 2026-07-19T03:07:33+00:00
+=== RUN S1 elite_same_D20 2026-07-19T03:07:33+00:00 ===
+OK S1 elite_same_D20 2026-07-19T03:13:23+00:00
+FORCE_OK=1
+=== RUN S2 mf_pair_rest_D20 2026-07-19T03:13:23+00:00 ===
+OK S2 mf_pair_rest_D20 2026-07-19T03:30:49+00:00
+=== RUN S2 mf_headon_D20 2026-07-19T03:30:51+00:00 ===
+OK S2 mf_headon_D20 2026-07-19T03:43:12+00:00
+PAIR_OK=1
+=== RUN S3 mf_orbit_R16_vt0p03 2026-07-19T03:43:13+00:00 ===
+OK S3 mf_orbit_R16_vt0p03 2026-07-19T04:05:40+00:00
+=== RUN S3 mf_orbit_R16_vt0p05 2026-07-19T04:05:43+00:00 ===
+OK S3 mf_orbit_R16_vt0p05 2026-07-19T04:28:09+00:00
+=== RUN S3 mf_orbit_R16_vt0p08 2026-07-19T04:28:12+00:00 ===
+OK S3 mf_orbit_R16_vt0p08 2026-07-19T04:50:43+00:00
+=== RUN S4 mf_h1_orbit_N192 2026-07-19T04:50:46+00:00 ===
+OK S4 mf_h1_orbit_N192 2026-07-19T06:28:30+00:00
+QUEUE_DONE 2026-07-19T06:28:34+00:00
+--- DONE ---
+elite_opp_D12.ok
+elite_opp_D16.ok
+elite_opp_D20.ok
+elite_same_D12.ok
+elite_same_D16.ok
+elite_same_D20.ok
+mf_force_D12.ok
+mf_force_D16.ok
+mf_force_D20.ok
+mf_h1_orbit_N192.ok
+mf_headon_D20.ok
+mf_orbit_R16_vt0p03.ok
+mf_orbit_R16_vt0p05.ok
+mf_orbit_R16_vt0p08.ok
+mf_pair_rest_D20.ok
+smoke_mf.ok
+--- DISK ---
+overlay         100G   12G   89G  12% /
+--- TAIL RUNLOG ---
+phi_max=0.6040 theta_rms=0.000e+00
+Q_phi=1.147216e+02 Q_theta=0.000000e+00 Q_total=1.147216e+02 s_max=4.8539e-02 r_core=3.150 omega_core=0.0000 Q_core=4.483731e-01
+gauss_max=9.464e-14 gauss_l2=1.749e-14 E_em=7.481953e-01 Q_flux=4.595885e+00
+SFA: mf_h1_orbit_N192.sfa (18 frames)
+Wall: 5260.0s (87.7 min) 82.62ms/step
+CAMPAIGN_COMPLETE 2026-07-19T01:37:14-05:00
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1       916G  412G  458G  48% /space
+/dev/nvme1n1p2  457G  384G   50G  89% /

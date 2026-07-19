@@ -1,0 +1,77 @@
+QUEUE_START 2026-07-19T02:05:00+00:00
+=== RUN S0 smoke_mf 2026-07-19T02:05:00+00:00 ===
+OK S0 smoke_mf 2026-07-19T02:08:49+00:00
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G  974M  100G   1% /
+=== RUN S1 mf_force_D12 2026-07-19T02:08:49+00:00 ===
+OK S1 mf_force_D12 2026-07-19T02:18:32+00:00
+pruned large SFA mf_force_D12 (3311300431)
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G  974M  100G   1% /
+=== RUN S1 elite_opp_D12 2026-07-19T02:18:33+00:00 ===
+OK S1 elite_opp_D12 2026-07-19T02:24:25+00:00
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G  3.0G   98G   3% /
+=== RUN S1 elite_same_D12 2026-07-19T02:24:25+00:00 ===
+OK S1 elite_same_D12 2026-07-19T02:30:17+00:00
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G  4.7G   96G   5% /
+=== RUN S1 mf_force_D16 2026-07-19T02:30:17+00:00 ===
+OK S1 mf_force_D16 2026-07-19T02:40:01+00:00
+pruned large SFA mf_force_D16 (3326275851)
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G  4.4G   96G   5% /
+=== RUN S1 elite_opp_D16 2026-07-19T02:40:03+00:00 ===
+OK S1 elite_opp_D16 2026-07-19T02:45:58+00:00
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G  6.2G   94G   7% /
+=== RUN S1 elite_same_D16 2026-07-19T02:45:58+00:00 ===
+OK S1 elite_same_D16 2026-07-19T02:51:53+00:00
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G  8.1G   92G   9% /
+=== RUN S1 mf_force_D20 2026-07-19T02:51:53+00:00 ===
+OK S1 mf_force_D20 2026-07-19T03:01:37+00:00
+pruned large SFA mf_force_D20 (3343331307)
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G  7.9G   93G   8% /
+=== RUN S1 elite_opp_D20 2026-07-19T03:01:39+00:00 ===
+OK S1 elite_opp_D20 2026-07-19T03:07:33+00:00
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G  9.7G   91G  10% /
+=== RUN S1 elite_same_D20 2026-07-19T03:07:33+00:00 ===
+OK S1 elite_same_D20 2026-07-19T03:13:23+00:00
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G   12G   89G  12% /
+=== RUN S2 mf_pair_rest_D20 2026-07-19T03:13:23+00:00 ===
+OK S2 mf_pair_rest_D20 2026-07-19T03:30:49+00:00
+pruned large SFA mf_pair_rest_D20 (3601615889)
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G   12G   89G  12% /
+=== RUN S2 mf_headon_D20 2026-07-19T03:30:51+00:00 ===
+OK S2 mf_headon_D20 2026-07-19T03:43:12+00:00
+pruned large SFA mf_headon_D20 (3510849580)
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G   12G   89G  12% /
+=== RUN S3 mf_orbit_R16_vt0p03 2026-07-19T03:43:13+00:00 ===
+OK S3 mf_orbit_R16_vt0p03 2026-07-19T04:05:40+00:00
+pruned large SFA mf_orbit_R16_vt0p03 (7796381916)
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G   12G   89G  12% /
+=== RUN S3 mf_orbit_R16_vt0p05 2026-07-19T04:05:43+00:00 ===
+OK S3 mf_orbit_R16_vt0p05 2026-07-19T04:28:09+00:00
+pruned large SFA mf_orbit_R16_vt0p05 (7813285451)
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G   12G   89G  12% /
+=== RUN S3 mf_orbit_R16_vt0p08 2026-07-19T04:28:12+00:00 ===
+OK S3 mf_orbit_R16_vt0p08 2026-07-19T04:50:43+00:00
+pruned large SFA mf_orbit_R16_vt0p08 (7824460738)
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G   12G   89G  12% /
+=== RUN S4 mf_h1_orbit_N192 2026-07-19T04:50:46+00:00 ===
+OK S4 mf_h1_orbit_N192 2026-07-19T06:28:30+00:00
+pruned large SFA mf_h1_orbit_N192 (11298047080)
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G   12G   89G  12% /
+QUEUE_DONE 2026-07-19T06:28:34+00:00
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G   12G   89G  12% /

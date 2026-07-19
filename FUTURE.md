@@ -11,6 +11,25 @@ has no stable particles (CONCEPT.md §2/§9).
 
 ---
 
+## GPU long-T multi-fab atom (v79) — 2026-07-18
+
+**Docs:** `v79/PLAN.md` · `v79/STATUS.md` · `v79/cfg/` · `v79/seeds/`  
+**Instance:** Vast **45259142** `v79atom` — **V100-SXM2-32GB**, **100 GB disk**,
+ssh `ssh7.vast.ai:19142`. Primary: Z6N6+L6 **T=800** multi-fab B2.
+Seeds + CUDA binary uploaded; run started.
+
+---
+
+## Field → nucleon → C₁₂ atom path (v78) — 2026-07-19
+
+**Docs:** `v78/GOALS.md` · `v78/PHYSICS_RELATIONS.md` · `v78/PARTICLE_LADDER.md` ·
+`v78/RECIPES.md` · `v78/CONVERGENCE.md`  
+**Status:** **STOP COMPLETE** — phases W–U PASS; atom *package* ready; ideal
+long-T C₁₂ atom product deferred to **v79 GPU**.
+Integrates monist R1–R10 (v76/v77) with SCP nucleon/P/N/Z-carbon/L (v74/v75).
+
+---
+
 ## Multi-focus monist demos (v77) — 2026-07-18
 
 **Docs:** `v77/PROBLEM.md` · `v77/FOCI.md` · `v77/RUN.md` · `v77/README.md`  

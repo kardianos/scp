@@ -1,0 +1,20 @@
+==== ow 1 2026-07-19T09:26:00-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+2311 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03.cfg
+0 %, 2620 MiB
+-rw-r--r-- 1 root root 3.1G Jul 19 14:25 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv: lines=97 last_t=94.55
+overlay         100G   64G   37G  64% /
+8
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)

@@ -1,0 +1,958 @@
+==== mon 1 2026-07-19T11:57:18-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+936 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p50_T1200.cfg
+0 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=62 t=59.72
+total 0
+-rw-r--r-- 1 root root 135M Jul 19 16:57 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  204M  100G   1% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 2 2026-07-19T12:00:25-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+936 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p50_T1200.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=147 t=144.31
+total 0
+-rw-r--r-- 1 root root 449M Jul 19 17:00 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  596M  100G   1% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 3 2026-07-19T12:03:33-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+936 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p50_T1200.cfg
+0 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=233 t=229.91
+total 0
+-rw-r--r-- 1 root root 721M Jul 19 17:03 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  1.1G   99G   2% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 4 2026-07-19T12:06:40-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+936 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p50_T1200.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=320 t=316.50
+total 0
+-rw-r--r-- 1 root root 995M Jul 19 17:06 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  1.5G   99G   2% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 5 2026-07-19T12:09:48-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+936 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p50_T1200.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=405 t=401.10
+total 0
+-rw-r--r-- 1 root root 1.3G Jul 19 17:09 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  1.5G   99G   2% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 6 2026-07-19T12:12:55-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+936 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p50_T1200.cfg
+0 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=494 t=489.68
+total 0
+-rw-r--r-- 1 root root 1.5G Jul 19 17:12 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  2.4G   98G   3% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 7 2026-07-19T12:16:03-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+936 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p50_T1200.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=581 t=576.26
+total 0
+-rw-r--r-- 1 root root 1.7G Jul 19 17:15 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  1.8G   99G   2% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 8 2026-07-19T12:19:11-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+936 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p50_T1200.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=668 t=662.85
+total 0
+-rw-r--r-- 1 root root 2.0G Jul 19 17:19 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  3.8G   97G   4% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 9 2026-07-19T12:22:18-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+936 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p50_T1200.cfg
+0 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=755 t=749.44
+total 0
+-rw-r--r-- 1 root root 2.2G Jul 19 17:22 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.2G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 10 2026-07-19T12:25:26-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+936 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p50_T1200.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=843 t=837.03
+total 0
+-rw-r--r-- 1 root root 2.4G Jul 19 17:25 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.2G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 11 2026-07-19T12:28:33-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+936 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p50_T1200.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=929 t=922.62
+total 0
+-rw-r--r-- 1 root root 2.6G Jul 19 17:28 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.5G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 12 2026-07-19T12:31:41-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+936 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p50_T1200.cfg
+0 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1017 t=1010.20
+total 0
+-rw-r--r-- 1 root root 2.8G Jul 19 17:31 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.5G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 13 2026-07-19T12:34:48-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+936 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p50_T1200.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1104 t=1096.79
+total 0
+-rw-r--r-- 1 root root 3.0G Jul 19 17:34 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.5G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 14 2026-07-19T12:37:56-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+936 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p50_T1200.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1190 t=1182.39
+total 0
+-rw-r--r-- 1 root root 3.2G Jul 19 17:37 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  7.2G   93G   8% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 15 2026-07-19T12:41:03-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+no_sim
+1719 /root/v80/bin/mf_pair_track mf_orbit_R16_vt0p50_T1200.sfa tracks/mf_orbit_R16_vt0p50_T1200_track.tsv
+0 %, 0 MiB
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 12K
+-rw-r--r-- 1 root root 12K Jul 19 17:40 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  3.3G   97G   4% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 16 2026-07-19T12:44:11-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=21 t=38.06
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 16K
+-rw-r--r-- 1 root root 16K Jul 19 17:41 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 5.3M Jul 19 17:43 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  3.3G   97G   4% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 17 2026-07-19T12:47:18-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=76 t=148.23
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 16K
+-rw-r--r-- 1 root root 16K Jul 19 17:41 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root  69M Jul 19 17:46 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  3.3G   97G   4% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 18 2026-07-19T12:50:26-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=131 t=258.41
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 16K
+-rw-r--r-- 1 root root 16K Jul 19 17:41 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 130M Jul 19 17:49 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  3.4G   97G   4% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 19 2026-07-19T12:53:33-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=185 t=366.58
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 16K
+-rw-r--r-- 1 root root 16K Jul 19 17:41 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 187M Jul 19 17:53 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  3.4G   97G   4% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 20 2026-07-19T12:56:41-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+0 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=241 t=478.75
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 16K
+-rw-r--r-- 1 root root 16K Jul 19 17:41 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 223M Jul 19 17:55 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  3.6G   97G   4% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 21 2026-07-19T12:59:48-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=296 t=588.93
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 16K
+-rw-r--r-- 1 root root 16K Jul 19 17:41 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 277M Jul 19 17:59 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  3.6G   97G   4% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 22 2026-07-19T13:02:56-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=351 t=699.10
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 16K
+-rw-r--r-- 1 root root 16K Jul 19 17:41 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 330M Jul 19 18:02 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  3.8G   97G   4% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 23 2026-07-19T13:06:03-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=405 t=807.27
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 16K
+-rw-r--r-- 1 root root 16K Jul 19 17:41 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 380M Jul 19 18:05 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.1G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 24 2026-07-19T13:09:11-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+2337 /root/v80/bin/mf_pair_track /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa /root/v80/work_orbit2/tracks/mf_orbit_R16_vt0p50_T1200_track.tsv
+0 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=461 t=919.45
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 16K
+-rw-r--r-- 1 root root  12K Jul 19 18:08 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 4.0K Jul 19 18:08 retrack_hard.log
+-rw-r--r-- 1 root root 412M Jul 19 18:08 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.1G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 25 2026-07-19T13:12:19-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=517 t=1031.62
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 460M Jul 19 18:11 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.2G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 26 2026-07-19T13:15:27-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=571 t=1139.79
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 506M Jul 19 18:14 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.2G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 27 2026-07-19T13:18:34-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=626 t=1249.97
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 549M Jul 19 18:18 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.2G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 28 2026-07-19T13:21:42-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+0 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=680 t=1358.14
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 578M Jul 19 18:20 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.3G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 29 2026-07-19T13:24:49-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=736 t=1470.31
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 639M Jul 19 18:24 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.3G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 30 2026-07-19T13:27:57-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=790 t=1578.48
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 730M Jul 19 18:27 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.9G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 31 2026-07-19T13:31:04-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=844 t=1686.65
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 820M Jul 19 18:30 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  5.0G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 32 2026-07-19T13:34:12-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+0 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=900 t=1798.83
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 878M Jul 19 18:33 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  5.0G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 33 2026-07-19T13:37:20-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=954 t=1907.00
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 968M Jul 19 18:36 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.4G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 34 2026-07-19T13:40:27-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=1008 t=2015.17
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 1.1G Jul 19 18:40 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.4G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 35 2026-07-19T13:43:35-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=1061 t=2121.34
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 1.2G Jul 19 18:43 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.8G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 36 2026-07-19T13:46:43-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=1117 t=2233.51
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 1.3G Jul 19 18:45 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.5G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 37 2026-07-19T13:49:50-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=1171 t=2341.68
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 1.4G Jul 19 18:49 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  4.8G   96G   5% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 38 2026-07-19T13:52:58-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=1224 t=2447.85
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 1.5G Jul 19 18:52 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  5.2G   95G   6% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 39 2026-07-19T13:56:05-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+0 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=1279 t=2558.02
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 1.6G Jul 19 18:55 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  5.2G   95G   6% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 40 2026-07-19T13:59:13-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=1333 t=2666.19
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 1.7G Jul 19 18:58 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  5.1G   95G   6% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 41 2026-07-19T14:02:20-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=1387 t=2774.36
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 1.8G Jul 19 19:01 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  5.5G   95G   6% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 42 2026-07-19T14:05:28-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=1441 t=2882.53
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 1.9G Jul 19 19:05 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  5.5G   95G   6% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 43 2026-07-19T14:08:36-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=1497 t=2994.71
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 2.0G Jul 19 19:07 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  5.4G   95G   6% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 44 2026-07-19T14:11:43-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=1551 t=3102.88
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 2.1G Jul 19 19:11 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  5.4G   95G   6% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 45 2026-07-19T14:14:51-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=1605 t=3211.05
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 2.2G Jul 19 19:14 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  5.8G   95G   6% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 46 2026-07-19T14:17:59-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=1660 t=3321.22
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 2.3G Jul 19 19:17 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  5.8G   95G   6% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 47 2026-07-19T14:21:07-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+QUEUE_START 2026-07-19T16:53:08+00:00
+=== RUN mf_orbit_R16_vt0p50_T1200 2026-07-19T16:53:08+00:00 ===
+OK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK mf_orbit_R16_vt0p50_T1200 2026-07-19T17:38:36+00:00
+TRACK_OK mf_orbit_R16_vt0p50_T1200 122 lines
+=== RUN mf_orbit_R16_vt0p03_T4000 2026-07-19T17:41:08+00:00 ===
+1774 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p03_T4000.cfg
+100 %, 2404 MiB
+DIAG mf_orbit_R16_vt0p03_T4000_diag.tsv lines=1716 t=3433.40
+DIAG mf_orbit_R16_vt0p50_T1200_diag.tsv lines=1207 t=1199.31
+total 24K
+-rw-r--r-- 1 root root  16K Jul 19 18:09 mf_orbit_R16_vt0p50_T1200_track.tsv
+-rw-r--r-- 1 root root 7.3K Jul 19 18:09 retrack_hard.log
+-rw-r--r-- 1 root root 2.4G Jul 19 19:20 /root/v80/work_orbit2/mf_orbit_R16_vt0p03_T4000.sfa
+-rw-r--r-- 1 root root 3.2G Jul 19 17:38 /root/v80/work_orbit2/mf_orbit_R16_vt0p50_T1200.sfa
+overlay         100G  5.8G   95G   6% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!

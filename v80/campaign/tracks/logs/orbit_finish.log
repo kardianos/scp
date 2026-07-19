@@ -1,0 +1,507 @@
+==== of 1 2026-07-19T09:47:44-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS:
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+PROCS:
+3565 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p05.cfg
+3633 /root/v80/bin/mf_pair_track /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+0 %, 4 MiB
+-rw-r--r-- 1 root root 0 Jul 19 14:47 /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root 15G Jul 19 14:47 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv lines=403 t=399.11
+overlay         100G   64G   37G  64% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+tracks_ready=0/2
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)
+==== of 2 2026-07-19T09:50:50-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS:
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+PROCS:
+3565 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p05.cfg
+3633 /root/v80/bin/mf_pair_track /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+100 %, 2620 MiB
+-rw-r--r-- 1 root root 8.0K Jul 19 14:50 /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root  15G Jul 19 14:47 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+-rw-r--r-- 1 root root 812M Jul 19 14:50 /root/v80/work_tracks/mf_orbit_R16_vt0p05.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv lines=403 t=399.11
+DIAG mf_orbit_R16_vt0p05_diag.tsv lines=30 t=27.87
+overlay         100G   65G   36G  65% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+tracks_ready=1/2
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)
+==== of 3 2026-07-19T09:53:57-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS:
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+PROCS:
+3565 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p05.cfg
+no_track
+0 %, 2620 MiB
+-rw-r--r-- 1 root root 11K Jul 19 14:51 /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root  15G Jul 19 14:47 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+-rw-r--r-- 1 root root 2.6G Jul 19 14:53 /root/v80/work_tracks/mf_orbit_R16_vt0p05.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv lines=403 t=399.11
+DIAG mf_orbit_R16_vt0p05_diag.tsv lines=82 t=79.62
+overlay         100G   68G   33G  68% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+tracks_ready=1/2
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)
+==== of 4 2026-07-19T09:57:03-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS:
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+PROCS:
+3565 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p05.cfg
+no_track
+100 %, 2620 MiB
+-rw-r--r-- 1 root root 11K Jul 19 14:51 /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root  15G Jul 19 14:47 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+-rw-r--r-- 1 root root 4.2G Jul 19 14:57 /root/v80/work_tracks/mf_orbit_R16_vt0p05.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv lines=403 t=399.11
+DIAG mf_orbit_R16_vt0p05_diag.tsv lines=122 t=119.43
+overlay         100G   72G   29G  72% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+tracks_ready=1/2
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)
+==== of 5 2026-07-19T10:00:09-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS:
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+PROCS:
+3565 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p05.cfg
+no_track
+100 %, 2620 MiB
+-rw-r--r-- 1 root root 11K Jul 19 14:51 /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root  15G Jul 19 14:47 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+-rw-r--r-- 1 root root 5.7G Jul 19 15:00 /root/v80/work_tracks/mf_orbit_R16_vt0p05.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv lines=403 t=399.11
+DIAG mf_orbit_R16_vt0p05_diag.tsv lines=164 t=161.23
+overlay         100G   72G   29G  72% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+tracks_ready=1/2
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)
+==== of 6 2026-07-19T10:03:16-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS:
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+PROCS:
+3565 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p05.cfg
+no_track
+100 %, 2620 MiB
+-rw-r--r-- 1 root root 11K Jul 19 14:51 /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root  15G Jul 19 14:47 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+-rw-r--r-- 1 root root 7.2G Jul 19 15:03 /root/v80/work_tracks/mf_orbit_R16_vt0p05.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv lines=403 t=399.11
+DIAG mf_orbit_R16_vt0p05_diag.tsv lines=205 t=202.04
+overlay         100G   75G   26G  75% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+tracks_ready=1/2
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)
+==== of 7 2026-07-19T10:06:22-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS:
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+PROCS:
+3565 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p05.cfg
+no_track
+100 %, 2620 MiB
+-rw-r--r-- 1 root root 11K Jul 19 14:51 /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root  15G Jul 19 14:47 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+-rw-r--r-- 1 root root 9.0G Jul 19 15:06 /root/v80/work_tracks/mf_orbit_R16_vt0p05.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv lines=403 t=399.11
+DIAG mf_orbit_R16_vt0p05_diag.tsv lines=253 t=249.81
+overlay         100G   75G   26G  75% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+tracks_ready=1/2
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)
+==== of 8 2026-07-19T10:09:28-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS:
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+PROCS:
+3565 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p05.cfg
+no_track
+100 %, 2620 MiB
+-rw-r--r-- 1 root root 11K Jul 19 14:51 /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root 15G Jul 19 14:47 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+-rw-r--r-- 1 root root 11G Jul 19 15:09 /root/v80/work_tracks/mf_orbit_R16_vt0p05.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv lines=403 t=399.11
+DIAG mf_orbit_R16_vt0p05_diag.tsv lines=307 t=303.56
+overlay         100G   78G   23G  78% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+tracks_ready=1/2
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)
+==== of 9 2026-07-19T10:12:34-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS:
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+PROCS:
+3565 /root/v80/bin/scp_sim_cuda cfg/mf_orbit_R16_vt0p05.cfg
+no_track
+0 %, 2620 MiB
+-rw-r--r-- 1 root root 11K Jul 19 14:51 /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root 15G Jul 19 14:47 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+-rw-r--r-- 1 root root 13G Jul 19 15:12 /root/v80/work_tracks/mf_orbit_R16_vt0p05.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv lines=403 t=399.11
+DIAG mf_orbit_R16_vt0p05_diag.tsv lines=358 t=354.32
+overlay         100G   78G   23G  78% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+tracks_ready=1/2
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)
+==== of 10 2026-07-19T10:16:12-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS:
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+OK O mf_orbit_R16_vt0p05 2026-07-19T15:16:06+00:00
+QUEUE_DONE 2026-07-19T15:16:06+00:00
+PROCS:
+no_sim
+no_track
+0 %, 0 MiB
+-rw-r--r-- 1 root root 11K Jul 19 14:51 /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root 15G Jul 19 14:47 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+-rw-r--r-- 1 root root 15G Jul 19 15:16 /root/v80/work_tracks/mf_orbit_R16_vt0p05.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv lines=403 t=399.11
+DIAG mf_orbit_R16_vt0p05_diag.tsv lines=403 t=399.11
+overlay         100G   78G   23G  78% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+tracks_ready=1/2
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== of 11 2026-07-19T10:19:20-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS:
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+OK O mf_orbit_R16_vt0p05 2026-07-19T15:16:06+00:00
+QUEUE_DONE 2026-07-19T15:16:06+00:00
+PROCS:
+no_sim
+no_track
+0 %, 0 MiB
+-rw-r--r-- 1 root root 11K Jul 19 14:51 /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root 15G Jul 19 14:47 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+-rw-r--r-- 1 root root 15G Jul 19 15:16 /root/v80/work_tracks/mf_orbit_R16_vt0p05.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv lines=403 t=399.11
+DIAG mf_orbit_R16_vt0p05_diag.tsv lines=403 t=399.11
+overlay         100G   78G   23G  78% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+tracks_ready=1/2
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== of 12 2026-07-19T10:22:29-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS:
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+OK O mf_orbit_R16_vt0p05 2026-07-19T15:16:06+00:00
+QUEUE_DONE 2026-07-19T15:16:06+00:00
+PROCS:
+no_sim
+no_track
+0 %, 0 MiB
+-rw-r--r-- 1 root root 11K Jul 19 14:51 /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root 15G Jul 19 14:47 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+-rw-r--r-- 1 root root 15G Jul 19 15:16 /root/v80/work_tracks/mf_orbit_R16_vt0p05.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv lines=403 t=399.11
+DIAG mf_orbit_R16_vt0p05_diag.tsv lines=403 t=399.11
+overlay         100G   78G   23G  78% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+tracks_ready=1/2
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== of 13 2026-07-19T10:25:37-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS:
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+OK O mf_orbit_R16_vt0p05 2026-07-19T15:16:06+00:00
+QUEUE_DONE 2026-07-19T15:16:06+00:00
+PROCS:
+no_sim
+no_track
+0 %, 0 MiB
+-rw-r--r-- 1 root root 11K Jul 19 14:51 /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root 15G Jul 19 14:47 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+-rw-r--r-- 1 root root 15G Jul 19 15:16 /root/v80/work_tracks/mf_orbit_R16_vt0p05.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv lines=403 t=399.11
+DIAG mf_orbit_R16_vt0p05_diag.tsv lines=403 t=399.11
+overlay         100G   78G   23G  78% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+tracks_ready=1/2
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== of 14 2026-07-19T10:28:45-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS:
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+OK O mf_orbit_R16_vt0p05 2026-07-19T15:16:06+00:00
+QUEUE_DONE 2026-07-19T15:16:06+00:00
+PROCS:
+no_sim
+no_track
+0 %, 0 MiB
+-rw-r--r-- 1 root root 11K Jul 19 14:51 /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root 15G Jul 19 14:47 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+-rw-r--r-- 1 root root 15G Jul 19 15:16 /root/v80/work_tracks/mf_orbit_R16_vt0p05.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv lines=403 t=399.11
+DIAG mf_orbit_R16_vt0p05_diag.tsv lines=403 t=399.11
+overlay         100G   69G   32G  69% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+tracks_ready=1/2
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== of 15 2026-07-19T10:31:54-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS:
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+OK O mf_orbit_R16_vt0p05 2026-07-19T15:16:06+00:00
+QUEUE_DONE 2026-07-19T15:16:06+00:00
+PROCS:
+no_sim
+no_track
+0 %, 0 MiB
+-rw-r--r-- 1 root root 11K Jul 19 14:51 /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root 15G Jul 19 14:47 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+-rw-r--r-- 1 root root 15G Jul 19 15:16 /root/v80/work_tracks/mf_orbit_R16_vt0p05.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv lines=403 t=399.11
+DIAG mf_orbit_R16_vt0p05_diag.tsv lines=403 t=399.11
+overlay         100G   69G   32G  69% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+tracks_ready=1/2
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== of 16 2026-07-19T10:35:02-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS:
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+OK O mf_orbit_R16_vt0p05 2026-07-19T15:16:06+00:00
+QUEUE_DONE 2026-07-19T15:16:06+00:00
+PROCS:
+no_sim
+no_track
+0 %, 0 MiB
+-rw-r--r-- 1 root root 11K Jul 19 14:51 /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root 15G Jul 19 14:47 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+-rw-r--r-- 1 root root 15G Jul 19 15:16 /root/v80/work_tracks/mf_orbit_R16_vt0p05.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv lines=403 t=399.11
+DIAG mf_orbit_R16_vt0p05_diag.tsv lines=403 t=399.11
+overlay         100G   69G   32G  69% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+tracks_ready=1/2
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== of 17 2026-07-19T10:38:10-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS:
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+OK O mf_orbit_R16_vt0p05 2026-07-19T15:16:06+00:00
+QUEUE_DONE 2026-07-19T15:16:06+00:00
+PROCS:
+no_sim
+no_track
+0 %, 0 MiB
+-rw-r--r-- 1 root root 11K Jul 19 14:51 /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root 15G Jul 19 14:47 /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa
+-rw-r--r-- 1 root root 15G Jul 19 15:16 /root/v80/work_tracks/mf_orbit_R16_vt0p05.sfa
+DIAG mf_orbit_R16_vt0p03_diag.tsv lines=403 t=399.11
+DIAG mf_orbit_R16_vt0p05_diag.tsv lines=403 t=399.11
+overlay         100G   69G   32G  69% /
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+rsync error: unexplained error (code 255) at rsync.c(716) [generator=3.2.7]
+rsync: [generator] write error: Broken pipe (32)
+tracks_ready=1/2
+rsync error: received SIGINT, SIGTERM, or SIGHUP (code 20) at io.c(519) [receiver=3.2.7]
+rsync: [receiver] write error: Broken pipe (32)
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!

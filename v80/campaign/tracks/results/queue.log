@@ -1,0 +1,32 @@
+QUEUE_START 2026-07-19T12:12:14+00:00
+=== RUN F mf_force_D8 2026-07-19T12:12:14+00:00 ===
+OK F mf_force_D8 2026-07-19T12:31:58+00:00
+-rw-r--r-- 1 root root 9.4G Jul 19 12:31 mf_force_D8.sfa
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G  9.7G   91G  10% /
+=== RUN F mf_force_D12 2026-07-19T12:31:58+00:00 ===
+OK F mf_force_D12 2026-07-19T12:51:16+00:00
+-rw-r--r-- 1 root root 9.5G Jul 19 12:51 mf_force_D12.sfa
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G   20G   81G  20% /
+=== RUN F mf_force_D16 2026-07-19T12:51:16+00:00 ===
+OK F mf_force_D16 2026-07-19T13:12:37+00:00
+-rw-r--r-- 1 root root 9.6G Jul 19 13:12 mf_force_D16.sfa
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G   29G   72G  29% /
+=== RUN F mf_force_D20 2026-07-19T13:12:37+00:00 ===
+OK F mf_force_D20 2026-07-19T13:34:19+00:00
+-rw-r--r-- 1 root root 9.6G Jul 19 13:34 mf_force_D20.sfa
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G   39G   62G  39% /
+=== RUN F mf_force_D24 2026-07-19T13:34:19+00:00 ===
+OK F mf_force_D24 2026-07-19T13:53:04+00:00
+-rw-r--r-- 1 root root 9.7G Jul 19 13:53 mf_force_D24.sfa
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G   48G   53G  48% /
+=== RUN R elite_same_D12 2026-07-19T13:53:04+00:00 ===
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+lrwxrwxrwx 1 root root 34 Jul 19 12:12 elite_same_D12.sfa -> /root/v80/seeds/elite_same_D12.sfa
+Filesystem      Size  Used Avail Use% Mounted on
+overlay         100G   56G   45G  56% /
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===

@@ -1,0 +1,662 @@
+==== mon 1 2026-07-19T09:13:11-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS_TAIL:
+OK F mf_force_D24 2026-07-19T13:53:04+00:00
+=== RUN R elite_same_D12 2026-07-19T13:53:04+00:00 ===
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+TRACKS:
+total 24K
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root    0 Jul 19 14:12 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root    0 Jul 19 14:13 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+TRACK_LOG:
+frame 58 D=9.8686 massC=79.01 massL=79.01 Qc=114.72 Ql=114.72
+frame 59 D=9.7885 massC=79.28 massL=79.28 Qc=114.72 Ql=114.72
+frame 60 D=9.7059 massC=79.37 massL=79.37 Qc=114.72 Ql=114.72
+frame 61 D=9.6941 massC=79.20 massL=79.20 Qc=114.72 Ql=114.72
+Wrote tracks/mf_force_D12_track.tsv
+OK force D=12 63 lines
+SKIP force D=16 already tracked
+TRACK force D=20 2026-07-19T14:13:13+00:00
+PROCS:
+   02:00:59
+2056 /root/v80/bin/mf_pair_track mf_force_D16.sfa tracks/mf_force_D16_track.tsv
+2077 /root/v80/bin/mf_pair_track mf_force_D20.sfa tracks/mf_force_D20_track.tsv
+0 %, 1276 MiB
+overlay         100G   57G   44G  57% /
+7
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 2 2026-07-19T09:15:21-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS_TAIL:
+OK F mf_force_D24 2026-07-19T13:53:04+00:00
+=== RUN R elite_same_D12 2026-07-19T13:53:04+00:00 ===
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+TRACKS:
+total 32K
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 4.0K Jul 19 14:14 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 4.0K Jul 19 14:15 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+TRACK_LOG:
+frame 58 D=9.8686 massC=79.01 massL=79.01 Qc=114.72 Ql=114.72
+frame 59 D=9.7885 massC=79.28 massL=79.28 Qc=114.72 Ql=114.72
+frame 60 D=9.7059 massC=79.37 massL=79.37 Qc=114.72 Ql=114.72
+frame 61 D=9.6941 massC=79.20 massL=79.20 Qc=114.72 Ql=114.72
+Wrote tracks/mf_force_D12_track.tsv
+OK force D=12 63 lines
+SKIP force D=16 already tracked
+TRACK force D=20 2026-07-19T14:13:13+00:00
+PROCS:
+   02:03:09
+2056 /root/v80/bin/mf_pair_track mf_force_D16.sfa tracks/mf_force_D16_track.tsv
+2077 /root/v80/bin/mf_pair_track mf_force_D20.sfa tracks/mf_force_D20_track.tsv
+0 %, 1276 MiB
+overlay         100G   59G   42G  59% /
+7
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 3 2026-07-19T09:17:31-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS_TAIL:
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+TRACKS:
+total 52K
+-rw-r--r-- 1 root root 3.1K Jul 19 14:17 elite_same_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root    0 Jul 19 14:16 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+TRACK_LOG:
+frame 58 D=19.4994 massC=79.03 massL=79.03 Qc=114.72 Ql=114.72
+frame 59 D=19.4820 massC=79.29 massL=79.29 Qc=114.72 Ql=114.72
+frame 60 D=19.4640 massC=79.38 massL=79.38 Qc=114.72 Ql=114.72
+frame 61 D=19.4614 massC=79.20 massL=79.20 Qc=114.72 Ql=114.72
+Wrote tracks/mf_force_D20_track.tsv
+OK force D=20 63 lines
+SKIP force D=24 already tracked
+TRACK elite D=12 sz=3767680939 2026-07-19T14:17:10+00:00
+PROCS:
+   02:05:19
+2208 /root/v80/bin/mf_pair_track mf_force_D24.sfa tracks/mf_force_D24_track.tsv
+2220 /root/v80/bin/sfa_qball_track /root/v80/seeds/elite_same_D12.sfa
+0 %, 4 MiB
+overlay         100G   59G   42G  59% /
+8
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 4 2026-07-19T09:19:41-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS_TAIL:
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+TRACKS:
+total 76K
+-rw-r--r-- 1 root root  14K Jul 19 14:18 elite_same_D12_track.tsv
+-rw-r--r-- 1 root root 6.4K Jul 19 14:19 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 4.0K Jul 19 14:19 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+TRACK_LOG:
+frame 60 D=19.4640 massC=79.38 massL=79.38 Qc=114.72 Ql=114.72
+frame 61 D=19.4614 massC=79.20 massL=79.20 Qc=114.72 Ql=114.72
+Wrote tracks/mf_force_D20_track.tsv
+OK force D=20 63 lines
+SKIP force D=24 already tracked
+TRACK elite D=12 sz=3767680939 2026-07-19T14:17:10+00:00
+OK elite D=12 207 lines
+TRACK elite D=16 sz=3798204210 2026-07-19T14:18:54+00:00
+PROCS:
+   02:07:29
+2208 /root/v80/bin/mf_pair_track mf_force_D24.sfa tracks/mf_force_D24_track.tsv
+2372 /root/v80/bin/sfa_qball_track /root/v80/seeds/elite_same_D16.sfa
+0 %, 2620 MiB
+overlay         100G   59G   42G  59% /
+8
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 5 2026-07-19T09:21:51-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS_TAIL:
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+TRACKS:
+total 104K
+-rw-r--r-- 1 root root  14K Jul 19 14:18 elite_same_D12_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root 9.1K Jul 19 14:21 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+TRACK_LOG:
+OK mf_force_D24.sfa
+TRACK_PHASE1_DONE 2026-07-19T14:21:47+00:00
+lready tracked
+TRACK elite D=12 sz=3767680939 2026-07-19T14:17:10+00:00
+OK elite D=12 207 lines
+TRACK elite D=16 sz=3798204210 2026-07-19T14:18:54+00:00
+OK elite D=16 212 lines
+TRACK elite D=20 sz=3816146002 2026-07-19T14:20:44+00:00
+PROCS:
+   02:09:39
+2533 /root/v80/bin/sfa_qball_track /root/v80/seeds/elite_same_D20.sfa
+100 %, 2620 MiB
+overlay         100G   60G   41G  60% /
+8
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 6 2026-07-19T09:24:01-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS_TAIL:
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+TRACKS:
+total 112K
+-rw-r--r-- 1 root root  14K Jul 19 14:18 elite_same_D12_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+TRACK_LOG:
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+PROCS:
+   02:11:49
+100 %, 2620 MiB
+overlay         100G   62G   39G  62% /
+8
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 7 2026-07-19T09:26:10-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS_TAIL:
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+TRACKS:
+total 112K
+-rw-r--r-- 1 root root  14K Jul 19 14:18 elite_same_D12_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+TRACK_LOG:
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+PROCS:
+   02:13:58
+100 %, 2620 MiB
+overlay         100G   64G   37G  64% /
+8
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 8 2026-07-19T09:28:20-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS_TAIL:
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+TRACKS:
+total 112K
+-rw-r--r-- 1 root root  14K Jul 19 14:18 elite_same_D12_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+TRACK_LOG:
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+PROCS:
+   02:16:08
+0 %, 2620 MiB
+overlay         100G   64G   37G  64% /
+8
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 9 2026-07-19T09:30:29-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS_TAIL:
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+TRACKS:
+total 112K
+-rw-r--r-- 1 root root  14K Jul 19 14:18 elite_same_D12_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+TRACK_LOG:
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+PROCS:
+   02:18:17
+0 %, 2620 MiB
+overlay         100G   68G   33G  68% /
+8
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 10 2026-07-19T09:32:39-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS_TAIL:
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+TRACKS:
+total 112K
+-rw-r--r-- 1 root root  14K Jul 19 14:18 elite_same_D12_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+TRACK_LOG:
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+PROCS:
+   02:20:27
+100 %, 2620 MiB
+overlay         100G   66G   35G  66% /
+8
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 11 2026-07-19T09:34:48-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS_TAIL:
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+TRACKS:
+total 112K
+-rw-r--r-- 1 root root  14K Jul 19 14:18 elite_same_D12_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+TRACK_LOG:
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+PROCS:
+   02:22:36
+0 %, 2620 MiB
+overlay         100G   68G   33G  68% /
+8
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 12 2026-07-19T09:36:58-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS_TAIL:
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+TRACKS:
+total 112K
+-rw-r--r-- 1 root root  14K Jul 19 14:18 elite_same_D12_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+TRACK_LOG:
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+PROCS:
+   02:24:46
+100 %, 2620 MiB
+overlay         100G   72G   29G  72% /
+8
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 13 2026-07-19T09:39:08-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS_TAIL:
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+TRACKS:
+total 112K
+-rw-r--r-- 1 root root  14K Jul 19 14:18 elite_same_D12_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+TRACK_LOG:
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+PROCS:
+   02:26:56
+100 %, 2620 MiB
+overlay         100G   72G   29G  72% /
+8
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+==== mon 14 2026-07-19T09:41:17-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS_TAIL:
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+TRACKS:
+total 112K
+-rw-r--r-- 1 root root  14K Jul 19 14:18 elite_same_D12_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+TRACK_LOG:
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+PROCS:
+   02:29:05
+0 %, 2620 MiB
+overlay         100G   62G   39G  62% /
+8
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+-rw-r--r-- 1 d d 9.4G Jul 19 07:31 /space/scp/v80/tracks/mf_force_D8.sfa
+==== mon 15 2026-07-19T09:43:26-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS_TAIL:
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+TRACKS:
+total 112K
+-rw-r--r-- 1 root root  14K Jul 19 14:18 elite_same_D12_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+TRACK_LOG:
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+PROCS:
+   02:31:14
+0 %, 2620 MiB
+overlay         100G   69G   32G  69% /
+8
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+-rw-r--r-- 1 d d 9.4G Jul 19 07:31 /space/scp/v80/tracks/mf_force_D8.sfa
+==== mon 16 2026-07-19T09:45:35-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS_TAIL:
+OK R elite_same_D12 2026-07-19T14:00:35+00:00
+=== RUN R elite_same_D16 2026-07-19T14:00:35+00:00 ===
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+TRACKS:
+total 112K
+-rw-r--r-- 1 root root  14K Jul 19 14:18 elite_same_D12_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+TRACK_LOG:
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+PROCS:
+   02:33:24
+100 %, 2620 MiB
+overlay         100G   69G   32G  69% /
+8
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+-rw-r--r-- 1 d d 9.4G Jul 19 07:31 /space/scp/v80/tracks/mf_force_D8.sfa
+==== mon 17 2026-07-19T09:47:45-05:00 ====
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+STATUS_TAIL:
+OK R elite_same_D16 2026-07-19T14:08:54+00:00
+=== RUN R elite_same_D20 2026-07-19T14:08:54+00:00 ===
+OK R elite_same_D20 2026-07-19T14:17:15+00:00
+=== RUN O mf_orbit_R16_vt0p03 2026-07-19T14:17:15+00:00 ===
+OK O mf_orbit_R16_vt0p03 2026-07-19T14:47:01+00:00
+=== RUN O mf_orbit_R16_vt0p05 2026-07-19T14:47:01+00:00 ===
+TRACKS:
+total 108K
+-rw-r--r-- 1 root root  14K Jul 19 14:18 elite_same_D12_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root    0 Jul 19 14:47 mf_orbit_R16_vt0p03_track.tsv
+-rw-r--r-- 1 root root    0 Jul 19 14:47 orbit0p03_track.log
+TRACK_LOG:
+-rw-r--r-- 1 root root  14K Jul 19 14:20 elite_same_D16_track.tsv
+-rw-r--r-- 1 root root  14K Jul 19 14:22 elite_same_D20_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:13 mf_force_D12_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:16 mf_force_D16_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:17 mf_force_D20_track.tsv
+-rw-r--r-- 1 root root 8.3K Jul 19 14:21 mf_force_D24_track.tsv
+-rw-r--r-- 1 root root 8.1K Jul 19 14:12 mf_force_D8_track.tsv
+-rw-r--r-- 1 root root   52 Jul 19 14:22 mf_orbit_R16_vt0p03_track.tsv
+PROCS:
+   02:35:33
+3633 /root/v80/bin/mf_pair_track /root/v80/work_tracks/mf_orbit_R16_vt0p03.sfa /root/v80/work_tracks/tracks/mf_orbit_R16_vt0p03_track.tsv
+0 %, 4 MiB
+overlay         100G   64G   37G  64% /
+9
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+Welcome to vast.ai. If authentication fails, try again after a few seconds, and double check your ssh key.
+Have fun!
+-rw-r--r-- 1 d d 9.4G Jul 19 07:31 /space/scp/v80/tracks/mf_force_D8.sfa
