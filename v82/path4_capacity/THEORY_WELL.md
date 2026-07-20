@@ -22,13 +22,22 @@ Net along joining line (sign: **+ attract, − repel**):
 F_{\mathrm{net}}(D) = F_{\mathrm{EM}}(D) + F_{\mathrm{core}}(D).
 \]
 
-## Equilibrium \(r_*\)
+## Static force zero vs circular orbit (do not confuse)
 
-Solve \(F_{\mathrm{net}}(r_*)=0\) with \(F_{\mathrm{net}}'(r_*)<0\) in the sense that displacement from \(r_*\) restores (in 1D reduced mass: \(F>0\) pulls together when \(D>r_*\)).
+**Force zero** \(F_{\mathrm{net}}(r_0)=0\) only marks repel↔attract boundary.
 
-Approximate: \(1/(2\pi r_*) = k_{\mathrm{core}} e^{-r_*^2/(2s^2)}\).
+**Circular orbit** for reduced mass \(\mu=m/2\) with angular momentum \(L=\mu r v_\theta\):
 
-Circular \(v_t \approx \sqrt{|F_{\mathrm{net}}|\,r_*/\mu}\) with \(\mu=m/2\) if a small residual force band; better: seed at \(r_*\) with \(v_t\) from EM-only circular estimate then adjust.
+\[
+F_{\mathrm{along}}(r_c)=\frac{\mu v_\theta^2}{r_c}\;>\;0
+\]
+
+(\(F_{\mathrm{along}}>0\) = still **net attract**, providing centripetal force).  
+So \(r_c\) lies on the **attractive side** of \(r_0\), not at \(F_{\mathrm{net}}=0\).
+
+Seeding \(v_t=\sqrt{F_{\mathrm{EM}} r/\mu}\) at \(F_{\mathrm{net}}=0\) is **wrong** (over-speed) — see `parallel/GAP_ANALYSIS.md` §A1.
+
+**Stable circular:** minimum of \(V_{\mathrm{eff}}=V(r)+L^2/(2\mu r^2)\) with \(\mathrm{d}V/\mathrm{d}r=F_{\mathrm{along}}\).
 
 ## Success
 
