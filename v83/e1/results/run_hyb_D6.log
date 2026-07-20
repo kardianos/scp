@@ -1,0 +1,79 @@
+=== scp_sim_c4: V44 + Cosserat + Curl²-Hardening (+ optional chiral) ===
+d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ) - α·curl(M) - 2curl(Q)
+d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ) + 2α·M - β|∇×φ|²θ
+  M = curl(φ)/2 - θ,  Q = (β/2)|θ|²curl(φ)
+
+Grid:    N=48 L=12.0 T=8 dt_factor=0.0500
+Physics: m²=2.2500 m_θ²=2.5600 η=0.000 μ=-41.345 κ=50.0 κ_h=0.000 α=0.000 β=0.000
+Complex: 12-field U(1) kernel (complex_phi=1)
+Q-diag:  radius=8.00 probes=(8.00,16.00)
+Gauge:   U(1) compact links, g=0.0500 (complex_gauge=1)
+Locks:   n_locks=1 file=(inline lock0..) track=/home/d/code/scp/v83/e1/results/track_hyb_D6.tsv soft=(0,0) bag_mode=0 (r=0 k=0 sm=0)
+Mode:    0
+BC:      absorbing sphere (width=2.0 rate=0.0800)
+Init:    sfa (/home/d/code/scp/v83/e1/seeds/ball_N48.sfa frame=-1)
+Output:  /home/d/code/scp/v83/e1/results/out_hyb_D6.sfa (f32, snap=1000.0 diag=0.5)
+
+Allocating 0.05 GB (5971968 doubles, N=48, 12 fields + U(1) links)
+dx=0.5106 dt=0.025532 threads=8
+
+Locks: allocated 1 carriers + rho/J
+  lock[0] from lock0=-1,500,6,0,0,0,0,0,0
+Init: SFA file '/home/d/code/scp/v83/e1/seeds/ball_N48.sfa' frame=-1
+  Grid: 48x48x48, 24 columns, 1 frames, reading frame 0
+  Loaded col 0 'phi_x' (sem=0 comp=0 dtype=1) -> slot 0
+  Loaded col 1 'phi_y' (sem=0 comp=1 dtype=1) -> slot 1
+  Loaded col 2 'phi_z' (sem=0 comp=2 dtype=1) -> slot 2
+  Loaded col 3 'theta_x' (sem=1 comp=0 dtype=1) -> slot 3
+  Loaded col 4 'theta_y' (sem=1 comp=1 dtype=1) -> slot 4
+  Loaded col 5 'theta_z' (sem=1 comp=2 dtype=1) -> slot 5
+  Loaded col 6 'phi_vx' (sem=2 comp=0 dtype=1) -> slot 6
+  Loaded col 7 'phi_vy' (sem=2 comp=1 dtype=1) -> slot 7
+  Loaded col 8 'phi_vz' (sem=2 comp=2 dtype=1) -> slot 8
+  Loaded col 9 'theta_vx' (sem=2 comp=3 dtype=1) -> slot 9
+  Loaded col 10 'theta_vy' (sem=2 comp=4 dtype=1) -> slot 10
+  Loaded col 11 'theta_vz' (sem=2 comp=5 dtype=1) -> slot 11
+  Loaded col 12 'phiim_x' (sem=0 comp=3 dtype=1) -> slot 12
+  Loaded col 13 'phiim_y' (sem=0 comp=4 dtype=1) -> slot 13
+  Loaded col 14 'phiim_z' (sem=0 comp=5 dtype=1) -> slot 14
+  Loaded col 15 'thetaim_x' (sem=1 comp=3 dtype=1) -> slot 15
+  Loaded col 16 'thetaim_y' (sem=1 comp=4 dtype=1) -> slot 16
+  Loaded col 17 'thetaim_z' (sem=1 comp=5 dtype=1) -> slot 17
+  Loaded col 18 'phiim_vx' (sem=2 comp=6 dtype=1) -> slot 18
+  Loaded col 19 'phiim_vy' (sem=2 comp=7 dtype=1) -> slot 19
+  Loaded col 20 'phiim_vz' (sem=2 comp=8 dtype=1) -> slot 20
+  Loaded col 21 'thetaim_vx' (sem=2 comp=9 dtype=1) -> slot 21
+  Loaded col 22 'thetaim_vy' (sem=2 comp=10 dtype=1) -> slot 22
+  Loaded col 23 'thetaim_vz' (sem=2 comp=11 dtype=1) -> slot 23
+  Loaded: 6/6 field arrays, 6/6 velocity arrays
+  WARNING: init=sfa: no gauge columns; E seeded by Gauss projection
+Gauss projection: 176 CG iters, gauss_max(0)=7.35e-14 (offset -1.068e-03)
+SFA: /home/d/code/scp/v83/e1/results/out_hyb_D6.sfa (30 cols, f32, BSS+zstd)
+
+INIT: E_total=4.6015e+02 E_pot=-38.5106 phi_max=0.6340 P_int=3.1971e+01 theta_rms=0.000e+00
+
+Locks: n=1 Q=-1 E*=5.0000e+02 Ekin=0.0000e+00
+t=    0.5 E=4.600e+02 (drift -0.029%) Ep=-39.2 phi=0.638 θ_rms=0.00e+00 Q=3.153544e+02 s_max=6.7660e-02 gauss=7.3e-14 E_em=1.658e+00 locks=1 E*=5.00e+02 [6% 0.3s 13.53ms/step]
+t=    1.0 E=4.600e+02 (drift -0.041%) Ep=-40.0 phi=0.642 θ_rms=0.00e+00 Q=3.153331e+02 s_max=7.0125e-02 gauss=7.3e-14 E_em=1.647e+00 locks=1 E*=5.00e+02 [13% 0.5s 13.14ms/step]
+t=    1.5 E=4.599e+02 (drift -0.047%) Ep=-39.5 phi=0.637 θ_rms=0.00e+00 Q=3.153179e+02 s_max=6.7079e-02 gauss=7.3e-14 E_em=1.642e+00 locks=1 E*=5.00e+02 [19% 0.8s 13.00ms/step]
+t=    2.0 E=4.599e+02 (drift -0.052%) Ep=-38.8 phi=0.634 θ_rms=0.00e+00 Q=3.153058e+02 s_max=6.5082e-02 gauss=7.3e-14 E_em=1.637e+00 locks=1 E*=5.00e+02 [26% 1.0s 12.95ms/step]
+t=    2.6 E=4.599e+02 (drift -0.056%) Ep=-39.2 phi=0.638 θ_rms=0.00e+00 Q=3.152959e+02 s_max=6.7683e-02 gauss=7.2e-14 E_em=1.633e+00 locks=1 E*=5.00e+02 [32% 1.3s 12.84ms/step]
+t=    3.1 E=4.599e+02 (drift -0.061%) Ep=-40.0 phi=0.639 θ_rms=0.00e+00 Q=3.152872e+02 s_max=6.7760e-02 gauss=7.3e-14 E_em=1.631e+00 locks=1 E*=5.00e+02 [38% 1.6s 13.05ms/step]
+t=    3.6 E=4.599e+02 (drift -0.062%) Ep=-39.8 phi=0.631 θ_rms=0.00e+00 Q=3.152792e+02 s_max=6.3211e-02 gauss=7.3e-14 E_em=1.629e+00 locks=1 E*=5.00e+02 [45% 1.8s 13.15ms/step]
+t=    4.1 E=4.599e+02 (drift -0.063%) Ep=-39.1 phi=0.623 θ_rms=0.00e+00 Q=3.152717e+02 s_max=5.8733e-02 gauss=7.3e-14 E_em=1.626e+00 locks=1 E*=5.00e+02 [51% 2.1s 13.12ms/step]
+t=    4.6 E=4.598e+02 (drift -0.066%) Ep=-39.2 phi=0.626 θ_rms=0.00e+00 Q=3.152645e+02 s_max=6.0107e-02 gauss=7.3e-14 E_em=1.623e+00 locks=1 E*=5.00e+02 [58% 2.3s 13.04ms/step]
+t=    5.1 E=4.598e+02 (drift -0.070%) Ep=-39.8 phi=0.629 θ_rms=0.00e+00 Q=3.152575e+02 s_max=6.1934e-02 gauss=7.2e-14 E_em=1.622e+00 locks=1 E*=5.00e+02 [64% 2.6s 13.01ms/step]
+t=    5.6 E=4.598e+02 (drift -0.071%) Ep=-39.8 phi=0.626 θ_rms=0.00e+00 Q=3.152507e+02 s_max=6.0150e-02 gauss=7.2e-14 E_em=1.621e+00 locks=1 E*=5.00e+02 [70% 2.8s 12.95ms/step]
+t=    6.1 E=4.598e+02 (drift -0.072%) Ep=-39.3 phi=0.634 θ_rms=0.00e+00 Q=3.152439e+02 s_max=6.4874e-02 gauss=7.2e-14 E_em=1.619e+00 locks=1 E*=5.00e+02 [77% 3.1s 12.91ms/step]
+t=    6.6 E=4.598e+02 (drift -0.074%) Ep=-39.1 phi=0.637 θ_rms=0.00e+00 Q=3.152373e+02 s_max=6.6850e-02 gauss=7.2e-14 E_em=1.617e+00 locks=1 E*=5.00e+02 [83% 3.3s 12.87ms/step]
+t=    7.1 E=4.598e+02 (drift -0.077%) Ep=-39.4 phi=0.631 θ_rms=0.00e+00 Q=3.152308e+02 s_max=6.2852e-02 gauss=7.2e-14 E_em=1.617e+00 locks=1 E*=5.00e+02 [89% 3.6s 12.88ms/step]
+t=    7.7 E=4.598e+02 (drift -0.078%) Ep=-39.7 phi=0.629 θ_rms=0.00e+00 Q=3.152244e+02 s_max=6.2098e-02 gauss=7.2e-14 E_em=1.618e+00 locks=1 E*=5.00e+02 [96% 3.9s 12.87ms/step]
+
+=== COMPLETE ===
+E_total=4.5979e+02 (drift -0.078%) E_pot=-39.5916
+phi_max=0.6320 P_int=3.2751e+01 theta_rms=0.000e+00
+Q_phi=3.152204e+02 Q_theta=0.000000e+00 Q_total=3.152204e+02 s_max=6.3707e-02 r_core=3.395 omega_core=1.3841 Q_core=3.143372e+02
+gauss_max=7.244e-14 gauss_l2=1.716e-14 E_em=1.617325e+00 Q_flux=2.487723e+02
+SFA: /home/d/code/scp/v83/e1/results/out_hyb_D6.sfa (1 frames)
+[WARN] theta_rms grew: 0.00e+00 -> 0.00e+00
+Wall: 4.0s (0.1 min) 12.84ms/step

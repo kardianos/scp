@@ -1,0 +1,75 @@
+=== scp_sim_c4: V44 + Cosserat + Curl²-Hardening (+ optional chiral) ===
+d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ) - α·curl(M) - 2curl(Q)
+d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ) + 2α·M - β|∇×φ|²θ
+  M = curl(φ)/2 - θ,  Q = (β/2)|θ|²curl(φ)
+
+Grid:    N=48 L=12.0 T=6 dt_factor=0.0500
+Physics: m²=2.2500 m_θ²=2.5600 η=0.000 μ=-41.345 κ=50.0 κ_h=0.000 α=0.000 β=0.000
+Complex: 12-field U(1) kernel (complex_phi=1)
+Q-diag:  radius=8.00 probes=(8.00,16.00)
+Gauge:   U(1) compact links, g=0.0500 (complex_gauge=1)
+Locks:   n_locks=1 file=(inline lock0..) track=v83/e1/results/track_hyb_q-1_D8.tsv soft=(0,0) bag_mode=0 (r=0 k=0 sm=0)
+Mode:    0
+BC:      absorbing sphere (width=2.0 rate=0.0800)
+Init:    sfa (v83/e1/seeds/ball_N48.sfa frame=-1)
+Output:  v83/e1/results/out_hyb_q-1_D8.sfa (f32, snap=1000.0 diag=0.5)
+
+Allocating 0.05 GB (5971968 doubles, N=48, 12 fields + U(1) links)
+dx=0.5106 dt=0.025532 threads=8
+
+Locks: allocated 1 carriers + rho/J
+  lock[0] from lock0=-1,500,8,0,0,0,0,0,0
+Init: SFA file 'v83/e1/seeds/ball_N48.sfa' frame=-1
+  Grid: 48x48x48, 24 columns, 1 frames, reading frame 0
+  Loaded col 0 'phi_x' (sem=0 comp=0 dtype=1) -> slot 0
+  Loaded col 1 'phi_y' (sem=0 comp=1 dtype=1) -> slot 1
+  Loaded col 2 'phi_z' (sem=0 comp=2 dtype=1) -> slot 2
+  Loaded col 3 'theta_x' (sem=1 comp=0 dtype=1) -> slot 3
+  Loaded col 4 'theta_y' (sem=1 comp=1 dtype=1) -> slot 4
+  Loaded col 5 'theta_z' (sem=1 comp=2 dtype=1) -> slot 5
+  Loaded col 6 'phi_vx' (sem=2 comp=0 dtype=1) -> slot 6
+  Loaded col 7 'phi_vy' (sem=2 comp=1 dtype=1) -> slot 7
+  Loaded col 8 'phi_vz' (sem=2 comp=2 dtype=1) -> slot 8
+  Loaded col 9 'theta_vx' (sem=2 comp=3 dtype=1) -> slot 9
+  Loaded col 10 'theta_vy' (sem=2 comp=4 dtype=1) -> slot 10
+  Loaded col 11 'theta_vz' (sem=2 comp=5 dtype=1) -> slot 11
+  Loaded col 12 'phiim_x' (sem=0 comp=3 dtype=1) -> slot 12
+  Loaded col 13 'phiim_y' (sem=0 comp=4 dtype=1) -> slot 13
+  Loaded col 14 'phiim_z' (sem=0 comp=5 dtype=1) -> slot 14
+  Loaded col 15 'thetaim_x' (sem=1 comp=3 dtype=1) -> slot 15
+  Loaded col 16 'thetaim_y' (sem=1 comp=4 dtype=1) -> slot 16
+  Loaded col 17 'thetaim_z' (sem=1 comp=5 dtype=1) -> slot 17
+  Loaded col 18 'phiim_vx' (sem=2 comp=6 dtype=1) -> slot 18
+  Loaded col 19 'phiim_vy' (sem=2 comp=7 dtype=1) -> slot 19
+  Loaded col 20 'phiim_vz' (sem=2 comp=8 dtype=1) -> slot 20
+  Loaded col 21 'thetaim_vx' (sem=2 comp=9 dtype=1) -> slot 21
+  Loaded col 22 'thetaim_vy' (sem=2 comp=10 dtype=1) -> slot 22
+  Loaded col 23 'thetaim_vz' (sem=2 comp=11 dtype=1) -> slot 23
+  Loaded: 6/6 field arrays, 6/6 velocity arrays
+  WARNING: init=sfa: no gauge columns; E seeded by Gauss projection
+Gauss projection: 176 CG iters, gauss_max(0)=8.66e-14 (offset -1.068e-03)
+SFA: v83/e1/results/out_hyb_q-1_D8.sfa (30 cols, f32, BSS+zstd)
+
+INIT: E_total=4.6016e+02 E_pot=-38.5106 phi_max=0.6340 P_int=3.1971e+01 theta_rms=0.000e+00
+
+Locks: n=1 Q=-1 E*=5.0000e+02 Ekin=0.0000e+00
+t=    0.5 E=4.600e+02 (drift -0.029%) Ep=-39.2 phi=0.638 θ_rms=0.00e+00 Q=3.153544e+02 s_max=6.7660e-02 gauss=7.0e-14 E_em=1.660e+00 locks=1 E*=5.00e+02 [9% 0.2s 10.88ms/step]
+t=    1.0 E=4.600e+02 (drift -0.041%) Ep=-40.0 phi=0.642 θ_rms=0.00e+00 Q=3.153331e+02 s_max=7.0125e-02 gauss=7.0e-14 E_em=1.649e+00 locks=1 E*=5.00e+02 [17% 0.4s 10.99ms/step]
+t=    1.5 E=4.599e+02 (drift -0.047%) Ep=-39.5 phi=0.637 θ_rms=0.00e+00 Q=3.153179e+02 s_max=6.7079e-02 gauss=7.0e-14 E_em=1.644e+00 locks=1 E*=5.00e+02 [26% 0.7s 11.15ms/step]
+t=    2.0 E=4.599e+02 (drift -0.052%) Ep=-38.8 phi=0.634 θ_rms=0.00e+00 Q=3.153058e+02 s_max=6.5082e-02 gauss=7.0e-14 E_em=1.640e+00 locks=1 E*=5.00e+02 [34% 0.9s 11.20ms/step]
+t=    2.6 E=4.599e+02 (drift -0.056%) Ep=-39.2 phi=0.638 θ_rms=0.00e+00 Q=3.152959e+02 s_max=6.7683e-02 gauss=7.0e-14 E_em=1.636e+00 locks=1 E*=5.00e+02 [43% 1.1s 11.15ms/step]
+t=    3.1 E=4.599e+02 (drift -0.061%) Ep=-40.0 phi=0.639 θ_rms=0.00e+00 Q=3.152872e+02 s_max=6.7760e-02 gauss=7.0e-14 E_em=1.633e+00 locks=1 E*=5.00e+02 [51% 1.3s 11.17ms/step]
+t=    3.6 E=4.599e+02 (drift -0.062%) Ep=-39.8 phi=0.631 θ_rms=0.00e+00 Q=3.152792e+02 s_max=6.3211e-02 gauss=7.0e-14 E_em=1.631e+00 locks=1 E*=5.00e+02 [60% 1.6s 11.17ms/step]
+t=    4.1 E=4.599e+02 (drift -0.063%) Ep=-39.1 phi=0.623 θ_rms=0.00e+00 Q=3.152717e+02 s_max=5.8733e-02 gauss=7.0e-14 E_em=1.628e+00 locks=1 E*=5.00e+02 [68% 1.8s 11.16ms/step]
+t=    4.6 E=4.599e+02 (drift -0.066%) Ep=-39.2 phi=0.626 θ_rms=0.00e+00 Q=3.152645e+02 s_max=6.0106e-02 gauss=7.0e-14 E_em=1.625e+00 locks=1 E*=5.00e+02 [77% 2.0s 11.14ms/step]
+t=    5.1 E=4.598e+02 (drift -0.070%) Ep=-39.8 phi=0.629 θ_rms=0.00e+00 Q=3.152575e+02 s_max=6.1934e-02 gauss=7.0e-14 E_em=1.624e+00 locks=1 E*=5.00e+02 [85% 2.2s 11.15ms/step]
+t=    5.6 E=4.598e+02 (drift -0.071%) Ep=-39.8 phi=0.626 θ_rms=0.00e+00 Q=3.152507e+02 s_max=6.0150e-02 gauss=7.0e-14 E_em=1.623e+00 locks=1 E*=5.00e+02 [94% 2.5s 11.16ms/step]
+
+=== COMPLETE ===
+E_total=4.5983e+02 (drift -0.072%) E_pot=-39.4275
+phi_max=0.6313 P_int=3.2536e+01 theta_rms=0.000e+00
+Q_phi=3.152456e+02 Q_theta=0.000000e+00 Q_total=3.152456e+02 s_max=6.3273e-02 r_core=3.394 omega_core=1.4111 Q_core=3.143219e+02
+gauss_max=7.008e-14 gauss_l2=1.741e-14 E_em=1.621950e+00 Q_flux=2.497637e+02
+SFA: v83/e1/results/out_hyb_q-1_D8.sfa (1 frames)
+[WARN] theta_rms grew: 0.00e+00 -> 0.00e+00
+Wall: 2.6s (0.0 min) 11.17ms/step
