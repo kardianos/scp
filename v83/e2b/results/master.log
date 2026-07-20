@@ -1,0 +1,39 @@
+E2 campaign: 36 jobs, workers=4, OMP=4
+  done C1_mix_D6: n=1->1 sep=0.00->0.00 park=0 merge=0 sepflag=0 wall=54s
+  done C1_anti_D6: n=2->2 sep=7.15->14.72 park=0 merge=0 sepflag=1 wall=55s
+  done C1_co_D6: n=1->1 sep=0.00->0.00 park=0 merge=0 sepflag=0 wall=55s
+  done C1_co_D8: n=1->1 sep=0.00->0.00 park=0 merge=0 sepflag=0 wall=56s
+  done C1_mix_D8: n=1->1 sep=0.00->0.00 park=0 merge=0 sepflag=0 wall=54s
+  done C1_co_D10: n=2->1 sep=9.82->0.00 park=0 merge=1 sepflag=0 wall=55s
+  done C1_anti_D8: n=2->2 sep=8.46->13.69 park=0 merge=0 sepflag=1 wall=55s
+  done C1_anti_D10: n=2->2 sep=10.15->12.90 park=0 merge=0 sepflag=1 wall=54s
+  done C1_co_D12: n=2->2 sep=11.94->11.14 park=1 merge=0 sepflag=0 wall=47s
+  done C1_anti_D12: n=2->2 sep=12.09->13.42 park=1 merge=0 sepflag=0 wall=47s
+  done C1_mix_D12: n=2->2 sep=11.98->12.07 park=1 merge=0 sepflag=0 wall=48s
+  done C1_mix_D10: n=2->2 sep=9.95->9.26 park=1 merge=0 sepflag=0 wall=54s
+  done C1_co_D14: n=2->2 sep=14.02->14.05 park=1 merge=0 sepflag=0 wall=42s
+  done C1_anti_D14: n=2->2 sep=14.04->14.68 park=1 merge=0 sepflag=0 wall=43s
+  done C1_mix_D14: n=2->2 sep=14.03->14.30 park=1 merge=0 sepflag=0 wall=42s
+  done C1_co_D16: n=2->2 sep=16.04->16.03 park=1 merge=0 sepflag=0 wall=38s
+  done C1_anti_D16: n=2->2 sep=16.04->16.22 park=1 merge=0 sepflag=0 wall=38s
+  done C1_mix_D16: n=2->2 sep=16.04->16.12 park=1 merge=0 sepflag=0 wall=38s
+  done C3_mix_D14: n=2->2 sep=14.03->15.76 park=1 merge=0 sepflag=0 wall=104s
+  done C3_co_D14: n=2->2 sep=14.02->14.56 park=1 merge=0 sepflag=0 wall=106s
+  done C3_co_D16: n=2->2 sep=16.04->16.20 park=1 merge=0 sepflag=0 wall=94s
+  done C3_anti_D14: n=2->2 sep=14.04->17.56 park=0 merge=0 sepflag=1 wall=105s
+  done C3_mix_D16: n=2->2 sep=16.04->17.07 park=1 merge=0 sepflag=0 wall=102s
+  done C3_anti_D16: n=2->2 sep=16.04->18.03 park=1 merge=0 sepflag=0 wall=104s
+  done C2_im1_D8: n=1->2 sep=0.00->15.20 park=0 merge=0 sepflag=1 wall=116s
+  done C2_im2_D8: n=1->1 sep=0.00->0.00 park=0 merge=0 sepflag=0 wall=120s
+  done C2_co_D8: n=1->1 sep=0.00->0.00 park=0 merge=0 sepflag=0 wall=116s
+  done C2_im1_D10: n=2->2 sep=9.97->13.95 park=0 merge=0 sepflag=1 wall=117s
+  done C2_im2_D10: n=2->1 sep=9.84->0.00 park=0 merge=1 sepflag=0 wall=118s
+  done C2_co_D10: n=1->1 sep=0.00->0.00 park=0 merge=0 sepflag=0 wall=116s
+  done C2_im1_D12: n=2->2 sep=12.00->14.53 park=0 merge=0 sepflag=1 wall=100s
+  done C2_im2_D12: n=2->2 sep=11.98->11.68 park=1 merge=0 sepflag=0 wall=100s
+  done C2_co_D12: n=2->1 sep=11.94->0.00 park=0 merge=1 sepflag=0 wall=94s
+  done C2_im1_D14: n=2->2 sep=13.99->15.68 park=1 merge=0 sepflag=0 wall=83s
+  done C2_im2_D14: n=2->2 sep=13.98->14.94 park=1 merge=0 sepflag=0 wall=62s
+  done C2_co_D14: n=2->2 sep=13.95->13.99 park=1 merge=0 sepflag=0 wall=60s
+
+E2: park=19 merge=3 separate=7 / 36

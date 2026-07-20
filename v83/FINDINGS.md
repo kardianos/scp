@@ -103,3 +103,13 @@ No static multi-center standoff. Consistent with v71 interlock moral (frustratio
 | `v83/e1/results/e1a_fixed_scan.tsv` | force table |
 | `v83/e1/results/track_e1b.tsv` | orbit track |
 | `v83/e2/results/clusters_*.tsv` | cluster counts |
+
+---
+
+## Parallel options push (E1b B1–B5, E2 C1–C3) — 2026-07-20
+
+See `v83/e1b_e2_EVAL.md`.
+
+- **E1b:** 0/31 band PASS. Best revs 0.58 (inspiral); flattest r ~0.34 rev (B1 r=10 vf=1). Soft/bag/mass ineffective.
+- **E2:** No true multi-center park. Co merges (small D) or stalls (large D); anti separates; flavored interlock no static molecule.
+- **Stop:** both tracks FAIL/NULL under option matrix (C4 skipped).
