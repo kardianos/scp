@@ -147,6 +147,17 @@ typedef struct {
                                 * (neutron-friendly). B1 lock ignores this (Q←C). */
     int    mf_seed_Q;          /* 1=if unlock and init_sfa_Q empty, copy C→Q once at init
                                 * (proton-friendly B2 start). Default 0. */
+
+    /* v81 Stage-3 locks on free gauge medium (n_locks=0 => sector off) */
+    int    n_locks;            /* number of lock carriers (0 = off) */
+    char   locks_file[512];    /* TSV seed; empty = use lock0.. strings */
+    char   lock0[256], lock1[256], lock2[256], lock3[256]; /* q,m,x,y,z[,ux,uy,uz,pinned] */
+    char   locks_track[512];   /* side-car track TSV path (empty = auto if n_locks>0) */
+    double lock_soft_r;        /* soft form-factor core radius (0 = off) */
+    double lock_soft_k;        /* soft core strength k (0 = off) */
+    double lock_bag_r;         /* anti-lock (lock-Higgs) bag radius (0 = off) */
+    double lock_bag_k;         /* anti-lock bag attraction strength */
+    int    locks_medium_only;  /* 1 = skip multiplet force/kick (vacuum Φ + locks Maxwell) */
 } Config;
 
 static Config cfg_defaults(void) {
@@ -197,6 +208,7 @@ static Config cfg_defaults(void) {
     c.init_sfa_L[0] = '\0';
     c.init_sfa_Q[0] = '\0';
     c.mf_seed_Q = 0;
+    /* n_locks / locks_file / lock* / locks_track already zero from memset */
     return c;
 }
 
@@ -311,6 +323,18 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"init_sfa_Q"))  strncpy(c->init_sfa_Q, val, 511);
     else if (!strcmp(key,"mf_seed_Q"))   c->mf_seed_Q = atoi(val);
     else if (!strcmp(key,"init_sfa_L"))  strncpy(c->init_sfa_L, val, 511);
+    else if (!strcmp(key,"n_locks"))     c->n_locks = atoi(val);
+    else if (!strcmp(key,"locks_file"))  strncpy(c->locks_file, val, 511);
+    else if (!strcmp(key,"lock0"))       strncpy(c->lock0, val, 255);
+    else if (!strcmp(key,"lock1"))       strncpy(c->lock1, val, 255);
+    else if (!strcmp(key,"lock2"))       strncpy(c->lock2, val, 255);
+    else if (!strcmp(key,"lock3"))       strncpy(c->lock3, val, 255);
+    else if (!strcmp(key,"locks_track")) strncpy(c->locks_track, val, 511);
+    else if (!strcmp(key,"lock_soft_r")) c->lock_soft_r = atof(val);
+    else if (!strcmp(key,"lock_soft_k")) c->lock_soft_k = atof(val);
+    else if (!strcmp(key,"lock_bag_r"))  c->lock_bag_r = atof(val);
+    else if (!strcmp(key,"lock_bag_k"))  c->lock_bag_k = atof(val);
+    else if (!strcmp(key,"locks_medium_only")) c->locks_medium_only = atoi(val);
     else fprintf(stderr, "WARNING: unknown config key '%s'\n", key);
 }
 
@@ -363,6 +387,14 @@ static void cfg_print(const Config *c) {
                 printf("Gauge:   second ball at (%.2f,%.2f,%.2f) sign=%+d phase=%.4f\n",
                        c->qball2_x0, c->qball2_y0, c->qball2_z0,
                        c->qball2_sign, c->qball2_phase);
+        }
+        if (c->n_locks > 0) {
+            printf("Locks:   n_locks=%d file=%s track=%s soft=(%.3g,%.3g) bag/anti=(%.3g,%.3g)%s\n",
+                   c->n_locks,
+                   c->locks_file[0] ? c->locks_file : "(inline lock0..)",
+                   c->locks_track[0] ? c->locks_track : "(auto)",
+                   c->lock_soft_r, c->lock_soft_k, c->lock_bag_r, c->lock_bag_k,
+                   c->locks_medium_only ? " medium_only=1" : "");
         }
         if (c->n_fabrics == 3) {
             printf("Multi-fab: n=3 (C/Q/L) stage=%d lock_CQ=%d eps_CQ=%.4g\n",
@@ -429,6 +461,24 @@ static void cfg_validate(const Config *c) {
         }
     }
     /* v69 SPEC §1.1: gauged-kernel hard incompatibilities */
+    if (c->n_locks > 0) {
+        if (c->complex_phi == 0 || c->complex_gauge == 0) {
+            fprintf(stderr, "ERROR: n_locks>0 requires complex_phi=1 and complex_gauge=1\n");
+            exit(1);
+        }
+        if (c->g_gauge == 0.0) {
+            fprintf(stderr, "ERROR: n_locks>0 requires g_gauge != 0\n");
+            exit(1);
+        }
+        if (c->n_locks > 4 && c->locks_file[0] == '\0') {
+            fprintf(stderr, "ERROR: n_locks>4 requires locks_file=...\n");
+            exit(1);
+        }
+        if (c->locks_medium_only && c->n_fabrics == 3) {
+            fprintf(stderr, "ERROR: locks_medium_only incompatible with n_fabrics=3\n");
+            exit(1);
+        }
+    }
     if (c->complex_gauge != 0) {
         if (c->complex_phi == 0) {
             fprintf(stderr, "ERROR: complex_gauge=1 requires complex_phi=1\n");

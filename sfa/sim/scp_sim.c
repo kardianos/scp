@@ -24,6 +24,14 @@
 
 /* Config, f16 helpers, and constants defined in scp_config.h */
 
+/* v81 lock carrier (API in scp_locks.h after Grid is defined) */
+typedef struct {
+    int    id;
+    int    type;
+    double q, m, E_star;
+    double x[3], u[3], x_prev[3], f[3];
+    int    pinned, alive;
+} ScpLock;
 
 /* ================================================================
    Grid: 18 arrays (6 fields × {val, vel, acc})
@@ -78,9 +86,21 @@ typedef struct {
     double *L_theta[NFIELDS], *L_theta_vel[NFIELDS], *L_theta_acc[NFIELDS];
     double *L_phi_im[NFIELDS], *L_phi_im_vel[NFIELDS], *L_phi_im_acc[NFIELDS];
     double *L_theta_im[NFIELDS], *L_theta_im_vel[NFIELDS], *L_theta_im_acc[NFIELDS];
+    /* v81 Stage-3 locks on free gauge medium (n_locks==0 => all NULL, unused) */
+    int     n_locks;
+    ScpLock *locks;
+    double *lock_rho;            /* CIC charge density of locks (added to Gauss ρ) */
+    double *lock_J[3];           /* charge-conserving current density */
+    char    locks_track[512];    /* side-car track path (empty = no file) */
+    double  lock_soft_r;         /* soft form-factor core radius (0 = off) */
+    double  lock_soft_k;         /* soft core strength */
+    double  lock_bag_r;          /* anti-lock bag radius (0 = off) */
+    double  lock_bag_k;          /* anti-lock bag pull strength */
     int N; long N3;
     double L, dx, dt;
 } Grid;
+
+#include "scp_locks.h"
 
 /* View of one fabric's matter arrays (C uses primary Grid pointers). */
 typedef struct {
@@ -156,16 +176,21 @@ static inline double fabric_rho_at(const FabricView *F, long idx) {
     return rho;
 }
 
-/* EM charge density under shared A: sum_f q_f ρ_f. Single fabric: ρ_C. */
+/* EM charge density under shared A: sum_f q_f ρ_f. Single fabric: ρ_C.
+ * v81: plus lock CIC density when n_locks>0 (Gauss: div E = g (ρ_matter+ρ_lock)). */
 static inline double em_rho_at(Grid *g, long idx) {
+    double rho;
     if (g->n_fabrics != 3) {
         FabricView C = fabric_C(g);
-        return fabric_rho_at(&C, idx);
+        rho = fabric_rho_at(&C, idx);
+    } else {
+        FabricView C = fabric_C(g), Q = fabric_Q(g), L = fabric_L(g);
+        rho = g->q_fab[0]*fabric_rho_at(&C, idx)
+            + g->q_fab[1]*fabric_rho_at(&Q, idx)
+            + g->q_fab[2]*fabric_rho_at(&L, idx);
     }
-    FabricView C = fabric_C(g), Q = fabric_Q(g), L = fabric_L(g);
-    return g->q_fab[0]*fabric_rho_at(&C, idx)
-         + g->q_fab[1]*fabric_rho_at(&Q, idx)
-         + g->q_fab[2]*fabric_rho_at(&L, idx);
+    if (g->lock_rho) rho += g->lock_rho[idx];
+    return rho;
 }
 
 static Grid *grid_alloc(const Config *c) {
@@ -184,6 +209,16 @@ static Grid *grid_alloc(const Config *c) {
     g->mf_lock_CQ   = c->mf_lock_CQ;
     g->q_fab[0] = c->q_C;  g->q_fab[1] = c->q_Q;  g->q_fab[2] = c->q_L;
     g->mf_mem = NULL;
+    /* v81 locks: default off (byte-identical when n_locks=0) */
+    g->n_locks = 0;
+    g->locks = NULL;
+    g->lock_rho = NULL;
+    g->lock_J[0] = g->lock_J[1] = g->lock_J[2] = NULL;
+    g->locks_track[0] = '\0';
+    g->lock_soft_r = c->lock_soft_r;
+    g->lock_soft_k = c->lock_soft_k;
+    g->lock_bag_r = c->lock_bag_r;
+    g->lock_bag_k = c->lock_bag_k;
     /* v71 Higgs: only in the gauged-complex path; off => byte-identical */
     g->higgs_mode = (c->higgs_v > 0.0 && g->gauge_mode) ? 1 : 0;
     g->higgs_v = c->higgs_v;  g->higgs_lam = c->higgs_lam;  g->higgs_kap = c->higgs_kap;
@@ -953,6 +988,55 @@ static void compute_forces_complex(Grid *g, const Config *c) {
 }
 
 /* ================================================================
+   v81 locks medium-only: free U(1) Maxwell (plaquettes → E_acc), no multiplet.
+   Used when locks_medium_only=1 (vacuum Φ + locks). NOT Cosserat Higgs.
+   ================================================================ */
+static void compute_forces_gauge_medium_only(Grid *g, const Config *c) {
+    (void)c;
+    const int N = g->N, NN = N * N;
+    const long N3 = g->N3;
+    const double dx = g->dx;
+    const double GG = g->g_gauge;
+    const double STP = 1.0 / (GG * dx * dx * dx);
+    for (int i = 0; i < 3; i++) {
+        double *thp = g->th[i], *cp = g->link_c[i], *sp = g->link_s[i];
+        #pragma omp parallel for schedule(static)
+        for (long idx = 0; idx < N3; idx++) {
+            cp[idx] = cos(thp[idx]);
+            sp[idx] = sin(thp[idx]);
+        }
+    }
+    #pragma omp parallel for schedule(static)
+    for (long idx = 0; idx < N3; idx++) {
+        int i = (int)(idx / NN), j = (int)((idx / N) % N), k = (int)(idx % N);
+        long np[3], nm[3];
+        np[0] = (long)((i + 1) % N) * NN + (long)j * N + k;
+        nm[0] = (long)((i - 1 + N) % N) * NN + (long)j * N + k;
+        np[1] = (long)i * NN + (long)((j + 1) % N) * N + k;
+        nm[1] = (long)i * NN + (long)((j - 1 + N) % N) * N + k;
+        np[2] = (long)i * NN + (long)j * N + (k + 1) % N;
+        nm[2] = (long)i * NN + (long)j * N + (k - 1 + N) % N;
+        const int pa[3] = {0, 1, 2}, pb[3] = {1, 2, 0};
+        for (int p = 0; p < 3; p++) {
+            int a = pa[p], b = pb[p];
+            double ang = g->th[a][idx] + g->th[b][np[a]]
+                       - g->th[a][np[b]] - g->th[b][idx];
+            g->plaq_s[p][idx] = sin(ang);
+        }
+        double st[3];
+        st[0] =  (g->plaq_s[0][idx] - g->plaq_s[0][nm[1]])
+               - (g->plaq_s[2][idx] - g->plaq_s[2][nm[2]]);
+        st[1] = -(g->plaq_s[0][idx] - g->plaq_s[0][nm[0]])
+               + (g->plaq_s[1][idx] - g->plaq_s[1][nm[2]]);
+        st[2] =  (g->plaq_s[2][idx] - g->plaq_s[2][nm[0]])
+               - (g->plaq_s[1][idx] - g->plaq_s[1][nm[1]]);
+        g->E_acc[0][idx] = STP * st[0];
+        g->E_acc[1][idx] = STP * st[1];
+        g->E_acc[2][idx] = STP * st[2];
+    }
+}
+
+/* ================================================================
    v69 gauged complex forces (SPEC §3): 12 matter fields + compact
    U(1) links. ALL spatial matter differences are link-covariant
    (forward+backward transported neighbors, §3.1-3.3); the E-kick is
@@ -1495,8 +1579,10 @@ static void verlet_step(Grid *g, const Config *c) {
     /* v69 §1.3/§3.5: gauge sector active only when complex_gauge && g != 0 */
     const int gauged = g->gauge_mode && g->g_gauge != 0.0;
     const int mf = (g->n_fabrics == 3);
+    const int med_only = c->locks_medium_only && g->n_locks > 0;
     FabricView C = fabric_C(g);
-    /* stage 1: half-kick (matter velocities AND E) */
+    /* stage 1: half-kick (matter velocities AND E) — skip multiplet if medium-only */
+    if (!med_only) {
     if (mf) {
         fabric_half_kick(&C, N3, hdt);
         if (!g->mf_lock_CQ) { FabricView Q = fabric_Q(g); fabric_half_kick(&Q, N3, hdt); }
@@ -1513,6 +1599,7 @@ static void verlet_step(Grid *g, const Config *c) {
             for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
         }
     }
+    }
     if (gauged) for (int a=0;a<3;a++) {
         double *E=g->Efield[a],*K=g->E_acc[a];
         #pragma omp parallel for schedule(static)
@@ -1523,10 +1610,11 @@ static void verlet_step(Grid *g, const Config *c) {
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) E[i]+=hdt*K[i];
     }
-    if (g->higgs_mode) { double *vH=g->H_vel,*aH=g->H_acc;
+    if (g->higgs_mode && !med_only) { double *vH=g->H_vel,*aH=g->H_acc;
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) vH[i]+=hdt*aH[i]; }
     /* stage 2: drift (fields AND link angles, wrapped to (-pi,pi]) */
+    if (!med_only) {
     if (mf) {
         fabric_drift(&C, N3, dt);
         if (!g->mf_lock_CQ) { FabricView Q = fabric_Q(g); fabric_drift(&Q, N3, dt); }
@@ -1542,6 +1630,7 @@ static void verlet_step(Grid *g, const Config *c) {
             #pragma omp parallel for schedule(static)
             for (long i=0;i<N3;i++) { pp[i]+=dt*vp[i]; pt[i]+=dt*vt[i]; }
         }
+    }
     }
     if (gauged) {
         const double gad = -g->g_gauge * g->dx * dt;   /* th_dot = -g*a*E */
@@ -1565,15 +1654,17 @@ static void verlet_step(Grid *g, const Config *c) {
             }
         }
     }
-    if (g->higgs_mode) { double *pH=g->H,*vH=g->H_vel;
+    if (g->higgs_mode && !med_only) { double *pH=g->H,*vH=g->H_vel;
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) pH[i]+=dt*vH[i]; }
     /* stage 3: forces (matter accs + E_acc) */
-    if (gauged && mf)         compute_forces_complex_gauge_mf(g, c);
+    if (gauged && med_only)   compute_forces_gauge_medium_only(g, c);
+    else if (gauged && mf)    compute_forces_complex_gauge_mf(g, c);
     else if (gauged)          compute_forces_complex_gauge(g, c);
     else if (g->complex_mode) compute_forces_complex(g, c);
     else                      compute_forces(g, c);
     /* stage 4: half-kick (matter + E) */
+    if (!med_only) {
     if (mf) {
         fabric_half_kick(&C, N3, hdt);
         if (!g->mf_lock_CQ) { FabricView Q = fabric_Q(g); fabric_half_kick(&Q, N3, hdt); }
@@ -1591,6 +1682,7 @@ static void verlet_step(Grid *g, const Config *c) {
             for (long i=0;i<N3;i++) { vp[i]+=hdt*ap[i]; vt[i]+=hdt*at[i]; }
         }
     }
+    }
     if (gauged) for (int a=0;a<3;a++) {
         double *E=g->Efield[a],*K=g->E_acc[a];
         #pragma omp parallel for schedule(static)
@@ -1604,6 +1696,12 @@ static void verlet_step(Grid *g, const Config *c) {
     if (g->higgs_mode) { double *vH=g->H_vel,*aH=g->H_acc;
         #pragma omp parallel for schedule(static)
         for (long i=0;i<N3;i++) vH[i]+=hdt*aH[i]; }
+    /* stage 4b: v81 locks — Boris push, then charge-conserving J → Ampère
+     * (apply after E half-kicks so trajectory and ρ update align with div E). */
+    if (g->n_locks > 0) {
+        locks_push_and_move(g, dt);
+        locks_apply_J_to_E(g, dt);   /* E += dt * g * J(x_prev→x) */
+    }
     /* stage 5: BCs */
     if (c->bc_type == 0)
         apply_damping(g, c);
@@ -2660,6 +2758,29 @@ int main(int argc, char **argv) {
     Grid *g = grid_alloc(&c);
     printf("dx=%.4f dt=%.6f threads=%d\n\n", g->dx, g->dt, nth);
 
+    /* v81 locks (n_locks==0: no-op alloc) */
+    if (c.n_locks > 0) {
+        locks_alloc(g, c.n_locks);
+        if (c.locks_track[0])
+            strncpy(g->locks_track, c.locks_track, sizeof(g->locks_track) - 1);
+        else
+            snprintf(g->locks_track, sizeof(g->locks_track), "locks_track.tsv");
+        if (c.locks_file[0]) {
+            locks_load_file(g, c.locks_file);
+        } else {
+            const char *inline_locks[4] = { c.lock0, c.lock1, c.lock2, c.lock3 };
+            for (int i = 0; i < c.n_locks && i < 4; i++) {
+                if (!inline_locks[i][0]) {
+                    fprintf(stderr, "FATAL: n_locks=%d but lock%d empty and no locks_file\n",
+                            c.n_locks, i);
+                    exit(1);
+                }
+                locks_set_from_csv(g, i, inline_locks[i]);
+                printf("  lock[%d] from lock%d=%s\n", i, i, inline_locks[i]);
+            }
+        }
+    }
+
     /* Initialize */
     do_init(g, &c);
     /* v71 Higgs: condensate at the VEV; optional central cavity (higgs_rvoid>0)
@@ -2684,12 +2805,18 @@ int main(int argc, char **argv) {
     /* v75 multi-fabric: load L seed + Q←C lock before Gauss */
     mf_post_init(g, &c);
 
+    /* v81: deposit lock ρ before Gauss projection so div E = g(ρ_m+ρ_L) */
+    if (g->n_locks > 0)
+        locks_deposit_rho(g);
+
     if (gauged) {
         if (c.bc_type == 2) net_charge_check(g, &c);
         init_gauss_project(g, &c);
         if (g->gauge2_mode) init_gauss2_project(g);
     }
-    if (gauged && g->n_fabrics == 3) compute_forces_complex_gauge_mf(g, &c);
+    if (gauged && c.locks_medium_only && g->n_locks > 0)
+                                  compute_forces_gauge_medium_only(g, &c);
+    else if (gauged && g->n_fabrics == 3) compute_forces_complex_gauge_mf(g, &c);
     else if (gauged)              compute_forces_complex_gauge(g, &c);
     else if (g->complex_mode) compute_forces_complex(g, &c);
     else                      compute_forces(g, &c);
@@ -2844,7 +2971,17 @@ int main(int argc, char **argv) {
                                    "\tomega_core\tQ_core\tthp1u\tthp1v\tthp2u\tthp2v");
     if (c.complex_gauge) fprintf(fp, "\tgauss_max\tgauss_l2\tE_em\tQ_flux");
     if (c.n_fabrics == 3) fprintf(fp, "\tQ_C\tQ_Q\tQ_L\tQ_em");
+    if (c.n_locks > 0) fprintf(fp, "\tE_locks_star\tE_locks_kin\tlocks_alive\tQ_locks");
     fprintf(fp, "\n");
+
+    FILE *fp_locks = NULL;
+    if (c.n_locks > 0 && g->locks_track[0]) {
+        fp_locks = fopen(g->locks_track, "w");
+        if (fp_locks)
+            fprintf(fp_locks, "t\tid\ttype\tx\ty\tz\tux\tuy\tuz\tfx\tfy\tfz\tpinned\talive\n");
+        else
+            fprintf(stderr, "WARNING: cannot open locks_track '%s'\n", g->locks_track);
+    }
 
     int n_steps = (int)lround(c.T / g->dt);
     int diag_every = (int)lround(c.diag_dt / g->dt); if (diag_every<1) diag_every=1;
@@ -2888,6 +3025,14 @@ int main(int argc, char **argv) {
         compute_mf_charges(g,&QC,&QQ,&QL,&Qem);
         fprintf(fp,"\t%.12e\t%.12e\t%.12e\t%.12e",QC,QQ,QL,Qem);
         printf("MF charges: Q_C=%.4e Q_Q=%.4e Q_L=%.4e Q_em=%.4e\n",QC,QQ,QL,Qem);
+    }
+    if (c.n_locks > 0) {
+        double Els=0, Elk=0; int nalive=0;
+        locks_energy(g, &Els, &Elk, &nalive);
+        double Ql = locks_Q_total(g);
+        fprintf(fp, "\t%.12e\t%.12e\t%d\t%.12e", Els, Elk, nalive, Ql);
+        printf("Locks: n=%d Q=%.4g E*=%.4e Ekin=%.4e\n", nalive, Ql, Els, Elk);
+        if (fp_locks) locks_write_track(g, 0.0, fp_locks);
     }
     fprintf(fp,"\n");
 
@@ -3041,6 +3186,12 @@ int main(int argc, char **argv) {
                 compute_mf_charges(g,&QC,&QQ,&QL,&Qem);
                 fprintf(fp,"\t%.12e\t%.12e\t%.12e\t%.12e",QC,QQ,QL,Qem);
             }
+            if (c.n_locks > 0) {
+                double Els=0, Elk=0; int nalive=0;
+                locks_energy(g, &Els, &Elk, &nalive);
+                fprintf(fp, "\t%.12e\t%.12e\t%d\t%.12e", Els, Elk, nalive, locks_Q_total(g));
+                if (fp_locks) locks_write_track(g, t, fp_locks);
+            }
             fprintf(fp,"\n");
             fflush(fp);
 
@@ -3055,6 +3206,11 @@ int main(int argc, char **argv) {
                     double QC=0,QQ=0,QL=0,Qem=0;
                     compute_mf_charges(g,&QC,&QQ,&QL,&Qem);
                     printf("Qem=%.3e ", Qem);
+                }
+                if (c.n_locks > 0) {
+                    double Els=0, Elk=0; int nalive=0;
+                    locks_energy(g, &Els, &Elk, &nalive);
+                    printf("locks=%d E*=%.2e ", nalive, Els);
                 }
                 printf("[%.0f%% %.1fs %.2fms/step]\n",
                        100.0*step/n_steps,wall,1000*wall/step);
@@ -3112,6 +3268,8 @@ int main(int argc, char **argv) {
     printf("Wall: %.1fs (%.1f min) %.2fms/step\n", wall, wall/60, 1000*wall/n_steps);
 
     fclose(fp);
+    if (fp_locks) fclose(fp_locks);
+    if (g->n_locks > 0) locks_free(g);
     if (cast_buf) free(cast_buf);
     grid_free(g);
     return 0;

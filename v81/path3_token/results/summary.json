@@ -1,0 +1,50 @@
+{
+  "T0": {
+    "passed": true,
+    "name": "T0",
+    "pass_conservation": true,
+    "pass_hop_cap": true,
+    "total_tokens_initial": 135168,
+    "total_tokens_final": 135168,
+    "max_abs_drift": 0,
+    "hop_cap_c": 3,
+    "observed_max_transfer": 3,
+    "transfer_hit_cap": true,
+    "ticks": 500,
+    "notes": "exact conservation; hop cap binds and is never exceeded"
+  },
+  "T1": {
+    "passed": true,
+    "name": "T1",
+    "pass_signed_force": true,
+    "opp_d_initial": 16.691713862574034,
+    "opp_d_final": 39.81155559427533,
+    "opp_delta": 23.1198417317013,
+    "same_d_initial": 11.074902748331084,
+    "same_d_final": 0.0,
+    "same_delta": -11.074902748331084,
+    "opp_mean_approach_rate": -0.019676461048256422,
+    "same_mean_approach_rate": 0.009425449147515816,
+    "ticks": 1200,
+    "notes": "opp \u0394d=23.120 rate=-0.01968 mid_travel=0.88 |\u0394\u03b8|=0.057; same \u0394d=-11.075 rate=0.00943 mid_travel=3.28 |\u0394\u03b8|=0.175; signed viscous-gas force: same-sign merges, opposite recedes (not EM-like; still circulation-sign dependent); approach rates differ by sign"
+  },
+  "T2": {
+    "passed": true,
+    "name": "T2",
+    "pass_longevity": true,
+    "ticks": 4000,
+    "C_abs_mean_initial": 0.011057599139814852,
+    "C_abs_mean_final": 0.0077446628712221416,
+    "C_abs_mean_ratio": 0.7003928043779509,
+    "KE_initial": 2447.6694545526107,
+    "KE_final": 1046.83311102575,
+    "KE_ratio": 0.4276856538282421,
+    "sep_std": 7.699558747847081,
+    "sep_mean": 44.344703182113975,
+    "peak_detect_fraction": 1.0,
+    "token_drift": 0,
+    "notes": "|C| mean 0.0111 \u2192 0.0077 (ratio 0.700); KE 2447.67 \u2192 1046.83 (ratio 0.428); track frac=1.00; sep mean\u00b1std=44.34\u00b17.70; pattern durable over long T (not multiplet-hump evaporation)"
+  },
+  "wall_seconds": 20.75318479537964,
+  "all_passed": true
+}

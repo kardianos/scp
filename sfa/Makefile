@@ -47,7 +47,7 @@ tools/vecstream2sfa: tools/vecstream2sfa.c format/sfa.h format/vecstream.h
 
 # ---- Simulation kernels ----
 
-sim/scp_sim: sim/scp_sim.c format/sfa.h
+sim/scp_sim: sim/scp_sim.c sim/scp_config.h sim/scp_init.h sim/scp_locks.h format/sfa.h
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
 
 sim/scp_multi: sim/scp_multi.c format/sfa.h

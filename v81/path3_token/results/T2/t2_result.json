@@ -1,0 +1,16 @@
+{
+  "name": "T2",
+  "pass_longevity": true,
+  "ticks": 4000,
+  "C_abs_mean_initial": 0.011057599139814852,
+  "C_abs_mean_final": 0.0077446628712221416,
+  "C_abs_mean_ratio": 0.7003928043779509,
+  "KE_initial": 2447.6694545526107,
+  "KE_final": 1046.83311102575,
+  "KE_ratio": 0.4276856538282421,
+  "sep_std": 7.699558747847081,
+  "sep_mean": 44.344703182113975,
+  "peak_detect_fraction": 1.0,
+  "token_drift": 0,
+  "notes": "|C| mean 0.0111 \u2192 0.0077 (ratio 0.700); KE 2447.67 \u2192 1046.83 (ratio 0.428); track frac=1.00; sep mean\u00b1std=44.34\u00b17.70; pattern durable over long T (not multiplet-hump evaporation)"
+}

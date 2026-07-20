@@ -1,0 +1,14 @@
+{
+  "name": "T1",
+  "pass_signed_force": true,
+  "opp_d_initial": 16.691713862574034,
+  "opp_d_final": 39.81155559427533,
+  "opp_delta": 23.1198417317013,
+  "same_d_initial": 11.074902748331084,
+  "same_d_final": 0.0,
+  "same_delta": -11.074902748331084,
+  "opp_mean_approach_rate": -0.019676461048256422,
+  "same_mean_approach_rate": 0.009425449147515816,
+  "ticks": 1200,
+  "notes": "opp \u0394d=23.120 rate=-0.01968 mid_travel=0.88 |\u0394\u03b8|=0.057; same \u0394d=-11.075 rate=0.00943 mid_travel=3.28 |\u0394\u03b8|=0.175; signed viscous-gas force: same-sign merges, opposite recedes (not EM-like; still circulation-sign dependent); approach rates differ by sign"
+}

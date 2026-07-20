@@ -1,0 +1,13 @@
+{
+  "name": "T0",
+  "pass_conservation": true,
+  "pass_hop_cap": true,
+  "total_tokens_initial": 135168,
+  "total_tokens_final": 135168,
+  "max_abs_drift": 0,
+  "hop_cap_c": 3,
+  "observed_max_transfer": 3,
+  "transfer_hit_cap": true,
+  "ticks": 500,
+  "notes": "exact conservation; hop cap binds and is never exceeded"
+}

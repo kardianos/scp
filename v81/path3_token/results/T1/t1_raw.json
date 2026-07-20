@@ -1,0 +1,48 @@
+{
+  "opp": {
+    "label": "opp",
+    "opposite": true,
+    "d_initial": 16.691713862574034,
+    "d_final": 39.81155559427533,
+    "delta": 23.1198417317013,
+    "mean_approach_rate": -0.019676461048256422,
+    "mid_travel": 0.8759564727079059,
+    "d_angle": 0.05676116448110902,
+    "C_abs_mean_final": 0.007845448270352958,
+    "KE_final": 1073.0994786348263,
+    "total_tokens": 221184,
+    "centers_seed": [
+      [
+        47.5,
+        39.5
+      ],
+      [
+        47.5,
+        55.5
+      ]
+    ]
+  },
+  "same": {
+    "label": "same",
+    "opposite": false,
+    "d_initial": 11.074902748331084,
+    "d_final": 0.0,
+    "delta": -11.074902748331084,
+    "mean_approach_rate": 0.009425449147515816,
+    "mid_travel": 3.276057675914294,
+    "d_angle": -0.1745231515779473,
+    "C_abs_mean_final": 0.012150030506403427,
+    "KE_final": 3598.5200896213996,
+    "total_tokens": 221184,
+    "centers_seed": [
+      [
+        47.5,
+        39.5
+      ],
+      [
+        47.5,
+        55.5
+      ]
+    ]
+  }
+}

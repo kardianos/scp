@@ -1,0 +1,6 @@
+=== START base 2026-07-19T16:14:05-05:00 ===
+=== DONE base 2026-07-19T17:08:53-05:00 ===
+  File "<stdin>", line 5
+    print(f"{run}: n={len(rows)} gauss_max={gmax:.3e} E_em_f={float(rows[-1][\"E_em\"]):.4e} alive={rows[-1][\"locks_alive\"]}")
+                                                                              ^
+SyntaxError: unexpected character after line continuation character
