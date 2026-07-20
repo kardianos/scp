@@ -1,28 +1,25 @@
-# v82 — capacity / sequestration core (after P1 multi-rev miss)
+# v82 — Stage-3 second scale (after P1 multi-rev miss)
 
-**Status:** council + Phase A **PASS** (force sign change); Phase B orbit **not yet** multi-rev  
-**Baseline:** v81 P1 locks (commit `66fdfbe`) kept as attractive channel  
+**Status:** three parallel approaches run (A well / B magnetic / C composite)  
+**See:** `PARALLEL.md`, `parallel/RESULTS.md`
 
-## Why
+## Commits lineage
 
-S1 grid bag was non-decorative but collapse-through (`min sep~0.7`, revs≪1).  
-Council (2× glm-5.2): second scale = **depletion of free capacity** (repel when footprints overlap), not monotonic bag attract.
+- v81 P1 locks (medium attract works)  
+- S1 grid bag fail multi-rev  
+- Council: capacity as short-range **repulsion**  
+- Path4 Phase A force sign change; Phase B orbit incomplete  
 
-## Layout
+## Parallel results (2026-07-20)
 
-| Path | Role |
-|------|------|
-| `DESIGN_BRIEF.md` | Brief to advisors |
-| `council/` | glm-5.2 recommendations + synthesis |
-| `path4_capacity/` | Sandbox Phase A/B |
+| ID | Result |
+|----|--------|
+| **A** capacity well | \(F(D)\) well **PASS** (\(r_*\!\sim\!7{-}9\)); free multi-rev **FAIL** this run |
+| **B** magnetic | **FAIL** as sole scale |
+| **C** composite lock | **PASS\*** durable dipole + live \(E_{\mathrm{em}}\) |
 
-## Results (so far)
+## Default next
 
-| Gate | Result |
-|------|--------|
-| Phase A pinned `F_along(D)` non-monotonic | **PASS** — zero-cross near \(D^*\sim5\) for \(k_{\mathrm{core}}\ge2\) |
-| Phase B free orbit multi-rev | **FAIL** (this session) — min sep held (~10–14), revs~0.18, slow expand |
+**A+C hybrid:** free pair with proven well force + honest PIC, **or** promote composite as structural positronium analog while free multi-rev is tuned.
 
-## Next
-
-Tune `{k_core,n_crit,foot_r,v_t}` / longer T; if band+revs≥1 → kernel port; if not → topological core fallback (council rank 3).
+Do **not** resume multi-fab product.

@@ -1,0 +1,80 @@
+v82 parallel approaches  outdir=results
+
+======== A: capacity pair-overlap well ========
+  k_core=0.020 s=4.0
+    D=   3  Fem=+5.6715e-02  Fcore=-1.5097e-02  Fnet=+4.1618e-02
+    D=   4  Fem=+4.1188e-02  Fcore=-1.2131e-02  Fnet=+2.9058e-02
+    D=   5  Fem=+3.2408e-02  Fcore=-9.1567e-03  Fnet=+2.3251e-02
+    D=   6  Fem=+2.6745e-02  Fcore=-6.4930e-03  Fnet=+2.0252e-02
+    D=   8  Fem=+1.9812e-02  Fcore=-2.7067e-03  Fnet=+1.7105e-02
+    D=  10  Fem=+1.5690e-02  Fcore=-8.7874e-04  Fnet=+1.4811e-02
+    D=  12  Fem=+1.2940e-02  Fcore=-2.2218e-04  Fnet=+1.2718e-02
+    D=  16  Fem=+9.4709e-03  Fcore=-6.7093e-06  Fnet=+9.4641e-03
+    D=  20  Fem=+7.3424e-03  Fcore=-7.4533e-08  Fnet=+7.3423e-03
+    D=  24  Fem=+5.8789e-03  Fcore=-3.0460e-10  Fnet=+5.8789e-03
+  k_core=0.050 s=4.0
+    D=   3  Fem=+5.6715e-02  Fcore=-3.7742e-02  Fnet=+1.8973e-02
+    D=   4  Fem=+4.1188e-02  Fcore=-3.0327e-02  Fnet=+1.0862e-02
+    D=   5  Fem=+3.2408e-02  Fcore=-2.2892e-02  Fnet=+9.5164e-03
+    D=   6  Fem=+2.6745e-02  Fcore=-1.6233e-02  Fnet=+1.0513e-02
+    D=   8  Fem=+1.9812e-02  Fcore=-6.7668e-03  Fnet=+1.3045e-02
+    D=  10  Fem=+1.5690e-02  Fcore=-2.1968e-03  Fnet=+1.3493e-02
+    D=  12  Fem=+1.2940e-02  Fcore=-5.5545e-04  Fnet=+1.2385e-02
+    D=  16  Fem=+9.4709e-03  Fcore=-1.6773e-05  Fnet=+9.4541e-03
+    D=  20  Fem=+7.3424e-03  Fcore=-1.8633e-07  Fnet=+7.3422e-03
+    D=  24  Fem=+5.8789e-03  Fcore=-7.6150e-10  Fnet=+5.8789e-03
+  k_core=0.100 s=4.0
+    D=   3  Fem=+5.6715e-02  Fcore=-7.5484e-02  Fnet=-1.8769e-02
+    D=   4  Fem=+4.1188e-02  Fcore=-6.0653e-02  Fnet=-1.9465e-02
+    D=   5  Fem=+3.2408e-02  Fcore=-4.5783e-02  Fnet=-1.3375e-02
+    D=   6  Fem=+2.6745e-02  Fcore=-3.2465e-02  Fnet=-5.7198e-03
+    D=   8  Fem=+1.9812e-02  Fcore=-1.3534e-02  Fnet=+6.2783e-03
+    WELL r*~7.0 (repel→attract)
+    D=  10  Fem=+1.5690e-02  Fcore=-4.3937e-03  Fnet=+1.1297e-02
+    D=  12  Fem=+1.2940e-02  Fcore=-1.1109e-03  Fnet=+1.1829e-02
+    D=  16  Fem=+9.4709e-03  Fcore=-3.3546e-05  Fnet=+9.4373e-03
+    D=  20  Fem=+7.3424e-03  Fcore=-3.7267e-07  Fnet=+7.3421e-03
+    D=  24  Fem=+5.8789e-03  Fcore=-1.5230e-09  Fnet=+5.8789e-03
+  k_core=0.200 s=4.0
+    D=   3  Fem=+5.6715e-02  Fcore=-1.5097e-01  Fnet=-9.4253e-02
+    D=   4  Fem=+4.1188e-02  Fcore=-1.2131e-01  Fnet=-8.0118e-02
+    D=   5  Fem=+3.2408e-02  Fcore=-9.1567e-02  Fnet=-5.9159e-02
+    D=   6  Fem=+2.6745e-02  Fcore=-6.4930e-02  Fnet=-3.8185e-02
+    D=   8  Fem=+1.9812e-02  Fcore=-2.7067e-02  Fnet=-7.2552e-03
+    D=  10  Fem=+1.5690e-02  Fcore=-8.7874e-03  Fnet=+6.9028e-03
+    WELL r*~9.0 (repel→attract)
+    D=  12  Fem=+1.2940e-02  Fcore=-2.2218e-03  Fnet=+1.0719e-02
+    D=  16  Fem=+9.4709e-03  Fcore=-6.7093e-05  Fnet=+9.4038e-03
+    D=  20  Fem=+7.3424e-03  Fcore=-7.4533e-07  Fnet=+7.3417e-03
+    D=  24  Fem=+5.8789e-03  Fcore=-3.0460e-09  Fnet=+5.8789e-03
+  wrote results/A_Fnet.tsv  well=1 r*~9.0 k=0.200
+  seed orbit D0=9.00 vt≈0.1985 Fem=1.7521e-02
+  orbit: sepmin=9.00 sepmax=48.82 revs=0.22 no
+  Approach A => well=PASS orbit=FAIL
+
+======== B: uniform Bz + soft core ========
+  Bz=0.00 vt=0.10 sep[3.33,31.20] revs=1.90 no
+  Bz=0.00 vt=0.18 sep[9.48,53.95] revs=0.15 no
+  Bz=0.00 vt=0.25 sep[3.92,52.82] revs=0.66 no
+  Bz=0.05 vt=0.10 sep[2.52,58.77] revs=1.38 no
+  Bz=0.05 vt=0.18 sep[12.00,63.08] revs=0.08 no
+  Bz=0.05 vt=0.25 sep[12.00,67.79] revs=0.50 no
+  Bz=0.15 vt=0.10 sep[2.50,19.57] revs=0.14 no
+  Bz=0.15 vt=0.18 sep[3.77,50.27] revs=0.08 no
+  Bz=0.15 vt=0.25 sep[0.84,41.78] revs=0.20 no
+  Bz=0.30 vt=0.10 sep[0.56,18.68] revs=0.14 no
+  Bz=0.30 vt=0.18 sep[9.54,27.34] revs=0.06 no
+  Bz=0.30 vt=0.25 sep[4.12,28.66] revs=0.01 no
+  Approach B => FAIL
+
+======== C: rigid composite dipole ========
+  final COM=(50.06,41.08) omega=0.0819 Eem_f/Eem0=0.000 alive=1
+  wrote results/C_composite.tsv
+  Eem_final=3.4281e-01  pass=1 (durable composite + medium field)
+  Approach C => PASS*
+  (PASS* = durable object + live E_em; not two-body multi-rev)
+
+======== PARALLEL SCORECARD ========
+  A capacity well/orbit: partial/fail
+  B magnetic:            FAIL
+  C composite:           PASS*
