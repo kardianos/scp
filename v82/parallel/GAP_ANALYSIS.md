@@ -26,78 +26,49 @@ Seed circular orbit with \(v_t=\sqrt{F_{\mathrm{EM}}\,r_*/\mu}\) at that \(r_*\)
 | Zero of \(F_{\mathrm{net}}\) | Exists for \(k\gtrsim0.1\), \(s=4\) |
 | Free orbit at claimed \(r_*\) | \(\mathrm{sepmin}=9\), \(\mathrm{sepmax}\sim49\), \(\mathrm{revs}=0.22\) — leaves “well” |
 
-### GAP A1 — **Wrong circular condition (theory bug)**
+### GAP A1 — **Wrong circular condition (theory bug) — FIXED 2026-07-20**
 
-Relative 1D radial problem with conserved angular momentum \(L=\mu\,r\,v_\theta\):
-
-\[
-\mu\ddot r = F_r(r)+\frac{L^2}{\mu r^3}.
-\]
-
-Here \(F_r=-F_{\mathrm{along}}\) if \(F_{\mathrm{along}}>0\) means attract (force that decreases \(r\)).  
-**Circular** \(\ddot r=0\), \(\dot r=0\):
+Relative problem with \(L=\mu\,r\,v_{\mathrm{rel}}\):
 
 \[
-F_{\mathrm{along}}(r_c)=\frac{\mu v_\theta^2}{r_c}\;>\;0.
+\mu\ddot r = -F_{\mathrm{along}}(r)+\frac{L^2}{\mu r^3},\qquad
+F_{\mathrm{along}}(r_c)=\frac{\mu v_{\mathrm{rel}}^2}{r_c}\;>\;0.
 \]
 
-So the pair must sit where **net force is still attractive**, equal to the centripetal requirement — **not** at \(F_{\mathrm{net}}=0\).
+**Not** at \(F_{\mathrm{net}}=0\). Also: equal-mass COM seed must use \(v_{\mathrm{each}}=v_{\mathrm{rel}}/2\), not \(v_{\mathrm{rel}}\).
 
-At \(F_{\mathrm{net}}=0\) there is **no** force left for \(\mu v^2/r\). The code then seeded
+Old code seeded \(v_{\mathrm{each}}=\sqrt{F_{\mathrm{EM}} r/\mu}\) at \(r_0\) → ~6× too fast vs correct first shell.
 
-\[
-v_t=\sqrt{F_{\mathrm{EM}}\,r/\mu}
-\]
+**Re-run (`A_fixed_run.log`):** continuum analytic orbits **PASS** (flat sep, multi-rev). CONTROL wrong seed **expands**. Live PIC: **at least one band** (\(r_c\!\approx\!9.82\), revs\(=2\)).
 
-using **bare EM**, not \(F_{\mathrm{net}}\). At \(r_*\) where \(F_{\mathrm{net}}=0\), true \(F_{\mathrm{net}}\ll F_{\mathrm{EM}}\), so \(v_t\) is **systematically too large** → super-circular → climbs out of any shallow well → expand. That matches sepmax~49.
+### GAP A2 — **Stable circular family — CLOSED (exists)**
 
-**Correct program:**
+Continuum \(k=0.2\), \(s=4\): \(r_0\!\approx\!8.64\); stable circular shell \(r_c\in[9.04,16+]\) with \(v_{\mathrm{each}}\sim0.03\)–\(0.10\). Analytic dynamics parks all tested seeds.
 
-1. Choose \(L\) (or \(v_\theta\)).  
-2. Solve \(F_{\mathrm{along}}(r)=\mu v_\theta^2/r\) for \(r_c(L)\).  
-3. Require **stability**: \(\partial_r\!\left(F_{\mathrm{along}}-\mu v_\theta^2/r\right)<0\) in the appropriate sign convention (effective potential minimum).  
-4. Seed at that \((r_c,v_\theta)\), not at \(F_{\mathrm{net}}=0\).
+### GAP A3 — **Dynamics incompleteness (live PIC) — OPEN, partial**
 
-### GAP A2 — **Is there a stable circular family at all?**
-
-Define \(V(r)\) by \(\mathrm{d}V/\mathrm{d}r=F_{\mathrm{along}}\) with \(V(\infty)=0\) (work to separate).  
-Effective potential \(V_{\mathrm{eff}}=V+L^2/(2\mu r^2)\).
-
-Analytic sketch for \(k=0.2\), \(s=4\), \(\mu=4\):
-
-- \(V(r)\) has a **minimum** near the force zero (\(r\sim8.7\)).  
-- Circular points with \(F_{\mathrm{along}}>0\) exist only for \(r>r_{\mathrm{zero}}\) (attractive side).  
-- For large \(L\), the centrifugal barrier may destroy the bound pocket; for small \(L\), circular radius sits just outside \(r_{\mathrm{zero}}\) with small \(F_{\mathrm{along}}\).
-
-So a bound circular family **can** exist, but:
-
-- It lives in a **thin shell** outside \(r_{\mathrm{zero}}\), with **small** \(v_\theta\), not the EM-only \(v_t\sim0.2\).  
-- Numerics never seeded that family → orbit FAIL does **not** yet kill the well idea.
-
-### GAP A3 — **Dynamics incompleteness (numeric method)**
-
-Orbit step used: deposit ρ → **few SOR iterations** → force → non-rel update. That is **not** Gauss-preserving Maxwell+current dynamics. Radiation, retardation, and self-force are wrong or missing. Escape may mix:
-
-- wrong \(v_t\) (A1), and  
-- numerical heating / force lag (A3).
-
-Until A1 is fixed under a **faithful** stepper, “orbit FAIL” is under-determined.
+Live step: deposit ρ → few SOR → force. Not full charge-conserving Maxwell. Self-force / lag still broaden orbits; several seeds fail band, one passes. **A1 no longer confounds** — residual live fail is A3/A5.
 
 ### GAP A4 — **Ontology vs pair proxy**
 
-Pair Gaussian overlap is a **proxy** for depletion \(n_{\mathrm{free}}\), not the co-field. It reintroduces a **pairwise** form (allowed as regularisation of overlap, but not the monist end state). True capacity must remain **gathered from a medium field** so Gauss/ledger stay clean in 3D.
+Pair Gaussian overlap is a **proxy** for depletion \(n_{\mathrm{free}}\), not the co-field. True capacity must remain **gathered from a medium field** so Gauss/ledger stay clean in 3D.
 
-### A — status after gaps
+### GAP A5 — **Lattice force noise off-grid (found in fix re-run)**
+
+Dense `measure_Fem` at non-integer \(D\) **sign-oscillates** (CIC self-force). Integer \(D\) matches continuum within ~1–8%. Circular design must use continuum \(F_{\mathrm{EM}}=1/(2\pi D)\) (or integer lattice only), not dense lattice sampling.
+
+### A — status after fix re-run
 
 | Piece | Status |
 |-------|--------|
-| EM medium force | Complete enough (numeric≈continuum) |
-| Short-range repel shape | Complete enough for a well |
-| Circular / stability theory in docs | **Wrong / incomplete (A1)** |
-| Orbit numeric | **Invalid as falsifier until A1+A3 fixed** |
+| EM medium force (integer \(D\)) | OK vs continuum |
+| Short-range repel → well | **PASS** \(r_0\!\approx\!8.64\) |
+| Circular / COM seed theory | **Fixed (A1)** |
+| Analytic force-law orbit | **PASS** multi-rev band |
+| Live PIC orbit | **PASS** (fragile; ≥1 band) |
 | Co-field capacity | Incomplete (pair proxy) |
 
-**Not chasing the wrong object** — chasing with the **wrong equilibrium formula** and a **weak dynamical probe**.
+**Verdict:** A is the **right primary** free-pair scale. Promote capacity into monist kernel only after live is made robust (A3).
 
 ---
 

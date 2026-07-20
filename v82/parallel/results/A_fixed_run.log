@@ -1,0 +1,78 @@
+v82 parallel approaches  outdir=v82/parallel/results
+
+======== A FIXED: well + correct circular seed ========
+  Circular: F_along(r_c) = mu * v_theta^2 / r_c  (>0 attract), NOT F_net=0
+  F_net design uses continuum Fem=1/(2 pi D); lattice validated at integer D only
+  building continuum F_net(D) for k=0.200 s=4.0
+  force-zero r0=8.644 (repel→attract) well=1
+  lattice Fem vs continuum at integer D:
+    D= 3  Fem_lat=5.6715e-02  Fem_cont=5.3052e-02  ratio=1.069
+    D= 4  Fem_lat=4.1188e-02  Fem_cont=3.9789e-02  ratio=1.035
+    D= 5  Fem_lat=3.2408e-02  Fem_cont=3.1831e-02  ratio=1.018
+    D= 6  Fem_lat=2.6745e-02  Fem_cont=2.6526e-02  ratio=1.008
+    D= 7  Fem_lat=2.2769e-02  Fem_cont=2.2736e-02  ratio=1.001
+    D= 8  Fem_lat=1.9812e-02  Fem_cont=1.9894e-02  ratio=0.996
+    D= 9  Fem_lat=1.7521e-02  Fem_cont=1.7684e-02  ratio=0.991
+    D=10  Fem_lat=1.5690e-02  Fem_cont=1.5915e-02  ratio=0.986
+    D=11  Fem_lat=1.4192e-02  Fem_cont=1.4469e-02  ratio=0.981
+    D=12  Fem_lat=1.2940e-02  Fem_cont=1.3263e-02  ratio=0.976
+    D=13  Fem_lat=1.1879e-02  Fem_cont=1.2243e-02  ratio=0.970
+    D=14  Fem_lat=1.0965e-02  Fem_cont=1.1368e-02  ratio=0.965
+    D=15  Fem_lat=1.0170e-02  Fem_cont=1.0610e-02  ratio=0.959
+    D=16  Fem_lat=9.4709e-03  Fem_cont=9.9472e-03  ratio=0.952
+    D=17  Fem_lat=8.8504e-03  Fem_cont=9.3621e-03  ratio=0.945
+    D=18  Fem_lat=8.2955e-03  Fem_cont=8.8419e-03  ratio=0.938
+    D=19  Fem_lat=7.7956e-03  Fem_cont=8.3766e-03  ratio=0.931
+    D=20  Fem_lat=7.3424e-03  Fem_cont=7.9577e-03  ratio=0.923
+  wrote v82/parallel/results/Afix_Fnet.tsv
+  circular family: mu v_rel^2/r = Fnet; seed each with v_each=v_rel/2:
+    r_c=9.037  Fnet=2.0314e-03  v_each=0.0339  v_rel=0.0677  STABLE
+    r_c=9.300  Fnet=3.7101e-03  v_each=0.0464  v_rel=0.0929  STABLE
+    r_c=9.562  Fnet=5.1617e-03  v_each=0.0555  v_rel=0.1111  STABLE
+    r_c=9.825  Fnet=6.4053e-03  v_each=0.0627  v_rel=0.1254  STABLE
+    r_c=10.088  Fnet=7.4597e-03  v_each=0.0686  v_rel=0.1372  STABLE
+    r_c=10.350  Fnet=8.3434e-03  v_each=0.0735  v_rel=0.1469  STABLE
+    r_c=10.613  Fnet=9.0743e-03  v_each=0.0776  v_rel=0.1552  STABLE
+    r_c=10.875  Fnet=9.6694e-03  v_each=0.0811  v_rel=0.1621  STABLE
+    r_c=11.137  Fnet=1.0145e-02  v_each=0.0840  v_rel=0.1681  STABLE
+    r_c=11.400  Fnet=1.0515e-02  v_each=0.0866  v_rel=0.1731  STABLE
+    r_c=11.662  Fnet=1.0795e-02  v_each=0.0887  v_rel=0.1774  STABLE
+    r_c=11.925  Fnet=1.0996e-02  v_each=0.0905  v_rel=0.1811  STABLE
+    r_c=12.188  Fnet=1.1131e-02  v_each=0.0921  v_rel=0.1842  STABLE
+    r_c=12.450  Fnet=1.1208e-02  v_each=0.0934  v_rel=0.1868  STABLE
+    r_c=12.713  Fnet=1.1238e-02  v_each=0.0945  v_rel=0.1890  STABLE
+    r_c=12.975  Fnet=1.1228e-02  v_each=0.0954  v_rel=0.1908  STABLE
+    r_c=13.238  Fnet=1.1186e-02  v_each=0.0962  v_rel=0.1924  STABLE
+    r_c=13.500  Fnet=1.1117e-02  v_each=0.0968  v_rel=0.1937  STABLE
+    r_c=13.762  Fnet=1.1027e-02  v_each=0.0974  v_rel=0.1948  STABLE
+    r_c=14.025  Fnet=1.0920e-02  v_each=0.0978  v_rel=0.1957  STABLE
+    r_c=14.287  Fnet=1.0800e-02  v_each=0.0982  v_rel=0.1964  STABLE
+    r_c=14.550  Fnet=1.0671e-02  v_each=0.0985  v_rel=0.1970  STABLE
+    r_c=14.812  Fnet=1.0534e-02  v_each=0.0988  v_rel=0.1975  STABLE
+    r_c=15.075  Fnet=1.0393e-02  v_each=0.0990  v_rel=0.1979  STABLE
+    r_c=15.338  Fnet=1.0248e-02  v_each=0.0991  v_rel=0.1982  STABLE
+    r_c=15.600  Fnet=1.0103e-02  v_each=0.0992  v_rel=0.1985  STABLE
+    r_c=15.863  Fnet=9.9565e-03  v_each=0.0994  v_rel=0.1987  STABLE
+    r_c=16.125  Fnet=9.8109e-03  v_each=0.0994  v_rel=0.1989  STABLE
+    r_c=16.387  Fnet=9.6666e-03  v_each=0.0995  v_rel=0.1990  STABLE
+  wrote v82/parallel/results/Afix_circular.tsv  n_stable_circular=29
+  OLD (wrong) seed at r0: v_each=0.1995 using Fem only as if reduced
+  NEW seeds: first r_c=9.037 v_each=0.0339 (ratio new/old=0.170)
+  --- orbit mode=analytic ---
+    analytic r_c=9.04 v=0.0339 sep[9.04,9.04] mean=9.04 rms=0.00 revs=2.39 BAND
+    analytic r_c=9.30 v=0.0464 sep[9.30,9.30] mean=9.30 rms=0.00 revs=3.18 BAND
+    analytic r_c=9.56 v=0.0555 sep[9.56,9.56] mean=9.56 rms=0.00 revs=3.70 BAND
+    analytic r_c=9.82 v=0.0627 sep[9.82,9.83] mean=9.82 rms=0.00 revs=4.06 BAND
+    analytic r_c=10.09 v=0.0686 sep[10.09,10.09] mean=10.09 rms=0.00 revs=4.33 BAND
+    analytic r_c=10.35 v=0.0735 sep[10.35,10.35] mean=10.35 rms=0.00 revs=4.52 BAND
+  --- orbit mode=live ---
+    live r_c=9.04 v=0.0339 sep[8.93,11.12] mean=9.78 rms=0.62 revs=0.08 no
+    live r_c=9.30 v=0.0464 sep[6.75,12.00] mean=9.83 rms=1.15 revs=0.47 no
+    live r_c=9.56 v=0.0555 sep[6.89,13.49] mean=10.08 rms=1.65 revs=0.44 no
+    live r_c=9.82 v=0.0627 sep[6.33,13.19] mean=10.18 rms=1.59 revs=2.00 BAND
+    live r_c=10.09 v=0.0686 sep[5.83,16.27] mean=11.53 rms=2.57 revs=1.58 no
+    live r_c=10.35 v=0.0735 sep[5.50,16.81] mean=11.86 rms=2.88 revs=0.73 no
+  CONTROL wrong seed analytic r0=8.64 v=0.1995 sep[8.64,67.80] revs=0.10 EXPAND (as expected)
+  wrote v82/parallel/results/Afix_orbit.tsv
+
+  Approach A FIXED => well=PASS  analytic_orbit=PASS  live_orbit=PASS

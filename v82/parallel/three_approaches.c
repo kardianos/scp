@@ -252,110 +252,260 @@ static void boris2d(Lock *L, double Ex, double Ey, double Bz, double dt) {
     L->uy = uy + half * Ey;
 }
 
-/* ---------- Approach A: well scan + orbit ---------- */
+/* F_along > 0 = attract. Fcore = -k exp(-D^2/(2s^2)). */
+static double fcore_of(double D, double k, double s) {
+    return -k * exp(-0.5 * D * D / (s * s));
+}
+
+/* Measure F_em,along at separation D (pinned pair, full Poisson). */
+static double measure_Fem(int nx, double dx, double D) {
+    World W;
+    world_init(&W, nx, nx, dx, 2);
+    double cx = 0.5 * nx * dx, cy = cx;
+    W.locks[0] = (Lock){.q = 1, .m = 8, .E_star = 8, .x = cx - 0.5 * D, .y = cy, .pinned = 1, .alive = 1};
+    W.locks[1] = (Lock){.q = -1, .m = 8, .E_star = 8, .x = cx + 0.5 * D, .y = cy, .pinned = 1, .alive = 1};
+    deposit_rho(&W);
+    poisson_sor(&W, 8000, 1e-11);
+    double Ex0, Ey0, Ex1, Ey1;
+    gather_E(&W, W.locks[0].x, W.locks[0].y, &Ex0, &Ey0);
+    gather_E(&W, W.locks[1].x, W.locks[1].y, &Ex1, &Ey1);
+    double Fem = 0.5 * (W.locks[0].q * Ex0 - W.locks[1].q * Ex1);
+    world_free(&W);
+    return Fem;
+}
+
+/* Continuum 2D opposite-charge force (+attract). Lattice measure_Fem is noisy off-grid. */
+static double Fem_cont(double D) { return 1.0 / (2.0 * M_PI * fmax(D, 1e-9)); }
+static double Fnet_cont(double D, double k, double s) { return Fem_cont(D) + fcore_of(D, k, s); }
+
+/* Pure central force on pair: F_along >0 attract. Action–reaction, no self-force. */
+static void forces_A_analytic(World *W) {
+    double Lx = W->nx * W->dx, Ly = W->ny * W->dx;
+    Lock *A = &W->locks[0], *B = &W->locks[1];
+    A->fx = A->fy = B->fx = B->fy = 0;
+    double dx = B->x - A->x, dy = B->y - A->y;
+    mi_delta(&dx, &dy, Lx, Ly);
+    double D = sqrt(dx * dx + dy * dy);
+    if (D < 1e-9) return;
+    double F = Fnet_cont(D, W->k_core, W->s_foot); /* + = attract on each toward partner */
+    double rx = dx / D, ry = dy / D;
+    A->fx += F * rx;
+    A->fy += F * ry;
+    B->fx -= F * rx;
+    B->fy -= F * ry;
+}
+
+/* ---------- Approach A fixed: circular F_along = μ v²/r, not F=0 ---------- */
 static int run_A(const char *outdir) {
-    printf("\n======== A: capacity pair-overlap well ========\n");
-    int nx = 128, ny = 128;
+    printf("\n======== A FIXED: well + correct circular seed ========\n");
+    printf("  Circular: F_along(r_c) = mu * v_theta^2 / r_c  (>0 attract), NOT F_net=0\n");
+    printf("  F_net design uses continuum Fem=1/(2 pi D); lattice validated at integer D only\n");
+    int nx = 128;
     double dx = 1.0;
-    char path[512];
-    snprintf(path, sizeof path, "%s/A_Fnet.tsv", outdir);
-    FILE *fp = fopen(path, "w");
-    fprintf(fp, "k_core\ts_foot\tD\tF_em\tF_core\tF_net\n");
-
-    double kcores[] = {0.02, 0.05, 0.1, 0.2};
+    double m = 8.0, mu = m / 2.0;
     double s_foot = 4.0;
-    int Ds[] = {3, 4, 5, 6, 8, 10, 12, 16, 20, 24};
-    int nD = 10;
-    double best_k = 0, best_rstar = -1;
-    int found_well = 0;
+    double kc = 0.2;
+    char path[512];
 
-    for (int ik = 0; ik < 4; ik++) {
-        double kc = kcores[ik];
-        printf("  k_core=%.3f s=%.1f\n", kc, s_foot);
-        double Fprev = 0;
-        double rstar = -1;
-        for (int id = 0; id < nD; id++) {
-            double D = (double)Ds[id];
-            World W;
-            world_init(&W, nx, ny, dx, 2);
-            W.k_core = kc;
-            W.s_foot = s_foot;
-            double cx = 0.5 * nx * dx, cy = 0.5 * ny * dx;
-            W.locks[0] = (Lock){.q = 1, .m = 8, .E_star = 8, .x = cx - 0.5 * D, .y = cy, .pinned = 1, .alive = 1};
-            W.locks[1] = (Lock){.q = -1, .m = 8, .E_star = 8, .x = cx + 0.5 * D, .y = cy, .pinned = 1, .alive = 1};
-            deposit_rho(&W);
-            poisson_sor(&W, 6000, 1e-10);
-            /* EM only first */
-            double Ex0, Ey0, Ex1, Ey1;
-            gather_E(&W, W.locks[0].x, W.locks[0].y, &Ex0, &Ey0);
-            gather_E(&W, W.locks[1].x, W.locks[1].y, &Ex1, &Ey1);
-            double Fem = 0.5 * (W.locks[0].q * Ex0 - W.locks[1].q * Ex1); /* >0 attract */
-            /* pair core only */
-            double Fcore = -kc * exp(-0.5 * D * D / (s_foot * s_foot));
-            double Fnet = Fem + Fcore;
-            printf("    D=%4.0f  Fem=%+.4e  Fcore=%+.4e  Fnet=%+.4e\n", D, Fem, Fcore, Fnet);
-            fprintf(fp, "%.4f\t%.2f\t%.0f\t%.8e\t%.8e\t%.8e\n", kc, s_foot, D, Fem, Fcore, Fnet);
-            if (id > 0 && Fprev * Fnet < 0 && Fprev < 0 && Fnet > 0 && rstar < 0) {
-                /* zero cross: was repel (neg), now attract (pos) → well */
-                rstar = 0.5 * (Ds[id - 1] + D);
-                found_well = 1;
-                best_k = kc;
-                best_rstar = rstar;
-                printf("    WELL r*~%.1f (repel→attract)\n", rstar);
-            }
-            Fprev = Fnet;
-            world_free(&W);
+    /* Dense continuum F_net table (smooth) + sparse lattice check */
+    snprintf(path, sizeof path, "%s/Afix_Fnet.tsv", outdir);
+    FILE *fp = fopen(path, "w");
+    fprintf(fp, "D\tFem_cont\tFem_lat\tFcore\tFnet_cont\n");
+    const int nD = 81;
+    double Dmin = 3.0, Dmax = 24.0;
+    double Ds[81], Fnet[81];
+    double r0 = -1;
+    printf("  building continuum F_net(D) for k=%.3f s=%.1f\n", kc, s_foot);
+    for (int i = 0; i < nD; i++) {
+        Ds[i] = Dmin + (Dmax - Dmin) * i / (nD - 1);
+        double Fc = fcore_of(Ds[i], kc, s_foot);
+        double Femc = Fem_cont(Ds[i]);
+        Fnet[i] = Femc + Fc;
+        double Feml = -1.0;
+        /* lattice only on integer D (CIC self-force otherwise poisons sign) */
+        if (fabs(Ds[i] - round(Ds[i])) < 1e-9)
+            Feml = measure_Fem(nx, dx, Ds[i]);
+        fprintf(fp, "%.6f\t%.8e\t%.8e\t%.8e\t%.8e\n", Ds[i], Femc, Feml, Fc, Fnet[i]);
+        if (i > 0 && r0 < 0 && Fnet[i - 1] < 0 && Fnet[i] > 0)
+            r0 = 0.5 * (Ds[i - 1] + Ds[i]);
+    }
+    fclose(fp);
+    int well = (r0 > 0);
+    printf("  force-zero r0=%.3f (repel→attract) well=%d\n", r0, well);
+    /* lattice integer-D validation of well shape */
+    printf("  lattice Fem vs continuum at integer D:\n");
+    for (int Di = 3; Di <= 20; Di++) {
+        double fl = measure_Fem(nx, dx, (double)Di);
+        double fc = Fem_cont((double)Di);
+        printf("    D=%2d  Fem_lat=%.4e  Fem_cont=%.4e  ratio=%.3f\n", Di, fl, fc, fl / fc);
+    }
+    printf("  wrote %s\n", path);
+
+    /* Circular family on continuum Fnet.
+     * Relative: mu * v_rel^2 / r = F  =>  v_rel = sqrt(F r / mu).
+     * Equal mass COM: each particle gets uy = ± v_each with v_each = v_rel/2. */
+    snprintf(path, sizeof path, "%s/Afix_circular.tsv", outdir);
+    fp = fopen(path, "w");
+    fprintf(fp, "r\tFnet\tv_each\tv_rel\tL_rel\tstable\n");
+    int n_circ = 0;
+    double rc_list[32], vc_list[32];
+    printf("  circular family: mu v_rel^2/r = Fnet; seed each with v_each=v_rel/2:\n");
+    for (int i = 0; i < nD; i++) {
+        if (Fnet[i] <= 1e-10) {
+            fprintf(fp, "%.6f\t%.8e\tnan\tnan\tnan\t0\n", Ds[i], Fnet[i]);
+            continue;
+        }
+        double r = Ds[i];
+        double v_rel = sqrt(Fnet[i] * r / mu);
+        double v_each = 0.5 * v_rel;
+        double L = mu * r * v_rel;
+        double Fp = 0;
+        if (i > 0 && i < nD - 1)
+            Fp = (Fnet[i + 1] - Fnet[i - 1]) / (Ds[i + 1] - Ds[i - 1]);
+        else if (i > 0)
+            Fp = (Fnet[i] - Fnet[i - 1]) / (Ds[i] - Ds[i - 1]);
+        else
+            Fp = (Fnet[i + 1] - Fnet[i]) / (Ds[i + 1] - Ds[i]);
+        int stable = (Fp > -3.0 * Fnet[i] / r) ? 1 : 0;
+        fprintf(fp, "%.6f\t%.8e\t%.8e\t%.8e\t%.8e\t%d\n", r, Fnet[i], v_each, v_rel, L, stable);
+        /* attract-side shell just outside r0 */
+        if (stable && n_circ < 32 && r > r0 + 0.15 && r < r0 + 8.0) {
+            rc_list[n_circ] = r;
+            vc_list[n_circ] = v_each;
+            n_circ++;
+            printf("    r_c=%.3f  Fnet=%.4e  v_each=%.4f  v_rel=%.4f  STABLE\n", r, Fnet[i], v_each, v_rel);
         }
     }
     fclose(fp);
-    printf("  wrote %s  well=%d r*~%.1f k=%.3f\n", path, found_well, best_rstar, best_k);
+    printf("  wrote %s  n_stable_circular=%d\n", path, n_circ);
 
-    /* Orbit at r* if well found */
-    int orbit_ok = 0;
-    if (found_well && best_rstar > 0) {
-        double D0 = best_rstar;
-        double m = 8.0, mu = m / 2.0;
-        /* v_c from EM circular: mu v^2 / r = Fem(r) */
-        World Wp;
-        world_init(&Wp, nx, ny, dx, 2);
-        Wp.k_core = best_k;
-        Wp.s_foot = s_foot;
-        double cx = 0.5 * nx * dx, cy = 0.5 * ny * dx;
-        Wp.locks[0] = (Lock){.q = 1, .m = m, .E_star = m, .x = cx - 0.5 * D0, .y = cy, .alive = 1};
-        Wp.locks[1] = (Lock){.q = -1, .m = m, .E_star = m, .x = cx + 0.5 * D0, .y = cy, .alive = 1};
-        deposit_rho(&Wp);
-        poisson_sor(&Wp, 6000, 1e-10);
-        double Ex0, Ey0, Ex1, Ey1;
-        gather_E(&Wp, Wp.locks[0].x, Wp.locks[0].y, &Ex0, &Ey0);
-        gather_E(&Wp, Wp.locks[1].x, Wp.locks[1].y, &Ex1, &Ey1);
-        double Fem = 0.5 * (Wp.locks[0].q * Ex0 - Wp.locks[1].q * Ex1);
-        if (Fem < 0) Fem = -Fem;
-        double vt = sqrt(fmax(Fem * D0 / mu, 1e-8));
-        printf("  seed orbit D0=%.2f vt≈%.4f Fem=%.4e\n", D0, vt, Fem);
-        world_free(&Wp);
+    if (well) {
+        /* old wrong: seed each with sqrt(Fem r/mu) at r0 (double-counts + uses bare EM) */
+        double Fem0 = Fem_cont(r0);
+        double v_wrong = sqrt(fmax(Fem0 * r0 / mu, 1e-12));
+        printf("  OLD (wrong) seed at r0: v_each=%.4f using Fem only as if reduced\n", v_wrong);
+        if (n_circ > 0)
+            printf("  NEW seeds: first r_c=%.3f v_each=%.4f (ratio new/old=%.3f)\n", rc_list[0], vc_list[0],
+                   vc_list[0] / v_wrong);
+    }
 
+    /* Orbit: analytic central force (tests A1) + live PIC */
+    int orbit_ok = 0, mech_ok = 0;
+    snprintf(path, sizeof path, "%s/Afix_orbit.tsv", outdir);
+    fp = fopen(path, "w");
+    fprintf(fp, "mode\tr_c\tv\tsepmin\tsepmax\trevs\trms_r\tband\n");
+
+    int n_try = n_circ < 6 ? n_circ : 6;
+    if (n_try == 0 && well) {
+        for (int i = 0; i < nD && n_try < 5; i++) {
+            if (Fnet[i] > 1e-10 && Ds[i] > r0) {
+                rc_list[n_try] = Ds[i];
+                vc_list[n_try] = 0.5 * sqrt(Fnet[i] * Ds[i] / mu); /* v_each */
+                n_try++;
+            }
+        }
+    }
+
+    for (int mode = 0; mode < 2; mode++) {
+        /* 0 = analytic F_net central (honest force-law); 1 = live PIC+core */
+        const char *mname = mode == 0 ? "analytic" : "live";
+        printf("  --- orbit mode=%s ---\n", mname);
+        for (int it = 0; it < n_try; it++) {
+            double D0 = rc_list[it];
+            double vt = vc_list[it];
+            int N = 128;
+            World W;
+            world_init(&W, N, N, dx, 2);
+            W.k_core = kc;
+            W.s_foot = s_foot;
+            /* smaller dt for mechanical accuracy */
+            if (mode == 0) W.dt = 0.05;
+            double cx = 0.5 * N * dx, cy = cx;
+            double Lx = N * dx, Ly = N * dx;
+            W.locks[0] = (Lock){.q = 1, .m = m, .E_star = m, .x = cx - 0.5 * D0, .y = cy, .uy = vt, .alive = 1};
+            W.locks[1] = (Lock){.q = -1, .m = m, .E_star = m, .x = cx + 0.5 * D0, .y = cy, .uy = -vt, .alive = 1};
+            if (mode == 1) {
+                deposit_rho(&W);
+                poisson_sor(&W, 8000, 1e-11);
+            }
+            int nsteps = mode == 0 ? 40000 : 4000;
+            double sepmin = 1e99, sepmax = 0, ang_acc = 0, prev = 0, sum_r = 0, sum_r2 = 0;
+            int first = 1, nmeas = 0;
+            for (int s = 0; s <= nsteps; s++) {
+                if (s > 0) {
+                    if (mode == 0) {
+                        forces_A_analytic(&W);
+                    } else {
+                        deposit_rho(&W);
+                        poisson_sor(&W, 120, 1e-6);
+                        forces_A(&W);
+                    }
+                    for (int p = 0; p < 2; p++) {
+                        Lock *L = &W.locks[p];
+                        L->ux += (L->fx / L->m) * W.dt;
+                        L->uy += (L->fy / L->m) * W.dt;
+                        L->x += L->ux * W.dt;
+                        L->y += L->uy * W.dt;
+                        if (L->x < 0) L->x += Lx;
+                        if (L->x >= Lx) L->x -= Lx;
+                        if (L->y < 0) L->y += Ly;
+                        if (L->y >= Ly) L->y -= Ly;
+                    }
+                }
+                double ddx = W.locks[0].x - W.locks[1].x, ddy = W.locks[0].y - W.locks[1].y;
+                mi_delta(&ddx, &ddy, Lx, Ly);
+                double sep = sqrt(ddx * ddx + ddy * ddy);
+                double ang = atan2(ddy, ddx);
+                if (first) {
+                    prev = ang;
+                    first = 0;
+                } else {
+                    double da = ang - prev;
+                    if (da > M_PI) da -= 2 * M_PI;
+                    if (da < -M_PI) da += 2 * M_PI;
+                    ang_acc += da;
+                    prev = ang;
+                }
+                if (sep < sepmin) sepmin = sep;
+                if (sep > sepmax) sepmax = sep;
+                sum_r += sep;
+                sum_r2 += sep * sep;
+                nmeas++;
+            }
+            double revs = fabs(ang_acc) / (2 * M_PI);
+            double mean_r = sum_r / nmeas;
+            double rms_r = sqrt(fmax(sum_r2 / nmeas - mean_r * mean_r, 0.0));
+            int band = (sepmin > 0.55 * D0) && (sepmax < 1.6 * D0) && (revs >= 1.0) && (rms_r < 0.30 * D0);
+            if (mode == 0 && band) mech_ok = 1;
+            if (mode == 1 && band) orbit_ok = 1;
+            printf("    %s r_c=%.2f v=%.4f sep[%.2f,%.2f] mean=%.2f rms=%.2f revs=%.2f %s\n", mname, D0, vt,
+                   sepmin, sepmax, mean_r, rms_r, revs, band ? "BAND" : "no");
+            fprintf(fp, "%s\t%.6f\t%.8e\t%.6f\t%.6f\t%.6f\t%.6f\t%d\n", mname, D0, vt, sepmin, sepmax, revs, rms_r,
+                    band);
+            world_free(&W);
+        }
+    }
+
+    /* CONTROL: wrong seed at r0 (analytic force law) — expect expand */
+    if (well) {
+        double D0 = r0;
+        /* old formula: each particle gets sqrt(Fem r/mu) — 2× too fast even if F were right */
+        double vt = sqrt(fmax(Fem_cont(D0) * D0 / mu, 1e-12));
         World W;
-        world_init(&W, 96, 96, dx, 2);
-        W.k_core = best_k;
+        world_init(&W, 128, 128, dx, 2);
+        W.k_core = kc;
         W.s_foot = s_foot;
-        cx = 0.5 * 96 * dx;
-        cy = 0.5 * 96 * dx;
+        W.dt = 0.05;
+        double cx = 64.0, cy = 64.0, Lx = 128.0, Ly = 128.0;
         W.locks[0] = (Lock){.q = 1, .m = m, .E_star = m, .x = cx - 0.5 * D0, .y = cy, .uy = vt, .alive = 1};
         W.locks[1] = (Lock){.q = -1, .m = m, .E_star = m, .x = cx + 0.5 * D0, .y = cy, .uy = -vt, .alive = 1};
-        deposit_rho(&W);
-        poisson_sor(&W, 6000, 1e-10);
-        int nsteps = 4000;
         double sepmin = 1e99, sepmax = 0, ang_acc = 0, prev = 0;
         int first = 1;
-        double Lx = 96 * dx, Ly = 96 * dx;
-        for (int s = 0; s <= nsteps; s++) {
+        for (int s = 0; s <= 20000; s++) {
             if (s > 0) {
-                deposit_rho(&W);
-                poisson_sor(&W, 80, 1e-6); /* cheap re-relax electrostatic */
-                forces_A(&W);
+                forces_A_analytic(&W);
                 for (int p = 0; p < 2; p++) {
                     Lock *L = &W.locks[p];
-                    /* non-rel push with total force */
                     L->ux += (L->fx / L->m) * W.dt;
                     L->uy += (L->fy / L->m) * W.dt;
                     L->x += L->ux * W.dt;
@@ -383,20 +533,20 @@ static int run_A(const char *outdir) {
             if (sep < sepmin) sepmin = sep;
             if (sep > sepmax) sepmax = sep;
         }
-        double revs = fabs(ang_acc) / (2 * M_PI);
-        int band = (sepmin > 0.6) && (sepmax < 2.5 * D0) && (revs >= 0.5);
-        orbit_ok = band;
-        printf("  orbit: sepmin=%.2f sepmax=%.2f revs=%.2f %s\n", sepmin, sepmax, revs, band ? "BAND" : "no");
-        snprintf(path, sizeof path, "%s/A_orbit.tsv", outdir);
-        fp = fopen(path, "w");
-        fprintf(fp, "D0\tvt\tk\ts\tsepmin\tsepmax\trevs\tband\n");
-        fprintf(fp, "%.4f\t%.6f\t%.4f\t%.2f\t%.4f\t%.4f\t%.4f\t%d\n", D0, vt, best_k, s_foot, sepmin, sepmax,
-                revs, band);
-        fclose(fp);
+        int expand = (sepmax > 2.0 * D0);
+        printf("  CONTROL wrong seed analytic r0=%.2f v=%.4f sep[%.2f,%.2f] revs=%.2f %s\n", D0, vt, sepmin,
+               sepmax, fabs(ang_acc) / (2 * M_PI), expand ? "EXPAND (as expected)" : "unexpectedly bound?");
+        fprintf(fp, "control_wrong\t%.6f\t%.8e\t%.6f\t%.6f\t%.6f\t0\t%d\n", D0, vt, sepmin, sepmax,
+                fabs(ang_acc) / (2 * M_PI), expand ? 0 : 1);
         world_free(&W);
     }
-    printf("  Approach A => well=%s orbit=%s\n", found_well ? "PASS" : "FAIL", orbit_ok ? "PASS" : "FAIL");
-    return (found_well ? 0 : 1) | (orbit_ok ? 0 : 2);
+    fclose(fp);
+    printf("  wrote %s\n", path);
+
+    printf("\n  Approach A FIXED => well=%s  analytic_orbit=%s  live_orbit=%s\n", well ? "PASS" : "FAIL",
+           mech_ok ? "PASS" : "FAIL", orbit_ok ? "PASS" : "FAIL");
+    int orbit_any = mech_ok || orbit_ok;
+    return (well ? 0 : 1) | (orbit_any ? 0 : 2);
 }
 
 /* ---------- Approach B: magnetic ---------- */

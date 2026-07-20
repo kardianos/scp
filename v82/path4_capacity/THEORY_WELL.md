@@ -26,23 +26,30 @@ F_{\mathrm{net}}(D) = F_{\mathrm{EM}}(D) + F_{\mathrm{core}}(D).
 
 **Force zero** \(F_{\mathrm{net}}(r_0)=0\) only marks repel↔attract boundary.
 
-**Circular orbit** for reduced mass \(\mu=m/2\) with angular momentum \(L=\mu r v_\theta\):
+**Circular orbit** for reduced mass \(\mu=m/2\), relative speed \(v_{\mathrm{rel}}\):
 
 \[
-F_{\mathrm{along}}(r_c)=\frac{\mu v_\theta^2}{r_c}\;>\;0
+F_{\mathrm{along}}(r_c)=\frac{\mu v_{\mathrm{rel}}^2}{r_c}\;>\;0
 \]
 
-(\(F_{\mathrm{along}}>0\) = still **net attract**, providing centripetal force).  
-So \(r_c\) lies on the **attractive side** of \(r_0\), not at \(F_{\mathrm{net}}=0\).
+(\(F_{\mathrm{along}}>0\) = still **net attract**). So \(r_c\) is on the **attractive side** of \(r_0\).
 
-Seeding \(v_t=\sqrt{F_{\mathrm{EM}} r/\mu}\) at \(F_{\mathrm{net}}=0\) is **wrong** (over-speed) — see `parallel/GAP_ANALYSIS.md` §A1.
+Equal-mass COM seed: each lock gets \(v_{\mathrm{each}}=v_{\mathrm{rel}}/2\).  
+Seeding \(v_{\mathrm{each}}=\sqrt{F_{\mathrm{EM}} r/\mu}\) at \(r_0\) is **wrong** (uses bare EM and treats each as reduced mass).
 
-**Stable circular:** minimum of \(V_{\mathrm{eff}}=V(r)+L^2/(2\mu r^2)\) with \(\mathrm{d}V/\mathrm{d}r=F_{\mathrm{along}}\).
+**Stable circular:** \(F'(r_c)>-3F(r_c)/r_c\) (min of \(V_{\mathrm{eff}}\)).
+
+## Numeric confirmation (2026-07-20, `parallel/`)
+
+- Continuum \(k=0.2\), \(s=4\): \(r_0\approx8.64\); analytic orbits **PASS** (flat sep, multi-rev).  
+- Live PIC: **PASS** band at \(r_c\approx9.82\), revs\(=2\).  
+- CONTROL wrong seed: expands.  
+- Lattice \(F_{\mathrm{EM}}\) only trustworthy at integer \(D\) (CIC noise off-grid).
 
 ## Success
 
-- Pinned: \(F_{\mathrm{net}}(D<r_*)<0\) (repel), \(F_{\mathrm{net}}(D>r_*)>0\) (attract).  
-- Free: multi-rev ≥1, \(\mathrm{sepmin}>0.6\), not monotone expand.
+- Pinned / continuum: \(F_{\mathrm{net}}(D<r_0)<0\) (repel), \(F_{\mathrm{net}}(D>r_0)>0\) (attract).  
+- Free analytic or live: multi-rev ≥1, band on sep, not monotone expand.
 
 ## Harmonics (secondary)
 
