@@ -1,0 +1,49 @@
+=== scp_sim_c4: V44 + Cosserat + Curl²-Hardening (+ optional chiral) ===
+d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ) - α·curl(M) - 2curl(Q)
+d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ) + 2α·M - β|∇×φ|²θ
+  M = curl(φ)/2 - θ,  Q = (β/2)|θ|²curl(φ)
+
+Grid:    N=96 L=24.0 T=60 dt_factor=0.0500
+Physics: m²=2.2500 m_θ²=2.5600 η=0.000 μ=-41.345 κ=50.0 κ_h=0.000 α=0.000 β=0.000
+Complex: 12-field U(1) kernel (complex_phi=1)
+Q-diag:  radius=12.00 probes=(8.00,16.00)
+Gauge:   U(1) compact links, g=1.0000 (complex_gauge=1)
+Locks:   n_locks=3 file=(inline lock0..) track=track_vt014.tsv soft=(2,0.2) bag_mode=2 (r=4 k=2 sm=3) medium_only=1
+Mode:    0
+BC:      periodic
+Init:    oscillon
+Output:  out_vt014.sfa (f32, snap=10000.0 diag=2.0)
+
+Allocating 0.38 GB (47775744 doubles, N=96, 12 fields + U(1) links)
+dx=0.5053 dt=0.025263 threads=16
+
+Locks: allocated 3 carriers + rho/J + grid bag B(x)
+  lock[0] from lock0=1,14,6,0,0,0,0.14,0,0,0
+  lock[1] from lock1=-1,14,-6,0,0,0,-0.14,0,0,0
+  lock[2] from lock2=0,40,0,0,0,0,0,0,1,1
+Init: oscillon (A=0.000 sigma=3.000)
+Gauss projection: 341 CG iters, gauss_max(0)=1.21e-13 (offset -3.182e-22)
+SFA: out_vt014.sfa (30 cols, f32, BSS+zstd)
+
+INIT: E_total=1.7499e-01 E_pot=0.0000 phi_max=0.0000 P_int=0.0000e+00 theta_rms=0.000e+00
+
+Locks: n=3 Q=0 E*=6.8000e+01 Ekin=2.7307e-01
+t=    6.0 E=3.112e+00 (drift +1678.380%) Ep=0.0 phi=0.000 θ_rms=0.00e+00 Q=0.000000e+00 s_max=0.0000e+00 gauss=4.5e-02 E_em=3.112e+00 locks=3 E*=6.80e+01 [10% 10.2s 42.97ms/step]
+t=   12.0 E=7.187e+00 (drift +4006.819%) Ep=0.0 phi=0.000 θ_rms=0.00e+00 Q=0.000000e+00 s_max=0.0000e+00 gauss=5.8e-02 E_em=7.187e+00 locks=3 E*=6.80e+01 [20% 21.3s 44.92ms/step]
+t=   18.0 E=1.205e+01 (drift +6783.828%) Ep=0.0 phi=0.000 θ_rms=0.00e+00 Q=0.000000e+00 s_max=0.0000e+00 gauss=7.8e-02 E_em=1.205e+01 locks=3 E*=6.80e+01 [30% 31.3s 44.01ms/step]
+t=   23.9 E=1.981e+01 (drift +11219.019%) Ep=0.0 phi=0.000 θ_rms=0.00e+00 Q=0.000000e+00 s_max=0.0000e+00 gauss=1.1e-01 E_em=1.981e+01 locks=3 E*=6.80e+01 [40% 41.2s 43.50ms/step]
+t=   29.9 E=2.738e+01 (drift +15544.898%) Ep=0.0 phi=0.000 θ_rms=0.00e+00 Q=0.000000e+00 s_max=0.0000e+00 gauss=6.5e-02 E_em=2.738e+01 locks=3 E*=6.80e+01 [50% 51.3s 43.28ms/step]
+t=   35.9 E=3.624e+01 (drift +20612.121%) Ep=0.0 phi=0.000 θ_rms=0.00e+00 Q=0.000000e+00 s_max=0.0000e+00 gauss=6.4e-02 E_em=3.624e+01 locks=3 E*=6.80e+01 [60% 61.4s 43.18ms/step]
+t=   41.9 E=4.680e+01 (drift +26646.126%) Ep=0.0 phi=0.000 θ_rms=0.00e+00 Q=0.000000e+00 s_max=0.0000e+00 gauss=9.7e-02 E_em=4.680e+01 locks=3 E*=6.80e+01 [70% 71.4s 43.06ms/step]
+t=   47.9 E=5.920e+01 (drift +33728.637%) Ep=0.0 phi=0.000 θ_rms=0.00e+00 Q=0.000000e+00 s_max=0.0000e+00 gauss=7.3e-02 E_em=5.920e+01 locks=3 E*=6.80e+01 [80% 81.5s 42.99ms/step]
+t=   53.9 E=7.389e+01 (drift +42127.081%) Ep=0.0 phi=0.000 θ_rms=0.00e+00 Q=0.000000e+00 s_max=0.0000e+00 gauss=2.0e-01 E_em=7.389e+01 locks=3 E*=6.80e+01 [90% 91.6s 42.96ms/step]
+t=   59.9 E=9.190e+01 (drift +52414.943%) Ep=0.0 phi=0.000 θ_rms=0.00e+00 Q=0.000000e+00 s_max=0.0000e+00 gauss=8.8e-02 E_em=9.190e+01 locks=3 E*=6.80e+01 [100% 101.5s 42.83ms/step]
+
+=== COMPLETE ===
+E_total=9.2271e+01 (drift 52628.866%) E_pot=0.0000
+phi_max=0.0000 P_int=0.0000e+00 theta_rms=0.000e+00
+Q_phi=0.000000e+00 Q_theta=0.000000e+00 Q_total=0.000000e+00 s_max=0.0000e+00 r_core=0.000 omega_core=0.0000 Q_core=0.000000e+00
+gauss_max=7.802e-02 gauss_l2=2.062e-03 E_em=9.227112e+01 Q_flux=5.764975e-02
+SFA: out_vt014.sfa (1 frames)
+[WARN] theta_rms grew: 0.00e+00 -> 0.00e+00
+Wall: 101.8s (1.7 min) 42.86ms/step

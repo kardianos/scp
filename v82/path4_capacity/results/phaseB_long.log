@@ -1,0 +1,9 @@
+v82 path4_capacity PIC + sequestration core
+outdir=/home/d/code/scp/v82/path4_capacity/results  mode=phaseB
+
+======== Phase B: capacity orbit scan ========
+  vt=0.08  sep 14.00->22.07 min=10.40 max=22.42 revs=0.18 Eem=1.384e+01 no
+  vt=0.12  sep 14.00->24.82 min=11.69 max=24.82 revs=0.18 Eem=1.450e+01 no
+  vt=0.15  sep 14.00->23.18 min=14.00 max=24.17 revs=0.18 Eem=1.432e+01 no
+  wrote /home/d/code/scp/v82/path4_capacity/results/phaseB_scan.tsv
+  Phase B => FAIL (no band)

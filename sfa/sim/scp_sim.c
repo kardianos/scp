@@ -94,8 +94,11 @@ typedef struct {
     char    locks_track[512];    /* side-car track path (empty = no file) */
     double  lock_soft_r;         /* soft form-factor core radius (0 = off) */
     double  lock_soft_k;         /* soft core strength */
-    double  lock_bag_r;          /* anti-lock bag radius (0 = off) */
-    double  lock_bag_k;          /* anti-lock bag pull strength */
+    double  lock_bag_r;          /* bag radius (pairwise or CIC cloud width) */
+    double  lock_bag_k;          /* bag force scale */
+    int     lock_bag_mode;       /* 0=off 1=pairwise 2=grid B(x) co-field */
+    int     lock_bag_smooth;     /* Jacobi smooth passes for grid bag */
+    double *lock_bag;            /* N3 bag field B(x); NULL if mode!=2 */
     int N; long N3;
     double L, dx, dt;
 } Grid;
@@ -219,6 +222,9 @@ static Grid *grid_alloc(const Config *c) {
     g->lock_soft_k = c->lock_soft_k;
     g->lock_bag_r = c->lock_bag_r;
     g->lock_bag_k = c->lock_bag_k;
+    g->lock_bag_mode = c->lock_bag_mode;
+    g->lock_bag_smooth = c->lock_bag_smooth;
+    g->lock_bag = NULL;
     /* v71 Higgs: only in the gauged-complex path; off => byte-identical */
     g->higgs_mode = (c->higgs_v > 0.0 && g->gauge_mode) ? 1 : 0;
     g->higgs_v = c->higgs_v;  g->higgs_lam = c->higgs_lam;  g->higgs_kap = c->higgs_kap;

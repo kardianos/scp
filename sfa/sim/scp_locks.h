@@ -52,17 +52,22 @@ static void locks_alloc(Grid *g, int n) {
     g->locks = NULL;
     g->lock_rho = NULL;
     g->lock_J[0] = g->lock_J[1] = g->lock_J[2] = NULL;
+    g->lock_bag = NULL;
     g->locks_track[0] = '\0';
     if (n <= 0) return;
     g->locks = (ScpLock *)calloc((size_t)n, sizeof(ScpLock));
     g->lock_rho = (double *)calloc((size_t)g->N3, sizeof(double));
     for (int d = 0; d < 3; d++)
         g->lock_J[d] = (double *)calloc((size_t)g->N3, sizeof(double));
-    if (!g->locks || !g->lock_rho || !g->lock_J[0] || !g->lock_J[1] || !g->lock_J[2]) {
+    if (g->lock_bag_mode == 2)
+        g->lock_bag = (double *)calloc((size_t)g->N3, sizeof(double));
+    if (!g->locks || !g->lock_rho || !g->lock_J[0] || !g->lock_J[1] || !g->lock_J[2] ||
+        (g->lock_bag_mode == 2 && !g->lock_bag)) {
         fprintf(stderr, "FATAL: locks alloc failed (n=%d)\n", n);
         exit(1);
     }
-    printf("Locks: allocated %d carriers + rho/J scratch\n", n);
+    printf("Locks: allocated %d carriers + rho/J%s\n", n,
+           g->lock_bag_mode == 2 ? " + grid bag B(x)" : "");
 }
 
 static void locks_free(Grid *g) {
@@ -70,9 +75,11 @@ static void locks_free(Grid *g) {
     free(g->locks);
     free(g->lock_rho);
     free(g->lock_J[0]); free(g->lock_J[1]); free(g->lock_J[2]);
+    free(g->lock_bag);
     g->locks = NULL;
     g->lock_rho = NULL;
     g->lock_J[0] = g->lock_J[1] = g->lock_J[2] = NULL;
+    g->lock_bag = NULL;
     g->n_locks = 0;
 }
 
@@ -443,16 +450,122 @@ static void locks_soft_core_force(Grid *g, int p, double Fsc[3]) {
     }
 }
 
-/* Lock-Higgs / anti-lock bag: charge locks attracted toward type=1 anti-locks.
- * NOT Cosserat multiplet Higgs. Anti-lock is a lock species (q=0, no EM deposit).
- * F = −k_bag (1/r − 1/r_bag)_+ rhat  (pull toward anti-lock). */
+/* Rebuild grid bag B(x): CIC deposit from type=1 anti-locks (weight ∝ E_star),
+ * optional Jacobi smooth. Co-field — NOT Cosserat multiplet Higgs. */
+static void locks_rebuild_grid_bag(Grid *g) {
+    if (g->lock_bag_mode != 2 || !g->lock_bag || g->n_locks <= 0) return;
+    const int N = g->N;
+    const long N3 = g->N3;
+    const double dV = g->dx * g->dx * g->dx;
+    const double inv_dV = 1.0 / dV;
+    const double sig = (g->lock_bag_r > 0) ? g->lock_bag_r : (2.0 * g->dx);
+    const double inv2s2 = 1.0 / (2.0 * sig * sig);
+    const int R = (int)ceil(3.0 * sig / g->dx);
+    memset(g->lock_bag, 0, (size_t)N3 * sizeof(double));
+    for (int p = 0; p < g->n_locks; p++) {
+        ScpLock *L = &g->locks[p];
+        if (!L->alive || L->type != 1) continue;
+        double wtot = (L->E_star > 0) ? L->E_star : 1.0;
+        double ci, cj, ck;
+        locks_phys_to_cell(g, L->x[0], L->x[1], L->x[2], &ci, &cj, &ck);
+        int i0 = (int)floor(ci + 1e-12);
+        int j0 = (int)floor(cj + 1e-12);
+        int k0 = (int)floor(ck + 1e-12);
+        for (int di = -R; di <= R; di++)
+        for (int dj = -R; dj <= R; dj++)
+        for (int dk = -R; dk <= R; dk++) {
+            int ii = locks_wrap_i(i0 + di, N);
+            int jj = locks_wrap_i(j0 + dj, N);
+            int kk = locks_wrap_i(k0 + dk, N);
+            double dx = (di - (ci - i0)) * g->dx;
+            double dy = (dj - (cj - j0)) * g->dx;
+            double dz = (dk - (ck - k0)) * g->dx;
+            double r2 = dx*dx + dy*dy + dz*dz;
+            g->lock_bag[locks_idx(ii, jj, kk, N)] += wtot * inv_dV * exp(-r2 * inv2s2);
+        }
+    }
+    int ns = g->lock_bag_smooth;
+    if (ns < 0) ns = 0;
+    if (ns > 0) {
+        double *tmp = (double *)malloc((size_t)N3 * sizeof(double));
+        if (!tmp) return;
+        for (int s = 0; s < ns; s++) {
+            #pragma omp parallel for schedule(static)
+            for (long idx = 0; idx < N3; idx++) {
+                int i = (int)(idx / (N * N)), j = (int)((idx / N) % N), k = (int)(idx % N);
+                long ip = locks_idx(locks_wrap_i(i+1,N), j, k, N);
+                long im = locks_idx(locks_wrap_i(i-1,N), j, k, N);
+                long jp = locks_idx(i, locks_wrap_i(j+1,N), k, N);
+                long jm = locks_idx(i, locks_wrap_i(j-1,N), k, N);
+                long kp = locks_idx(i, j, locks_wrap_i(k+1,N), N);
+                long km = locks_idx(i, j, locks_wrap_i(k-1,N), N);
+                tmp[idx] = 0.5 * g->lock_bag[idx]
+                    + (1.0/12.0) * (g->lock_bag[ip]+g->lock_bag[im]+g->lock_bag[jp]
+                                   +g->lock_bag[jm]+g->lock_bag[kp]+g->lock_bag[km]);
+            }
+            memcpy(g->lock_bag, tmp, (size_t)N3 * sizeof(double));
+        }
+        free(tmp);
+    }
+}
+
+/* Gather −κ ∇B at physical (x,y,z) via CIC of central differences on B. */
+static void locks_gather_grad_bag(const Grid *g, double x, double y, double z, double gB[3]) {
+    gB[0] = gB[1] = gB[2] = 0;
+    if (!g->lock_bag) return;
+    const int N = g->N;
+    const double inv2dx = 0.5 / g->dx;
+    double ci, cj, ck;
+    locks_phys_to_cell(g, x, y, z, &ci, &cj, &ck);
+    int i0 = (int)floor(ci), j0 = (int)floor(cj), k0 = (int)floor(ck);
+    double fx = ci - i0, fy = cj - j0, fz = ck - k0;
+    double gx = 0, gy = 0, gz = 0;
+    for (int di = 0; di < 2; di++)
+    for (int dj = 0; dj < 2; dj++)
+    for (int dk = 0; dk < 2; dk++) {
+        int ii = locks_wrap_i(i0 + di, N);
+        int jj = locks_wrap_i(j0 + dj, N);
+        int kk = locks_wrap_i(k0 + dk, N);
+        double w = (di ? fx : 1 - fx) * (dj ? fy : 1 - fy) * (dk ? fz : 1 - fz);
+        long ip = locks_idx(locks_wrap_i(ii+1,N), jj, kk, N);
+        long im = locks_idx(locks_wrap_i(ii-1,N), jj, kk, N);
+        long jp = locks_idx(ii, locks_wrap_i(jj+1,N), kk, N);
+        long jm = locks_idx(ii, locks_wrap_i(jj-1,N), kk, N);
+        long kp = locks_idx(ii, jj, locks_wrap_i(kk+1,N), N);
+        long km = locks_idx(ii, jj, locks_wrap_i(kk-1,N), N);
+        gx += w * (g->lock_bag[ip] - g->lock_bag[im]) * inv2dx;
+        gy += w * (g->lock_bag[jp] - g->lock_bag[jm]) * inv2dx;
+        gz += w * (g->lock_bag[kp] - g->lock_bag[km]) * inv2dx;
+    }
+    gB[0] = gx; gB[1] = gy; gB[2] = gz;
+}
+
+/* Bag force on charge lock p.
+ * mode 1: pairwise anti-lock (legacy form-factor).
+ * mode 2: F = −k ∇B from grid co-field (rebuild bag first outside). */
 static void locks_bag_force(Grid *g, int p, double Fbag[3]) {
     Fbag[0] = Fbag[1] = Fbag[2] = 0;
-    if (g->lock_bag_r <= 0 || g->lock_bag_k <= 0) return;
+    if (g->lock_bag_k <= 0) return;
+    int mode = g->lock_bag_mode;
+    /* back-compat: bag_k+r set without mode → pairwise */
+    if (mode == 0 && g->lock_bag_r > 0) mode = 1;
+    if (mode <= 0) return;
     ScpLock *A = &g->locks[p];
-    if (A->type != 0) return; /* bag acts on charge locks only */
-    const double r0 = g->lock_bag_r;
+    if (A->type != 0) return;
     const double k = g->lock_bag_k;
+
+    if (mode == 2) {
+        double gB[3];
+        locks_gather_grad_bag(g, A->x[0], A->x[1], A->x[2], gB);
+        Fbag[0] = -k * gB[0];
+        Fbag[1] = -k * gB[1];
+        Fbag[2] = -k * gB[2];
+        return;
+    }
+
+    /* mode 1: pairwise */
+    if (g->lock_bag_r <= 0) return;
+    const double r0 = g->lock_bag_r;
     const double box = 2.0 * g->L;
     for (int q = 0; q < g->n_locks; q++) {
         if (!g->locks[q].alive || g->locks[q].type != 1) continue;
@@ -466,7 +579,7 @@ static void locks_bag_force(Grid *g, int p, double Fbag[3]) {
         double r2 = dx*dx + dy*dy + dz*dz;
         if (r2 < 1e-20 || r2 >= r0 * r0) continue;
         double r = sqrt(r2);
-        double mag = -k * (1.0 / r - 1.0 / r0); /* attract toward anti-lock */
+        double mag = -k * (1.0 / r - 1.0 / r0);
         Fbag[0] += mag * dx / r;
         Fbag[1] += mag * dy / r;
         Fbag[2] += mag * dz / r;
@@ -480,6 +593,8 @@ static void locks_push_and_move(Grid *g, double dt) {
     const double box = 2.0 * g->L;
 
     locks_refresh_plaquettes(g);
+    if (g->lock_bag_mode == 2)
+        locks_rebuild_grid_bag(g);
 
     for (int p = 0; p < g->n_locks; p++) {
         ScpLock *L = &g->locks[p];

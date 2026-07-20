@@ -1,0 +1,4 @@
+Usage: ./bin/capacity_pic <phaseA|l0|l1|l2|l3|all> [results_dir]
+  v82 path4_capacity: monist PIC + n_free depletion core
+v82 path4_capacity PIC + sequestration core
+outdir=results  mode=phaseB

@@ -155,8 +155,10 @@ typedef struct {
     char   locks_track[512];   /* side-car track TSV path (empty = auto if n_locks>0) */
     double lock_soft_r;        /* soft form-factor core radius (0 = off) */
     double lock_soft_k;        /* soft core strength k (0 = off) */
-    double lock_bag_r;         /* anti-lock (lock-Higgs) bag radius (0 = off) */
-    double lock_bag_k;         /* anti-lock bag attraction strength */
+    double lock_bag_r;         /* bag radius / CIC cloud width */
+    double lock_bag_k;         /* bag force strength */
+    int    lock_bag_mode;      /* 0=off 1=pairwise anti-lock 2=grid co-field B(x) */
+    int    lock_bag_smooth;    /* Jacobi smooth iters for mode=2 (default 2) */
     int    locks_medium_only;  /* 1 = skip multiplet force/kick (vacuum Φ + locks Maxwell) */
 } Config;
 
@@ -334,6 +336,8 @@ static void cfg_set(Config *c, const char *key, const char *val) {
     else if (!strcmp(key,"lock_soft_k")) c->lock_soft_k = atof(val);
     else if (!strcmp(key,"lock_bag_r"))  c->lock_bag_r = atof(val);
     else if (!strcmp(key,"lock_bag_k"))  c->lock_bag_k = atof(val);
+    else if (!strcmp(key,"lock_bag_mode")) c->lock_bag_mode = atoi(val);
+    else if (!strcmp(key,"lock_bag_smooth")) c->lock_bag_smooth = atoi(val);
     else if (!strcmp(key,"locks_medium_only")) c->locks_medium_only = atoi(val);
     else fprintf(stderr, "WARNING: unknown config key '%s'\n", key);
 }
@@ -389,11 +393,12 @@ static void cfg_print(const Config *c) {
                        c->qball2_sign, c->qball2_phase);
         }
         if (c->n_locks > 0) {
-            printf("Locks:   n_locks=%d file=%s track=%s soft=(%.3g,%.3g) bag/anti=(%.3g,%.3g)%s\n",
+            printf("Locks:   n_locks=%d file=%s track=%s soft=(%.3g,%.3g) bag_mode=%d (r=%.3g k=%.3g sm=%d)%s\n",
                    c->n_locks,
                    c->locks_file[0] ? c->locks_file : "(inline lock0..)",
                    c->locks_track[0] ? c->locks_track : "(auto)",
-                   c->lock_soft_r, c->lock_soft_k, c->lock_bag_r, c->lock_bag_k,
+                   c->lock_soft_r, c->lock_soft_k,
+                   c->lock_bag_mode, c->lock_bag_r, c->lock_bag_k, c->lock_bag_smooth,
                    c->locks_medium_only ? " medium_only=1" : "");
         }
         if (c->n_fabrics == 3) {

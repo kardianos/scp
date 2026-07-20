@@ -1,0 +1,65 @@
+v82 path4_capacity PIC + sequestration core
+outdir=results  mode=phaseA
+
+======== Phase A: capacity core a_rel(D) non-monotonic scan ========
+  --- k_core=0.50 n_crit=0.30 ---
+    D=   4  F_along=+4.1188e-02  a_rel=1.6475e-02  attract_sign=1
+    D=   6  F_along=+1.5952e-02  a_rel=6.3810e-03  attract_sign=1
+    D=   8  F_along=+8.1354e-03  a_rel=3.2542e-03  attract_sign=0
+    D=  12  F_along=+1.2940e-02  a_rel=5.1761e-03  attract_sign=0
+    D=  16  F_along=+9.4709e-03  a_rel=3.7883e-03  attract_sign=0
+    D=  20  F_along=+7.3424e-03  a_rel=2.9370e-03  attract_sign=0
+    D=  24  F_along=+5.8789e-03  a_rel=2.3516e-03  attract_sign=0
+    D=  30  F_along=+4.3419e-03  a_rel=1.7368e-03  attract_sign=0
+  --- k_core=0.50 n_crit=0.60 ---
+    D=   4  F_along=+4.1188e-02  a_rel=1.6475e-02  attract_sign=1
+    D=   6  F_along=+1.5952e-02  a_rel=6.3810e-03  attract_sign=1
+    D=   8  F_along=+7.8896e-03  a_rel=3.1559e-03  attract_sign=0
+    D=  12  F_along=+1.2940e-02  a_rel=5.1761e-03  attract_sign=0
+    D=  16  F_along=+9.4709e-03  a_rel=3.7883e-03  attract_sign=0
+    D=  20  F_along=+7.3424e-03  a_rel=2.9370e-03  attract_sign=0
+    D=  24  F_along=+5.8789e-03  a_rel=2.3516e-03  attract_sign=0
+    D=  30  F_along=+4.3419e-03  a_rel=1.7368e-03  attract_sign=0
+  --- k_core=2.00 n_crit=0.30 ---
+    D=   4  F_along=+4.1188e-02  a_rel=1.6475e-02  attract_sign=1
+    D=   6  F_along=-1.6427e-02  a_rel=6.5707e-03  attract_sign=0
+    D=   8  F_along=-2.6894e-02  a_rel=1.0758e-02  attract_sign=0
+    D=  12  F_along=+1.2940e-02  a_rel=5.1761e-03  attract_sign=0
+    D=  16  F_along=+9.4709e-03  a_rel=3.7883e-03  attract_sign=0
+    D=  20  F_along=+7.3424e-03  a_rel=2.9370e-03  attract_sign=0
+    D=  24  F_along=+5.8789e-03  a_rel=2.3516e-03  attract_sign=0
+    D=  30  F_along=+4.3419e-03  a_rel=1.7368e-03  attract_sign=0
+    ZERO-CROSS near D*~5.0
+  --- k_core=2.00 n_crit=0.60 ---
+    D=   4  F_along=+4.1188e-02  a_rel=1.6475e-02  attract_sign=1
+    D=   6  F_along=-1.6427e-02  a_rel=6.5707e-03  attract_sign=0
+    D=   8  F_along=-2.7877e-02  a_rel=1.1151e-02  attract_sign=0
+    D=  12  F_along=+1.2940e-02  a_rel=5.1761e-03  attract_sign=0
+    D=  16  F_along=+9.4709e-03  a_rel=3.7883e-03  attract_sign=0
+    D=  20  F_along=+7.3424e-03  a_rel=2.9370e-03  attract_sign=0
+    D=  24  F_along=+5.8789e-03  a_rel=2.3516e-03  attract_sign=0
+    D=  30  F_along=+4.3419e-03  a_rel=1.7368e-03  attract_sign=0
+    ZERO-CROSS near D*~5.0
+  --- k_core=8.00 n_crit=0.30 ---
+    D=   4  F_along=+4.1188e-02  a_rel=1.6475e-02  attract_sign=1
+    D=   6  F_along=-1.4594e-01  a_rel=5.8377e-02  attract_sign=0
+    D=   8  F_along=-1.6701e-01  a_rel=6.6804e-02  attract_sign=0
+    D=  12  F_along=+1.2940e-02  a_rel=5.1761e-03  attract_sign=0
+    D=  16  F_along=+9.4709e-03  a_rel=3.7883e-03  attract_sign=0
+    D=  20  F_along=+7.3424e-03  a_rel=2.9370e-03  attract_sign=0
+    D=  24  F_along=+5.8789e-03  a_rel=2.3516e-03  attract_sign=0
+    D=  30  F_along=+4.3419e-03  a_rel=1.7368e-03  attract_sign=0
+    ZERO-CROSS near D*~5.0
+  --- k_core=8.00 n_crit=0.60 ---
+    D=   4  F_along=+4.1188e-02  a_rel=1.6475e-02  attract_sign=1
+    D=   6  F_along=-1.4594e-01  a_rel=5.8377e-02  attract_sign=0
+    D=   8  F_along=-1.7094e-01  a_rel=6.8377e-02  attract_sign=0
+    D=  12  F_along=+1.2940e-02  a_rel=5.1761e-03  attract_sign=0
+    D=  16  F_along=+9.4709e-03  a_rel=3.7883e-03  attract_sign=0
+    D=  20  F_along=+7.3424e-03  a_rel=2.9370e-03  attract_sign=0
+    D=  24  F_along=+5.8789e-03  a_rel=2.3516e-03  attract_sign=0
+    D=  30  F_along=+4.3419e-03  a_rel=1.7368e-03  attract_sign=0
+    ZERO-CROSS near D*~5.0
+  wrote results/phaseA_scan.tsv
+  any zero-crossing=1  best D*~5.0 (k=8.00 ncrit=0.60)
+  Phase A => PASS (non-monotonic)
