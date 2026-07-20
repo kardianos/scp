@@ -7,7 +7,8 @@
  *   ScpLock, locks_alloc/free, locks_load_file, locks_deposit_rho,
  *   locks_add_J_to_Eacc, locks_push_and_move, locks_energy, locks_write_track
  *
- * Force:   F = −(g q) E + … (sign matched to projected lattice E; opposite attract)
+ * Force:   F = +(g q) E + …  (continuum: div E = g ρ, F = g q E → opposite attract,
+ *          same-sign repel; matches hybrid Cosserat Q-ball → lock Coulomb)
  * Soft core (optional): short-range form-factor repulsion r < lock_soft_r
  * Gauss:   div E − g (ρ_matter + ρ_lock) = 0
  * Ampère:  E −= dt g j_phys after push (Cosserat J_lat = −j)
@@ -608,18 +609,15 @@ static void locks_push_and_move(Grid *g, double dt) {
         locks_soft_core_force(g, p, Fsc);
         locks_bag_force(g, p, Fbag);
 
-        if (L->pinned) {
-            L->u[0] = L->u[1] = L->u[2] = 0;
+        /* --- anti-lock: no EM; optional free motion under zero force (or pin) --- */
+        if (L->type == 1 || L->q == 0.0) {
             L->f[0] = Fsc[0] + Fbag[0];
             L->f[1] = Fsc[1] + Fbag[1];
             L->f[2] = Fsc[2] + Fbag[2];
-            continue;
-        }
-
-        /* --- anti-lock: no EM; optional free motion under zero force (or pin) --- */
-        if (L->type == 1 || L->q == 0.0) {
-            /* bag does not self-force; anti-locks stay put unless given velocity */
-            L->f[0] = L->f[1] = L->f[2] = 0;
+            if (L->pinned) {
+                L->u[0] = L->u[1] = L->u[2] = 0;
+                continue;
+            }
             double u2 = L->u[0]*L->u[0] + L->u[1]*L->u[1] + L->u[2]*L->u[2];
             double gamma = sqrt(1.0 + u2);
             L->x[0] += dt * L->u[0] / gamma;
@@ -634,19 +632,26 @@ static void locks_push_and_move(Grid *g, double dt) {
 
         locks_gather_EB(g, L->x[0], L->x[1], L->x[2], E, B);
 
-        /* F_em = −(g q) E; plus soft core + bag pull from anti-locks */
-        double qem = -GG * L->q;
+        /* F_em = +(g q) E  (div E = g ρ ⇒ continuum Coulomb; opposite attract).
+         * Prior −(g q)E inverted hybrid Cosserat→lock force (v83 E1a FAIL). */
+        double qem = GG * L->q; /* Lorentz charge factor: a = (g q / m) E in Boris */
         double Ftot[3] = {
             qem * E[0] + Fsc[0] + Fbag[0],
             qem * E[1] + Fsc[1] + Fbag[1],
             qem * E[2] + Fsc[2] + Fbag[2]
         };
+        L->f[0] = Ftot[0]; L->f[1] = Ftot[1]; L->f[2] = Ftot[2];
+
+        if (L->pinned) {
+            L->u[0] = L->u[1] = L->u[2] = 0;
+            continue;
+        }
+
         double Eeff[3] = {
             E[0] + (Fsc[0] + Fbag[0]) / qem,
             E[1] + (Fsc[1] + Fbag[1]) / qem,
             E[2] + (Fsc[2] + Fbag[2]) / qem
         };
-        L->f[0] = Ftot[0]; L->f[1] = Ftot[1]; L->f[2] = Ftot[2];
 
         double qom = qem / L->m;
         double half = 0.5 * dt * qom;
