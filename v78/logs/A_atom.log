@@ -1,0 +1,73 @@
+===== ENTRY 2026-07-19T18:00:00Z | A-000 | bootstrap =====
+Agent: A
+Round: 0
+Tags: bootstrap
+---
+Atom package. Append-only. See GOALS.md CAMPAIGN_MAP.md.
+===== END =====
+
+===== ENTRY 2026-07-19T19:30:00Z | A-001 | package =====
+Agent: A
+Round: 1
+Tags: PhaseA, package, C12, P/N, readiness
+---
+Phase A COMPLETE. Wrote work/A/c12_atom_package_v0.md + recipe_checklist_multifab.md.
+
+Sources: v75/C12_ATOM_GOAL.md, STATE.md, ATOM_LADDER.md, FINDINGS F14–F19 (Z6 atom).
+
+End state: time-stable multi-fabric C12 analog = Z≈6 p-analogs (+ optional N n-analogs)
++ L cloud with n_L=Z; private bags; shared A; no merge/fission/disperse; Gauss floor.
+
+P/N freeze (B2): p = C+Q, n = C-only, q_C=0 q_Q=+1 q_L=-1; isotope = +N at fixed Z.
+
+Pass bar: park-aware c_Q≤0.15, c_L≤0.15, massL hold, Gauss floor; hard fail on bag merge.
+Do not score net Q_flux alone as L death.
+
+Path: P1 hydrogenoid OPEN; P2.0 DONE; P2 Z2 DONE; P2 Z6 partial (F19); P3 NOT STARTED.
+
+Evidence snapshot F19: Z6 isotope Q_flux identical 990.3; Z6N6 c_Q_park=0.046 PASS;
+Z6N0 soft 0.184; atom massL −12.5% both isotopes; multi-ball → droplet t∼400;
+PASS_atom strict False.
+
+BLOCKED for ideal claim: multi-fab GPU re-run long-T; shell-radius diag (tooling);
+optional lower-g for free A=12 park. Kernel auth only if retune exhausted
+(bag-only-C, ε_CQ, Option C) — not required to start recipe matrix.
+
+Atom readiness: PACKAGE READY; PRODUCT PARTIAL (short-T smoke only).
+===== END =====
+
+===== ENTRY 2026-07-19T19:31:00Z | A-002 | stamp =====
+Agent: A
+Round: 1
+Tags: CP-A, ADOPT
+---
+STAMP CP-A: ADOPT (package ready)
+
+Co-agree needed: U (CAMPAIGN_MAP). Unlocks U final path on atom package, not product PASS.
+
+Does NOT claim ideal long-T visual C12 atom. Claims docs/recipes/pass bars/blocks complete.
+===== END =====
+
+===== ENTRY 2026-07-19T19:32:00Z | A-003 | checkin_handoff =====
+Agent: A
+Round: 1
+Tags: checkin, handoff
+---
+CHECKIN: Phase A done. Artifacts under work/A/ only + this log.
+
+FOR_U: co-stamp CP-A ADOPT; consume c12_atom_package_v0.md for CONVERGENCE atom row;
+status = package PASS / product PARTIAL.
+
+FOR_P: P/N freeze adopted as-is (F17–F19); L count = Z not A. No re-litigation.
+
+FOR_C: primary atom core candidate = Z6N6 parked droplet (not multi-center crystal);
+A=12 free nucleons super-critical at g=0.05 (v74 charge budget) — document path vs lower g.
+
+FOR_L: cloud co-design tracks Z; F19 L −12.5% at R=22 needs tighten before long-T claim;
+P1.3 shell-radius diagnostic still open.
+
+FOR_O: GPU matrix when multi-fab ready — checklist recipe_checklist_multifab.md;
+prefer z6_a_n6 long-T; V100-16GB proven N=192 ~48 min/T400; no sleep in sim_exec.
+
+HANDOFF: Agent A idle pending U co-agree or GPU run authorization. No kernel edits requested.
+===== END =====

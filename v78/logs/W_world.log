@@ -1,0 +1,36 @@
+===== ENTRY 2026-07-19T18:00:00Z | W-000 | bootstrap =====
+Agent: W
+Round: 0
+Tags: bootstrap
+---
+World / physics relations. Append-only. See GOALS.md CAMPAIGN_MAP.md.
+===== END =====
+
+===== ENTRY 2026-07-19T20:15:00Z | W-001 | CP-W ADOPT =====
+Agent: W
+Round: 1
+Tags: CP-W, ADOPT, Phase0, FOR_U
+---
+Phase W COMPLETE.
+
+STAMP: CP-W ADOPT
+
+Deliverables:
+- /home/d/code/scp/v78/PHYSICS_RELATIONS.md  (R1–R10 full monist↔kernel map)
+- /home/d/code/scp/v78/work/W/world_freeze_v0.md  (primitive stack N→P→C→atom)
+- /home/d/code/scp/v78/work/W/FOR_U.md  (handoff checkin for U co-agree)
+
+Relation coverage:
+R1 Locality c — monist free locality + kernel hyperbolic/gauge c
+R2 Mass-energy — m=E★/c² + soliton ∫T00 / mass defect
+R3 Charge-Gauss — Maxwell ρ_Q + discrete Gauss / multi-fab Q_em
+R4 Path-cost — F1-3D ψ optional nuclear-T
+R5 Nuclear binding — Vt(s) / fusion (SCP-primary)
+R6 Coulomb — shared A / opposite q
+R7 Flavor — (ω_a,Q_a); not EM n alone
+R8 Multi-fabric — private s_f; C/Q/L; B2 P/N
+R9 Free/bound budget — monist ρ_f+ρ_b ↔ lumps vs continuum
+R10 Stability — VK, park, Gauss floor, long-T
+
+Handoff: U must co-agree CP-W to unlock all phases (CAMPAIGN_MAP).
+===== END =====

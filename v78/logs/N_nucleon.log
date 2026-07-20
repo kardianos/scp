@@ -1,0 +1,40 @@
+===== ENTRY 2026-07-19T18:00:00Z | N-000 | bootstrap =====
+Agent: N
+Round: 0
+Tags: bootstrap
+---
+Nucleon primitive. Append-only. See GOALS.md CAMPAIGN_MAP.md.
+===== END =====
+
+===== ENTRY 2026-07-19T20:15:00Z | N-001 | phase_complete =====
+Agent: N
+Round: 1
+Tags: CP-N, nucleon, package, recipes, ADOPT
+---
+PHASE N COMPLETE — nucleon package frozen from existing theory + data.
+
+Deliverables (work/N only + this log):
+1. work/N/nucleon_package_v0.md
+   - Definition: gauged diagonal-U(1) Q-ball, 3 equal Φ_a, η=0, m_θ=1.6, g=0.05
+   - VK window: dQ/dω<0 for ω∈[1.40624, 1.4825]; Q_max=921; do not seed ω≳1.485 free
+   - Light/standard table (gscan + CARBON_MAP):
+       standard ω=1.42 Q=311.46 E/Q=1.4649  f_w142_g005
+       light    ω=1.46 Q=114.13 E/Q=1.5187  f_w146_g005  ← campaign default
+       lightest ω=1.4825 Q=90.01 (shoot on demand)
+   - Seed recipe: profile → gen_qball_boost vx=0 or gen_qball_multi → init=sfa
+   - Stability: CONCEPT charge retention 99.99985%/1000 t.u.; v71 he2/li3s;
+     v74 c6_light/c12_light use same free light unit
+2. work/N/recipes.sh — exact commands for profiles (use v74 paths), seeds, cfg skeleton
+3. work/N/README.md — index
+
+No scp_sim / sfa.h edits. No new profiles shot (reuse v74/profiles).
+
+STAMP CP-N: ADOPT
+
+Handoff:
+- FOR_U: board CP-N = ADOPT; fold into PARTICLE_LADDER / RECIPES when open
+- FOR_P: free nucleon template ready; P/N⁰ is multi-fabric EM layer, not new ω table
+- FOR_C: free inventory unit = light ω=1.46; Z-carbon path already PASS in v74
+
+Checkin: Phase N pass bar (GOALS §4 row N) met — spec + profile + seed recipe + stability evidence.
+===== END =====

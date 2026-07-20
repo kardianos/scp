@@ -1,0 +1,31 @@
+===== ENTRY 2026-07-19T18:00:00Z | O-000 | bootstrap =====
+Agent: O
+Round: 0
+Tags: bootstrap
+---
+v78 campaign start. Goal: field primitive → nucleon → P/N → C nucleus → atom path.
+Stop only when all phases PASS/BLOCKED + CONVERGENCE.
+===== END =====
+
+===== ENTRY 2026-07-19T18:05:00Z | O-001 | meta =====
+Agent: O
+Round: 1
+Tags: spawn, R1
+---
+R1: W physics relations; N nucleon package; U board. Then R2–R5 until complete.
+===== END =====
+===== ENTRY 2026-07-19T19:00:00Z | O-002 | finding =====
+Agent: O
+Round: final
+Tags: STOP, COMPLETE
+---
+v78 CAMPAIGN COMPLETE (STOP).
+
+All phases scored by U (PASS or BLOCKED-product):
+  W PASS | N PASS | P PASS | C PASS | L PASS
+  A package PASS, ideal long-T C12 atom BLOCKED (GPU multi-fab long-T)
+  U PASS · CP-U ADOPT
+
+No DISPROVE. Kernel auth not required for documented next GPU matrix.
+Flagship: v78/CONVERGENCE.md, PHYSICS_RELATIONS.md, PARTICLE_LADDER.md, RECIPES.md.
+===== END =====

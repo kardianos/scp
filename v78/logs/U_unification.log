@@ -1,0 +1,89 @@
+===== ENTRY 2026-07-19T18:00:00Z | U-000 | bootstrap =====
+Agent: U
+Round: 0
+Tags: bootstrap
+---
+Unification. Append-only. See GOALS.md CAMPAIGN_MAP.md.
+===== END =====
+
+===== ENTRY 2026-07-19T20:00:00Z | U-001 | checkin_R1 =====
+Agent: U
+Round: 1
+Tags: checkin, board, R1
+---
+R1 board up: work/U/CHECKPOINT_BOARD.md (initial).
+Mid-poll: peer work/* mostly bootstrap; U pre-reads v74/v75/v76/v77 for gap-fill.
+Local nucleon verify notes started (gscan + f_w146 fingerprint).
+FOR_O: R1 U board alive; awaiting W/N packages for CP co-agree.
+===== END =====
+
+===== ENTRY 2026-07-19T21:00:00Z | U-002 | co_agree_all_CP =====
+Agent: U
+Round: 4
+Tags: CP-W, CP-N, CP-P, CP-C, CP-L, CP-A, ADOPT, mid-round
+---
+Re-read all peer packages + logs after delivery wave:
+
+W: PHYSICS_RELATIONS.md, world_freeze_v0.md, FOR_U.md — CP-W ADOPT (W-001)
+N: nucleon_package_v0.md, recipes.sh — CP-N ADOPT (N-001)
+P: pn_package_v0.md — CP-P ADOPT (P-002)
+C: carbon_nucleus_v0.md — CP-C ADOPT (C-002)
+L: light_sector_v0.md — CP-L ADOPT (L-001)
+A: c12_atom_package_v0.md, recipe_checklist_multifab.md — CP-A ADOPT (A-002)
+
+U CO-AGREE STAMPS (all):
+  CP-W ADOPT — W FOR_U checklist 1–7 verified YES
+  CP-N ADOPT — light ω=1.46 Q=114.13; VK window; recipes.sh
+  CP-P ADOPT — B2 p=C+Q n=C-only; F17–F19; gates PN-S*
+  CP-C ADOPT — c6_light PASS Q→650; c12 super-crit documented
+  CP-L ADOPT — L prep + hydrogenoid path met; Z6 massL soft residual → A
+  CP-A ADOPT — package ready; product ideal C12 BLOCKED (honest)
+
+Integration written:
+  /home/d/code/scp/v78/PARTICLE_LADDER.md
+  /home/d/code/scp/v78/RECIPES.md
+  work/U/RELATION_MATRIX.md (aligned with W PHYSICS_RELATIONS)
+  work/U/NUCLEON_VERIFY.md
+
+Nucleon verify: gscan g=0.05 ω=1.46 Q=114.13 E_tot=173.33 r_half=2.630 dQsign=-1;
+profile f(0)≈0.606 matches. PASS.
+
+FOR_O: all CP-W…CP-A co-agreed; CONVERGENCE next; no kernel auth request.
+===== END =====
+
+===== ENTRY 2026-07-19T21:15:00Z | U-003 | CP-U ADOPT STOP =====
+Agent: U
+Round: 5
+Tags: CP-U, ADOPT, CONVERGENCE, STOP, FOR_O
+---
+STAMP CP-U: ADOPT
+
+Deliverables complete:
+1. PHYSICS_RELATIONS.md — W (R1–R10)
+2. PARTICLE_LADDER.md — U integrate
+3. RECIPES.md — U integrate
+4. CONVERGENCE.md — U
+5. work/U/CHECKPOINT_BOARD.md — FINAL
+6. Per-phase work/{W,N,P,C,L,A}/* — peer packages
+
+Phase scores:
+  W PASS | N PASS | P PASS | C PASS | L PASS
+  A BLOCKED (product) / package PASS
+  U PASS
+
+Campaign bar MET: all phases PASS or BLOCKED; CONVERGENCE written.
+
+VERDICT: STOP v78
+
+One-liner:
+  Field-primitive world + nucleon + P/N + Z-carbon + L-prep frozen with recipes;
+  atom package ready; ideal long-T C12 product BLOCKED pending multi-fab GPU
+  (no kernel edit required to start retune/long-T).
+
+FOR_O:
+  Confirm STOP campaign.
+  Optional authorize post-v78 GPU: z6_a_n6 long-T matrix per work/A/recipe_checklist_multifab.md.
+  Do not treat residual atom product as campaign incomplete — GOALS allows BLOCKED.
+
+Agent U idle after this stamp.
+===== END =====

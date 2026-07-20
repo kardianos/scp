@@ -1,0 +1,116 @@
+===== ENTRY 2026-07-19T18:00:00Z | P-000 | bootstrap =====
+Agent: P
+Round: 0
+Tags: bootstrap
+---
+Proton/neutron package. Append-only. See GOALS.md CAMPAIGN_MAP.md.
+===== END =====
+
+===== ENTRY 2026-07-19T20:30:00Z | P-001 | package =====
+Agent: P
+Round: 2
+Tags: CP-P, pn_package, F17, F18, F19, B2
+---
+Phase P COMPLETE deliverable written.
+
+**Package:** work/P/pn_package_v0.md
+**README:** work/P/README.md
+
+## Definition (freeze)
+
+| Species | Content | EM |
+|---------|---------|-----|
+| proton analog | C bag + Q charge (co-located) | q_Q ρ_Q ≠ 0 |
+| neutron analog | C-only (Q=0 at site) | ≈ 0 |
+| light / e | L fabric | q_L = −1 |
+
+Config: n_fabrics=3, mf_lock_CQ=0 (B2), q_C=0, q_Q=+1, q_L=−1.
+
+Not P/N: flavored Δω alone (F17b still charged); equal-f cancel multiplet (F17c residual Q/3); B1 lock (no neutral).
+
+## Evidence summary
+
+F17 (primary charge structure):
+- S1 n EM-null: PASS (Q_flux=0, F17d)
+- S2 p charged: PASS (Q_flux/Q_φ=0.998, F17e)
+- S3 Q_em(Z,N)≈Q_em(Z,0): PASS≈ (Z2 flux 387 vs 423)
+- S4 lumps survive: PASS
+- S5 flavor ≠ Z/N: PASS null
+
+F18 Z2: Q_flux(Z2N0)=Q_flux(Z2N2)=372; park PASS; L=Z isotope PASS.
+F19 Z6: Q_flux identical 990.3 for N0/N6; Z6N6 park PASS; Z6N0 soft c_Q=0.184.
+
+## Recipes / configs
+
+Pointers in package §5 → v75/cfg/pn/:
+- f17d_b2n / f17e_b2p (unit n/p)
+- f17f–h (Z1N1, Z2N0, Z2N2)
+- p2_* (Z2 park + atom)
+- z6_* (Z6 nuclear + atom)
+Seed: bin/gen_pn_core (sfa/seed/gen_pn_core.c)
+Scorer: v75/analysis/score_pn_park.py
+Grid: v75/PN_GRID.md (Z6 freeze N=192 L=48)
+
+## Gates (Z vs N)
+
+PN-S1 n null | PN-S2 p charged | PN-S4 existence
+PN-Z EM∝Z | PN-N isotope EM fixed | PN-A bag∝A | PN-L count=Z
+
+## Gaps (do not kill package)
+
+1. Multi-ball → droplet by t∼400 (C morphology)
+2. Z6N0 park soft (C retune)
+3. L −12.5% at Z=6 (L/A)
+4. Shell-radius diagnostic missing (A)
+5. Q self-bag still on under B2 (optional kernel)
+
+STAMP and handoff in P-002 / P-003.
+===== END =====
+
+===== ENTRY 2026-07-19T20:31:00Z | P-002 | stamp =====
+Agent: P
+Round: 2
+Tags: CP-P, STAMP
+---
+STAMP CP-P: ADOPT
+
+Rationale:
+- P2.0 firm p vs n closed (F17 S1–S5) with B2 + selective Q seeding.
+- Isotope EM control measured at Z=2 (F18) and Z=6 (F19): Q_flux identical for +N.
+- Package + recipes + gates documented in work/P/pn_package_v0.md.
+- Residual gaps are C/L/A packaging (droplet, Z6N0 soft park, L hold), not species definition.
+
+Co-agree required: U (CAMPAIGN_MAP: P+U).
+Unlocks: C isotopes (N at fixed Z); A Z-count for L cloud.
+
+Reject only if new data shows Q_em tracks A not Z under B2, or n acquires finite Q_flux with q_C=0.
+===== END =====
+
+===== ENTRY 2026-07-19T20:32:00Z | P-003 | checkin =====
+Agent: P
+Round: 2
+Tags: checkin, handoff, R2
+---
+## Checkin — Phase P
+
+Status: **COMPLETE** (package freeze + STAMP CP-P ADOPT)
+Paths:
+- /home/d/code/scp/v78/work/P/pn_package_v0.md
+- /home/d/code/scp/v78/work/P/README.md
+- /home/d/code/scp/v78/logs/P_proton_neutron.log
+
+P/N status: **FIRM**
+- proton = C+Q (B2)
+- neutron = C-only (B2)
+- q_C=0, q_Q=+1, q_L=−1
+- Q_em ∝ Z; N = isotope knob
+- Evidence F17–F19 measured; configs under v75/cfg/pn/
+
+FOR_U: co-stamp CP-P ADOPT on board; fold into PARTICLE_LADDER + RECIPES.
+FOR_C: use gen_pn_core Z/N; isotope = +N at fixed Z; own Z6N0 park retune.
+FOR_L: L count = Z never A; carbon-class L hold soft (F19 −12.5%).
+FOR_A: assemble (Z,N,L=Z) from this package; do not re-litigate P/N definition.
+FOR_O: Phase P PASS pending U co-agree; board CP-P open for U.
+
+Agent P idle pending U co-stamp or reopen on reject trigger.
+===== END =====

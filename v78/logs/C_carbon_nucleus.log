@@ -1,0 +1,138 @@
+===== ENTRY 2026-07-19T18:00:00Z | C-000 | bootstrap =====
+Agent: C
+Round: 0
+Tags: bootstrap
+---
+Carbon nucleus. Append-only. See GOALS.md CAMPAIGN_MAP.md.
+===== END =====
+
+===== ENTRY 2026-07-19T19:00:00Z | C-001 | package =====
+Agent: C
+Round: 2
+Tags: phase-C, carbon, v74, c6_light, c12_light
+---
+Phase C COMPLETE — package written:
+
+  work/C/carbon_nucleus_v0.md
+  work/C/README.md
+
+Sources read (no re-runs; evidence reuse):
+  v74/CARBON_MAP.md
+  v74/RESULTS.md
+  v74/STATUS.md
+  v74/cfg/c6_light.cfg
+  v74/cfg/c12_light.cfg
+  v74/cfg/c6_light_smoke.cfg
+  v74/results/c6_light_diag.tsv (header + seed row)
+  v74/results/c12_light_diag.tsv (header + seed row)
+  v74/analysis/make_carbon_seeds.sh
+
+## Z-carbon c6_light PASS (primary)
+
+| qty | seed | t=300 |
+|-----|------|-------|
+| Q | 907.84 | **649.83** (0.71×Q_max) |
+| E/Q | 1.4988 | **1.4450** |
+| branch pred | — | 1.4377 |
+| on-branch Δ | — | **+0.51%** |
+| gauss_max | 9.8e-14 | 1.0e-13 floor |
+| mass defect | — | **4.85%** vs free light N |
+| late dQ/dt | — | ≈−0.17 / t.u. (still cooling) |
+
+Recipe: 6× light ω=1.46 co-phase octahedron D=10; g=0.05; N=192 L=36 T=300.
+Single droplet, no fission. Stage 2A fabric **Z-carbon nucleus**.
+
+## A=12 super-critical theorem + control
+
+Theorem (g=0.05): Q_max=921, Q_N^min≈90 ⇒ 12×90≈1080 > 921.
+No free stable-branch nucleons fuse to a subcritical A=12 static droplet.
+
+c12_light control:
+  seed Q=1959.9 (2.13×Q_max) → t=300 Q=**1410.5** (1.53×Q_max)
+  late dQ/dt≈−0.30 / t.u.; evaporating toward cap; single blob, no fission.
+  Honest product: hot A=12 droplet, **not** parked isotope.
+
+## Z=6 mapping
+
+Real Z=6 ↔ six free-nucleon formation units (A_free=6 light inventory).
+Identity = final Q + on-branch E/Q + fusion history (v71: droplet forgets A).
+Electrons/atom out of scope (Phase L/A).
+
+## Path to true A=12
+
+1. Lower g (g≈0.02, Q_max~5300) — c12_g02 after profile shoot.
+2. Droplet + N⁰ isotope knob after CP-P.
+3. Do NOT call Q→Q_max evaporation "parked A=12".
+
+## Config pointers
+
+  v74/cfg/c6_light.cfg       — production Z-carbon
+  v74/cfg/c12_light.cfg      — A=12 control
+  v74/cfg/c6_light_smoke.cfg — CPU smoke N=128
+  seeds: /space/scp/v74/seeds/ + v74/seeds/
+  make: v74/analysis/make_carbon_seeds.sh
+===== END =====
+
+===== ENTRY 2026-07-19T19:05:00Z | C-002 | stamp =====
+Agent: C
+Round: 2
+Tags: stamp, CP-C, ADOPT
+---
+STAMP CP-C: **ADOPT**
+
+Scope of C ADOPT (carbon nucleus package):
+- Z-carbon (c6_light) Stage 2A PASS numbers frozen in work/C/carbon_nucleus_v0.md
+- A=12 charge-budget theorem at g=0.05 + c12_light control fate documented
+- Z=6 structural mapping via formation history + conserved Q/branch
+- Path to parked A=12: lower g or droplet+N⁰ (not free A=12 at g=0.05)
+- Config/seed/result pointers under v74/cfg, v74/seeds, /space/scp/v74/results
+
+Does NOT alone close full board CP-C:
+- Needs U co-agree (CAMPAIGN_MAP: C+U)
+- Does NOT claim atom (needs CP-L + CP-A)
+- Does NOT claim true parked A=12 isotope at g=0.05
+- No kernel changes; no new GPU runs this round
+
+Unlocks (pending U co-stamp): **A core** nuclear droplet for atom recipes.
+===== END =====
+
+===== ENTRY 2026-07-19T19:10:00Z | C-003 | checkin =====
+Agent: C
+Round: 2
+Tags: checkin, handoff
+---
+CHECKIN — Phase C complete
+
+Done:
+1. work/C/carbon_nucleus_v0.md (PASS numbers, theorem, Z map, A=12 path, cfg)
+2. work/C/README.md
+3. STAMP CP-C ADOPT (C-002)
+
+Not done / not owned:
+- g=0.02 profile shoot / c12_g02
+- longer T park of c6 (polish)
+- multi-center Stage 2B
+- electron sector / atom assembly
+
+FOR_U:
+  Co-stamp CP-C ADOPT if package acceptable; mark Phase C PASS on board.
+  Z-carbon is the nuclear core for PARTICLE_LADDER / atom recipes.
+
+FOR_A:
+  Core recipe: Z-carbon c6_light class (Q~650, g=0.05, on-branch).
+  Atom still blocked on L-sector light opposite charges (CP-L).
+
+FOR_P:
+  N⁰ attachment = Path B to raise A at fixed Z without free A=12 budget crash.
+
+FOR_L:
+  No C-side change; light opposite sector remains atom gate.
+
+FOR_O:
+  Phase C agent work complete for R2; await U co-agree then continue R3 L+A.
+
+HANDOFF — C Round 2 complete
+  Package: work/C/carbon_nucleus_v0.md
+  Stamp: CP-C ADOPT
+  Status: PASS (Z-carbon) + documented super-critical A=12
+===== END =====
