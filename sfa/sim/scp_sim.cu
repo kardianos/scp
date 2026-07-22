@@ -839,6 +839,7 @@ static void init_gauss_project(Grid *g, const Config *c) {
 
     /* b = G - Gbar (zero-mean RHS; we solve (-lap) chi = b) */
     double gsum=0, gmax0=0;
+    #pragma omp parallel for schedule(static) reduction(+:gsum)
     for (long idx=0;idx<N3;idx++) {
         int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
         long nm[3];
@@ -849,6 +850,7 @@ static void init_gauss_project(Grid *g, const Config *c) {
         gsum += b[idx];
     }
     double gbar = gsum/(double)N3;
+    #pragma omp parallel for schedule(static) reduction(max:gmax0)
     for (long idx=0;idx<N3;idx++) {
         b[idx] -= gbar;
         double d=fabs(b[idx]); if (d>gmax0) gmax0=d;
@@ -858,6 +860,7 @@ static void init_gauss_project(Grid *g, const Config *c) {
     memcpy(r, b, N3*sizeof(double));
     memcpy(p, b, N3*sizeof(double));
     double rz=0;
+    #pragma omp parallel for schedule(static) reduction(+:rz)
     for (long idx=0;idx<N3;idx++) rz += r[idx]*r[idx];
 
     int it=0;
@@ -865,6 +868,7 @@ static void init_gauss_project(Grid *g, const Config *c) {
     double rmax=gmax0;
     while (rmax > tol && it < itmax) {
         double pAp=0;
+        #pragma omp parallel for schedule(static) reduction(+:pAp)
         for (long idx=0;idx<N3;idx++) {
             int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
             long nip=(long)((i+1)%N)*NN+(long)j*N+k, nim=(long)((i-1+N)%N)*NN+(long)j*N+k;
@@ -876,6 +880,7 @@ static void init_gauss_project(Grid *g, const Config *c) {
         }
         double alpha = rz/pAp;
         double rz2=0, xsum=0, rm=0;
+        #pragma omp parallel for schedule(static) reduction(+:rz2,xsum) reduction(max:rm)
         for (long idx=0;idx<N3;idx++) {
             xv[idx] += alpha*p[idx];
             r[idx]  -= alpha*Ap[idx];
@@ -886,6 +891,7 @@ static void init_gauss_project(Grid *g, const Config *c) {
         /* keep chi zero-mean per iteration (torus null space) */
         double xbar = xsum/(double)N3;
         double beta = rz2/rz;
+        #pragma omp parallel for schedule(static)
         for (long idx=0;idx<N3;idx++) {
             xv[idx] -= xbar;
             p[idx] = r[idx] + beta*p[idx];
@@ -899,6 +905,7 @@ static void init_gauss_project(Grid *g, const Config *c) {
     }
 
     /* E correction by the forward gradient: div-correction = lap(chi) exactly */
+    #pragma omp parallel for schedule(static)
     for (long idx=0;idx<N3;idx++) {
         int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
         long np[3];
@@ -911,6 +918,7 @@ static void init_gauss_project(Grid *g, const Config *c) {
 
     /* measure + freeze G_offset; report post-projection residual */
     double osum=0;
+    #pragma omp parallel for schedule(static) reduction(+:osum)
     for (long idx=0;idx<N3;idx++) {
         int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
         long nm[3];

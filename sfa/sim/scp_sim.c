@@ -2640,8 +2640,9 @@ static void *cast_buf = NULL;
 
 static void sfa_snap(SFA *sfa, Grid *g, double t, int precision) {
     long n = g->N3;
-    /* base 12/24/30; multi-fab adds 24 L-matter columns (Q omitted when locked) */
+    /* base 12/24/30; gauge2 adds 6 (th2+E2); multi-fab adds 24 L-matter columns */
     int nf = g->gauge_mode ? 30 : (g->complex_mode ? 24 : 12);
+    if (g->gauge2_mode) nf += 6;
     if (g->n_fabrics == 3) nf += 24;
     double *arrays[64];
     int k = 0;
@@ -2658,6 +2659,10 @@ static void sfa_snap(SFA *sfa, Grid *g, double t, int precision) {
     if (g->gauge_mode) {
         arrays[k++]=g->th[0]; arrays[k++]=g->th[1]; arrays[k++]=g->th[2];
         arrays[k++]=g->Efield[0]; arrays[k++]=g->Efield[1]; arrays[k++]=g->Efield[2];
+    }
+    if (g->gauge2_mode) {
+        arrays[k++]=g->th2[0]; arrays[k++]=g->th2[1]; arrays[k++]=g->th2[2];
+        arrays[k++]=g->Efield2[0]; arrays[k++]=g->Efield2[1]; arrays[k++]=g->Efield2[2];
     }
     if (g->n_fabrics == 3) {
         arrays[k++]=g->L_phi[0]; arrays[k++]=g->L_phi[1]; arrays[k++]=g->L_phi[2];
@@ -2884,6 +2889,15 @@ int main(int argc, char **argv) {
         sfa_add_column(sfa, "E_x",  sfa_dtype, SFA_VELOCITY, 12);
         sfa_add_column(sfa, "E_y",  sfa_dtype, SFA_VELOCITY, 13);
         sfa_add_column(sfa, "E_z",  sfa_dtype, SFA_VELOCITY, 14);
+    }
+    if (c.complex_gauge && c.g_gauge2 != 0.0) {
+        /* v85 second-gauge (color) export: links2 as ANGLE 9-11, E2 as VELOCITY 15-17 */
+        sfa_add_column(sfa, "th2_x", sfa_dtype, SFA_ANGLE,    9);
+        sfa_add_column(sfa, "th2_y", sfa_dtype, SFA_ANGLE,    10);
+        sfa_add_column(sfa, "th2_z", sfa_dtype, SFA_ANGLE,    11);
+        sfa_add_column(sfa, "E2_x",  sfa_dtype, SFA_VELOCITY, 15);
+        sfa_add_column(sfa, "E2_y",  sfa_dtype, SFA_VELOCITY, 16);
+        sfa_add_column(sfa, "E2_z",  sfa_dtype, SFA_VELOCITY, 17);
     }
     if (c.n_fabrics == 3) {
         /* L fabric: same semantic/component scheme as C (tools match by name) */
