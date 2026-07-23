@@ -57,3 +57,51 @@ the ANALYSIS error budget), or occupancy structure (D13 untouched).
    expensive at N≥384.
 3. **Tail completion** of this run from the t=1500 frame (T+500) — low
    value; the curve's shape is established.
+
+---
+
+# X10b results — deep-shell run (Q=444, completed T=2000)
+**Date:** 2026-07-23 · **Instance:** gpu7 (V100-32GB), 19.4 h wall, clean
+completion. Data: `/space/scp/v85/topo1/gpu/x10b*` (9 frames @ 250 t.u.,
+diag @ 0.25). Design: ball ω=1.3925 (Q=444, ungauged profile), α_f=0.088,
+a₀=7.55, ε₁=5.85e-3 (1/ε₁=171 t.u.; T=2000 = 11.7 binding times; 5.4
+tail-lengths of sponge clearance — BC-clean by design), perturbation −11 at
+r=9.
+
+## The frame story (negative-charge radial profiles)
+| t | Q₋ total | distribution |
+|---|---|---|
+| 250 | −3.49 | r=14–30, peak 26–28 (n=2 territory); **~3.9 units annihilated on the ball + ~3.7 escaped** — seeding at r=9 was inside the contact zone (ρ=1.8 too aggressive) |
+| 500 | −2.27 | peak 22–24 — inward cascade begins |
+| 750 | −1.59 | bimodal 18/28 — radial slosh, undersampled by frame cadence |
+| 1000 | −1.18 | unimodal peak 18–20 — net migration 27→19 over 750 t.u. |
+| 1250 | −0.82 | plateau 16–26; **migration arrested** |
+| 1500 | −0.61 | pinned 16–20; ball skirt reaches r≈12 (contact shielding of the 1s) |
+| 1750 | −0.51 | narrow band 16–20, outer tail empty; τ→1300 |
+| 2000 | −0.52 | **drain STOPPED (flat over final 250 t.u.)**; band dispersed to 20–30+ with first traces at r=10–14 — non-stationary slosh, retained |
+
+## Verdicts
+1. **Retention: PASS.** ~0.5 units of opposite charge permanently retained
+   (drain rate → 0 by run end) — no BC loss, no annihilation loss at late
+   times. The BC-clean design worked for what survived.
+2. **Cascade: CONFIRMED.** Net inward migration 27→19 over 750 t.u. under
+   classical radiation reaction — the fabric's first observed orbital decay
+   toward a ground state.
+3. **Ground-state occupation: BLOCKED (contact shielding).** The 1s radius
+   (7.5) sat inside the ball's contact/annihilation zone, which *expanded*
+   during the run: the seeded ungauged profile relaxed toward the fatter
+   gauged equilibrium (r=8 bin ×6 growth) — a benign but consequential
+   seed-shape artifact. Migration arrested at r≈16–20.
+4. **Stationarity: NOT ACHIEVED.** The retained cloud sloshes radially
+   (period ≳ 500 t.u., aliased by the 250-t.u. frame cadence).
+5. **Initial annihilation: F10 partially fired at contact** (~3.9 units of
+   ball charge consumed at t<250) — the first direct annihilation-rate
+   datum; confirms seeding must stay outside the contact zone.
+
+## Design lessons (bracketing complete)
+- Pathfinder (ρ=5): BC-dirty, contact-clean → shell at a₀ but boundary ate it.
+- X10b (ρ=1.8): BC-clean, contact-dirty → retention but 1s shielded.
+- **X10c window: ρ ≈ 3** — Q≈270 at g=0.05 (α_f=0.053, a₀=12.6, ε₁=2.1e-3,
+  tail=12.6, 2.8 tail-lengths clearance, contact zone ends ~r 8–9).
+  Plus: seed perturbation AT a₀ (not inside), finer snap cadence (150) to
+  resolve the slosh, and (future) gauged-shooter profiles at high Q.
