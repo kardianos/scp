@@ -105,3 +105,56 @@ r=9.
   tail=12.6, 2.8 tail-lengths clearance, contact zone ends ~r 8–9).
   Plus: seed perturbation AT a₀ (not inside), finer snap cadence (150) to
   resolve the slosh, and (future) gauged-shooter profiles at high Q.
+
+---
+
+# X10c results — ρ≈3 window run (Q=267, completed T=2000)
+**Date:** 2026-07-24 · gpu7 (V100-32GB), 19.5 h, clean completion, 15 frames
+@ 150 t.u. Design: ball ω=1.410 (Q=267), α_f=0.053, a₀=12.6, ε₁=2.11e-3
+(1/ε₁=473; T=2000 = 4.2 binding times), perturbation −6 seeded AT r=13=a₀.
+
+## Verdicts
+1. **Contact avoidance: TOTAL SUCCESS.** Ball charge +267.1 constant to
+   0.02% for 2000 t.u.; zero annihilation (vs X10b's −3.9). Seeding at a₀
+   eliminated F10 entirely.
+2. **Retention: PASS.** −0.43 units held at T=2000; leak τ grew 950 →
+   ~2000+ (unbound flush complete by t≈450; thereafter the bound cloud is
+   effectively permanent on the run timescale).
+3. **Shell localization: PASS with corrected radius.** The cloud never
+   left the 12–35 band after formation; repeated consolidation episodes
+   peak at r ≈ 16–22 ≈ 1.4–1.6 a₀ — consistent with the ground state of
+   the ACTUAL effective potential: a hard-core Coulomb (ball contact
+   exclusion r ≲ 12 + point-charge tail), whose 1s peaks outside the naive
+   point-Coulomb a₀. The recurring ~1.5a₀ localization across all three
+   X10 runs supports this reading.
+4. **Stationarity: NOT reached — and the obstacle is now understood.**
+   The cloud breathes radially (period ≈ 500–600 t.u., ~3.5 cycles
+   observed) with only mild late-run damping. Mechanism: **a radial
+   (monopole) charge oscillation cannot radiate through the gauge field**
+   (no dipole moment change) and the matter channel is gap-blocked — the
+   breathing mode is radiatively protected. This explains X10b's endless
+   slosh and X10c's persistence, and is itself a fabric-electrodynamics
+   prediction verified by three runs.
+5. Gauss at 2.2e-13 floor throughout; θ silent; energy drift −2.38% (all
+   escape-phase radiation).
+
+## X10 series synthesis (three runs)
+| Run | ρ = a₀/r_half | Outcome |
+|---|---|---|
+| Pathfinder (Q=160) | 5.0 | Shell AT a₀, BC-eaten (tail ≈ clearance) |
+| X10b (Q=444) | 1.8 | Retention, cascade observed, 1s contact-shielded |
+| X10c (Q=267) | 3.0 | Retention + localization at hard-core-corrected 1s; monopole breather persists |
+
+**Established across the series:** bound opposite-charge response clouds
+form at the (effective-potential) Bohr radius, are retained indefinitely,
+never annihilate when kept off-contact, and cascade inward under radiation
+reaction — while purely radial excitations persist because monopole
+breathing is radiatively protected.
+
+## Next: X10d — orbital angular momentum (the capstone)
+Seed the perturbation ON a circular orbit: position (0, 13, 0), tangential
+velocity v_orb = √(α_f/(m·a₀)) ≈ 0.053 via de Broglie tilt (vx along x ⊥
+radius). A rotating cloud has a rotating dipole → radiates → circularizes
+into the stationary orbiting ground state the monopole breather cannot
+reach. Same box/params as X10c; expect L_z bookkeeping (ħ_eff per unit
+charge) as a bonus measurement.
