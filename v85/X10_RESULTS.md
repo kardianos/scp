@@ -158,3 +158,35 @@ radius). A rotating cloud has a rotating dipole → radiates → circularizes
 into the stationary orbiting ground state the monopole breather cannot
 reach. Same box/params as X10c; expect L_z bookkeeping (ħ_eff per unit
 charge) as a bonus measurement.
+
+---
+
+# X10d results — orbital-seed run (completed T=2000): EXACT TWIN-NULL
+**Date:** 2026-07-25 · gpu7, 19.5 h, clean completion. Identical to X10c
+except the perturbation carried tangential velocity v=0.053 at (0,13,0)
+(circular-orbit initial condition, specific L ≈ 1.0 per unit charge).
+
+**Result: NULL to measurement precision.** Every frame matches X10c
+bin-for-bin within ~3% (final totals −0.414 vs −0.434; same breathing
+period, same consolidation episodes, same end-state). The seeded angular
+momentum produced no measurable dynamical difference.
+
+**Why (the load-bearing lesson): ORBITS REQUIRE CARRIERS.** A non-solitonic
+perturbation disperses into a shell during the scatter phase; its coherent
+orbital motion smears into negligible net rotation, and the monopole
+breather dominates identically. A smeared charge cloud cannot orbit — only
+a self-bound closure retains the coherent L needed to circularize into a
+stationary orbit. This converges with the TOE quantum-light chain's carrier
+requirement (Step 7/9) from an entirely independent direction: the fabric
+derives classically that the atomic electron must be a discrete object.
+
+## Next: X11-PB — two-closure orbit ("fabric hydrogen-lite")
+Heavy: v71 flavored ball (Q=284, partition 76.7/103.7/103.7). Light: the
+branch-bottom soliton Q≈−88.5 (ω=−1.4750 profile, E=135.5, r_half=2.35) at
+(0,12,0) with tangential v=0.064 (α_AB = g²·284·88.5/4π ≈ 5.0, μ ≈ 102;
+orbit period ≈ 1200 t.u. → ~1.7 orbits in T=2000). Protections, all
+measured in this program: distance ≫ tails (annihilation overlap ~e^{−2κD}
+negligible at D=12), clock detuning beat ≈ 2.9, flavor-partition mismatch
+(annihilation conservation-redirected, X8 design). Goal: bound two-closure
+orbital motion — the original v75 Step-2 target with today's design
+discipline — plus inspiral/radiation and L_z ledger data.
