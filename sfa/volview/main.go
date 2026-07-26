@@ -3116,6 +3116,17 @@ func computeGaugeView(n int, phi, ef, link [3][]float32, vol *volumeData) {
 	fmt.Printf("  gauge view: max|E|=%.3e max|Phi|^2=%.3e max|A|=%.3e\n", mE, mR, mA)
 }
 
+// v85: transfer-function gamma (set from -gamma flag). Values < 1 compress
+// dynamic range so faint structures survive global-max normalization.
+var renderGamma float32 = 1.0
+
+func applyGamma(x float32) float32 {
+	if renderGamma == 1.0 || x <= 0 {
+		return x
+	}
+	return float32(math.Pow(float64(x), float64(renderGamma)))
+}
+
 // computeChargeView: Noether charge density rhoQ = sum_a (u vdot - v udot)
 // (+ theta terms when present). R = +rhoQ, B = -rhoQ, G = |Phi|^2 context.
 func computeChargeView(n int, re, im, vre, vim [3][]float32,
@@ -3177,13 +3188,13 @@ func computeChargeView(n int, re, im, vre, vim [3][]float32,
 		for i := start; i < end; i++ {
 			q := vol.rgba[i*4+0] * invQ
 			if q >= 0 {
-				vol.rgba[i*4+0] = q
+				vol.rgba[i*4+0] = applyGamma(q)
 				vol.rgba[i*4+2] = 0
 			} else {
 				vol.rgba[i*4+0] = 0
-				vol.rgba[i*4+2] = -q
+				vol.rgba[i*4+2] = applyGamma(-q)
 			}
-			vol.rgba[i*4+1] *= invR
+			vol.rgba[i*4+1] = applyGamma(vol.rgba[i*4+1] * invR)
 		}
 	})
 	fmt.Printf("  charge view: max|rhoQ|=%.3e (R=+Q, B=-Q)\n", mQ)
@@ -4634,7 +4645,9 @@ func main() {
 	pgaModeFlag := flag.Int("pga-mode", 0, "PGA view mode: 0=spectrum, 1=rotation (8-comp v56 files)")
 	pgaPhaseFlag := flag.Int("pga-phase", 0, "PGA rotation phase (which 3-of-8 components → R,G,B)")
 	viewFlag := flag.Int("view", 0, "View mode: 0=field, 1=velocity, 2=accel, 3=U(1) gauge, 4=charge, 5=flavor, 6=clock")
+	gammaFlag := flag.Float64("gamma", 1.0, "Transfer-function gamma: <1 lifts faint structure (e.g. 0.35 makes a 2%-amplitude object visible next to a full ball)")
 	flag.Parse()
+	renderGamma = float32(*gammaFlag)
 
 	// CPU profiling to file
 	if *cpuprofile != "" {

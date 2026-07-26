@@ -625,13 +625,17 @@ func (r *RemoteExecutor) executeRemoteRun(ctx context.Context, rr *remoteRun, co
 	}
 }
 
-// rsyncFile does a single rsync --append-verify of a remote file to a local directory.
-// Returns nil on success, error on failure.
+// rsyncFile syncs a remote file to a local directory using rsync's delta
+// algorithm with --inplace. NOTE: --append-verify was removed (v85): SFA
+// files are NOT append-only — the header frame counter and JMPF index slots
+// are updated in place mid-file, and append mode silently freezes the local
+// copy's early bytes, producing chimera files when pulling live runs. The
+// delta algorithm handles both appends and in-place rewrites correctly.
 func (r *RemoteExecutor) rsyncFile(ctx context.Context, remotePath, localDir string) error {
 	if err := os.MkdirAll(localDir, 0755); err != nil {
 		return fmt.Errorf("mkdir %s: %w", localDir, err)
 	}
-	cmd := fmt.Sprintf("rsync -az --partial --append-verify -e 'ssh -o StrictHostKeyChecking=no -p %d' root@%s:%s %s/",
+	cmd := fmt.Sprintf("rsync -az --partial --inplace -e 'ssh -o StrictHostKeyChecking=no -p %d' root@%s:%s %s/",
 		r.sshPort, r.sshHost, remotePath, localDir)
 	out, err := execOutput(ctx, "bash", "-c", cmd)
 	if err != nil {
@@ -822,8 +826,10 @@ func (r *RemoteExecutor) doDownload(ctx context.Context, di *DownloadInfo) {
 		return
 	}
 
-	// Use rsync with --append-verify.
-	cmd := fmt.Sprintf("rsync -avz --partial --append-verify -e 'ssh -o StrictHostKeyChecking=no -p %d' root@%s:%s %s",
+	// rsync delta algorithm with --inplace (see rsyncFile: --append-verify
+	// produces chimera copies of live SFA files whose index is updated
+	// in place).
+	cmd := fmt.Sprintf("rsync -avz --partial --inplace -e 'ssh -o StrictHostKeyChecking=no -p %d' root@%s:%s %s",
 		r.sshPort, r.sshHost, di.RemotePath, di.LocalPath)
 
 	rsync := newTrackedExec(ctx, "bash", "-c", cmd)

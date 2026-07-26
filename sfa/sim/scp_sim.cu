@@ -1932,6 +1932,10 @@ __global__ void reduce_diagnostics_kernel(
  * [24] E_em, [25] divE cube sum, [26] nC */
 #define GAUSS_BASE  21
 #define GDIAG_TOTAL 27
+/* v85: per-component phi charges — 3 slots appended after the gauss block;
+ * DIAG_ALLOC is the unconditional results-buffer size. */
+#define QPA_BASE    27
+#define DIAG_ALLOC  30
 
 __global__ void reduce_diagnostics_complex_kernel(
     const double *u0, const double *u1, const double *u2,
@@ -2547,6 +2551,41 @@ __global__ void reduce_rcore_kernel(
         __syncthreads();
     }
     if (tid == 0) atomicAdd(d_rsum, sdata[0]);
+}
+
+/* v85: per-component Noether charges q_a = u_a*vdot_a - v_a*udot_a,
+ * raw sums atomically accumulated into d_qpa[0..2] (host applies *dV). */
+__global__ void reduce_qpa_kernel(
+    const double *u0, const double *u1, const double *u2,
+    const double *v0, const double *v1, const double *v2,
+    const double *vu0, const double *vu1, const double *vu2,
+    const double *vv0, const double *vv1, const double *vv2,
+    double *d_qpa)
+{
+    __shared__ double sdata[3 * 256];
+    long idx = (long)blockIdx.x * blockDim.x + threadIdx.x;
+    int tid = threadIdx.x;
+    double q0 = 0.0, q1 = 0.0, q2 = 0.0;
+    if (idx < d_N3) {
+        q0 = u0[idx]*vv0[idx] - v0[idx]*vu0[idx];
+        q1 = u1[idx]*vv1[idx] - v1[idx]*vu1[idx];
+        q2 = u2[idx]*vv2[idx] - v2[idx]*vu2[idx];
+    }
+    sdata[tid] = q0; sdata[256 + tid] = q1; sdata[512 + tid] = q2;
+    __syncthreads();
+    for (int s = blockDim.x/2; s > 0; s >>= 1) {
+        if (tid < s) {
+            sdata[tid] += sdata[tid + s];
+            sdata[256 + tid] += sdata[256 + tid + s];
+            sdata[512 + tid] += sdata[512 + tid + s];
+        }
+        __syncthreads();
+    }
+    if (tid == 0) {
+        atomicAdd(&d_qpa[0], sdata[0]);
+        atomicAdd(&d_qpa[1], sdata[256]);
+        atomicAdd(&d_qpa[2], sdata[512]);
+    }
 }
 
 /* v67: find the voxel index where s = prod_a(u_a^2+v_a^2) attains the global
@@ -3695,7 +3734,7 @@ static DiagHookCtx create_diag_hook(FILE *fp, int diag_every, int major_every,
     ctx.Rcube = c->qdiag_radius;
     ctx.gauss_max = ctx.gauss_l2 = ctx.e_em = ctx.q_flux = 0.0;
 
-    int nvals = ctx.gauge_mode ? GDIAG_TOTAL : (ctx.complex_mode ? CDIAG_TOTAL : DIAG_NVALS);
+    int nvals = DIAG_ALLOC;   /* v85: always allocate the full slot set (incl. QPA) */
     cudaMalloc(&ctx.d_results, nvals * sizeof(double));
     cudaMallocHost(&ctx.h_results, nvals * sizeof(double));
 
@@ -3730,7 +3769,7 @@ static void run_gpu_diagnostics(const FieldState *state, DiagHookCtx *ctx) {
         /* v66 complex path: 20-value reduction + two-pass centroid r_core
          * (mirrors CPU compute_energy_complex + compute_charges).
          * v69 gauged: covariant-difference energy variant + gauss reduction. */
-        int nvals = ctx->gauge_mode ? GDIAG_TOTAL : CDIAG_TOTAL;
+        int nvals = DIAG_ALLOC;   /* v85: clear QPA slots too */
         zero_diag_kernel<<<1, nvals>>>(ctx->d_results, nvals);
         if (ctx->gauged) {
             reduce_diagnostics_complex_gauge_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
@@ -3872,6 +3911,16 @@ static void run_gpu_diagnostics(const FieldState *state, DiagHookCtx *ctx) {
             ctx->h_results[20] = 0.0;
         }
 
+        /* v85 pass: per-component phi charges */
+        reduce_qpa_kernel<<<gpu_blocks, THREADS_PER_BLOCK>>>(
+            state->phi[0], state->phi[1], state->phi[2],
+            state->phi_im[0], state->phi_im[1], state->phi_im[2],
+            state->vel_phi[0], state->vel_phi[1], state->vel_phi[2],
+            state->vel_phi_im[0], state->vel_phi_im[1], state->vel_phi_im[2],
+            ctx->d_results + QPA_BASE);
+        cudaMemcpy(&ctx->h_results[QPA_BASE], ctx->d_results + QPA_BASE,
+                   3 * sizeof(double), cudaMemcpyDeviceToHost);
+
         /* v67 pass 3: omega_core at the argmax-s voxel (tiny kernel reading the
          * s_max value found by pass 1, then 4 single-voxel DtoH copies) */
         double smax = ctx->h_results[14];
@@ -3965,6 +4014,11 @@ static void diag_hook(int step, double t, const FieldState *state, void *vctx) {
     if (ctx->gauge_mode)
         fprintf(ctx->fp, "\t%.6e\t%.6e\t%.12e\t%.12e",
                 ctx->gauss_max, ctx->gauss_l2, ctx->e_em, ctx->q_flux);
+    if (ctx->complex_mode)
+        fprintf(ctx->fp, "\t%.12e\t%.12e\t%.12e",
+                ctx->h_results[QPA_BASE]   * ctx->dV,
+                ctx->h_results[QPA_BASE+1] * ctx->dV,
+                ctx->h_results[QPA_BASE+2] * ctx->dV);
     fprintf(ctx->fp, "\n");
     fflush(ctx->fp);
 
@@ -5344,6 +5398,8 @@ int main(int argc, char **argv) {
     if (c.complex_phi) fprintf(fp, "\tQ_phi\tQ_theta\tQ_total\ts_max\tr_core"
                                    "\tomega_core\tQ_core\tthp1u\tthp1v\tthp2u\tthp2v");
     if (c.complex_gauge) fprintf(fp, "\tgauss_max\tgauss_l2\tE_em\tQ_flux");
+    /* v85: per-component phi charges appended LAST (parser compatibility) */
+    if (c.complex_phi) fprintf(fp, "\tQ_p0\tQ_p1\tQ_p2");
     fprintf(fp, "\n");
 
     cudaEvent_t t_start;

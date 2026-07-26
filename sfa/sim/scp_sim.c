@@ -2074,13 +2074,15 @@ static double P_integrated_complex(Grid *g) {
 static void compute_charges(Grid *g, const Config *c,
                             double *Q_phi, double *Q_theta,
                             double *s_max, double *r_core,
-                            double *omega_core, double *Q_core, double thp[4]) {
+                            double *omega_core, double *Q_core, double thp[4],
+                            double Qpa[3]) {
     const int N=g->N, NN=N*N; const long N3=g->N3;
     const double L=g->L, dx=g->dx, dV=dx*dx*dx;
     const double R2 = c->qdiag_radius * c->qdiag_radius;
     double qp=0, qt=0, smax=0, M0=0, cx=0, cy=0, cz=0, qc=0;
+    double qp0=0, qp1=0, qp2=0;   /* per-component phi charges (v85 diag) */
 
-    #pragma omp parallel for reduction(+:qp,qt,M0,cx,cy,cz,qc) \
+    #pragma omp parallel for reduction(+:qp,qt,M0,cx,cy,cz,qc,qp0,qp1,qp2) \
         reduction(max:smax) schedule(static)
     for (long idx=0;idx<N3;idx++) {
         int i=(int)(idx/NN), j=(int)((idx/N)%N), k=(int)(idx%N);
@@ -2091,7 +2093,9 @@ static void compute_charges(Grid *g, const Config *c,
             double ud=g->phi_vel[a][idx], vd=g->phi_im_vel[a][idx];
             double tu=g->theta[a][idx],   tv=g->theta_im[a][idx];
             double tud=g->theta_vel[a][idx], tvd=g->theta_im_vel[a][idx];
-            qp_v += u*vd - v*ud;
+            double qa = u*vd - v*ud;
+            qp_v += qa;
+            if (a==0) qp0 += qa; else if (a==1) qp1 += qa; else qp2 += qa;
             qt_v += tu*tvd - tv*tud;
             double s2a = u*u + v*v;
             rho2 += s2a;
@@ -2107,6 +2111,7 @@ static void compute_charges(Grid *g, const Config *c,
     *Q_theta = qt*dV;
     *s_max   = smax;
     *Q_core  = qc*dV;
+    if (Qpa) { Qpa[0]=qp0*dV; Qpa[1]=qp1*dV; Qpa[2]=qp2*dV; }
 
     /* omega_core: locate the argmax-s voxel (lowest index on ties; relative
      * tolerance guards rounding differences vs the reduction pass) */
@@ -2992,6 +2997,9 @@ int main(int argc, char **argv) {
     if (c.complex_gauge) fprintf(fp, "\tgauss_max\tgauss_l2\tE_em\tQ_flux");
     if (c.n_fabrics == 3) fprintf(fp, "\tQ_C\tQ_Q\tQ_L\tQ_em");
     if (c.n_locks > 0) fprintf(fp, "\tE_locks_star\tE_locks_kin\tlocks_alive\tQ_locks");
+    /* v85: per-component phi charges — appended LAST so existing
+     * column-index-based parsers keep working */
+    if (c.complex_phi) fprintf(fp, "\tQ_p0\tQ_p1\tQ_p2");
     fprintf(fp, "\n");
 
     FILE *fp_locks = NULL;
@@ -3018,7 +3026,7 @@ int main(int argc, char **argv) {
 
     /* Initial diagnostic */
     double epk,etk,eg,em,ep,etg,etm,ec,et,pm,Pm;
-    double Qp=0,Qt=0,smax=0,rcore=0;
+    double Qp=0,Qt=0,smax=0,rcore=0; double Qpa[3]={0,0,0};
     double ocore=0,qcore=0,thp[4]={0,0,0,0};
     double eem=0, gmax=0, gl2=0, gem=0, qflux=0;
     if (gauged)            compute_energy_complex_gauge(g,&c,&epk,&etk,&eg,&em,&ep,&etg,&etm,&ec,&et,&pm,&Pm,&eem);
@@ -3032,7 +3040,7 @@ int main(int argc, char **argv) {
     fprintf(fp,"%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e",
             0.0,epk,etk,eg,em,ep,etg,etm,ec,et,pm,Pm,Pint0,trms0);
     if (c.complex_phi) {
-        compute_charges(g,&c,&Qp,&Qt,&smax,&rcore,&ocore,&qcore,thp);
+        compute_charges(g,&c,&Qp,&Qt,&smax,&rcore,&ocore,&qcore,thp,Qpa);
         fprintf(fp,"\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%.6e",
                 Qp,Qt,Qp+Qt,smax,rcore,ocore,qcore,thp[0],thp[1],thp[2],thp[3]);
     }
@@ -3054,6 +3062,7 @@ int main(int argc, char **argv) {
         printf("Locks: n=%d Q=%.4g E*=%.4e Ekin=%.4e\n", nalive, Ql, Els, Elk);
         if (fp_locks) locks_write_track(g, 0.0, fp_locks);
     }
+    if (c.complex_phi) fprintf(fp,"\t%.12e\t%.12e\t%.12e",Qpa[0],Qpa[1],Qpa[2]);
     fprintf(fp,"\n");
 
     double wall0 = omp_get_wtime();
@@ -3193,7 +3202,7 @@ int main(int argc, char **argv) {
             fprintf(fp,"%.2f\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e\t%.6e",
                     t,epk,etk,eg,em,ep,etg,etm,ec,et,pm,Pm,Pint,trms);
             if (c.complex_phi) {
-                compute_charges(g,&c,&Qp,&Qt,&smax,&rcore,&ocore,&qcore,thp);
+                compute_charges(g,&c,&Qp,&Qt,&smax,&rcore,&ocore,&qcore,thp,Qpa);
                 fprintf(fp,"\t%.12e\t%.12e\t%.12e\t%.6e\t%.6e\t%.12e\t%.12e\t%.6e\t%.6e\t%.6e\t%.6e",
                         Qp,Qt,Qp+Qt,smax,rcore,ocore,qcore,thp[0],thp[1],thp[2],thp[3]);
             }
@@ -3212,6 +3221,7 @@ int main(int argc, char **argv) {
                 fprintf(fp, "\t%.12e\t%.12e\t%d\t%.12e", Els, Elk, nalive, locks_Q_total(g));
                 if (fp_locks) locks_write_track(g, t, fp_locks);
             }
+            if (c.complex_phi) fprintf(fp,"\t%.12e\t%.12e\t%.12e",Qpa[0],Qpa[1],Qpa[2]);
             fprintf(fp,"\n");
             fflush(fp);
 
@@ -3265,7 +3275,7 @@ int main(int argc, char **argv) {
     double trms = c.complex_phi ? theta_rms_complex(g)    : theta_rms(g);
     double Pint = c.complex_phi ? P_integrated_complex(g) : P_integrated(g);
     double wall=omp_get_wtime()-wall0;
-    if (c.complex_phi) compute_charges(g,&c,&Qp,&Qt,&smax,&rcore,&ocore,&qcore,thp);
+    if (c.complex_phi) compute_charges(g,&c,&Qp,&Qt,&smax,&rcore,&ocore,&qcore,thp,Qpa);
     if (c.complex_gauge) compute_gauss(g,&c,&gmax,&gl2,&gem,&qflux);
 
     printf("\n=== COMPLETE ===\n");
@@ -3275,6 +3285,8 @@ int main(int argc, char **argv) {
         printf("Q_phi=%.6e Q_theta=%.6e Q_total=%.6e s_max=%.4e r_core=%.3f "
                "omega_core=%.4f Q_core=%.6e\n",
                Qp, Qt, Qp+Qt, smax, rcore, ocore, qcore);
+    if (c.complex_phi)
+        printf("Q_p = (%.6e, %.6e, %.6e)\n", Qpa[0], Qpa[1], Qpa[2]);
     if (c.complex_gauge)
         printf("gauss_max=%.3e gauss_l2=%.3e E_em=%.6e Q_flux=%.6e\n",
                gmax, gl2, gem, qflux);

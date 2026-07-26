@@ -491,6 +491,7 @@ const char *sfa_dtype_name(uint8_t dtype);
 #include <stdlib.h>
 #include <string.h>
 #include <zstd.h>
+#include <math.h>
 
 /* ---- Helpers ---- */
 
