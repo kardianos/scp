@@ -56,6 +56,10 @@ type MCPServer struct {
 	monitor   *Monitor
 	state     *RunnerState
 	protoLog  *os.File // protocol log file (nil = disabled)
+
+	onCompleteMu   sync.Mutex
+	onCompleteCmds map[notifyKey]string // per-run on_complete hooks
+	terminalOnce   sync.Map             // notifyKey -> struct{}: terminal anchor done
 }
 
 // prefixWriter prepends a prefix to each Write call for protocol logging.
@@ -71,7 +75,8 @@ func (pw *prefixWriter) Write(p []byte) (int, error) {
 
 func NewMCPServer(executor Executor) *MCPServer {
 	s := &MCPServer{
-		executors: make(map[string]Executor),
+		executors:      make(map[string]Executor),
+		onCompleteCmds: make(map[notifyKey]string),
 	}
 	// Legacy: if a single executor is provided at construction, ignore it.
 	// Instances are now created via sim_setup with a name.
@@ -296,16 +301,63 @@ func (s *MCPServer) sendLogMessage(level string, message string) {
 	})
 }
 
+// setOnComplete registers a local shell command to run when the given run
+// reaches a terminal state.
+func (s *MCPServer) setOnComplete(instance, id, cmd string) {
+	if cmd == "" {
+		return
+	}
+	s.onCompleteMu.Lock()
+	s.onCompleteCmds[notifyKey{instance: instance, runID: id}] = cmd
+	s.onCompleteMu.Unlock()
+}
+
+// takeOnComplete removes and returns the on_complete hook for a run, if any.
+func (s *MCPServer) takeOnComplete(instance, id string) string {
+	s.onCompleteMu.Lock()
+	defer s.onCompleteMu.Unlock()
+	nk := notifyKey{instance: instance, runID: id}
+	cmd := s.onCompleteCmds[nk]
+	delete(s.onCompleteCmds, nk)
+	return cmd
+}
+
+// anchorRunTerminal performs the once-per-run terminal-state file anchoring:
+// final status file, the .done/.failed marker (what external file-watchers
+// watch), and the optional on_complete hook. Safe to call from multiple paths
+// (executor callback and monitor tick) — only the first call acts.
+func (s *MCPServer) anchorRunTerminal(instance, id string, info RunInfo) {
+	if !isTerminalRunState(info.Status) {
+		return
+	}
+	nk := notifyKey{instance: instance, runID: id}
+	if _, already := s.terminalOnce.LoadOrStore(nk, struct{}{}); already {
+		return
+	}
+	if info.Phase == "" {
+		info.Phase = string(info.Status)
+	}
+	writeRunStatusFile(instance, id, &info)
+	writeRunMarker(instance, id, info.Status)
+	if cmd := s.takeOnComplete(instance, id); cmd != "" {
+		go runOnCompleteCommand(cmd, instance, id, info.Status)
+	}
+}
+
 // handleRunDone is called directly from the executor goroutine when a run reaches
 // terminal state. It sends a channel event immediately, without waiting for the
 // 5-second monitor tick.
 func (s *MCPServer) handleRunDone(instanceName string, id string, info RunInfo) {
+	// File-based completion anchor (markers + on_complete hook) fires first so
+	// external watchers see the terminal state even if the MCP push is lost.
+	s.anchorRunTerminal(instanceName, id, info)
+
 	switch info.Status {
 	case RunComplete:
 		msg := fmt.Sprintf("[%s] Run %s complete — sim_time=%.1f/%.1f wall=%.1fs", instanceName, id, info.SimTime, info.TotalTime, info.WallSecs)
 		s.sendChannelEvent("run_complete", map[string]string{
-			"instance": instanceName,
-			"run_id":   id,
+			"instance":  instanceName,
+			"run_id":    id,
 			"sim_time":  fmt.Sprintf("%.1f", info.SimTime),
 			"wall_secs": fmt.Sprintf("%.1f", info.WallSecs),
 		}, msg)
@@ -588,10 +640,11 @@ func (s *MCPServer) handleSetup(ctx context.Context, raw any) (any, error) {
 		// Persist instance state.
 		if s.state != nil {
 			s.state.SetInstance(p.Name, &InstanceState{
-				ID:      remote.instanceID,
-				Host:    remote.sshHost,
-				Port:    remote.sshPort,
-				GPUName: remote.gpuName,
+				ID:        remote.instanceID,
+				MachineID: remote.machineID,
+				Host:      remote.sshHost,
+				Port:      remote.sshPort,
+				GPUName:   remote.gpuName,
 			})
 		}
 		s.sendChannelEvent("setup_complete", map[string]string{
@@ -609,6 +662,8 @@ func (s *MCPServer) handleSetup(ctx context.Context, raw any) (any, error) {
 			Port:       remote.sshPort,
 			GPUName:    remote.gpuName,
 			InstanceID: remote.instanceID,
+			MachineID:  remote.machineID,
+			DPHTotal:   remote.dphTotal,
 		}, nil
 
 	default:
@@ -768,7 +823,13 @@ func (s *MCPServer) handleBuild(ctx context.Context, raw any) (any, error) {
 	if len(p.Sources) == 0 {
 		return nil, fmt.Errorf("sources required")
 	}
-	result, err := ex.Build(ctx, p.Sources, p.Cmd)
+	// Auto-discover locally-included headers so callers can pass just the
+	// main source file (e.g. sfa/sim/scp_sim.cu pulls in ../format/sfa.h).
+	expanded := expandSources(p.Sources)
+	if len(expanded) > len(p.Sources) {
+		log.Printf("scp-runner: build [%s]: auto-added %d header(s): %v", p.Name, len(expanded)-len(p.Sources), expanded[len(p.Sources):])
+	}
+	result, err := ex.Build(ctx, expanded, p.Cmd)
 	if err != nil {
 		return nil, err
 	}
@@ -828,6 +889,14 @@ func parseConfigValue(config, key string) string {
 	return ""
 }
 
+// runOnExecutor dispatches a run start, honoring the local no_queue bypass.
+func runOnExecutor(ctx context.Context, ex Executor, config, id string, notifyInterval time.Duration, noQueue bool) error {
+	if local, ok := ex.(*LocalExecutor); ok {
+		return local.RunOpts(ctx, config, id, notifyInterval, noQueue)
+	}
+	return ex.Run(ctx, config, id, notifyInterval)
+}
+
 func (s *MCPServer) handleRun(ctx context.Context, raw any) (any, error) {
 	p := raw.(*SimRunParams)
 
@@ -877,6 +946,12 @@ func (s *MCPServer) handleRun(ctx context.Context, raw any) (any, error) {
 
 	notifyInterval := time.Duration(p.NotifyInterval * float64(time.Second))
 
+	// Reset stale completion markers/status from a previous run with this id,
+	// and register the terminal-state anchor for the new run.
+	s.terminalOnce.Delete(notifyKey{instance: p.Name, runID: p.ID})
+	clearRunMarkers(p.Name, p.ID)
+	s.setOnComplete(p.Name, p.ID, p.OnComplete)
+
 	// Use auto-download variant for remote executor when auto_download is set.
 	if p.AutoDownload != "" {
 		if remote, ok := ex.(*RemoteExecutor); ok {
@@ -885,12 +960,12 @@ func (s *MCPServer) handleRun(ctx context.Context, raw any) (any, error) {
 			}
 		} else {
 			// Local executor: ignore auto_download, just run normally.
-			if err := ex.Run(ctx, p.Config, p.ID, notifyInterval); err != nil {
+			if err := runOnExecutor(ctx, ex, p.Config, p.ID, notifyInterval, p.NoQueue); err != nil {
 				return nil, err
 			}
 		}
 	} else {
-		if err := ex.Run(ctx, p.Config, p.ID, notifyInterval); err != nil {
+		if err := runOnExecutor(ctx, ex, p.Config, p.ID, notifyInterval, p.NoQueue); err != nil {
 			return nil, err
 		}
 	}
@@ -1030,7 +1105,43 @@ func (s *MCPServer) handleDownload(ctx context.Context, raw any) (any, error) {
 		"remote":      p.RemotePath,
 		"local":       p.LocalPath,
 	}, fmt.Sprintf("[%s] Download started: %s -> %s", p.Name, p.RemotePath, p.LocalPath))
-	return &SimDownloadResult{DownloadID: id, Status: "started"}, nil
+
+	if !p.Wait {
+		return &SimDownloadResult{DownloadID: id, Status: "started"}, nil
+	}
+
+	// Block until the transfer reaches a terminal state (generous timeout),
+	// then verify local size == remote size.
+	const downloadWaitTimeout = 4 * time.Hour
+	deadline := time.Now().Add(downloadWaitTimeout)
+	var info *DownloadInfo
+	for {
+		info = ex.DownloadStatus(id)
+		if info == nil {
+			return nil, fmt.Errorf("download %s disappeared", id)
+		}
+		if info.Status == DLComplete || info.Status == DLFailed {
+			break
+		}
+		if time.Now().After(deadline) {
+			return nil, fmt.Errorf("download %s still running after %s (id remains valid — poll sim_download_status)", id, downloadWaitTimeout)
+		}
+		select {
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-time.After(2 * time.Second):
+		}
+	}
+
+	verified := info.Status == DLComplete && info.BytesTotal > 0 && info.BytesDone == info.BytesTotal
+	return &SimDownloadResult{
+		DownloadID:  id,
+		Status:      string(info.Status),
+		RemoteBytes: info.BytesTotal,
+		LocalBytes:  info.BytesDone,
+		Verified:    verified,
+		Error:       info.Error,
+	}, nil
 }
 
 func (s *MCPServer) handleDownloadStatus(_ context.Context, raw any) (any, error) {

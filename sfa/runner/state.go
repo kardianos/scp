@@ -24,10 +24,11 @@ type PersistedInstance struct {
 
 // InstanceState records the remote instance connection info.
 type InstanceState struct {
-	ID      int    `json:"id"`
-	Host    string `json:"host"`
-	Port    int    `json:"port"`
-	GPUName string `json:"gpu_name"`
+	ID        int    `json:"id"`
+	MachineID int    `json:"machine_id,omitempty"`
+	Host      string `json:"host"`
+	Port      int    `json:"port"`
+	GPUName   string `json:"gpu_name"`
 }
 
 // PersistRun records the persistent state of a single simulation run.

@@ -17,13 +17,20 @@ import (
 
 // LocalExecutor runs simulations on the local machine.
 type LocalExecutor struct {
-	workDir     string
-	hasNVCC     bool
-	hasGCC      bool
-	startTime   time.Time
-	lastBinary     string                    // set after successful Build
-	OnRunDone      func()                    // called when any run reaches terminal state
-	OnRunComplete  func(id string, info RunInfo) // called with run details on completion
+	workDir       string
+	hasNVCC       bool
+	hasGCC        bool
+	hasStdbuf     bool
+	startTime     time.Time
+	lastBinary    string                        // set after successful Build
+	OnRunDone     func()                        // called when any run reaches terminal state
+	OnRunComplete func(id string, info RunInfo) // called with run details on completion
+
+	// Local run scheduling: each sim uses OpenMP across many cores, so only
+	// max(1, nproc/16) heavy runs execute concurrently (override with
+	// SCP_RUNNER_MAX_LOCAL). Excess runs queue and start as slots free.
+	maxConcurrent int
+	slots         chan struct{}
 
 	runs      sync.Map // map[string]*localRun
 	downloads sync.Map // map[string]*DownloadInfo
@@ -34,14 +41,35 @@ type localRun struct {
 	info           RunInfo
 	cancel         context.CancelFunc
 	notifyInterval time.Duration
-	onDone         func() // called when run reaches terminal state
+	onDone         func()    // called when run reaches terminal state
+	sawDiag        bool      // a "t=" diag row has been observed
+	lastDiagTime   time.Time // time of the last observed "t=" diag row
+	logBytes       int64     // bytes of stdout observed
 	mu             sync.Mutex
 }
 
+// localMaxConcurrent computes the concurrent heavy-run limit:
+// SCP_RUNNER_MAX_LOCAL if set (>0), else max(1, nproc/16).
+func localMaxConcurrent() int {
+	if v := os.Getenv("SCP_RUNNER_MAX_LOCAL"); v != "" {
+		if n, err := strconv.Atoi(strings.TrimSpace(v)); err == nil && n > 0 {
+			return n
+		}
+	}
+	n := runtime.NumCPU() / 16
+	if n < 1 {
+		n = 1
+	}
+	return n
+}
+
 func NewLocalExecutor(workDir string) *LocalExecutor {
+	maxC := localMaxConcurrent()
 	return &LocalExecutor{
-		workDir:   workDir,
-		startTime: time.Now(),
+		workDir:       workDir,
+		startTime:     time.Now(),
+		maxConcurrent: maxC,
+		slots:         make(chan struct{}, maxC),
 	}
 }
 
@@ -55,6 +83,8 @@ func (l *LocalExecutor) Setup(ctx context.Context) error {
 	l.hasNVCC = err == nil
 	_, err = exec.LookPath("gcc")
 	l.hasGCC = err == nil
+	_, err = exec.LookPath("stdbuf")
+	l.hasStdbuf = err == nil
 	if !l.hasGCC {
 		return fmt.Errorf("gcc not found in PATH")
 	}
@@ -71,6 +101,9 @@ func (l *LocalExecutor) Status(ctx context.Context) (*ExecutorStatus, error) {
 		Uptime:   time.Since(l.startTime).Round(time.Second).String(),
 	}
 
+	s.Reachable = true
+	s.LastContact = time.Now().Format(time.RFC3339)
+
 	// Count active runs.
 	l.runs.Range(func(_, v any) bool {
 		r := v.(*localRun)
@@ -78,13 +111,15 @@ func (l *LocalExecutor) Status(ctx context.Context) (*ExecutorStatus, error) {
 		switch r.info.Status {
 		case RunStarting, RunRunning:
 			s.ActiveRuns++
+		case RunQueued:
+			s.QueuedRuns++
 		}
 		r.mu.Unlock()
 		return true
 	})
 
 	// CPU info.
-	s.CPUUtil = -1 // simplified; full /proc/stat parsing omitted for brevity
+	s.CPUUtil = -1                                // simplified; full /proc/stat parsing omitted for brevity
 	s.RAMTotalMB = int64(runtime.NumCPU()) * 1024 // rough estimate
 
 	// GPU info if available.
@@ -138,10 +173,11 @@ func (l *LocalExecutor) Build(ctx context.Context, sources []string, cmd string)
 		return &BuildResult{Status: "cached", Binary: binPath, Cached: true}, nil
 	}
 
-	// Build.
+	// Build. Only compilable files go on the command line — headers in the
+	// source set (auto-discovered includes) contribute to the hash only.
 	if cmd == "" {
 		cmd = fmt.Sprintf("gcc -O3 -march=native -fopenmp -o %s %s -lzstd -lm",
-			binPath, strings.Join(sources, " "))
+			binPath, strings.Join(compileSources(sources), " "))
 	} else {
 		// Replace placeholder output path if present.
 		cmd = strings.ReplaceAll(cmd, "${OUTPUT}", binPath)
@@ -175,6 +211,11 @@ func isConfigContent(s string) bool {
 }
 
 func (l *LocalExecutor) Run(ctx context.Context, config string, id string, notifyInterval time.Duration) error {
+	return l.RunOpts(ctx, config, id, notifyInterval, false)
+}
+
+// RunOpts starts a run; noQueue bypasses the local concurrency limit.
+func (l *LocalExecutor) RunOpts(ctx context.Context, config string, id string, notifyInterval time.Duration, noQueue bool) error {
 	if _, loaded := l.runs.Load(id); loaded {
 		return fmt.Errorf("run %s already exists", id)
 	}
@@ -184,17 +225,18 @@ func (l *LocalExecutor) Run(ctx context.Context, config string, id string, notif
 		info: RunInfo{
 			ID:     id,
 			Status: RunStarting,
+			Phase:  "init",
 		},
 		cancel:         cancel,
 		notifyInterval: notifyInterval,
 	}
 	l.runs.Store(id, lr)
 
-	go l.executeRun(runCtx, lr, config)
+	go l.executeRun(runCtx, lr, config, noQueue)
 	return nil
 }
 
-func (l *LocalExecutor) executeRun(ctx context.Context, lr *localRun, config string) {
+func (l *LocalExecutor) executeRun(ctx context.Context, lr *localRun, config string, noQueue bool) {
 	defer lr.cancel()
 	defer func() {
 		if l.OnRunComplete != nil {
@@ -207,6 +249,33 @@ func (l *LocalExecutor) executeRun(ctx context.Context, lr *localRun, config str
 			l.OnRunDone()
 		}
 	}()
+
+	// nproc-aware scheduling: acquire a concurrency slot unless bypassed.
+	if !noQueue && l.slots != nil {
+		select {
+		case l.slots <- struct{}{}:
+		default:
+			lr.mu.Lock()
+			lr.info.Status = RunQueued
+			lr.info.Phase = "queued"
+			lr.mu.Unlock()
+			select {
+			case l.slots <- struct{}{}:
+			case <-ctx.Done():
+				lr.mu.Lock()
+				lr.info.Status = RunCancelled
+				lr.info.Phase = string(RunCancelled)
+				lr.mu.Unlock()
+				return
+			}
+		}
+		defer func() { <-l.slots }()
+		lr.mu.Lock()
+		lr.info.Status = RunStarting
+		lr.info.Phase = "init"
+		lr.mu.Unlock()
+	}
+
 	startWall := time.Now()
 
 	var binPath string
@@ -248,7 +317,14 @@ func (l *LocalExecutor) executeRun(ctx context.Context, lr *localRun, config str
 		args = parts[1:]
 	}
 
-	cmd := exec.CommandContext(ctx, binPath, args...)
+	// Launch under stdbuf (line-buffered) when available so progress output
+	// streams line-by-line instead of appearing in 4KB bursts.
+	var cmd *exec.Cmd
+	if l.hasStdbuf {
+		cmd = exec.CommandContext(ctx, "stdbuf", append([]string{"-oL", "-eL", binPath}, args...)...)
+	} else {
+		cmd = exec.CommandContext(ctx, binPath, args...)
+	}
 	cmd.Dir = l.workDir
 
 	// Capture stdout for progress lines (sim writes progress to stdout).
@@ -275,10 +351,14 @@ func (l *LocalExecutor) executeRun(ctx context.Context, lr *localRun, config str
 
 	lr.mu.Lock()
 	lr.info.Status = RunRunning
+	lr.info.Phase = computePhase(RunRunning, false, 0)
 	lr.mu.Unlock()
 
 	// Tail stdout for progress output (t=... lines).
 	go l.tailDiag(ctx, lr, stdout)
+
+	// Track process CPU%, diag age, and phase every 5 seconds.
+	go l.pollRunStats(ctx, lr, cmd.Process.Pid)
 
 	// Also parse total_time from config if present.
 	if isConfigContent(config) {
@@ -324,6 +404,7 @@ func (l *LocalExecutor) executeRun(ctx context.Context, lr *localRun, config str
 	default:
 		lr.info.Status = RunComplete
 	}
+	lr.info.Phase = string(lr.info.Status)
 
 	// Gather output files.
 	matches, _ := filepath.Glob(filepath.Join(l.workDir, "*.sfa"))
@@ -341,9 +422,12 @@ func (l *LocalExecutor) tailDiag(ctx context.Context, lr *localRun, r io.Reader)
 		line := scanner.Text()
 		lr.mu.Lock()
 		lr.info.LastDiag = line
+		lr.logBytes += int64(len(line)) + 1
 		// Parse sim_time from progress lines like "t=    3.0 E=..."
 		// The %7.1f format pads with spaces, so extract between "t=" and " E"
 		if strings.HasPrefix(line, "t=") {
+			lr.sawDiag = true
+			lr.lastDiagTime = time.Now()
 			rest := strings.TrimPrefix(line, "t=")
 			if idx := strings.Index(rest, " E"); idx > 0 {
 				if t, err := strconv.ParseFloat(strings.TrimSpace(rest[:idx]), 64); err == nil {
@@ -351,6 +435,47 @@ func (l *LocalExecutor) tailDiag(ctx context.Context, lr *localRun, r io.Reader)
 				}
 			}
 		}
+		lr.mu.Unlock()
+	}
+	if err := scanner.Err(); err != nil && ctx.Err() == nil {
+		fmt.Fprintf(os.Stderr, "scp-runner: tail diag %s: %v\n", lr.info.ID, err)
+	}
+}
+
+// pollRunStats updates proc_cpu_pct, last_diag_age_s, log_bytes, and phase
+// for a running local simulation every 5 seconds.
+func (l *LocalExecutor) pollRunStats(ctx context.Context, lr *localRun, pid int) {
+	ticker := time.NewTicker(5 * time.Second)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+		}
+
+		cpu := -1.0
+		if out, err := execOutput(ctx, "ps", "-o", "%cpu=", "-p", strconv.Itoa(pid)); err == nil {
+			if v, perr := strconv.ParseFloat(strings.TrimSpace(out), 64); perr == nil {
+				cpu = v
+			}
+		}
+
+		lr.mu.Lock()
+		if lr.info.Status != RunRunning {
+			lr.mu.Unlock()
+			return
+		}
+		if cpu >= 0 {
+			lr.info.ProcCPUPct = cpu
+		}
+		var diagAge time.Duration
+		if !lr.lastDiagTime.IsZero() {
+			diagAge = time.Since(lr.lastDiagTime)
+			lr.info.LastDiagAgeS = diagAge.Seconds()
+		}
+		lr.info.LogBytes = lr.logBytes
+		lr.info.Phase = computePhase(RunRunning, lr.sawDiag, diagAge)
 		lr.mu.Unlock()
 	}
 }
@@ -364,6 +489,9 @@ func (l *LocalExecutor) RunStatus(id string) *RunInfo {
 	lr.mu.Lock()
 	defer lr.mu.Unlock()
 	info := lr.info
+	if info.Phase == "" {
+		info.Phase = computePhase(info.Status, lr.sawDiag, time.Duration(info.LastDiagAgeS*float64(time.Second)))
+	}
 	return &info
 }
 

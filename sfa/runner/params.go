@@ -20,14 +20,16 @@ type SimSetupParams struct {
 }
 
 type SimSetupResult struct {
-	Status     string `json:"status"`
-	Name       string `json:"name"`
-	Type       string `json:"type"`
-	WorkDir    string `json:"work_dir,omitempty"`
-	Host       string `json:"host,omitempty"`
-	Port       int    `json:"port,omitempty"`
-	GPUName    string `json:"gpu_name,omitempty"`
-	InstanceID int    `json:"instance_id,omitempty"`
+	Status     string  `json:"status"`
+	Name       string  `json:"name"`
+	Type       string  `json:"type"`
+	WorkDir    string  `json:"work_dir,omitempty"`
+	Host       string  `json:"host,omitempty"`
+	Port       int     `json:"port,omitempty"`
+	GPUName    string  `json:"gpu_name,omitempty"`
+	InstanceID int     `json:"instance_id,omitempty"`
+	MachineID  int     `json:"machine_id,omitempty"`
+	DPHTotal   float64 `json:"dph_total,omitempty"`
 }
 
 type SimStatusParams struct {
@@ -55,6 +57,8 @@ type SimRunParams struct {
 	NotifyInterval float64 `json:"notify_interval" desc:"Send progress notifications every N seconds (0=disabled)"`
 	Wait           bool    `json:"wait" desc:"Block until run completes and return final status (default: false)"`
 	AutoDownload   string  `json:"auto_download" desc:"Local directory for automatic incremental downloads during the run"`
+	OnComplete     string  `json:"on_complete" desc:"Local shell command run (bash -c) when the run reaches a terminal state; env: SCP_RUN_ID, SCP_STATE, SCP_INSTANCE"`
+	NoQueue        bool    `json:"no_queue" desc:"Local runs only: bypass the nproc-aware concurrency queue and start immediately"`
 }
 
 type SimRunResult struct {
@@ -107,11 +111,16 @@ type SimDownloadParams struct {
 	Name       string `json:"name" desc:"Instance name" required:"true"`
 	RemotePath string `json:"remote_path" desc:"Remote file path" required:"true"`
 	LocalPath  string `json:"local_path" desc:"Local destination path" required:"true"`
+	Wait       bool   `json:"wait" desc:"Block until the transfer completes, verify local size == remote size, and return {remote_bytes, local_bytes, verified} (default: false, async)"`
 }
 
 type SimDownloadResult struct {
-	DownloadID string `json:"download_id"`
-	Status     string `json:"status"`
+	DownloadID  string `json:"download_id"`
+	Status      string `json:"status"`
+	RemoteBytes int64  `json:"remote_bytes,omitempty"`
+	LocalBytes  int64  `json:"local_bytes,omitempty"`
+	Verified    bool   `json:"verified,omitempty"`
+	Error       string `json:"error,omitempty"`
 }
 
 type SimDownloadStatusParams struct {

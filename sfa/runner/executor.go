@@ -17,12 +17,40 @@ const (
 type RunState string
 
 const (
+	RunQueued    RunState = "queued"
 	RunStarting  RunState = "starting"
 	RunRunning   RunState = "running"
 	RunComplete  RunState = "complete"
 	RunFailed    RunState = "failed"
 	RunCancelled RunState = "cancelled"
 )
+
+// isTerminalRunState reports whether a run state is terminal.
+func isTerminalRunState(s RunState) bool {
+	return s == RunComplete || s == RunFailed || s == RunCancelled
+}
+
+// computePhase derives the coarse run phase from the run state plus liveness
+// signals. "init" means the process is alive but has produced zero diag rows
+// yet (GPU runs have a long silent CPU projection at startup); "stalled" means
+// the process is alive but the diag output is older than 10 minutes.
+func computePhase(status RunState, sawDiag bool, diagAge time.Duration) string {
+	switch status {
+	case RunQueued:
+		return "queued"
+	case RunStarting:
+		return "init"
+	case RunRunning:
+		if !sawDiag {
+			return "init"
+		}
+		if diagAge > 10*time.Minute {
+			return "stalled"
+		}
+		return "running"
+	}
+	return string(status) // complete, failed, cancelled
+}
 
 // DownloadState tracks file transfer lifecycle.
 type DownloadState string
@@ -47,19 +75,29 @@ type ExecutorStatus struct {
 	DiskUsedGB    float64  `json:"disk_used_gb"`
 	DiskFreeGB    float64  `json:"disk_free_gb"`
 	ActiveRuns    int      `json:"active_runs"`
+	QueuedRuns    int      `json:"queued_runs,omitempty"`
 	Uptime        string   `json:"uptime"`
+	Reachable     bool     `json:"reachable"`
+	Degraded      bool     `json:"degraded,omitempty"`
+	LastContact   string   `json:"last_contact,omitempty"`
+	MachineID     int      `json:"machine_id,omitempty"`
+	DPHTotal      float64  `json:"dph_total,omitempty"`
 }
 
 // RunInfo holds the state of a single simulation run.
 type RunInfo struct {
-	ID          string   `json:"id"`
-	Status      RunState `json:"status"`
-	SimTime     float64  `json:"sim_time"`
-	TotalTime   float64  `json:"total_time"`
-	WallSecs    float64  `json:"wall_seconds"`
-	LastDiag    string   `json:"last_diag,omitempty"`
-	Error       string   `json:"error,omitempty"`
-	OutputFiles []string `json:"output_files,omitempty"`
+	ID           string   `json:"id"`
+	Status       RunState `json:"status"`
+	Phase        string   `json:"phase,omitempty"` // init | running | complete | failed | stalled | queued | cancelled
+	SimTime      float64  `json:"sim_time"`
+	TotalTime    float64  `json:"total_time"`
+	WallSecs     float64  `json:"wall_seconds"`
+	ProcCPUPct   float64  `json:"proc_cpu_pct,omitempty"`
+	LastDiagAgeS float64  `json:"last_diag_age_s,omitempty"`
+	LogBytes     int64    `json:"log_bytes,omitempty"`
+	LastDiag     string   `json:"last_diag,omitempty"`
+	Error        string   `json:"error,omitempty"`
+	OutputFiles  []string `json:"output_files,omitempty"`
 }
 
 // DownloadInfo holds the state of a file download.

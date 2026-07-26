@@ -19,18 +19,31 @@ import (
 
 // RemoteExecutor runs simulations on a remote GPU via SSH.
 type RemoteExecutor struct {
-	vast       *VastClient
-	instanceID int
-	sshHost    string
-	sshPort    int
-	gpuName    string
-	sshClient  *ssh.Client
-	startTime  time.Time
-	workDir    string // local work dir for downloads
-	lastBinary     string                            // set after successful Build
-	OnRunDone      func()                            // called when any run reaches terminal state
-	OnRunComplete  func(id string, info RunInfo)     // called with run details on completion
+	vast           *VastClient
+	instanceID     int
+	machineID      int     // Vast machine ID backing the instance
+	dphTotal       float64 // $/hr of the rented offer (0 if unknown)
+	sshHost        string
+	sshPort        int
+	gpuName        string
+	sshClient      *ssh.Client
+	startTime      time.Time
+	workDir        string                                    // local work dir for downloads
+	lastBinary     string                                    // set after successful Build
+	OnRunDone      func()                                    // called when any run reaches terminal state
+	OnRunComplete  func(id string, info RunInfo)             // called with run details on completion
 	OnDownloadDone func(id, remote, local string, err error) // called when a download completes or fails
+
+	// stdbuf availability on the remote (probed once, lazily).
+	stdbufOnce sync.Once
+	hasStdbuf  bool
+
+	// Liveness tracking (bidirectional heartbeat).
+	liveMu        sync.Mutex
+	lastContact   time.Time // last successful SSH round-trip
+	lastProbe     time.Time // last liveness probe attempt
+	consecFails   int       // consecutive failed probes
+	probeInFlight bool
 
 	runs      sync.Map // map[string]*remoteRun
 	downloads sync.Map // map[string]*DownloadInfo
@@ -41,10 +54,11 @@ type remoteRun struct {
 	info           RunInfo
 	cancel         context.CancelFunc
 	notifyInterval time.Duration
-	autoDownload   string   // local directory for auto-download
-	outputFiles    []string // remote output files to sync
-	remoteDir      string   // remote directory containing outputs (e.g. /root)
+	autoDownload   string        // local directory for auto-download
+	outputFiles    []string      // remote output files to sync
+	remoteDir      string        // remote directory containing outputs (e.g. /root)
 	adDone         chan struct{} // closed when auto-download goroutine exits
+	sawDiag        bool          // a "t=" diag row has been observed
 	mu             sync.Mutex
 }
 
@@ -58,9 +72,9 @@ type RemoteConfig struct {
 }
 
 const (
-	defaultImage = "nvidia/cuda:12.2.0-devel-ubuntu22.04"
-	defaultDiskGB    = 100
-	defaultOnstart   = "apt-get update && apt-get install -y libzstd-dev rsync && ldconfig"
+	defaultImage   = "nvidia/cuda:12.2.0-devel-ubuntu22.04"
+	defaultDiskGB  = 100
+	defaultOnstart = "apt-get update && apt-get install -y libzstd-dev rsync && ldconfig"
 )
 
 func NewRemoteExecutor(cfg RemoteConfig) *RemoteExecutor {
@@ -107,6 +121,8 @@ func (r *RemoteExecutor) Provision(ctx context.Context, gpuFilter map[string]str
 			if inst.Status == "running" && inst.SSHHost != "" && inst.SSHPort > 0 {
 				fmt.Fprintf(os.Stderr, "scp-runner: reusing existing instance %d (%s:%d)\n", inst.ID, inst.SSHHost, inst.SSHPort)
 				r.instanceID = inst.ID
+				r.machineID = inst.MachineID
+				r.dphTotal = inst.DPHTotal
 				r.gpuName = inst.GPUName
 				return r.Connect(ctx, inst.SSHHost, inst.SSHPort)
 			}
@@ -136,26 +152,41 @@ func (r *RemoteExecutor) Provision(ctx context.Context, gpuFilter map[string]str
 			continue
 		}
 
-		// Pick the cheapest offer (already sorted asc by price) not yet tried.
+		// Pick the cheapest offer (already sorted asc by price) not yet tried
+		// and not on the session machine blacklist.
 		idx := -1
 		for i := range offers {
+			if isMachineBlacklisted(offers[i].MachineID) {
+				continue
+			}
 			if !tried[offers[i].ID] {
 				idx = i
 				break
 			}
 		}
-		if idx < 0 { // all current offers already tried — take the freshest cheapest
-			idx = 0
+		if idx < 0 { // all current offers already tried — take the freshest cheapest non-blacklisted
+			for i := range offers {
+				if !isMachineBlacklisted(offers[i].MachineID) {
+					idx = i
+					break
+				}
+			}
+		}
+		if idx < 0 {
+			lastErr = fmt.Errorf("all %d offers are on the session machine blacklist", len(offers))
+			continue
 		}
 		offer := offers[idx]
 		tried[offer.ID] = true
 
-		fmt.Fprintf(os.Stderr, "scp-runner: attempt %d/%d: offer %d %s (%d GB VRAM, %s, $%.3f/hr) [%d offers]\n",
-			attempt+1, maxAttempts, offer.ID, offer.GPUName, offer.GPUMemMB/1024, offer.Geolocation, offer.DPHTot, len(offers))
+		fmt.Fprintf(os.Stderr, "scp-runner: attempt %d/%d: offer %d machine %d %s (%d GB VRAM, %s, $%.3f/hr) [%d offers]\n",
+			attempt+1, maxAttempts, offer.ID, offer.MachineID, offer.GPUName, offer.GPUMemMB/1024, offer.Geolocation, offer.DPHTot, len(offers))
 
 		instanceID, lastErr = r.vast.CreateInstance(ctx, offer.ID, defaultImage, diskGB, defaultOnstart)
 		if lastErr == nil {
 			r.instanceID = instanceID
+			r.machineID = offer.MachineID
+			r.dphTotal = offer.DPHTot
 			r.gpuName = offer.GPUName
 			break
 		}
@@ -165,7 +196,21 @@ func (r *RemoteExecutor) Provision(ctx context.Context, gpuFilter map[string]str
 		return fmt.Errorf("create instance: all %d attempts failed, last error: %w", maxAttempts, lastErr)
 	}
 
-	// Wait for instance to become ready with SSH info.
+	// Wait for instance to become ready with SSH info. On any failure past this
+	// point the instance exists and is billing — destroy it and blacklist the
+	// machine before returning the error.
+	if err := r.waitReadyAndConnect(ctx, instanceID); err != nil {
+		return r.provisionFailed(instanceID, err)
+	}
+	if err := r.waitOnstart(ctx); err != nil {
+		return r.provisionFailed(instanceID, err)
+	}
+	return nil
+}
+
+// waitReadyAndConnect polls the Vast API until the instance is running with
+// SSH info, then establishes the SSH connection.
+func (r *RemoteExecutor) waitReadyAndConnect(ctx context.Context, instanceID int) error {
 	fmt.Fprintf(os.Stderr, "scp-runner: waiting for instance %d to start...\n", instanceID)
 	deadline := time.Now().Add(5 * time.Minute)
 	for {
@@ -186,14 +231,28 @@ func (r *RemoteExecutor) Provision(ctx context.Context, gpuFilter map[string]str
 		for _, i := range instances {
 			if i.ID == instanceID && i.Status == "running" && i.SSHHost != "" && i.SSHPort > 0 {
 				fmt.Fprintf(os.Stderr, "scp-runner: instance ready at %s:%d\n", i.SSHHost, i.SSHPort)
-				if err := r.Connect(ctx, i.SSHHost, i.SSHPort); err != nil {
-					return err
-				}
-				return r.waitOnstart(ctx)
+				return r.Connect(ctx, i.SSHHost, i.SSHPort)
 			}
 		}
 		time.Sleep(5 * time.Second)
 	}
+}
+
+// provisionFailed cleans up after a post-create provisioning failure: it
+// blacklists the machine for this session and destroys the instance via the
+// Vast API so it does not keep billing, then returns a wrapped error.
+func (r *RemoteExecutor) provisionFailed(instanceID int, cause error) error {
+	blacklistMachine(r.machineID)
+	dctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+	if derr := r.vast.DestroyInstance(dctx, instanceID); derr != nil {
+		fmt.Fprintf(os.Stderr, "scp-runner: WARNING: destroy of failed instance %d also failed: %v\n", instanceID, derr)
+		return fmt.Errorf("provision failed (machine %d blacklisted; instance %d may STILL BE RUNNING, destroy failed: %v): %w",
+			r.machineID, instanceID, derr, cause)
+	}
+	fmt.Fprintf(os.Stderr, "scp-runner: destroyed failed instance %d, blacklisted machine %d\n", instanceID, r.machineID)
+	r.instanceID = 0
+	return fmt.Errorf("provision failed (instance %d destroyed, machine %d blacklisted): %w", instanceID, r.machineID, cause)
 }
 
 // waitOnstart polls until the onstart script has finished by checking for libzstd and nvcc.
@@ -250,7 +309,56 @@ func (r *RemoteExecutor) Connect(_ context.Context, host string, port int) error
 	}
 
 	r.sshClient = client
+	r.liveMu.Lock()
+	r.lastContact = time.Now()
+	r.consecFails = 0
+	r.liveMu.Unlock()
 	return nil
+}
+
+// livenessProbeInterval is the cadence of the bidirectional heartbeat probe.
+const livenessProbeInterval = 60 * time.Second
+
+// degradedFailThreshold: unreachable for more than this many consecutive
+// probe cycles marks the instance degraded.
+const degradedFailThreshold = 3
+
+// maybeProbeLiveness launches a lightweight `echo ok` SSH probe if one is due
+// and none is in flight. Non-blocking; results land in the liveness fields.
+func (r *RemoteExecutor) maybeProbeLiveness() {
+	r.liveMu.Lock()
+	if r.probeInFlight || time.Since(r.lastProbe) < livenessProbeInterval {
+		r.liveMu.Unlock()
+		return
+	}
+	r.probeInFlight = true
+	r.lastProbe = time.Now()
+	r.liveMu.Unlock()
+
+	go func() {
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+		defer cancel()
+		out, err := r.sshRun(ctx, "echo ok")
+		ok := err == nil && strings.Contains(out, "ok")
+		r.liveMu.Lock()
+		if ok {
+			r.lastContact = time.Now()
+			r.consecFails = 0
+		} else {
+			r.consecFails++
+		}
+		r.probeInFlight = false
+		r.liveMu.Unlock()
+	}()
+}
+
+// liveness returns the current reachability snapshot.
+func (r *RemoteExecutor) liveness() (reachable, degraded bool, lastContact time.Time) {
+	r.liveMu.Lock()
+	defer r.liveMu.Unlock()
+	return r.consecFails == 0 && !r.lastContact.IsZero(),
+		r.consecFails > degradedFailThreshold,
+		r.lastContact
 }
 
 func (r *RemoteExecutor) Teardown(ctx context.Context) error {
@@ -295,10 +403,19 @@ func (r *RemoteExecutor) sshRun(ctx context.Context, cmd string) (string, error)
 
 func (r *RemoteExecutor) Status(ctx context.Context) (*ExecutorStatus, error) {
 	s := &ExecutorStatus{
-		Type:     ExecRemote,
-		Location: fmt.Sprintf("%s:%d", r.sshHost, r.sshPort),
-		GPUUtil:  -1,
-		Uptime:   time.Since(r.startTime).Round(time.Second).String(),
+		Type:      ExecRemote,
+		Location:  fmt.Sprintf("%s:%d", r.sshHost, r.sshPort),
+		GPUUtil:   -1,
+		Uptime:    time.Since(r.startTime).Round(time.Second).String(),
+		MachineID: r.machineID,
+		DPHTotal:  r.dphTotal,
+	}
+
+	reachable, degraded, lastContact := r.liveness()
+	s.Reachable = reachable
+	s.Degraded = degraded
+	if !lastContact.IsZero() {
+		s.LastContact = lastContact.Format(time.RFC3339)
 	}
 
 	// Count active runs.
@@ -308,10 +425,19 @@ func (r *RemoteExecutor) Status(ctx context.Context) (*ExecutorStatus, error) {
 		switch rr.info.Status {
 		case RunStarting, RunRunning:
 			s.ActiveRuns++
+		case RunQueued:
+			s.QueuedRuns++
 		}
 		rr.mu.Unlock()
 		return true
 	})
+
+	// If the instance is degraded (multiple consecutive failed liveness probes),
+	// skip the SSH stat queries: they would hang or return zeros. The liveness
+	// fields above are the honest report.
+	if degraded {
+		return s, nil
+	}
 
 	// GPU info via nvidia-smi.
 	out, err := r.sshRun(ctx, "nvidia-smi --query-gpu=name,utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits")
@@ -523,6 +649,18 @@ func (r *RemoteExecutor) executeRemoteRun(ctx context.Context, rr *remoteRun, co
 		runCmd = fmt.Sprintf("%s %s", binPath, cfgPath)
 	}
 
+	// Launch under stdbuf (line-buffered stdout/stderr) when available so run
+	// logs stream line-by-line instead of appearing in 4KB bursts.
+	r.stdbufOnce.Do(func() {
+		probeCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+		defer cancel()
+		out, err := r.sshRun(probeCtx, "command -v stdbuf >/dev/null 2>&1 && echo yes")
+		r.hasStdbuf = err == nil && strings.Contains(out, "yes")
+	})
+	if r.hasStdbuf {
+		runCmd = "stdbuf -oL -eL " + runCmd
+	}
+
 	// Start simulation with nohup so it survives SSH drops.
 	// Write exit code to a .exit file so we can check it from another session.
 	logFile := fmt.Sprintf("/root/run_%s.log", rr.info.ID)
@@ -541,6 +679,7 @@ func (r *RemoteExecutor) executeRemoteRun(ctx context.Context, rr *remoteRun, co
 	pid := strings.TrimSpace(out)
 	rr.mu.Lock()
 	rr.info.Status = RunRunning
+	rr.info.Phase = computePhase(RunRunning, false, 0)
 	rr.mu.Unlock()
 
 	// Start auto-download goroutine if configured.
@@ -557,6 +696,7 @@ func (r *RemoteExecutor) executeRemoteRun(ctx context.Context, rr *remoteRun, co
 			r.sshRun(context.Background(), fmt.Sprintf("kill %s 2>/dev/null", pid))
 			rr.mu.Lock()
 			rr.info.Status = RunCancelled
+			rr.info.Phase = string(RunCancelled)
 			rr.info.WallSecs = time.Since(startWall).Seconds()
 			rr.mu.Unlock()
 			return
@@ -571,6 +711,22 @@ func (r *RemoteExecutor) executeRemoteRun(ctx context.Context, rr *remoteRun, co
 		diagOut, _ := r.sshRun(ctx, fmt.Sprintf("tail -20 %s 2>/dev/null", logFile))
 		lines := strings.Split(strings.TrimSpace(diagOut), "\n")
 
+		// Liveness stats: log size + mtime, and process CPU%.
+		statsOut, _ := r.sshRun(ctx, fmt.Sprintf("stat -c '%%s %%Y' %s 2>/dev/null; ps -o %%cpu= -p %s 2>/dev/null", logFile, pid))
+		var logBytes, logMtime int64
+		var procCPU float64 = -1
+		for i, sl := range strings.Split(strings.TrimSpace(statsOut), "\n") {
+			fields := strings.Fields(sl)
+			if i == 0 && len(fields) == 2 {
+				logBytes, _ = strconv.ParseInt(fields[0], 10, 64)
+				logMtime, _ = strconv.ParseInt(fields[1], 10, 64)
+			} else if len(fields) == 1 {
+				if v, perr := strconv.ParseFloat(fields[0], 64); perr == nil {
+					procCPU = v
+				}
+			}
+		}
+
 		rr.mu.Lock()
 		rr.info.WallSecs = time.Since(startWall).Seconds()
 		if len(lines) > 0 && lines[len(lines)-1] != "" {
@@ -584,9 +740,24 @@ func (r *RemoteExecutor) executeRemoteRun(ctx context.Context, rr *remoteRun, co
 							rr.info.SimTime = t
 						}
 					}
+					rr.sawDiag = true
 					break
 				}
 			}
+		}
+		if logBytes > 0 {
+			rr.info.LogBytes = logBytes
+		}
+		var diagAge time.Duration
+		if logMtime > 0 {
+			diagAge = time.Since(time.Unix(logMtime, 0))
+			rr.info.LastDiagAgeS = diagAge.Seconds()
+		}
+		if procCPU >= 0 {
+			rr.info.ProcCPUPct = procCPU
+		}
+		if alive {
+			rr.info.Phase = computePhase(RunRunning, rr.sawDiag, diagAge)
 		}
 
 		if !alive {
@@ -618,6 +789,7 @@ func (r *RemoteExecutor) executeRemoteRun(ctx context.Context, rr *remoteRun, co
 				}
 				rr.info.Status = RunFailed
 			}
+			rr.info.Phase = string(rr.info.Status)
 			rr.mu.Unlock()
 			return
 		}
@@ -733,7 +905,12 @@ func (r *RemoteExecutor) syncAndCleanSFP(ctx context.Context, remoteDir, localDi
 		info, err := os.Stat(localPath)
 		if err != nil || info.Size() != remoteSize {
 			fmt.Fprintf(os.Stderr, "scp-runner: sfp verify failed %s (remote=%d local=%d)\n",
-				baseName, remoteSize, func() int64 { if info != nil { return info.Size() }; return -1 }())
+				baseName, remoteSize, func() int64 {
+					if info != nil {
+						return info.Size()
+					}
+					return -1
+				}())
 			continue
 		}
 
@@ -771,6 +948,9 @@ func (r *RemoteExecutor) RunStatus(id string) *RunInfo {
 	rr.mu.Lock()
 	defer rr.mu.Unlock()
 	info := rr.info
+	if info.Phase == "" {
+		info.Phase = computePhase(info.Status, rr.sawDiag, time.Duration(info.LastDiagAgeS*float64(time.Second)))
+	}
 	return &info
 }
 
@@ -856,8 +1036,13 @@ func (r *RemoteExecutor) doDownload(ctx context.Context, di *DownloadInfo) {
 		return
 	}
 
-	// Verify download.
-	stat, err := os.Stat(di.LocalPath)
+	// Verify download. If local_path is a directory, rsync placed the file
+	// inside it — stat the actual destination file.
+	localFile := di.LocalPath
+	if st, serr := os.Stat(localFile); serr == nil && st.IsDir() {
+		localFile = filepath.Join(localFile, filepath.Base(di.RemotePath))
+	}
+	stat, err := os.Stat(localFile)
 	if err != nil {
 		di.Status = DLFailed
 		di.Error = fmt.Sprintf("stat local: %v", err)

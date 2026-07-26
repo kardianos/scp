@@ -101,44 +101,79 @@ execution, both local and remote. It exposes `sim_*` tools via MCP that handle
 instance management, building, running, monitoring, and downloading — with NO
 sleep polling required. Use these tools instead of manual SSH/SCP/rsync.
 
-**IMPORTANT: Only one executor is active at a time.** Calling `sim_setup` replaces
-the current executor. To run local then remote, complete the local workflow first,
-then call `sim_setup(executor="remote")` to switch.
+**Instances are named and independent.** Every `sim_*` tool takes a `name`
+parameter identifying the instance (chosen at `sim_setup`, e.g. "local1",
+"gpu1"). Multiple named instances — local and remote, or several GPUs —
+coexist and run concurrently; `sim_teardown(name=...)` destroys one without
+touching the others. `sim_status` with no name lists all instances.
 
 **Local execution** (CPU, for quick tests):
 ```
-sim_setup(executor="local")
-sim_build(sources=["sfa/sim/scp_sim.c"])          ← auto-detects gcc
-sim_run(config="N=64\nL=15\nT=5\n...", id="test_001")  ← config content, uses last-built binary
-sim_run_status(id="test_001")   ← instant, no polling
+sim_setup(name="local1", executor="local")
+sim_build(name="local1", sources=["sfa/sim/scp_sim.c"])   ← auto-detects gcc; quoted #includes auto-uploaded
+sim_run(name="local1", config="N=64\nL=15\nT=5\n...", id="test_001")  ← config content, uses last-built binary
+sim_run_status(name="local1", id="test_001")   ← instant, no polling
 ```
 
 **Remote execution** (GPU, for production runs):
 ```
-sim_setup(executor="remote")     ← auto-provisions Vast.ai instance (reuses existing if running)
-sim_build(sources=["sfa/sim/scp_sim.cu", "sfa/format/sfa.h"])  ← auto-detects nvcc
-sim_run(config="N=384\nL=100\nT=200\n...", id="gradient_test")
-sim_run_status(id="gradient_test")
-sim_download(remote_path="output.sfa", local_path="/space/scp/results/")
-sim_teardown()                   ← verifies downloads, destroys instance
+sim_setup(name="gpu1", executor="remote", disk_gb=40)  ← auto-provisions Vast.ai (reuses existing if running)
+sim_build(name="gpu1", sources=["sfa/sim/scp_sim.cu"])  ← auto-detects nvcc; sfa.h etc. discovered from #include "..."
+sim_run(name="gpu1", config="N=384\nL=100\nT=200\n...", id="gradient_test")
+sim_run_status(name="gpu1", id="gradient_test")
+sim_download(name="gpu1", remote_path="output.sfa", local_path="/space/scp/results/", wait=true)
+sim_teardown(name="gpu1")        ← verifies downloads, destroys instance
 ```
 
 **Remote with existing instance** (connect to already-running GPU):
 ```
-sim_setup(executor="remote", host="ssh5.vast.ai", port=12345)
+sim_setup(name="gpu1", executor="remote", host="ssh5.vast.ai", port=12345)
 ```
 
 **Custom GPU filter** (default is V100 16GB):
 ```
-sim_setup(executor="remote", gpu_filter="gpu_name=RTX_4090 num_gpus=1 rentable=true disk_space>=20")
+sim_setup(name="gpu1", executor="remote", gpu_filter={"gpu_name": "Tesla_V100"})
 ```
+The `sim_setup` result includes `machine_id` and `dph_total` ($/hr). Machines
+that fail provisioning are destroyed automatically and blacklisted for the
+session.
 
 **sim_run config**: Pass config file content (key=value lines). The runner writes it to
 a `.cfg` file and invokes the last-built binary automatically. Alternatively, pass a
 command string (e.g. `/path/to/binary /path/to/config.cfg`) for direct execution.
 
+**sim_run extras**: `on_complete="<shell cmd>"` runs a local command (bash -c,
+env `SCP_RUN_ID`/`SCP_STATE`/`SCP_INSTANCE`) when the run reaches a terminal
+state. Local runs are queued nproc-aware (max concurrent = max(1, nproc/16),
+override with env `SCP_RUNNER_MAX_LOCAL`; bypass per-run with `no_queue=true`);
+queued runs show state/phase "queued" and start as slots free.
+
+**sim_run_status** reports `phase` alongside `status`: `init` (process alive,
+zero diag rows yet — GPU runs have a long silent CPU projection at startup, do
+NOT kill an "init" run), `running`, `stalled` (alive but diag output older
+than 10 min), `queued`, `complete`, `failed`. It also reports `proc_cpu_pct`,
+`last_diag_age_s`, and `log_bytes`.
+
+**sim_download**: default is async (poll `sim_download_status`); pass
+`wait=true` to block until the transfer finishes and get
+`{remote_bytes, local_bytes, verified}` back.
+
+**File-based signals** (MCP push notifications can be missed — these files are
+the reliable anchor): `~/.scp-runner/state/` holds per-instance dirs with
+`<run_id>.status.json` (state/sim_time/total_time/last_update/wall_seconds,
+refreshed every ~5 s), an empty `<run_id>.done` or `<run_id>.failed` marker
+created atomically at terminal state (watch these with a file-watcher),
+and `instance.json` ({reachable, degraded, last_contact, host, port,
+machine_id}). `heartbeat.log` (one line/30 s) and `heartbeat.json` prove the
+runner itself is alive — stale age means the runner died. `sim_status` also
+reports `reachable`/`last_contact`/`degraded` per instance; a degraded
+instance (3+ failed liveness probes) skips the SSH stat queries instead of
+returning zeros.
+
 **sim_build**: Omit `cmd` for auto-detection (gcc for .c, nvcc for .cu). If you need
-a custom build command, use `${OUTPUT}` as the output path placeholder.
+a custom build command, use `${OUTPUT}` as the output path placeholder. Local
+`#include "..."` headers are discovered recursively and added to the upload/hash
+set automatically — passing just the main source file is enough.
 
 **DO NOT** use manual SSH, SCP, rsync, or `sleep N` polling for simulation work.
 The runner handles all of this internally with goroutines — every tool call

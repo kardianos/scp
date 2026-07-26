@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -23,6 +24,7 @@ type VastClient struct {
 // VastOffer is a GPU rental offer.
 type VastOffer struct {
 	ID          int     `json:"id"`
+	MachineID   int     `json:"machine_id"`
 	GPUName     string  `json:"gpu_name"`
 	NumGPUs     int     `json:"num_gpus"`
 	DPHTot      float64 `json:"dph_total"`
@@ -31,6 +33,31 @@ type VastOffer struct {
 	Reliability float64 `json:"reliability2"`
 	InetDown    float64 `json:"inet_down"`
 	Geolocation string  `json:"geolocation"`
+}
+
+// machineBlacklist is an in-memory, session-scoped set of Vast machine IDs
+// that failed provisioning (ready-timeout, SSH auth failure, onstart failure).
+// Blacklisted machines are excluded from subsequent offer selection.
+var machineBlacklist = struct {
+	mu  sync.Mutex
+	ids map[int]bool
+}{ids: make(map[int]bool)}
+
+// blacklistMachine records a failed machine ID for this session.
+func blacklistMachine(machineID int) {
+	if machineID == 0 {
+		return
+	}
+	machineBlacklist.mu.Lock()
+	machineBlacklist.ids[machineID] = true
+	machineBlacklist.mu.Unlock()
+}
+
+// isMachineBlacklisted reports whether a machine ID failed earlier this session.
+func isMachineBlacklisted(machineID int) bool {
+	machineBlacklist.mu.Lock()
+	defer machineBlacklist.mu.Unlock()
+	return machineBlacklist.ids[machineID]
 }
 
 // allowedGPUs defines the hardcoded set of acceptable GPU models with their
@@ -56,13 +83,15 @@ var allowedRegions = []string{"US", "CA"}
 
 // VastInstance is a running instance.
 type VastInstance struct {
-	ID         int    `json:"id"`
-	Status     string `json:"actual_status"`
-	SSHHost    string `json:"ssh_host"`
-	SSHPort    int    `json:"ssh_port"`
-	GPUName    string `json:"gpu_name"`
-	CurState   string `json:"cur_state"`
-	ContractID int    `json:"contract_id,omitempty"`
+	ID         int     `json:"id"`
+	MachineID  int     `json:"machine_id"`
+	Status     string  `json:"actual_status"`
+	SSHHost    string  `json:"ssh_host"`
+	SSHPort    int     `json:"ssh_port"`
+	GPUName    string  `json:"gpu_name"`
+	CurState   string  `json:"cur_state"`
+	ContractID int     `json:"contract_id,omitempty"`
+	DPHTotal   float64 `json:"dph_total,omitempty"`
 }
 
 // NewVastClient creates a client, reading the API key from ~/.vast_api_key.

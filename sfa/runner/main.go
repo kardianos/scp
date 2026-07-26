@@ -153,6 +153,7 @@ func recoverInstance(ctx context.Context, server *MCPServer, state *RunnerState,
 
 	// Restore instance metadata.
 	remote.instanceID = inst.ID
+	remote.machineID = inst.MachineID
 	remote.gpuName = inst.GPUName
 
 	// Restore the last-built binary path.
@@ -217,6 +218,7 @@ func recoverRun(ctx context.Context, remote *RemoteExecutor, state *RunnerState,
 			info: RunInfo{
 				ID:     id,
 				Status: RunState(finalStatus),
+				Phase:  finalStatus,
 			},
 		}
 		// Grab last diag line.
@@ -240,6 +242,7 @@ func recoverRun(ctx context.Context, remote *RemoteExecutor, state *RunnerState,
 			info: RunInfo{
 				ID:     id,
 				Status: RunFailed,
+				Phase:  string(RunFailed),
 				Error:  "no log file found during recovery",
 			},
 		}
@@ -256,6 +259,7 @@ func recoverRun(ctx context.Context, remote *RemoteExecutor, state *RunnerState,
 		info: RunInfo{
 			ID:     id,
 			Status: RunRunning,
+			Phase:  "running",
 		},
 		cancel:         cancel,
 		notifyInterval: 60 * time.Second, // default for recovered runs
@@ -299,6 +303,7 @@ func recoverRun(ctx context.Context, remote *RemoteExecutor, state *RunnerState,
 			case <-runCtx.Done():
 				rr.mu.Lock()
 				rr.info.Status = RunCancelled
+				rr.info.Phase = string(RunCancelled)
 				rr.info.WallSecs = time.Since(startWall).Seconds()
 				rr.mu.Unlock()
 				state.UpdateRunStatus(instanceName, id, "cancelled")
@@ -327,6 +332,7 @@ func recoverRun(ctx context.Context, remote *RemoteExecutor, state *RunnerState,
 								rr.info.SimTime = tVal
 							}
 						}
+						rr.sawDiag = true
 						break
 					}
 				}
@@ -341,6 +347,7 @@ func recoverRun(ctx context.Context, remote *RemoteExecutor, state *RunnerState,
 					tailOut, _ := remote.sshRun(runCtx, fmt.Sprintf("tail -20 %s 2>/dev/null", logFile))
 					rr.info.Error = fmt.Sprintf("exit code %s\n%s", exitCode, strings.TrimSpace(tailOut))
 				}
+				rr.info.Phase = string(rr.info.Status)
 				rr.mu.Unlock()
 				state.UpdateRunStatus(instanceName, id, string(rr.info.Status))
 				return

@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"sync"
 	"time"
 )
@@ -51,13 +52,13 @@ type notifyKey struct {
 
 // Monitor writes periodic status snapshots and manages background tasks.
 type Monitor struct {
-	server  *MCPServer
-	dir     string
-	mu      sync.Mutex
-	latest  StatusState
-	notify  map[notifyKey]*notifyState // per-run notification tracking
-	wakeup  chan struct{}              // signal for immediate notification check
-	state   *RunnerState              // persistent state (shared with server)
+	server *MCPServer
+	dir    string
+	mu     sync.Mutex
+	latest StatusState
+	notify map[notifyKey]*notifyState // per-run notification tracking
+	wakeup chan struct{}              // signal for immediate notification check
+	state  *RunnerState               // persistent state (shared with server)
 }
 
 func NewMonitor(server *MCPServer, dir string) *Monitor {
@@ -87,16 +88,42 @@ func (m *Monitor) Run(ctx context.Context) {
 	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
 
+	// Aliveness heartbeat: one log line + atomic JSON rewrite every 30s so
+	// external watchers can detect a dead runner by file age.
+	hbTicker := time.NewTicker(30 * time.Second)
+	defer hbTicker.Stop()
+	m.heartbeat()
+
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
 			m.snapshot(ctx)
+		case <-hbTicker.C:
+			m.heartbeat()
 		case <-m.wakeup:
 			m.snapshot(ctx)
 		}
 	}
+}
+
+// heartbeat writes the runner-aliveness heartbeat files.
+func (m *Monitor) heartbeat() {
+	names := m.server.getExecutorNames()
+	sort.Strings(names)
+	active := 0
+	for _, ex := range m.server.getAllExecutors() {
+		runs := make(map[string]*RunInfo)
+		collectRuns(ex, runs)
+		for _, ri := range runs {
+			switch ri.Status {
+			case RunQueued, RunStarting, RunRunning:
+				active++
+			}
+		}
+	}
+	writeHeartbeat(names, active)
 }
 
 func (m *Monitor) snapshot(ctx context.Context) {
@@ -118,9 +145,38 @@ func (m *Monitor) snapshot(ctx context.Context) {
 			instState.Executor = status
 		}
 
+		// Bidirectional heartbeat: probe remote liveness (~60s cadence,
+		// non-blocking) and mirror reachability into <instance>/instance.json.
+		if remote, ok := ex.(*RemoteExecutor); ok {
+			remote.maybeProbeLiveness()
+			reachable, degraded, lastContact := remote.liveness()
+			il := &InstanceLiveness{
+				Reachable: reachable,
+				Degraded:  degraded,
+				Host:      remote.sshHost,
+				Port:      remote.sshPort,
+				MachineID: remote.machineID,
+			}
+			if !lastContact.IsZero() {
+				il.LastContact = lastContact.Format(time.RFC3339)
+			}
+			writeInstanceFile(name, il)
+		}
+
 		// Collect run states and send notifications.
 		collectRuns(ex, instState.Runs)
 		m.sendRunNotifications(name, ex, instState.Runs)
+
+		// Mirror per-run status into <instance>/<run>.status.json for external
+		// file-watchers. Terminal runs get their final status file (plus the
+		// .done/.failed marker) via anchorRunTerminal, so skip rewriting them.
+		for id, info := range instState.Runs {
+			if isTerminalRunState(info.Status) {
+				m.server.anchorRunTerminal(name, id, *info)
+			} else {
+				writeRunStatusFile(name, id, info)
+			}
+		}
 
 		// Collect download states.
 		collectDownloads(ex, instState.Downloads)
@@ -195,8 +251,8 @@ func (m *Monitor) sendRunNotifications(instanceName string, ex Executor, runs ma
 				switch info.Status {
 				case RunComplete:
 					m.server.sendChannelEvent("run_complete", map[string]string{
-						"instance": instanceName,
-						"run_id":   id,
+						"instance":  instanceName,
+						"run_id":    id,
 						"sim_time":  fmt.Sprintf("%.1f", info.SimTime),
 						"wall_secs": fmt.Sprintf("%.1f", info.WallSecs),
 					}, msg)
