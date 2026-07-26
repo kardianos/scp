@@ -125,3 +125,21 @@ measurement; EX-4 retargeted to ball-clock transport.
 
 **Order of work (revised):** Part 0 (N1–N4, N10) → HC-1/HC-2 → N5/N6/N8 →
 HC-3/HC-6 → HC-4 (hardened) → EX-2 → N7 → EX-1/EX-4 (ramped) → EX-3.
+
+---
+
+# AMENDMENT 2 (2026-07-26, post N-battery review)
+- **Canonical rung protocols:** `council/grok45/N_BATTERY_REVIEW.md` §1
+  restores the full N1–N10 designs (formulas, discriminators, kill
+  criteria) that GROUNDING v2 §5 compressed — that file governs execution.
+- **Order fixes:** N7 runs BEFORE EX-1 (inertia lock precedes any boost
+  interpretation); N9 restored to the sequence; a **D7-lite** refinement
+  certification (one dt/dx/L pair on a representative observable) rides
+  along with Part 0.
+- **If halved:** cut EX-3, HC-5 (HC-6 covers the point), EX-1's v=0.05 arm,
+  full EX-4 cloud transport; defer N8. Keep N1–N3, N7, N10, HC-1/3/6, EX-2.
+- **Part I.1 superseded:** the harmonic-count framing stands, but all
+  energy-ontology phrasing in the original body defers to GROUNDING v2 §0
+  (E primary, M=E/c², Σ virial excess, ħ_eff/Q as measured ratio).
+- Strategy review verdict: current plan reweighted, defended against
+  pure-carbon-now and second-sector-first (see N_BATTERY_REVIEW §3).
