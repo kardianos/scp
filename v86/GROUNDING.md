@@ -1,106 +1,130 @@
-# v86 GROUNDING — the mathematics under the harmonic census
-**Date:** 2026-07-26 · **Role:** paper-math grounding for v86/PROPOSAL.md
-Part I, written BEFORE the numerical rungs so the analysis has a precise
-target and cannot overclaim. Reviewed by the v86 council (this file is a
-review input).
+# v86 GROUNDING (v2, post-council) — mathematics under the census + the frozen foundation
+**Date:** 2026-07-26 · **v1 reviewed by the three-seat council** (see
+`council/SYNTHESIS.md`); this revision applies every converged fix and
+INTEGRATES the adopted Grok FOUNDATIONS frame (R1/R2/R4/R5). Where v1 is
+contradicted, this file supersedes it; v1's text survives in git history.
 
-## 1. Multi-charge stability: the Grillakis–Shatah–Strauss frame
+## 0. The frozen foundation (adopted from FOUNDATIONS R1/R4 — supersedes TOE Step 3's E=Qω-first phrasing)
 
-**Setup.** The gauged complexified Cosserat system is Hamiltonian with (at
-η=0) three commuting U(1) symmetries and conserved charges Q_a
-(code-verified, v85/ANALYSIS §2E). Stationary states are constrained
-extremizers: δ(E − Σ_a ω_a Q_a) = 0, so along any smooth family
-**ω_a = ∂E/∂Q_a** (measured to 8×10⁻⁵ in the single-charge case).
+- **Primary objects:** the vacuum-subtracted Hamiltonian energy **E**, the
+  conserved charges **Q_a** (+ winding n), and the branch relations. Inertia
+  is **M = E/c²** — E = mc² stands as the honest rest-energy relation, not
+  as a "derived shadow" of E = Qω. (v85's elevation of E=Qω repeated v84's
+  mistake in mirror image: it closed the D5 units gap cosmetically by
+  claiming the closed formula that CREED A4 had rightly refused.)
+- **ω_a = ∂E/∂Q_a are chemical potentials** — the Legendre structure is the
+  exact, measured content (8×10⁻⁵). "E = Qω" is the monochromatic thin-wall
+  skeleton, exact only for bound linear modes.
+- **Σ ≡ E − Σ_a ω_a Q_a is the virial/surface excess** — the object
+  formerly known as ε(Q)·ωQ, now to be DERIVED (see §5 battery): gradient +
+  potential + gauge − kinetic imbalance, with closed-form targets (virial
+  identity of the profile ODE; thin-wall surface law
+  Σ ≈ 4πR²σ_eff(ω) + g²Q²/8πR; scaling collapse in ξ/R).
+- **Three-way split even within one sector:** gauge charge Q_G ≠ process
+  action 𝒜 ≠ inertia M. "ħ_eff = Q" is demoted from identity to measured
+  ratio ħ_eff/Q = 1+δ (v70's 3–5% and ε's 1–4% are the same residual
+  family, to be unified by the battery).
+- **Q-degeneracy consequence:** degeneracy is a *regime property of
+  monochromatic solitons*, not destiny. Foundation-level attacks (ring
+  mass-ladder M(n) at fixed Q; potential-window scans) run before/alongside
+  the second-sector design, which stays motivated by carrier physics and
+  universal ħ — not by rescuing a false fundamental law. Cloud-mass does
+  not solve HIER; it restates it.
 
-**The stability object.** Define the dual d(ω⃗) = E − Σ_a ω_a Q_a evaluated
-on the branch. Then ∂d/∂ω_a = −Q_a and the Hessian
-**D_ab ≡ −∂²d/∂ω_a∂ω_b = ∂Q_a/∂ω_b** is symmetric. The
-Grillakis–Shatah–Strauss (GSS, 1987/1990) theory gives the criterion:
-orbital stability holds when n(H_ω) — the number of negative eigenvalues of
-the constrained linearized energy — equals p(D), the number of positive
-eigenvalues of D. For the single-charge Q-ball this reduces to the familiar
-Vakhitov–Kolokolov dQ/dω < 0 (with the standard one-negative-direction
-count). **The multi-harmonic generalization is therefore not a guess: it is
-the signature condition on the 3×3 matrix ∂Q_a/∂ω_b along the flavored
-branch.**
+## 1. Multi-charge stability: GSS, corrected (council fix #1 — the sign error)
 
-**What HC-3 must actually compute.** The flavored shooter gives
-Q_a(ω_1,ω_2,ω_3) on the branch; finite-difference D_ab; record its
-signature over the partition space. The claimed "stability region of
-partitions" IS the region where the GSS count matches. Honest caveats to
-carry: (i) GSS assumes the linearization has no unstable essential
-spectrum — on the lattice this must be checked against the band (see §2);
-(ii) gauge fields add constraint directions: the Gauss constraint must be
-projected before counting n(H_ω) (standard for gauged GSS, e.g. abelian
-Higgs vortex literature); (iii) GSS gives orbital stability, not asymptotic
-stability — a stable partition may still be surrounded by long-lived
-breathing (which v85 measured; monopole protection is exactly an
-obstruction to asymptotic relaxation).
+Setup as before: three commuting U(1)s at η=0; stationary states extremize
+E − Σω_a Q_a; d(ω⃗) = E − Σω_a Q_a on the branch; ∂d/∂ω_a = −Q_a.
 
-## 2. Resonance decay: Fermi golden rule with a lattice wrinkle
+**v1 stated the criterion backwards** ("n(H_ω) = p(D)" with D = ∂Q_a/∂ω_b),
+which fails its own single-charge reduction: the VK-stable branch has
+dQ/dω < 0, i.e. p(D) = 0, while n(H_ω) = 1. **Corrected statement:** with
+Hess d = −∂Q_a/∂ω_b, GSS orbital stability requires
+**n(H_ω) = n(∂Q_a/∂ω_b)** — the count of NEGATIVE eigenvalues of the
+charge-response matrix must equal the constrained negative index of the
+linearized energy. Single-charge check: dQ/dω < 0 gives one negative
+eigenvalue = n(H_ω) = 1 ✓ (VK recovered).
 
-**The continuum statement (Soffer–Weinstein 1999; Sigal; Buslaev–Perelman).**
-A discrete internal mode ω_int of the linearization about a soliton decays
-when some small integer multiple couples into the essential spectrum:
-n·ω_int > ω_edge (here the gap m). The rate is Γ ∝ |⟨F_n, ψ_res⟩|² — the
-golden-rule constant built from the n-th order nonlinear coupling and the
-density of states at n·ω_int — provided the coupling is nondegenerate
-(the "nonlinear Fermi Golden Rule" condition, generically nonzero but not
-guaranteed; it must be computed or measured, not assumed).
+**What HC-3 computes:** D_ab = ∂Q_a/∂ω_b by finite differences on the
+flavored branch; record its full signature; the stability claim is the
+matching of negative indices — and requires n(H_ω) from the HC-1 linear
+solve, which is now provisioned (council fix: v1 had no rung for n(H_ω)).
 
-**Applicability conditions for OUR system (the review should attack these):**
-1. Multi-component coupling: the mode couples through the product potential
-   V(s), whose expansion mixes components — the golden-rule constant is a
-   matrix element over component structure, computable from the HC-1
-   catalog.
-2. Gauge sector: the essential spectrum includes the massless gauge
-   channel. A mode combination below the matter gap may still radiate
-   through A if it carries a time-varying multipole — EXCEPT monopole
-   breathing (no dipole; v85's measured protection). The census must
-   therefore classify modes by multipole as well as frequency.
-3. **The lattice band-top wrinkle (novel, honest artifact warning).** On
-   the lattice the "continuum" is a BAND: ω ∈ [m, ω_max(dx)] with
-   ω_max² = m² + 4d/dx² (d=3). Combinations with n·ω_int ABOVE the band top
-   cannot radiate either — the lattice re-protects high harmonics that the
-   physical continuum would kill. Any HC-2 "stable" verdict from
-   above-band arithmetic is a lattice artifact and must be flagged; the
-   dx-dependence of ω_max makes this testable (an artifact-protected mode
-   destabilizes under refinement).
+**Caveats (hardened per council):** (i) the gauged system is
+COULOMB-phase — the massless channel reaches ω = 0, the cited vortex
+results are Higgs-phase, so gauged GSS is used as a heuristic with the
+ungauged theorem as anchor; verdicts are labeled accordingly. (ii) GSS is
+orbital, not asymptotic — monopole-protected breathing coexists with
+orbital stability (measured, v85).
 
-**Prediction for HC-4:** measured linewidths of the QRK-1 lines should
-scale as the square of the excitation amplitude at lowest coupling order
-(Γ ∝ ε² for a first-order-allowed channel, higher even powers when the
-first channels are multipole- or arithmetic-blocked). Deviation from
-even-power scaling falsifies the golden-rule reading.
+## 2. Resonance decay: multipole first, then arithmetic (council fix #3)
 
-## 3. KAM: framing only
+**Classification order corrected:** for every internal mode, FIRST classify
+its multipole content. Any mode with a time-varying multipole l ≥ 1
+couples to the **massless gauge channel, open at all frequencies** — gap
+arithmetic decides nothing for it; its width is a golden-rule computation
+against the A-channel density of states (κ_box-limited in finite volume).
+Only monopole (and pure-matter) excitations get the gap-arithmetic
+treatment vs the matter band [m, ω_max], ω_max² = m² + 12/dx² (formula
+council-verified). The lattice band-top re-protection warning stands, with
+Grok's addendum: band-edge Van Hove structure makes near-edge rate
+predictions unreliable in either direction — refinement tests are
+mandatory for any near-edge verdict.
 
-Kuksin/Wayne-type KAM for PDEs proves persistence of finite-dimensional
-quasi-periodic tori for parameter sets of positive measure in SPECIFIC
-(mostly 1D, bounded, non-resonant) settings. Nothing we run satisfies those
-hypotheses; the citation earns its place only as the structural reason
-"generic extra frequencies die" — it licenses no quantitative claim in
-this program and must not be cited as if it did.
+**Width-floor calibration (Kimi, adopted):** before any HC-4 width is
+quoted, measure the numeric width floor on a mode with NO open channel
+(monopole, below-gap, below-cutoff) — "zero width" is then calibrated, not
+assumed.
 
-## 4. The correspondence claim, stated at provable strength
+**Box-IR hazard (council fix #4):** the QRK-1 lines (0.018–0.126) all sit
+below the box IR cutoff (≈0.209 at N=64/L=15; ≈0.057 at N=384/L=55) — in
+any proposed box those modes have no open radiative channel, and nonlinear
+frequency-pulling can fake an ε² "confirmation." HC-4 therefore (a) runs
+the width-floor calibration, (b) uses a box pair chosen to move the cutoff
+across at least one line, and (c) treats ε²-scaling WITHOUT cutoff-crossing
+sensitivity as NULL, not confirmation.
 
-Claim C1 (fabric theorem-shaped): *in this system, a configuration is
-orbitally stable iff it is a GSS-signature minimizer within its conserved
-sector (flavor charges × winding), and every other localized excitation
-carries a golden-rule width unless blocked by multipole selection or
-arithmetic (with lattice band-top blocks flagged as artifacts).*
-Claim C2 (correspondence, interpretive): this reproduces the structural
-rule by which real physics organizes stability (lowest state per
-quantum-number sector; resonances elsewhere). C2 is an analogy claim and
-stays [C]-tagged; C1 is what HC-1..5 can actually establish, and the
-council review should judge whether HC-1..5 as designed suffice for C1.
+## 3. KAM: framing only (unchanged, council-verified).
 
-## 5. EX-1 adiabaticity (pre-registered arithmetic)
+## 4. Claims, restated at provable strength
+C1 (theorem-shaped): a configuration is orbitally stable iff its
+sector-constrained GSS indices match (corrected §1), and every other
+localized excitation carries a width that is either golden-rule computable
+(open channel) or bounded by the calibrated floor (blocked channel), with
+multipole classification deciding which — lattice band-top blocks flagged
+as artifacts. C2 (correspondence with real physics' lowest-state-per-
+sector rule) stays interpretive, [C]-tagged. **HC-1..HC-6 as amended are
+judged by the council sufficient in structure for C1**, with HC-4's
+hardening load-bearing.
 
-Boost concern: the X10c cloud binds at ε₁ ≈ 2.1e-3 (binding time 1/ε₁ ≈
-473). A boost applied as a seed-level phase tilt is impulsive; the cloud
-survives only if the imparted energy per unit charge ~ ½v² ≪ ε₁ →
-**v ≪ √(2ε₁) ≈ 0.065**. The proposed v = 0.02–0.05 spans gentle (0.02:
-½v² = 2e-4 ≈ ε₁/10) to marginal (0.05: ½v² = 1.25e-3 ≈ 0.6·ε₁). The review
-should check this estimate and whether a ramped (multi-step) boost is
-needed at the upper end.
+## 5. The ε/foundation numeric battery (FOUNDATIONS N1–N10, adopted as Part 0 of the program)
+All shooter/analysis-level (zero GPU spend) except N7:
+- **N1** component decomposition of E on existing gscan + branch tables →
+  Σ split into E_∇, E_m, E_V, E_g vs Q (is Σ the virial imbalance as
+  claimed?).
+- **N2** integrated virial identity of the radial ODE (parameter-free) →
+  ε(Q) as a derived function; TOE-grade if it lands.
+- **N3** scaling collapse: ε vs ξ/R across g after Coulomb subtraction.
+- **N4** multi-flavor Legendre excess on the flavored branch.
+- **N5** throughput-vs-charge (𝒜 vs 2πQ) on flavored/breathing objects —
+  the action≠charge split made empirical.
+- **N6** ħ_eff triple comparison (reopen v70 calibration against ε).
+- **N7** N-INV weak-acceleration inertia measurement — decides D5′
+  empirically (M_inertial vs E/c² vs Qω/c²). GPU-light.
+- **N8** ring spin-ladder M(n) at fixed Q (v73 ring machinery) — mass
+  without charge; the first foundation-level degeneracy crack test.
+- **N9** soft-window shooter scan (μ,κ) — how much can M/Q move in one
+  sector?
+- **N10** shell-mode E = ωQ exactness on X10 profiles (the linear-mode
+  anchor, atom-facing).
+
+## 6. EX-1 adiabaticity, corrected (council fix #5)
+The v1 threshold dropped the mass factor. Boost energy per unit charge is
+½·(M/Q)·v² ≈ ½·m·v² (E/Q ≈ m for the cloud), so the survival condition is
+**v ≪ √(2ε₁/m) = α_f ≈ 0.053** — v = 0.05 sits at 89% of threshold with a
+pre-registered sudden-kick stripping estimate of ~55% (13% at v = 0.02),
+and Kimi's differential-drift mechanism strips below the bound as well.
+**Protocol:** ramped boost (≥4 steps, spacing ≫ 1/ε₁) mandatory above
+v = 0.02; sudden-kick at v = 0.02 retained deliberately as a stripping-
+fraction measurement. EX-4 retargets clock transport to the BALL clock
+(measurable at T=2000), cloud-mode transport deferred to a longer run.

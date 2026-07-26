@@ -100,3 +100,28 @@ test** — a parked atom that cannot move is not an atom.
 HC-1 → HC-2/HC-3 (all analysis, no spend) → EX-2 (mines existing data) →
 HC-4/HC-5 (cheap CPU) → EX-1/EX-4 (the GPU centerpiece) → EX-3 → then the
 Stage-4 carbon program inherits whatever the exchange audit says.
+
+---
+
+# AMENDMENT 1 (2026-07-26, post-council — integrates GROUNDING v2 and FOUNDATIONS)
+
+**Part 0 (new, runs FIRST): the ε/foundation battery** — N1–N10 as
+specified in GROUNDING v2 §5. N1–N6, N8–N10 are shooter/analysis (zero
+spend); N7 is the one GPU-light rung and doubles as the empirical D5′
+decision. Part 0 output feeds a TOE Step-3/§D rewrite to the frozen
+foundation (GROUNDING v2 §0).
+
+**Census amendments:** HC-1 also delivers n(H_ω) (needed by corrected GSS);
+HC-2 classifies by multipole BEFORE arithmetic (massless-channel modes are
+golden-rule, not arithmetic); HC-3 uses the corrected negative-index
+criterion; HC-4 adds width-floor calibration + a box pair moving the IR
+cutoff across a line (ε² scaling without cutoff sensitivity = NULL);
+**HC-6 (new, Kimi):** seed deliberately GSS-unstable partitions and verify
+decay to sector minima — the converse census.
+
+**Exchange amendments:** EX-1 threshold corrected to v ≪ α_f ≈ 0.053;
+ramped protocol above v=0.02; sudden-kick at 0.02 kept as a stripping
+measurement; EX-4 retargeted to ball-clock transport.
+
+**Order of work (revised):** Part 0 (N1–N4, N10) → HC-1/HC-2 → N5/N6/N8 →
+HC-3/HC-6 → HC-4 (hardened) → EX-2 → N7 → EX-1/EX-4 (ramped) → EX-3.
