@@ -25,12 +25,12 @@ precision; objects on the measured Q-ball / fusion branch; closed fabric
 ledger where process-form applies; no fatal radiation. Parallels to real
 carbon are structural, not quantitative (see CONCEPT.md).
 
-**Default next work when the user does not specify otherwise:** **v75**
-(`PROPOSAL.md`, `FIRST_STEPS.md`, `FINDINGS.md`) — Step 1 ± force **PASS**
-(FINDINGS F8–F9). Next: **Step 2 ± orbit/capture** on E-lite (±ω). Full
-multi-fabric kernel is authorized but **deferred** until Step 2 shows
-same-fabric bag physics blocks atoms. Radial = L2 only. Nested grids / large
-GPUs for L1. n-bar (L3) after force+orbit graph measured. v74 nuclear baseline done.
+**Default next work when the user does not specify otherwise:** **v86**
+(`v86/THEORY_v86.md` is the canonical clean-state entry point; program order
+in its Part C — next rung: N1 of the ε/foundation battery). v85 closed with
+the atom-arc campaigns; the v86 council corrections govern. The stage table
+above predates the v85 finding that 2B multi-center is load-bearing for
+atoms (change pending explicit user sign-off).
 
 **Tools (existing):** `radial_qball` / gauged shooter, `gen_qball_multi`,
 `gen_qball_flavored`, `eta_qflow`, collision/pair seeds, SFA charge/flavor
