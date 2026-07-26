@@ -25,10 +25,10 @@ Worksheet index (each referenced from findings below):
 - `ws2_model_closedform.py` — the explicit Door-A model; E(a,b) in closed form
   (SymPy), including the p-family generalisation.
 - `ws2b_model_closedform.mac` — Maxima cross-check of the same integral.
-- `ws3_md_bound.py` — symbolic/LP bound: max |S| as a function of the
-  measurement-dependence budget; tightness check.
-- `ws4_mutual_info.py` — I(λ : a,b) for the model and the p-family;
-  minimal-MI optimisation at S = 2√2 and S = 4.
+- `ws3_md_bound.py` — the budget laws: tight TV bound S ≤ 2 + 2D (LP-verified),
+  minimal-MI curve incl. the global Blahut–Arimoto solve and closed form.
+- `ws4_mutual_info.py` — S_max(p) and I(λ : a,b) along the p-family (the
+  Tsirelson-is-imported scan).
 - `ws5_montecarlo.py` — explicit-PRNG Monte Carlo of the model.
 
 ---
