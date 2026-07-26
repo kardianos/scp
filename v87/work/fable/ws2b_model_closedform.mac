@@ -1,0 +1,47 @@
+/* ws2b — FABLE seat, v87 B0. Maxima 5.46.0 cross-check of ws2.
+   Verifies, independently of SymPy:
+   (a) dF1/dtheta = (pi/4) sin(theta) for
+       F1(theta) = integrate(t*acos(cot(theta)*t/sqrt(1-t^2)), t, 0, sin(theta))
+   (b) therefore E_1(theta) = -1 + (4/pi) F_1(theta) = -cos(theta)
+   (c) the CHSH maximum for E = -cos: S at the canonical angles = 2*sqrt(2),
+       and the stationarity conditions hold there.
+   Run: maxima -b ws2b_model_closedform.mac
+*/
+
+/* (a) Leibniz: boundary term is acos(1)=0 at t=sin(theta); interior deriv */
+assume(th > 0, th < %pi/2)$
+inner : acos(cot(th)*t/sqrt(1-t^2))$
+dinner : diff(inner, th)$
+/* target simplification: t/(sin(th)^2*sqrt(1-t^2/sin(th)^2)) */
+target : t/(sin(th)^2*sqrt(1-t^2/sin(th)^2))$
+resid : radcan(trigsimp(dinner - target))$
+print("(a) interior derivative residual (radcan):", resid)$
+/* numeric spot checks in the domain 0 < t < sin(th) */
+for tv in [0.1, 0.3, 0.5] do
+  print("    numeric at th=0.9, t=", tv, ":",
+        ev(dinner - target, th=0.9, t=tv, numer))$
+
+/* the reduced integral: integrate target*t over t in (0, sin th).
+   Substitute t = sin(th)*s (dt = sin(th) ds):
+   integrand t^2/(sin^2 th sqrt(1-t^2/sin^2 th)) dt -> sin(th) s^2/sqrt(1-s^2) ds */
+dF : sin(th) * integrate(s^2/sqrt(1-s^2), s, 0, 1)$
+dF : radcan(dF)$
+print("(a) dF1/dtheta =", dF, " (must be (pi/4) sin(theta))")$
+print("    residual:", radcan(dF - (%pi/4)*sin(th)))$
+
+/* (b) E_1(theta) = -1 + (4/pi) * integrate((pi/4) sin(u), u, 0, theta) */
+E1 : -1 + (4/%pi) * integrate((%pi/4)*sin(u), u, 0, th)$
+print("(b) E_1(theta) =", radcan(E1), " (must be -cos(theta))")$
+print("    residual:", radcan(E1 + cos(th)))$
+
+/* (c) CHSH at canonical angles for E(theta) = -cos(theta) */
+S(al, alp, be, bep) := -(cos(al-be) + cos(al-bep) + cos(alp-be) - cos(alp-bep))$
+Sq : radcan(S(0, %pi/2, %pi + %pi/4, %pi - %pi/4))$
+print("(c) S(canonical) =", Sq, " (must be 2*sqrt(2))")$
+print("    residual:", radcan(Sq - 2*sqrt(2)))$
+/* stationarity: all four partials vanish at the canonical point */
+grad : [diff(S(al,alp,be,bep),al), diff(S(al,alp,be,bep),alp),
+        diff(S(al,alp,be,bep),be), diff(S(al,alp,be,bep),bep)]$
+gval : ev(grad, al=0, alp=%pi/2, be=%pi+%pi/4, bep=%pi-%pi/4)$
+print("(c) gradient at canonical point:", radcan(gval), " (must be [0,0,0,0])")$
+quit()$
