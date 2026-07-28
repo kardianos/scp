@@ -79,6 +79,10 @@ typedef struct {
     double aux_kx, aux_ky, aux_kz, aux_sigma;
     int prealign;                /* align plane normals transverse at init */
     int rad_diag;                /* G4 apparatus: per-shell radial flux report */
+    int lump_diag;               /* MASS apparatus: connected-lump census rows */
+    double lump_thr;             /* census membership threshold on free Em */
+    int ring_n, ring_wind;       /* MASS apparatus: ring seed (voices, winding) */
+    double ring_d, ring_x;       /* ring spacing; load (<0 = tuning-curve auto) */
     long trials;                 /* bell trials per angle combo */
     double aA1, aA2, aB1, aB2;   /* analyzer angles, degrees */
     int debug;                   /* extra gate/flux statistics per diag row */
@@ -168,6 +172,8 @@ static void cfg_defaults(void)
     P.aux_kx = 0; P.aux_ky = 0; P.aux_kz = 0; P.aux_sigma = -1;
     P.prealign = 0;
     P.rad_diag = 0;
+    P.lump_diag = 0; P.lump_thr = 0.1;
+    P.ring_n = 0; P.ring_wind = 0; P.ring_d = 1.25; P.ring_x = -1;
     P.trials = 200000;
     P.aA1 = 0.0; P.aA2 = 45.0; P.aB1 = 22.5; P.aB2 = 67.5;
     P.npairs = 48;
@@ -220,6 +226,7 @@ static void set_kv(const char *k, const char *v)
         else if (!strcmp(v, "pairs")) P.init = 4;
         else if (!strcmp(v, "slit")) P.init = 5;
         else if (!strcmp(v, "hom")) P.init = 6;
+        else if (!strcmp(v, "ring")) P.init = 7;
         else fprintf(stderr, "# WARN unknown init '%s'\n", v);
     }
     else if (!strcmp(k, "L")) P.L = atof(v);
@@ -275,6 +282,12 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "aux_sigma")) P.aux_sigma = atof(v);
     else if (!strcmp(k, "prealign")) P.prealign = atoi(v);
     else if (!strcmp(k, "rad_diag")) P.rad_diag = atoi(v);
+    else if (!strcmp(k, "lump_diag")) P.lump_diag = atoi(v);
+    else if (!strcmp(k, "lump_thr")) P.lump_thr = atof(v);
+    else if (!strcmp(k, "ring_n")) P.ring_n = atoi(v);
+    else if (!strcmp(k, "ring_wind")) P.ring_wind = atoi(v);
+    else if (!strcmp(k, "ring_d")) P.ring_d = atof(v);
+    else if (!strcmp(k, "ring_x")) P.ring_x = atof(v);
     else if (!strcmp(k, "trials")) P.trials = atol(v);
     else if (!strcmp(k, "aA1")) P.aA1 = atof(v);
     else if (!strcmp(k, "aA2")) P.aA2 = atof(v);
@@ -354,7 +367,7 @@ static void load_cfg(const char *path)
 static void print_cfg(void)
 {
     const char *modes[] = { "field", "bell", "ladder" };
-    const char *inits[] = { "vacuum", "noise", "pulse", "blob", "pairs", "slit", "hom" };
+    const char *inits[] = { "vacuum", "noise", "pulse", "blob", "pairs", "slit", "hom", "ring" };
     printf("# cellfab — v89 cell-fabric kernel (no lattice, no prior code)\n");
     printf("# cfg seed=%lu mode=%s init=%s\n", P.seed, modes[P.mode], inits[P.init]);
     printf("# cfg L=%g dmin=%g r0=%g rjit=%g\n", P.L, P.dmin, P.r0, P.rjit);
@@ -497,6 +510,9 @@ static double *lem, *lph, *lwant;    /* [NL][chan][dir] flattened */
 static double *lflux;                /* [NL][chan] deposits this step   */
 static signed char *lp, *lq;         /* dense sector: locked-in partial ratio p:q */
 static double rough_total = 0.0;     /* C2 ledger: dissonance radiated D->F */
+static double cond_total = 0.0;      /* M0 ledger: condensed F->D (pass 6) */
+static double evap_total = 0.0;      /* M0 ledger: over-full evaporation D->F */
+static double backs_total = 0.0;     /* M0 ledger: space returned with D->F */
 static double A0eff = 0.0;           /* action atom (0 = continuous limit) */
 static double *qcnvD = NULL;         /* per-cell F->D conversion credit (variant 2) */
 static double *qcnvF = NULL;         /* per-cell D->F conversion credit (variant 2) */
@@ -874,6 +890,80 @@ static void build_field(void)
                P.pair_x0 < 0 ? "x*(d), example " : "",
                P.pair_x0 < 0 ? (P.w2 * 1.25 / (M_PI * P.C) - 1.0) / P.q_detune : P.pair_x0,
                P.pair_seedlock ? "locked" : "random");
+    } else if (P.init == 7) {
+        /* MASS R3 — the ring lock: N voices on a closed chord. Adjacent
+         * pairs sit near the m=1 pair rung (omega*d/C = pi at 1:1), so
+         * the loop closes when N is even: sum omega*d/C = N*pi. Loads
+         * from the tuning curve at each voice's ACTUAL mean spacing;
+         * phases seeded in the locked relation around the loop with
+         * ring_wind extra turns distributed; axes transverse to the
+         * local chord (kappa_align adapts them from there). */
+        int n = P.ring_n > 0 ? P.ring_n : 6;
+        int *pick = malloc(n * sizeof(int));
+        double Rr = P.ring_d / (2.0 * sin(M_PI / n));
+        for (int k = 0; k < n; k++) {
+            double phk = TWO_PI * k / n;
+            double tx = 0.5 * P.L + Rr * cos(phk);
+            double ty = 0.5 * P.L + Rr * sin(phk);
+            double tz = 0.5 * P.L;
+            int best = -1; double bd = 1e30;
+            for (int i = 0; i < NC; i++) {
+                if (cflag[i]) continue;
+                int used = 0;
+                for (int q = 0; q < k; q++) if (pick[q] == i) used = 1;
+                if (used) continue;
+                double dx = cx[i] - tx, dy = cy[i] - ty, dz = cz[i] - tz;
+                double dd = dx * dx + dy * dy + dz * dz;
+                if (dd < bd) { bd = dd; best = i; }
+            }
+            pick[k] = best;
+        }
+        for (int k = 0; k < n; k++) {
+            int u = pick[k], up = pick[(k + n - 1) % n], un = pick[(k + 1) % n];
+            double dpx = cx[u] - cx[up], dpy = cy[u] - cy[up], dpz = cz[u] - cz[up];
+            double dnx = cx[un] - cx[u], dny = cy[un] - cy[u], dnz = cz[un] - cz[u];
+            double dp_ = sqrt(dpx * dpx + dpy * dpy + dpz * dpz);
+            double dn_ = sqrt(dnx * dnx + dny * dny + dnz * dnz);
+            double dbar = 0.5 * (dp_ + dn_);
+            double xk = P.ring_x >= 0 ? P.ring_x
+                       : (P.w2 * dbar / (M_PI * P.C) - 1.0) / P.q_detune;
+            if (xk < 0.02) xk = 0.02;
+            double add = xk * P.cap / (1.0 + P.s_pull);
+            Em[u] += add;
+            double pull = P.s_pull * add;
+            double avail = Es[u] - P.es_floor;
+            if (pull > avail) pull = avail > 0 ? avail : 0;
+            Es[u] -= pull;
+            Em[u] += pull;
+            double ux = dnx / dn_, uy = dny / dn_, uz = dnz / dn_;
+            double ax = 0, ay = 0, az = 1;
+            if (fabs(uz) > 0.9) { ax = 1; az = 0; }
+            double dp2 = ax * ux + ay * uy + az * uz;
+            double t1x = ax - dp2 * ux, t1y = ay - dp2 * uy, t1z = az - dp2 * uz;
+            double tn = sqrt(t1x * t1x + t1y * t1y + t1z * t1z);
+            t1x /= tn; t1y /= tn; t1z /= tn;
+            n1x[u] = t1x; n1y[u] = t1y; n1z[u] = t1z;
+            n2x[u] = uy * t1z - uz * t1y;
+            n2y[u] = uz * t1x - ux * t1z;
+            n2z[u] = ux * t1y - uy * t1x;
+        }
+        double closure = 0;
+        th2[pick[0]] = frand() * TWO_PI;
+        for (int k = 0; k < n; k++) {
+            int u = pick[k], un = pick[(k + 1) % n];
+            double dnx = cx[un] - cx[u], dny = cy[un] - cy[u], dnz = cz[un] - cz[u];
+            double dn_ = sqrt(dnx * dnx + dny * dny + dnz * dnz);
+            double we = P.w2 / (1.0 + P.q_detune * (Em[u] / P.cap));
+            closure += we * dn_ / P.C;
+            if (k < n - 1)
+                th2[un] = fmod(th2[u] - we * dn_ / P.C
+                               + TWO_PI * (double)P.ring_wind / n
+                               + 8.0 * TWO_PI, TWO_PI);
+        }
+        printf("# ring: seeded n=%d R=%.2f d_target=%.2f "
+               "closure/2pi=%.4f wind=%d\n",
+               n, Rr, P.ring_d, closure / TWO_PI, P.ring_wind);
+        free(pick);
     } else if (P.init == 5) {
         /* double slit: wall (detuned medium) with two vacuum windows,
          * screen + edge sinks (record media), optional which-path
@@ -1522,7 +1612,7 @@ static void step_field(void)
      * QATOM flush in pass 6. */
 #pragma omp parallel for schedule(static)
     for (int i2 = 0; i2 < NC; i2++) { th1s[i2] = th1[i2]; th2s[i2] = th2[i2]; }
-#pragma omp parallel for schedule(static) reduction(+:rough_total)
+#pragma omp parallel for schedule(static) reduction(+:rough_total,backs_total)
     for (int recv = 0; recv < NC; recv++) {
         for (int q = cls[recv]; q < cls[recv + 1]; q++) {
             int l = clidx[q];
@@ -1565,6 +1655,7 @@ static void step_field(void)
                         rough = atoms_clamp(rough, take, reF, reD, &qcnvF[recv]);
                         if (rough > 0) roughq[recv] += rough;
                         double back_s = rough * P.s_pull / (1.0 + P.s_pull);
+                        backs_total += back_s;
                         Em[recv] += take - rough;
                         field_inject(recv, rough - back_s);
                         Es[recv] += back_s;
@@ -1779,6 +1870,7 @@ static void step_field(void)
                 d1 = atoms_fire(d1, eF, eD, &qcnvD[i]);
                 d1 = atoms_clamp(d1, 0.98 * Ee[i], eF, eD, &qcnvD[i]);
                 if (d1 > 0) {
+                    cond_total += d1;
                     qatom_diag(1, atoms_w(w1e[i], w2e[i]), d1);
                     double dsp = P.s_pull * d1;
                     double avail = Es[i] - P.es_floor;
@@ -1803,8 +1895,10 @@ static void step_field(void)
                 d2 = atoms_fire(d2, eF2, eD2, &qcnvF[i]);
                 d2 = atoms_clamp(d2, Em[i], eF2, eD2, &qcnvF[i]);
                 if (d2 > 0) {
+                    evap_total += d2;
                     qatom_diag(0, atoms_w(w2e[i], w1e[i]), d2);
                     double bs = d2 * P.s_pull / (1.0 + P.s_pull);
+                    backs_total += bs;
                     Em[i] -= d2;
                     field_inject(i, d2 - bs);
                     Es[i] += bs;
@@ -1904,6 +1998,70 @@ static void snapshot(int step)
                 i, cx[i], cy[i], cz[i], cr[i], Es[i], Em[i], Ee[i], th1[i], th2[i],
                 w1e[i], w2e[i], n1x[i], n1y[i], n1z[i], n2x[i], n2y[i], n2z[i]);
     fclose(f);
+}
+
+/* MASS instrument — the lump census: connected components of free dense
+ * energy above lump_thr, walked over live channels. The campaign's
+ * primary eye: per-lump mass, centroid, rms radius (top 10 by mass). */
+static int *lv_vis = NULL, *lv_q = NULL;
+static void lumps_row(double t)
+{
+    if (!lv_vis) {
+        lv_vis = malloc(NC * sizeof(int));
+        lv_q = malloc(NC * sizeof(int));
+    }
+    for (int i = 0; i < NC; i++) lv_vis[i] = 0;
+    double thr = P.lump_thr;
+    double emfree = 0;
+    for (int i = 0; i < NC; i++) if (!cflag[i]) emfree += Em[i];
+    double lm[10], lx[10], ly[10], lz[10], lr[10];
+    int nl = 0, ntot = 0;
+    for (int i = 0; i < NC; i++) {
+        if (lv_vis[i] || cflag[i] || Em[i] <= thr) continue;
+        int h = 0, tq = 0;
+        lv_q[tq++] = i; lv_vis[i] = 1;
+        double m = 0, mx = 0, my = 0, mz = 0;
+        while (h < tq) {
+            int u = lv_q[h++];
+            m += Em[u];
+            mx += Em[u] * cx[u]; my += Em[u] * cy[u]; mz += Em[u] * cz[u];
+            for (int q = cls[u]; q < cls[u + 1]; q++) {
+                int l = clidx[q];
+                if (lA[l] <= 0) continue;
+                int o = li[l] == u ? lj[l] : li[l];
+                if (!lv_vis[o] && !cflag[o] && Em[o] > thr) {
+                    lv_vis[o] = 1; lv_q[tq++] = o;
+                }
+            }
+        }
+        ntot++;
+        mx /= m; my /= m; mz /= m;
+        double rg = 0;
+        for (int q = 0; q < tq; q++) {
+            int u = lv_q[q];
+            double dx = cx[u] - mx, dy = cy[u] - my, dz = cz[u] - mz;
+            rg += Em[u] * (dx * dx + dy * dy + dz * dz);
+        }
+        rg = sqrt(rg / m);
+        int at = nl < 10 ? nl : -1;
+        if (at < 0) {
+            for (int k = 0; k < 10; k++)
+                if (m > lm[k] && (at < 0 || lm[k] < lm[at])) at = k;
+        }
+        if (at >= 0) {
+            if (nl < 10) nl++;
+            lm[at] = m; lx[at] = mx; ly[at] = my; lz[at] = mz; lr[at] = rg;
+        }
+    }
+    printf("# LUMP t=%.2f n=%d Emfree=%.6g", t, ntot, emfree);
+    for (int k = 0; k < nl; k++) {
+        int b = 0;
+        for (int k2 = 1; k2 < nl; k2++) if (lm[k2] > lm[b]) b = k2;
+        printf(" | m=%.6g x=%.2f y=%.2f z=%.2f rg=%.2f",
+               lm[b], lx[b], ly[b], lz[b], lr[b]);
+        lm[b] = -1;
+    }
+    printf("\n");
 }
 
 static void diag_row(double t)
@@ -2008,6 +2166,10 @@ static void diag_row(double t)
            t, tEs, tEm, tEe, tET, tot, drift, nact,
            cmx, cmy, cmz, cin, front, rin, defA, rout, rin > 0 ? rin / (rout > 0 ? rout : 1) : 0,
            win, wout, cex, cey, cez, pfx, pfy, pfz, ffx, ffy, ffz);
+
+    printf("# CONV t=%.2f cond=%.6g evap=%.6g rough=%.6g back_s=%.6g\n",
+           t, cond_total, evap_total, rough_total, backs_total);
+    if (P.lump_diag) lumps_row(t);
 
     /* G4 — radial throughput report: per shell, the accumulated space-
      * transport flux rate (positive = outward), the instantaneous field
