@@ -105,18 +105,59 @@ def render_series(snapdir, which, z0, dz, out):
     print(f"wrote {out}  ({n} frames)")
 
 
+def render_3d(path, out, thr=0.05):
+    """3D view: the live dense structure in the foam. Grey dust = a
+    subsample of the foam for depth context; colored = cells with
+    Em > thr (size ~ r^2, color = Em); teal = field cells Ee > thr."""
+    d = load(path)
+    step = os.path.basename(path).split("_")[-1].split(".")[0]
+    fig = plt.figure(figsize=(9, 8))
+    ax = fig.add_subplot(projection="3d")
+    dust = d[::7]
+    ax.scatter(dust["x"], dust["y"], dust["z"], s=1.2, c="#999999",
+               alpha=0.10, linewidths=0)
+    live = d[d["Em"] > thr]
+    if len(live):
+        p = ax.scatter(live["x"], live["y"], live["z"],
+                       s=60.0 * live["r"] ** 2, c=live["Em"],
+                       cmap="inferno", linewidths=0, depthshade=True)
+        fig.colorbar(p, ax=ax, fraction=0.03, pad=0.08, label="Em")
+    fld = d[d["Ee"] > thr]
+    if len(fld):
+        ax.scatter(fld["x"], fld["y"], fld["z"], s=25.0 * fld["r"] ** 2,
+                   c="teal", alpha=0.5, linewidths=0, marker="^")
+    for lim, lo, hi in ((ax.set_xlim, d["x"].min(), d["x"].max()),
+                        (ax.set_ylim, d["y"].min(), d["y"].max()),
+                        (ax.set_zlim, d["z"].min(), d["z"].max())):
+        lim(lo, hi)
+    ax.set_box_aspect((1, 1, 1))
+    ax.set_title(f"3D — dense Em > {thr} (step {step}); "
+                 f"grey dust = foam context, teal = field", fontsize=10)
+    fig.tight_layout()
+    fig.savefig(out, dpi=115)
+    plt.close(fig)
+    print(f"wrote {out}  ({len(live)} live dense cells of {len(d)})")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("target", help="snapshot TSV, or snapshot dir with --series")
     ap.add_argument("--series", action="store_true")
+    ap.add_argument("--mode3d", action="store_true",
+                    help="3D structure view instead of the slab panels")
     ap.add_argument("--panel", default="em", choices=["em", "ee", "es"])
+    ap.add_argument("--thr", type=float, default=0.05)
     ap.add_argument("--z", type=float, default=None)
     ap.add_argument("--dz", type=float, default=1.5)
     ap.add_argument("--out", default=None)
     a = ap.parse_args()
-    out = a.out or (a.target.rstrip("/") + (".series.png" if a.series else ".png"))
+    out = a.out or (a.target.rstrip("/")
+                    + (".series.png" if a.series else
+                       ".3d.png" if a.mode3d else ".png"))
     if a.series:
         render_series(a.target, a.panel, a.z, a.dz, out)
+    elif a.mode3d:
+        render_3d(a.target, out, a.thr)
     else:
         render_one(a.target, a.z, a.dz, out)
 

@@ -247,3 +247,34 @@ E — THEORY DEBTS FEEDING MASS
      separable constituents; knocking one out should yield only new
      closed structures + radiation, never a lone free voice — the
      confinement phenomenology, testable as B4.
+
+* **2026-07-28 (parallel design round, two agents)** — both design
+  notes landed and are archived in `design/`:
+  **B1 winding compensation** (`design/B1_winding_compensation.md`):
+  the decisive reframe — *winding IS the choice of per-link
+  retardation*; the naive seed's phases were right and its LOADS were
+  wrong. Compensated seed: no phase kick (`ring_wind=0`), loads set so
+  ω·d/C = π − 2πw/N per link; the closure integer m = N/2 − w becomes
+  the topology/species label, verified by the seeder's own closure
+  printout. Concrete: comp12 (N=12, d=1.25, ring_x=0.32054 → m=5) with
+  a mass-AND-pitch-matched unwound control (d=1.5, same ring_x → m=6)
+  — a clean topological A/B differing only in the closure integer.
+  Protection argument: unwinding requires a link to cross the dead-gate
+  desert (gate ~4e-10 at ψ≈−2.6). Risks: N=6 w=1 is fully one-way
+  (back gates 1.5e-5); gg diagnostics read low BY DESIGN on wound
+  rings (score by leak + circulation, not gg). Prediction worth
+  chasing: a chirality-split mass spectrum (m = N/2−w heavy vs
+  N/2+w light) — the first charge-like species axis.
+  **C1' piston** (`design/C1_piston_design.md`): cflag-6 skin +
+  explicit reservoir accounts R_s/R_f INSIDE the conservation sum
+  (Sterbenz-exact resets; drift stays at the floor); apparatus params
+  piston_m/es0/es1/t0/t1/absorb; rung LOCI proven ambient-invariant by
+  the bound-energy-only pitch law — so any measured locus shift under
+  pressure FALSIFIES that law (a free tripwire); quasi-static bound
+  t1−t0 ≥ 1000 at s_k=0.06. Two experiments specified (blob census
+  arms A0/A+/A−; ring anneal B0/B+/B−) with success criteria.
+  **Instrument caveat found by the agent, recorded:** existing
+  edge_sink cells accumulate recorded Em which enters pressure via
+  s_disp — old sinks slowly push space inward on long runs; prefer the
+  piston for T > 500 once built (kernel-wide fix only via the ratchet).
+  comp12 probe fleet launched (zero code change).
