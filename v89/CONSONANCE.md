@@ -557,3 +557,127 @@ fabric as in a choir.
   identity.
 * The octave wants range: only the edge of the occupancy scale reaches
   2:1 at q_detune = 1.2.
+
+## Part VII — Round 3: the choir's correction, derived and retired (2026-07-28)
+
+Part VI left one open mechanism: energy exchange whose direction
+correlates with the sign of detuning — "singers correct pitch, not just
+phase." The §6.9 annealing (ROADMAP) closed it as a *posited* rate-level
+law: `kappa_freq = 0.6` times the dispersive partner of the comb
+resonance, windowed by the acceptance and scaled by mutual gate closure.
+S2's first obligation was to derive that bias. This round did, with an
+ending nobody ordered: the mechanism is real and derivable — and the
+constant is unnecessary.
+
+### VII.1 Two lemmas from the gate algebra
+
+**The odd channel does not exist at rate level.** The gates are even
+(`gate_of` is a function of cos), and on a rung separation the two gate
+arguments of a locked pair are exact negatives: ψ_ji = −ψ_ij, so
+g_ij = g_ji *identically*, at any entrainment strength, for any locked
+offset. Rate-level exchange therefore carries no odd-in-detune flow at
+all: however hard the clocks entrain, the two directed wants stay equal.
+Whatever restores a mistuned pair's *ratio* must be interference
+**energy** — the cross term of coherent amplitudes — which rate
+compression discards. (This is why §6.9 had to posit a new law rather
+than strengthen an old one.)
+
+**The ladder is the conservation condition of retarded exchange.** For
+two partial amplitudes coupled through a channel with flight retardation
+τ = d/C, the sum of the two directed energy flows carries the factor
+sin((q·ω_i + p·ω_j)·τ/2 − πm): retarded coherent exchange conserves the
+pair's books *exactly on the separation ladder* (q·ω_i + p·ω_j)·d/C =
+2πm, and pumps or drains off it. Part III derived the ladder from gate
+alignment; it is equally the locus where a coherent channel is
+conservative. Same law, second derivation.
+
+### VII.2 The micro-model (v89/s2/choir_pull.c)
+
+Two voices, one channel, every constant from the law table. Twin A is
+the rate-level pair with the §6.9 posit; twin B replaces the two
+directed rates with coherent gated exchange — flows
+∓2κ·g·√(E₀E₁)·sin(ψ) per direction with the kernel's own gate arguments,
+plus the same coupling's phase pull (injection pulling), plus the
+kernel's κ_lock entrainment and delivery cycles verbatim. The one bridge
+convention: κ = ½·(k_dep·k_dep_m·geo·gpl·res) — the channel's own
+conductance read as an amplitude coupling. **No bias law anywhere in
+twin B.** Measured (results in v89/s2/results/):
+
+* **Sign — restoring, derived.** For det = q·ω₀ − p·ω₁ > 0 (voice 0
+  sharp = light), the lock settles at ψ* > 0 and net energy flows into
+  voice 0, flattening it. Feeding the sharp voice is not a choice; it is
+  where the locked phase offset puts the cross-flow.
+* **Healing.** Unclamped, a pair seeded at det = 0.15 reaches det ≈
+  0.002 by t = 5 and the rung exactly by t ≈ 10 (twin A with the posit:
+  t ≈ 5). The rung is a two-sided attractor of the bare amplitude
+  dynamics, at battery-relevant speed.
+* **Window.** The bias curve is odd, roughly linear inside the lock, and
+  collapses when the comb window unlocks the pair — at |det| ≈ 2Γ_b with
+  Γ_b = Γ_m/(pq), for both 1:1 (collapse ≈ 0.2) and 3:2 (≈ 0.03, with
+  the slip counter confirming unlock). The posited "windowed inside the
+  acceptance" shape was the right family.
+* **Mutual closure.** Off the ladder (d-scan at fixed det) the bias
+  falls with the gate-closure product and weakly reverses far off — the
+  rim-protection clause of the posit is inherent, not added.
+* **Strength.** At the unitarity point the in-band bias is ~7–20×
+  weaker than kappa_freq = 0.6's — and (see VII.3) that is enough.
+* **A prediction the posit cannot make:** asymmetric intervals
+  equilibrate slightly *off* exact ratio (the 3:2 curve's zero crossing
+  is displaced) — interval stretch, as in real inharmonic instruments.
+  Measurable on e9 with a tightened ratio criterion; not yet scored.
+
+### VII.3 The kernel competition, and the retirement
+
+The derived term was put into the kernel as a uniform law
+(`kappa_reac`: the reactive component of sympathetic exchange at the
+channel's own conductance; kappa_reac = 1 is the unitarity point, not a
+tuned strength) and run against the full battery:
+
+| table | bias law | result |
+|---|---|---|
+| `laws_V2.cfg` (§6.9) | kappa_freq = 0.6, posited | 17/17, fat margins |
+| `laws_V2d.cfg` | kappa_reac = 1, derived, no free constant | **16/17** — everything passes except e3b: the tilted blob stalls and decoheres (cos 0.97 → 0.02) |
+| `laws_V2z.cfg` | **no bias at all** (kf = 0, kr = 0) | **17/17 — the standing table** |
+
+Two findings in one table.
+
+**The e3b failure is located physics.** The derived term is odd in the
+*phase offset* ψ; the posit was odd in the *detune*. For a lock-pinned
+pair these coincide (ψ* ∝ det). For a tilted translating front, ψ is
+pinned by *advection* at det ≈ 0 — and there the raw reactive flow acts
+where the posit's det-window was silent. Worse, its pair-restoring sign
+is anti-parallel to the transport current (for a subluminal traveling
+phase gradient, ψ_ij = d·(k − ω/C) > 0 on forward links, and the
+restoring sign *reduces* forward wants). Rate-level transport is
+incoherent gated diffusion; it cannot host the raw current that
+amplitude mechanics would use to *carry* the blob. That is the crisp
+acceptance criterion this round bequeaths to the full dense-amplitude
+rewrite: **S2-full is done when kappa_reac = 1 passes the whole battery
+— when the reactive current is what translation IS, not what breaks
+it.** (Probe hygiene note: a kappa_reac = −1 "sign test" early in this
+round silently ran as zero — the kernel guard is `> 0` — so the
+sign-conflict claim rests on the analytic argument above and the
+micro-model, not on a kernel run.)
+
+**The constant was margin, not law.** With the bias off entirely the
+battery still passes 17/17. The §6.9 annealing introduced kappa_freq
+(round R1) *before* flight-loads-pitch (round R3) removed the actual
+cause of pair death; the later rounds tuned the bias's shape without
+re-running the zero ablation. The battery caught the vestige. What the
+bias was buying under V2 was margin: e7 frac 0.79 → 0.77 (bar 0.75),
+e3a seal 0.00071 → 0.00174 (bar 0.002), e6 tongue gg 0.88 → 0.65 (bar
+0.5) — thinner everywhere, green everywhere. Under the standing
+protocol (the battery judges; constants must be load-bearing), the
+principled table is V2z: **kappa_freq is retired from the law table.**
+
+### VII.4 Status of the open mechanism
+
+The Part VI open item — "the missing mechanism is energy exchange whose
+direction correlates with the sign of detuning" — closes as follows:
+the mechanism exists and is derived (VII.2), it is the interference
+cross-flow of coherent exchange at the locked phase offset; at rate
+level, after flight-loads-pitch, nothing in the program requires its
+shadow; and its faithful home is the amplitude completion, where it
+must also carry transport. One free constant leaves the theory; one
+acceptance criterion and one pre-registered prediction (interval
+stretch) enter it.

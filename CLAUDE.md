@@ -44,17 +44,19 @@ usual sense, because nothing has a trajectory.
 
 ## The unified law (synthesis, 2026-07-28)
 
-One law table — `v89/battery/laws_V2.cfg` — passes all 17 experiments with
-only apparatus varying (`python3 v89/battery/battery.py --laws laws_V2.cfg`).
+One law table — `v89/battery/laws_V2z.cfg` — passes all 17 experiments with
+only apparatus varying (`python3 v89/battery/battery.py --laws laws_V2z.cfg`).
 The synthesis, in full in `v89/README.md` ("The law, as it stands"):
 **amplitudes within a mode** (transport is never quantized); **atoms at mode
 boundaries** (every conversion fires in whole action atoms ε = A₀ω/2π at the
 source's pitch, two-atom credit; ħ-linearity measured to ~1e−8); **load
 flattens pitch and flight is load** (x = (Em + flload)/cap; vacuum optics
-linear, Kerr = loaded matter); **the choir's correction** (dispersive partner
-of the comb resonance, acceptance-windowed, gate-scaled — rungs are two-sided
-attractors; kappa_freq = 0.6 posited, S2 owes the derivation); **the vacuum
-skirt** (confirmed scored prediction). Record: `v89/ROADMAP.md` §6.
+linear, Kerr = loaded matter); **the choir's correction derived then
+retired** (the restoring bias is the interference cross-flow of coherent
+exchange — derived in `v89/s2/`, unnecessary at rate level post-flload:
+17/17 with zero bias constant; kappa_reac=1 full-pass is the S2-full
+acceptance criterion); **the vacuum skirt** (confirmed scored prediction).
+Record: `v89/ROADMAP.md` §6 (§6.10 for the retirement).
 
 ## Everything below this line is HISTORICAL
 

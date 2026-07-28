@@ -26,7 +26,7 @@ LAW_KEYS = {
     "C", "dmin", "r0", "rjit", "w1", "w2", "q_detune", "gamma_res",
     "gamma_res_m", "p_gate", "lock_floor", "k_dep", "k_dep_m", "cap",
     "e_s0", "es_floor", "e_cond", "f_conv", "f_evap", "s_pull",
-    "kappa_lock", "kappa_align", "kappa_freq", "sigma_tumble",
+    "kappa_lock", "kappa_align", "kappa_freq", "kappa_reac", "sigma_tumble",
     "comb_limit", "rough_k",
     "gamma_rough", "mob_sym", "mob_floor", "field_J", "quant_A0",
     "quant_mode",

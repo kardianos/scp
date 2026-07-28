@@ -1,0 +1,23 @@
+# cellfab — v89 cell-fabric kernel (no lattice, no prior code)
+# cfg seed=20260727 mode=bell init=vacuum
+# cfg L=24 dmin=1 r0=0.85 rjit=0.06
+# cfg C=1 w1=1.65 w2=2.9 q_detune=1.2 gamma_res=0.25 gamma_res_m=0.1 p_gate=8
+# cfg lock_floor=0.005
+# cfg k_dep=1.2 k_dep_m=2 cap=2.5 e_s0=1 es_floor=0.05
+# cfg e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# cfg kappa_lock=1 kappa_align=0.5 kappa_freq=0 kappa_reac=1 sigma_tumble=0.01
+# cfg dt=0.02 T=40 diag_every=50 snap_every=0
+# cfg center=(-1,-1,-1) amp=1 sigma=2.5 k=(0,0,0) prealign=0 noise_amp=0
+# cfg music: comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004
+# cfg field sector: two-component signed amplitude, unitary hops, field_J=1.8
+# bell mode: analyzers pass with the kernel's plane-overlap law cos^2(delta)
+# joint: pair = ONE unfinished conversion; first completed cycle collapses the shared phase
+# lhv:   same cos^2 responder, but a private pre-assigned phase per packet
+# aA	aB	E_joint_mc	E_joint_th	E_lhv_mc	E_lhv_th
+0.0	22.5	+0.7069	+0.7071	+0.3534	+0.3536
+0.0	67.5	-0.7065	-0.7071	-0.3552	-0.3536
+45.0	22.5	+0.7066	+0.7071	+0.3546	+0.3536
+45.0	67.5	+0.7063	+0.7071	+0.3505	+0.3536
+# RESULT S_joint=2.8263 S_lhv=1.4138 classical_bound=2 tsirelson=2.8284 trials=500000
+# reading: the violation is bought by the joint harmonic (one process, two ends),
+# not by the response law — the identical cos^2 responder with private phases stays below 2.

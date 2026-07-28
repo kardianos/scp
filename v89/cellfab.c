@@ -64,6 +64,7 @@ typedef struct {
     double e_cond, f_conv, f_evap, s_pull;
     double kappa_lock, kappa_align, sigma_tumble;
     double kappa_freq;           /* A1: dispersive exchange bias (frequency entrainment) */
+    double kappa_reac;           /* S2: derived reactive exchange (choir's correction, no posit) */
     double dt, T;
     int diag_every, snap_every;
     char snap_dir[256];
@@ -147,6 +148,7 @@ static void cfg_defaults(void)
     P.e_cond = 0.30; P.f_conv = 0.25; P.f_evap = 0.5; P.s_pull = 0.5;
     P.kappa_lock = 0.9; P.kappa_align = 0.5; P.sigma_tumble = 0.01;
     P.kappa_freq = 0.0;
+    P.kappa_reac = 0.0;
     P.dt = 0.02; P.T = 40.0;
     P.diag_every = 50; P.snap_every = 0;
     strcpy(P.snap_dir, "snaps");
@@ -232,6 +234,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "kappa_lock")) P.kappa_lock = atof(v);
     else if (!strcmp(k, "kappa_align")) P.kappa_align = atof(v);
     else if (!strcmp(k, "kappa_freq")) P.kappa_freq = atof(v);
+    else if (!strcmp(k, "kappa_reac")) P.kappa_reac = atof(v);
     else if (!strcmp(k, "sigma_tumble")) P.sigma_tumble = atof(v);
     else if (!strcmp(k, "dt")) P.dt = atof(v);
     else if (!strcmp(k, "T")) P.T = atof(v);
@@ -338,8 +341,8 @@ static void print_cfg(void)
            P.k_dep, P.k_dep_m, P.cap, P.e_s0, P.es_floor);
     printf("# cfg e_cond=%g f_conv=%g f_evap=%g s_pull=%g\n",
            P.e_cond, P.f_conv, P.f_evap, P.s_pull);
-    printf("# cfg kappa_lock=%g kappa_align=%g kappa_freq=%g sigma_tumble=%g\n",
-           P.kappa_lock, P.kappa_align, P.kappa_freq, P.sigma_tumble);
+    printf("# cfg kappa_lock=%g kappa_align=%g kappa_freq=%g kappa_reac=%g sigma_tumble=%g\n",
+           P.kappa_lock, P.kappa_align, P.kappa_freq, P.kappa_reac, P.sigma_tumble);
     printf("# cfg dt=%g T=%g diag_every=%d snap_every=%d\n",
            P.dt, P.T, P.diag_every, P.snap_every);
     printf("# cfg center=(%g,%g,%g) amp=%g sigma=%g k=(%g,%g,%g) prealign=%d noise_amp=%g\n",
@@ -1180,6 +1183,32 @@ static void step_field(void)
                 double bj = 1.0 + kb; if (bj < 0) bj = 0;
                 w_ij *= bi;
                 w_ji *= bj;
+            }
+            if (c == 1 && P.kappa_reac > 0) {
+                /* S2 — the choir's correction, DERIVED: sympathetic
+                 * exchange carries its reactive (odd) component — the
+                 * interference cross-flow of the coincident partials,
+                 * which even-gate rate compression discards (with even
+                 * gates on a rung, g_ij == g_ji for a locked pair, so
+                 * no odd-in-det flow exists at rate level; the odd
+                 * channel is interference energy). kappa is the
+                 * channel's own conductance read as amplitude coupling:
+                 * kappa_reac = 1 is the unitarity point, not a tuned
+                 * strength (v89/s2/choir_pull.c: sign restoring, window
+                 * ~2*Gamma_b inherent in res x lock loss, rim
+                 * protection inherent in sin(psi) averaging to zero for
+                 * unlocked pairs). */
+                double ps_ij = wrap_pi(lq[l] * thi - lq[l] * wi * d / P.C
+                                       - lp[l] * thj);
+                double ps_ji = wrap_pi(lp[l] * thj - lp[l] * wj * d / P.C
+                                       - lq[l] * thi);
+                double Sm = sqrt(mi_eff * mj_eff);
+                double hh = sqrt(head_i * head_j);
+                double reac = P.kappa_reac * 0.5 * base * hh * Sm;
+                w_ij -= reac * g_ij * sin(ps_ij);
+                w_ji -= reac * g_ji * sin(ps_ji);
+                if (w_ij < 0) w_ij = 0;
+                if (w_ji < 0) w_ji = 0;
             }
             if (w_ij > 0) { lwant[SLOT(l, c, 0)] = w_ij; if (c == 0) req0[i] += w_ij; else req1[i] += w_ij; }
             if (w_ji > 0) { lwant[SLOT(l, c, 1)] = w_ji; if (c == 0) req0[j] += w_ji; else req1[j] += w_ji; }

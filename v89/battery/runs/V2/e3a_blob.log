@@ -5,7 +5,7 @@
 # cfg lock_floor=0.005
 # cfg k_dep=1.2 k_dep_m=2 cap=2.5 e_s0=1 es_floor=0.05
 # cfg e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
-# cfg kappa_lock=1 kappa_align=0.5 kappa_freq=0.6 sigma_tumble=0.01
+# cfg kappa_lock=1 kappa_align=0.5 kappa_freq=0.6 kappa_reac=0 sigma_tumble=0.01
 # cfg dt=0.02 T=80 diag_every=100 snap_every=0
 # cfg center=(-1,-1,-1) amp=1.6 sigma=2.2 k=(0,0,0) prealign=0 noise_amp=0
 # cfg music: comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004

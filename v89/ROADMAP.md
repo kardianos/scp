@@ -64,11 +64,16 @@ an exactly paired ledger move or an exactly unitary rotation.
    Missing: exchange direction correlated with detuning sign
    (∝ ∂res/∂x), a paired move. Success: interval lifetimes extend by
    orders; rungs become two-sided attractors (fixes the below-rung
-   fall-through). **RESOLVED as a rate-level law (§6.9, kappa_freq):
-   the dispersive partner of the comb resonance, windowed by the
-   acceptance, scaled by mutual gate closure — rungs are measured
-   two-sided attractors (e7 gg 0.98, e9 locked t=60). Remaining open:
-   S2 must *derive* the bias (strength currently a posited constant).**
+   fall-through). **CLOSED (§6.10, CONSONANCE Part VII): the mechanism
+   is DERIVED at amplitude level (interference cross-flow at the locked
+   phase offset — restoring sign, ~2Γ_b window, mutual-closure riding
+   and healing all measured in v89/s2/ with no bias law), and the
+   rate-level constant is RETIRED — after flight-loads-pitch the
+   battery passes 17/17 with kappa_freq = 0 (laws_V2z.cfg, the
+   standing table). Rungs are two-sided attractors without it (e9
+   locked t=60 at zero bias). The raw derived term (kappa_reac = 1)
+   breaks tilted transport (e3b) — its faithful home is the S2-full
+   amplitude completion, whose acceptance criterion it now is.**
 2. **Interval identity hysteresis.** The comb argmax flips instantly; a
    held interval should need a decisive margin to change its name.
 3. **Rings — the fabric's chords.** Σωᵢdᵢ/C = 2πm for triangles; narrower
@@ -674,7 +679,52 @@ variant-orthogonal, not overfitted to V2.
 
 **Honest limits:** blob-drift observables are chaotic at the 10⁻³ level
 (±30% under law microshifts) — the e3a/e3b bars are meaningful but
-individual values jitter; kappa_freq awaits its S2 derivation; the
-vacuum-skirt law (voices within ~2Γ of the room's pitch dissolve into
-it) is now confirmed and *guarded by the battery*, but its edge
+individual values jitter; kappa_freq awaits its S2 derivation *(done
+next day — §6.10: derived at amplitude level, retired from the table)*;
+the vacuum-skirt law (voices within ~2Γ of the room's pitch dissolve
+into it) is now confirmed and *guarded by the battery*, but its edge
 structure (the 0.076-vs-0.093 margin) is one seed's measurement.
+
+### 6.10 S2 first execution: the choir's correction derived — and the
+constant retired (2026-07-28)
+
+Full record: `CONSONANCE.md` Part VII; micro-model and sweeps in
+`v89/s2/`. The short form:
+
+* **Negative lemma.** Even gates + rung separation ⇒ g_ij = g_ji for a
+  locked pair identically: rate-level exchange has NO odd-in-detune
+  channel at any entrainment strength. The correction is necessarily
+  interference *energy* — which rate compression discards. (Bonus
+  lemma: retarded coherent exchange conserves the pair's books exactly
+  ON the separation ladder — the CONSONANCE rungs re-derived as the
+  conservation condition of retarded coupling.)
+* **Derivation.** A two-voice amplitude micro-model (kernel gates,
+  comb, entrainment, cycles, pitch-load verbatim; coupling = the
+  channel's own conductance; NO bias law) produces the bias emergently:
+  restoring sign, odd windowed curve collapsing at ~2Γ_b = 2Γ_m/(pq)
+  (checked at 1:1 and 3:2), riding the mutual gate closure, healing a
+  det = 0.15 pair to the rung by t ≈ 10. Plus a pre-registered
+  prediction the posit cannot make: asymmetric intervals equilibrate
+  slightly off exact ratio (interval stretch).
+* **Kernel competition.** `kappa_reac = 1` (derived term at the
+  unitarity point, zero free constants) scores 16/17 — the sole failure
+  is e3b: the reactive flow is odd in phase offset, not detune, so it
+  acts on advection-pinned tilts where the posit's det-window was
+  silent, and its pair-restoring sign is anti-parallel to the transport
+  current. Rate-level incoherent transport cannot host the raw current.
+  **S2-full acceptance criterion: kappa_reac = 1 passes the whole
+  battery — translation IS the current.**
+* **Retirement.** With the bias off entirely: **17/17
+  (`laws_V2z.cfg`, now the standing table).** Flight-loads-pitch (R3)
+  had removed the pair-death cause the bias was introduced for (R1);
+  the zero ablation was never re-run; the battery caught the vestige.
+  The 0.6 was buying margin, not passes (e7 frac 0.79→0.77 vs bar
+  0.75; e3a 0.00071→0.00174 vs bar 0.002; e6 gg 0.88→0.65 vs bar 0.5).
+  Under the standing protocol — constants must be load-bearing — the
+  free constant leaves the theory. The law tables carry
+  `kappa_freq=0, kappa_reac=0`; `laws_V2.cfg` (0.6) and `laws_V2d.cfg`
+  (kr=1) are kept as the §6.9 artifact and the S2 exhibit.
+
+**Next:** S2-full (dense amplitude completion; acceptance = kr 1 full
+pass), S3 joint-pass sweep, S4 quantum battery, the e9 interval-stretch
+measurement, HOM fidelity, Es-lensing.

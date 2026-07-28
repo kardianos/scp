@@ -541,11 +541,28 @@ Recursive annealing against the full battery closed the last gap
   coincidence — windowed by the Lorentzian acceptance (falls as 1/det³
   off-resonance: blob rims feel nothing) and scaled by the mutual gate
   closure (the choir corrects only those singing together). Rungs are
-  now measured two-sided attractors. The strength (0.6) is posited;
-  S2 owes its derivation.
+  now measured two-sided attractors. *(S2 postscript, 2026-07-28: the
+  mechanism was then DERIVED at amplitude level and the constant
+  RETIRED — see §12c.)*
 
 Also from the annealing: the **vacuum skirt** is a confirmed, scored
 prediction (voices within ~2Γ of the room's pitch dissolve into it —
 pair deaths confined to x* ≤ 1.5× the computed boundary), and
 `mob_floor = 0.004` sits where pair bleed and front recruitment both
-pass. The standing law table: `battery/laws_V2.cfg`.
+pass. The standing law table: `battery/laws_V2z.cfg` (§12c).
+
+## 12c. S2 first execution: kappa_freq derived, then retired (2026-07-28)
+
+Full record: `CONSONANCE.md` Part VII; micro-model in `s2/`. The bias
+is real amplitude physics — a two-voice coherent micro-model with no
+bias law produces it emergently (restoring sign, ~2Γ_b window,
+mutual-closure riding, healing to the rung by t ≈ 10) — and its
+rate-level shadow is unnecessary: after flight-loads-pitch, the battery
+passes **17/17 with the bias at zero**. The kernel now carries
+`kappa_reac` (the derived reactive term at the channel's own
+conductance; unitarity point = 1): at kr = 1 it scores 16/17, failing
+only e3b — the raw current is odd in phase offset, not detune, so it
+acts on advection-pinned tilts and fights incoherent transport. The
+standing table is `laws_V2z.cfg` (kf = 0, kr = 0, one fewer free
+constant); kr = 1 full-pass is the acceptance criterion for the dense
+amplitude completion.

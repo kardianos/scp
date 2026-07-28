@@ -44,7 +44,7 @@ If a question seems to need prior context, the answer is to derive it from
 ## The law, as it stands (2026-07-28)
 
 What the constraints have produced so far, in one place. One table of
-constants — `battery/laws_V2.cfg` — passes every experiment in the program
+constants — `battery/laws_V2z.cfg` — passes every experiment in the program
 (17/17), with only apparatus differing between them: conservation, field
 packets, heavy and light blobs, curvature linearity, CHSH, the rung tongue,
 the pair tuning curve, the comma, the fifth, double-slit fringes,
@@ -71,15 +71,19 @@ short set of laws.
    nonlinearity is a property of loaded matter. Inertia emerges from the
    same law — light blobs translate, heavy blobs freeze.
 
-3. **The choir's correction.** Sympathetic exchange carries the
-   dispersive partner of the comb resonance: a mistuned pair biases its
-   own exchange toward whichever direction restores the rung (feeding
-   the sharp voice flattens it), windowed inside the acceptance and
-   riding the mutual gate closure — only those singing together are
-   corrected, so a blob's graded rim feels no homogenizing pressure.
-   Rungs are thereby two-sided attractors, measured: the fifth locks and
-   holds. Strength kappa_freq = 0.6 is posited at rate level; its
-   derivation is S2's first obligation.
+3. **The choir's correction — derived, then retired.** A mistuned pair
+   restores its own rung: the interference cross-flow of coherent
+   exchange at the locked phase offset feeds the sharp voice and
+   flattens it — restoring sign, ~2Γ acceptance window, and
+   mutual-gate riding all *derived* in a two-voice amplitude micro-model
+   with no bias law (`s2/`, CONSONANCE Part VII). At rate level the
+   corresponding constant proved unnecessary: after flight-loads-pitch,
+   the battery passes 17/17 with the bias at zero, so the law table
+   carries no bias constant at all. Rungs are two-sided attractors
+   without it — the fifth locks and holds. The raw derived term breaks
+   tilted transport at rate level (16/17), which is now the acceptance
+   criterion for the dense amplitude completion: it passes when
+   translation IS the current.
 
 4. **The vacuum skirt** — a scored prediction, confirmed. A voice loaded
    to within ~2Γ of the room's pitch dissolves into it; pair deaths
@@ -91,8 +95,9 @@ destination-sized; per-cycle floor vs credit). V2 — source-sized atoms
 with the two-atom credit — is the unique full pass (V1 15/17, V3 16/17,
 V4 16/17), and the failures are discriminations, not accidents: a floor
 cannot pay the comma, and destination-sizing taxes a translating front.
-Full record and the annealing history: `ROADMAP.md` §6; harness and
-verdicts: `battery/`.
+V2z is V2 with the bias constant retired (17/17, one fewer free
+constant). Full record and the annealing history: `ROADMAP.md` §6;
+harness and verdicts: `battery/`.
 
 ## What is inherited
 
@@ -117,8 +122,9 @@ else needs to be retrieved.
 
 | file | role |
 |---|---|
-| `ROADMAP.md` | **program state, open areas, and the reality ladder** — the standing execution document. Tiers 0–3 of the double-slit ladder green (single-quantum clicks, duality equality, eraser, delayed choice); tier 4 (HOM) **partial**: exchange registry works, boson dip / fermion peak with correct signs and delay recovery (g_b 0.42 < 0.5 < g_f 0.58), depth limited by mode matching and coupler chromaticity — the same limits as real experiments. Forks F-ħ and F-NS resolved. **§6 = the standing first priority: unification** — one law table for all experiments; the parameter audit, the thesis (amplitudes within a mode, atoms at mode boundaries, integers in closure), construction U1–U6. **S1 executed (§6.8) then recursively annealed (§6.9): 17/17 under one law table** — variant V2 (source-sized atoms + credit) is the unique full pass; ħ-linearity a measured battery invariant; emergent inertia; A1 closed as a law (the choir's correction: dispersive bias × acceptance window × mutual gate closure) plus the zero-constant flight-loads-pitch law; the vacuum skirt a confirmed scored prediction; S2 now owes the *derivation* of kappa_freq. |
-| `battery/` | **the unification battery** — one `laws_V2.cfg` shared byte-identically by 16 experiments (purity-checked), apparatus-only per-experiment cfgs, physics acceptance, variant cross-table. `python3 battery.py --laws laws_V2.cfg`. |
+| `ROADMAP.md` | **program state, open areas, and the reality ladder** — the standing execution document. Tiers 0–3 of the double-slit ladder green (single-quantum clicks, duality equality, eraser, delayed choice); tier 4 (HOM) **partial**: exchange registry works, boson dip / fermion peak with correct signs and delay recovery (g_b 0.42 < 0.5 < g_f 0.58), depth limited by mode matching and coupler chromaticity — the same limits as real experiments. Forks F-ħ and F-NS resolved. **§6 = the standing first priority: unification** — one law table for all experiments; the parameter audit, the thesis (amplitudes within a mode, atoms at mode boundaries, integers in closure), construction U1–U6. **S1 executed (§6.8) then recursively annealed (§6.9): 17/17 under one law table** — variant V2 (source-sized atoms + credit) is the unique full pass; ħ-linearity a measured battery invariant; emergent inertia; A1 closed as a law (the choir's correction: dispersive bias × acceptance window × mutual gate closure) plus the zero-constant flight-loads-pitch law; the vacuum skirt a confirmed scored prediction. **§6.10: S2 first execution — the choir's correction derived at amplitude level (`s2/`, CONSONANCE Part VII) and its constant retired: 17/17 with zero bias (`laws_V2z.cfg` standing); kappa_reac=1 full-pass = the S2-full acceptance criterion.** |
+| `battery/` | **the unification battery** — one `laws_V2z.cfg` shared byte-identically by 16 experiments (purity-checked), apparatus-only per-experiment cfgs, physics acceptance, variant cross-table. `python3 battery.py --laws laws_V2z.cfg`. |
+| `s2/` | **the S2 derivation micro-model** (`choir_pull.c`): two-voice amplitude-complete channel; twin A (rate + posit) vs twin B (coherent, no posit); curve/heal/dscan sweeps in `s2/results/`. |
 | `HBAR.md` | **the F-ħ situation, written out**: the cycle gate quantizes *when*, nothing quantizes *how much*. The reframe — the atom of transfer is action (fixed tail-call frame ⇒ E = (A₀/2π)ω) — plus ranked candidate origins (integer harmonic content restored; phase-space resolution from tongue widths; the space-cell grain e_s0·d̄/C ≈ 1.15 vs measured median act 0.617; zero-point self-consistency; winding), a rejected branch, and five discriminating tests. |
 | `CELLFAB.md` + `cellfab.c` | the **cell-fabric kernel**: no-grid cells with two-plane harmonics, resonant joining at rate C gated by tail phases, beat-gated mode conversion, saturation, curvature as contact defect, event-level Bell. First campaign results in `CELLFAB.md` §10, logs in `cellfab_runs/`. |
 | `CONSONANCE.md` | **locks without binding**: the musical resonance theory (notes as tail-calling processes, consonance as closure, the comma, the computed harmonic limit) back-ported to cell harmonics. Derives the pair separation ladder (ω₁+ω₂)d/C = 2πm from the existing gate law — no new mechanism — and measures it (E6/E7: tongue, tempered comma, defect payment, Huygens acquisition). Round 2 (Part VI) promotes the theory to kernel law (partial comb, roughness radiates, mutual coupling) and measures the comma paid (E8) and the interval lifetime hierarchy (E9). "Binding" is retired. |
