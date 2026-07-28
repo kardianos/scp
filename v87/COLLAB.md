@@ -1,11 +1,20 @@
 # Bell rung B0 — how the two seats interact
 
-Two agents work this rung IN PARALLEL and INDEPENDENTLY, then cross-check.
+THREE agents work this rung IN PARALLEL and INDEPENDENTLY, then cross-check.
+(A third seat, GEOM, was added after FABLE and GROK started — if you are one of
+those two, note it now and read its file.)
 
-| seat  | model    | writes to      | reads |
-|-------|----------|----------------|-------|
-| FABLE | fable    | FABLE_WORK.md  | BELL_BRIEF.md, FABLE_WORK.md, GROK_WORK.md |
-| GROK  | grok-4.5 | GROK_WORK.md   | BELL_BRIEF.md, GROK_WORK.md, FABLE_WORK.md |
+| seat  | model    | writes to      | extra brief    | reads |
+|-------|----------|----------------|----------------|-------|
+| FABLE | fable    | FABLE_WORK.md  | —              | BELL_BRIEF.md + all three work files |
+| GROK  | grok-4.5 | GROK_WORK.md   | —              | BELL_BRIEF.md + all three work files |
+| GEOM  | grok-4.5 | GEOM_WORK.md   | GEOM_BRIEF.md  | BELL_BRIEF.md, GEOM_BRIEF.md + all three work files |
+
+GEOM pursues one specific hypothesis: that the metric quadratic form (the c²
+relation) is the source of the 2√2 ceiling, while field monism supplies the
+mechanism for exceeding 2. FABLE and GROK work the doors-and-costs angle
+without that assumption. The two halves are meant to join if both succeed —
+GEOM owns the BOUND, FABLE/GROK own the REACHABILITY.
 
 RULES
 1. Write ONLY your own file. Never edit the other seat's file or the brief.

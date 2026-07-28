@@ -15,15 +15,36 @@ contradicted, this file supersedes it; v1's text survives in git history.
 - **ω_a = ∂E/∂Q_a are chemical potentials** — the Legendre structure is the
   exact, measured content (8×10⁻⁵). "E = Qω" is the monochromatic thin-wall
   skeleton, exact only for bound linear modes.
-- **Σ ≡ E − Σ_a ω_a Q_a is the virial/surface excess** — the object
-  formerly known as ε(Q)·ωQ, now to be DERIVED (see §5 battery): gradient +
-  potential + gauge − kinetic imbalance, with closed-form targets (virial
-  identity of the profile ODE; thin-wall surface law
-  Σ ≈ 4πR²σ_eff(ω) + g²Q²/8πR; scaling collapse in ξ/R).
+- **Σ ≡ E − Σ_a ω_a Q_a is the virial/surface excess** — the object formerly
+  known as ε(Q)·ωQ. **DERIVED by N1/N2** (`v86/PART0_RESULTS.md` §1–2); this
+  bullet is corrected here from its v1 wording:
+  - **Sign correction.** With the *true* integrated kinetic energy
+    E_kin = ∫(3/2)wt²f²dV, the excess is
+    **Σ = E_∇ + E_m + E_V − E_kin − E_g** — a MINUS on the gauge term, not the
+    "+ gauge" of the v1 text. The two are reconciled by the exact Gauss
+    identity **ωQ = 2(E_kin + E_g)** (residual ≤ 5×10⁻⁹ of E): if "kinetic" is
+    read as the *throughput* ωQ/2 then Σ = E_∇ + E_m + E_V − ωQ/2 and no bare
+    E_g appears at all. Mixing the two conventions is an error of 2E_g.
+  - **Closed form.** The Derrick/virial identity of the profile system,
+    (E_∇ − E_g) + 3(E_m + E_V − E_kin) = 0, reduces the excess to
+    **Σ = (2/3)(E_∇ − E_g)**, verified to ≤ 5×10⁻⁸ of E on 292 branch points
+    across g ∈ {0, 0.02, 0.05, 0.10}, on the flavoured branch, and across 25
+    (μ,κ) potentials. Ungauged this gives Σ = (2/3)E_∇ > 0 identically, which
+    *derives* the universally positive ε.
+  - **What is still not closed.** ε remains a computed profile functional —
+    E_∇ must come from the shooter. The thin-wall surface-law target is
+    supported (local fit ε ~ (ξ/R)^1.01, ε' collapses on ξ/R across g after the
+    measured-E_g subtraction) but σ_eff is not fitted, and the collapse
+    abscissa is O(1) sensitive to the definition of R.
 - **Three-way split even within one sector:** gauge charge Q_G ≠ process
   action 𝒜 ≠ inertia M. "ħ_eff = Q" is demoted from identity to measured
-  ratio ħ_eff/Q = 1+δ (v70's 3–5% and ε's 1–4% are the same residual
-  family, to be unified by the battery).
+  ratio ħ_eff/Q = 1+δ. **N6 closes the unification this bullet predicted:**
+  ħ_E/Q − 1 ≡ E/(ω̄Q) − 1 is *identically* ε̄, measured at 0.026–0.049 across
+  45 archived single-object runs — v70's 3–5% and the shooter's 1–4% are the
+  same residual measured twice. The third leg ħ_pk = p/k still needs a boost
+  series. N5 also measures the local-clock/throughput split directly: the
+  ball-centre clock runs 0.2–4.1% slow against the throughput-derived bare ω,
+  g-dependently.
 - **Q-degeneracy consequence:** degeneracy is a *regime property of
   monochromatic solitons*, not destiny. Foundation-level attacks (ring
   mass-ladder M(n) at fixed Q; potential-window scans) run before/alongside
@@ -50,6 +71,18 @@ flavored branch; record its full signature; the stability claim is the
 matching of negative indices — and requires n(H_ω) from the HC-1 linear
 solve, which is now provisioned (council fix: v1 had no rung for n(H_ω)).
 
+**MEASURED (v86 Part 0).** HC-1 gives **n(H_ω) = 1** at every box-adequate ω in
+[1.32, 1.47], ungauged: L₀ contributes no negative directions (its zero mode is
+the nodeless U(1) Goldstone, recovered at |λ₀| ≤ 10⁻¹¹ with eigenvector overlap
+1.000000 against r·f), L_x^flav = L₀ − A with A = 2P₀ < 0 contributes none, and
+L_x^sym contributes exactly one — the l = 0 dilational direction. HC-3 finds
+**n(D) = 1** across every scanned flavoured partition. The indices therefore
+match over the scanned region, in the ungauged theorem regime. Two limits stand:
+the HC-3 scan is a **single detuning ray**, so it maps a stable tube rather than
+the partition space (HC-6's decay targets must be sought off it), and the
+production regime g = 0.05 is Coulomb-phase, where a gauged BdG does not yet
+exist and GSS remains heuristic.
+
 **Caveats (hardened per council):** (i) the gauged system is
 COULOMB-phase — the massless channel reaches ω = 0, the cited vortex
 results are Higgs-phase, so gauged GSS is used as a heuristic with the
@@ -58,6 +91,17 @@ orbital, not asymptotic — monopole-protected breathing coexists with
 orbital stability (measured, v85).
 
 ## 2. Resonance decay: multipole first, then arithmetic (council fix #3)
+
+**MEASURED (v86 Part 0), and one figure in this section is wrong.** The
+matter continuum edge for the coupled (x,y) system in the CO-ROTATING frame is
+**Ω_c = m − ω**, not √(m²−ω²) and not the bare m: the asymptotic dispersion
+(Ω²−G)² = 4ω²Ω² with G = m²−ω²+k² gives Ω = −ω + √(m²+k²). This is the
+lab-frame statement "a perturbation at co-rotating Ω radiates iff ω+Ω ≥ m",
+i.e. exactly the band [m, ω_max] this section names — but the number is a
+factor ~6 smaller than √(m²−ω²) at ω = 1.42, and using the wrong one promotes
+box-discretised continuum states to "bound internal modes". The single-operator
+eigenvalue maps as Ω(λ) = √(ω²+λ) − ω, sending λ_c = m²−ω² to Ω_c exactly.
+HC-2's harmonic arithmetic runs against Ω_c.
 
 **Classification order corrected:** for every internal mode, FIRST classify
 its multipole content. Any mode with a time-varying multipole l ≥ 1

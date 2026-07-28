@@ -1,0 +1,57 @@
+I'll start from the foundation in `v88/PRINCIPLE.md`, then read the subordinate design so I can build outward from the principle rather than patch around old assumptions.I've got the principle and the clean design. Next I'll pull measured facts and related notes so the construction can rest on what was already established.I have enough foundation. Next I'll build the regular method and the five open pieces as a coherent no-background construction, then write `v88/CONSTRUCTION.md` and any supporting code.Constructing the full account now: regular method first, then mode structure, conversion direction, quantitative curvature, and particles — with an explicit no-background audit throughout.Next I'll add the two combinatorial instruments: species enumeration and a Gauss-law check, both without a lattice.Building and running both instruments to verify the constructions.Both instruments ran cleanly. I'll fold the measured results into the construction document.# Construction complete
+
+Written to **`v88/CONSTRUCTION.md`**, with two combinatorial instruments. Summary of what was built:
+
+## 1. Regular method (heart)
+
+**State** = a finite **energy complex**: ephemeral parcels + channels + modes + harmonic words + mid-cycle energy. No immortal labels; transitions *replace* complexes, they do not re-value fixed sites.
+
+**Permitted transitions** = atomic rewrites R1–R6:
+- deposit / advance / deliver through channels (cycle gate)
+- split/merge, mode conversion, channel birth/death
+- only under **energy conservation** + **complete-cycle resonance**
+
+**Dynamics** = the relation \(C \Rightarrow C'\), not a differential equation on an index set. Concurrent rewrites selected by **steepest closure** of an open-cycle deficit \(\Delta\).
+
+## 2. Direction and rate
+
+| Question | Construction |
+|----------|----------------|
+| When? | Resonant chiral cycle can complete (\(\Delta\) can fall) |
+| Which way? | Saturation forces \(S\to D\); exterior unlock allows \(D\to S\); open chains are field |
+| How fast? | Relative rewrite depth; \(c\) = max open-chain advance rate \(\sim g\cdot a\) **[M]** |
+
+## 3. Modes
+
+Four modes forced by conversion topology (not imported):
+
+- **S** free · **D** closed lock · **F** open chain · **T** mid-cycle transfer
+
+**T is derived:** non-instant transfer + energy never destroyed requires mid-cycle energy to live somewhere. Mass vs EMF is closed vs open topology of the rewrite graph.
+
+## 4. Curvature
+
+Combinatorial Gauss law on the space subcomplex \(C_S\):
+
+\[
+K(I)=\kappa\, M(I)/\varepsilon_0
+\]
+
+degree defect of remaining space ∝ enclosed dense energy. Free fall = steepest-closure bias on a defect-laden \(C_S\) (not a force). Toy check: \(r^2\approx 0.90\) for \(K\propto M\).
+
+## 5. Particle
+
+A **self-reproducing integer lock** with spectral boundary — recurrence under \(\Rightarrow\), not a lump on a lattice. Mass \(=E_D\) (often \(\propto N_c\)); discreteness from integer closure; charge from structure (\(\chi\), harmonic class).
+
+## Background audit (§8)
+
+Explicit table: parcels/channels die; no fixed connectivity; no \(a\cdot i+\xi\); momentum not fundamental. Constants \(d_*,\varepsilon_0,\kappa\) are structural, not a stage.
+
+## Code
+
+| File | Result |
+|------|--------|
+| `v88/construct_species.c` | **772** closed locks, **502** isolated (\(N_c\le3\)) — discrete spectrum without a lattice |
+| `v88/construct_gauss.c` | \(K-K_0 \approx \kappa M\), \(r^2\approx0.90\) |
+
+Load-bearing postulates are listed in §10 for later audit. Resonance polynomial and exact \(\kappa\) remain schematic **[P]**; the joints that hold the principle together are named rather than left as gaps.

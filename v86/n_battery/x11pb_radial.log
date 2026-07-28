@@ -1,0 +1,22 @@
+sfa_radial: N=384 L=55 dx=0.287206 g=0.0500 m2=2.2500 mtheta2=2.5600 mu=-41.345 kappa=50 eta=0
+            center=(0,0,0) nbins=220 rmax=55 dr=0.2500
+frame 1/19 done (t=0.0)
+frame 2/19 done (t=100.0)
+frame 3/19 done (t=200.0)
+frame 4/19 done (t=300.0)
+frame 5/19 done (t=400.0)
+frame 6/19 done (t=500.0)
+frame 7/19 done (t=600.0)
+frame 8/19 done (t=700.0)
+frame 9/19 done (t=800.0)
+frame 10/19 done (t=900.0)
+frame 11/19 done (t=1000.0)
+frame 12/19 done (t=1100.0)
+frame 13/19 done (t=1200.0)
+frame 14/19 done (t=1300.0)
+frame 15/19 done (t=1400.0)
+frame 16/19 done (t=1500.0)
+frame 17/19 done (t=1600.0)
+frame 18/19 done (t=0.1)
+frame 18 read failed
+wrote x11pb_shells.tsv

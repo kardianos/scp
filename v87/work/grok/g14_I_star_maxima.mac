@@ -1,0 +1,18 @@
+/* G14: Maxima closed form for I_* = D_KL(η || 3/4) at Tsirelson CHSH.
+ * η = (1 + 1/sqrt(2))/2
+ * Run: maxima -b g14_I_star_maxima.mac
+ */
+print("=== G14 I_star closed form ===")$
+eta: (1 + 1/sqrt(2))/2$
+mup: 3/4$
+/* D_KL in bits: eta log2(eta/mup) + (1-eta) log2((1-eta)/(1-mup)) */
+Istar: eta * log(eta/mup)/log(2) + (1-eta)*log((1-eta)/(1-mup))/log(2)$
+print("eta =", eta, "=", float(eta))$
+print("I_star =", Istar)$
+print("I_star float =", float(Istar))$
+print("compare 0.04627384685")$
+/* also S = 2 sqrt 2 */
+print("2*sqrt(2) =", float(2*sqrt(2)))$
+/* TV budget */
+print("D_TV min = sqrt(2)-1 =", float(sqrt(2)-1))$
+quit()$

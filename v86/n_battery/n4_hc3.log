@@ -1,0 +1,58 @@
+v86 N4 + HC-3 -- flavored (multi-clock) branch  [UNGAUGED, H=0.01 R=60]
+  normalization assert vs v66 symmetric convention: PASS (Q=209.5671, E=309.6917)
+  symmetric point: eps=0.04068  R_vir/E=-9.00e-07  I4/E=-3.00e-07
+
+==============================================================================
+N4 -- Legendre excess vs flavor partition
+==============================================================================
+  Q target (symmetric point at w=1.420): 209.567
+partition (w0,w1,w2)            Qtot   Q0/Qtot         E     Sigma       eps  2/3E_grad    R_vir/E       I4/E
+(1.4200,1.4200,1.4200)       209.567    0.3333   309.692   12.1064   0.04068    12.1065  -9.00e-07  -3.00e-07  |dQ|/Q*=0.0e+00
+(1.4150,1.4225,1.4225)       209.567    0.3191   309.703   12.1024   0.04067    12.1025  -9.00e-07  -3.00e-07  |dQ|/Q*=1.1e-08
+(1.4099,1.4249,1.4249)       209.567    0.3055   309.735   12.0910   0.04062    12.0911  -8.98e-07  -2.99e-07  |dQ|/Q*=6.5e-08
+(1.4047,1.4272,1.4272)       209.567    0.2926   309.785   12.0729   0.04055    12.0730  -8.96e-07  -2.99e-07  |dQ|/Q*=2.2e-07
+(1.3995,1.4295,1.4295)       209.567    0.2803   309.853   12.0487   0.04046    12.0488  -8.93e-07  -2.98e-07  |dQ|/Q*=5.5e-07
+(1.3942,1.4317,1.4317)       209.567    0.2685   309.936   12.0191   0.04034    12.0192  -8.89e-07  -2.96e-07  |dQ|/Q*=4.1e-09
+(1.3888,1.4338,1.4338)       209.567    0.2573   310.033   11.9845   0.04021    11.9846  -8.84e-07  -2.95e-07  |dQ|/Q*=7.3e-09
+(1.3779,1.4379,1.4379)       209.567    0.2364   310.263   11.9021   0.03989    11.9022  -8.73e-07  -2.91e-07  |dQ|/Q*=1.4e-08
+(1.3668,1.4418,1.4418)       209.567    0.2174   310.531   11.8043   0.03952    11.8044  -8.60e-07  -2.87e-07  |dQ|/Q*=5.0e-07
+
+  Sigma at fixed Q=209.57 (+/- 1.1e-06): 11.8043 .. 12.1064 -> spread 2.52% of the mean
+  N4 VERDICT: GEOMETRY-DRIVEN PARTITION DEPENDENCE (2.5%) -- Sigma moves, but the I4 identity Sigma=(2/3)E_grad still holds to 3.0e-07, and E_grad moves by 2.5%: the excess tracks the gradient/surface term, so the flavor split acts through PROFILE SHAPE, not through a separate V(s) interference channel. HC-3 gate: single-charge eps formulas may not be reused numerically, but the closed form is unchanged.
+  cross-check: max |Sigma - (2/3)E_grad|/E over the scan = 3.00e-07
+  E_grad spread over the scan: 2.52% (Sigma spread 2.52%)
+  PATH LIMITATION (pre-registered, grok Finding 13-1): this is ONE detuning ray (w0 down, w1=w2 up) at ONE total charge Q*=209.57. It does not gate flavored physics in general -- only 'on this path'. A full (Q0,Q1,Q2) volume scan is HC-3's follow-on.
+
+==============================================================================
+HC-3 -- corrected GSS: signature of D_ab = dQ_a/dw_b
+   criterion  n(H_omega) = n(D)   [NEGATIVE indices must match]
+   UNGAUGED run: theorem regime (the gauged case is heuristic).
+   n(H_omega) is HC-1's deliverable; the single-hump family is
+   ASSUMED n(H_omega)=1 here -- flagged, to be replaced by HC-1.
+==============================================================================
+partition (w0,w1,w2)            Qtot     eigenvalues of dQ_a/dw_b     n(D)   p(D) GSS verdict (assuming n(H)=1)
+(1.4200,1.4200,1.4200)       209.567 [ -1602.00    610.80    610.80]        1      2 n(D)=1 region (provisional n(H)=1)
+(1.4150,1.4225,1.4225)       209.567 [ -1601.90    582.10    640.32]        1      2 n(D)=1 region (provisional n(H)=1)
+(1.4099,1.4249,1.4249)       209.567 [ -1601.71    554.50    670.37]        1      2 n(D)=1 region (provisional n(H)=1)
+(1.4047,1.4272,1.4272)       209.567 [ -1601.53    527.96    700.97]        1      2 n(D)=1 region (provisional n(H)=1)
+(1.3995,1.4295,1.4295)       209.567 [ -1601.41    502.46    732.17]        1      2 n(D)=1 region (provisional n(H)=1)
+(1.3942,1.4317,1.4317)       209.567 [ -1601.37    477.99    763.99]        1      2 n(D)=1 region (provisional n(H)=1)
+(1.3888,1.4338,1.4338)       209.567 [ -1601.40    454.54    796.47]        1      2 n(D)=1 region (provisional n(H)=1)
+(1.3779,1.4379,1.4379)       209.567 [ -1601.52    410.72    863.58]        1      2 n(D)=1 region (provisional n(H)=1)
+(1.3668,1.4418,1.4418)       209.567 [ -1601.34    370.91    933.87]        1      2 n(D)=1 region (provisional n(H)=1)
+
+  symmetry check max|D-D^T|/max|D| (should be ~FD noise): 7.43e-06
+  smallest |eigenvalue| seen: 3.709e+02 (near-zero modes can flip n(D))
+  n(D) values seen across the scanned partitions: [1]
+  HC-3 RESULT: every scanned flavored partition carries n(D)=1 --
+  a contiguous n(D)=1 region, not a single VK point. Under the
+  PROVISIONAL n(H_omega)=1 for this one-hump family the GSS
+  indices match, i.e. the region is stability-CONSISTENT.
+
+  CLAIM LIMIT (grok Finding 12, mandatory): this is an n(D) MAP under
+  a provisional n(H_omega)=1, NOT a full GSS verdict. Multi-charge
+  ground states need not have n(H)=1 everywhere (the decoupled limit
+  gives n(H)=3). Full GSS is deferred to HC-1's n(H_omega); this run
+  does not close C1 and must not be quoted as doing so.
+
+wrote /home/d/code/scp/v86/n_battery/n4_flavored.tsv

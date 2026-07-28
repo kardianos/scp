@@ -1,0 +1,95 @@
+v86 N7 (N7-STRESS) -- inertia lock on n7_scout
+==============================================================================
+  charge drift over the run : -4.191e-04
+  energy drift over the run : -8.012e-04
+  |net Px| / max|P_right|   : 3.041e-03  (total momentum must stay 0)
+
+  momentum balance dP/dt vs the measured stress flux:
+    flux sign convention resolved to -1 (residual 2.0794 vs 0.0794)
+    R_PF over the window where |F| > 5% of its peak: median 0.0482, max 0.4167
+    PASS -- the measured force and the measured momentum are the
+    same physics, so both inertia estimators rest on validated
+    metrology rather than on a force model.
+
+       t   X_right         v          P      dP/dt    F(meas)       R_PF
+     0.0    5.1387   0.00393    -0.0000    0.64095    0.63591     0.0079
+     9.0    5.2162   0.01651     5.2580    0.51244    0.51185     0.0012
+    18.0    5.4255   0.02949     9.3508    0.39909    0.39237     0.0171
+    26.9    5.7383   0.03957    12.4642    0.30350    0.29382     0.0329
+    35.9    6.1296   0.04702    14.8141    0.21863    0.21069     0.0377
+    44.9    6.5769   0.05205    16.3954    0.13840    0.12972     0.0669
+    53.9    7.0597   0.05517    17.3912    0.08975    0.07828     0.1466
+    62.9    7.5655   0.05740    18.0705    0.06485    0.05148     0.2597
+    71.8    8.0892   0.05916    18.5841    0.05060    0.03626     0.3953
+    80.8    8.6269   0.06049    18.9846    0.03926    0.02531     0.5515
+    89.8    9.1748   0.06125    19.2989    0.03261    0.01749     0.8651
+
+  impulse calibration of the measured force:
+    integral F dt = 18.4570   vs   P(end) - P(0) = 19.2989   ratio 0.9564
+    -> the plane-flux integral runs 4.4% low. dP/dt is therefore the
+       CALIBRATED force in this run, and any F/a estimator inherits
+       that bias. This is a discretisation systematic of the surface
+       integral, not a physics result.
+
+  derivative-window sensitivity (w = points in the local linear fit):
+       w      dP/dv        P/v    (dP/dt)/a        F/a
+       5     312.70     314.79       314.89     307.18
+       9     312.40     315.03       315.14     307.25
+      15     311.55     315.51       314.57     306.50
+      21     320.87     316.02       316.08     310.75
+    The three momentum-based estimators agree; F/a sits ~2.5%% below
+    them, exactly the shortfall the impulse calibration measures.
+
+==============================================================================
+  INERTIA ESTIMATORS (right ball)
+==============================================================================
+  M_slope = dP/dv over the linear window :    312.401   (fit residual 1.42e-03)
+  M_P     = P/v (median)                 :    315.026
+  M_dPa   = (dP/dt)/a over the same window:    314.678  [45 pts]
+  ---- the three above use only P and X: ONE derivative of the
+       measured momentum, or one of the measured position ----
+  M_a     = F/a, uncalibrated flux           :    305.746
+  M_a     = F/a, impulse-calibrated          :    319.692
+
+  COMPARATORS (from this run, not from the continuum shooter)
+  Q_right                                :    211.490
+  E_right at t=0                         :    313.747
+  interaction energy share removed       :      0.433  (D_0 = 10.28)
+  E  (hypothesis 1, D5': M = E/c^2)      :    313.314
+  Q*omega (hypothesis 2, thin-wall)      :    302.431  (omega = 1.430)
+  eps for this object = E/(Q omega) - 1  :     0.0360
+
+  estimator             M      M/E - 1   M/(Qw) - 1
+  M_slope         312.401      -0.0029       0.0330
+  M_P             315.026       0.0055       0.0416
+  M_dPa           314.678       0.0044       0.0405
+  M_a*            305.746      -0.0242       0.0110
+
+==============================================================================
+  VERDICT
+==============================================================================
+  (* F/a is listed but EXCLUDED from the verdict -- see the impulse
+   calibration: its bias is the size of the effect being measured.)
+  |M/E - 1|    across the momentum estimators: 0.0029 .. 0.0055
+  |M/(Qw) - 1| across the momentum estimators: 0.0330 .. 0.0416
+  hypothesis separation (eps)   : 0.0360
+
+  M is closer to E than to Q*omega on EVERY estimator.
+  --> D5' CONFIRMED at this precision: the inertia that resists a
+      measured force is the vacuum-subtracted energy, M = E/c^2,
+      not the thin-wall skeleton Q*omega. H4 is dead as a mass
+      definition.
+
+  SYSTEMATIC BUDGET (pre-registered; do not demand sub-percent)
+   * lattice group-velocity anomaly, 1-5%% (v70) -- the honest ceiling;
+   * finite dx: this run has only ~6.6 voxels per r_half, and the
+     lattice charge deficit vs the continuum profile is ~4.3%
+     (Q_run 211.5 vs profile 221.0). ABSOLUTE masses inherit that;
+     the RATIOS M/E and M/(Qw) largely do not, because E, Q and M are
+     all measured on the same lattice;
+   * periodic images and sponge drag: bounded by the net-momentum and
+     energy-drift gates above;
+   * the interaction-energy share removed from E is an analytic
+     point-Coulomb estimate, a 0.14% correction, so its own error is
+     negligible.
+wrote n7_scout_inertia.tsv

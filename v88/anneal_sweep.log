@@ -1,0 +1,63 @@
+### quench seed=11111
+  [init t=0.0] n_lumps=828  mean_Nc=1.44  sd/mean=0.664  act=543.398  E~1493.556  peakI=0.913
+  [quench t=100.0] n_lumps=23  mean_Nc=6.78  sd/mean=0.557  act=543.898  E~1312.118  peakI=0.976
+  [quench t=200.0] n_lumps=19  mean_Nc=5.63  sd/mean=0.591  act=538.965  E~1332.676  peakI=1.929
+  [quench t=300.0] n_lumps=17  mean_Nc=3.47  sd/mean=0.868  act=539.212  E~1350.104  peakI=3.438
+  [quench t=400.0] n_lumps=14  mean_Nc=4.00  sd/mean=1.039  act=589.733  E~1350.806  peakI=5.542
+  DONE schedule=quench seed=11111 action=589.733179 peakI=5.541674
+### quench seed=22222
+  [init t=0.0] n_lumps=788  mean_Nc=1.48  sd/mean=0.720  act=526.927  E~1448.726  peakI=0.955
+  [quench t=100.0] n_lumps=32  mean_Nc=5.47  sd/mean=0.890  act=527.726  E~1265.011  peakI=0.824
+  [quench t=200.0] n_lumps=17  mean_Nc=5.47  sd/mean=0.758  act=523.691  E~1285.879  peakI=2.080
+  [quench t=300.0] n_lumps=11  mean_Nc=3.91  sd/mean=1.125  act=518.305  E~1303.181  peakI=3.816
+  [quench t=400.0] n_lumps=12  mean_Nc=4.33  sd/mean=0.971  act=528.674  E~1313.123  peakI=4.357
+  DONE schedule=quench seed=22222 action=528.673571 peakI=4.357452
+### quench seed=33333
+  [init t=0.0] n_lumps=758  mean_Nc=1.56  sd/mean=0.725  act=538.291  E~1492.240  peakI=0.976
+  [quench t=100.0] n_lumps=26  mean_Nc=5.31  sd/mean=0.735  act=539.443  E~1304.427  peakI=0.946
+  [quench t=200.0] n_lumps=19  mean_Nc=6.32  sd/mean=0.584  act=536.228  E~1329.259  peakI=1.828
+  [quench t=300.0] n_lumps=16  mean_Nc=6.81  sd/mean=0.768  act=531.682  E~1344.616  peakI=2.463
+  [quench t=400.0] n_lumps=8  mean_Nc=4.00  sd/mean=0.661  act=576.424  E~1347.735  peakI=7.021
+  DONE schedule=quench seed=33333 action=576.423553 peakI=7.021434
+### thermal seed=11111
+  [therm_s1 t=100.0] n_lumps=859  mean_Nc=2.58  sd/mean=1.639  act=18204.453  E~48573.512  peakI=10.938
+  [therm_s2 t=100.0] n_lumps=539  mean_Nc=5.93  sd/mean=7.153  act=22378.460  E~59014.694  peakI=11.423
+  [therm_s3 t=100.0] n_lumps=810  mean_Nc=1.97  sd/mean=1.032  act=24011.700  E~63668.112  peakI=16.228
+  [therm_s4 t=100.0] n_lumps=333  mean_Nc=1.34  sd/mean=0.866  act=24497.265  E~64835.635  peakI=23.532
+  [therm_s5 t=100.0] n_lumps=39  mean_Nc=1.77  sd/mean=0.987  act=24750.963  E~64872.886  peakI=35.654
+  DONE schedule=thermal seed=11111 action=24750.962865 peakI=35.654375
+### thermal seed=22222
+  [therm_s1 t=100.0] n_lumps=379  mean_Nc=9.16  sd/mean=14.280  act=18393.289  E~49036.091  peakI=9.050
+  [therm_s2 t=100.0] n_lumps=754  mean_Nc=3.17  sd/mean=2.022  act=22385.437  E~59385.164  peakI=12.944
+  [therm_s3 t=100.0] n_lumps=777  mean_Nc=2.89  sd/mean=1.911  act=24263.475  E~64056.192  peakI=14.550
+  [therm_s4 t=100.0] n_lumps=55  mean_Nc=1.13  sd/mean=0.341  act=24897.938  E~65314.479  peakI=36.382
+  [therm_s5 t=100.0] n_lumps=4  mean_Nc=1.00  sd/mean=0.000  act=25047.224  E~65361.680  peakI=102.141
+  DONE schedule=thermal seed=22222 action=25047.224107 peakI=102.141241
+### thermal seed=33333
+  [therm_s1 t=100.0] n_lumps=518  mean_Nc=6.42  sd/mean=10.248  act=18313.653  E~48892.904  peakI=9.213
+  [therm_s2 t=100.0] n_lumps=824  mean_Nc=2.10  sd/mean=1.248  act=22278.288  E~59311.516  peakI=14.513
+  [therm_s3 t=100.0] n_lumps=465  mean_Nc=7.24  sd/mean=14.558  act=24029.043  E~63837.977  peakI=11.988
+  [therm_s4 t=100.0] n_lumps=820  mean_Nc=1.93  sd/mean=1.130  act=24460.065  E~65002.068  peakI=16.449
+  [therm_s5 t=100.0] n_lumps=7  mean_Nc=1.71  sd/mean=0.514  act=24920.651  E~65025.242  peakI=83.294
+  DONE schedule=thermal seed=33333 action=24920.651323 peakI=83.294010
+### detune seed=11111
+  [init t=0.0] n_lumps=828  mean_Nc=1.44  sd/mean=0.664  act=543.398  E~1493.556  peakI=0.913
+  [detune t=100.0] n_lumps=22  mean_Nc=6.27  sd/mean=0.518  act=543.634  E~1311.778  peakI=0.984
+  [detune t=200.0] n_lumps=17  mean_Nc=7.12  sd/mean=0.541  act=544.015  E~1331.543  peakI=1.778
+  [detune t=300.0] n_lumps=18  mean_Nc=8.61  sd/mean=0.664  act=544.463  E~1348.001  peakI=1.972
+  [detune t=400.0] n_lumps=15  mean_Nc=6.93  sd/mean=0.684  act=544.952  E~1364.349  peakI=2.949
+  DONE schedule=detune seed=11111 action=544.951574 peakI=2.948784
+### detune seed=22222
+  [init t=0.0] n_lumps=788  mean_Nc=1.48  sd/mean=0.720  act=526.927  E~1448.726  peakI=0.955
+  [detune t=100.0] n_lumps=34  mean_Nc=4.79  sd/mean=0.935  act=527.150  E~1265.032  peakI=0.835
+  [detune t=200.0] n_lumps=14  mean_Nc=3.14  sd/mean=0.720  act=527.508  E~1284.698  peakI=2.915
+  [detune t=300.0] n_lumps=16  mean_Nc=6.75  sd/mean=0.680  act=527.938  E~1300.821  peakI=2.254
+  [detune t=400.0] n_lumps=13  mean_Nc=4.69  sd/mean=0.858  act=528.410  E~1318.419  peakI=3.771
+  DONE schedule=detune seed=22222 action=528.409845 peakI=3.771059
+### detune seed=33333
+  [init t=0.0] n_lumps=758  mean_Nc=1.56  sd/mean=0.725  act=538.291  E~1492.240  peakI=0.976
+  [detune t=100.0] n_lumps=16  mean_Nc=3.19  sd/mean=0.703  act=538.527  E~1304.257  peakI=1.532
+  [detune t=200.0] n_lumps=20  mean_Nc=3.90  sd/mean=0.782  act=538.907  E~1326.453  peakI=2.313
+  [detune t=300.0] n_lumps=14  mean_Nc=6.86  sd/mean=0.623  act=539.361  E~1344.183  peakI=2.551
+  [detune t=400.0] n_lumps=15  mean_Nc=6.33  sd/mean=0.644  act=539.856  E~1361.350  peakI=3.271
+  DONE schedule=detune seed=33333 action=539.855720 peakI=3.270549

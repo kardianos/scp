@@ -1,0 +1,27 @@
+I'll start as the GROK seat: read the brief, collab rules, and context docs, then begin work in `GROK_WORK.md` and worksheets under `v87/work/grok/`.Reading the ontology and measured results, then opening the working file.Starting the working file and building Door A (Hall-type) algebra plus CHSH proofs in worksheets.Building the core Door A models: closed-form E, mutual information, and Monte Carlo.Fixing the classical CHSH angle choice in g3, then re-running the full worksheet suite.Computing a closed form for the 0.046 bit figure and a one-parameter family to S=4, then updating the working file.Updating `GROK_WORK.md` with full findings, FABLE engagement, and the live verdict.Deepening the singlet MI bound and the fabric-derivation argument; correcting the work-log timestamps.Reading FABLE's worksheets to cross-check numbers and engage concretely.Updating the working file with FABLE cross-check results and new findings.FABLE confirmed our I_min. Updating the cross-seat section to mark the dispute resolved.**GROK seat — primary stack complete** (work in `v87/GROK_WORK.md` + 15 worksheets under `v87/work/grok/`).
+
+### Verdict in one paragraph
+
+Bell is correct: **(R)∧(L)∧(MI) ⇒ |S|≤2**. Under O1∧O2 the natural relaxation is **Door A (MI)**. An explicit local deterministic model (GOOD-tilt on 8 of 16 strategies) achieves **S=2√2** at mutual information
+
+**I_min = 0.046274 bits** = D_KL((1+1/√2)/2 ‖ 3/4),
+
+with TV budget **D=√2−1** (tight). FABLE independently confirmed global optimality of this price list. Unrestricted MD reaches **S=4** at I=log₂(4/3)≈0.415 bits — so Door A alone does **not** explain Tsirelson. The required ρ(λ|a,b) is **postulated**, not derived from Cosserat dynamics. The present kernel is local+IVP ⇒ |S|≤2 for cone-separated fresh-entropy choosers. **Bell remains a wall for explanation.**
+
+### Deliverables
+
+| # | Result |
+|---|--------|
+| 1 Symbolic | GOOD-tilt + hemisphere + FABLE p-family (verified p=1 ⇒ E=−cos θ); Maxima/SymPy worksheets |
+| 2 Bound | ≤2 under MI; =2√2 at quantum targets; =4 unrestricted MD |
+| 3 Cost | I_*=0.046274 bits (CHSH, agreed with FABLE BA); Hall ~0.066 singlet marked UNVERIFIED |
+| 4 MC | g4/g7/g8 recover S to sampling precision |
+| 5 Crux | **Postulated, not derived** |
+| 6 Falsifiable | In-kernel \|S|≤2; Door-A S_max(I) price list |
+| 7 Negatives | Door B/C closed for kernel; MD fails Tsirelson half |
+
+### Cross-seat
+
+Strong agreement with FABLE on Door A primary, frame≠channel, IVP closes Door C, Tsirelson imported. Early I_min dispute (0.064 vs 0.046) **resolved** — FABLE’s Blahut–Arimoto confirms GROK’s 0.046274.
+
+Full writeup and formulae: `v87/GROK_WORK.md`.

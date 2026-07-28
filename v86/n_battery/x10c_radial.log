@@ -1,0 +1,18 @@
+sfa_radial: N=384 L=55 dx=0.287206 g=0.0500 m2=2.2500 mtheta2=2.5600 mu=-41.345 kappa=50 eta=0
+            center=(0,0,0) nbins=220 rmax=55 dr=0.2500
+frame 1/15 done (t=0.0)
+frame 2/15 done (t=150.0)
+frame 3/15 done (t=300.0)
+frame 4/15 done (t=450.0)
+frame 5/15 done (t=600.0)
+frame 6/15 done (t=750.0)
+frame 7/15 done (t=900.0)
+frame 8/15 done (t=1050.0)
+frame 9/15 done (t=1200.0)
+frame 10/15 done (t=1350.0)
+frame 11/15 done (t=1500.0)
+frame 12/15 done (t=1650.0)
+frame 13/15 done (t=1800.0)
+frame 14/15 done (t=1950.0)
+frame 15/15 done (t=2000.0)
+wrote x10c_shells.tsv

@@ -1,0 +1,16 @@
+=== wind=0 ===
+  15000    1.419717   0.000000   3.100302e+02 1.9425e-10   6.5492e-02   147.9168     0.0000     1.000e+00 
+# final: omega=1.419717  Q_phi=210.0000  Q_theta=0.0000  Q_total=210.0000 (target 210.0000)
+# fixJ final: Omega=0.000000  J_actual=0.0000 (target 0.0000)  Q_actual=210.0000  cond=1.000e+00  w_eff(Q/N)=1.419717
+=== wind=1 ===
+  15000    1.510789   -0.002870  3.176177e+02 1.3831e-03   1.4283e-07   138.7371     210.0000   4.709e-01 
+# final: omega=1.510789  Q_phi=209.6025  Q_theta=0.0000  Q_total=209.6025 (target 210.0000)
+# fixJ final: Omega=-0.002870  J_actual=210.0000 (target 210.0000)  Q_actual=210.0000  cond=4.709e-01  w_eff(Q/N)=1.513654
+# WARNING: omega >= m (outside existence window)
+# ring: L_z=199.1041  L_z/Q=0.9481 (target wind=1)  rho_peak=8.409  winding@peak=0.99
+=== wind=2 ===
+  15000    1.509494   -0.009015  3.181248e+02 7.7094e-04   3.5892e-08   137.4854     420.0000   2.979e-01 
+# final: omega=1.509494  Q_phi=207.5334  Q_theta=0.0000  Q_total=207.5334 (target 210.0000)
+# fixJ final: Omega=-0.009015  J_actual=419.9997 (target 420.0000)  Q_actual=209.9999  cond=2.979e-01  w_eff(Q/N)=1.527435
+# WARNING: omega >= m (outside existence window)
+# ring: L_z=387.8624  L_z/Q=1.8470 (target wind=2)  rho_peak=10.992  winding@peak=1.99

@@ -51,23 +51,50 @@ charges** — winding, shell level, orbit class — not charges or energies.
 ### A4. Energy and mass — the frozen foundation
 - **Energy E** (Hamiltonian, vacuum-subtracted) is the primary quantity.
   **Inertia is M = E/c²**: E = mc² holds as the honest rest-energy
-  relation of the emergent SR kinematics. **[D/M]**
+  relation of the emergent SR kinematics. **[D/M]** **N7 decides this
+  empirically (v86 Part 0, D5′ CLOSED):** with the force measured as a stress
+  flux and the momentum measured as ∫T^{0i} — no analytic force law, nothing
+  presupposing a relation between E, Q and M — three independent estimators
+  (dP/dv, P/v, (dP/dt)/a) give **|M/E − 1| = 0.3–0.6%** against
+  **|M/(Qω) − 1| = 3.3–4.2% ≈ ε**. The inertia that resists a force is the
+  energy, not the thin-wall skeleton Qω. **[M]**
 - **ω_a = ∂E/∂Q_a are chemical potentials** — the Legendre structure is
   exact and measured (8×10⁻⁵ shooter; 0.1–0.26% in-kernel). Composite
   bookkeeping uses ΔE = ∫ω dQ (exact to 0.26%). **[M]**
 - **E = Qω is the monochromatic thin-wall skeleton**, exact only for bound
   linear modes (canonical identity **[D]**); solitons carry a positive
-  excess **Σ ≡ E − Σω_a Q_a** (ε = Σ/ωQ = +0.9…+4.3% across every branch
-  **[M]**), understood as the virial/surface imbalance (gradient +
-  potential + gauge − kinetic) with three closed-form targets under active
-  derivation (virial identity, surface law, ξ/R scaling collapse). **[D/G]**
+  excess **Σ ≡ E − Σω_a Q_a** (ε = Σ/ωQ = +0.45…+4.34% across every branch
+  **[M]**). **v86 Part 0 reduced it in closed form** (`v86/PART0_RESULTS.md`):
+  with the exact Gauss identity ωQ = 2(E_kin + E_g) and the Derrick identity
+  (E_∇ − E_g) + 3(E_m + E_V − E_kin) = 0,
+  **Σ = E_∇ + E_m + E_V − E_kin − E_g = (2/3)(E_∇ − E_g)** — residual ≤
+  5×10⁻⁸ of E on 292 gauged branch points, on the flavoured branch, and across
+  25 (μ,κ) potentials. **[D, verified M]** Note the **minus** on the gauge
+  term: the earlier "gradient + potential + gauge − kinetic" wording of this
+  bullet was wrong by 2E_g (it is correct only if "kinetic" means the
+  throughput ωQ/2, which already contains E_g). Ungauged, Σ = (2/3)E_∇ > 0
+  identically — the universally positive ε is now derived, not just measured.
+  ε itself remains a computed profile functional (E_∇ comes from the shooter);
+  the thin-wall surface-law target is supported (ε' collapses on ξ/R across g
+  after the measured-E_g subtraction; local exponent ≈1) but σ_eff is not
+  fitted. **[D/M]**
 - **Charge, process action, and inertia are three different quantities**
   even within one sector: Q_G (Gauss/Noether, couples to A), 𝒜 (cycle
   action; equals 2πQ only for monochromatic co-rotation — reported as the
-  measured ratio ħ_eff/Q = 1+δ, with v70's 3–5% and ε the same residual
-  family), and M = E/c². The apparent charge≡action≡mass degeneracy of the
-  v85 era is a regime property of monochromatic solitons, not an axiom of
-  the theory. **[D — adopted foundation]**
+  measured ratio ħ_eff/Q = 1+δ), and M = E/c². The apparent charge≡action≡mass
+  degeneracy of the v85 era is a regime property of monochromatic solitons, not
+  an axiom of the theory. **[D — adopted foundation]** **N5/N6 make the split
+  empirical:** ħ_E/Q − 1 is *identically* ε̄ and measures 0.026–0.049 over 45
+  archived single-object runs — so v70's 3–5% and the shooter's ε are the same
+  residual measured twice, as FOUNDATIONS predicted — while the ball-centre
+  clock runs 0.2–4.1% slow against the throughput-derived bare ω, g-dependently.
+  **[M]** The third leg is now measured too: v70's ħ_pk was not independent
+  (its p was γE₀v, making p/k ≡ E₀/ω), so N6 integrated **p = ∫T^{0i}** from the
+  archived boost frames instead. The invariant rest energy comes back constant
+  to **0.20%** across γ = 1.05–1.38 and matches the shooter to 0.23%, ħ_pk/Q − 1
+  runs −0.2%…+2.5%, and the ħ_E–ħ_pk gap grows 0.6% → 3.3% with boost — that gap
+  is the lattice dispersion in k and is the honest precision floor on any
+  momentum-based mass statement in this kernel. **[M]**
 
 ### A5. Substructure: the multi-harmonic nucleon
 The nucleon-analog is a **three-harmonic bound state, not a composite of
@@ -133,9 +160,25 @@ match: **n(H_ω) equals the count of NEGATIVE eigenvalues of ∂Q_a/∂ω_b**
 heuristic — Coulomb phase — with the ungauged theorem as anchor). Every
 other localized excitation carries a width: classified **multipole-first**
 (any l ≥ 1 mode radiates through the massless gauge channel at any
-frequency), then by gap arithmetic against the matter band [m, ω_max],
-ω_max² = m² + 12/dx² (lattice band-top protection is an artifact —
-refinement-tested). **[D, council-corrected]** The correspondence claim —
+frequency), then by gap arithmetic against the matter band. The co-rotating
+radiation threshold is **Ω_c = m − ω** (equivalently, lab-frame ω + Ω ≥ m);
+the lattice band top ω_max² = m² + 12/dx² gives Ω_max = ω_max − ω and any
+band-top "protection" is an artifact, refinement-tested.
+**[D, council-corrected]**
+
+**Both indices are now measured, ungauged (v86 Part 0).** HC-1's BdG solve gives
+**n(H_ω) = 1** at every box-adequate ω ∈ [1.32, 1.47] — L₀ and the two flavour
+channels contribute no negative directions, L_x^sym contributes exactly one (the
+l = 0 dilational direction) — and HC-3 gives **n(D) = 1** across every scanned
+flavoured partition, so the indices match over the scanned region. **[M]**
+The census also answers *how many harmonics a particle can hold*: with a box
+sized to the object, **at most one** bound internal monopole mode exists, and
+only in the narrow window ω ≈ 1.33–1.34; the working region ω ≥ 1.36 has
+**none**. Every propagating monopole candidate has its fundamental below Ω_c, so
+its leading radiative order is n ≥ 2 — the linear-theory root of the measured
+monopole breathing protection. **[M/D]** *Limits:* ungauged; the HC-3 scan is a
+single detuning ray; a gauged (Coulomb-phase) BdG does not yet exist, so GSS
+statements about production objects at g = 0.05 remain heuristic. The correspondence claim —
 that this reproduces real physics' rule "stable particles are the lowest
 states of their conserved-sector" — is the program's cleanest export and
 remains interpretive until the census lands. **[C/S]**
@@ -152,7 +195,14 @@ not assumed. **[M/D/theorem]**
 
 ## Part B — Measured pillars (one line each)
 Gauss exactness 1e-13 · branch re-derived & validated · dE/dQ = ω at
-8×10⁻⁵ · ε = +0.9…4.3% everywhere · linear-mode E = ωQ exact [D] ·
+8×10⁻⁵ · ε = +0.45…4.34% everywhere · **Σ = (2/3)(E_∇ − E_g) to 5e-8** ·
+**ωQ = 2(E_kin + E_g) to 5e-9** · **ε' collapses on ξ/R across g** ·
+**n(H_ω) = 1 measured (ungauged)** · **≤1 bound internal mode, none at ω≥1.36** ·
+**exchange is matter: gauge share of escaping power ~1e-5** ·
+**ħ_E/Q − 1 ≡ ε̄ = 2.6–4.9%** · **ħ triple all-measured; E₀ invariant to 0.20%
+across γ** · **M_inertial = E/c² to 0.3–0.6% (D5′)** ·
+**single-sector E/Q window ≤ 1.5× m** ·
+linear-mode E = ωQ exact [D] ·
 ħ_eff/Q = 1 + (3–5%) · action/cycle 2πQ at 0.03% · pass-through ledger
 99.75% · SR kinematics on-lattice · contact force law & detuning lock
 bound · three global U(1)s (code + dynamics) · color-Zeeman ∝ g₂² exact
@@ -163,32 +213,45 @@ radii ×3 · cascade observed · monopole protection ×3 · two-closure orbit
 splitting · erosion tracks agitation, not Q_thr.
 
 ## Part C — Open locks and the active program
-**Locks:** HIER (no light stable carrier — the atom dichotomy), COUNT
-(carbon carrier count), Q-PIN (no charge selector; cosmogonic candidate
-untested), T2/JUMP (no exchange quantum; fractional-trapping and ~29%
-dressed-line chirp stand as anti-QM discriminators), D13 (occupancy),
-D5′ (which mass is inertial — decided empirically by N7), Bell (closed).
+**Locks:** HIER (no light stable carrier — the atom dichotomy; **N9 now closes
+the cheap escape route: retuning (μ,κ) buys at most 1.5× in E/Q along a branch
+and ≤1.21× at fixed Q, because E/Q ≤ m(1+ε) for every VK-stable solution of
+this class. A second mass scale needs a second gap, not a reshaped
+self-interaction**), COUNT (carbon carrier count), Q-PIN (no charge selector;
+cosmogonic candidate untested), T2/JUMP (no exchange quantum;
+fractional-trapping and ~29% dressed-line chirp stand as anti-QM
+discriminators), D13 (occupancy), **D5′ (CLOSED by N7: M = E/c², measured to
+0.3–0.6% against 3.3–4.2% for Qω)**, Bell (closed).
 
 **The program (v86, council-hardened; canonical rung protocols in
-`v86/council/grok45/N_BATTERY_REVIEW.md` §1):**
-- **Part 0 — ε/foundation battery** N1–N10 (mostly free): decompose Σ,
-  derive the virial identity, scaling collapse, flavored Legendre excess,
-  action-vs-charge, ħ_eff recalibration, **N7 inertia lock (decides D5′,
-  runs before any boost work)**, ring mass-ladder, soft-window scan,
-  shell-mode exactness. D7-lite refinement pair rides along.
-- **Census** HC-1 (mode catalog + n(H_ω)) → HC-2 (multipole-first
-  arithmetic) → HC-3 (corrected GSS signature over partitions) → HC-6
-  (converse decay) → HC-4 (widths, hardened: floor calibration +
-  cutoff-crossing box pair) → HC-5.
-- **Exchange** EX-2 (sponge-flux spectroscopy of existing data) → EX-1/EX-4
-  (ATOM-BOOST, ramped, v ≪ α_f ≈ 0.053; ball-clock transport) → EX-3
-  (boost-invariance vs dx).
+`v86/council/grok45/N_BATTERY_REVIEW.md` §1). Status after the 2026-07-26
+zero-spend execution — full results in `v86/PART0_RESULTS.md`:**
+- **Part 0 — ε/foundation battery.** **DONE except N8:** N1, N2, N3, N4, N5,
+  N9, N10 complete; **N6 complete** (all three ħ legs measured, the third by
+  integrating T^{0i} on the archived boost series — v70's p/k leg was not
+  independent); **N7 complete on the scout: D5′ closed, M = E/c²**, with a
+  dx-refinement pair running that doubles as **D7-lite** on that observable;
+  N8 (ring mass-ladder) deferred per the halving list.
+- **Census.** HC-1 (mode catalog + n(H_ω) + continuum edges) and HC-2
+  (multipole-first arithmetic) **done**; HC-3 delivers an n(D) map on one
+  detuning ray, so **HC-6's decay targets must be sought off that ray**;
+  **HC-4 must be redesigned or dropped** — it was pre-registered around
+  direct (n=1) emission, and every monopole candidate found has n ≥ 2, with
+  no bound line at all in the working region. HC-5 remains merged into HC-6.
+  Outstanding CPU debt: a **gauged (Coulomb-phase) BdG**, without which every
+  GSS statement about production objects stays heuristic.
+- **Exchange.** EX-2 **done** (matter carries the flow; gauge share ~1e-5 on
+  both a monopole and an orbiting-dipole source; budget consistent at the
+  order-of-magnitude level). → EX-1/EX-4 (ATOM-BOOST, ramped, v ≪ α_f ≈ 0.053;
+  ball-clock transport) → EX-3 (boost-invariance vs dx).
 - Then: structural carbon (2B multi-center + D12-clean cloud) inheriting
   whatever the exchange audit says. Rule: **no Stage-4/5 claim without its
   transport test.**
 
 ## Part D — Resuming from a clean state
-1. **Read order:** this file → `v85/STATE_OF_THE_THEORY.md` (fuller map +
+1. **Read order:** this file → **`v86/PART0_RESULTS.md`** (what Part 0 and the
+  first census/exchange rungs actually measured, with every instrument, log and
+  caveat) → `v85/STATE_OF_THE_THEORY.md` (fuller map +
   problem registry) → `v86/PROPOSAL.md` + Amendments → the council files.
   `CONCEPT.md` remains the U(1)-era textbook (pre-v85 physics);
   version directories are history.
@@ -208,5 +271,11 @@ D5′ (which mass is inertial — decided empirically by N7), Bell (closed).
   AT the target orbit radius, never inside the contact zone; frames'
   SFA_VELOCITY components 3–5 are θ (φ-imaginary velocities are 6–8);
   ω_max moves with dx (band-top artifacts refine away).
-5. **Next action:** run N1 (component decomposition on existing branch
-  tables — pure analysis, zero spend), then follow Part C's order.
+5. **Next action:** Part 0 is **done** (2026-07-26), including N7 — see
+  `v86/PART0_RESULTS.md` and the instruments in `v86/n_battery/`. D5′ is closed
+  (M = E/c²), so **EX-1 ATOM-BOOST is now unblocked** and is the next GPU
+  spend: ramped, v ≪ α_f ≈ 0.053, with the pre-registered expectation from EX-2
+  that its radiative losses are above-gap matter waves rather than gauge
+  radiation. Cheap CPU debt to clear alongside: the **gauged (Coulomb-phase)
+  BdG** — without it every GSS statement about production objects is heuristic
+  — and extending **HC-3 off its single detuning ray** so HC-6 has targets.

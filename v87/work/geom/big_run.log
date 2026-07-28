@@ -1,0 +1,13 @@
+bell_grid   N=10000000000  grid=65536 (0.00549 deg)  nb=262144  nth=262144  threads=16
+  exact targets: arm1 = 2 (triangle) ; arm2 = 2sqrt2 = 2.828427124746
+
+--- ARM 1 ---
+  ANALYTIC (no sampling)  max|S| = 2.000000000000   excess +4.337e-19     4.87 s
+  SAMPLED  (int128 exact) max|S| = 2.000047949200   excess +4.795e-05    66.15 s build +  5.03 s search
+            1/sqrt(N) = 1.000e-05   ->  excess/noise = 4.79
+            E(0)=-1.000000000000 E(60)=-0.333333743600 E(90)=0.000019791600 E(180)=1.000000000000
+--- ARM 2 ---
+  ANALYTIC (no sampling)  max|S| = 2.828427124746   excess +0.000e+00     5.02 s
+  SAMPLED  (int128 exact) max|S| = 2.828412372683   excess -1.475e-05    67.07 s build +  4.87 s search
+            1/sqrt(N) = 1.000e-05   ->  excess/noise = -1.48
+            E(0)=-1.000000000000 E(60)=-0.500019847191 E(90)=0.000010992534 E(180)=1.000000000000

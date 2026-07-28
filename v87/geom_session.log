@@ -1,0 +1,33 @@
+I'll start by reading the task briefs and collaboration rules in the prescribed order, then the ontology context.Next I'll read the ontology context and the other seats' working files so I can engage with them by name.FABLE and GROK have Door A largely settled. I'll pursue the geometric bound half and start writing the working file plus worksheets.I'll draft the working file and first geometric worksheets, keeping reachability and the bound separate under the hard constraints.Running the worksheets and writing findings into the working file.Fixing the residual check (S can be negative) and re-running.Fixing the operator identity check — SymPy residual handling was wrong.All worksheets pass. Writing the full findings, cross-seat engagement, and VERDICT into `GEOM_WORK.md`.Final verification that all worksheets pass, then a quick re-read of the other seats for any late engagement.**GEOM seat primary stack is complete.** Work is in `v87/GEOM_WORK.md` and worksheets under `v87/work/geom/` (10 files, all pass).
+
+### Geometric hypothesis — scored
+
+| Half | Assigned to | Result |
+|------|-------------|--------|
+| **Bound** (why ≤2√2 not 4) | metric / c² quadratic form | **Conditional success + honest negative** |
+| **Reachability** (why >2) | O2 “recursive non-locality” | **Holism fails** (Constraint 2); Door A works but is postulated |
+
+### Hard constraints (both enforced)
+
+1. **Light cone ≠ Tsirelson.** PR boxes are no-signalling and give S=4. Spacetime causality stops at 4, not 2√2.
+2. **Monism ≠ Bell escape.** λ = full Cauchy-slice field still gives (R)∧(L) and |S|≤2. Holism is not enough.
+
+### What *is* derived
+
+Once \(E(a,b)=-a\cdot b\) (unit vectors), parallelogram + Cauchy–Schwarz (and the operator identity \(S^2=4I-[A,A']\otimes[B,B']\)) give **|S|≤2√2** exactly. Machine-checked (SymPy + Maxima + MC).
+
+### What is *not* derived
+
+- Why correlations are inner products of unit vectors (the real geometric question)
+- Why fabric would land on FABLE’s p=1 (or any IP form) rather than classical sawtooth or PR
+- The MD tilt itself from Cosserat dynamics
+
+Lorentzian spacetime form and Euclidean correlator 2-norm are the **same class**, different **instance**. No fabric→Hilbert bridge this rung.
+
+### Join with FABLE/GROK
+
+They supply reachability (Door A, \(I_{\min}=0.046274\) bits). At p=1, \(E=-\cos\theta\) and geometry caps S. The p-family **overshoots** through 2√2 toward 4 — geometry does not select the quantum point. **The two halves do not fully join.**
+
+### Bottom line
+
+Geometry explains the **shape of the ceiling** once you are under the inner-product form. It does **not** get the fabric there, and **c² alone cannot produce 2√2**. Bell remains a wall for explanation; GEOM owns a clean negative on the strongest reading of the geometric hypothesis, plus a full conditional bound theorem.

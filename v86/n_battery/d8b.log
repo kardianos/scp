@@ -1,0 +1,57 @@
+==============================================================================
+PART 1 -- symbolic verification on a periodic lattice
+==============================================================================
+  1D  sum_n (lap f)(Dc_x f) = 0 ............................. PASS
+  1D  (lap f)(Dc f)_n = Delta^-[ G_n^2 / 2dx^3 ] at every n .. PASS
+  3D  sum_n (lap f)(Dc_x f) = 0 ............................. PASS
+  3D  transverse (d!=x) two-term link flux, every site ...... PASS
+  1D  sum_n m^2 f (Dc f) = 0 (exact, any dx) ................ PASS
+  1D  sum_n lam f^3 (Dc f) != 0  -> pinning residual ........ PASS
+      residual is the antisymmetric double sum
+        R = -1/(2dx) sum_n [ U'(f_n) f_{n+1} - U'(f_{n+1}) f_n ]
+      (vanishes identically iff U' is linear -- i.e. mass only)
+      sympy form, 8 sites, U=lam f^4/4: lam*(f0**3*f1 - f0**3*f7 - f0*f1**3 + f0*f7**3 + f1**3*f2 - ...
+
+  gauged case (kernel pass C): neighbours are parallel-transported
+  before differencing, f_{n+d} -> Re/Im[ U_d(n) Phi_{n+d} ]. The
+  telescoping above is an identity in the TRANSPORTED variables, so
+  it survives verbatim with G^d_n -> Re/Im[U_d(n)Phi_{n+d}] - Phi_n.
+  |G^d_n|^2 depends on the link only through the invariant combination  PASS
+
+  SYMBOLIC SUMMARY: 7/7 identities verified
+
+==============================================================================
+PART 2a -- derived flux verified at scale (random periodic field)
+==============================================================================
+  N=24 random field, dx=0.3
+  max site-by-site |lhs-rhs| / max|lhs| = 2.092e-16   PASS
+  |sum_n lhs| / sum_n |lhs|            = 9.127e-19   PASS
+  -> the link-centred flux IS the kernel's exact momentum flux;
+     the cell-centred continuum sample is not.
+
+==============================================================================
+PART 2b -- Peierls-Nabarro pinning residual (the irreducible part)
+==============================================================================
+  Q-ball w=1.430 slid through one cell; R_x = -sum_n dV/df . Dc_x f
+  (mass and gradient sectors contribute exactly zero -- Part 1)
+
+        dx  Ncell       max|R_x|        E_scale          R/E
+     0.600     46     7.8655e-04     1.8400e+01     4.27e-05
+     0.400     70     3.5324e-06     1.8505e+01     1.91e-07
+     0.300     93     2.2289e-07     1.8542e+01     1.20e-08
+     0.240    116     1.6593e-07     1.8559e+01     8.94e-09
+     0.200    140     3.7668e-08     1.8568e+01     2.03e-09
+
+  The residual falls steeply with dx: it is the lattice PINNING
+  force, exponentially small in (ball width)/dx for a resolved
+  object. At the production dx it is far below the 4.4%% flux
+  defect, which therefore is NOT pinning -- it is the surface
+  object, and Part 2a gives the corrected one.
+
+D8b RESULT: gradient sector has an EXACT link-centred discrete flux;
+mass sector contributes exactly zero; the nonlinear potential leaves
+a pinning residual that is the only obstruction to an exactly
+conserved lattice momentum. Charge is exact by construction because
+its U(1) is CONTINUOUS; translation is broken to a discrete subgroup,
+so no Noether momentum current exists -- that asymmetry is structural,
+not a bug, and it bounds what D8's re-derivation can buy.

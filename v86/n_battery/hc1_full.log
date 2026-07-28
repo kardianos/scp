@@ -1,0 +1,880 @@
+v86 HC-1 -- BdG mode catalog on the UNGAUGED Q-ball background
+grid: u=r*phi, h=0.01, ADAPTIVE Rmax = max(40, 5 r_rms), l=0..4
+
+==============================================================================
+omega = 1.3200   Q = 144005.48   xi = 1.404   (shooter resid 9.6e-10)
+operator edge lambda_c = m^2 - w^2 = 0.50760   |   PHYSICAL radiation threshold Omega_c = m - w = 0.18000
+==============================================================================
+  check 1  L0 lowest eigenvalue at l=0 (the U(1) Goldstone, must be 0):  6.179e-12   [floor ~ h^2 = 1.0e-04]
+           overlap of that eigenvector with u = r*f: 1.000000
+  box: Rmax=113.2 = 5.0 x r_rms (r_rms=22.63)
+
+  channel     l  n_neg   mult lowest eigenvalues (bound ones are < lambda_c)
+  L0          0      0      3    0.00000   0.02376   0.06995   0.13855   0.22879   0.33941   [******]
+  L0          1      0      3    0.00510   0.04146   0.09910   0.17872   0.27945   0.39944   [******]
+  L0          2      0      3    0.01312   0.06235   0.13141   0.22193   0.33286   0.46100   [******]
+  L0          3      0      3    0.02392   0.08630   0.16680   0.26809   0.38878   0.51141   [***** ]
+  L0          4      0      3    0.03738   0.11323   0.20516   0.31705   0.44680   0.51284   [***** ]
+  Lx_sym      0      1      1   -0.00228   0.50904   0.51337   0.52058   0.53067   0.54363   [*     ]
+  Lx_sym      1      0      1    0.00000   0.50948   0.51390   0.52113   0.53123   0.54420   [*     ]
+  Lx_sym      2      0      1    0.00455   0.51031   0.51495   0.52225   0.53238   0.54536   [*     ]
+  Lx_sym      3      0      1    0.01138   0.51145   0.51650   0.52394   0.53410   0.54710   [*     ]
+  Lx_sym      4      0      1    0.02048   0.51284   0.51847   0.52617   0.53642   0.54944   [*     ]
+  Lx_flav     0      0      2    0.50898   0.51313   0.52004   0.52971   0.54215   0.55734   [      ]
+  Lx_flav     1      0      2    0.50944   0.51368   0.52063   0.53031   0.54275   0.55795   [      ]
+  Lx_flav     2      0      2    0.51028   0.51478   0.52180   0.53152   0.54397   0.55917   [      ]
+  Lx_flav     3      0      2    0.51144   0.51639   0.52358   0.53334   0.54582   0.56103   [      ]
+  Lx_flav     4      0      2    0.51283   0.51841   0.52592   0.53580   0.54830   0.56352   [      ]
+
+  (* = below the continuum edge lambda_c = 0.50760, i.e. a BOUND radial mode)
+  n(H_omega) = sum over channels/l of n_neg x multiplicity = 1
+  check 2  L0 contributes 0 negative directions (expected 0)
+  check 3  Lx_flav contributes 0 (expected 0: A = 2 P0 < 0 so Lx_flav = L0 - A >= L0)
+  check 4  Lx_sym contributes 1 (expected 1: the l=0 dilational direction)
+  --> n(H_omega) = 1 -- the GSS/VK anchor CONFIRMED, and the provisional n(H)=1 used by HC-3 is now MEASURED
+
+  MODE CATALOG (bound radial modes, by multipole) -- HC-2 input
+  channel     l node      lambda   Omega_est  radiates? classification
+  L0          0    0     0.00000     0.00000        n/a U(1) PHASE GOLDSTONE (x3, one per global U(1))
+  L0          0    1     0.02376     0.00897   no (l=0) monopole: gap arithmetic vs Omega_c = m - w = 0.1800
+  L0          0    2     0.06995     0.02623   no (l=0) monopole: gap arithmetic vs Omega_c = m - w = 0.1800
+  L0          0    3     0.13855     0.05148   no (l=0) monopole: gap arithmetic vs Omega_c = m - w = 0.1800
+  L0          0    4     0.22879     0.08399   no (l=0) monopole: gap arithmetic vs Omega_c = m - w = 0.1800
+  L0          0    5     0.33941     0.12285   no (l=0) monopole: gap arithmetic vs Omega_c = m - w = 0.1800
+  L0          0    6     0.46677     0.16633   no (l=0) monopole: gap arithmetic vs Omega_c = m - w = 0.1800
+  L0          1    0     0.00510     0.00193 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          1    1     0.04146     0.01561 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          1    2     0.09910     0.03702 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          1    3     0.17872     0.06605 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          1    4     0.27945     0.10192 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          1    5     0.39944     0.14350 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          2    0     0.01312     0.00496 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          2    1     0.06235     0.02341 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          2    2     0.13141     0.04887 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          2    3     0.22193     0.08155 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          2    4     0.33286     0.12058 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          2    5     0.46100     0.16438 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          3    0     0.02392     0.00903 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          3    1     0.08630     0.03229 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          3    2     0.16680     0.06174 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          3    3     0.26809     0.09792 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          3    4     0.38878     0.13986 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          4    0     0.03738     0.01409 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          4    1     0.11323     0.04221 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          4    2     0.20516     0.07555 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          4    3     0.31705     0.11508 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          4    4     0.44680     0.15959 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  Lx_sym      0    0    -0.00228    -0.00086   no (l=0) monopole: gap arithmetic vs Omega_c = m - w = 0.1800
+  Lx_sym      1    0     0.00000     0.00000        n/a TRANSLATION GOLDSTONE (x3: l=1, m=-1,0,+1)
+  Lx_sym      2    0     0.00455     0.00172 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  Lx_sym      3    0     0.01138     0.00430 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  Lx_sym      4    0     0.02048     0.00773 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+
+  coupled (x,y) l=0 symmetric sector -- BOX-SIZE TEST
+  (a sub-threshold Omega that MOVES with Rmax is a discretized
+   continuum state, not an internal mode)
+    Rmax=113.167 Omega: 0.00000 0.00000 0.00002 0.00051 0.00455 0.02440 0.05133
+    Rmax=169.751 Omega: 0.00000 0.00000 0.00005 0.00133 0.02659 0.18017 0.18067
+    predicted box-mode ladder sqrt(m^2+(n pi/Rmax)^2) - w:
+      Rmax=113.167 0.18026 0.18103 0.18231 0.18410 0.18641
+      Rmax=169.751 0.18011 0.18046 0.18103 0.18183 0.18285
+    box-stability tolerance 1.26e-05 = min(2% of the highest sub-threshold mode, 0.25 x larger-box level spacing 5.06e-05)
+    sub-threshold (Omega < Omega_c = 0.18000) frequencies: 8 at Rmax=113.167, 4 at Rmax=169.751; 0 survive the box change
+    --> NO bound internal mode in this sector: every
+        sub-threshold frequency moves with the box, i.e. is a
+        discretized continuum state. Every genuine excitation of
+        the ball therefore sits AT OR ABOVE the radiation
+        threshold and CARRIES A WIDTH -- the census claim C1's
+        'every other localized excitation carries a width'
+        holds here by absence of bound structure, not by
+        arithmetic on a mode that does not exist.
+    growth rates Re(lambda) > 0 at Rmax=113.167: 0.00004
+==============================================================================
+omega = 1.3300   Q = 22206.45   xi = 1.442   (shooter resid 9.6e-10)
+operator edge lambda_c = m^2 - w^2 = 0.48110   |   PHYSICAL radiation threshold Omega_c = m - w = 0.17000
+==============================================================================
+  check 1  L0 lowest eigenvalue at l=0 (the U(1) Goldstone, must be 0):  2.093e-13   [floor ~ h^2 = 1.0e-04]
+           overlap of that eigenvector with u = r*f: 1.000000
+  box: Rmax=60.6 = 5.0 x r_rms (r_rms=12.11)
+
+  channel     l  n_neg   mult lowest eigenvalues (bound ones are < lambda_c)
+  L0          0      0      3    0.00000   0.08339   0.24007   0.45400   0.48648   0.50208   [****  ]
+  L0          1      0      3    0.01798   0.14438   0.33531   0.48749   0.50200   0.52466   [***   ]
+  L0          2      0      3    0.04611   0.21532   0.43608   0.49063   0.50696   0.53219   [***   ]
+  L0          3      0      3    0.08374   0.29541   0.49445   0.51074   0.52887   0.54750   [**    ]
+  L0          4      0      3    0.13043   0.38366   0.49939   0.51893   0.54513   0.57862   [**    ]
+  Lx_sym      0      1      1   -0.00785   0.48626   0.50171   0.52741   0.56329   0.60925   [*     ]
+  Lx_sym      1      0      1    0.00000   0.48777   0.50352   0.52931   0.56524   0.61124   [*     ]
+  Lx_sym      2      0      1    0.01571   0.49062   0.50711   0.53314   0.56916   0.61522   [*     ]
+  Lx_sym      3      0      1    0.03925   0.49457   0.51241   0.53889   0.57508   0.62123   [*     ]
+  Lx_sym      4      0      1    0.07064   0.49940   0.51921   0.54655   0.58304   0.62931   [*     ]
+  Lx_flav     0      0      2    0.48585   0.50010   0.52383   0.55701   0.59961   0.65156   [      ]
+  Lx_flav     1      0      2    0.48746   0.50208   0.52593   0.55916   0.60179   0.65377   [      ]
+  Lx_flav     2      0      2    0.49044   0.50599   0.53014   0.56349   0.60619   0.65821   [      ]
+  Lx_flav     3      0      2    0.49449   0.51167   0.53647   0.57005   0.61283   0.66491   [      ]
+  Lx_flav     4      0      2    0.49937   0.51881   0.54480   0.57884   0.62179   0.67394   [      ]
+
+  (* = below the continuum edge lambda_c = 0.48110, i.e. a BOUND radial mode)
+  n(H_omega) = sum over channels/l of n_neg x multiplicity = 1
+  check 2  L0 contributes 0 negative directions (expected 0)
+  check 3  Lx_flav contributes 0 (expected 0: A = 2 P0 < 0 so Lx_flav = L0 - A >= L0)
+  check 4  Lx_sym contributes 1 (expected 1: the l=0 dilational direction)
+  --> n(H_omega) = 1 -- the GSS/VK anchor CONFIRMED, and the provisional n(H)=1 used by HC-3 is now MEASURED
+
+  MODE CATALOG (bound radial modes, by multipole) -- HC-2 input
+  channel     l node      lambda   Omega_est  radiates? classification
+  L0          0    0     0.00000     0.00000        n/a U(1) PHASE GOLDSTONE (x3, one per global U(1))
+  L0          0    1     0.08339     0.03099   no (l=0) monopole: gap arithmetic vs Omega_c = m - w = 0.1700
+  L0          0    2     0.24007     0.08738   no (l=0) monopole: gap arithmetic vs Omega_c = m - w = 0.1700
+  L0          0    3     0.45400     0.16094   no (l=0) monopole: gap arithmetic vs Omega_c = m - w = 0.1700
+  L0          1    0     0.01798     0.00674 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          1    1     0.14438     0.05321 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          1    2     0.33531     0.12059 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          2    0     0.04611     0.01722 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          2    1     0.21532     0.07862 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          2    2     0.43608     0.15492 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          3    0     0.08374     0.03112 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          3    1     0.29541     0.10677 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          4    0     0.13043     0.04816 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          4    1     0.38366     0.13716 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  Lx_sym      0    0    -0.00785    -0.00296   no (l=0) NEGATIVE direction (GSS index contribution)
+  Lx_sym      1    0     0.00000     0.00000        n/a TRANSLATION GOLDSTONE (x3: l=1, m=-1,0,+1)
+  Lx_sym      2    0     0.01571     0.00589 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  Lx_sym      3    0     0.03925     0.01468 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  Lx_sym      4    0     0.07064     0.02629 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+
+  coupled (x,y) l=0 symmetric sector -- BOX-SIZE TEST
+  (a sub-threshold Omega that MOVES with Rmax is a discretized
+   continuum state, not an internal mode)
+    Rmax=60.5592 Omega: 0.09388 0.09740 0.17165 0.17650 0.18399 0.19121 0.19938
+    Rmax=90.8388 Omega: 0.00055 0.01817 0.09406 0.15110 0.17059 0.17236 0.17529
+    predicted box-mode ladder sqrt(m^2+(n pi/Rmax)^2) - w:
+      Rmax=60.5592 0.17090 0.17358 0.17805 0.18428 0.19226
+      Rmax=90.8388 0.17040 0.17159 0.17358 0.17637 0.17993
+    box-stability tolerance 1.95e-03 = min(2% of the highest sub-threshold mode, 0.25 x larger-box level spacing 1.76e-02)
+    sub-threshold (Omega < Omega_c = 0.17000) frequencies: 2 at Rmax=60.5592, 4 at Rmax=90.8388; 1 survive the box change
+    --> GENUINE BOUND INTERNAL MODE(S): 0.09388
+    growth rates Re(lambda) > 0 at Rmax=60.5592: none (no linear instability in this sector)
+==============================================================================
+omega = 1.3400   Q = 7222.18   xi = 1.483   (shooter resid 9.6e-10)
+operator edge lambda_c = m^2 - w^2 = 0.45440   |   PHYSICAL radiation threshold Omega_c = m - w = 0.16000
+==============================================================================
+  check 1  L0 lowest eigenvalue at l=0 (the U(1) Goldstone, must be 0):  3.227e-12   [floor ~ h^2 = 1.0e-04]
+           overlap of that eigenvector with u = r*f: 1.000000
+  box: Rmax=41.8 = 5.0 x r_rms (r_rms=8.35)
+
+  channel     l  n_neg   mult lowest eigenvalues (bound ones are < lambda_c)
+  L0          0      0      3    0.00000   0.17452   0.45566   0.47066   0.50335   0.55494   [**    ]
+  L0          1      0      3    0.03832   0.29607   0.46796   0.49879   0.54658   0.60536   [**    ]
+  L0          2      0      3    0.09761   0.42846   0.47480   0.50983   0.56282   0.63306   [**    ]
+  L0          3      0      3    0.17596   0.48244   0.51649   0.55414   0.59420   0.65985   [*     ]
+  L0          4      0      3    0.27200   0.49282   0.53375   0.58779   0.65397   0.72336   [*     ]
+  Lx_sym      0      1      1   -0.01653   0.46545   0.49848   0.55319   0.62917   0.72599   [*     ]
+  Lx_sym      1      0      1    0.00000   0.46858   0.50224   0.55718   0.63331   0.73024   [*     ]
+  Lx_sym      2      0      1    0.03303   0.47452   0.50971   0.56519   0.64161   0.73878   [*     ]
+  Lx_sym      3      0      1    0.08248   0.48277   0.52071   0.57721   0.65412   0.75164   [*     ]
+  Lx_sym      4      0      1    0.14824   0.49289   0.53485   0.59316   0.67087   0.76886   [*     ]
+  Lx_flav     0      0      2    0.46419   0.49352   0.54230   0.61033   0.69727   0.80247   [      ]
+  Lx_flav     1      0      2    0.46762   0.49779   0.54686   0.61505   0.70215   0.80760   [      ]
+  Lx_flav     2      0      2    0.47396   0.50621   0.55601   0.62454   0.71191   0.81774   [      ]
+  Lx_flav     3      0      2    0.48252   0.51835   0.56970   0.63886   0.72661   0.83287   [      ]
+  Lx_flav     4      0      2    0.49279   0.53350   0.58761   0.65798   0.74630   0.85303   [      ]
+
+  (* = below the continuum edge lambda_c = 0.45440, i.e. a BOUND radial mode)
+  n(H_omega) = sum over channels/l of n_neg x multiplicity = 1
+  check 2  L0 contributes 0 negative directions (expected 0)
+  check 3  Lx_flav contributes 0 (expected 0: A = 2 P0 < 0 so Lx_flav = L0 - A >= L0)
+  check 4  Lx_sym contributes 1 (expected 1: the l=0 dilational direction)
+  --> n(H_omega) = 1 -- the GSS/VK anchor CONFIRMED, and the provisional n(H)=1 used by HC-3 is now MEASURED
+
+  MODE CATALOG (bound radial modes, by multipole) -- HC-2 input
+  channel     l node      lambda   Omega_est  radiates? classification
+  L0          0    0     0.00000     0.00000        n/a U(1) PHASE GOLDSTONE (x3, one per global U(1))
+  L0          0    1     0.17452     0.06361   no (l=0) monopole: gap arithmetic vs Omega_c = m - w = 0.1600
+  L0          1    0     0.03832     0.01422 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          1    1     0.29607     0.10626 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          2    0     0.09761     0.03594 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          2    1     0.42846     0.15133 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          3    0     0.17596     0.06412 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          4    0     0.27200     0.09792 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  Lx_sym      0    0    -0.01653    -0.00618   no (l=0) NEGATIVE direction (GSS index contribution)
+  Lx_sym      1    0     0.00000     0.00000        n/a TRANSLATION GOLDSTONE (x3: l=1, m=-1,0,+1)
+  Lx_sym      2    0     0.03303     0.01227 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  Lx_sym      3    0     0.08248     0.03043 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  Lx_sym      4    0     0.14824     0.05422 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+
+  coupled (x,y) l=0 symmetric sector -- BOX-SIZE TEST
+  (a sub-threshold Omega that MOVES with Rmax is a discretized
+   continuum state, not an internal mode)
+    Rmax=41.7728 Omega: 0.13519 0.16377 0.17480 0.19252 0.21628 0.24484 0.27380
+    Rmax=62.6592 Omega: 0.13493 0.16130 0.16516 0.17152 0.17972 0.18066 0.19148
+    predicted box-mode ladder sqrt(m^2+(n pi/Rmax)^2) - w:
+      Rmax=41.7728 0.16188 0.16752 0.17687 0.18987 0.20642
+      Rmax=62.6592 0.16084 0.16335 0.16752 0.17335 0.18080
+    box-stability tolerance 2.70e-03 = min(2% of the highest sub-threshold mode, 0.25 x larger-box level spacing 1.60e-01)
+    sub-threshold (Omega < Omega_c = 0.16000) frequencies: 1 at Rmax=41.7728, 1 at Rmax=62.6592; 1 survive the box change
+    --> GENUINE BOUND INTERNAL MODE(S): 0.13519
+    growth rates Re(lambda) > 0 at Rmax=41.7728: none (no linear instability in this sector)
+==============================================================================
+omega = 1.3600   Q = 1745.04   xi = 1.580   (shooter resid 9.6e-10)
+operator edge lambda_c = m^2 - w^2 = 0.40040   |   PHYSICAL radiation threshold Omega_c = m - w = 0.14000
+==============================================================================
+  check 1  L0 lowest eigenvalue at l=0 (the U(1) Goldstone, must be 0):  1.165e-11   [floor ~ h^2 = 1.0e-04]
+           overlap of that eigenvector with u = r*f: 1.000000
+  box: Rmax=40.0 = 7.5 x r_rms (r_rms=5.31)
+
+  channel     l  n_neg   mult lowest eigenvalues (bound ones are < lambda_c)
+  L0          0      0      3    0.00000   0.38807   0.41210   0.44219   0.48876   0.55160   [**    ]
+  L0          1      0      3    0.09822   0.41361   0.44123   0.48402   0.54034   0.60652   [*     ]
+  L0          2      0      3    0.24284   0.42134   0.45383   0.50146   0.56477   0.64322   [*     ]
+  L0          3      0      3    0.42010   0.43131   0.46974   0.52233   0.58991   0.67280   [      ]
+  L0          4      0      3    0.44222   0.48589   0.54038   0.59653   0.64070   0.71393   [      ]
+  Lx_sym      0      1      1   -0.04256   0.40993   0.43843   0.48569   0.55137   0.63517   [*     ]
+  Lx_sym      1      0      1    0.00000   0.41408   0.44396   0.49184   0.55795   0.64207   [*     ]
+  Lx_sym      2      0      1    0.08453   0.42142   0.45452   0.50402   0.57108   0.65590   [*     ]
+  Lx_sym      3      0      1    0.20975   0.43097   0.46904   0.52165   0.59057   0.67664   [*     ]
+  Lx_sym      4      0      1    0.37305   0.44225   0.48636   0.54369   0.61587   0.70410   [*     ]
+  Lx_flav     0      0      2    0.40888   0.43430   0.47657   0.53558   0.61110   0.70270   [      ]
+  Lx_flav     1      0      2    0.41350   0.44085   0.48405   0.54362   0.61959   0.71177   [      ]
+  Lx_flav     2      0      2    0.42122   0.45283   0.49852   0.55947   0.63636   0.72937   [      ]
+  Lx_flav     3      0      2    0.43091   0.46832   0.51845   0.58235   0.66106   0.75531   [      ]
+  Lx_flav     4      0      2    0.44223   0.48600   0.54186   0.61045   0.69254   0.78905   [      ]
+
+  (* = below the continuum edge lambda_c = 0.40040, i.e. a BOUND radial mode)
+  n(H_omega) = sum over channels/l of n_neg x multiplicity = 1
+  check 2  L0 contributes 0 negative directions (expected 0)
+  check 3  Lx_flav contributes 0 (expected 0: A = 2 P0 < 0 so Lx_flav = L0 - A >= L0)
+  check 4  Lx_sym contributes 1 (expected 1: the l=0 dilational direction)
+  --> n(H_omega) = 1 -- the GSS/VK anchor CONFIRMED, and the provisional n(H)=1 used by HC-3 is now MEASURED
+
+  MODE CATALOG (bound radial modes, by multipole) -- HC-2 input
+  channel     l node      lambda   Omega_est  radiates? classification
+  L0          0    0     0.00000     0.00000        n/a U(1) PHASE GOLDSTONE (x3, one per global U(1))
+  L0          0    1     0.38807     0.13588   no (l=0) monopole: gap arithmetic vs Omega_c = m - w = 0.1400
+  L0          1    0     0.09822     0.03564 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  L0          2    0     0.24284     0.08653 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  Lx_sym      0    0    -0.04256    -0.01574   no (l=0) NEGATIVE direction (GSS index contribution)
+  Lx_sym      1    0     0.00000     0.00000        n/a TRANSLATION GOLDSTONE (x3: l=1, m=-1,0,+1)
+  Lx_sym      2    0     0.08453     0.03073 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  Lx_sym      3    0     0.20975     0.07504 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  Lx_sym      4    0     0.37305     0.13086 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+
+  coupled (x,y) l=0 symmetric sector -- BOX-SIZE TEST
+  (a sub-threshold Omega that MOVES with Rmax is a discretized
+   continuum state, not an internal mode)
+    Rmax=40    Omega: 0.14302 0.15196 0.16631 0.18474 0.20419 0.22515 0.25314
+    Rmax=60    Omega: 0.14117 0.14468 0.15047 0.15846 0.16850 0.18029 0.19322
+    predicted box-mode ladder sqrt(m^2+(n pi/Rmax)^2) - w:
+      Rmax=40    0.14205 0.14820 0.15839 0.17255 0.19055
+      Rmax=60    0.14091 0.14365 0.14820 0.15455 0.16267
+    box-stability tolerance 2.00e-02 = min(2% of the highest sub-threshold mode, 0.25 x larger-box level spacing inf)
+    sub-threshold (Omega < Omega_c = 0.14000) frequencies: 0 at Rmax=40, 0 at Rmax=60; 0 survive the box change
+    --> NO bound internal mode in this sector: every
+        sub-threshold frequency moves with the box, i.e. is a
+        discretized continuum state. Every genuine excitation of
+        the ball therefore sits AT OR ABOVE the radiation
+        threshold and CARRIES A WIDTH -- the census claim C1's
+        'every other localized excitation carries a width'
+        holds here by absence of bound structure, not by
+        arithmetic on a mode that does not exist.
+    growth rates Re(lambda) > 0 at Rmax=40: none (no linear instability in this sector)
+==============================================================================
+omega = 1.3900   Q = 482.18   xi = 1.774   (shooter resid 9.6e-10)
+operator edge lambda_c = m^2 - w^2 = 0.31790   |   PHYSICAL radiation threshold Omega_c = m - w = 0.11000
+==============================================================================
+  check 1  L0 lowest eigenvalue at l=0 (the U(1) Goldstone, must be 0):  5.433e-11   [floor ~ h^2 = 1.0e-04]
+           overlap of that eigenvector with u = r*f: 1.000000
+  box: Rmax=40.0 = 10.8 x r_rms (r_rms=3.71)
+
+  channel     l  n_neg   mult lowest eigenvalues (bound ones are < lambda_c)
+  L0          0      0      3    0.00000   0.32568   0.34889   0.38713   0.43982   0.50611   [*     ]
+  L0          1      0      3    0.21255   0.33099   0.35808   0.40011   0.45697   0.52832   [*     ]
+  L0          2      0      3    0.33862   0.36904   0.40879   0.45096   0.49935   0.56726   [      ]
+  L0          3      0      3    0.34840   0.38568   0.43501   0.49628   0.56882   0.65112   [      ]
+  L0          4      0      3    0.35973   0.40348   0.45919   0.52709   0.60718   0.69928   [      ]
+  Lx_sym      0      1      1   -0.10261   0.32618   0.35094   0.39203   0.44920   0.52218   [*     ]
+  Lx_sym      1      0      1    0.00000   0.33095   0.35799   0.40043   0.45857   0.53237   [*     ]
+  Lx_sym      2      0      1    0.19640   0.33874   0.37049   0.41626   0.47685   0.55253   [*     ]
+  Lx_sym      3      0      1    0.34840   0.38546   0.43140   0.46220   0.50889   0.58510   [      ]
+  Lx_sym      4      0      1    0.35973   0.40348   0.45915   0.52681   0.60572   0.69264   [      ]
+  Lx_flav     0      0      2    0.32530   0.34748   0.38440   0.43595   0.50200   0.58232   [      ]
+  Lx_flav     1      0      2    0.33063   0.35603   0.39501   0.44799   0.51520   0.59665   [      ]
+  Lx_flav     2      0      2    0.33866   0.36966   0.41320   0.46968   0.53952   0.62306   [      ]
+  Lx_flav     3      0      2    0.34840   0.38569   0.43516   0.49702   0.57150   0.65886   [      ]
+  Lx_flav     4      0      2    0.35973   0.40349   0.45920   0.52715   0.60744   0.70018   [      ]
+
+  (* = below the continuum edge lambda_c = 0.31790, i.e. a BOUND radial mode)
+  n(H_omega) = sum over channels/l of n_neg x multiplicity = 1
+  check 2  L0 contributes 0 negative directions (expected 0)
+  check 3  Lx_flav contributes 0 (expected 0: A = 2 P0 < 0 so Lx_flav = L0 - A >= L0)
+  check 4  Lx_sym contributes 1 (expected 1: the l=0 dilational direction)
+  --> n(H_omega) = 1 -- the GSS/VK anchor CONFIRMED, and the provisional n(H)=1 used by HC-3 is now MEASURED
+
+  MODE CATALOG (bound radial modes, by multipole) -- HC-2 input
+  channel     l node      lambda   Omega_est  radiates? classification
+  L0          0    0     0.00000     0.00000        n/a U(1) PHASE GOLDSTONE (x3, one per global U(1))
+  L0          1    0     0.21255     0.07446 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+  Lx_sym      0    0    -0.10261    -0.03742   no (l=0) NEGATIVE direction (GSS index contribution)
+  Lx_sym      1    0     0.00000     0.00000        n/a TRANSLATION GOLDSTONE (x3: l=1, m=-1,0,+1)
+  Lx_sym      2    0     0.19640     0.06894 YES (l>=1) golden-rule width vs the massless A channel (gauged case)
+
+  coupled (x,y) l=0 symmetric sector -- BOX-SIZE TEST
+  (a sub-threshold Omega that MOVES with Rmax is a discretized
+   continuum state, not an internal mode)
+    Rmax=40    Omega: 0.11272 0.12080 0.13407 0.15227 0.17504 0.20194 0.23240
+    Rmax=60    Omega: 0.11110 0.11437 0.11981 0.12737 0.13699 0.14862 0.16217
+    predicted box-mode ladder sqrt(m^2+(n pi/Rmax)^2) - w:
+      Rmax=40    0.11205 0.11820 0.12839 0.14255 0.16055
+      Rmax=60    0.11091 0.11365 0.11820 0.12455 0.13267
+    box-stability tolerance 2.00e-02 = min(2% of the highest sub-threshold mode, 0.25 x larger-box level spacing inf)
+    sub-threshold (Omega < Omega_c = 0.11000) frequencies: 0 at Rmax=40, 0 at Rmax=60; 0 survive the box change
+    --> NO bound internal mode in this sector: every
+        sub-threshold frequency moves with the box, i.e. is a
+        discretized continuum state. Every genuine excitation of
+        the ball therefore sits AT OR ABOVE the radiation
+        threshold and CARRIES A WIDTH -- the census claim C1's
+        'every other localized excitation carries a width'
+        holds here by absence of bound structure, not by
+        arithmetic on a mode that does not exist.
+    growth rates Re(lambda) > 0 at Rmax=40: 0.00000
+==============================================================================
+omega = 1.4200   Q = 209.57   xi = 2.069   (shooter resid 9.6e-10)
+operator edge lambda_c = m^2 - w^2 = 0.23360   |   PHYSICAL radiation threshold Omega_c = m - w = 0.08000
+==============================================================================
+  check 1  L0 lowest eigenvalue at l=0 (the U(1) Goldstone, must be 0):  -3.468e-12   [floor ~ h^2 = 1.0e-04]
+           overlap of that eigenvector with u = r*f: 1.000000
+  box: Rmax=40.0 = 12.7 x r_rms (r_rms=3.14)
+
+  channel     l  n_neg   mult lowest eigenvalues (bound ones are < lambda_c)
+  L0          0      0      3   -0.00000   0.24121   0.26394   0.30144   0.35333   0.41919   [*     ]
+  L0          1      0      3    0.24574   0.26582   0.28998   0.32727   0.38100   0.44950   [      ]
+  L0          2      0      3    0.25435   0.28524   0.32825   0.38314   0.44940   0.52621   [      ]
+  L0          3      0      3    0.26410   0.30139   0.35080   0.41247   0.48637   0.57241   [      ]
+  L0          4      0      3    0.27543   0.31919   0.37490   0.44283   0.52303   0.61552   [      ]
+  Lx_sym      0      1      1   -0.18966   0.24136   0.26459   0.30314   0.35681   0.42536   [*     ]
+  Lx_sym      1      0      1    0.00000   0.24649   0.27271   0.31337   0.36874   0.43877   [*     ]
+  Lx_sym      2      0      1    0.25430   0.28400   0.31209   0.34024   0.39572   0.46784   [      ]
+  Lx_sym      3      0      1    0.26410   0.30138   0.35075   0.41218   0.48518   0.56837   [      ]
+  Lx_sym      4      0      1    0.27543   0.31918   0.37490   0.44281   0.52297   0.61531   [      ]
+  Lx_flav     0      0      2    0.24057   0.26146   0.29624   0.34484   0.40714   0.48299   [      ]
+  Lx_flav     1      0      2    0.24625   0.27120   0.30901   0.35994   0.42420   0.50186   [      ]
+  Lx_flav     2      0      2    0.25435   0.28529   0.32856   0.38431   0.45269   0.53389   [      ]
+  Lx_flav     3      0      2    0.26410   0.30139   0.35082   0.41255   0.48663   0.57315   [      ]
+  Lx_flav     4      0      2    0.27543   0.31919   0.37490   0.44283   0.52305   0.61560   [      ]
+
+  (* = below the continuum edge lambda_c = 0.23360, i.e. a BOUND radial mode)
+  n(H_omega) = sum over channels/l of n_neg x multiplicity = 1
+  check 2  L0 contributes 0 negative directions (expected 0)
+  check 3  Lx_flav contributes 0 (expected 0: A = 2 P0 < 0 so Lx_flav = L0 - A >= L0)
+  check 4  Lx_sym contributes 1 (expected 1: the l=0 dilational direction)
+  --> n(H_omega) = 1 -- the GSS/VK anchor CONFIRMED, and the provisional n(H)=1 used by HC-3 is now MEASURED
+
+  MODE CATALOG (bound radial modes, by multipole) -- HC-2 input
+  channel     l node      lambda   Omega_est  radiates? classification
+  L0          0    0    -0.00000    -0.00000        n/a U(1) PHASE GOLDSTONE (x3, one per global U(1))
+  Lx_sym      0    0    -0.18966    -0.06843   no (l=0) NEGATIVE direction (GSS index contribution)
+  Lx_sym      1    0     0.00000     0.00000        n/a TRANSLATION GOLDSTONE (x3: l=1, m=-1,0,+1)
+
+  coupled (x,y) l=0 symmetric sector -- BOX-SIZE TEST
+  (a sub-threshold Omega that MOVES with Rmax is a discretized
+   continuum state, not an internal mode)
+    Rmax=40    Omega: 0.00000 0.08258 0.09025 0.10289 0.12027 0.14212 0.16814
+    Rmax=60    Omega: 0.08106 0.08423 0.08949 0.09681 0.10614 0.11743 0.13061
+    predicted box-mode ladder sqrt(m^2+(n pi/Rmax)^2) - w:
+      Rmax=40    0.08205 0.08820 0.09839 0.11255 0.13055
+      Rmax=60    0.08091 0.08365 0.08820 0.09455 0.10267
+    box-stability tolerance 2.00e-02 = min(2% of the highest sub-threshold mode, 0.25 x larger-box level spacing inf)
+    sub-threshold (Omega < Omega_c = 0.08000) frequencies: 0 at Rmax=40, 0 at Rmax=60; 0 survive the box change
+    --> NO bound internal mode in this sector: every
+        sub-threshold frequency moves with the box, i.e. is a
+        discretized continuum state. Every genuine excitation of
+        the ball therefore sits AT OR ABOVE the radiation
+        threshold and CARRIES A WIDTH -- the census claim C1's
+        'every other localized excitation carries a width'
+        holds here by absence of bound structure, not by
+        arithmetic on a mode that does not exist.
+    growth rates Re(lambda) > 0 at Rmax=40: none (no linear instability in this sector)
+==============================================================================
+omega = 1.4500   Q = 118.05   xi = 2.604   (shooter resid 9.6e-10)
+operator edge lambda_c = m^2 - w^2 = 0.14750   |   PHYSICAL radiation threshold Omega_c = m - w = 0.05000
+==============================================================================
+  check 1  L0 lowest eigenvalue at l=0 (the U(1) Goldstone, must be 0):  6.344e-11   [floor ~ h^2 = 1.0e-04]
+           overlap of that eigenvector with u = r*f: 1.000000
+  box: Rmax=40.0 = 12.9 x r_rms (r_rms=3.09)
+
+  channel     l  n_neg   mult lowest eigenvalues (bound ones are < lambda_c)
+  L0          0      0      3    0.00000   0.15515   0.17789   0.21523   0.26669   0.33186   [*     ]
+  L0          1      0      3    0.16006   0.18429   0.21982   0.26574   0.32160   0.38814   [      ]
+  L0          2      0      3    0.16825   0.19917   0.24231   0.29768   0.36518   0.44464   [      ]
+  L0          3      0      3    0.17800   0.21529   0.26471   0.32641   0.40039   0.48666   [      ]
+  L0          4      0      3    0.18933   0.23309   0.28880   0.35673   0.43694   0.52946   [      ]
+  Lx_sym      0      1      1   -0.31142   0.15495   0.17724   0.21425   0.26580   0.33171   [*     ]
+  Lx_sym      1      0      1    0.00000   0.16035   0.18633   0.22635   0.28054   0.34881   [*     ]
+  Lx_sym      2      0      1    0.16825   0.19909   0.24186   0.29568   0.35815   0.42517   [      ]
+  Lx_sym      3      0      1    0.17800   0.21529   0.26470   0.32636   0.40021   0.48611   [      ]
+  Lx_sym      4      0      1    0.18933   0.23309   0.28880   0.35673   0.43693   0.52941   [      ]
+  Lx_flav     0      0      2    0.15424   0.17445   0.20809   0.25510   0.31540   0.38887   [      ]
+  Lx_flav     1      0      2    0.16013   0.18493   0.22232   0.27246   0.33548   0.41147   [      ]
+  Lx_flav     2      0      2    0.16825   0.19918   0.24239   0.29798   0.36601   0.44656   [      ]
+  Lx_flav     3      0      2    0.17800   0.21529   0.26472   0.32642   0.40046   0.48684   [      ]
+  Lx_flav     4      0      2    0.18933   0.23309   0.28880   0.35673   0.43695   0.52947   [      ]
+
+  (* = below the continuum edge lambda_c = 0.14750, i.e. a BOUND radial mode)
+  n(H_omega) = sum over channels/l of n_neg x multiplicity = 1
+  check 2  L0 contributes 0 negative directions (expected 0)
+  check 3  Lx_flav contributes 0 (expected 0: A = 2 P0 < 0 so Lx_flav = L0 - A >= L0)
+  check 4  Lx_sym contributes 1 (expected 1: the l=0 dilational direction)
+  --> n(H_omega) = 1 -- the GSS/VK anchor CONFIRMED, and the provisional n(H)=1 used by HC-3 is now MEASURED
+
+  MODE CATALOG (bound radial modes, by multipole) -- HC-2 input
+  channel     l node      lambda   Omega_est  radiates? classification
+  L0          0    0     0.00000     0.00000        n/a U(1) PHASE GOLDSTONE (x3, one per global U(1))
+  Lx_sym      0    0    -0.31142    -0.11169   no (l=0) NEGATIVE direction (GSS index contribution)
+  Lx_sym      1    0     0.00000     0.00000        n/a TRANSLATION GOLDSTONE (x3: l=1, m=-1,0,+1)
+
+  coupled (x,y) l=0 symmetric sector -- BOX-SIZE TEST
+  (a sub-threshold Omega that MOVES with Rmax is a discretized
+   continuum state, not an internal mode)
+    Rmax=40    Omega: 0.05242 0.05974 0.07193 0.08882 0.11012 0.13554 0.16478
+    Rmax=60    Omega: 0.05102 0.05407 0.05918 0.06632 0.07546 0.08654 0.09950
+    predicted box-mode ladder sqrt(m^2+(n pi/Rmax)^2) - w:
+      Rmax=40    0.05205 0.05820 0.06839 0.08255 0.10055
+      Rmax=60    0.05091 0.05365 0.05820 0.06455 0.07267
+    box-stability tolerance 2.00e-02 = min(2% of the highest sub-threshold mode, 0.25 x larger-box level spacing inf)
+    sub-threshold (Omega < Omega_c = 0.05000) frequencies: 0 at Rmax=40, 0 at Rmax=60; 0 survive the box change
+    --> NO bound internal mode in this sector: every
+        sub-threshold frequency moves with the box, i.e. is a
+        discretized continuum state. Every genuine excitation of
+        the ball therefore sits AT OR ABOVE the radiation
+        threshold and CARRIES A WIDTH -- the census claim C1's
+        'every other localized excitation carries a width'
+        holds here by absence of bound structure, not by
+        arithmetic on a mode that does not exist.
+    growth rates Re(lambda) > 0 at Rmax=40: 0.00000
+==============================================================================
+omega = 1.4700   Q = 91.93   xi = 3.350   (shooter resid 9.6e-10)
+operator edge lambda_c = m^2 - w^2 = 0.08910   |   PHYSICAL radiation threshold Omega_c = m - w = 0.03000
+==============================================================================
+  check 1  L0 lowest eigenvalue at l=0 (the U(1) Goldstone, must be 0):  3.392e-11   [floor ~ h^2 = 1.0e-04]
+           overlap of that eigenvector with u = r*f: 1.000000
+  box: Rmax=40.0 = 11.7 x r_rms (r_rms=3.43)
+
+  channel     l  n_neg   mult lowest eigenvalues (bound ones are < lambda_c)
+  L0          0      0      3    0.00000   0.09697   0.12015   0.15784   0.20940   0.27441   [*     ]
+  L0          1      0      3    0.10169   0.12616   0.16252   0.21040   0.26947   0.33960   [      ]
+  L0          2      0      3    0.10985   0.14077   0.18394   0.23937   0.30703   0.38684   [      ]
+  L0          3      0      3    0.11960   0.15689   0.20631   0.26801   0.34201   0.42830   [      ]
+  L0          4      0      3    0.13093   0.17469   0.23040   0.29833   0.37854   0.47106   [      ]
+  Lx_sym      0      1      1   -0.42593   0.09636   0.11811   0.15424   0.20460   0.26901   [*     ]
+  Lx_sym      1      0      1    0.00000   0.10198   0.12803   0.16798   0.22184   0.28946   [*     ]
+  Lx_sym      2      0      1    0.10985   0.14074   0.18376   0.23865   0.30480   0.38102   [      ]
+  Lx_sym      3      0      1    0.11960   0.15689   0.20631   0.26798   0.34191   0.42803   [      ]
+  Lx_sym      4      0      1    0.13093   0.17469   0.23040   0.29833   0.37853   0.47103   [      ]
+  Lx_flav     0      0      2    0.09574   0.11565   0.14879   0.19510   0.25450   0.32689   [      ]
+  Lx_flav     1      0      2    0.10173   0.12648   0.16374   0.21363   0.27623   0.35161   [      ]
+  Lx_flav     2      0      2    0.10985   0.14078   0.18398   0.23954   0.30749   0.38789   [      ]
+  Lx_flav     3      0      2    0.11960   0.15689   0.20631   0.26802   0.34205   0.42841   [      ]
+  Lx_flav     4      0      2    0.13093   0.17469   0.23040   0.29833   0.37855   0.47107   [      ]
+
+  (* = below the continuum edge lambda_c = 0.08910, i.e. a BOUND radial mode)
+  n(H_omega) = sum over channels/l of n_neg x multiplicity = 1
+  check 2  L0 contributes 0 negative directions (expected 0)
+  check 3  Lx_flav contributes 0 (expected 0: A = 2 P0 < 0 so Lx_flav = L0 - A >= L0)
+  check 4  Lx_sym contributes 1 (expected 1: the l=0 dilational direction)
+  --> n(H_omega) = 1 -- the GSS/VK anchor CONFIRMED, and the provisional n(H)=1 used by HC-3 is now MEASURED
+
+  MODE CATALOG (bound radial modes, by multipole) -- HC-2 input
+  channel     l node      lambda   Omega_est  radiates? classification
+  L0          0    0     0.00000     0.00000        n/a U(1) PHASE GOLDSTONE (x3, one per global U(1))
+  Lx_sym      0    0    -0.42593    -0.15282   no (l=0) NEGATIVE direction (GSS index contribution)
+  Lx_sym      1    0     0.00000     0.00000        n/a TRANSLATION GOLDSTONE (x3: l=1, m=-1,0,+1)
+
+  coupled (x,y) l=0 symmetric sector -- BOX-SIZE TEST
+  (a sub-threshold Omega that MOVES with Rmax is a discretized
+   continuum state, not an internal mode)
+    Rmax=40    Omega: 0.03167 0.03826 0.05025 0.06709 0.08831 0.11357 0.14259
+    Rmax=60    Omega: 0.00000 0.03076 0.03341 0.03827 0.04530 0.05439 0.06545
+    predicted box-mode ladder sqrt(m^2+(n pi/Rmax)^2) - w:
+      Rmax=40    0.03205 0.03820 0.04839 0.06255 0.08055
+      Rmax=60    0.03091 0.03365 0.03820 0.04455 0.05267
+    box-stability tolerance 2.00e-02 = min(2% of the highest sub-threshold mode, 0.25 x larger-box level spacing inf)
+    sub-threshold (Omega < Omega_c = 0.03000) frequencies: 0 at Rmax=40, 0 at Rmax=60; 0 survive the box change
+    --> NO bound internal mode in this sector: every
+        sub-threshold frequency moves with the box, i.e. is a
+        discretized continuum state. Every genuine excitation of
+        the ball therefore sits AT OR ABOVE the radiation
+        threshold and CARRIES A WIDTH -- the census claim C1's
+        'every other localized excitation carries a width'
+        holds here by absence of bound structure, not by
+        arithmetic on a mode that does not exist.
+    growth rates Re(lambda) > 0 at Rmax=40: 0.00000
+==============================================================================
+omega = 1.4750   Q = 88.53   xi = 3.667   (shooter resid 9.6e-10)
+operator edge lambda_c = m^2 - w^2 = 0.07437   |   PHYSICAL radiation threshold Omega_c = m - w = 0.02500
+==============================================================================
+  check 1  L0 lowest eigenvalue at l=0 (the U(1) Goldstone, must be 0):  2.032e-10   [floor ~ h^2 = 1.0e-04]
+           overlap of that eigenvector with u = r*f: 1.000000
+  box: Rmax=40.0 = 11.1 x r_rms (r_rms=3.61)
+
+  channel     l  n_neg   mult lowest eigenvalues (bound ones are < lambda_c)
+  L0          0      0      3    0.00000   0.08235   0.10575   0.14362   0.19525   0.26025   [*     ]
+  L0          1      0      3    0.08697   0.11147   0.14793   0.19604   0.25553   0.32626   [      ]
+  L0          2      0      3    0.09513   0.12604   0.16921   0.22465   0.29233   0.37219   [      ]
+  L0          3      0      3    0.10488   0.14216   0.19159   0.25329   0.32728   0.41358   [      ]
+  L0          4      0      3    0.11620   0.15996   0.21567   0.28360   0.36382   0.45633   [      ]
+  Lx_sym      0      1      1   -0.46240   0.08159   0.10319   0.13908   0.18912   0.25315   [*     ]
+  Lx_sym      1      0      1    0.00000   0.08727   0.11338   0.15337   0.20719   0.27468   [*     ]
+  Lx_sym      2      0      1    0.09512   0.12602   0.16906   0.22405   0.29050   0.36752   [      ]
+  Lx_sym      3      0      1    0.10488   0.14216   0.19158   0.25326   0.32719   0.41333   [      ]
+  Lx_sym      4      0      1    0.11620   0.15996   0.21567   0.28360   0.36381   0.45631   [      ]
+  Lx_flav     0      0      2    0.08100   0.10084   0.13388   0.18005   0.23926   0.31141   [      ]
+  Lx_flav     1      0      2    0.08700   0.11175   0.14899   0.19883   0.26136   0.33663   [      ]
+  Lx_flav     2      0      2    0.09513   0.12605   0.16926   0.22481   0.29275   0.37312   [      ]
+  Lx_flav     3      0      2    0.10488   0.14216   0.19159   0.25330   0.32732   0.41368   [      ]
+  Lx_flav     4      0      2    0.11620   0.15996   0.21567   0.28361   0.36382   0.45635   [      ]
+
+  (* = below the continuum edge lambda_c = 0.07437, i.e. a BOUND radial mode)
+  n(H_omega) = sum over channels/l of n_neg x multiplicity = 1
+  check 2  L0 contributes 0 negative directions (expected 0)
+  check 3  Lx_flav contributes 0 (expected 0: A = 2 P0 < 0 so Lx_flav = L0 - A >= L0)
+  check 4  Lx_sym contributes 1 (expected 1: the l=0 dilational direction)
+  --> n(H_omega) = 1 -- the GSS/VK anchor CONFIRMED, and the provisional n(H)=1 used by HC-3 is now MEASURED
+
+  MODE CATALOG (bound radial modes, by multipole) -- HC-2 input
+  channel     l node      lambda   Omega_est  radiates? classification
+  L0          0    0     0.00000     0.00000        n/a U(1) PHASE GOLDSTONE (x3, one per global U(1))
+  Lx_sym      0    0    -0.46240    -0.16610   no (l=0) NEGATIVE direction (GSS index contribution)
+  Lx_sym      1    0     0.00000     0.00000        n/a TRANSLATION GOLDSTONE (x3: l=1, m=-1,0,+1)
+
+  coupled (x,y) l=0 symmetric sector -- BOX-SIZE TEST
+  (a sub-threshold Omega that MOVES with Rmax is a discretized
+   continuum state, not an internal mode)
+    Rmax=40    Omega: 0.02544 0.03209 0.04430 0.06130 0.08260 0.10789 0.13689
+    Rmax=60    Omega: 0.02512 0.02766 0.03256 0.03967 0.04883 0.05995 0.07291
+    predicted box-mode ladder sqrt(m^2+(n pi/Rmax)^2) - w:
+      Rmax=40    0.02705 0.03320 0.04339 0.05755 0.07555
+      Rmax=60    0.02591 0.02865 0.03320 0.03955 0.04767
+    box-stability tolerance 2.00e-02 = min(2% of the highest sub-threshold mode, 0.25 x larger-box level spacing inf)
+    sub-threshold (Omega < Omega_c = 0.02500) frequencies: 0 at Rmax=40, 0 at Rmax=60; 0 survive the box change
+    --> NO bound internal mode in this sector: every
+        sub-threshold frequency moves with the box, i.e. is a
+        discretized continuum state. Every genuine excitation of
+        the ball therefore sits AT OR ABOVE the radiation
+        threshold and CARRIES A WIDTH -- the census claim C1's
+        'every other localized excitation carries a width'
+        holds here by absence of bound structure, not by
+        arithmetic on a mode that does not exist.
+    growth rates Re(lambda) > 0 at Rmax=40: 0.00000
+==============================================================================
+omega = 1.4800   Q = 86.73   xi = 4.096   (shooter resid 9.6e-10)
+operator edge lambda_c = m^2 - w^2 = 0.05960   |   PHYSICAL radiation threshold Omega_c = m - w = 0.02000
+==============================================================================
+  check 1  L0 lowest eigenvalue at l=0 (the U(1) Goldstone, must be 0):  1.467e-09   [floor ~ h^2 = 1.0e-04]
+           overlap of that eigenvector with u = r*f: 1.000000
+  box: Rmax=40.0 = 10.3 x r_rms (r_rms=3.88)
+
+  channel     l  n_neg   mult lowest eigenvalues (bound ones are < lambda_c)
+  L0          0      0      3    0.00000   0.06774   0.09143   0.12950   0.18123   0.24625   [*     ]
+  L0          1      0      3    0.07219   0.09672   0.13325   0.18155   0.24137   0.31259   [      ]
+  L0          2      0      3    0.08035   0.11127   0.15444   0.20989   0.27758   0.35746   [      ]
+  L0          3      0      3    0.09010   0.12739   0.17681   0.23851   0.31251   0.39881   [      ]
+  L0          4      0      3    0.10143   0.14519   0.20090   0.26883   0.34904   0.44156   [      ]
+  Lx_sym      0      1      1   -0.50414   0.06676   0.08820   0.12384   0.17353   0.23713   [*     ]
+  Lx_sym      1      0      1    0.00000   0.07253   0.09872   0.13877   0.19256   0.25994   [*     ]
+  Lx_sym      2      0      1    0.08035   0.11125   0.15430   0.20936   0.27602   0.35358   [      ]
+  Lx_sym      3      0      1    0.09010   0.12739   0.17681   0.23848   0.31242   0.39856   [      ]
+  Lx_sym      4      0      1    0.10143   0.14519   0.20090   0.26883   0.34903   0.44153   [      ]
+  Lx_flav     0      0      2    0.06620   0.08600   0.11894   0.16497   0.22400   0.29593   [      ]
+  Lx_flav     1      0      2    0.07222   0.09697   0.13419   0.18400   0.24646   0.32164   [      ]
+  Lx_flav     2      0      2    0.08035   0.11128   0.15448   0.21003   0.27796   0.35833   [      ]
+  Lx_flav     3      0      2    0.09010   0.12739   0.17681   0.23852   0.31255   0.39891   [      ]
+  Lx_flav     4      0      2    0.10143   0.14519   0.20090   0.26883   0.34905   0.44157   [      ]
+
+  (* = below the continuum edge lambda_c = 0.05960, i.e. a BOUND radial mode)
+  n(H_omega) = sum over channels/l of n_neg x multiplicity = 1
+  check 2  L0 contributes 0 negative directions (expected 0)
+  check 3  Lx_flav contributes 0 (expected 0: A = 2 P0 < 0 so Lx_flav = L0 - A >= L0)
+  check 4  Lx_sym contributes 1 (expected 1: the l=0 dilational direction)
+  --> n(H_omega) = 1 -- the GSS/VK anchor CONFIRMED, and the provisional n(H)=1 used by HC-3 is now MEASURED
+
+  MODE CATALOG (bound radial modes, by multipole) -- HC-2 input
+  channel     l node      lambda   Omega_est  radiates? classification
+  L0          0    0     0.00000     0.00000        n/a U(1) PHASE GOLDSTONE (x3, one per global U(1))
+  Lx_sym      0    0    -0.50414    -0.18144   no (l=0) NEGATIVE direction (GSS index contribution)
+  Lx_sym      1    0     0.00000     0.00000        n/a TRANSLATION GOLDSTONE (x3: l=1, m=-1,0,+1)
+
+  coupled (x,y) l=0 symmetric sector -- BOX-SIZE TEST
+  (a sub-threshold Omega that MOVES with Rmax is a discretized
+   continuum state, not an internal mode)
+    Rmax=40    Omega: 0.01438 0.02555 0.03803 0.05526 0.07670 0.10205 0.13106
+    Rmax=60    Omega: 0.00000 0.01499 0.02181 0.02664 0.03383 0.04310 0.05429
+    predicted box-mode ladder sqrt(m^2+(n pi/Rmax)^2) - w:
+      Rmax=40    0.02205 0.02820 0.03839 0.05255 0.07055
+      Rmax=60    0.02091 0.02365 0.02820 0.03455 0.04267
+    box-stability tolerance 2.88e-04 = min(2% of the highest sub-threshold mode, 0.25 x larger-box level spacing 2.00e-02)
+    sub-threshold (Omega < Omega_c = 0.02000) frequencies: 1 at Rmax=40, 1 at Rmax=60; 0 survive the box change
+    --> NO bound internal mode in this sector: every
+        sub-threshold frequency moves with the box, i.e. is a
+        discretized continuum state. Every genuine excitation of
+        the ball therefore sits AT OR ABOVE the radiation
+        threshold and CARRIES A WIDTH -- the census claim C1's
+        'every other localized excitation carries a width'
+        holds here by absence of bound structure, not by
+        arithmetic on a mode that does not exist.
+    growth rates Re(lambda) > 0 at Rmax=40: 0.00002
+==============================================================================
+omega = 1.4830   Q = 86.68   xi = 4.441   (shooter resid 9.6e-10)
+operator edge lambda_c = m^2 - w^2 = 0.05071   |   PHYSICAL radiation threshold Omega_c = m - w = 0.01700
+==============================================================================
+  check 1  L0 lowest eigenvalue at l=0 (the U(1) Goldstone, must be 0):  5.365e-09   [floor ~ h^2 = 1.0e-04]
+           overlap of that eigenvector with u = r*f: 1.000000
+  box: Rmax=40.0 = 9.7 x r_rms (r_rms=4.11)
+
+  channel     l  n_neg   mult lowest eigenvalues (bound ones are < lambda_c)
+  L0          0      0      3    0.00000   0.05898   0.08290   0.12112   0.17292   0.23795   [*     ]
+  L0          1      0      3    0.06331   0.08784   0.12441   0.17279   0.23278   0.30426   [      ]
+  L0          2      0      3    0.07146   0.10238   0.14555   0.20100   0.26870   0.34859   [      ]
+  L0          3      0      3    0.08122   0.11850   0.16792   0.22962   0.30362   0.38992   [      ]
+  L0          4      0      3    0.09254   0.13630   0.19201   0.25994   0.34015   0.43267   [      ]
+  Lx_sym      0      1      1   -0.53264   0.05783   0.07917   0.11463   0.16410   0.22742   [*     ]
+  Lx_sym      1      0      1    0.00000   0.06367   0.08993   0.13003   0.18381   0.25112   [*     ]
+  Lx_sym      2      0      1    0.07146   0.10236   0.14542   0.20051   0.26725   0.34505   [      ]
+  Lx_sym      3      0      1    0.08122   0.11850   0.16792   0.22959   0.30353   0.38967   [      ]
+  Lx_sym      4      0      1    0.09254   0.13630   0.19201   0.25994   0.34014   0.43263   [      ]
+  Lx_flav     0      0      2    0.05730   0.07707   0.10996   0.15591   0.21484   0.28664   [      ]
+  Lx_flav     1      0      2    0.06333   0.08808   0.12529   0.17508   0.23751   0.31264   [      ]
+  Lx_flav     2      0      2    0.07146   0.10239   0.14559   0.20114   0.26907   0.34943   [      ]
+  Lx_flav     3      0      2    0.08122   0.11850   0.16793   0.22963   0.30366   0.39002   [      ]
+  Lx_flav     4      0      2    0.09254   0.13630   0.19201   0.25994   0.34016   0.43269   [      ]
+
+  (* = below the continuum edge lambda_c = 0.05071, i.e. a BOUND radial mode)
+  n(H_omega) = sum over channels/l of n_neg x multiplicity = 1
+  check 2  L0 contributes 0 negative directions (expected 0)
+  check 3  Lx_flav contributes 0 (expected 0: A = 2 P0 < 0 so Lx_flav = L0 - A >= L0)
+  check 4  Lx_sym contributes 1 (expected 1: the l=0 dilational direction)
+  --> n(H_omega) = 1 -- the GSS/VK anchor CONFIRMED, and the provisional n(H)=1 used by HC-3 is now MEASURED
+
+  MODE CATALOG (bound radial modes, by multipole) -- HC-2 input
+  channel     l node      lambda   Omega_est  radiates? classification
+  L0          0    0     0.00000     0.00000        n/a U(1) PHASE GOLDSTONE (x3, one per global U(1))
+  Lx_sym      0    0    -0.53264    -0.19201   no (l=0) NEGATIVE direction (GSS index contribution)
+  Lx_sym      1    0     0.00000     0.00000        n/a TRANSLATION GOLDSTONE (x3: l=1, m=-1,0,+1)
+
+  coupled (x,y) l=0 symmetric sector -- BOX-SIZE TEST
+  (a sub-threshold Omega that MOVES with Rmax is a discretized
+   continuum state, not an internal mode)
+    Rmax=40    Omega: 0.00005 0.02192 0.03423 0.05154 0.07305 0.09845 0.12748
+    Rmax=60    Omega: 0.00000 0.01862 0.02322 0.03034 0.03961 0.05083 0.06389
+    predicted box-mode ladder sqrt(m^2+(n pi/Rmax)^2) - w:
+      Rmax=40    0.01905 0.02520 0.03539 0.04955 0.06755
+      Rmax=60    0.01791 0.02065 0.02520 0.03155 0.03967
+    box-stability tolerance 9.05e-07 = min(2% of the highest sub-threshold mode, 0.25 x larger-box level spacing inf)
+    sub-threshold (Omega < Omega_c = 0.01700) frequencies: 1 at Rmax=40, 0 at Rmax=60; 0 survive the box change
+    --> NO bound internal mode in this sector: every
+        sub-threshold frequency moves with the box, i.e. is a
+        discretized continuum state. Every genuine excitation of
+        the ball therefore sits AT OR ABOVE the radiation
+        threshold and CARRIES A WIDTH -- the census claim C1's
+        'every other localized excitation carries a width'
+        holds here by absence of bound structure, not by
+        arithmetic on a mode that does not exist.
+    growth rates Re(lambda) > 0 at Rmax=40: 0.01394
+==============================================================================
+omega = 1.4850   Q = 87.27   xi = 4.726   (shooter resid 9.6e-10)
+operator edge lambda_c = m^2 - w^2 = 0.04477   |   PHYSICAL radiation threshold Omega_c = m - w = 0.01500
+==============================================================================
+  check 1  L0 lowest eigenvalue at l=0 (the U(1) Goldstone, must be 0):  1.352e-08   [floor ~ h^2 = 1.0e-04]
+           overlap of that eigenvector with u = r*f: 1.000000
+  box: Rmax=40.0 = 9.3 x r_rms (r_rms=4.30)
+
+  channel     l  n_neg   mult lowest eigenvalues (bound ones are < lambda_c)
+  L0          0      0      3    0.00000   0.05316   0.07725   0.11559   0.16744   0.23247   [*     ]
+  L0          1      0      3    0.05737   0.08191   0.11850   0.16694   0.22702   0.29865   [      ]
+  L0          2      0      3    0.06553   0.09644   0.13962   0.19506   0.26276   0.34267   [      ]
+  L0          3      0      3    0.07528   0.11256   0.16199   0.22368   0.29768   0.38398   [      ]
+  L0          4      0      3    0.08660   0.13036   0.18607   0.25400   0.33422   0.42673   [      ]
+  Lx_sym      0      1      1   -0.55354   0.05187   0.07313   0.10847   0.15776   0.22088   [*     ]
+  Lx_sym      1      0      1    0.00000   0.05776   0.08408   0.12421   0.17798   0.24525   [*     ]
+  Lx_sym      2      0      1    0.06552   0.09642   0.13949   0.19458   0.26138   0.33930   [      ]
+  Lx_sym      3      0      1    0.07528   0.11256   0.16198   0.22365   0.29759   0.38373   [      ]
+  Lx_sym      4      0      1    0.08660   0.13036   0.18607   0.25400   0.33420   0.42669   [      ]
+  Lx_flav     0      0      2    0.05136   0.07111   0.10396   0.14987   0.20873   0.28044   [      ]
+  Lx_flav     1      0      2    0.05740   0.08214   0.11935   0.16913   0.23155   0.30664   [      ]
+  Lx_flav     2      0      2    0.06553   0.09645   0.13966   0.19520   0.26314   0.34349   [      ]
+  Lx_flav     3      0      2    0.07528   0.11256   0.16199   0.22370   0.29772   0.38409   [      ]
+  Lx_flav     4      0      2    0.08660   0.13036   0.18607   0.25401   0.33422   0.42675   [      ]
+
+  (* = below the continuum edge lambda_c = 0.04477, i.e. a BOUND radial mode)
+  n(H_omega) = sum over channels/l of n_neg x multiplicity = 1
+  check 2  L0 contributes 0 negative directions (expected 0)
+  check 3  Lx_flav contributes 0 (expected 0: A = 2 P0 < 0 so Lx_flav = L0 - A >= L0)
+  check 4  Lx_sym contributes 1 (expected 1: the l=0 dilational direction)
+  --> n(H_omega) = 1 -- the GSS/VK anchor CONFIRMED, and the provisional n(H)=1 used by HC-3 is now MEASURED
+
+  MODE CATALOG (bound radial modes, by multipole) -- HC-2 input
+  channel     l node      lambda   Omega_est  radiates? classification
+  L0          0    0     0.00000     0.00000        n/a U(1) PHASE GOLDSTONE (x3, one per global U(1))
+  Lx_sym      0    0    -0.55354    -0.19982   no (l=0) NEGATIVE direction (GSS index contribution)
+  Lx_sym      1    0     0.00000     0.00000        n/a TRANSLATION GOLDSTONE (x3: l=1, m=-1,0,+1)
+
+  coupled (x,y) l=0 symmetric sector -- BOX-SIZE TEST
+  (a sub-threshold Omega that MOVES with Rmax is a discretized
+   continuum state, not an internal mode)
+    Rmax=40    Omega: 0.00004 0.01968 0.03175 0.04903 0.07058 0.09600 0.12504
+    Rmax=60    Omega: 0.00000 0.01656 0.02104 0.02807 0.03730 0.04851 0.06158
+    predicted box-mode ladder sqrt(m^2+(n pi/Rmax)^2) - w:
+      Rmax=40    0.01705 0.02320 0.03339 0.04755 0.06555
+      Rmax=60    0.01591 0.01865 0.02320 0.02955 0.03767
+    box-stability tolerance 8.47e-07 = min(2% of the highest sub-threshold mode, 0.25 x larger-box level spacing inf)
+    sub-threshold (Omega < Omega_c = 0.01500) frequencies: 1 at Rmax=40, 0 at Rmax=60; 0 survive the box change
+    --> NO bound internal mode in this sector: every
+        sub-threshold frequency moves with the box, i.e. is a
+        discretized continuum state. Every genuine excitation of
+        the ball therefore sits AT OR ABOVE the radiation
+        threshold and CARRIES A WIDTH -- the census claim C1's
+        'every other localized excitation carries a width'
+        holds here by absence of bound structure, not by
+        arithmetic on a mode that does not exist.
+    growth rates Re(lambda) > 0 at Rmax=40: 0.02361
+==============================================================================
+omega = 1.4900   Q = 92.34   xi = 5.783   (shooter resid 9.6e-10)
+operator edge lambda_c = m^2 - w^2 = 0.02990   |   PHYSICAL radiation threshold Omega_c = m - w = 0.01000
+==============================================================================
+  check 1  L0 lowest eigenvalue at l=0 (the U(1) Goldstone, must be 0):  1.801e-07   [floor ~ h^2 = 1.0e-04]
+           overlap of that eigenvector with u = r*f: 0.999999
+  box: Rmax=40.0 = 8.0 x r_rms (r_rms=5.02)
+
+  channel     l  n_neg   mult lowest eigenvalues (bound ones are < lambda_c)
+  L0          0      0      3    0.00000   0.03870   0.06336   0.10203   0.15402   0.21909   [*     ]
+  L0          1      0      3    0.04250   0.06705   0.10368   0.15221   0.21250   0.28445   [      ]
+  L0          2      0      3    0.05065   0.08157   0.12474   0.18018   0.24788   0.32779   [      ]
+  L0          3      0      3    0.06040   0.09769   0.14711   0.20881   0.28280   0.36909   [      ]
+  L0          4      0      3    0.07173   0.11549   0.17120   0.23913   0.31934   0.41185   [      ]
+  Lx_sym      0      1      1   -0.61533   0.03691   0.05793   0.09288   0.14168   0.20420   [*     ]
+  Lx_sym      1      0      1    0.00000   0.04297   0.06949   0.10973   0.16350   0.23067   [*     ]
+  Lx_sym      2      0      1    0.05065   0.08155   0.12461   0.17971   0.24655   0.32469   [      ]
+  Lx_sym      3      0      1    0.06040   0.09769   0.14710   0.20877   0.28268   0.36880   [      ]
+  Lx_sym      4      0      1    0.07173   0.11549   0.17120   0.23912   0.31932   0.41180   [      ]
+  Lx_flav     0      0      2    0.03648   0.05618   0.08897   0.13476   0.19346   0.26496   [      ]
+  Lx_flav     1      0      2    0.04252   0.06726   0.10448   0.15424   0.21662   0.29166   [      ]
+  Lx_flav     2      0      2    0.05065   0.08158   0.12478   0.18034   0.24827   0.32863   [      ]
+  Lx_flav     3      0      2    0.06040   0.09769   0.14712   0.20882   0.28285   0.36922   [      ]
+  Lx_flav     4      0      2    0.07173   0.11549   0.17120   0.23913   0.31935   0.41188   [      ]
+
+  (* = below the continuum edge lambda_c = 0.02990, i.e. a BOUND radial mode)
+  n(H_omega) = sum over channels/l of n_neg x multiplicity = 1
+  check 2  L0 contributes 0 negative directions (expected 0)
+  check 3  Lx_flav contributes 0 (expected 0: A = 2 P0 < 0 so Lx_flav = L0 - A >= L0)
+  check 4  Lx_sym contributes 1 (expected 1: the l=0 dilational direction)
+  --> n(H_omega) = 1 -- the GSS/VK anchor CONFIRMED, and the provisional n(H)=1 used by HC-3 is now MEASURED
+
+  MODE CATALOG (bound radial modes, by multipole) -- HC-2 input
+  channel     l node      lambda   Omega_est  radiates? classification
+  L0          0    0     0.00000     0.00000        n/a U(1) PHASE GOLDSTONE (x3, one per global U(1))
+  Lx_sym      0    0    -0.61533    -0.22320   no (l=0) NEGATIVE direction (GSS index contribution)
+  Lx_sym      1    0     0.00000     0.00000        n/a TRANSLATION GOLDSTONE (x3: l=1, m=-1,0,+1)
+
+  coupled (x,y) l=0 symmetric sector -- BOX-SIZE TEST
+  (a sub-threshold Omega that MOVES with Rmax is a discretized
+   continuum state, not an internal mode)
+    Rmax=40    Omega: 0.00008 0.01450 0.02598 0.04283 0.06424 0.08965 0.11870
+    Rmax=60    Omega: 0.00000 0.01154 0.01588 0.02267 0.03168 0.04275 0.05574
+    predicted box-mode ladder sqrt(m^2+(n pi/Rmax)^2) - w:
+      Rmax=40    0.01205 0.01820 0.02839 0.04255 0.06055
+      Rmax=60    0.01091 0.01365 0.01820 0.02455 0.03267
+    box-stability tolerance 1.57e-06 = min(2% of the highest sub-threshold mode, 0.25 x larger-box level spacing 1.00e-02)
+    sub-threshold (Omega < Omega_c = 0.01000) frequencies: 1 at Rmax=40, 1 at Rmax=60; 0 survive the box change
+    --> NO bound internal mode in this sector: every
+        sub-threshold frequency moves with the box, i.e. is a
+        discretized continuum state. Every genuine excitation of
+        the ball therefore sits AT OR ABOVE the radiation
+        threshold and CARRIES A WIDTH -- the census claim C1's
+        'every other localized excitation carries a width'
+        holds here by absence of bound structure, not by
+        arithmetic on a mode that does not exist.
+    growth rates Re(lambda) > 0 at Rmax=40: 0.04507
+==============================================================================
+omega = 1.4950   Q = 111.34   xi = 8.172   (shooter resid 9.6e-10)
+operator edge lambda_c = m^2 - w^2 = 0.01497   |   PHYSICAL radiation threshold Omega_c = m - w = 0.00500
+==============================================================================
+  check 1  L0 lowest eigenvalue at l=0 (the U(1) Goldstone, must be 0):  4.569e-06   [floor ~ h^2 = 1.0e-04]
+           overlap of that eigenvector with u = r*f: 0.999962
+  box: Rmax=40.0 = 6.0 x r_rms (r_rms=6.72)
+
+  channel     l  n_neg   mult lowest eigenvalues (bound ones are < lambda_c)
+  L0          0      0      3    0.00000   0.02468   0.05018   0.08924   0.14141   0.20654   [*     ]
+  L0          1      0      3    0.02757   0.05212   0.08876   0.13734   0.19776   0.26996   [      ]
+  L0          2      0      3    0.03572   0.06664   0.10980   0.16523   0.23291   0.31280   [      ]
+  L0          3      0      3    0.04548   0.08276   0.13218   0.19387   0.26786   0.35414   [      ]
+  L0          4      0      3    0.05680   0.10056   0.15627   0.22420   0.30441   0.39691   [      ]
+  Lx_sym      0      1      1   -0.70104   0.02184   0.04245   0.07680   0.12483   0.18645   [*     ]
+  Lx_sym      1      0      1    0.00000   0.02826   0.05507   0.09546   0.14925   0.21631   [*     ]
+  Lx_sym      2      0      1    0.03572   0.06661   0.10964   0.16467   0.23143   0.30954   [      ]
+  Lx_sym      3      0      1    0.04548   0.08276   0.13217   0.19381   0.26767   0.35371   [      ]
+  Lx_sym      4      0      1    0.05680   0.10056   0.15627   0.22419   0.30436   0.39681   [      ]
+  Lx_flav     0      0      2    0.02155   0.04125   0.07399   0.11969   0.17824   0.24951   [      ]
+  Lx_flav     1      0      2    0.02760   0.05235   0.08958   0.13936   0.20174   0.27675   [      ]
+  Lx_flav     2      0      2    0.03573   0.06665   0.10987   0.16543   0.23339   0.31377   [      ]
+  Lx_flav     3      0      2    0.04548   0.08276   0.13219   0.19391   0.26795   0.35433   [      ]
+  Lx_flav     4      0      2    0.05680   0.10056   0.15627   0.22421   0.30443   0.39697   [      ]
+
+  (* = below the continuum edge lambda_c = 0.01497, i.e. a BOUND radial mode)
+  n(H_omega) = sum over channels/l of n_neg x multiplicity = 1
+  check 2  L0 contributes 0 negative directions (expected 0)
+  check 3  Lx_flav contributes 0 (expected 0: A = 2 P0 < 0 so Lx_flav = L0 - A >= L0)
+  check 4  Lx_sym contributes 1 (expected 1: the l=0 dilational direction)
+  --> n(H_omega) = 1 -- the GSS/VK anchor CONFIRMED, and the provisional n(H)=1 used by HC-3 is now MEASURED
+
+  MODE CATALOG (bound radial modes, by multipole) -- HC-2 input
+  channel     l node      lambda   Omega_est  radiates? classification
+  L0          0    0     0.00000     0.00000        n/a U(1) PHASE GOLDSTONE (x3, one per global U(1))
+  Lx_sym      0    0    -0.70104    -0.25646   no (l=0) NEGATIVE direction (GSS index contribution)
+  Lx_sym      1    0     0.00000     0.00000        n/a TRANSLATION GOLDSTONE (x3: l=1, m=-1,0,+1)
+
+  coupled (x,y) l=0 symmetric sector -- BOX-SIZE TEST
+  (a sub-threshold Omega that MOVES with Rmax is a discretized
+   continuum state, not an internal mode)
+    Rmax=40    Omega: 0.00022 0.00985 0.02089 0.03699 0.05781 0.08290 0.11180
+    Rmax=60    Omega: 0.00002 0.00667 0.01107 0.01771 0.02644 0.03720 0.04993
+    predicted box-mode ladder sqrt(m^2+(n pi/Rmax)^2) - w:
+      Rmax=40    0.00705 0.01320 0.02339 0.03755 0.05555
+      Rmax=60    0.00591 0.00865 0.01320 0.01955 0.02767
+    box-stability tolerance 4.32e-06 = min(2% of the highest sub-threshold mode, 0.25 x larger-box level spacing 5.00e-03)
+    sub-threshold (Omega < Omega_c = 0.00500) frequencies: 1 at Rmax=40, 1 at Rmax=60; 0 survive the box change
+    --> NO bound internal mode in this sector: every
+        sub-threshold frequency moves with the box, i.e. is a
+        discretized continuum state. Every genuine excitation of
+        the ball therefore sits AT OR ABOVE the radiation
+        threshold and CARRIES A WIDTH -- the census claim C1's
+        'every other localized excitation carries a width'
+        holds here by absence of bound structure, not by
+        arithmetic on a mode that does not exist.
+    growth rates Re(lambda) > 0 at Rmax=40: 0.07329
+
+wrote /home/d/code/scp/v86/n_battery/hc1_catalog.tsv (107 catalog entries)
+wrote /home/d/code/scp/v86/n_battery/hc1_bound_modes.tsv
+
+==============================================================================
+HC-1 SUMMARY -- bound internal modes along the branch
+==============================================================================
+w                  Q    r_rms    Rmax   Omega_c   n(H_w)  count box-stable Omega
+1.3200      144005.5    22.63   113.2   0.18000        1      0 (none)
+1.3300       22206.5    12.11    60.6   0.17000        1      1 0.09388
+1.3400        7222.2     8.35    41.8   0.16000        1      1 0.13519
+1.3600        1745.0     5.31    40.0   0.14000        1      0 (none)
+1.3900         482.2     3.71    40.0   0.11000        1      0 (none)
+1.4200         209.6     3.14    40.0   0.08000        1      0 (none)
+1.4500         118.0     3.09    40.0   0.05000        1      0 (none)
+1.4700          91.9     3.43    40.0   0.03000        1      0 (none)
+1.4750          88.5     3.61    40.0   0.02500        1      0 (none)
+1.4800          86.7     3.88    40.0   0.02000        1      0 (none)
+1.4830          86.7     4.11    40.0   0.01700        1      0 (none)
+1.4850          87.3     4.30    40.0   0.01500        1      0 (none)
+1.4900          92.3     5.02    40.0   0.01000        1      0 (none)
+1.4950         111.3     6.71    40.0   0.00500        1      0 (none)
+
+n(H_omega) over the 14 ACCEPTED omegas: [1]
+The GSS/VK anchor n(H_omega) = 1 is a MEASURED input to HC-3 over
+the accepted range [1.3200, 1.4950] -- and ONLY over that range. It is
+not established outside it, and this run is UNGAUGED, so the
+Coulomb-phase (production, g=0.05) case remains heuristic.

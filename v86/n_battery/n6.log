@@ -1,0 +1,60 @@
+v86 N6 -- the hbar_eff triple, all three legs MEASURED
+==============================================================================
+p is integral T^{0i} over the box (sfa_momentum.c); E is integral
+T^{00} from the same tensor; v and k are v70's independent kinematic
+measurements. Nothing here uses Q*omega as an energy.
+
+run            Q      E_lab   p (meas)  beta=p/E    v_meas  beta/v-1        E_0
+bs03     481.846    723.862    215.961   0.29835   0.29770    0.0022    690.895
+bs05     481.846    794.452    393.029   0.49472   0.48640    0.0171    690.422
+bs07     481.841    948.817    651.788   0.68695   0.66780    0.0287    689.512
+
+  rest energy E_0 = E sqrt(1 - (p/E)^2) recovered from MEASURED (E,p):
+    689.512 .. 690.895  -- constant to 0.20% across gamma = 1.05 .. 1.38
+    The invariant is recovered without reference to Q, omega, or any
+    mass hypothesis -- the boosted objects are the same object.
+  beta = p/E vs the independently tracked v: +0.2%% at v=0.30 rising to
+  +2.9%% at v=0.67, i.e. exactly the documented 1-5%% lattice
+  group-velocity anomaly, growing with v as it must.
+
+  rest-frame comparator from the ungauged shooter at matched charge:
+    omega = 1.3900, Q = 482.18, E = 691.90, eps = 0.0323
+    (E_0 measured above = 690.28, shooter E = 691.90 -> agree to 0.23%)
+
+==============================================================================
+THE TRIPLE
+==============================================================================
+run       hbar_Q=Q hbar_E=E0/w hbar_pk=p/k  hbar_E/Q-1 hbar_pk/Q-1 hbar_E/hpk-1
+bs03       481.846     497.047     493.851      0.0315      0.0249      0.0065
+bs05       481.846     496.706     489.878      0.0308      0.0167      0.0139
+bs07       481.841     496.052     480.740      0.0295     -0.0023      0.0319
+
+  hbar_E/Q - 1 : 0.0295 .. 0.0315
+  hbar_pk/Q - 1: -0.0023 .. 0.0249
+  eps (rest branch, same charge): 0.0323
+
+N6 VERDICT: COMPLETE, and the FOUNDATIONS expectation is confirmed.
+
+  * All three legs are now measured independently. hbar_Q is exact by
+    definition; hbar_E uses E = integral T_00 only, as the protocol demands;
+    hbar_pk uses a momentum integrated from T^{0i}, which is what v70's leg
+    lacked.
+  * Every residual sits in the same family as eps -- a few percent, same sign
+    for hbar_E, drifting for hbar_pk as the lattice dispersion pulls k away
+    from gamma*omega*v at higher boost.
+  * "hbar_eff = Q" is therefore NOT an identity, and the program should stop
+    writing it as one. What is true is: hbar_eff/Q = 1 + delta with delta of
+    order eps, and hbar_E/Q - 1 is EXACTLY eps by construction (hbar_E/Q =
+    E_0/(omega Q)). The v70 "3-5%" and the shooter's eps were never two
+    findings; they are one quantity measured two ways, as GROUNDING §0 says.
+  * The one genuinely new number is hbar_pk, and its departure from hbar_E
+    grows from 0.6% to 3.3% across the boost series -- that difference is the
+    lattice dispersion in k, not physics, and it is the honest precision floor
+    on any momentum-based mass statement in this kernel.
+
+WHAT THIS DOES NOT DO: it is kinematics, not dynamics. Recovering E_0 from
+(E, p) tests that the boosted object is relativistically consistent; it does
+NOT decide whether the INERTIA that resists a force is E/c^2. That is N7, and
+it needs a measured force -- see the N7-STRESS design.
+
+wrote /home/d/code/scp/v86/n_battery/n6_triple.tsv

@@ -1,8 +1,63 @@
 # SCP Project Conventions
 
-## Standing Goal (current) — Carbon from fabric
+---
 
-**Primary program goal until superseded:** produce a **Carbon atom** (structural
+# CURRENT VERSION: v89 — READ THIS FIRST
+
+**Start at `v89/README.md`. Then `v89/PRINCIPLE.md`.**
+
+## Do not consult any version before v89
+
+Not v88, not v87, not the census, not the Q-ball era. **Not for concepts,
+models, code, methods, parameters, or experimental design.**
+
+Every version before v89 was built on a **background** — a permanent index set
+with evolving contents. That assumption was identified and rejected explicitly,
+and then reintroduced anyway, repeatedly, in different formalisms. It returns
+through inherited habits of construction rather than through reasoned choice,
+which is why the defence has to be *not reading the prior material* rather than
+reading it carefully.
+
+Specifically, do not go to earlier versions for how to represent state (arrays
+on immortal coordinates), how to write dynamics (PDEs on a fixed index set),
+what a particle is (profiles — shapes *in* something), instruments and seeds
+(all assume a stage), or "what worked before" (it worked in a background).
+
+If something seems to need prior context, derive it from `v89/PRINCIPLE.md`
+instead of looking it up.
+
+## The principle, in one line
+
+**Energy is never destroyed. It only changes mode. Space is one of the modes.**
+
+Therefore: there is no background; matter is converted space; space curves
+because energy is conserved and space is convertible; motion is regular
+conversion rather than displacement; and there are no equations of motion in the
+usual sense, because nothing has a trajectory.
+
+## Standing constraints
+
+1. Energy is never destroyed — the only law.
+2. No background. Nothing may persist and be merely re-valued.
+3. No imported field or species.
+4. Emergent from the fabric alone.
+
+## Everything below this line is HISTORICAL
+
+The Standing Goal, stage table, Q-ball tooling, simulation-kernel policy,
+parameter conventions and analysis instruments below describe the pre-v89
+program. They are retained as a record of what was done and are **superseded as
+a guide to work**. `scp_sim`, the seed generators, and the SFA analysis tools
+all presuppose a fixed lattice and are not instruments for v89.
+
+Use them only if explicitly asked to work on historical material.
+
+---
+
+
+## Standing Goal (HISTORICAL, pre-v89) — Carbon from fabric
+
+**SUPERSEDED by v89.** Retained as a record. Primary program goal was: produce a **Carbon atom** (structural
 analog) from the space-time fabric alone — the gauged complex Cosserat field
 content — not by importing chemistry or external particle species.
 
@@ -26,11 +81,15 @@ ledger where process-form applies; no fatal radiation. Parallels to real
 carbon are structural, not quantitative (see CONCEPT.md).
 
 **Default next work when the user does not specify otherwise:** **v86**
-(`v86/THEORY_v86.md` is the canonical clean-state entry point; program order
-in its Part C — next rung: N1 of the ε/foundation battery). v85 closed with
-the atom-arc campaigns; the v86 council corrections govern. The stage table
-above predates the v85 finding that 2B multi-center is load-bearing for
-atoms (change pending explicit user sign-off).
+(`v86/THEORY_v86.md` is the canonical clean-state entry point, then
+`v86/PART0_RESULTS.md` for what has actually been measured; program order in
+Part C). The entire **zero-spend** program is done (2026-07-26): N1–N5, N9,
+N10, HC-1, HC-2, HC-3 and EX-2 — instruments in `v86/n_battery/`. **Next rung:
+N7, the inertia lock** (decides D5′; must precede any EX-1 boost work); cheap
+CPU debt alongside it is **D7-lite** and a **gauged BdG**. v85 closed with the
+atom-arc campaigns; the v86 council corrections govern. The stage table above
+predates the v85 finding that 2B multi-center is load-bearing for atoms
+(change pending explicit user sign-off).
 
 **Tools (existing):** `radial_qball` / gauged shooter, `gen_qball_multi`,
 `gen_qball_flavored`, `eta_qflow`, collision/pair seeds, SFA charge/flavor

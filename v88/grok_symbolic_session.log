@@ -1,0 +1,44 @@
+Pushback is fair — P1 fails and single-cell “species” aren’t particles. I’ll measure the instrument’s effective dynamics, fit secular forms with residuals, then back-trace a minimal model.Building a measurement instrument that evaluates the EOM at controlled states and records secular averages, then fitting those data symbolically.Fixing per-step reallocs and shrinking the expensive measurement loops.Measurements are decisive: static two-lump energy is repulsive; θ is decorative at current params; no preferred Nc. Writing the symbolic report.## Deliverable
+
+**`v88/GROK_V88_SYMBOLIC.md`** — fitted forms, residuals, back-trace, revised spec.  
+Data/code: `fabric_measure.c`, `fit_harmonic.py`, `measure_out/*`.
+
+Pushbacks stand. Short version of what the inverse programme found:
+
+---
+
+### What the instrument actually does
+
+| measurement | fit | residual quality | blunt reading |
+|---|---|---|---|
+| **M1** dI₀ | `−ε₁ · 2√(I₀I₁) sin(−Δφ)` | **R² = 1.000**, RMSE 1.6×10⁻⁸ | only bilinear hop; θ and detune do not enter instantaneous power |
+| **M2** \|dI\| vs detune | flat: CV = **0** | exact | “complete cycle” is **not** implemented — leakage is always on |
+| **M3** θ(I) | `−0.575 tanh(0.747 I)` | **R² = 0.999** | θ(I=0.25) = **−0.11** — decorative |
+| **M4** ΔE(sep) | short-range **repulsive** | **R² = 0.996** | ΔE(2)=**+3.59**, ΔE(∞)≈0 |
+| **M6** N_c | tracks seed, not a constant | preferred_size = **False** | nothing quantises multi-cell mass |
+| **M6b** lock | phase winds, std 2.4 | not locked | no emergent “Higgs” config |
+| **M5** tower | lock residual 0 / 0.06 / 0.42 | rates identical | species channels = **truncation** |
+
+### (a)–(e)
+
+**(a)** Adjacent lumps: **repulsive** statically. In-phase dynamics is **merger into one blob**, not a bound multi-cell particle. Far apart: no force. **Model is dead as written for clusters.**
+
+**(b)** N_c set by IC + NLS-like self-trapping, not integer closure.
+
+**(c)** θ decorative. GAM~3× gets |θ|~0.5, but even saturated THMAX cannot put Δω outside the hop band:
+`σ·THMAX·ω₀ ≈ 0.32  ≱  2dε₁ ≈ 0.9`. Structural, not a small tweak.
+
+**(d)** Tower choice **does** control secular lock residuals — and that makes m-dependent “species” an artifact.
+
+**(e)** Survives: discrete fabric; densify-with-cycle (formula); no imported Higgs; resonant average as math.  
+**Dead:** lock-vector species, θ-as-trap at present scales, annealing-as-discovery, bilinear hop as complete-cycle rule, multi-mode complexity as the particle engine.
+
+### Revised minimal model (spec only)
+
+1. Drop EPS2/GINT/tower-species.  
+2. Enforce **spectral wall:** `σ·THMAX·ω₀ ≥ 2dε₁`.  
+3. **Geometry:** θ = div ξ with **Σθ = 0** (packing can make ΔE negative — must remeasure).  
+4. Upgrade transfer (gated/resonant) or satisfy the wall with smaller ε₁.  
+5. **Gates before any anneal:** G-θ, G-bind (ΔE(2)<0), G-Nc (CV<0.15, N_c≥4), G-leak.
+
+I have not implemented `fabric_core.c` yet — the symbolic job was to stop postulating and quantify why the present H fails. Next concrete step is that core instrument against the gates, not more annealing on `fabric_harmonic`.

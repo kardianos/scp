@@ -1,0 +1,209 @@
+v86 HC-2 -- multipole-first resonance audit
+==============================================================================
+lattice band tops (Omega_max = sqrt(m^2 + 12/dx^2) - w) -- ARTIFACTS:
+   N=384,L=55   dx=0.2872  w_max=12.154
+   N=64,L=15    dx=0.4762  w_max=7.428
+   any 'protected because it is above the band top' verdict below is
+   flagged ARTIFACT(dx) and must be refinement-tested before use.
+
+w        channel     l node      lambda       Omega decided by  verdict
+1.3200   L0          0    0     0.00000     0.00000 symmetry    U(1) phase Goldstone -- exactly zero, no width
+1.3200   L0          0    1     0.02376     0.00897 gap arithmetic monopole -- see harmonic table below
+1.3200   L0          0    2     0.06995     0.02623 gap arithmetic monopole -- see harmonic table below
+1.3200   L0          0    3     0.13855     0.05148 gap arithmetic monopole -- see harmonic table below
+1.3200   L0          0    4     0.22879     0.08399 gap arithmetic monopole -- see harmonic table below
+1.3200   L0          0    5     0.33941     0.12285 gap arithmetic monopole -- see harmonic table below
+1.3200   L0          0    6     0.46677     0.16633 gap arithmetic monopole -- see harmonic table below
+1.3200   L0          1    0     0.00510     0.00193 MULTIPOLE   l=1: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          1    1     0.04146     0.01561 MULTIPOLE   l=1: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          1    2     0.09910     0.03702 MULTIPOLE   l=1: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          1    3     0.17872     0.06605 MULTIPOLE   l=1: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          1    4     0.27945     0.10192 MULTIPOLE   l=1: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          1    5     0.39944     0.14350 MULTIPOLE   l=1: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          2    0     0.01312     0.00496 MULTIPOLE   l=2: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          2    1     0.06235     0.02341 MULTIPOLE   l=2: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          2    2     0.13141     0.04887 MULTIPOLE   l=2: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          2    3     0.22193     0.08155 MULTIPOLE   l=2: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          2    4     0.33286     0.12058 MULTIPOLE   l=2: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          2    5     0.46100     0.16438 MULTIPOLE   l=2: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          3    0     0.02392     0.00903 MULTIPOLE   l=3: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          3    1     0.08630     0.03229 MULTIPOLE   l=3: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          3    2     0.16680     0.06174 MULTIPOLE   l=3: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          3    3     0.26809     0.09792 MULTIPOLE   l=3: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          3    4     0.38878     0.13986 MULTIPOLE   l=3: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          4    0     0.03738     0.01409 MULTIPOLE   l=4: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          4    1     0.11323     0.04221 MULTIPOLE   l=4: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          4    2     0.20516     0.07555 MULTIPOLE   l=4: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          4    3     0.31705     0.11508 MULTIPOLE   l=4: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   L0          4    4     0.44680     0.15959 MULTIPOLE   l=4: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   Lx_sym      0    0    -0.00228    -0.00086 gap arithmetic monopole -- see harmonic table below
+1.3200   Lx_sym      1    0     0.00000     0.00000 symmetry    translation Goldstone -- exactly zero, no width
+1.3200   Lx_sym      2    0     0.00455     0.00172 MULTIPOLE   l=2: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   Lx_sym      3    0     0.01138     0.00430 MULTIPOLE   l=3: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3200   Lx_sym      4    0     0.02048     0.00773 MULTIPOLE   l=4: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3300   L0          0    0     0.00000     0.00000 symmetry    U(1) phase Goldstone -- exactly zero, no width
+1.3300   L0          0    1     0.08339     0.03099 gap arithmetic monopole -- see harmonic table below
+1.3300   L0          0    2     0.24007     0.08738 gap arithmetic monopole -- see harmonic table below
+1.3300   L0          0    3     0.45400     0.16094 gap arithmetic monopole -- see harmonic table below
+1.3300   L0          1    0     0.01798     0.00674 MULTIPOLE   l=1: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3300   L0          1    1     0.14438     0.05321 MULTIPOLE   l=1: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3300   L0          1    2     0.33531     0.12059 MULTIPOLE   l=1: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3300   L0          2    0     0.04611     0.01722 MULTIPOLE   l=2: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3300   L0          2    1     0.21532     0.07862 MULTIPOLE   l=2: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3300   L0          2    2     0.43608     0.15492 MULTIPOLE   l=2: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3300   L0          3    0     0.08374     0.03112 MULTIPOLE   l=3: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3300   L0          3    1     0.29541     0.10677 MULTIPOLE   l=3: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3300   L0          4    0     0.13043     0.04816 MULTIPOLE   l=4: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3300   L0          4    1     0.38366     0.13716 MULTIPOLE   l=4: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3300   Lx_sym      0    0    -0.00785    -0.00296 GSS index   negative direction: contributes to n(H_omega), not a propagating mode
+1.3300   Lx_sym      1    0     0.00000     0.00000 symmetry    translation Goldstone -- exactly zero, no width
+1.3300   Lx_sym      2    0     0.01571     0.00589 MULTIPOLE   l=2: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3300   Lx_sym      3    0     0.03925     0.01468 MULTIPOLE   l=3: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3300   Lx_sym      4    0     0.07064     0.02629 MULTIPOLE   l=4: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3400   L0          0    0     0.00000     0.00000 symmetry    U(1) phase Goldstone -- exactly zero, no width
+1.3400   L0          0    1     0.17452     0.06361 gap arithmetic monopole -- see harmonic table below
+1.3400   L0          1    0     0.03832     0.01422 MULTIPOLE   l=1: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3400   L0          1    1     0.29607     0.10626 MULTIPOLE   l=1: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3400   L0          2    0     0.09761     0.03594 MULTIPOLE   l=2: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3400   L0          2    1     0.42846     0.15133 MULTIPOLE   l=2: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3400   L0          3    0     0.17596     0.06412 MULTIPOLE   l=3: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3400   L0          4    0     0.27200     0.09792 MULTIPOLE   l=4: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3400   Lx_sym      0    0    -0.01653    -0.00618 GSS index   negative direction: contributes to n(H_omega), not a propagating mode
+1.3400   Lx_sym      1    0     0.00000     0.00000 symmetry    translation Goldstone -- exactly zero, no width
+1.3400   Lx_sym      2    0     0.03303     0.01227 MULTIPOLE   l=2: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3400   Lx_sym      3    0     0.08248     0.03043 MULTIPOLE   l=3: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3400   Lx_sym      4    0     0.14824     0.05422 MULTIPOLE   l=4: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3600   L0          0    0     0.00000     0.00000 symmetry    U(1) phase Goldstone -- exactly zero, no width
+1.3600   L0          0    1     0.38807     0.13588 gap arithmetic monopole -- see harmonic table below
+1.3600   L0          1    0     0.09822     0.03564 MULTIPOLE   l=1: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3600   L0          2    0     0.24284     0.08653 MULTIPOLE   l=2: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3600   Lx_sym      0    0    -0.04256    -0.01574 GSS index   negative direction: contributes to n(H_omega), not a propagating mode
+1.3600   Lx_sym      1    0     0.00000     0.00000 symmetry    translation Goldstone -- exactly zero, no width
+1.3600   Lx_sym      2    0     0.08453     0.03073 MULTIPOLE   l=2: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3600   Lx_sym      3    0     0.20975     0.07504 MULTIPOLE   l=3: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3600   Lx_sym      4    0     0.37305     0.13086 MULTIPOLE   l=4: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3900   L0          0    0     0.00000     0.00000 symmetry    U(1) phase Goldstone -- exactly zero, no width
+1.3900   L0          1    0     0.21255     0.07446 MULTIPOLE   l=1: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.3900   Lx_sym      0    0    -0.10261    -0.03742 GSS index   negative direction: contributes to n(H_omega), not a propagating mode
+1.3900   Lx_sym      1    0     0.00000     0.00000 symmetry    translation Goldstone -- exactly zero, no width
+1.3900   Lx_sym      2    0     0.19640     0.06894 MULTIPOLE   l=2: time-varying multipole couples to the MASSLESS gauge channel, open at every frequency -> golden-rule width, gap arithmetic does NOT apply
+1.4200   L0          0    0    -0.00000    -0.00000 symmetry    U(1) phase Goldstone -- exactly zero, no width
+1.4200   Lx_sym      0    0    -0.18966    -0.06843 GSS index   negative direction: contributes to n(H_omega), not a propagating mode
+1.4200   Lx_sym      1    0     0.00000     0.00000 symmetry    translation Goldstone -- exactly zero, no width
+1.4500   L0          0    0     0.00000     0.00000 symmetry    U(1) phase Goldstone -- exactly zero, no width
+1.4500   Lx_sym      0    0    -0.31142    -0.11169 GSS index   negative direction: contributes to n(H_omega), not a propagating mode
+1.4500   Lx_sym      1    0     0.00000     0.00000 symmetry    translation Goldstone -- exactly zero, no width
+1.4700   L0          0    0     0.00000     0.00000 symmetry    U(1) phase Goldstone -- exactly zero, no width
+1.4700   Lx_sym      0    0    -0.42593    -0.15282 GSS index   negative direction: contributes to n(H_omega), not a propagating mode
+1.4700   Lx_sym      1    0     0.00000     0.00000 symmetry    translation Goldstone -- exactly zero, no width
+
+==============================================================================
+HARMONIC ARITHMETIC for monopole (l=0) propagating modes
+  a mode of co-rotating frequency Omega emits into the matter band
+  through its n-th harmonic when n*Omega >= Omega_c = m - w.
+  The lowest crossing n is the leading radiative order; n = 1 means
+  the mode radiates directly (a golden-rule width linear in the
+  density of states), n >= 2 means direct emission is BLOCKED and the
+  leading channel is n-quantum -- which is exactly the regime where
+  HC-4's 'width proportional to amplitude^2' pre-registration does NOT
+  apply unmodified.
+
+  CAVEAT (review Finding 7) -- the Omega values in this table are
+  SINGLE-OPERATOR ESTIMATES, Omega(lambda) = sqrt(w^2+lambda) - w applied
+  to eigenvalues of L0 / Lx_sym / Lx_flav separately. The true BdG
+  frequencies of the coupled (x,y) system come from the quadratic pencil,
+  which HC-1 solves ONLY for the l=0 symmetric sector and only there with
+  a box-convergence test. Where the two disagree the COUPLED, box-tested
+  result in hc1_bound_modes.tsv is authoritative: e.g. at w=1.32 the
+  single-operator L0 spectrum shows six sub-threshold entries, while the
+  box-converged coupled solve (Rmax = 5 r_rms = 113) shows ZERO bound
+  internal modes -- the apparent ladder was a box artifact of an
+  undersized domain. Treat this table as a CLASSIFICATION of candidate
+  modes by channel, not as a measured frequency list.
+==============================================================================
+w        channel        Omega    Omega_c n*Omega vs Omega_c
+1.3200   L0           0.00897    0.18000  1:0.0090  2:0.0179  3:0.0269  4:0.0359  5:0.0448  6:0.0538
+         -> leading radiative order n = > 6
+1.3200   L0           0.02623    0.18000  1:0.0262  2:0.0525  3:0.0787  4:0.1049  5:0.1312  6:0.1574
+         -> leading radiative order n = > 6
+1.3200   L0           0.05148    0.18000  1:0.0515  2:0.1030  3:0.1544  4:0.2059*  5:0.2574*  6:0.3089*
+         -> leading radiative order n = 4  (direct emission BLOCKED; the fundamental is below the matter continuum)
+1.3200   L0           0.08399    0.18000  1:0.0840  2:0.1680  3:0.2520*  4:0.3360*  5:0.4200*  6:0.5040*
+         -> leading radiative order n = 3  (direct emission BLOCKED; the fundamental is below the matter continuum)
+1.3200   L0           0.12285    0.18000  1:0.1228  2:0.2457*  3:0.3685*  4:0.4914*  5:0.6142*  6:0.7371*
+         -> leading radiative order n = 2  (direct emission BLOCKED; the fundamental is below the matter continuum)
+1.3200   L0           0.16633    0.18000  1:0.1663  2:0.3327*  3:0.4990*  4:0.6653*  5:0.8316*  6:0.9980*
+         -> leading radiative order n = 2  (direct emission BLOCKED; the fundamental is below the matter continuum)
+1.3300   L0           0.03099    0.17000  1:0.0310  2:0.0620  3:0.0930  4:0.1239  5:0.1549  6:0.1859*
+         -> leading radiative order n = 6  (direct emission BLOCKED; the fundamental is below the matter continuum)
+1.3300   L0           0.08738    0.17000  1:0.0874  2:0.1748*  3:0.2621*  4:0.3495*  5:0.4369*  6:0.5243*
+         -> leading radiative order n = 2  (direct emission BLOCKED; the fundamental is below the matter continuum)
+1.3300   L0           0.16094    0.17000  1:0.1609  2:0.3219*  3:0.4828*  4:0.6438*  5:0.8047*  6:0.9656*
+         -> leading radiative order n = 2  (direct emission BLOCKED; the fundamental is below the matter continuum)
+1.3400   L0           0.06361    0.16000  1:0.0636  2:0.1272  3:0.1908*  4:0.2544*  5:0.3180*  6:0.3817*
+         -> leading radiative order n = 3  (direct emission BLOCKED; the fundamental is below the matter continuum)
+1.3600   L0           0.13588    0.14000  1:0.1359  2:0.2718*  3:0.4077*  4:0.5435*  5:0.6794*  6:0.8153*
+         -> leading radiative order n = 2  (direct emission BLOCKED; the fundamental is below the matter continuum)
+
+==============================================================================
+HC-2 SUMMARY
+==============================================================================
+  catalog entries: 16 symmetry (exact zero modes), 7 GSS-index directions,
+  54 multipole (l>=1, massless-channel golden rule), 11 propagating monopole.
+
+  HC-1's box-stable bound-mode census along the branch:
+  w                  Q    r_rms   Omega_c  count Omegas
+  1.3200      144005.0    22.63   0.18000      0 -
+  1.3300       22206.5    12.11   0.17000      1 0.0938798
+  1.3400        7222.2     8.35   0.16000      1 0.135187
+  1.3600        1745.0     5.31   0.14000      0 -
+  1.3900         482.2     3.71   0.11000      0 -
+  1.4200         209.6     3.14   0.08000      0 -
+  1.4500         118.0     3.09   0.05000      0 -
+  1.4700          91.9     3.43   0.03000      0 -
+
+  THE CENSUS ANSWER TO 'how many harmonics can a particle hold?':
+  AT MOST ONE, and only in a narrow window. Across the whole scanned
+  branch the box-converged coupled solve finds a single bound internal
+  monopole mode at w = 1.33 and 1.34 and NONE anywhere else --
+  including at the thin-wall extreme w = 1.32, where an undersized
+  box had previously faked a ladder of three. Total box-stable bound
+  internal modes over 8 omegas: 2.
+  The count is therefore NOT a constant of the theory and NOT the
+  dimension of the conserved-charge lattice; it is a narrow feature of
+  branch position, and it is ZERO over the working region w >= 1.36
+  where every production run of this program has lived.
+
+  Consequences the program must absorb:
+   1. PROPOSAL I.1's slogan 'the number of independently stable
+      harmonics = the dimension of the conserved-charge lattice' is
+      FALSIFIED as stated. The conserved-charge lattice has fixed
+      dimension 3 (+winding), but the internal-mode count varies along
+      the branch and is ZERO over the working region. What the charge
+      lattice counts is the number of independent STATE families, not
+      internal excitations of one state -- which is what the corrected
+      GSS statement (n(H) = n(D)) already says, and what HC-1/HC-3
+      measured (n(H_omega) = 1 everywhere).
+   2. HC-4 (line-width spectroscopy) has nothing to measure in the
+      working region: with no bound internal mode above the Goldstones
+      at w >= 1.36 there is no narrow line whose width can scale as
+      amplitude^2. The QRK-1 lines (0.018-0.126) do NOT appear in this
+      linear catalog at the omegas where they were observed, which
+      supports the council's box-IR hazard warning (GROUNDING §2, fix
+      #4): they are candidates for nonlinear frequency-pulling or box
+      artifacts, not linear modes. The halving list's demotion of HC-4
+      is therefore EARNED, not merely economical. If HC-4 is run at all
+      it should be run at w <= 1.34, where real lines exist.
+   3. Every bound monopole breather found has its FUNDAMENTAL below the
+      matter continuum, so its leading radiative order is n >= 2 -- and
+      being a MONOPOLE it also cannot radiate through the gauge channel.
+      That is the linear-theory root of the v85 measurement 'monopole
+      breathing is radiatively protected' (X10 series), now derived
+      rather than observed.
+   4. Direct emission being blocked (n >= 2 everywhere) means HC-4's
+      pre-registered 'width ~ amplitude^2 = golden-rule confirmation'
+      tests the WRONG power for these modes; the leading process is
+      n-quantum and the exponent must be derived per mode from the
+      table above before any width is called a confirmation.
+
+wrote /home/d/code/scp/v86/n_battery/hc2_classification.tsv

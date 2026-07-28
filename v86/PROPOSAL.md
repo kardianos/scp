@@ -6,6 +6,28 @@ per-component Q_a diag (CPU verified, CUDA at next build), volview -gamma.
 
 ## Part I — The harmonic census: how many harmonics can a particle hold?
 
+> **SUPERSEDED (2026-07-26). Sections I.1–I.4 and the original "Order of work"
+> below are historical.** They are governed by Amendment 1 + GROUNDING v2
+> (multipole-first classification; corrected GSS sign) and, for the two
+> specific claims below, by the measurement in `v86/PART0_RESULTS.md`:
+>
+> * **"the number of independently stable harmonics = the dimension of the
+>   conserved-charge lattice" is FALSE as a bound-mode census.** HC-1's
+>   box-converged BdG solve finds **at most one** bound internal monopole mode,
+>   only in the window ω ≈ 1.33–1.34, and **none** in the working region
+>   ω ≥ 1.36 — while dim(charge lattice) is fixed at 3 (+winding). What the
+>   charge lattice counts is independent *state families*, which is what the
+>   corrected GSS statement n(H) = n(D) already formalises. (Nothing here shows
+>   "no stable harmonics exist in the theory"; the QRK lines and flavoured
+>   splittings may still be weakly-above-threshold, box-protected or nonlinear.)
+> * **"n·ω_i ± m·ω_clock stays below the radiation continuum (gap m=1.5)" uses
+>   the wrong edge.** In the co-rotating frame the matter continuum begins at
+>   **Ω_c = m − ω** (lab-frame: ω + Ω ≥ m), a factor ~6 below √(m²−ω²) at
+>   ω = 1.42. HC-2's arithmetic runs against Ω_c.
+>
+> **Answer to the section's title question, as measured:** at most one, in a
+> narrow window, and zero over the region the program actually works in.
+
 ### I.1 The theoretical bodies that apply
 1. **Conserved-sector stability (VK generalized).** The fabric has a lattice
    of conserved quantities: three flavor charges Q_a, ring winding n, (and
@@ -143,3 +165,31 @@ HC-3/HC-6 → HC-4 (hardened) → EX-2 → N7 → EX-1/EX-4 (ramped) → EX-3.
   (E primary, M=E/c², Σ virial excess, ħ_eff/Q as measured ratio).
 - Strategy review verdict: current plan reweighted, defended against
   pure-carbon-now and second-sector-first (see N_BATTERY_REVIEW §3).
+
+---
+
+# AMENDMENT 3 (2026-07-26, post-execution of the zero-spend program)
+
+The whole zero-spend part of the program has now been run. Results, instruments
+and caveats: **`v86/PART0_RESULTS.md`**; code and logs in `v86/n_battery/`.
+
+**Done:** N1, N2, N3, N4, N5, N9, N10; N6 partial (ħ_pk open); HC-1, HC-2;
+HC-3 as an n(D) map on one detuning ray; EX-2 on x10c and x11pb.
+
+**Schedule changes this forces:**
+- **HC-4 is not runnable as pre-registered.** It assumed direct (n = 1)
+  emission and a narrow line to measure. HC-1 finds no bound internal mode in
+  the working region, and every monopole candidate that does exist has leading
+  radiative order n ≥ 2. HC-4 must be redesigned around n-quantum emission and
+  run at ω ≤ 1.34, or dropped per the halving list.
+- **HC-6 must look off the HC-3 ray.** n(D) = 1 everywhere on the scanned
+  detuning ray, so the converse-decay targets are not there. Either extend
+  HC-3 to a (Q₀,Q₁,Q₂) volume scan or seed large-detuning / asymmetric
+  partitions directly.
+- **A gauged (Coulomb-phase) BdG is promoted to explicit CPU work.** HC-1 is
+  ungauged. Until the gauged case exists, every GSS statement about production
+  objects (g = 0.05) is heuristic, and it is the weakest brick in the wall.
+- **N7 is the next rung**, unchanged, and still before EX-1. **D7-lite** is
+  still outstanding and can run alongside.
+- **EX-1's radiative-loss expectation is now pre-registerable:** losses should
+  be dominated by above-gap matter waves, not gauge radiation (EX-2).

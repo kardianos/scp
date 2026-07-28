@@ -1,0 +1,70 @@
+bell_grid   N=10000000000  grid=65536 (0.00549 deg)  nb=262144  nth=262144  threads=16
+  exact targets: arm1 = 2 (triangle) ; arm2 = 2sqrt2 = 2.828427124746
+
+--- ARM 1 ---
+  ANALYTIC (no sampling)  max|S| = 2.000000000000   excess +4.337e-19     5.73 s
+            analytic argmax:  a'=0.0165  b=180.0000  b'=45.0110 deg
+            pre-registered:   a'=90.0000  b=225.0000  b'=135.0000 deg   -> analytic |S| = 2.000000000000
+  SAMPLED  (int128 exact) max|S| = 2.000047949200   excess +4.795e-05    72.85 s build +  5.78 s search
+            1/sqrt(N) = 1.000e-05   ->  excess/noise = 4.79
+  FIXED    (pre-registered, no maximisation, UNBIASED)
+            |S| = 1.999975954400   excess -2.405e-05  -> -2.40 sigma
+            search bias = max|S| - |S|_fixed = +7.199e-05
+            E(0)=-1.000000000000 E(60)=-0.333333743600 E(90)=0.000019791600 E(180)=1.000000000000
+  DISCARD  <w> = eta = 1.000000   discarded = 0.000000
+            arm 1 is unweighted: nothing is discarded, so no
+            detection loophole is available to it. |S| = 2.000048
+
+--- ARM 2 ---
+  ANALYTIC (no sampling)  max|S| = 2.828427124746   excess +0.000e+00     6.00 s
+            analytic argmax:  a'=90.0000  b=225.0000  b'=135.0000 deg
+            pre-registered:   a'=90.0000  b=225.0000  b'=135.0000 deg   -> analytic |S| = 2.828427124746
+  SAMPLED  (int128 exact) max|S| = 2.828412372683   excess -1.475e-05    75.82 s build +  5.93 s search
+            1/sqrt(N) = 1.000e-05   ->  excess/noise = -1.48
+  FIXED    (pre-registered, no maximisation, UNBIASED)
+            |S| = 2.828412054160   excess -1.507e-05  -> -1.51 sigma
+            search bias = max|S| - |S|_fixed = +3.185e-07
+            E(0)=-1.000000000000 E(60)=-0.500019847191 E(90)=0.000010992534 E(180)=1.000000000000
+  DISCARD  <w> = eta = 0.636618   discarded = 0.363382
+            CHSH detection threshold 2(sqrt2-1) = 0.828427  -> BELOW (loophole OPEN)
+            Eberhard/CH threshold      2/3      = 0.666667  -> BELOW
+            VERDICT: read detector-side, this arm's |S| = 2.828412 is
+            obtained at eta = 0.6366, i.e. inside the detection
+            loophole. It is NOT a loophole-free violation.
+
+=== SEARCH-BIAS NULL  (12 replicas at N=1000000000) ===
+    the true |S| is exactly the target by construction; every
+    excess below is manufactured by maximising over the grid.
+
+    arm 1 rep  0:  searched c =  +4.154   fixed c =  +0.697
+    arm 1 rep  1:  searched c =  +1.929   fixed c =  -2.982
+    arm 1 rep  2:  searched c =  +2.923   fixed c =  -0.080
+    arm 1 rep  3:  searched c =  +2.743   fixed c =  -1.569
+    arm 1 rep  4:  searched c =  +3.447   fixed c =  -0.420
+    arm 1 rep  5:  searched c =  +4.816   fixed c =  +3.298
+    arm 1 rep  6:  searched c =  +4.631   fixed c =  +2.359
+    arm 1 rep  7:  searched c =  +5.919   fixed c =  -0.172
+    arm 1 rep  8:  searched c =  +4.594   fixed c =  +2.165
+    arm 1 rep  9:  searched c =  +4.693   fixed c =  +1.070
+    arm 1 rep 10:  searched c =  +4.467   fixed c =  +0.806
+    arm 1 rep 11:  searched c =  +3.127   fixed c =  +0.108
+    arm 1 SEARCHED  c = +3.954 +/- 1.076   [1.929, 5.919]
+    arm 1 FIXED     c = +0.440 +/- 1.650   (should straddle 0)
+    arm 1 null band at production N=10000000000: excess < 7.182e-05
+
+    arm 2 rep  0:  searched c =  +2.630   fixed c =  +2.464
+    arm 2 rep  1:  searched c =  +1.786   fixed c =  +1.551
+    arm 2 rep  2:  searched c =  -2.718   fixed c =  -2.876
+    arm 2 rep  3:  searched c =  +2.688   fixed c =  +2.541
+    arm 2 rep  4:  searched c =  -0.217   fixed c =  -0.285
+    arm 2 rep  5:  searched c =  -0.630   fixed c =  -0.658
+    arm 2 rep  6:  searched c =  -0.823   fixed c =  -1.026
+    arm 2 rep  7:  searched c =  +0.512   fixed c =  +0.432
+    arm 2 rep  8:  searched c =  +3.656   fixed c =  +3.442
+    arm 2 rep  9:  searched c =  +0.608   fixed c =  +0.569
+    arm 2 rep 10:  searched c =  +1.675   fixed c =  +1.593
+    arm 2 rep 11:  searched c =  -1.916   fixed c =  -1.975
+    arm 2 SEARCHED  c = +0.604 +/- 1.869   [-2.718, 3.656]
+    arm 2 FIXED     c = +0.481 +/- 1.844   (should straddle 0)
+    arm 2 null band at production N=10000000000: excess < 6.213e-05
+

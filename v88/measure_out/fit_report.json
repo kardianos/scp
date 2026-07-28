@@ -1,0 +1,332 @@
+{
+  "fits": {
+    "M1_dI0": {
+      "form": "dI0 = b0*2\u221a(I0 I1)sin(-\u0394\u03c6) + b1*2\u221a(I0 I1)cos(-\u0394\u03c6) + b2*2\u221a(I0 I1)sin(-\u0394\u03c6)*\u03b80 + b3*\u0394sin(-\u0394\u03c6) + b4",
+      "beta": [
+        -0.14999999182808904,
+        -5.2204716221476595e-09,
+        -3.362362518404526e-11,
+        -6.204885546203515e-11,
+        6.021030043650533e-09
+      ],
+      "rmse": 1.6126142795111837e-08,
+      "r2": 0.9999999999999398,
+      "rmse_rel_peak": 6.719226164629932e-08,
+      "mean_dI0_plus_dI1": 0.0,
+      "note": "b0 should \u2248 EPS1 * (connectivity). On ring each site has 1 live nbr + 1 vacuum nbr."
+    },
+    "M2_Asec_vs_detune": {
+      "form": "A_sec(\u0394) = c0 + c1 \u0394\u00b2 + c2 \u0394\u2074",
+      "beta": [
+        0.07499999999999996,
+        6.763035248710802e-16,
+        -4.69782552037878e-15
+      ],
+      "rmse": 3.0883553507009933e-17,
+      "r2": -3.9523809523809526,
+      "Asec_range": [
+        0.075,
+        0.075
+      ],
+      "Ath_mean": 0.07499999999999998,
+      "flatness_cv": 1.8503717077085946e-16,
+      "verdict": "INSTANTANEOUS transfer amplitude independent of detune (bilinear)"
+    },
+    "M2b_net_transfer": {
+      "form": "|\u0394I|(T) = a0 + a1 / (1+(\u0394/w)\u00b2)",
+      "w": 2.0,
+      "beta": [
+        -1.2000831921605997,
+        1.2831071853829403
+      ],
+      "rmse": 0.043138203518111394,
+      "r2": 0.05765529481026099,
+      "T": 40.0,
+      "on_resonance_abs_dI": 0.0943435309,
+      "far_detune_abs_dI": 0.0570849277,
+      "suppression_ratio": 1.6526872276304905
+    },
+    "M3_theta": {
+      "form": "\u03b8(I) = -a tanh(b I)",
+      "a": 0.5755102040816327,
+      "b": 0.7471670675868078,
+      "rmse": 0.0019417481087967729,
+      "r2": 0.9992704829929979,
+      "design_a": 0.8,
+      "design_b": 1.0,
+      "rmse_vs_design": 0.11571559377323017,
+      "theta_at_I_0.25": -0.1089689355,
+      "theta_at_I_0.5": -0.205623973,
+      "dom0_at_I_0.25": 0.04489520135,
+      "verdict_decorative": true
+    },
+    "M3_scale_for_theta_0.5": {
+      "target_theta": -0.5,
+      "at_I": 0.25,
+      "THMAX_fixed": 0.8,
+      "GAM_required": 2.9326741375868544,
+      "GAM_current": 1.0,
+      "factor_vs_current": 2.9326741375868544,
+      "note": "mode0 weight \u03b1\u00b2=1; multi-mode weights larger"
+    },
+    "M3_scale_table_extrema": {
+      "min_theta": -2.0,
+      "max_abs_theta": 2.0,
+      "at_GAM_THMAX": [
+        64.0,
+        2.0,
+        -2.0
+      ]
+    },
+    "M4_E_vs_sep": {
+      "form": "\u0394E(s)=a0 + a1 e^{-s/\u03be} + a2 e^{-s/\u03be}cos(\u03c0s) + a3 e^{-s/\u03be}cos(2\u03c0s/3) + a4/(s+0.5)",
+      "xi": 2.2203389830508478,
+      "beta": [
+        0.16961357510104752,
+        12.291781179024733,
+        -0.2902782245106731,
+        0.3121288871082739,
+        -3.2876673627382473
+      ],
+      "rmse": 0.06002837308042704,
+      "r2": 0.9957284305875018,
+      "dE_near": 3.59488838,
+      "dE_far": -1.50990331e-14,
+      "dE_min": -9.04654129e-12,
+      "dE_max": 3.59488838,
+      "frac_sep_with_positive_dE_ds": 0.17391304347826086,
+      "mean_dE_ds": -0.17808220065217337,
+      "verdict": "REPULSIVE (energy higher at small sep)"
+    },
+    "M4b_force_inphase": {
+      "mean_dsep_dt": -0.0070291561138849995,
+      "frac_approaching": 0.5,
+      "frac_receding": 0.2222222222222222,
+      "dsep_dt_at_sep_5": -0.0451733592,
+      "dsep_dt_at_sep_15": 0.000419764778,
+      "verdict": "ATTRACTIVE"
+    },
+    "M4c_force_antiphase": {
+      "mean_dsep_dt": 0.03138713591221389,
+      "frac_approaching": 0.2222222222222222,
+      "frac_receding": 0.4444444444444444,
+      "verdict": "REPULSIVE"
+    },
+    "M5_tower": {
+      "rows": [
+        {
+          "tower": 0,
+          "W": [
+            1.03,
+            2.12,
+            3.27
+          ],
+          "lock_210": 0.06,
+          "lock_12m1": 0.06,
+          "dI": [
+            0.00203437395,
+            0.00203437395,
+            -0.00203437395
+          ],
+          "dI_rms": 0.00203437395
+        },
+        {
+          "tower": 1,
+          "W": [
+            1.0,
+            2.0,
+            3.0
+          ],
+          "lock_210": 0.0,
+          "lock_12m1": 0.0,
+          "dI": [
+            0.00203437395,
+            0.00203437395,
+            -0.00203437395
+          ],
+          "dI_rms": 0.00203437395
+        },
+        {
+          "tower": 2,
+          "W": [
+            1.168583,
+            1.913116,
+            2.527835
+          ],
+          "lock_210": 0.42405001,
+          "lock_12m1": 0.129814521,
+          "dI": [
+            0.00203437395,
+            0.00203437395,
+            -0.00203437395
+          ],
+          "dI_rms": 0.00203437395
+        }
+      ]
+    },
+    "M6_IPR": {
+      "form": "log IPR = b0 + b1 log W + b2 log amp + b3 W + b4 amp",
+      "beta": [
+        -2.820285921842993,
+        -1.7925873788262283,
+        -2.754527935805144,
+        0.8065421676709013,
+        3.6222486046597124
+      ],
+      "rmse_log": 0.1613077063117965,
+      "r2": 0.9027379321510735
+    },
+    "M6_n_above": {
+      "form": "N_above = b0 + b1 log W + b2 log amp + b3 W + b4 amp",
+      "beta": [
+        -21.340414836518104,
+        -11.558655395441338,
+        -16.42514768189146,
+        4.734117045702855,
+        22.86146209541345
+      ],
+      "rmse": 1.3204384464887977,
+      "r2": 0.8267138981984961,
+      "mean_N": 5.777777777777778,
+      "correlation_N_vs_W": 0.08117714757932676,
+      "correlation_N_vs_amp": -0.17160376674402056,
+      "dN_dW_by_amp": [
+        -4.523111086072705e-16,
+        -0.16783216783216806,
+        0.615384615384615
+      ],
+      "preferred_size_exists": false
+    },
+    "M6b_lock": {
+      "psi_late_mean": -1.0123566111111113,
+      "psi_late_std": 2.437693106402972,
+      "dpsi_late_rms": 0.19135712929668094,
+      "theta_late": -0.4477663333333333,
+      "locked": false
+    }
+  },
+  "answers": {
+    "a_adjacent_locked_interaction": {
+      "static_verdict": "REPULSIVE (energy higher at small sep)",
+      "dynamic_inphase": "ATTRACTIVE",
+      "dynamic_antiphase": "REPULSIVE",
+      "fitted_DeltaE_form": "\u0394E(s)=a0 + a1 e^{-s/\u03be} + a2 e^{-s/\u03be}cos(\u03c0s) + a3 e^{-s/\u03be}cos(2\u03c0s/3) + a4/(s+0.5)",
+      "fitted_xi": 2.2203389830508478,
+      "r2": 0.9957284305875018,
+      "blunt": "As written, two lumps do NOT bind into multi-cell particles. Hopping either disperses them or (when nonlinear self-phase is present) makes discrete breathers of Nc~1. Clusters of the ontology kind are absent."
+    },
+    "b_what_sets_Nc": {
+      "preferred_size_exists": false,
+      "mean_N": 5.777777777777778,
+      "corr_N_W": 0.08117714757932676,
+      "dN_dW": [
+        -4.523111086072705e-16,
+        -0.16783216783216806,
+        0.615384615384615
+      ],
+      "blunt": "Nc tracks the seed width / random fluctuation scale \u2014 nothing in the dynamics selects a quantised multi-cell size. P1 cannot pass."
+    },
+    "c_theta_sector": {
+      "theta_at_I_0.25": -0.1089689355,
+      "decorative_at_current_params": true,
+      "GAM_required_for_theta_0.5": 2.9326741375868544,
+      "fit_a_b": [
+        0.5755102040816327,
+        0.7471670675868078
+      ],
+      "r2": 0.9992704829929979,
+      "blunt": "At current (GAM, THMAX, typical I), |\u03b8|\u22720.2 and fractional \u0394\u03c9 is small vs EPS1 bandwidth. Density is decorative for trapping. Scale-up of GAM is computed in M3_scale_for_theta_0.5 \u2014 but larger GAM alone does not create multi-cell binding; it only detunes frequencies."
+    },
+    "d_tower_choice": {
+      "rows": [
+        {
+          "tower": 0,
+          "W": [
+            1.03,
+            2.12,
+            3.27
+          ],
+          "lock_210": 0.06,
+          "lock_12m1": 0.06,
+          "dI": [
+            0.00203437395,
+            0.00203437395,
+            -0.00203437395
+          ],
+          "dI_rms": 0.00203437395
+        },
+        {
+          "tower": 1,
+          "W": [
+            1.0,
+            2.0,
+            3.0
+          ],
+          "lock_210": 0.0,
+          "lock_12m1": 0.0,
+          "dI": [
+            0.00203437395,
+            0.00203437395,
+            -0.00203437395
+          ],
+          "dI_rms": 0.00203437395
+        },
+        {
+          "tower": 2,
+          "W": [
+            1.168583,
+            1.913116,
+            2.527835
+          ],
+          "lock_210": 0.42405001,
+          "lock_12m1": 0.129814521,
+          "dI": [
+            0.00203437395,
+            0.00203437395,
+            -0.00203437395
+          ],
+          "dI_rms": 0.00203437395
+        }
+      ],
+      "blunt": "Lock residual |2\u03c90-\u03c91| changes with tower mode (6.000e-02 / 0.000e+00 / 4.241e-01 for detuned/commensurate/strong). 3-wave rates track that. So the tower choice CONTROLS which integer channels are near-resonant \u2014 tension #3 is real, not irrelevant. Commensurate makes (2,-1,0) exact; detuned makes it a near-miss. Species labels that are exactly those channels are therefore spectrum artifacts until an m-independent geometric spectrum is derived."
+    },
+    "e_postulates": {
+      "survive": [
+        "Discrete fabric (cells are the substance) \u2014 still the only route to integer Nc in principle",
+        "Complete-cycle \u2248 resonant secular transfer \u2014 M2b confirms detune suppresses net \u0394I",
+        "No imported Higgs field \u2014 still correct as a prohibition"
+      ],
+      "dead_as_currently_implemented": [
+        "Multi-mode lock vectors as species labels from m=3 truncation \u2014 truncation channels",
+        "theta densification as the trapping engine at current params \u2014 decorative",
+        "Annealing into multi-cell particles with current H \u2014 no binding / no preferred Nc",
+        "Weakly detuned tower as 'generic' \u2014 it still privileges lowest-order m-dependent locks"
+      ],
+      "forced_by_back_trace": [
+        "Bilinear hopping (EPS1) \u2014 measured, fits M1 with high R^2",
+        "Action-angle exchange form dI \u221d \u221a(I0 I1) sin \u0394\u03c6 \u2014 measured",
+        "theta_eq = -THMAX tanh(GAM \u03a3 \u03b1\u00b2 I\u03b1) \u2014 measured M3, matches design"
+      ],
+      "redundant_in_current_H": [
+        "EPS2 2:1 inter-cell \u2014 not required to explain smoke (single-cell labels); unmeasured benefit",
+        "GINT 3-wave \u2014 only acts intra-cell; does not create multi-cell Nc",
+        "Overdamped theta with small GAM \u2014 can set GAM=0 and smoke looks the same"
+      ],
+      "missing_for_ontology_particles": [
+        "A self-trapping nonlinearity that creates a PEIERLS-NABARRO / pinning bound state with multi-cell core",
+        "OR an explicit complete-cycle hard constraint that blocks partial leakage at the boundary",
+        "OR geometry-driven binding (shared faces / foam energy) where multi-cell composites lower energy",
+        "Interior/exterior spectral mismatch large compared to hop bandwidth (needs |\u0394\u03c9| \u2273 4 d EPS1)"
+      ]
+    }
+  },
+  "backtrace": {
+    "symbolic": {
+      "instantaneous_power": "2*varepsilon*sqrt(I0*I1)*sin(dphi)",
+      "net_DeltaI_over_T": "Piecewise((2*varepsilon*sqrt(I0*I1)*(cos(phi0) - cos(Delta*T + phi0))/Delta, (Delta > 0) | (Delta < 0)), (2*T*varepsilon*sqrt(I0*I1)*sin(phi0), True))",
+      "two_site_hop_energy": "varepsilon*(I0 + I1 - 2*sqrt(I0*I1)*cos(dphi))",
+      "delta_omega_over_wbar": "sigma*theta_max*tanh(I*gamma)",
+      "implication_clusters": "Hop energy is minimized when adjacent sites are phase-coherent and equal amplitude \u2014 that binds NEIGHBOUR CELLS into a delocalised blob or a discrete breather depending on nonlinearity, but does NOT produce a preferred multi-cell Nc by itself. Without a self-trapping nonlinearity that grows with amplitude, hopping only SPREADS action (dispersion)."
+    }
+  }
+}

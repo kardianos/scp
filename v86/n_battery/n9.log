@@ -1,0 +1,72 @@
+v86 N9 -- soft-window (mu,kappa) scan   (UNGAUGED, H=0.01 RMAX=100)
+standards: mu=-41.345 kappa=50.0
+
+anchor: standard potential at w=1.450 solved (resid 9.60e-10)
+
+mu        kappa      w_bot   w_span      n_VK    Q range    E/Q min    E/Q max  EoQ dyn  eps range
+-24.807   25.0      1.3184   0.1022        19  209-46704    1.34498    1.49650   1.1127 0.007-0.041  [7 unbound dropped]
+-24.807   37.5      1.3636   0.0726        14  299-50985    1.38476    1.49356   1.0786 0.005-0.030  [5 unbound dropped]
+-24.807   50.0      1.3884   0.0619        12  328-54882    1.40636    1.49841   1.0654 0.004-0.025  [4 unbound dropped]
+-24.807   75.0      1.4156   0.0428         9  497-56093    1.43040    1.49491   1.0451 0.004-0.018  [3 unbound dropped]
+-24.807   100.0     1.4307   0.0353         7  592-64321    1.44306    1.49623   1.0368 0.003-0.015  [2 unbound dropped]
+-33.076   25.0      1.2521   0.1457        26  127-37745    1.28596    1.49966   1.1662 0.009-0.056  [9 unbound dropped]
+-33.076   37.5      1.3150   0.1054        19  173-40527    1.34190    1.49776   1.1162 0.007-0.042  [7 unbound dropped]
+-33.076   50.0      1.3491   0.0859        16  207-42672    1.37206    1.49912   1.0926 0.006-0.034  [5 unbound dropped]
+-33.076   75.0      1.3864   0.0637        12  273-47357    1.40457    1.49918   1.0674 0.005-0.025  [4 unbound dropped]
+-33.076   100.0     1.4068   0.0508        10  342-48004    1.42271    1.49842   1.0532 0.004-0.021  [3 unbound dropped]
+-41.345   25.0      1.1820   0.1866        33   93-31285    1.22373    1.49662   1.2230 0.012-0.072  [12 unbound dropped]
+-41.345   37.5      1.2646   0.1341        24  127-33978    1.29715    1.49520   1.1527 0.009-0.053  [9 unbound dropped]
+-41.345   50.0      1.3087   0.1052        19  162-35749    1.33635    1.49300   1.1172 0.007-0.043  [8 unbound dropped]
+-41.345   75.0      1.3565   0.0791        15  206-38635    1.37851    1.49636   1.0855 0.006-0.032  [5 unbound dropped]
+-41.345   100.0     1.3826   0.0611        12  276-41069    1.40141    1.49339   1.0656 0.005-0.026  [5 unbound dropped]
+-51.681   25.0      1.0881   0.2436        42   67-26040    1.14021    1.49392   1.3102 0.016-0.094  [15 unbound dropped]
+-51.681   37.5      1.1985   0.1774        31   87-28750    1.23825    1.49779   1.2096 0.011-0.068  [11 unbound dropped]
+-51.681   50.0      1.2563   0.1417        25  105-30401    1.28973    1.49816   1.1616 0.009-0.055  [9 unbound dropped]
+-51.681   75.0      1.3181   0.1026        19  144-32867    1.34456    1.49661   1.1131 0.007-0.041  [7 unbound dropped]
+-51.681   100.0     1.3516   0.0836        15  171-34640    1.37418    1.49819   1.0902 0.006-0.033  [5 unbound dropped]
+-62.017   25.0      0.9852   0.3146        54   48-22424    1.04899    1.49922   1.4292 0.021-0.117  [18 unbound dropped]
+-62.017   37.5      1.1286   0.2181        38   67-24483    1.17620    1.49417   1.2703 0.014-0.084  [14 unbound dropped]
+-62.017   50.0      1.2017   0.1744        31   81-26205    1.24115    1.49669   1.2059 0.011-0.068  [11 unbound dropped]
+-62.017   75.0      1.2786   0.1269        23  107-27886    1.30978    1.49708   1.1430 0.008-0.050  [8 unbound dropped]
+-62.017   100.0     1.3200   0.1009        18  134-30106    1.34618    1.49593   1.1112 0.007-0.040  [7 unbound dropped]
+
+==============================================================================
+N9 reading (a) -- E/Q window ALONG the VK-stable branch of ONE theory
+   gate: the 10%% test. 'window ALWAYS <= 10%%' means EVERY theory on
+   the grid, not the best one. The 2x gate does NOT belong here.
+==============================================================================
+STANDARD potential (mu=-41.345, kappa=50.0) -- the frozen program theory,
+  the only point that binds HIER for the theory as it stands:
+  E/Q in [1.33635, 1.49300] -> window 11.72% over Q=162..35749
+grid-best (redesign headroom, NOT the frozen theory): mu=-62.017 kappa=25.0 -> window 42.92%
+theories with window <= 10%: 10 of 25
+VERDICT (a) [10% gate]: NOT BLOCKED -- the standard potential's own window is 11.72% > 10%; FOUNDATIONS' 'always <= 10%' condition fails
+
+==============================================================================
+N9 reading (b) -- E at FIXED Q across the (mu,kappa) family
+   = POTENTIAL-REDESIGN freedom. Different (mu,kappa) are different
+   theories/vacua, NOT different states of one conserved sector, so a
+   large (b) never means 'one sector hosts a hierarchy'; it means a
+   redesigned potential is a candidate alternative to a second sector.
+   gate: the 2x test.
+==============================================================================
+Q*       mu        kappa            w          E       E/Q   |dQ|/Q*
+120      -62.017   25.0        1.2388     164.11   1.36760  1.37e-02
+120      -62.017   75.0        1.4194     178.70   1.48913  1.09e-02
+        -> E dynamic range at Q=120 across 8 theories: 1.089x
+200      -62.017   25.0        1.1966     261.32   1.30660  1.88e-02
+200      -51.681   100.0       1.4440     298.17   1.49087  5.76e-04
+        -> E dynamic range at Q=200 across 15 theories: 1.141x
+400      -62.017   25.0        1.1512     495.37   1.23841  1.98e-02
+400      -33.076   100.0       1.4645     597.41   1.49353  1.01e-01
+        -> E dynamic range at Q=400 across 23 theories: 1.206x
+VERDICT (b) [2x gate]: NO REDESIGN HEADROOM ON THIS GRID (1.21x < 2x at fixed Q)
+
+==============================================================================
+N9 -- eps and the N2 closed form across the family
+==============================================================================
+max |Sigma - (2/3)E_grad| / E over ALL (mu,kappa,omega) points: 1.896e-06
+(the N2 identity is potential-shape independent by construction -- this
+ is a check that the Derrick derivation did not smuggle in mu/kappa)
+
+wrote /home/d/code/scp/v86/n_battery/n9_softwindow.tsv

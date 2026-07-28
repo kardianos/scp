@@ -1,0 +1,24 @@
+ERROR: bc_type=2 (periodic) requires net-neutral seed (Q_net=2.000e+00, Q_abs=2.000e+00); use +/- pairs or bc_type=0. jellium=1 is deferred (not implemented in v1).
+=== scp_sim_c4: V44 + Cosserat + Curl²-Hardening (+ optional chiral) ===
+d²φ/dt² = ∇²φ - m²φ - V'(P) + η·curl(θ) - α·curl(M) - 2curl(Q)
+d²θ/dt² = ∇²θ - m_θ²θ + η·curl(φ) + 2α·M - β|∇×φ|²θ
+  M = curl(φ)/2 - θ,  Q = (β/2)|θ|²curl(φ)
+
+Grid:    N=48 L=12.0 T=5 dt_factor=0.0500
+Physics: m²=2.2500 m_θ²=2.5600 η=0.000 μ=-41.345 κ=50.0 κ_h=0.000 α=0.000 β=0.000
+Complex: 12-field U(1) kernel (complex_phi=1)
+Q-diag:  radius=8.00 probes=(8.00,16.00)
+Gauge:   U(1) compact links, g=1.0000 (complex_gauge=1)
+Locks:   n_locks=2 file=(inline lock0..) track=v83/e1/results/track_sign_same.tsv soft=(0,0) bag_mode=0 (r=0 k=0 sm=0) medium_only=1
+Mode:    0
+BC:      periodic
+Init:    oscillon
+Output:  v83/e1/results/out_sign_same.sfa (f32, snap=1000.0 diag=0.5)
+
+Allocating 0.05 GB (5971968 doubles, N=48, 12 fields + U(1) links)
+dx=0.5106 dt=0.025532 threads=8
+
+Locks: allocated 2 carriers + rho/J
+  lock[0] from lock0=1,12,4,0,0,0,0,0,0
+  lock[1] from lock1=1,12,-4,0,0,0,0,0,0
+Init: oscillon (A=0.800 sigma=3.000)

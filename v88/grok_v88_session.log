@@ -1,0 +1,61 @@
+I'll start by reading the ontology and fabric design docs, then survey what's already in `v88/` so the design builds on the current programme rather than the rejected breather framing.Next I'll read the cautionary breather code and the other fabric instruments so the harmonic formulation is grounded in what's already been measured.I have enough context. Next I'll write a concrete multi-harmonic design (not DNLS breathers), a runnable lattice instrument, and the main design note.Implementing the multi-harmonic instrument next.Building and smoke-testing the instrument.Clustering threshold was too low (one giant lump). Raising it and using sparser initial conditions so multiple objects can form.Action grows while cascading into mode 3 — total action need not be conserved under 2:1, but energy should. Adding an energy diagnostic and tightening the integrator.## Output
+
+Main write-up: **`v88/GROK_V88_DESIGN.md`**  
+Instrument: **`v88/fabric_harmonic.c`** (built, smoke + one quench run)
+
+---
+
+### Theory (short)
+
+A cell is geometry **θ** (or **ξ**) plus an **internal harmonic spectrum** `z_α`, α=1..m (m≥2). Integers enter three ways that are not amplitude thresholds:
+
+1. **Mode indices** — eigenlabels on a compact internal space  
+2. **Resonance orders (p:q)** — secular transfer only when `p ω_{iα} = q ω_{jβ}`  
+3. **Lock vectors n** — interior “Higgs” = configuration with `Σ n_α ω_α ≈ 0` and stable relative phase  
+
+**Complete cycle** = the averaging statement: net transfer is the resonant (secular) piece of a multi-linear coupling; off resonance the joint period averages power to zero. Prefer Hamiltonian RWA over a hard non-Hamiltonian gate.
+
+**Not a breather:** DNLS is one dial past a band edge. Here trapping is multi-channel detuning of a locked multi-mode object against the exterior.
+
+**3–7 dimensions:**  
+- **[D]** fabric `d ≥ 3` from elastic self-energy of a dilational inclusion  
+- **[D]** internal `m ≥ 2` for nontrivial locks  
+- **Upper ~7: not derived** — testable guesses only (leakage / Arnold web)
+
+Honest tensions are in §1.8 of the design doc (hard vs soft cycle rule; mode cutoff looking like imported fields; commensurate spectrum risk; mass ≠ pure cell count if the elastic skirt is heavy).
+
+---
+
+### Simulation
+
+Standalone multi-mode lattice (no `scp_sim` / no Higgs field):
+
+| DOF | update |
+|-----|--------|
+| `z_{iα}` | resonant 1:1 + 2:1 + intra-cell 1+2↔3 |
+| `θ_i` | overdamped pull to `θ_eq(I)` + elastic Laplacian |
+
+Falsifiers: continuous amplitude family only; no multi-seed recurrence; strong m-sensitivity; identical to `m=1` detune control; unbounded coarsening; no phase lock.
+
+```bash
+gcc -O3 -march=native -fopenmp -o v88/fabric_harmonic v88/fabric_harmonic.c -lm
+./v88/fabric_harmonic quench 3 42
+```
+
+Schedules: `smoke|quench|thermal|cyclic|driven|staged|coalesce|detune`.
+
+---
+
+### Species / annealing
+
+Fingerprint: `(N_c, binned s_α, lock vector n̂)`. Candidates S2/S3 (locked multi-mode), not S1 (single-mode = breather danger).  
+**P1 (falsifiable):** ≥2 fingerprint peaks recurring in ≥3 seeds with CV(N_c)<0.15.  
+Anneals as specified; success = **recurrence across independent seeds**.
+
+---
+
+### Preliminary instrument note (not a result)
+
+Smoke: action stable (~3×10⁻⁴). One quench seed: lumps form and densify, but **n_lumps fell 10→3 by T=400** (coarsening open) and long-time E/action growth needs a Manley–Rowe audit before physics claims. **No multi-seed recurrence yet.**
+
+Code debt is listed in design §9; next useful runs are multi-seed quench vs `detune`, then coarsening T→1600.

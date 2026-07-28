@@ -1,0 +1,21 @@
+I'll review the design strictly from first principles. Reading `v88/DESIGN_CLEAN.md` only, then working through coherence, particle production, binding, and what would falsify it.I have the design. Next I’ll reason through coherence, particle production, and binding strictly from what’s written—no project history—and write the review.Writing the first-principles review: separating derived claims, postulates, and guesses, with binding treated as the decisive issue.Wrote **`v88/REVIEW_FIRST_PRINCIPLES.md`**. No code was created; no true experiment was run.
+
+### Hardest finding (C)
+**As stated, the design does not bind.** Handedness (§2) only gives two *distinct* channels, not an attractive one. \(\sum\theta_i=0\) only yields an \(O(1/N)\) mean-field effect that vanishes on a large fabric. Binding is a §7 *requirement*, not a *consequence*. Literal “partial cycle delivers nothing” also *suppresses* the usual exchange routes to forces, so static \(\xi\)-energy would have to do all the work — and no such energy is written down.
+
+### Coherence (A)
+| Claim | Verdict |
+|-------|---------|
+| Energy only in complete cycles | **Does not follow** from link mediation alone — needs a latch/monodromy/quantisation rule |
+| \(c\) emerges | Speed *limit* \(\sim a/\tau\) **follows**; isotropic Lorentzian \(c\) does **not**; cycle rate stays an input |
+| Mass = cell count | **Inconsistent** with exterior distortion if \(\xi\) carries mass — distortion mass is unlocated |
+| 3-from-7 | **Unsupported** and **not load-bearing**; §2 only needs a 2D transverse plane |
+
+### Particles (B)
+All of §7 is undemonstrated. Multi-cell trapping is a *definition*, not an existence theorem. Discrete species and mass ratios are hopes. Only a speed *limit* of order \(a/\tau\) is a partial consequence.
+
+### Implementation (D)
+Not run. The design underdetermines the EOM; any simulator would add postulates. A full buildable spec with OPEN items is in §D of the review.
+
+### Falsification (E)
+Cheapest true kill: full 3D nonlinear pair survey of \(\Delta E(r)\) in both handedness channels after multi-cell objects exist. All channels non-attractive (or gate only restorable with a new field) kills the design on its own terms.

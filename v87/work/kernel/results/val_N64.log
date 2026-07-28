@@ -1,0 +1,98 @@
+bell_kernel  /space/scp/v87/b1_val_N64.sfa
+  N=64  L=19.0000  dx=0.60317  frames=167  radius=5.00  grid=360 (1.000 deg)
+......
+  frames used M = 167   discarded = 0
+  relative phase Delta (gauge-invariant):
+    circular mean = 3.140881 rad (179.959 deg)   |R| = 1.000000
+    |R| is the phase-lock visibility: 1 = perfectly locked clocks,
+    0 = fully scrambled. Delta spread costs S linearly.
+    fast phase phi_A vs uniform: D_KS = 0.0170  (crit .05 = 0.1051)
+
+  transport (block-resolved decoherence of the pair clock):
+    block   t range        <Delta> deg    |R|      S_semi
+      0      0.00-   6.50    180.000     1.00000  2.000000
+      1      6.75-  13.25    180.000     1.00000  2.000000
+      2     13.50-  20.00    180.006     1.00000  2.000000
+      3     20.25-  26.75    179.962     1.00000  2.000000
+      4     27.00-  33.50    179.918     1.00000  2.000000
+      5     33.75-  41.50    179.884     1.00000  2.000000
+
+=== 1. ANALYTIC CONTROL ===
+  ideal locked pair (Delta = pi exactly), no sampling:
+    max|S| = 2.000000000   target 2   excess +2.665e-15
+    E(0) = -1.000000000  (target -1)
+  the search machinery adds +2.665e-15 to a noiseless table; any
+  sampled excess larger than that is statistics, not the search.
+
+=== 2. MEASURED ===
+  EMPIRICAL (assumption-free, M=167 raw frames)
+    max|S| = 2.000000000000   at a=0.00 a'=12.00 b=182.00 b'=45.00 deg
+    E(0,0) = -1.000000
+  SEMI-ANALYTIC (lambda averaged exactly, Delta sampled)
+    max|S| = 2.000000000000   at a=12.00 a'=2.00 b=188.00 b'=357.00 deg
+    E(0,0) = -0.999525
+
+=== 2b. ARM 2 -- p=1 TILT APPLIED TO THE FABRIC'S OWN PHASES ===
+  weight w = |cos(phi_B - b)|   (circle form of rho_1 ~ |lambda.b|)
+    max|S| = 2.836696   (Tsirelson 2.828427)   E(0,0) = -1.000000
+    <w> = eta = 0.636620   discarded = 0.363380
+  This is the ONLY way the fabric's measured phases reach 2sqrt2,
+  and it reaches it by throwing away 36.3% of the pairs. Under
+  CRANK2 Reading 2 that is the detection loophole: eta = 0.6366 sits
+  below both 2(sqrt2-1) = 0.8284 and the Eberhard/CH 2/3 = 0.6667.
+  Not a violation -- a demonstration of the price.
+
+=== 3. DISCARD FRACTION ===
+  frames read = 167   used = 167   discarded = 0   fraction = 0.000000
+  readout weight: every used frame contributes with weight 1 and
+  every (a,b) pair yields an outcome -- eta = 1.000000, no
+  post-selection on the settings, so no detection loophole is
+  available. This is the condition under which |S| <= 2 is a
+  genuine tripwire rather than a statement about efficiency.
+
+=== 4. SEARCH-BIAS NULL  (12 replicas, M=167 each) ===
+  Synthetic ensembles: lambda drawn uniform, Delta bootstrapped
+  from the MEASURED distribution, then run through the identical
+  estimator and the identical 360^3 search.
+
+  WHY ARM 1'S NULL MUST COME OUT AT ZERO, AND WHY THAT IS A RESULT:
+  this tool builds the FULL 2D table E(a,b) from one consistent set
+  of M frames, so all four CHSH terms are averages over the SAME
+  samples. For each individual frame the bracket
+      A(a)B(b) + A(a)B(b') + A(a')B(b) - A(a')B(b')
+  is a sum of four +/-1 products that is algebraically confined to
+  {-2,+2}. The sample mean of numbers in [-2,2] cannot leave [-2,2].
+  So |S| <= 2 holds EXACTLY, at every M, with no statistical slack
+  at all -- a nonzero null here would mean the estimator is broken.
+  Contrast bell_grid, whose 1D E(theta) table assumes translation
+  invariance of the lambda histogram: its four terms come from
+  INCONSISTENT effective samples, the pointwise argument fails, and
+  its arm 1 null is +3.95/sqrt(N) (12/12 positive). Same inequality,
+  two estimators, only one of which can manufacture a violation.
+    rep  0:  arm1 max|S| = 2.000000000 (+4.44e-16)   arm2 max|S| = 2.864994 (+0.036567)
+    rep  1:  arm1 max|S| = 2.000000000 (+4.44e-16)   arm2 max|S| = 2.918043 (+0.089615)
+    rep  2:  arm1 max|S| = 2.000000000 (+4.44e-16)   arm2 max|S| = 2.915471 (+0.087044)
+    rep  3:  arm1 max|S| = 2.000000000 (+4.44e-16)   arm2 max|S| = 2.869884 (+0.041457)
+    rep  4:  arm1 max|S| = 2.000000000 (+4.44e-16)   arm2 max|S| = 2.902493 (+0.074066)
+    rep  5:  arm1 max|S| = 2.000000000 (+4.44e-16)   arm2 max|S| = 2.864405 (+0.035978)
+    rep  6:  arm1 max|S| = 2.000000000 (+4.44e-16)   arm2 max|S| = 2.875523 (+0.047096)
+    rep  7:  arm1 max|S| = 2.000000000 (+4.44e-16)   arm2 max|S| = 2.917734 (+0.089307)
+    rep  8:  arm1 max|S| = 2.000000000 (+4.44e-16)   arm2 max|S| = 2.847871 (+0.019444)
+    rep  9:  arm1 max|S| = 2.000000000 (+4.44e-16)   arm2 max|S| = 2.846986 (+0.018559)
+    rep 10:  arm1 max|S| = 2.000000000 (+4.44e-16)   arm2 max|S| = 2.858155 (+0.029728)
+    rep 11:  arm1 max|S| = 2.000000000 (+4.44e-16)   arm2 max|S| = 2.880626 (+0.052199)
+
+  ARM 1 null bias: +4.441e-16 +/- 0.000e+00   range [+4.441e-16, +4.441e-16]
+    expected exactly 0 by the pointwise bound above -- CONFIRMED
+    to 1e-09, i.e. to floating point. The search cannot inflate
+    this estimator, so the tripwire threshold is a hard 2, not
+    2 + band: ANY excess above 1e-09 is a real defect.
+  MEASURED arm 1 max|S| = 2.000000000000  ->  at or below 2 -- tripwire clear, readout is wing-local
+
+  ARM 2 null spread: +0.051755 +/- 0.025537   range [+0.018559, +0.089615]
+    arm 2 has genuine statistical slack (b-dependent denominators),
+    so its excess over 2sqrt2 is noise unless it clears +0.128365.
+  MEASURED arm 2 max|S| = 2.836696  (excess +0.008269)  ->  consistent with exactly 2sqrt2
+
+  VERDICT: semi-analytic |S| = 2.000000000 vs the Bell bound 2 and the
+  Tsirelson bound 2.828427.

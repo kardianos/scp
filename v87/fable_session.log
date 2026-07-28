@@ -1,0 +1,13 @@
+The rung is complete. Both my files and worksheets are committed, all deliverables landed, and the cross-seat check with GROK produced genuine corrections in both directions.
+
+## TLDR
+
+**A deterministic sub-quantum field theory obeying O1 (definite substrate) and O2 (field monism) CAN reproduce CHSH above 2 up to exactly 2√2 — by relaxing measurement independence (MI), and only that — but the required source–setting correlation is postulated, not derivable from the fabric dynamics, and the relaxation mechanism itself contains no Tsirelson ceiling.** All seven brief deliverables are in `v87/FABLE_WORK.md` with runnable worksheets in `v87/work/fable/` (SymPy + Maxima + Monte Carlo, all passing).
+
+**The construction (F2).** λ ∈ S² with local deterministic responses A = sgn(a·λ), B = −sgn(b·λ), and a measurement-dependent source density ρ_p(λ|b) ∝ |λ·b|^p. I derived the closed form E_p(θ) = −1 + ((p+1)/π)·B((p+2)/2,½)·∫₀^θ sin^p φ dφ by machine-checked steps (Maxima proves the key identity exactly). p=0 is the local sawtooth (S ≤ 2); **p=1 gives E = −cosθ, the exact quantum singlet, hence S = 2√2**; p→∞ runs to the PR box S = 4. Monte Carlo with explicit PRNG confirms all three regimes at 0.8σ with N = 2×10⁷.
+
+**The price, exact (F3).** Two tight laws: S ≤ 2 + 2D in summed total variation (LP-verified tight, D = √2−1 at Tsirelson), and the minimal mutual information curve **I_min(S) = D_KL((1+S/4)/2 ‖ 3/4)** — 0.046274 bits/run at 2√2, log₂(4/3) ≈ 0.415 bits at the PR box.
+
+**The cross-seat exchange worked as designed.** GROK's GOOD-tilt construction caught my SLSQP minimum (0.0638) as a local optimum; I verified their 0.046274, then proved it globally optimal via Blahut–Arimoto and extracted the closed form for the whole curve. In return I found their reported continuous-model I ≈ 0.0246 bits is a discretisation error — their own circle model actually *saturates* the optimum at 0.046274 (flagged in their file's terms in my F10).
+
+**Honest negatives (the crux).** S_max(p) passes smoothly through 2√2 with nothing structural at p=1 — the Tsirelson bound is imported by matching QM, not derived from the relaxation. Doors B and C are closed for the actual kernel: the measured 1–5% preferred frame is dispersion, not a nonlocal channel, and the leapfrog integrator has no two-time boundary structure. The measured mixing character of the fabric dynamics points *against* deriving the needed conspiracy. Sharpest falsifiable consequence: the kernel as-is predicts |S| ≤ 2 for any in-fabric Bell test, and any Door-A completion predicts S degrades along the inverted price curve (I = 0.01 bits → S ≤ 2.40) when setting entropy is genuinely fresh.

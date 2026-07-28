@@ -1,0 +1,67 @@
+====================================================================================================
+v86 HC-1-GAUGED -- BdG with the A_0 perturbation solved self-consistently
+====================================================================================================
+  g = 0.0500   (gauged window at g=0.05 is (1.406, 1.5); ungauged (1.3087, 1.5))
+  BdG grid: h=0.02 rmax=60 n=3000      background grid: H=0.004 RMAX=150
+
+omega           Q        f0       chi0      L0 min   Lflav min    Lsym min   Lsym+Coul  n(Lx)   n(H)
+----------------------------------------------------------------------------------------------------
+1.3900    g continuation stalled -- BRANCH DOES NOT EXIST at g=0.050
+1.3950    g continuation stalled -- BRANCH DOES NOT EXIST at g=0.050
+1.4000    g continuation stalled -- BRANCH DOES NOT EXIST at g=0.050
+1.4050    g continuation stalled -- BRANCH DOES NOT EXIST at g=0.050
+1.4100     529.34  0.630666   0.034802  -2.906e-06   2.743e-01  -1.152e-01  -4.758e-02      1      1
+1.4200     311.46  0.635374   0.024013  -3.733e-06   2.425e-01  -1.553e-01  -9.926e-02      1      1
+1.4300     221.00  0.633071   0.018704  -4.384e-06   2.124e-01  -1.947e-01  -1.455e-01      1      1
+1.4400     169.35  0.626932   0.015276  -4.928e-06   1.827e-01  -2.367e-01  -1.926e-01      1      1
+1.4500     136.32  0.617867   0.012832  -5.348e-06   1.532e-01  -2.829e-01  -2.427e-01      1      1
+1.4600     114.13  0.606113   0.010996  -5.593e-06   1.237e-01  -3.348e-01  -2.980e-01      1      1
+1.4700      99.35  0.591382   0.009580  -5.582e-06   9.411e-02  -3.950e-01  -3.611e-01      1      1
+1.4800      90.95  0.572578   0.008491  -5.177e-06   6.444e-02  -4.684e-01  -4.370e-01      1      1
+1.4900      91.86  0.546445   0.007748  -4.114e-06   3.476e-02  -5.662e-01  -5.374e-01      1      1
+
+====================================================================================================
+HC-1-GAUGED SYNTHESIS
+====================================================================================================
+  1. GOLDSTONE CHECK  max |L0 (r f)| / scale = 3.178e-05
+     L0 annihilates the background ANALYTICALLY (L0 f = 0 is the
+     background equation), so this number is pure discretisation --
+     it is the floor against which every other eigenvalue is read,
+     not a pass/fail. Lowest |eigenvalue| of L_x^sym over the scan is
+     1.152e-01, i.e. 3623x above it, so the index is resolved.
+
+  2. FLAVOUR / PHASE CHANNELS
+     min eigenvalue of L_x^flav over the scan : 3.4764e-02  (>=0 required) PASS
+     lowest eigenvalue of L0     over the scan : -5.5932e-06
+       this IS the Goldstone, analytically exactly 0 (L0 f = 0), so the
+       value is the discretisation floor. Negative directions of L0
+       beyond that floor: 0  PASS
+     -> n(H_omega) is carried entirely by the SYMMETRIC channel,
+        now established AT g = 0.050 rather than assumed from g = 0.
+
+  3. COULOMB BACK-REACTION  12 g^2 (wt f) K^{-1} (wt f)
+     omega          Lsym min   with Coulomb          shift
+     1.4100    -1.151672e-01  -4.757984e-02  +6.758733e-02
+     1.4200    -1.553040e-01  -9.925960e-02  +5.604439e-02
+     1.4300    -1.946586e-01  -1.454792e-01  +4.917936e-02
+     1.4400    -2.366902e-01  -1.925520e-01  +4.413819e-02
+     1.4500    -2.828694e-01  -2.427252e-01  +4.014415e-02
+     1.4600    -3.348107e-01  -2.979808e-01  +3.682995e-02
+     1.4700    -3.950489e-01  -3.610823e-01  +3.396652e-02
+     1.4800    -4.683955e-01  -4.370324e-01  +3.136313e-02
+     1.4900    -5.661698e-01  -5.374037e-01  +2.876611e-02
+     all shifts non-negative: PASS   (the operator is PSD by construction)
+
+  4. INDEX  n(H_omega) over the gauged branch: [1]
+     n(H_omega) = 1 everywhere the gauged branch exists.
+     HC-3's provisional assumption is now VERIFIED at g = 0.050,
+     not merely inherited from the ungauged anchor.
+
+  5. BRANCH TERMINATION (not an index change)
+     omega with no gauged solution: [1.39, 1.395, 1.4, 1.405]
+     The gauged window closes by the BACKGROUND ceasing to exist,
+     while the index stays [1] wherever it does exist. Q_max and the
+     narrowed window are therefore an existence statement, NOT a
+     GSS instability -- these are different failure modes.
+
+wrote /home/d/code/scp/v86/n_battery/hc1_gauged.tsv

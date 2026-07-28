@@ -1,0 +1,34 @@
+/* gm1b_tsirelson.mac — Maxima: parallelogram + CS ⇒ Tsirelson for E=-a·b */
+/* GEOM seat */
+
+/* ||a+a'||^2 + ||a-a'||^2 = 4 for unit a,a' */
+/* Max of ||a+a'|| + ||a-a'|| by CS: (x+y)^2 ≤ 2(x^2+y^2) = 8 ⇒ x+y ≤ 2√2 */
+
+assume(phi >= 0, phi <= %pi);
+ns2: 2 + 2*cos(phi);   /* ||b+b'||^2 */
+nd2: 2 - 2*cos(phi);   /* ||b-b'||^2 */
+ns: sqrt(ns2);
+nd: sqrt(nd2);
+bound: ratsimp(ns + nd);
+/* at orthogonal */
+at_orth: ratsimp(subst(phi=%pi/2, bound));
+print("bound at phi=pi/2 =", at_orth);
+print("equals 2*sqrt(2)?", is(equal(at_orth, 2*sqrt(2))));
+
+/* maximise f(phi) = 2*(|cos(phi/2)| + |sin(phi/2)|) on [0,pi] */
+f: 2*(cos(phi/2) + sin(phi/2));
+df: diff(f, phi);
+crit: solve(df, phi);
+print("critical points:", crit);
+/* value at pi/2 */
+print("f(pi/2) =", ratsimp(subst(phi=%pi/2, f)));
+
+/* CHSH at canonical angles: S = 2*sqrt(2) */
+/* a=0, a'=pi/2, b=pi/4, b'=-pi/4; E=-cos(diff) */
+E(x,y) := -cos(x - y);
+S: E(0, %pi/4) + E(0, -%pi/4) + E(%pi/2, %pi/4) - E(%pi/2, -%pi/4);
+print("S_canonical =", ratsimp(S));
+print("|S| == 2*sqrt(2)?", is(equal(ratsimp(abs(S) - 2*sqrt(2)), 0)));
+
+/* Operator-style identity check for scalars is vacuous; done in gm4 */
+print("gm1b done");
