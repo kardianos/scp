@@ -79,3 +79,8 @@ pass; EM5 is a law-table event.
   cheap wins: EM1 dispersion scan and EM2 1/r² (instruments already in
   the kernel). Sequencing: after the speedup ladder and the MASS
   campaign start, per user direction.
+
+* **2026-07-28 (standing practice)** — every EMF experiment renders
+  frames alongside analytics: `viz/render_slice.py` (Ee panel + series
+  mode). Visuals have caught what numbers missed; the requirement is in
+  the MASS tech tree (D1) and the task tree.

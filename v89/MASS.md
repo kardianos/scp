@@ -131,6 +131,52 @@ Sequencing per user (2026-07-28): the speedup ladder first (real
 measured speedup), then M0/M1. Ensembles are mandatory (foam chaos
 ±30%), which is exactly why the speedup matters.
 
+## 5b. The tech tree (2026-07-28, after M0/M1)
+
+Standing practice on every node: **analytics AND rendered frames**
+(`viz/render_slice.py`) — visuals have caught what numbers missed.
+
+```
+A — CERTIFICATION (the first particle)
+├── A1  M1b: ring6 T=5000 — plateau vs ever-slowing decay   [RUNNING]
+├── A2  C3 ensemble: ring6 × 5 foam seeds, T=1000           [RUNNING]
+├── A3  C2 self-force null + C4 perturbation identity        [after A1,A2]
+├── A4  CERTIFY → the particle experiment ratchets into
+│        the battery                                          [gate A1–A3]
+└── A5  g5: space throughput at CONSTANT mass — the 1/r
+         source (closes G4's open question)                   [after A4]
+
+B — SEED ENGINEERING (better closures)
+├── B1  winding-compensated ring (twist absorbed into the
+│        per-link rungs; naive winding measured 2× worse)     [design]
+├── B2  species scan: N × d × interval × m — the first
+│        species table (lifetime + mass spectrum)             [after A4]
+├── B3  chords of chords: two rings in mutual consonance
+│        (the composite / binding question)                   [after A4]
+└── B4  collider probe: hard packet strike → debris census
+         (the confinement test: never a lone free voice)      [after A4]
+
+C — NATURAL FORMATION (annealing)
+├── C1' Es-reservoir piston apparatus (scheduled boundary
+│        pressure, LEDGERED as an instrument account)         [design]
+├── C2' pressure-annealed condensate census                   [after C1']
+└── C3' pressure-annealed ring (R1 × R3 combined)             [after C1']
+
+D — INSTRUMENTS
+├── D1  viz/render_slice.py — the fresh eye (v89-native;
+│        SFA/volview are pre-v89 and excluded)                [BUILT]
+├── D2  flight-inventory ledger check (closes M0's −0.039
+│        residual attribution)                                [open]
+└── D3  per-lump lock diagnostics (gg inside census lumps —
+         is the chord still singing?)                         [open]
+
+E — THEORY DEBTS FEEDING MASS
+├── E1  S2-full amplitude completion (wave-borne translation;
+│        kr=1 full pass; radiation pressure; moving clocks)   [large]
+└── E2  species enumeration re-run with the REAL resonance
+         rule (construct_species × the comb law)              [after B2]
+```
+
 ## 6. Log
 
 * **2026-07-28** — document opened. Standing table laws_V2g (21/21).
@@ -165,3 +211,39 @@ measured speedup), then M0/M1. Ensembles are mandatory (foam chaos
   **Queued next:** M1b ring6 at T=5000 (plateau vs ever-slowing decay),
   C3 ensemble over foam seeds, winding-compensated ring seeds,
   pressure-annealed ring (R1×R3), the flight-inventory residual check.
+
+* **2026-07-28 (Q&A, recorded at user request)** — four questions,
+  answered from the measurements:
+  1. *Do a cell's harmonics circulate outside its own cell in a mass?*
+     Yes, two ways measured: in-flight circulation (M0's −0.039/t.u.
+     residual = mass living in transit between cells; flight-loads-
+     pitch already treats channel energy as bound content of both
+     ends) and phase coherence (the lock — gate closure, the ring's
+     m=3 — is a property of no single cell). The dense AMPLITUDE
+     itself is still cell-local at rate level; extending it is
+     S2-full, and the S2-full failure set (radiation pressure,
+     wave-borne translation) is exactly the cost of that locality.
+  2. *Different types of particles?* Yes by design: species = distinct
+     closed structures, discrete because closure forces integers —
+     knobs are N, interval content (p:q), ladder index m (ring6
+     closes at exactly m=3), winding (once compensated), composites.
+     Already measured: different chords are dynamically different
+     (unison ≫ fifth > octave lifetimes). Masses from tuning-curve
+     loads ⇒ a discrete mass spectrum if closure survives.
+  3. *Protons and neutrons eventually?* The honest ladder: certify one
+     particle → species table (B2) → composites (B3) → then ask which
+     structures play nucleon ROLES. Missing structurally: charge (no
+     candidate law yet — winding/chirality imbalance are the
+     leads) and spin (the two-plane chirality pair is the natural
+     double-valued structure). "Neutron→proton decay" is a shape the
+     model can express (two chords differing by one interval, close
+     masses, one unstable to the other); whether it does is far.
+  4. *Composite, or blobs the colliders see?* The dichotomy dissolves:
+     a ring IS composite (the census resolves its voices; a hard probe
+     would scatter off them as point-like centers) but the voices are
+     NOT particles — alone, a voice-scale blob dies at −0.232 %/t.u.
+     (the measured control) while the same voices persist 4× longer
+     inside closure. Sub-particles are roles in a process, not
+     separable constituents; knocking one out should yield only new
+     closed structures + radiation, never a lone free voice — the
+     confinement phenomenology, testable as B4.
