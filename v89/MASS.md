@@ -318,3 +318,21 @@ E — THEORY DEBTS FEEDING MASS
   shed bath recondense — self-atmosphere vs starvation); the piston B+
   arm (ambient pressure raising the dissolution barrier) becomes the
   strongest stabilization candidate.
+
+* **2026-07-28 (fleet v3, exact closures — compensation WORKS; skirt
+  endgame pending).** Seeder gate 21/21 (ring_m inert to the battery).
+  With closures exact (5.0000/6.0000/2.0000): wound m=5 vs unwound m=6
+  at matched geometry class: −0.054 vs −0.047 %/t.u. — within foam
+  chaos; the naive-winding 2× penalty is GONE. Winding is now carried
+  at no lifetime cost (topology for free) but buys no protection at
+  this horizon. The one-way m=2 ring shows the best late rate
+  (−0.0034). Heavy rings (x/voice 0.21–0.44) retain 44–53% at t=1000,
+  no early collapse — consistent with skirt-death but not yet decisive:
+  at −0.05 %/t.u. their voices reach the skirt only at t ≈ 3000+. The
+  pre-registered prediction is therefore SCORED by the T=5000
+  extensions (launched: comp12_L, unwound12_L, comp6_L) — skirt
+  mechanism predicts death ordering by per-voice load: m1-class light
+  ring (died 1.9e3) ≪ unwound12 ≲ comp12 < comp6. Chirality
+  circulation signature not yet instrumented (open: per-ring flux
+  loop sum). A1c closed-box control running (self-atmosphere vs
+  starvation).
