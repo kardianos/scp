@@ -524,3 +524,28 @@ Continuous legacy (`quant_A0=0`) remains the exact limit of all
 variants. The pre-S1 kernel and its `reg_*` baselines are preserved at
 commit `0a0d4fa` and earlier; the battery's physics criteria supersede
 byte-comparison against them.
+
+### §12b — the annealed laws (same day; ROADMAP §6.9)
+
+Recursive annealing against the full battery closed the last gap
+(17/17). Two further uniform laws entered the kernel:
+
+* **Flight loads pitch** (no constant): a cell's pitch load is its
+  store plus half of each incident channel's in-flight dense energy —
+  the channel is a joint process of its two ends, so a pair's mutual
+  flight shelter no longer detunes the pair it shelters (found: every
+  e7 pair sat sharp of its rung by exactly the sheltered fraction).
+* **The choir's correction** (`kappa_freq`, A1): sympathetic exchange
+  carries the dispersive partner of the comb resonance — net flow
+  biased toward the direction that pulls coincident partials into
+  coincidence — windowed by the Lorentzian acceptance (falls as 1/det³
+  off-resonance: blob rims feel nothing) and scaled by the mutual gate
+  closure (the choir corrects only those singing together). Rungs are
+  now measured two-sided attractors. The strength (0.6) is posited;
+  S2 owes its derivation.
+
+Also from the annealing: the **vacuum skirt** is a confirmed, scored
+prediction (voices within ~2Γ of the room's pitch dissolve into it —
+pair deaths confined to x* ≤ 1.5× the computed boundary), and
+`mob_floor = 0.004` sits where pair bleed and front recruitment both
+pass. The standing law table: `battery/laws_V2.cfg`.

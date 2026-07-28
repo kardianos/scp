@@ -5,10 +5,10 @@
 # cfg lock_floor=0.005
 # cfg k_dep=1.2 k_dep_m=2 cap=2.5 e_s0=1 es_floor=0.05
 # cfg e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
-# cfg kappa_lock=1 kappa_align=0.5 sigma_tumble=0.01
+# cfg kappa_lock=1 kappa_align=0.5 kappa_freq=0.6 sigma_tumble=0.01
 # cfg dt=0.02 T=40 diag_every=100 snap_every=0
 # cfg center=(-1,-1,-1) amp=1 sigma=2.5 k=(0,0,0) prealign=0 noise_amp=0.1
-# cfg music: comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.01
+# cfg music: comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004
 # cfg field sector: two-component signed amplitude, unitary hops, field_J=1.8
 # action atom: A0=1.1500 (dbar=1.5045) mode=1 — eps(w)=A0*w/2pi; atoms at mode boundaries, transport continuous
 # fabric: cells=5670 channels=48753 mean_degree=17.20 box=20 dmin=1

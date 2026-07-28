@@ -63,6 +63,7 @@ typedef struct {
     double e_s0, es_floor;       /* space ledger nominal / conversion floor */
     double e_cond, f_conv, f_evap, s_pull;
     double kappa_lock, kappa_align, sigma_tumble;
+    double kappa_freq;           /* A1: dispersive exchange bias (frequency entrainment) */
     double dt, T;
     int diag_every, snap_every;
     char snap_dir[256];
@@ -145,6 +146,7 @@ static void cfg_defaults(void)
     P.e_s0 = 1.0; P.es_floor = 0.05;
     P.e_cond = 0.30; P.f_conv = 0.25; P.f_evap = 0.5; P.s_pull = 0.5;
     P.kappa_lock = 0.9; P.kappa_align = 0.5; P.sigma_tumble = 0.01;
+    P.kappa_freq = 0.0;
     P.dt = 0.02; P.T = 40.0;
     P.diag_every = 50; P.snap_every = 0;
     strcpy(P.snap_dir, "snaps");
@@ -229,6 +231,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "s_pull")) P.s_pull = atof(v);
     else if (!strcmp(k, "kappa_lock")) P.kappa_lock = atof(v);
     else if (!strcmp(k, "kappa_align")) P.kappa_align = atof(v);
+    else if (!strcmp(k, "kappa_freq")) P.kappa_freq = atof(v);
     else if (!strcmp(k, "sigma_tumble")) P.sigma_tumble = atof(v);
     else if (!strcmp(k, "dt")) P.dt = atof(v);
     else if (!strcmp(k, "T")) P.T = atof(v);
@@ -335,8 +338,8 @@ static void print_cfg(void)
            P.k_dep, P.k_dep_m, P.cap, P.e_s0, P.es_floor);
     printf("# cfg e_cond=%g f_conv=%g f_evap=%g s_pull=%g\n",
            P.e_cond, P.f_conv, P.f_evap, P.s_pull);
-    printf("# cfg kappa_lock=%g kappa_align=%g sigma_tumble=%g\n",
-           P.kappa_lock, P.kappa_align, P.sigma_tumble);
+    printf("# cfg kappa_lock=%g kappa_align=%g kappa_freq=%g sigma_tumble=%g\n",
+           P.kappa_lock, P.kappa_align, P.kappa_freq, P.sigma_tumble);
     printf("# cfg dt=%g T=%g diag_every=%d snap_every=%d\n",
            P.dt, P.T, P.diag_every, P.snap_every);
     printf("# cfg center=(%g,%g,%g) amp=%g sigma=%g k=(%g,%g,%g) prealign=%d noise_amp=%g\n",
@@ -468,6 +471,7 @@ static long qfire_n = 0;             /* conversion fire counter (QATOM diag) */
 /* instrument flags (init=slit): 0 vacuum, 1 wall, 2 screen, 3 sink, 4 recorder */
 static signed char *cflag;
 static double *fsum;                 /* per-cell total geometric joining weight */
+static double *flload;               /* per-cell pitch share of in-flight dense energy */
 static int *clickn;                  /* record grains already logged per cell */
 static double sim_t = 0.0;
 static double *expose_frz = NULL;    /* shutter: frozen screen record */
@@ -639,6 +643,7 @@ static void build_field(void)
     cflag = calloc(NC, 1);
     clickn = calloc(NC, sizeof(int));
     fsum = calloc(NC, sizeof(double));
+    flload = calloc(NC, sizeof(double));
     qcnvD = calloc(NC, sizeof(double));
     qcnvF = calloc(NC, sizeof(double));
 
@@ -1013,15 +1018,30 @@ static void step_field(void)
     double G2c[2] = { P.gamma_res * P.gamma_res, gm * gm };
     double lockf = P.lock_floor * P.cap;
 
+    /* pass 0: pitch share of in-flight dense energy. A cell's pitch load
+     * counts what it is bound INTO: its store plus half of each incident
+     * channel's in-flight dense energy — the channel is a joint process
+     * of its two ends, so energy in transit between a pair's voices does
+     * not lighten the pair (found via e7: the mutual-flight shelter was
+     * detuning the very pair it shelters — every pair sharp of the rung). */
+    for (int i = 0; i < NC; i++) flload[i] = 0.0;
+    for (int l = 0; l < NL; l++) {
+        double fl = lem[SLOT(l, 1, 0)] + lem[SLOT(l, 1, 1)];
+        if (fl <= 0) continue;
+        flload[li[l]] += 0.5 * fl;
+        flload[lj[l]] += 0.5 * fl;
+    }
+
     /* pass 1: live radii, effective frequencies, clear requests */
     for (int i = 0; i < NC; i++) {
         double ratio = Es[i] / P.e_s0;
         cr[i] = cr0[i] * cbrt(ratio > 0 ? ratio : 0);
-        /* S1/U3 — pitch load is BOUND energy: the dense store re-pitches
-         * the cell's harmonics; passing field amplitude does not. One
+        /* S1/U3 — pitch load is BOUND energy: the dense store (plus the
+         * cell's share of in-flight dense processes) re-pitches the
+         * cell's harmonics; passing field amplitude does not. One
          * definition everywhere: vacuum optics is linear automatically,
          * Kerr nonlinearity is a property of loaded matter. */
-        double x = Em[i] / P.cap;
+        double x = (Em[i] + flload[i]) / P.cap;
         if (cflag[i] >= 2) x = 0;   /* record media: deep and pitch-stable */
         double det = 1.0 + P.q_detune * x;
         double wb = P.w1;
@@ -1131,6 +1151,36 @@ static void step_field(void)
             double base = kd * dt * geo * gpl * res;
             double w_ij = base * g_ij * head_j * mi_eff;
             double w_ji = base * g_ji * head_i * mj_eff;
+            if (c == 1 && P.kappa_freq > 0) {
+                /* A1 — the choir's correction: sympathetic exchange
+                 * carries the DISPERSIVE partner of the comb resonance
+                 * (the odd lineshape 2*det*G/(det^2+G^2)): net flow is
+                 * biased toward the direction that pulls the coincident
+                 * partials into coincidence. det>0 means voice i is
+                 * sharp (too light) — feeding i flattens it. Vanishes
+                 * at exact tune and far off resonance, so silent-room
+                 * bleed is not amplified. Wants only; every deposit
+                 * remains an exactly paired ledger move. */
+                double detw = lq[l] * wi - lp[l] * wj;
+                double gwb = gm / (lp[l] * lq[l]);
+                double g2b = gwb * gwb;
+                /* windowed inside the acceptance (x Lorentzian): the
+                 * reactive pull belongs to the resonance it serves —
+                 * far-off-resonance links (blob rim vs vacuum) carry no
+                 * bias, so recruitment pressure cannot creep a sealed
+                 * blob. Falls as 1/det^3 outside, ~linear inside. */
+                double Db = 2.0 * detw * gwb * g2b
+                            / ((detw * detw + g2b) * (detw * detw + g2b));
+                /* ...and only for those singing together: the correction
+                 * rides the mutual gate closure, so a locked pair is
+                 * pulled into tune while an unlocked graded profile (a
+                 * blob rim) feels no homogenizing pressure. */
+                double kb = P.kappa_freq * Db * g_ij * g_ji;
+                double bi = 1.0 - kb; if (bi < 0) bi = 0;
+                double bj = 1.0 + kb; if (bj < 0) bj = 0;
+                w_ij *= bi;
+                w_ji *= bj;
+            }
             if (w_ij > 0) { lwant[SLOT(l, c, 0)] = w_ij; if (c == 0) req0[i] += w_ij; else req1[i] += w_ij; }
             if (w_ji > 0) { lwant[SLOT(l, c, 1)] = w_ji; if (c == 0) req0[j] += w_ji; else req1[j] += w_ji; }
         }
@@ -1653,7 +1703,7 @@ static void pair_report(double t, int final)
         double ret = pE0[p] > 0 ? (Em[i] + Em[j] + fl) / pE0[p] : 0;
         double flf = pE0[p] > 0 ? fl / pE0[p] : 0;
         double act = fl * 2.0 * d / P.C;
-        double xm = 0.5 * (Em[i] + Em[j]) / P.cap;   /* pitch load (U3: dense) */
+        double xm = 0.5 * (Em[i] + flload[i] + Em[j] + flload[j]) / P.cap;   /* pitch load (U3) */
         double ratio = w2e[j] > 1e-12 ? w2e[i] / w2e[j] : 0;
         double shed = pE0[p] - (Em[i] + Em[j] + fl);
         double flq = A0eff > 0

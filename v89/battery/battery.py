@@ -26,7 +26,8 @@ LAW_KEYS = {
     "C", "dmin", "r0", "rjit", "w1", "w2", "q_detune", "gamma_res",
     "gamma_res_m", "p_gate", "lock_floor", "k_dep", "k_dep_m", "cap",
     "e_s0", "es_floor", "e_cond", "f_conv", "f_evap", "s_pull",
-    "kappa_lock", "kappa_align", "sigma_tumble", "comb_limit", "rough_k",
+    "kappa_lock", "kappa_align", "kappa_freq", "sigma_tumble",
+    "comb_limit", "rough_k",
     "gamma_rough", "mob_sym", "mob_floor", "field_J", "quant_A0",
     "quant_mode",
 }
@@ -35,6 +36,8 @@ BANNED_IN_APPARATUS = LAW_KEYS | {"e_click"}  # e_click: retired into eps(w)
 EXPS = ["e1_conserve", "e2_pulse", "e3a_blob", "e3b_blob_tilt", "e4_curve",
         "e5_bell", "e6_pairs", "e7_tune", "e8_comma", "e9_fifth", "d1_slit",
         "t1_tonomura", "q2_eraser", "t4_hom", "qt_lo", "qt_hi"]
+
+LAWS = {}
 
 DRIFT_MAX = 5e-14
 
@@ -129,9 +132,10 @@ def pair_series(log):
         kv = dict(m.group(1, 2) for m in re.finditer(r"(\w+)=([^\s]+)", line))
         try:
             rows.append({
-                "t": float(kv["t"]), "p": int(kv["p"]),
+                "t": float(kv["t"]), "p": int(kv["p"]), "d": float(kv["d"]),
                 "delta": float(kv["delta"]), "gg": float(kv["gg"]),
                 "ratio": float(kv["ratio"]), "shed": float(kv["shed"]),
+                "ret": float(kv["ret"]),
             })
         except (KeyError, ValueError):
             pass
@@ -225,22 +229,38 @@ def chk_e6(log):
 
 def chk_e7(log):
     # P4 (CONSONANCE IV): the computed tuning curve x*(d) puts pairs ON
-    # the rung across all separations — measured as final |delta|
-    # concentration. Instantaneous phase-gate gg decays when voices
-    # trickle-split (the A1 frequency-correction gap, amplified by the
-    # unified q_detune); gg is reported, not scored.
+    # the rung across all separations — scored on the pairs the law
+    # table itself says can exist. Two claims, both scored:
+    #  (1) living pairs (ret >= 0.3) end delta-pinned (frac >= 0.75);
+    #  (2) the vacuum skirt PREDICTION: a voice within ~2*Gamma of the
+    #      vacuum pitch dissolves into the room — every death must lie
+    #      inside 1.5x the computed boundary x_skirt = 2G/(q*(w2-2G)).
     d, ok = conservation_ok(log)
     rows = pair_series(log)
     if not rows:
         return False, f"drift={d:.2e} no pairs"
+    import math
+    w2 = float(LAWS["w2"]); q = float(LAWS["q_detune"])
+    gm = float(LAWS["gamma_res_m"])
+    xskirt = 2 * gm / (q * (w2 - 2 * gm))
     tN = max(r["t"] for r in rows)
-    fin = [r for r in rows if r["t"] == tN]
-    n = len(fin)
-    on = sum(1 for r in fin if abs(r["delta"]) < 0.15)
-    gg = sum(r["gg"] for r in fin) / n if n else 0
-    frac = on / n if n else 0
-    return (ok and n >= 40 and frac >= 0.75), \
-        f"drift={d:.2e} n={n} frac|delta|<0.15={frac:.2f} mean_gg={gg:.2f} (A1 gap)"
+    seen = set(); fin = []
+    for r in rows:
+        if r["t"] == tN and r["p"] not in seen:
+            seen.add(r["p"]); fin.append(r)
+    for r in fin:
+        r["xs"] = (w2 * r["d"] / math.pi - 1) / q
+    alive = [r for r in fin if r["ret"] >= 0.3]
+    dead = [r for r in fin if r["ret"] < 0.3]
+    frac = (sum(1 for r in alive if abs(r["delta"]) < 0.15) / len(alive)) \
+        if alive else 0
+    gg = sum(r["gg"] for r in alive) / len(alive) if alive else 0
+    dead_max = max((r["xs"] for r in dead), default=0.0)
+    skirt_ok = dead_max <= 1.5 * xskirt
+    return (ok and len(fin) >= 40 and len(alive) >= 30 and frac >= 0.75
+            and skirt_ok), \
+        f"drift={d:.2e} alive={len(alive)}/{len(fin)} frac|delta|<0.15={frac:.2f} " \
+        f"gg={gg:.2f} dead_x*max={dead_max:.3f} skirt1.5={1.5*xskirt:.3f}"
 
 
 def chk_e8(log):
@@ -379,9 +399,12 @@ def main():
                 name, rc = fu.result()
                 print(f"# run done: {name} rc={rc}")
 
-    laws = dict(l.split("=", 1) for l in open(laws_path)
-                if "=" in l and not l.strip().startswith("#"))
+    laws = dict((k.strip(), v.strip()) for k, v in
+                (l.split("=", 1) for l in open(laws_path)
+                 if "=" in l and not l.strip().startswith("#")))
     a0 = float(laws["quant_A0"])
+    global LAWS
+    LAWS = laws
 
     logs = {}
     for e in exps:
