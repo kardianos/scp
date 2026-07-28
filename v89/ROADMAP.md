@@ -728,3 +728,42 @@ Full record: `CONSONANCE.md` Part VII; micro-model and sweeps in
 **Next:** S2-full (dense amplitude completion; acceptance = kr 1 full
 pass), S3 joint-pass sweep, S4 quantum battery, the e9 interval-stretch
 measurement, HOM fidelity, Es-lensing.
+
+## 7. The momentum and gravity campaigns (P/G, 2026-07-28)
+
+Doctrine: PRINCIPLE §5 retires momentum as *fundamental* (it references a
+background); §6 records its ~1e-4 conservation as "integrator quality."
+The P-campaign turns that into physics: momentum is the **first moment of
+the conversion pattern** — the energy centroid's velocity — and momentum
+conservation is the center-of-energy theorem: *an isolated system's
+energy centroid moves uniformly*, exactly to the degree that transfers
+are paired two-ended ledger moves (reciprocity) and the foam is
+statistically isotropic (homogeneity in distribution). Noether is
+replaced by reciprocity + homogeneity; deviations are attributable foam
+physics (scattering), not failures. Instruments: diag columns 20-22
+(field-energy centroid), 23-25 (in-flight flux moment), 26-28 (field
+momentum current 2·J_hop·Im[psi_i* psi_j], sign paired with the hop
+generator); apparatus machinery `aux_*` (second aimed packet) and
+`edge_sink` (absorbing edges for open-space runs); the dense centroid
+counts FREE cells only (instrument records are ledger, not matter).
+All governed by the RATCHET RULE (battery/README).
+
+**P1 — momentum of light (GATED, passes):** a field packet's energy
+centroid moves ballistically along its seeded k (cos 0.999, v = 0.40 C)
+with the momentum current forward (ffx > 0) through the foam.
+
+**P2 — radiation pressure (RECORDED, not gated — the failure is the
+finding):** a weak packet (amp 0.6) converts nothing and exerts no
+force — conversion is the only door by which field acts on dense. A
+strong packet (amp 2.5, open box) IS absorbed, but the momentum does
+not survive the conversion: the centroid ends displaced backward
+(near-face accretion bookkeeping) and no sustained forward drift
+develops. Momentum-conserving recoil would be ~0.13 C; measured
+<= 1e-3 — a ~100x deficit, structural (the dense translation ceiling
+is itself ~5e-3, the emergent-inertia freeze). **Third S2-full
+acceptance criterion: radiation pressure emerges when translation IS
+the current.** (The set now: kappa_reac=1 full pass; moving-clock
+dilation; P2.)
+
+**e3a is the standing self-force null** (a sealed blob does not
+accelerate): it guards P-experiments against spurious momentum creation.

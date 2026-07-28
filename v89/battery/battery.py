@@ -35,7 +35,13 @@ BANNED_IN_APPARATUS = LAW_KEYS | {"e_click"}  # e_click: retired into eps(w)
 
 EXPS = ["e1_conserve", "e2_pulse", "e3a_blob", "e3b_blob_tilt", "e4_curve",
         "e5_bell", "e6_pairs", "e7_tune", "e8_comma", "e9_fifth", "d1_slit",
-        "t1_tonomura", "q2_eraser", "t4_hom", "qt_lo", "qt_hi"]
+        "t1_tonomura", "q2_eraser", "t4_hom", "qt_lo", "qt_hi",
+        "p1_beam"]
+# p2_press: recorded, NOT gated (ratchet rule: tests enter as they PASS).
+# Measured 2026-07-28: absorption happens but the field's momentum does
+# not survive the conversion — recoil deficit ~100x (predicted 0.13C,
+# measured <=1e-3; the dense translation ceiling itself is ~5e-3).
+# Third S2-full acceptance criterion (ROADMAP §7). Run via --only p2_press.
 
 LAWS = {}
 
@@ -150,6 +156,32 @@ def qatom_points(log):
 def conservation_ok(log):
     d = grab(log, r"# RESULT conservation .*rel_drift=([-\d.e+]+)", 0)
     return d, (d is not None and abs(d) < DRIFT_MAX)
+
+
+def diag_table(log):
+    """diag rows as column lists (P-battery: needs the appended centroid
+    and flux-moment columns, indices 19.. — older logs return fewer)."""
+    rows = []
+    for line in log.splitlines():
+        if line.startswith("#") or "\t" not in line:
+            continue
+        parts = line.split("\t")
+        try:
+            rows.append([float(x) for x in parts])
+        except ValueError:
+            pass
+    return rows
+
+
+def linfit(ts, ys):
+    n = len(ts)
+    if n < 3:
+        return 0.0
+    mt = sum(ts) / n
+    my = sum(ys) / n
+    num = sum((t - mt) * (y - my) for t, y in zip(ts, ys))
+    den = sum((t - mt) ** 2 for t in ts)
+    return num / den if den > 0 else 0.0
 
 
 # ------------------------------------------------------- acceptance checks
@@ -341,12 +373,51 @@ def chk_qt_hi(log):
         f"drift={d:.2e} qatoms={nq} Em_final={em:.3g}"
 
 
+def chk_p1(log):
+    # momentum of light: ballistic direction persistence of the field
+    # energy centroid + the flux moment forward-biased during transit
+    d, ok = conservation_ok(log)
+    rows = [r for r in diag_table(log) if len(r) >= 28 and 3.0 <= r[0] <= 18.0]
+    if len(rows) < 8:
+        return False, f"drift={d:.2e} too few diag rows"
+    ts = [r[0] for r in rows]
+    vx = linfit(ts, [r[19] for r in rows])
+    vy = linfit(ts, [r[20] for r in rows])
+    vz = linfit(ts, [r[21] for r in rows])
+    import math
+    sp = math.sqrt(vx * vx + vy * vy + vz * vz)
+    cos = vx / sp if sp > 0 else 0
+    C = float(LAWS["C"])
+    ffx = sum(r[25] for r in rows) / len(rows)
+    return (ok and cos >= 0.9 and 0.3 * C <= sp <= 1.0 * C and ffx > 0), \
+        f"drift={d:.2e} v/C={sp / C:.3f} cos={cos:.3f} ffx={ffx:.3g}"
+
+
+def chk_p2(log):
+    # radiation pressure: still before arrival; absorbs; recoils ALONG
+    # the packet direction (pushed, never pulled). Self-controlled.
+    d, ok = conservation_ok(log)
+    rows = [r for r in diag_table(log) if len(r) >= 25]
+    if len(rows) < 60:
+        return False, f"drift={d:.2e} too few diag rows"
+    pre = [r for r in rows if 2.0 <= r[0] <= 8.0]
+    post = [r for r in rows if 30.0 <= r[0] <= 115.0]
+    v_pre = linfit([r[0] for r in pre], [r[8] for r in pre])
+    v_post = linfit([r[0] for r in post], [r[8] for r in post])
+    em0 = rows[0][2]
+    em_pk = max(r[2] for r in rows)
+    absorbed = em_pk - em0
+    return (ok and abs(v_pre) <= 1e-3 and absorbed > 5.0 and v_post >= 1.5e-3), \
+        f"drift={d:.2e} v_pre={v_pre:.2e} v_post={v_post:.2e} " \
+        f"absorbed={absorbed:.1f}"
+
+
 CHECKS = {"e1_conserve": chk_e1, "e2_pulse": chk_e2, "e3a_blob": chk_e3a,
           "e3b_blob_tilt": chk_e3b, "e4_curve": chk_e4, "e5_bell": chk_e5,
           "e6_pairs": chk_e6, "e7_tune": chk_e7, "e8_comma": chk_e8,
           "e9_fifth": chk_e9, "d1_slit": chk_d1, "t1_tonomura": chk_t1,
           "q2_eraser": chk_q2, "t4_hom": chk_hom, "qt_lo": chk_qt_lo,
-          "qt_hi": chk_qt_hi}
+          "qt_hi": chk_qt_hi, "p1_beam": chk_p1, "p2_press": chk_p2}
 
 
 def chk_linearity(all_logs, a0):

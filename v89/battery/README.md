@@ -6,6 +6,21 @@ law key (the runner refuses to start otherwise); **physics acceptance**,
 not byte comparison. Law variants compete as whole tables — switching a
 law per experiment is structurally impossible here.
 
+## THE RATCHET RULE (standing, 2026-07-28)
+
+1. **Every modification of the kernel or of a law table runs the FULL
+   battery before it is committed.** No exceptions for "obviously inert"
+   changes — inert is what the green run proves. (S2 exists because a
+   zero-ablation was skipped once.)
+2. **Experiments that pass and defend a claim are added to the battery**
+   and become part of the gate for every future modification. The suite
+   only grows.
+3. **Bars encode defended claims, never snapshots of current output.**
+   A bar may be sharpened by a measurement; it may not be softened to
+   make a change pass.
+4. **A green test leaves the suite only by explicit user decision** —
+   never as a side effect of making something else work.
+
 ```
 python3 battery.py --laws laws_V2z.cfg [--jobs 10] [--only e6_pairs ...] [--skip-run]
 ```

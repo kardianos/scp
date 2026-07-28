@@ -58,6 +58,12 @@ exchange — derived in `v89/s2/`, unnecessary at rate level post-flload:
 acceptance criterion); **the vacuum skirt** (confirmed scored prediction).
 Record: `v89/ROADMAP.md` §6 (§6.10 for the retirement).
 
+**The ratchet rule (v89/battery/README.md):** every kernel or law-table
+modification runs the FULL battery before commit; experiments that pass and
+defend a claim are added to the suite and gate all future modifications; bars
+encode claims (sharpen by measurement, never soften to pass); a green test
+leaves the suite only by explicit user decision.
+
 ## Everything below this line is HISTORICAL
 
 The Standing Goal, stage table, Q-ball tooling, simulation-kernel policy,

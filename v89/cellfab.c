@@ -72,6 +72,8 @@ typedef struct {
     double px, py, pz;           /* seed center (<0 -> box center) */
     double amp, sigma;           /* seed amplitude / width */
     double kx, ky, kz;           /* phase tilt (the ghost of momentum) */
+    double aux_amp, aux_x, aux_y, aux_z;   /* auxiliary field pulse (apparatus) */
+    double aux_kx, aux_ky, aux_kz, aux_sigma;
     int prealign;                /* align plane normals transverse at init */
     long trials;                 /* bell trials per angle combo */
     double aA1, aA2, aB1, aB2;   /* analyzer angles, degrees */
@@ -94,6 +96,7 @@ typedef struct {
     double wall_x, wall_th;      /* wall plane center / thickness */
     double slit_sep, slit_hw;    /* slit strip separation / half-width (y) */
     double screen_x, sink_m;     /* screen plane; edge sink margin */
+    double edge_sink;            /* any-init absorbing edge margin (0=off) */
     double src_lo, src_hi;       /* source slab x-range */
     double absorb_rate;          /* record medium condensation rate */
     double wall_detune;          /* wall field-plane pitch offset */
@@ -156,6 +159,8 @@ static void cfg_defaults(void)
     P.px = -1; P.py = -1; P.pz = -1;
     P.amp = 1.0; P.sigma = 2.5;
     P.kx = 0; P.ky = 0; P.kz = 0;
+    P.aux_amp = 0; P.aux_x = -1; P.aux_y = -1; P.aux_z = -1;
+    P.aux_kx = 0; P.aux_ky = 0; P.aux_kz = 0; P.aux_sigma = -1;
     P.prealign = 0;
     P.trials = 200000;
     P.aA1 = 0.0; P.aA2 = 45.0; P.aB1 = 22.5; P.aB2 = 67.5;
@@ -174,6 +179,7 @@ static void cfg_defaults(void)
     P.wall_x = 11.5; P.wall_th = 2.4;
     P.slit_sep = 9.0; P.slit_hw = 1.2;
     P.screen_x = 26.5; P.sink_m = 1.5;
+    P.edge_sink = 0;
     P.src_lo = 1.5; P.src_hi = 8.5;
     P.absorb_rate = 2.0;
     P.wall_detune = 8.0;
@@ -250,6 +256,14 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "kx")) P.kx = atof(v);
     else if (!strcmp(k, "ky")) P.ky = atof(v);
     else if (!strcmp(k, "kz")) P.kz = atof(v);
+    else if (!strcmp(k, "aux_amp")) P.aux_amp = atof(v);
+    else if (!strcmp(k, "aux_x")) P.aux_x = atof(v);
+    else if (!strcmp(k, "aux_y")) P.aux_y = atof(v);
+    else if (!strcmp(k, "aux_z")) P.aux_z = atof(v);
+    else if (!strcmp(k, "aux_kx")) P.aux_kx = atof(v);
+    else if (!strcmp(k, "aux_ky")) P.aux_ky = atof(v);
+    else if (!strcmp(k, "aux_kz")) P.aux_kz = atof(v);
+    else if (!strcmp(k, "aux_sigma")) P.aux_sigma = atof(v);
     else if (!strcmp(k, "prealign")) P.prealign = atoi(v);
     else if (!strcmp(k, "trials")) P.trials = atol(v);
     else if (!strcmp(k, "aA1")) P.aA1 = atof(v);
@@ -277,6 +291,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "slit_hw")) P.slit_hw = atof(v);
     else if (!strcmp(k, "screen_x")) P.screen_x = atof(v);
     else if (!strcmp(k, "sink_m")) P.sink_m = atof(v);
+    else if (!strcmp(k, "edge_sink")) P.edge_sink = atof(v);
     else if (!strcmp(k, "src_lo")) P.src_lo = atof(v);
     else if (!strcmp(k, "src_hi")) P.src_hi = atof(v);
     else if (!strcmp(k, "absorb_rate")) P.absorb_rate = atof(v);
@@ -347,6 +362,10 @@ static void print_cfg(void)
            P.dt, P.T, P.diag_every, P.snap_every);
     printf("# cfg center=(%g,%g,%g) amp=%g sigma=%g k=(%g,%g,%g) prealign=%d noise_amp=%g\n",
            P.px, P.py, P.pz, P.amp, P.sigma, P.kx, P.ky, P.kz, P.prealign, P.noise_amp);
+    if (P.aux_amp > 0)
+        printf("# cfg aux pulse: amp=%g at (%g,%g,%g) k=(%g,%g,%g) sigma=%g\n",
+               P.aux_amp, P.aux_x, P.aux_y, P.aux_z,
+               P.aux_kx, P.aux_ky, P.aux_kz, P.aux_sigma);
     printf("# cfg music: comb_limit=%d rough_k=%g gamma_rough=%g mob_sym=%d mob_floor=%g\n",
            P.comb_limit, P.rough_k, P.gamma_rough, P.mob_sym, P.mob_floor);
     printf("# cfg field sector: two-component signed amplitude, unitary hops, field_J=%g\n",
@@ -882,6 +901,41 @@ static void build_field(void)
                 Em[i] += pull;
                 th2[i] = tilt;
             }
+        }
+    }
+
+    /* absorbing edges (apparatus): flag a margin of cells on every face
+     * as sinks (record media), for open-space experiments under any
+     * init — e.g. so a radiation-pressure strike is not followed by the
+     * unabsorbed remainder reverberating in the closed box. */
+    if (P.edge_sink > 0) {
+        int nes = 0;
+        double m = P.edge_sink;
+        for (int i = 0; i < NC; i++) {
+            if (cflag[i]) continue;
+            if (cx[i] < m || cx[i] > P.L - m || cy[i] < m || cy[i] > P.L - m
+                || cz[i] < m || cz[i] > P.L - m) { cflag[i] = 3; nes++; }
+        }
+        printf("# edge_sink: margin=%g cells=%d\n", m, nes);
+    }
+
+    /* auxiliary field pulse (apparatus): a second packet on top of any
+     * init — e.g. aimed at a seeded blob for the radiation-pressure
+     * experiment. Same construction as init=pulse. */
+    if (P.aux_amp > 0) {
+        double axc = P.aux_x < 0 ? 0.5 * P.L : P.aux_x;
+        double ayc = P.aux_y < 0 ? 0.5 * P.L : P.aux_y;
+        double azc = P.aux_z < 0 ? 0.5 * P.L : P.aux_z;
+        double asg = P.aux_sigma > 0 ? P.aux_sigma : P.sigma;
+        double s2 = 2.0 * asg * asg;
+        for (int i = 0; i < NC; i++) {
+            double dx = cx[i] - axc, dy = cy[i] - ayc, dz = cz[i] - azc;
+            double rr2 = dx * dx + dy * dy + dz * dz;
+            double g = exp(-rr2 / s2);
+            if (g < 1e-3) continue;
+            double tilt = -(P.aux_kx * dx + P.aux_ky * dy + P.aux_kz * dz);
+            fa1[i] += sqrt(P.aux_amp * g) * cos(tilt);
+            fa2[i] += sqrt(P.aux_amp * g) * sin(tilt);
         }
     }
 
@@ -1606,16 +1660,22 @@ static void diag_row(double t)
     double drift = E0_total != 0 ? (tot - E0_total) / E0_total : 0;
     if (!isfinite(tot)) { fprintf(stderr, "# FATAL non-finite energy at t=%g\n", t); exit(2); }
 
-    /* dense centroid + containment (positions: diagnostic reconstruction only) */
-    double cmx = 0, cmy = 0, cmz = 0, cin = 0;
+    /* dense centroid + containment over FREE cells only — instrument
+     * cells (walls, screens, sinks) hold recorded ledger, not moving
+     * matter (positions: diagnostic reconstruction only) */
+    double cmx = 0, cmy = 0, cmz = 0, cin = 0, cmE = 0;
     double rcont = 2.5 * P.sigma;
-    if (tEm > 1e-12) {
-        for (int i = 0; i < NC; i++) {
-            cmx += Em[i] * cx[i]; cmy += Em[i] * cy[i]; cmz += Em[i] * cz[i];
-            double dx = cx[i] - cenx, dy = cy[i] - ceny, dz = cz[i] - cenz;
-            if (dx * dx + dy * dy + dz * dz < rcont * rcont) cin += Em[i];
-        }
-        cmx /= tEm; cmy /= tEm; cmz /= tEm; cin /= tEm;
+    for (int i = 0; i < NC; i++) {
+        if (cflag[i]) continue;
+        cmE += Em[i];
+        cmx += Em[i] * cx[i]; cmy += Em[i] * cy[i]; cmz += Em[i] * cz[i];
+        double dx = cx[i] - cenx, dy = cy[i] - ceny, dz = cz[i] - cenz;
+        if (dx * dx + dy * dy + dz * dz < rcont * rcont) cin += Em[i];
+    }
+    if (cmE > 1e-12) {
+        cmx /= cmE; cmy /= cmE; cmz /= cmE; cin /= cmE;
+    } else {
+        cmx = cmy = cmz = cin = 0;
     }
 
     /* field front radius (threshold on seed amplitude) */
@@ -1650,10 +1710,50 @@ static void diag_row(double t)
     if (nin) { rin /= nin; win /= nin; }
     if (nout) { rout /= nout; wout /= nout; }
 
-    printf("%.3f\t%.9g\t%.9g\t%.9g\t%.9g\t%.12g\t%.3e\t%d\t%.3f\t%.3f\t%.3f\t%.3f\t%.4f\t%.4f\t%.5g\t%.4f\t%.4f\t%.5f\t%.5f\n",
+    /* momentum instruments (P-battery): field-energy centroid, and the
+     * flux moment — the first moment of in-flight energy over link
+     * directions. Positions/directions are diagnostic reconstruction
+     * only; the laws never see them. */
+    double cex = 0, cey = 0, cez = 0;
+    if (tEe > 1e-12) {
+        for (int i = 0; i < NC; i++) {
+            cex += Ee[i] * cx[i]; cey += Ee[i] * cy[i]; cez += Ee[i] * cz[i];
+        }
+        cex /= tEe; cey /= tEe; cez /= tEe;
+    }
+    double pfx = 0, pfy = 0, pfz = 0;
+    for (int l = 0; l < NL; l++) {
+        double imb = (lem[SLOT(l, 0, 0)] + lem[SLOT(l, 1, 0)])
+                   - (lem[SLOT(l, 0, 1)] + lem[SLOT(l, 1, 1)]);
+        if (imb == 0) continue;
+        pfx += imb * lux[l]; pfy += imb * luy[l]; pfz += imb * luz[l];
+    }
+    /* field-sector momentum current: the repaired field moves by unitary
+     * hops, so its momentum lives in the amplitude phase gradient, not
+     * in flight slots. Per link: J = 2*J_hop*Im[psi_i^* psi_j] (both
+     * chirality components), summed over link directions. */
+    double ffx = 0, ffy = 0, ffz = 0;
+    {
+        double Aref_d = M_PI * P.r0 * P.r0, dref_d = 2.0 * P.r0;
+        for (int l = 0; l < NL; l++) {
+            if (lA[l] <= 0) continue;
+            int i = li[l], j = lj[l];
+            double w = P.field_J * (lA[l] / Aref_d) * (dref_d / ld[l]);
+            /* sign pairs with the hop generator U=exp(-i tau X) and the
+             * seed convention theta=-k*x (DOUBLESLIT round 2): forward
+             * current along +u is MINUS this Im-product. Calibrated
+             * against the ballistic p1 packet. */
+            double cur = fa1[i] * fa2[j] - fa2[i] * fa1[j]
+                       + fb1[i] * fb2[j] - fb2[i] * fb1[j];
+            double J = -2.0 * w * cur;
+            ffx += J * lux[l]; ffy += J * luy[l]; ffz += J * luz[l];
+        }
+    }
+
+    printf("%.3f\t%.9g\t%.9g\t%.9g\t%.9g\t%.12g\t%.3e\t%d\t%.3f\t%.3f\t%.3f\t%.3f\t%.4f\t%.4f\t%.5g\t%.4f\t%.4f\t%.5f\t%.5f\t%.4f\t%.4f\t%.4f\t%.5g\t%.5g\t%.5g\t%.5g\t%.5g\t%.5g\n",
            t, tEs, tEm, tEe, tET, tot, drift, nact,
            cmx, cmy, cmz, cin, front, rin, defA, rout, rin > 0 ? rin / (rout > 0 ? rout : 1) : 0,
-           win, wout);
+           win, wout, cex, cey, cez, pfx, pfy, pfz, ffx, ffy, ffz);
 
     if (nsamp < nsamp_max) {
         ds_t[nsamp] = t; ds_em[nsamp] = tEm; ds_front[nsamp] = front;
