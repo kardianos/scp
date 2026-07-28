@@ -42,6 +42,20 @@ usual sense, because nothing has a trajectory.
 3. No imported field or species.
 4. Emergent from the fabric alone.
 
+## The unified law (synthesis, 2026-07-28)
+
+One law table — `v89/battery/laws_V2.cfg` — passes all 17 experiments with
+only apparatus varying (`python3 v89/battery/battery.py --laws laws_V2.cfg`).
+The synthesis, in full in `v89/README.md` ("The law, as it stands"):
+**amplitudes within a mode** (transport is never quantized); **atoms at mode
+boundaries** (every conversion fires in whole action atoms ε = A₀ω/2π at the
+source's pitch, two-atom credit; ħ-linearity measured to ~1e−8); **load
+flattens pitch and flight is load** (x = (Em + flload)/cap; vacuum optics
+linear, Kerr = loaded matter); **the choir's correction** (dispersive partner
+of the comb resonance, acceptance-windowed, gate-scaled — rungs are two-sided
+attractors; kappa_freq = 0.6 posited, S2 owes the derivation); **the vacuum
+skirt** (confirmed scored prediction). Record: `v89/ROADMAP.md` §6.
+
 ## Everything below this line is HISTORICAL
 
 The Standing Goal, stage table, Q-ball tooling, simulation-kernel policy,

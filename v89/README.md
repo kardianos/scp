@@ -23,6 +23,77 @@ Concretely, do not look at earlier versions for:
 If a question seems to need prior context, the answer is to derive it from
 `PRINCIPLE.md`, not to go looking.
 
+## The standing constraints
+
+1. **Energy is never destroyed.** It only changes mode. This is the only law;
+   there is no separate equation of motion for it to constrain.
+
+2. **No background.** Space is a mode, not a stage. A construction has
+   reintroduced a stage if it contains: labels that persist while values change;
+   a permanent reference geometry from which physical geometry deviates; fixed
+   connectivity not itself produced by the current energy structure; or a
+   quantity whose conservation requires fixed ambient space (ordinary momentum).
+
+3. **No imported field or species.** Nothing may be added to carry an effect.
+   If an effect requires a new field, that is a failure of the construction, not
+   a licence to add one.
+
+4. **Emergent from the fabric alone.** Particles, species, masses and
+   interactions must arise from the fabric's own degrees of freedom.
+
+## The law, as it stands (2026-07-28)
+
+What the constraints have produced so far, in one place. One table of
+constants — `battery/laws_V2.cfg` — passes every experiment in the program
+(17/17), with only apparatus differing between them: conservation, field
+packets, heavy and light blobs, curvature linearity, CHSH, the rung tongue,
+the pair tuning curve, the comma, the fifth, double-slit fringes,
+single-quantum clicks, the eraser, HOM ordering, sub- and above-threshold
+conversion, and ħ-linearity. The table is not a list of fixes; it states a
+short set of laws.
+
+1. **Amplitudes within a mode; atoms at the boundaries; integers in
+   closure.** Inside a mode, energy moves as continuous amplitude —
+   transport is never quantized. Every conversion between modes
+   (space ↔ dense ↔ field) fires in whole atoms of action, ε = (A₀/2π)·ω
+   at the source's pitch, carried by a credit that lapses at two atoms.
+   This is measured, not assumed: every fired grain in every log sits on
+   the ε(ω) grid to ~10⁻⁸ (E = ħ_eff·ω as a battery invariant), and a
+   pool that cannot afford one atom never fires at all. The credit
+   memory is physics, not bookkeeping — without it the comma cannot be
+   paid.
+
+2. **Load flattens pitch, and flight is load.** A voice's detune is
+   x = (E_store + E_flight/2)/cap: bound energy re-pitches a cell, and a
+   channel is a joint process of its two ends, so each end carries half
+   of the channel's in-flight energy. Passing field amplitude does not
+   re-pitch: vacuum optics is linear automatically, and Kerr
+   nonlinearity is a property of loaded matter. Inertia emerges from the
+   same law — light blobs translate, heavy blobs freeze.
+
+3. **The choir's correction.** Sympathetic exchange carries the
+   dispersive partner of the comb resonance: a mistuned pair biases its
+   own exchange toward whichever direction restores the rung (feeding
+   the sharp voice flattens it), windowed inside the acceptance and
+   riding the mutual gate closure — only those singing together are
+   corrected, so a blob's graded rim feels no homogenizing pressure.
+   Rungs are thereby two-sided attractors, measured: the fifth locks and
+   holds. Strength kappa_freq = 0.6 is posited at rate level; its
+   derivation is S2's first obligation.
+
+4. **The vacuum skirt** — a scored prediction, confirmed. A voice loaded
+   to within ~2Γ of the room's pitch dissolves into it; pair deaths
+   retreat inside the computed boundary x_skirt = 2Γ/(q·(w₂ − 2Γ)), and
+   the battery guards it.
+
+Four placements of the atom competed as whole law tables (source- vs
+destination-sized; per-cycle floor vs credit). V2 — source-sized atoms
+with the two-atom credit — is the unique full pass (V1 15/17, V3 16/17,
+V4 16/17), and the failures are discriminations, not accidents: a floor
+cannot pay the comma, and destination-sizing taxes a translating front.
+Full record and the annealing history: `ROADMAP.md` §6; harness and
+verdicts: `battery/`.
+
 ## What is inherited
 
 Exactly two documents, and nothing else:
@@ -52,24 +123,6 @@ else needs to be retrieved.
 | `CELLFAB.md` + `cellfab.c` | the **cell-fabric kernel**: no-grid cells with two-plane harmonics, resonant joining at rate C gated by tail phases, beat-gated mode conversion, saturation, curvature as contact defect, event-level Bell. First campaign results in `CELLFAB.md` §10, logs in `cellfab_runs/`. |
 | `CONSONANCE.md` | **locks without binding**: the musical resonance theory (notes as tail-calling processes, consonance as closure, the comma, the computed harmonic limit) back-ported to cell harmonics. Derives the pair separation ladder (ω₁+ω₂)d/C = 2πm from the existing gate law — no new mechanism — and measures it (E6/E7: tongue, tempered comma, defect payment, Huygens acquisition). Round 2 (Part VI) promotes the theory to kernel law (partial comb, roughness radiates, mutual coupling) and measures the comma paid (E8) and the interval lifetime hierarchy (E9). "Binding" is retired. |
 | `DOUBLESLIT.md` | the double slit, postulated and simulated with instruments (wall, slits, screen, shutter, which-path recorders). Round 1 falsified the single-phase field sector exactly (I_AB = I_A + I_B, no fringes — refusal is delay, not cancellation). Round 2 **made the repair**: the field sector is now a signed two-plane amplitude (CONSTRUCTION §2.2's chiral pair) with symmetric-normalized unitary hops — **fringes at the parameter-free loci** (V_norm 0.32), complementarity as a measured dial (one strong meter: V → 0.025), 223 click grains, conservation ≤1.1e−15 through all detection. Dense-sector results unaffected. |
-
-## The standing constraints
-
-1. **Energy is never destroyed.** It only changes mode. This is the only law;
-   there is no separate equation of motion for it to constrain.
-
-2. **No background.** Space is a mode, not a stage. A construction has
-   reintroduced a stage if it contains: labels that persist while values change;
-   a permanent reference geometry from which physical geometry deviates; fixed
-   connectivity not itself produced by the current energy structure; or a
-   quantity whose conservation requires fixed ambient space (ordinary momentum).
-
-3. **No imported field or species.** Nothing may be added to carry an effect.
-   If an effect requires a new field, that is a failure of the construction, not
-   a licence to add one.
-
-4. **Emergent from the fabric alone.** Particles, species, masses and
-   interactions must arise from the fabric's own degrees of freedom.
 
 ## What is open
 
