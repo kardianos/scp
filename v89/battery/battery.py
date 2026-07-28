@@ -36,7 +36,7 @@ BANNED_IN_APPARATUS = LAW_KEYS | {"e_click"}  # e_click: retired into eps(w)
 EXPS = ["e1_conserve", "e2_pulse", "e3a_blob", "e3b_blob_tilt", "e4_curve",
         "e5_bell", "e6_pairs", "e7_tune", "e8_comma", "e9_fifth", "d1_slit",
         "t1_tonomura", "q2_eraser", "t4_hom", "qt_lo", "qt_hi",
-        "p1_beam", "g1_footprint", "g3_shadow"]
+        "p1_beam", "g1_footprint", "g3_shadow", "g4_throughput"]
 # p2_press: recorded, NOT gated (ratchet rule: tests enter as they PASS).
 # Measured 2026-07-28: absorption happens but the field's momentum does
 # not survive the conversion — recoil deficit ~100x (predicted 0.13C,
@@ -440,13 +440,55 @@ def chk_g3(log):
         f"drift={d:.2e} E_exit={fE:.2f} y_exit={fy:.2f} (launch 22.5, mass at 18)"
 
 
+def rad_rows(log):
+    rows = []
+    for line in log.splitlines():
+        if not line.startswith("# RAD"):
+            continue
+        t = float(re.search(r"t=([\d.]+)", line).group(1))
+        sh = [tuple(float(x) for x in m.groups()) for m in
+              re.finditer(r"([\d.]+):([-\d.e+]+),([-\d.e+]+),([-\d.e+]+),"
+                          r"([-\d.e+]+)", line)]
+        if len(sh) == 8:
+            rows.append((t, sh))
+    return rows
+
+
+def chk_g4(log):
+    # blob space throughput: NO steady monopole — far-shell space flux is
+    # mass-rate-driven (equilibration wind / refill), decays with the
+    # transients, and stays subdominant to the radiative field channel
+    # while the blob leaks. A steady 1/r-sourcing accretion flux would
+    # violate both bars. (The 1/r far field awaits a STABLE particle
+    # whose internal cycle gives throughput at constant mass.)
+    d, ok = conservation_ok(log)
+    rows = rad_rows(log)
+    if len(rows) < 100:
+        return False, f"drift={d:.2e} too few RAD rows"
+    def wavg(lo, hi, col, k):
+        w = [sh[k][col] for t, sh in rows if lo <= t <= hi]
+        return sum(w) / len(w) if w else 0.0
+    sf_e = wavg(20, 60, 1, 5)
+    sf_l = wavg(100, 160, 1, 5)
+    ff_l = wavg(100, 160, 2, 5)
+    def blobm(sh): return sum(s[4] for s in sh[:4])
+    late = [(t, sh) for t, sh in rows if 100 <= t <= 160]
+    mdot = (blobm(late[-1][1]) - blobm(late[0][1])) / (late[-1][0] - late[0][0])
+    decays = abs(sf_l) <= 0.5 * abs(sf_e) + 1e-6
+    subdom = abs(sf_l) <= abs(ff_l) + 1e-6
+    return (ok and decays and subdom), \
+        f"drift={d:.2e} sflux(r8.25) early={sf_e:+.3g} late={sf_l:+.3g} " \
+        f"fflux_late={ff_l:+.3g} dM/dt={mdot:+.3f}"
+
+
 CHECKS = {"e1_conserve": chk_e1, "e2_pulse": chk_e2, "e3a_blob": chk_e3a,
           "e3b_blob_tilt": chk_e3b, "e4_curve": chk_e4, "e5_bell": chk_e5,
           "e6_pairs": chk_e6, "e7_tune": chk_e7, "e8_comma": chk_e8,
           "e9_fifth": chk_e9, "d1_slit": chk_d1, "t1_tonomura": chk_t1,
           "q2_eraser": chk_q2, "t4_hom": chk_hom, "qt_lo": chk_qt_lo,
           "qt_hi": chk_qt_hi, "p1_beam": chk_p1, "p2_press": chk_p2,
-          "g1_footprint": chk_g1, "g3_shadow": chk_g3}
+          "g1_footprint": chk_g1, "g3_shadow": chk_g3,
+          "g4_throughput": chk_g4}
 
 
 def chk_linearity(all_logs, a0):

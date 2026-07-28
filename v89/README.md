@@ -112,8 +112,14 @@ the gate.
    matter is converted space, so a mass pushes space out and MAINTAINS
    an extended graded depression: the gravitational footprint (core
    ~0.5 of vacuum, halo to r ≈ 6, a faint displaced-space ridge, no far
-   tail — a sealed mass is not a steady space-flux monopole; the 1/r
-   field awaits measured space throughput). The loaded core is a mirror
+   tail). The throughput measurement closed the 1/r question for what
+   we have: every far-shell space flux of a leaking blob is bookkeeping
+   of its mass rate — outward wind while it evaporates, inward refill
+   as its depression relaxes — decaying with the leak and subdominant
+   to the radiative channel, with no steady accretion monopole. A
+   sealed static mass sources no 1/r field; the far field requires
+   steady space cycling at constant mass — a property of the stable
+   particle the program does not yet have. The loaded core is a mirror
    by the same pitch law that mutes the slit wall — matter is
    emergently opaque, and a passing beam exits shifted away
    (occultation); the halo's true lensing pull is measured at the right

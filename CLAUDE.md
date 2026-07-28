@@ -61,7 +61,9 @@ radiation-pressure deficit at the conversion door is recorded — another
 S2-full criterion); **space flows: pressure pushes, nothing reaches out**
 (s_k/s_disp: a mass maintains its extended graded depression — the
 gravitational footprint g1; matter is emergently opaque — occultation g3;
-no far tail without space throughput). Record: `v89/ROADMAP.md` §6–§7.
+g4 measured: a leaking blob's space flux is all mass-rate bookkeeping, no
+steady monopole — the 1/r far field awaits a stable particle's internal
+space cycle). Record: `v89/ROADMAP.md` §6–§7.
 
 **The ratchet rule (v89/battery/README.md):** every kernel or law-table
 modification runs the FULL battery before commit; experiments that pass and

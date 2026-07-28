@@ -804,3 +804,39 @@ the e3a rim un-sealed — the upper edge is physical):
 
 Net free constants this arc: kappa_freq retired (−1, §6.10); s_k and
 s_disp added (+2, both load-bearing: g1 fails without either).
+
+**G4 — blob space throughput: the 1/r question, measured (2026-07-28,
+GATED).** Instrument: per-shell radial space-transport flux (pass-S
+moves), radial field current (the relativistic channel), space mean and
+free dense sum, per diag window (`rad_diag=1`). Three runs under the
+standing table: heavy blob, light blob, vacuum control. The user's
+caveat governed the design and turned out to be the result: unlike a
+stable mass, whose energy is bound in internal cycling ("consuming" c
+in E = mc²), our blobs LEAK — and every measured flux is bookkeeping of
+that leak:
+
+* Vacuum control: exactly zero flux (a uniform room has no pressure
+  differences — the floor is clean).
+* While evaporation is fast (early window), a blob drives an OUTWARD
+  space wind (returned space shares pushed out: heavy +0.15, light
+  +0.07 at r = 8.25).
+* As the leak slows, the wind decays (heavy +0.147 → +0.057) and can
+  REVERSE (light +0.070 → −0.015): a shrinking load's maintained
+  depression is now too deep, and space flows back in to refill it.
+  Both signs are d(mass)/dt-driven.
+* The radiative field flux dominates or matches the space flux
+  wherever the blob is actively leaking (heavy late: field 0.117 vs
+  space 0.057).
+* **No steady inward accretion monopole exists at this sensitivity.**
+  Extrapolating dM/dt → 0 (a stable particle), every measured component
+  vanishes: **a sealed static mass sources NO 1/r far field under the
+  pressure law.** The far field requires steady space THROUGHPUT at
+  constant mass — a particle whose internal conversion cycle takes up
+  and lays back space continuously. That is a property of the stable
+  particle we do not yet have; the proton prerequisite (also the
+  reason collision experiments are deferred) is now a measured
+  conclusion, not a scheduling choice.
+
+g4's gate bars encode the defended claim (the transient DECAYS and
+stays subdominant to the radiative channel): a future law that made
+sealed matter suck space steadily would fail g4 loudly.

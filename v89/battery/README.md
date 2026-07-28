@@ -38,7 +38,11 @@ t1 Tonomura clicks · q2 eraser ± · t4 HOM ordering · qt_lo sub-threshold
 (nothing condenses) · qt_hi above-threshold (condensation) · p1 momentum
 of light (ballistic centroid + forward momentum current) · g1 the
 gravitational footprint (a mass maintains its extended space depression)
-· g3 occultation (matter is emergently opaque; beam exits away) · LIN:
+· g3 occultation (matter is emergently opaque; beam exits away) ·
+g4 space throughput (no steady monopole: far-shell space flux is
+mass-rate bookkeeping, decays, stays subdominant to the radiative
+channel — the 1/r far field awaits a stable particle's internal cycle)
+· LIN:
 every fired grain across every log sits on the eps(w) = A0·w/2π grid
 (ħ-linearity as a battery invariant).
 

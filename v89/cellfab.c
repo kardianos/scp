@@ -77,6 +77,7 @@ typedef struct {
     double aux_amp, aux_x, aux_y, aux_z;   /* auxiliary field pulse (apparatus) */
     double aux_kx, aux_ky, aux_kz, aux_sigma;
     int prealign;                /* align plane normals transverse at init */
+    int rad_diag;                /* G4 apparatus: per-shell radial flux report */
     long trials;                 /* bell trials per angle combo */
     double aA1, aA2, aB1, aB2;   /* analyzer angles, degrees */
     int debug;                   /* extra gate/flux statistics per diag row */
@@ -165,6 +166,7 @@ static void cfg_defaults(void)
     P.aux_amp = 0; P.aux_x = -1; P.aux_y = -1; P.aux_z = -1;
     P.aux_kx = 0; P.aux_ky = 0; P.aux_kz = 0; P.aux_sigma = -1;
     P.prealign = 0;
+    P.rad_diag = 0;
     P.trials = 200000;
     P.aA1 = 0.0; P.aA2 = 45.0; P.aB1 = 22.5; P.aB2 = 67.5;
     P.npairs = 48;
@@ -271,6 +273,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "aux_kz")) P.aux_kz = atof(v);
     else if (!strcmp(k, "aux_sigma")) P.aux_sigma = atof(v);
     else if (!strcmp(k, "prealign")) P.prealign = atoi(v);
+    else if (!strcmp(k, "rad_diag")) P.rad_diag = atoi(v);
     else if (!strcmp(k, "trials")) P.trials = atol(v);
     else if (!strcmp(k, "aA1")) P.aA1 = atof(v);
     else if (!strcmp(k, "aA2")) P.aA2 = atof(v);
@@ -502,6 +505,8 @@ static signed char *cflag;
 static double *fsum;                 /* per-cell total geometric joining weight */
 static double *flload;               /* per-cell pitch share of in-flight dense energy */
 static double *sprq, *swl;           /* space transport: per-cell wants, per-link flux */
+static double srad[8];               /* radial space flux accumulator (G4 shells) */
+static double srad_t0 = 0;           /* window start for the flux rate */
 static int *clickn;                  /* record grains already logged per cell */
 static double sim_t = 0.0;
 static double *expose_frz = NULL;    /* shutter: frozen screen record */
@@ -1143,6 +1148,21 @@ static void step_field(void)
             if (sprq[src] > avail) mag *= avail / sprq[src];
             Es[src] -= mag;
             Es[dst] += mag;
+            /* G4 instrument (apparatus-gated): radial projection of the
+             * move, binned by shell (positive = outward space transport) */
+            if (P.rad_diag) {
+                double mx = 0.5 * (cx[li[l]] + cx[lj[l]]) - cenx;
+                double my = 0.5 * (cy[li[l]] + cy[lj[l]]) - ceny;
+                double mz = 0.5 * (cz[li[l]] + cz[lj[l]]) - cenz;
+                double rr = sqrt(mx * mx + my * my + mz * mz);
+                int k = (int)(rr / (0.5 * P.L / 8.0));
+                if (rr > 1e-9 && k < 8) {
+                    double sgn = src == li[l] ? 1.0 : -1.0;
+                    double proj = sgn * (lux[l] * mx + luy[l] * my
+                                         + luz[l] * mz) / rr;
+                    srad[k] += mag * proj;
+                }
+            }
         }
     }
 
@@ -1811,6 +1831,50 @@ static void diag_row(double t)
            t, tEs, tEm, tEe, tET, tot, drift, nact,
            cmx, cmy, cmz, cin, front, rin, defA, rout, rin > 0 ? rin / (rout > 0 ? rout : 1) : 0,
            win, wout, cex, cey, cez, pfx, pfy, pfz, ffx, ffy, ffz);
+
+    /* G4 — radial throughput report: per shell, the accumulated space-
+     * transport flux rate (positive = outward), the instantaneous field
+     * radial current (the relativistic channel: evaporation leaves as
+     * field at c), the space mean and the free dense sum. Separating
+     * these is the point: a leaking blob's radiative wind must not be
+     * mistaken for a static gravitational monopole. */
+    if (P.rad_diag && P.s_k > 0) {
+        double dr = 0.5 * P.L / 8.0;
+        double fr[8], esh[8], emh[8];
+        int nsh[8];
+        for (int k = 0; k < 8; k++) { fr[k] = 0; esh[k] = 0; emh[k] = 0; nsh[k] = 0; }
+        double Aref_d = M_PI * P.r0 * P.r0, dref_d = 2.0 * P.r0;
+        for (int l = 0; l < NL; l++) {
+            if (lA[l] <= 0) continue;
+            int i = li[l], j = lj[l];
+            double mx = 0.5 * (cx[i] + cx[j]) - cenx;
+            double my = 0.5 * (cy[i] + cy[j]) - ceny;
+            double mz = 0.5 * (cz[i] + cz[j]) - cenz;
+            double rr = sqrt(mx * mx + my * my + mz * mz);
+            int k = (int)(rr / dr);
+            if (rr < 1e-9 || k >= 8) continue;
+            double w = P.field_J * (lA[l] / Aref_d) * (dref_d / ld[l]);
+            double cur = fa1[i] * fa2[j] - fa2[i] * fa1[j]
+                       + fb1[i] * fb2[j] - fb2[i] * fb1[j];
+            double J = -2.0 * w * cur;
+            fr[k] += J * (lux[l] * mx + luy[l] * my + luz[l] * mz) / rr;
+        }
+        for (int i = 0; i < NC; i++) {
+            if (cflag[i]) continue;
+            double dx = cx[i] - cenx, dy = cy[i] - ceny, dz = cz[i] - cenz;
+            int k = (int)(sqrt(dx * dx + dy * dy + dz * dz) / dr);
+            if (k < 8) { esh[k] += Es[i]; emh[k] += Em[i]; nsh[k]++; }
+        }
+        double win = t - srad_t0;
+        printf("# RAD t=%.2f", t);
+        for (int k = 0; k < 8; k++)
+            printf(" %.2f:%.4g,%.4g,%.4f,%.4g",
+                   (k + 0.5) * dr, win > 0 ? srad[k] / win : 0.0, fr[k],
+                   nsh[k] ? esh[k] / nsh[k] : 0, emh[k]);
+        printf("\n");
+        for (int k = 0; k < 8; k++) srad[k] = 0;
+        srad_t0 = t;
+    }
 
     if (nsamp < nsamp_max) {
         ds_t[nsamp] = t; ds_em[nsamp] = tEm; ds_front[nsamp] = front;
