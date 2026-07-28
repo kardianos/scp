@@ -30,6 +30,7 @@
  * Run:    ./v89/cellfab [config.cfg] [key=value ...]
  */
 
+#define _GNU_SOURCE   /* sincos */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -508,6 +509,7 @@ static double *sprq, *swl;           /* space transport: per-cell wants, per-lin
 static double *sscl;                 /* space transport: per-cell outflow scale */
 static double *th1s, *th2s;          /* clock snapshot: sources read pre-pass values */
 static double *nsnap;                /* normals snapshot for the parallel alignment */
+static int want_th1 = 1;             /* refresh the diagnostic th1 cache this step */
 static double *roughq;               /* per-cell rough fires this step (QATOM flush) */
 static double *rngbuf;               /* serial gaussian draws for the parallel tumble */
 static int *lcol, *colstart, *colidx, ncolors;  /* edge coloring (pass F hops) */
@@ -1341,8 +1343,8 @@ static void step_field(void)
                 res = best;
                 lp[l] = (signed char)bp;
                 lq[l] = (signed char)bq;
-                g_ij = gate_of(wrap_pi(bq * thi - bq * wi * d / P.C - bp * thj));
-                g_ji = gate_of(wrap_pi(bp * thj - bp * wj * d / P.C - bq * thi));
+                g_ij = gate_of(bq * thi - bq * wi * d / P.C - bp * thj);
+                g_ji = gate_of(bp * thj - bp * wj * d / P.C - bq * thi);
                 if (P.mob_sym) {
                     /* C3: harmony is mutual — exchange takes two; a silent
                      * partner responds at its sympathetic readiness floor */
@@ -1355,8 +1357,8 @@ static void step_field(void)
             } else {
                 double dw = wi - wj;
                 res = G2c[0] / (G2c[0] + dw * dw);
-                g_ij = gate_of(wrap_pi(thi - wi * d / P.C - thj));
-                g_ji = gate_of(wrap_pi(thj - wj * d / P.C - thi));
+                g_ij = gate_of(thi - wi * d / P.C - thj);
+                g_ji = gate_of(thj - wj * d / P.C - thi);
             }
 
             double kd = c == 0 ? P.k_dep : P.k_dep * P.k_dep_m;
@@ -1598,7 +1600,8 @@ static void step_field(void)
 #pragma omp parallel for schedule(static)
     for (int i = 0; i < NC; i++) {
         double ang = w1e[i] * dt;
-        double cc = cos(ang), ss = sin(ang);
+        double cc, ss;
+        sincos(ang, &ss, &cc);
         double a1 = fa1[i], a2 = fa2[i];
         fa1[i] = cc * a1 + ss * a2;
         fa2[i] = -ss * a1 + cc * a2;
@@ -1638,7 +1641,8 @@ static void step_field(void)
              * packet along +k: v_g = +t*sum d*sin(k*d). Verified by centroid. */
             double w = (lA[l] / Aref) * (dref / ld[l]);
             double tau = P.field_J * w / sqrt(si * sj) * dt;
-            double cc = cos(tau), ss = sin(tau);
+            double cc, ss;
+            sincos(tau, &ss, &cc);
             double a1i = fa1[i], a2i = fa2[i], a1j = fa1[j], a2j = fa2[j];
             fa1[i] = cc * a1i + ss * a2j;
             fa2[i] = cc * a2i - ss * a1j;
@@ -1740,7 +1744,9 @@ static void step_field(void)
     for (int i = 0; i < NC; i++) {
         Ee[i] = fa1[i] * fa1[i] + fa2[i] * fa2[i]
               + (pol_on ? fb1[i] * fb1[i] + fb2[i] * fb2[i] : 0);
-        if (Ee[i] > 1e-20) th1[i] = atan2(fa2[i], fa1[i]);
+        /* th1 is a diagnostic cache at runtime (the gated c==0 transport
+         * is gone since the field repair): refresh only on diag steps */
+        if (want_th1 && Ee[i] > 1e-20) th1[i] = atan2(fa2[i], fa1[i]);
     }
 
     /* pass 6: dense clock + beat-gated conversion (complete cycles only).
@@ -2612,6 +2618,8 @@ int main(int argc, char **argv)
 
     for (int s = 1; s <= NS; s++) {
         sim_t = s * P.dt;
+        want_th1 = (P.diag_every > 0 && s % P.diag_every == 0)
+                || (P.snap_every > 0 && s % P.snap_every == 0) || s == NS;
         step_field();
         if (P.init == 5 && P.t_expose > 0 && !expose_frz && sim_t >= P.t_expose) {
             /* the shutter closes: the record so far is the photograph */

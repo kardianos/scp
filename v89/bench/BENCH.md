@@ -13,6 +13,8 @@ before its numbers are recorded here.
 | 1 | — same binary, 1 thread | 32.28 | 10.71 | 0.57× (the gather double-visits + snapshots cost ~1.8× serial; parallelism pays it back) |
 | 1 | — same binary, 16 threads | 15.13 | 10.11 | 1.2× (hyperthread collapse: 8 physical cores; use OMP_NUM_THREADS=8) |
 
+| 2 | trig trim: sincos in pass F, redundant wrap_pi elided from cos-only gate args, diagnostic th1 atan2 lazy (diag steps only) | 6.23 | 2.67 | **2.94×** |
+
 Rung-1 notes: results are **thread-count independent to the byte**
 (verified: 1-thread vs 16-thread logs identical) — gathers and color
 batches have fixed evaluation order, the tumble gaussian stream is
