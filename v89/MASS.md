@@ -336,3 +336,27 @@ E — THEORY DEBTS FEEDING MASS
   circulation signature not yet instrumented (open: per-ring flux
   loop sum). A1c closed-box control running (self-atmosphere vs
   starvation).
+
+* **2026-07-28 (endgame: the skirt prediction scored; first structural
+  lifetime effect; longest-lived object yet).** Death times, all
+  T=5000 horizon: light m=3 ring (x/voice 0.128): open box 1900,
+  closed box 1600 — **the closed-box control rules out starvation**
+  (a ring in its own shed bath dies the same; environment is not the
+  killer). Heavy rings: unwound12 (x≈0.21) died 2221; one-way comp6
+  (x≈0.44) died 3836; **wound comp12 (x≈0.32, m=5, mutual back gates)
+  ALIVE at t=5000** (M=0.59, n=1, still decaying ~−3e-4). VERDICT on
+  the pre-registration: the load axis is CONFIRMED at class level —
+  lifetime rises steeply with per-voice load (1.6–1.9k → 2.2k → 3.8k →
+  >5k) exactly as skirt-death predicts. Within the heavy class it is
+  NOT load-monotone: the wound mutual N=12 ring outlived the heavier
+  one-way N=6 — the first evidence that STRUCTURE (winding/mutuality/
+  N) buys lifetime beyond load. Attribution caveat: single seeds,
+  comp12 vs comp6 differ in N, w, and mutuality simultaneously —
+  ensemble + a one-axis A/B (wound vs unwound at matched N=12 ran:
+  2221 vs >5000, differing ONLY in closure integer m=6 vs m=5 at
+  slightly different loads 0.21/0.32 — the cleanest pair we have, and
+  the wound heavier ring won by >2.3×). comp12 is the longest-lived
+  object the program has produced. STILL NO EQUILIBRIUM: everything
+  leaks toward the skirt; the stabilization routes standing are the
+  piston (raise the ambient barrier) and roughness elimination.
+  Next: piston build (C1'), then the B+ pressure arm on comp12.
