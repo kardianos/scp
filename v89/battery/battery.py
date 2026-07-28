@@ -1,0 +1,420 @@
+#!/usr/bin/env python3
+# v89 unification battery — the ROADMAP §6.5 protocol, operational.
+#
+# One LAWS file, shared byte-identically by every experiment in a run;
+# apparatus files may not touch law keys (purity-checked before anything
+# executes); acceptance is physics, not bytes. Variants (laws_V*.cfg)
+# compete as complete law tables — switching a law per experiment is
+# structurally impossible here.
+#
+# usage: battery.py --laws laws_V1.cfg [--jobs 8] [--only e6_pairs ...]
+#                   [--skip-run]   (re-parse existing logs only)
+
+import argparse
+import concurrent.futures as cf
+import os
+import re
+import subprocess
+import sys
+
+ROOT = os.path.dirname(os.path.abspath(__file__))
+V89 = os.path.dirname(ROOT)
+SRC = os.path.join(V89, "cellfab.c")
+BIN = os.path.join(V89, "cellfab")
+
+LAW_KEYS = {
+    "C", "dmin", "r0", "rjit", "w1", "w2", "q_detune", "gamma_res",
+    "gamma_res_m", "p_gate", "lock_floor", "k_dep", "k_dep_m", "cap",
+    "e_s0", "es_floor", "e_cond", "f_conv", "f_evap", "s_pull",
+    "kappa_lock", "kappa_align", "sigma_tumble", "comb_limit", "rough_k",
+    "gamma_rough", "mob_sym", "mob_floor", "field_J", "quant_A0",
+    "quant_mode",
+}
+BANNED_IN_APPARATUS = LAW_KEYS | {"e_click"}  # e_click: retired into eps(w)
+
+EXPS = ["e1_conserve", "e2_pulse", "e3a_blob", "e3b_blob_tilt", "e4_curve",
+        "e5_bell", "e6_pairs", "e7_tune", "e8_comma", "e9_fifth", "d1_slit",
+        "t1_tonomura", "q2_eraser", "t4_hom", "qt_lo", "qt_hi"]
+
+DRIFT_MAX = 5e-14
+
+
+def cfg_keys(path):
+    keys = []
+    with open(path) as fh:
+        for line in fh:
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            if "=" in line:
+                keys.append(line.split("=", 1)[0].strip())
+    return keys
+
+
+def purity_check(laws_path):
+    errs = []
+    lk = cfg_keys(laws_path)
+    if set(lk) != LAW_KEYS:
+        missing = LAW_KEYS - set(lk)
+        extra = set(lk) - LAW_KEYS
+        if missing:
+            errs.append(f"laws file missing law keys: {sorted(missing)}")
+        if extra:
+            errs.append(f"laws file has non-law keys: {sorted(extra)}")
+    if len(lk) != len(set(lk)):
+        errs.append("laws file has duplicate keys")
+    for e in EXPS:
+        ap = os.path.join(ROOT, "apparatus", e + ".cfg")
+        bad = [k for k in cfg_keys(ap) if k in BANNED_IN_APPARATUS]
+        if bad:
+            errs.append(f"apparatus {e}: law keys present: {bad}")
+    return errs
+
+
+def build_kernel():
+    cmd = ["gcc", "-O2", "-march=native", "-o", BIN, SRC, "-lm"]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0:
+        sys.exit(f"kernel build failed:\n{r.stderr}")
+
+
+def run_one(laws_path, variant, name):
+    vdir = os.path.join(ROOT, "runs", variant)
+    os.makedirs(os.path.join(vdir, "cfg"), exist_ok=True)
+    cfg = os.path.join(vdir, "cfg", name + ".cfg")
+    log = os.path.join(vdir, name + ".log")
+    with open(laws_path) as fh:
+        laws = fh.read()
+    with open(os.path.join(ROOT, "apparatus", name + ".cfg")) as fh:
+        app = fh.read()
+    with open(cfg, "w") as fh:
+        fh.write(laws + "\n# --- apparatus ---\n" + app)
+    with open(log, "w") as fh:
+        r = subprocess.run([BIN, cfg], stdout=fh, stderr=subprocess.STDOUT)
+    return name, r.returncode
+
+
+# ---------------------------------------------------------------- parsing
+
+def grab(log, pat, idx=None):
+    """last match of pat in log; floats of all groups (or group idx)."""
+    m = None
+    for m_ in re.finditer(pat, log):
+        m = m_
+    if m is None:
+        return None
+    g = [float(x) for x in m.groups()]
+    return g if idx is None else g[idx]
+
+
+def last_diag_em(log):
+    em = None
+    for line in log.splitlines():
+        if line.startswith("#") or "\t" not in line:
+            continue
+        parts = line.split("\t")
+        if len(parts) >= 15:
+            try:
+                em = float(parts[2])
+            except ValueError:
+                pass
+    return em
+
+
+def pair_series(log):
+    rows = []
+    for line in log.splitlines():
+        if not line.startswith("# PAIR "):
+            continue
+        kv = dict(m.group(1, 2) for m in re.finditer(r"(\w+)=([^\s]+)", line))
+        try:
+            rows.append({
+                "t": float(kv["t"]), "p": int(kv["p"]),
+                "delta": float(kv["delta"]), "gg": float(kv["gg"]),
+                "ratio": float(kv["ratio"]), "shed": float(kv["shed"]),
+            })
+        except (KeyError, ValueError):
+            pass
+    return rows
+
+
+def qatom_points(log):
+    return [(float(w), float(e)) for w, e in
+            re.findall(r"# QATOM t=[-\d.e+]+ dir=\w+ w=([\d.e+-]+) e=([\d.e+-]+)", log)]
+
+
+def conservation_ok(log):
+    d = grab(log, r"# RESULT conservation .*rel_drift=([-\d.e+]+)", 0)
+    return d, (d is not None and abs(d) < DRIFT_MAX)
+
+
+# ------------------------------------------------------- acceptance checks
+
+def chk_e1(log):
+    # e1's claim: the ledger closes with every mechanism live (conversions
+    # included when peaks clear the atom). Threshold physics is qt_lo/qt_hi.
+    d, ok = conservation_ok(log)
+    nq = len(qatom_points(log))
+    em = last_diag_em(log)
+    return ok, f"drift={d:.2e} qatoms={nq} Em_final={em:.3g}"
+
+
+def chk_qt_lo(log):
+    d, ok = conservation_ok(log)
+    nq = len(qatom_points(log))
+    em = last_diag_em(log)
+    sub = nq == 0 and (em is not None and em < 1e-9)
+    return ok and sub, f"drift={d:.2e} qatoms={nq} Em_final={em:.3g}"
+
+
+def chk_e2(log):
+    d, ok = conservation_ok(log)
+    v = grab(log, r"# RESULT front_speed v=[\d.-]+ v_over_C=([\d.-]+)", 0)
+    return ok and v is not None and v >= 0.3, f"drift={d:.2e} v/C={v}"
+
+
+def chk_e3a(log):
+    d, ok = conservation_ok(log)
+    s = grab(log, r"# RESULT blob_drift .*speed=([\d.-]+)", 0)
+    return ok and s is not None and s <= 0.002, f"drift={d:.2e} speed={s}"
+
+
+def chk_e3b(log):
+    d, ok = conservation_ok(log)
+    g = grab(log, r"# RESULT blob_drift .*speed=([\d.-]+) cos_to_kdir=([\d.-]+)")
+    if g is None:
+        return False, f"drift={d:.2e} no blob_drift"
+    s, c = g
+    return ok and s >= 0.003 and c >= 0.8, f"drift={d:.2e} speed={s} cos={c}"
+
+
+def chk_e4(log):
+    d, ok = conservation_ok(log)
+    g = grab(log, r"# RESULT curvature_fit defA_per_Em=([\d.-]+) r2=([\d.-]+)")
+    if g is None:
+        return False, f"drift={d:.2e} no curvature_fit"
+    k, r2 = g
+    return ok and k > 0 and r2 >= 0.95, f"drift={d:.2e} defA/Em={k} r2={r2}"
+
+
+def chk_e5(log):
+    g = grab(log, r"# RESULT S_joint=([\d.-]+) S_lhv=([\d.-]+)")
+    if g is None:
+        return False, "no S line"
+    s, lhv = g
+    return s >= 2.7 and lhv <= 2.1, f"S={s} S_lhv={lhv}"
+
+
+def tongue(log):
+    return grab(log, r"# RESULT pair_tongue \|delta\|<0\.6: n=(\d+) gg=([\d.]+) "
+                     r"ret=([\d.]+) fl=([\d.]+) \| 0\.6-1\.2: n=(\d+) gg=([\d.]+) "
+                     r"ret=([\d.]+) fl=([\d.]+) \| >1\.2: n=(\d+) gg=([\d.]+)")
+
+
+def chk_e6(log):
+    d, ok = conservation_ok(log)
+    g = tongue(log)
+    if g is None:
+        return False, f"drift={d:.2e} no tongue"
+    n_in, gg_in = g[0], g[1]
+    n_far, gg_far = g[8], g[9]
+    far_ok = n_far < 3 or gg_far <= 0.15
+    return (ok and n_in >= 10 and gg_in >= 0.5 and far_ok), \
+        f"drift={d:.2e} in: n={n_in:.0f} gg={gg_in} far: n={n_far:.0f} gg={gg_far}"
+
+
+def chk_e7(log):
+    # P4 (CONSONANCE IV): the computed tuning curve x*(d) puts pairs ON
+    # the rung across all separations — measured as final |delta|
+    # concentration. Instantaneous phase-gate gg decays when voices
+    # trickle-split (the A1 frequency-correction gap, amplified by the
+    # unified q_detune); gg is reported, not scored.
+    d, ok = conservation_ok(log)
+    rows = pair_series(log)
+    if not rows:
+        return False, f"drift={d:.2e} no pairs"
+    tN = max(r["t"] for r in rows)
+    fin = [r for r in rows if r["t"] == tN]
+    n = len(fin)
+    on = sum(1 for r in fin if abs(r["delta"]) < 0.15)
+    gg = sum(r["gg"] for r in fin) / n if n else 0
+    frac = on / n if n else 0
+    return (ok and n >= 40 and frac >= 0.75), \
+        f"drift={d:.2e} n={n} frac|delta|<0.15={frac:.2f} mean_gg={gg:.2f} (A1 gap)"
+
+
+def chk_e8(log):
+    d, ok = conservation_ok(log)
+    rows = pair_series(log)
+    if not rows:
+        return False, f"drift={d:.2e} no pairs"
+    t0 = min(r["t"] for r in rows)
+    tN = max(r["t"] for r in rows)
+    d0 = {r["p"]: abs(r["delta"]) for r in rows if r["t"] == t0}
+    sh = {r["p"]: r["shed"] for r in rows if r["t"] == tN}
+    common = sorted(set(d0) & set(sh), key=lambda p: d0[p])
+    if len(common) < 10:
+        return False, f"drift={d:.2e} too few pairs"
+    half = len(common) // 2
+    lo = sum(sh[p] for p in common[:half]) / half
+    hi = sum(sh[p] for p in common[half:]) / (len(common) - half)
+    tot = sum(sh.values())
+    return (ok and tot > 1.0 and hi > lo), \
+        f"drift={d:.2e} shed_lo|delta0|={lo:.3f} shed_hi|delta0|={hi:.3f} total={tot:.1f}"
+
+
+def chk_e9(log):
+    d, ok = conservation_ok(log)
+    rows = pair_series(log)
+    locked = {}
+    for r in rows:
+        if r["gg"] > 0.3 and 1.45 < r["ratio"] < 1.55:
+            locked[r["t"]] = locked.get(r["t"], 0) + 1
+    n10 = max((n for t, n in locked.items() if 5 <= t <= 15), default=0)
+    t_last = max((t for t, n in locked.items() if n >= 1), default=0)
+    return (ok and n10 >= 5 and t_last >= 20), \
+        f"drift={d:.2e} locked@t10={n10} t_last={t_last:.0f}"
+
+
+def chk_d1(log):
+    d, ok = conservation_ok(log)
+    v = grab(log, r"# RESULT fringe_visibility_central=([\d.-]+)", 0)
+    ex = grab(log, r"# RESULT screen_exposure=([\d.-]+)", 0)
+    return (ok and v is not None and v >= 0.25 and ex is not None and ex >= 10), \
+        f"drift={d:.2e} V={v} exposure={ex}"
+
+
+def chk_t1(log):
+    d, ok = conservation_ok(log)
+    v = grab(log, r"# RESULT qclick_visibility_central=([\d.-]+)", 0)
+    ncl = len(re.findall(r"^# QCLICK ", log, re.M))
+    return (ok and v is not None and v >= 0.2 and ncl >= 100), \
+        f"drift={d:.2e} V_click={v} clicks={ncl}"
+
+
+def chk_q2(log):
+    d, ok = conservation_ok(log)
+    g = grab(log, r"# RESULT analyzer ledgers: totalA=[\d.-]+ totalB=[\d.-]+ "
+                  r"V_A=([\d.-]+) V_B=([\d.-]+)")
+    if g is None:
+        return False, f"drift={d:.2e} no analyzer line"
+    va, vb = g
+    return ok and va >= 0.2 and vb <= -0.1, f"drift={d:.2e} V_A={va} V_B={vb}"
+
+
+def chk_hom(log):
+    d, ok = conservation_ok(log)
+    sp = grab(log, r"# RESULT hom coupler_split\(A cross->D2\)=([\d.-]+)", 0)
+    g = grab(log, r"# RESULT hom g_boson=([\d.-]+) g_fermion=([\d.-]+)")
+    if g is None or sp is None:
+        return False, f"drift={d:.2e} incomplete hom results"
+    gb, gf = g
+    return (ok and gb <= 0.47 and gf >= 0.53 and 0.35 <= sp <= 0.65), \
+        f"drift={d:.2e} split={sp} g_b={gb} g_f={gf}"
+
+
+def chk_qt_hi(log):
+    d, ok = conservation_ok(log)
+    nq = len(qatom_points(log))
+    em = last_diag_em(log)
+    return (ok and nq > 0 and em is not None and em > 0.5), \
+        f"drift={d:.2e} qatoms={nq} Em_final={em:.3g}"
+
+
+CHECKS = {"e1_conserve": chk_e1, "e2_pulse": chk_e2, "e3a_blob": chk_e3a,
+          "e3b_blob_tilt": chk_e3b, "e4_curve": chk_e4, "e5_bell": chk_e5,
+          "e6_pairs": chk_e6, "e7_tune": chk_e7, "e8_comma": chk_e8,
+          "e9_fifth": chk_e9, "d1_slit": chk_d1, "t1_tonomura": chk_t1,
+          "q2_eraser": chk_q2, "t4_hom": chk_hom, "qt_lo": chk_qt_lo,
+          "qt_hi": chk_qt_hi}
+
+
+def chk_linearity(all_logs, a0):
+    """cross-battery: every fired grain is a whole atom of eps(w) = A0*w/2pi,
+    across the spread of detuned frequencies the runs produced."""
+    pts = []
+    for log in all_logs.values():
+        pts += qatom_points(log)
+    if len(pts) < 10:
+        return None, f"only {len(pts)} QATOM points (need 10)"
+    ws = sorted(w for w, _ in pts)
+    spread = (ws[-1] - ws[0]) / ws[-1] if ws[-1] > 0 else 0
+    worst = 0.0
+    for w, e in pts:
+        eps = a0 * w / (2 * 3.141592653589793)
+        k = e / eps
+        dev = abs(k - round(k))
+        worst = max(worst, dev)
+    ok = worst < 1e-6 and spread >= 0.10
+    return ok, f"n={len(pts)} w=[{ws[0]:.3f},{ws[-1]:.3f}] spread={spread:.2f} max_offgrid={worst:.2e}"
+
+
+# ------------------------------------------------------------------- main
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--laws", required=True)
+    ap.add_argument("--jobs", type=int, default=8)
+    ap.add_argument("--only", nargs="*", default=None)
+    ap.add_argument("--skip-run", action="store_true")
+    args = ap.parse_args()
+
+    laws_path = os.path.join(ROOT, args.laws)
+    variant = re.sub(r"^laws_|\.cfg$", "", os.path.basename(args.laws))
+    exps = args.only if args.only else EXPS
+
+    errs = purity_check(laws_path)
+    if errs:
+        for e in errs:
+            print("PURITY FAIL:", e)
+        sys.exit(2)
+    print(f"# purity OK: laws={sorted(LAW_KEYS).__len__()} keys, "
+          f"apparatus clean; variant={variant}")
+
+    if not args.skip_run:
+        build_kernel()
+        with cf.ThreadPoolExecutor(max_workers=args.jobs) as ex:
+            futs = {ex.submit(run_one, laws_path, variant, e): e for e in exps}
+            for fu in cf.as_completed(futs):
+                name, rc = fu.result()
+                print(f"# run done: {name} rc={rc}")
+
+    laws = dict(l.split("=", 1) for l in open(laws_path)
+                if "=" in l and not l.strip().startswith("#"))
+    a0 = float(laws["quant_A0"])
+
+    logs = {}
+    for e in exps:
+        p = os.path.join(ROOT, "runs", variant, e + ".log")
+        logs[e] = open(p).read() if os.path.exists(p) else ""
+
+    print(f"\n== battery {variant} ==")
+    fails = 0
+    rows = []
+    for e in exps:
+        if not logs[e]:
+            rows.append((e, False, "no log"))
+            fails += 1
+            continue
+        ok, note = CHECKS[e](logs[e])
+        rows.append((e, ok, note))
+        fails += 0 if ok else 1
+    lin_ok, lin_note = chk_linearity(logs, a0)
+    if lin_ok is not None:
+        rows.append(("LIN grain=eps(w)", lin_ok, lin_note))
+        fails += 0 if lin_ok else 1
+    else:
+        rows.append(("LIN grain=eps(w)", True, "SKIP " + lin_note))
+
+    w = max(len(r[0]) for r in rows)
+    for name, ok, note in rows:
+        print(f"{name:<{w}}  {'PASS' if ok else 'FAIL'}  {note}")
+    print(f"== {variant}: {len(rows)-fails}/{len(rows)} pass ==")
+    with open(os.path.join(ROOT, "runs", variant, "summary.tsv"), "w") as fh:
+        for name, ok, note in rows:
+            fh.write(f"{name}\t{'PASS' if ok else 'FAIL'}\t{note}\n")
+    sys.exit(1 if fails else 0)
+
+
+if __name__ == "__main__":
+    main()

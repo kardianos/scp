@@ -497,3 +497,30 @@ octave). Details and tables: `CONSONANCE.md` Part VI.
   rewrite version would recycle them (remove the flagged audit residue).
 * The two base frequencies are uniform constants [P]; species structure
   would make ω-words per-cell integer content (CONSTRUCTION §2.2).
+
+## 12. S1 unification (2026-07-27) — the law table
+
+The kernel now runs under **one law table for every experiment**
+(ROADMAP §6; harness and the table itself in `battery/`). Two law
+changes landed here, uniformly:
+
+* **Pitch load is bound energy** (U3): `x = Em/cap` everywhere the
+  detune law reads load. Passing field amplitude no longer re-pitches a
+  cell — vacuum optics is linear with `q_detune` at its single law value
+  (1.2); Kerr nonlinearity is a property of loaded matter. Capacity and
+  headroom still count total stored energy.
+* **Atoms at mode boundaries** (U2): transport within a mode is
+  continuous; every S↔D↔F conversion — beat condensation, evaporation,
+  C2 roughness — fires in whole action atoms ε = A₀ω/2π at its own
+  channel's completed cycles, through per-cell conversion accounts
+  (`atoms_fire`). The winning variant (battery cross-table, 16/17):
+  **atoms sized by the source mode, credit memory with lapse at two
+  atoms** (`quant_mode=2`, `quant_A0=1.15` pinned). `e_cond` and
+  `e_click` are retired — the atom is the threshold and the click grain.
+  `# QATOM` lines ledger every 50th fire; the battery verifies every
+  grain sits on the ε(ω) grid (ħ-linearity as an invariant).
+
+Continuous legacy (`quant_A0=0`) remains the exact limit of all
+variants. The pre-S1 kernel and its `reg_*` baselines are preserved at
+commit `0a0d4fa` and earlier; the battery's physics criteria supersede
+byte-comparison against them.

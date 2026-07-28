@@ -432,13 +432,15 @@ a small residue of genuine constants to be fixed once.
   in the hop phase); C2 roughness moves to conversion events. Expected
   knob retirements: `p_gate`, `kappa_lock`, `gamma_res_m`, `k_dep_m`
   (absorbed into one dense coupling), the imprint machinery.
-* **U2 — atoms at conversions only.** All S↔D↔F conversions
-  integrate-and-fire in whole atoms ε = A₀ω/2π, A₀ = e_s0·d̄/C (auto —
-  no new constant), **sampled by the claim rule** (MCWF, as tier 1) not
-  deterministic credit. Intra-mode transport is never quantized.
+* **U2 — atoms at conversions only.** All S↔D↔F conversions fire in
+  whole atoms ε = A₀ω/2π; intra-mode transport is never quantized.
   Retires: `e_cond` (threshold = one atom of demand), `e_click`
   (grain = ε at the screen), and the `quant_A0` on/off seam itself —
   the machinery is permanently on, but it lives where ħ lives.
+  *Executed §6.8; the variant competition (sizing × memory) resolved to
+  source-sized atoms with credit memory (V2). A₀ is pinned numerically
+  (1.15, the L=30 foam grain) so the atom is a constant, not a per-box
+  accident — the foam-derivation of A₀ stays a hypothesis, not a law.*
 * **U3 — load detune from dense occupation only.** x = Em/cap. Vacuum
   optics linear automatically; `q_detune` single-valued. Reachability
   constraint: the fifth needs (1+q)/1 ≥ 3/2 ⇒ q ≥ 0.5 — propose
@@ -497,7 +499,9 @@ a small residue of genuine constants to be fixed once.
   restored (e3b drift, e6 locks) *with* thresholds kept, optics linear
   without `q_detune=0`, `e_cond`/`e_click` switches gone. If S1 passes
   everything, U1 becomes fidelity work rather than rescue; if it fails,
-  the failure localizes the thesis.
+  the failure localizes the thesis. **DONE — §6.8: 16/17 under one law
+  table (V2); the one failure localizes to the A1 frequency-correction
+  gap, exactly the mechanism §2.A1 predicted and S2 should supply.**
 * **S2 — U1, the dense amplitude completion** (the big rewrite), walls
   pre-listed from the field repair: sign/seed pairing (κ = −k with
   exp(−iτX)), symmetric normalization against foam disorder,
@@ -527,3 +531,86 @@ a small residue of genuine constants to be fixed once.
   lifetime, Tenney ordering) is what must survive.
 * Field sector and quantum tiers 0–4 are untouched by design — any
   regression there is an implementation bug, full stop.
+
+### 6.8 S1 executed (2026-07-27) — one law table, 16/17
+
+**Kernel** (cellfab.c): U3 — pitch load is bound energy, `x = Em/cap`,
+one definition everywhere (vacuum optics linear automatically; Kerr is a
+property of loaded matter). U2 — the transport quantization is deleted;
+every S↔D↔F conversion (beat condensation, evaporation, C2 roughness)
+fires through one uniform helper in whole atoms ε = A₀ω/2π at its own
+channel's completed cycles, through per-cell conversion accounts.
+`e_cond=0` (the atom is the threshold), `e_click` retired (grain =
+ε(w1e)), `# QATOM` ledger prints every 50th fire for the linearity
+invariant. Variant space: sizing (source/destination quantum) ×
+memory (per-cycle floor / credit with lapse at 2 atoms) = V1–V4,
+selected by `quant_mode` — one value per battery, never per experiment.
+
+**Harness** (`battery/`): the §6.5 protocol operational — purity check
+(apparatus files cannot contain law keys), one shared laws file, 16
+experiments + the LIN cross-check, physics acceptance, `summary.tsv`.
+
+**Cross-table** (after law iteration L2: Γ_m 0.02→0.10 — the unified
+pitch landscape has ~5× the old per-link detunes; 0.02 froze the blob
+rim and starved tuned pairs):
+
+| variant | sizing | memory | pass | what fails |
+|---|---|---|---|---|
+| V1 | source | floor | 14/17 | e4, e8 — the floor kills slow channels (roughness radiated = 0) |
+| **V2** | **source** | **credit** | **16/17** | e7 only (A1 gap) |
+| V3 | destination | floor | 14/17 | e4, e8 — same floor failures |
+| V4 | destination | credit | 15/17 | e6 — dense-sized atoms over-tax pair exchange (gg 0.54→0.29) |
+
+**V2 adopted as the standing law.** The full V2 row: conservation
+0–2e-15 everywhere; e2 packet 0.60C; e3a heavy blob sealed (0.0019);
+e3b light blob translates 0.0050 at cos 0.88; e4 curvature r²=0.98;
+e5 CHSH 2.826/1.414; e6 tongue in n=35 gg=0.54 vs far gg=0.02; e8 comma
+monotone (shed 0.15→0.31 by |δ₀|, total 13.8, roughness alive); e9 fifth
+locked through t=60(!); d1 V=0.46; t1 clicks V=0.51; q2 eraser
++0.41/−0.28; HOM g_b=0.37 < 0.5 < g_f=0.63; qt_lo exactly zero
+condensation, qt_hi condenses; **LIN: every fired grain in every log on
+the ε(ω) grid to 7e-9 across a 3× spread in ω — E = ħ_eff·ω as a
+measured battery invariant, ħ_eff = A₀/2π with A₀ = 1.15 pinned.**
+
+**Findings the battery forced:**
+
+1. **Memory is load-bearing; thresholds survive it.** The per-cycle
+   floor (V1/V3) kills every slow conversion channel (roughness: exactly
+   0 radiated — no comma paid, no e4 fit). Credit revives them, and the
+   hard sub-threshold zero at qt_lo *survives credit* because pool
+   affordability (0.98·Ee < one atom) blocks firing independently of
+   accumulated demand. Hard threshold + slow channels coexist under V2.
+2. **Atoms belong to the sender.** Destination sizing (V4) taxes pair
+   exchange with the large dense quantum and collapses the e6 tongue.
+   Emission grains ride the emitter's clock.
+3. **Emergent inertia.** Under the unified pitch landscape, blob drift
+   vs weight: speed = 3.0/5.0/1.3/0.4 ×10⁻³ at x_core = 0.2/0.28/0.4/
+   0.64 — translation peaks light and freezes heavy (the rim detune
+   gradient outruns resonance reach). The e3a/e3b pair now *states*
+   this: the same law seals the heavy blob and translates the light one.
+4. **The A1 gap is real and now load-bearing (the one FAIL).** e7's
+   pairs seed exactly on the rung and unpin by occupancy drift (final
+   |δ|<0.15 for only 8%; mean gg 0.27) — phase-only entrainment cannot
+   hold equal-voice pairs at q_detune deep enough to make the fifth
+   reachable. The deep-q law table *trades* interval vocabulary (e9
+   thrives, locked to t=60) against equal-pair tuning stability (e7
+   decays). The missing stabilizer is the choir's frequency correction
+   (§2.A1), predicted to emerge natively from the S2 dense-amplitude
+   coupling. No hand-tuned restoring rate was added — that would be the
+   ad-hocness this section exists to kill.
+5. **A₀ pinned, not derived.** Auto A₀ = e_s0·d̄/C varies with box foam
+   (d̄ 1.15 at L=30, 1.50 at L=14) — an apparatus leak into a law. The
+   law table pins A₀ = 1.15; whether the vacuum grain *computes* ħ
+   (HBAR §3 candidate 3) is still open, now cleanly separated.
+
+**Parameter seams retired** (vs the §6.2 audit): `quant_A0` on/off,
+`e_cond` (including all 99-disables), `e_click`, per-run `q_detune`,
+`w1`, `w2`, `field_J`, `p_gate`, `gamma_res_m`, `k_dep·k_dep_m`,
+`s_pull`, `kappa_lock`, `kappa_align`, `mob_floor` — all single-valued
+in `battery/laws_V2.cfg`. Apparatus files carry only geometry, sources,
+seeds, instruments, durations.
+
+**Next:** S2 — the dense-amplitude completion (U1), with A1 as its
+first acceptance target (e7 back above threshold with no new mechanism),
+then the S3 joint-pass sweep and S4 quantum battery under the unified
+laws.

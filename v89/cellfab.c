@@ -118,6 +118,7 @@ typedef struct {
      * eps(w) = A0*w/2pi. 0 = off (legacy float-identical); -1 = auto:
      * A0 = e_s0 * dbar / C — the space-cell grain, no new constant. */
     double quant_A0;
+    int quant_mode;              /* U2 variant: 1 src+floor, 2 src+credit, 3 dst+floor, 4 dst+credit */
 } Cfg;
 
 static Cfg P;
@@ -188,6 +189,7 @@ static void cfg_defaults(void)
     P.hom_solo = 0;
     P.hom_det = 7.0;
     P.quant_A0 = 0.0;
+    P.quant_mode = 1;
 }
 
 static void set_kv(const char *k, const char *v)
@@ -291,6 +293,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "hom_solo")) P.hom_solo = atoi(v);
     else if (!strcmp(k, "hom_det")) P.hom_det = atof(v);
     else if (!strcmp(k, "quant_A0")) P.quant_A0 = atof(v);
+    else if (!strcmp(k, "quant_mode")) P.quant_mode = atoi(v);
     else fprintf(stderr, "# WARN unknown key '%s'\n", k);
 }
 
@@ -458,8 +461,10 @@ static double *lem, *lph, *lwant;    /* [NL][chan][dir] flattened */
 static double *lflux;                /* [NL][chan] deposits this step   */
 static signed char *lp, *lq;         /* dense sector: locked-in partial ratio p:q */
 static double rough_total = 0.0;     /* C2 ledger: dissonance radiated D->F */
-static double A0eff = 0.0;           /* action atom (0 = continuous legacy) */
-static double *lacc = NULL;          /* deposit credit per slot (demand, not energy) */
+static double A0eff = 0.0;           /* action atom (0 = continuous limit) */
+static double *qcnvD = NULL;         /* per-cell F->D conversion credit (variant 2) */
+static double *qcnvF = NULL;         /* per-cell D->F conversion credit (variant 2) */
+static long qfire_n = 0;             /* conversion fire counter (QATOM diag) */
 /* instrument flags (init=slit): 0 vacuum, 1 wall, 2 screen, 3 sink, 4 recorder */
 static signed char *cflag;
 static double *fsum;                 /* per-cell total geometric joining weight */
@@ -634,7 +639,8 @@ static void build_field(void)
     cflag = calloc(NC, 1);
     clickn = calloc(NC, sizeof(int));
     fsum = calloc(NC, sizeof(double));
-    lacc = calloc(4 * NL, sizeof(double));
+    qcnvD = calloc(NC, sizeof(double));
+    qcnvF = calloc(NC, sizeof(double));
 
     /* the action atom: A0 from the space-cell grain (no new constant) */
     double dsum = 0;
@@ -642,8 +648,8 @@ static void build_field(void)
     double dbar = NL ? dsum / NL : 1.0;
     A0eff = P.quant_A0 < 0 ? P.e_s0 * dbar / P.C : P.quant_A0;
     if (A0eff > 0)
-        printf("# action atom: A0=%.4f (dbar=%.4f) — eps(w)=A0*w/2pi; dense transfers and conversions quantized\n",
-               A0eff, dbar);
+        printf("# action atom: A0=%.4f (dbar=%.4f) mode=%d — eps(w)=A0*w/2pi; atoms at mode boundaries, transport continuous\n",
+               A0eff, dbar, P.quant_mode);
 
     /* CSR incidence */
     cls = calloc(NC + 1, sizeof(int));
@@ -748,7 +754,7 @@ static void build_field(void)
                 n2y[u] = uz * t1x - ux * t1z;
                 n2z[u] = ux * t1y - uy * t1x;
             }
-            double we = P.w2 / (1.0 + P.q_detune * ((Em[i] + Ee[i]) / P.cap));
+            double we = P.w2 / (1.0 + P.q_detune * (Em[i] / P.cap));
             th2[i] = frand() * TWO_PI;
             th2[j] = P.pair_seedlock
                      ? fmod((P.pair_q * (th2[i] - we * d / P.C)) / P.pair_p
@@ -894,7 +900,7 @@ static void build_field(void)
     for (int i = 0; i < NC; i++) {
         double ratio = Es[i] / P.e_s0;
         cr[i] = cr0[i] * cbrt(ratio > 0 ? ratio : 0);
-        double det = 1.0 + P.q_detune * (Em[i] + Ee[i]) / P.cap;
+        double det = 1.0 + P.q_detune * Em[i] / P.cap;
         w1e[i] = P.w1 / det;
         w2e[i] = P.w2 / det;
     }
@@ -938,6 +944,66 @@ static void field_inject(int i, double dE)
     Ee[i] = e + dE;
 }
 
+/* S1/U2 — atoms at mode boundaries (ROADMAP §6.4), the uniform law:
+ * transport WITHIN a mode is continuous; energy CONVERTING between modes
+ * moves only in whole action atoms eps = A0*w/2pi, evaluated at the
+ * converting channel's own completed cycles (beat cycles for the beat
+ * channel, flight-cycle deliveries for roughness). quant_mode selects the
+ * variant law — one value for a whole battery, never per experiment.
+ * Two independent choices, four uniform variants:
+ *   sizing: SRC (the sending mode's quantum) or DST (the receiving
+ *           mode's quantum — a structural gap when eps_dst > eps_src);
+ *   memory: FLOOR (sub-atom demand lapses with its cycle) or CREDIT
+ *           (demand integrates across cycles, lapses at 2 atoms).
+ *   1 = SRC+FLOOR   2 = SRC+CREDIT   3 = DST+FLOOR   4 = DST+CREDIT
+ * A0eff = 0 is the continuous limit (all variants coincide, exactly). */
+static double atoms_eps(double eps_src, double eps_dst)
+{
+    return P.quant_mode >= 3 ? eps_dst : eps_src;
+}
+
+/* the frequency that sizes the atom (for the QATOM linearity ledger) */
+static double atoms_w(double w_src, double w_dst)
+{
+    return P.quant_mode >= 3 ? w_dst : w_src;
+}
+
+static double atoms_fire(double demand, double eps_src, double eps_dst, double *cred)
+{
+    if (A0eff <= 0 || demand <= 0) return demand;
+    double eps = atoms_eps(eps_src, eps_dst);
+    if (eps <= 0) return demand;
+    if (P.quant_mode == 2 || P.quant_mode == 4) {
+        *cred += demand;
+        if (*cred > 2.0 * eps) *cred = 2.0 * eps;
+        double mv = floor(*cred / eps) * eps;
+        *cred -= mv;
+        return mv;
+    }
+    return floor(demand / eps) * eps;
+}
+
+/* clamp a fired amount to an affordability ceiling while staying on the
+ * atom grid; unfired atoms return to credit under the credit variant */
+static double atoms_clamp(double mv, double ceil_e, double eps_src, double eps_dst,
+                          double *cred)
+{
+    if (mv <= ceil_e) return mv;
+    if (A0eff <= 0) return ceil_e;
+    double eps = atoms_eps(eps_src, eps_dst);
+    double keep = eps > 0 ? floor(ceil_e / eps) * eps : ceil_e;
+    if ((P.quant_mode == 2 || P.quant_mode == 4) && cred) *cred += mv - keep;
+    return keep;
+}
+
+static void qatom_diag(int fd, double w, double e)
+{
+    if (A0eff <= 0 || e <= 0) return;
+    if ((qfire_n++ % 50) == 0)
+        printf("# QATOM t=%.2f dir=%s w=%.9g e=%.12g\n",
+               sim_t, fd ? "FD" : "DF", w, e);
+}
+
 static void step_field(void)
 {
     double dt = P.dt;
@@ -951,7 +1017,11 @@ static void step_field(void)
     for (int i = 0; i < NC; i++) {
         double ratio = Es[i] / P.e_s0;
         cr[i] = cr0[i] * cbrt(ratio > 0 ? ratio : 0);
-        double x = (Em[i] + Ee[i]) / P.cap;
+        /* S1/U3 — pitch load is BOUND energy: the dense store re-pitches
+         * the cell's harmonics; passing field amplitude does not. One
+         * definition everywhere: vacuum optics is linear automatically,
+         * Kerr nonlinearity is a property of loaded matter. */
+        double x = Em[i] / P.cap;
         if (cflag[i] >= 2) x = 0;   /* record media: deep and pitch-stable */
         double det = 1.0 + P.q_detune * x;
         double wb = P.w1;
@@ -1089,23 +1159,10 @@ static void step_field(void)
                 int src = dir == 0 ? i : j;
                 int rcv = dir == 0 ? j : i;
                 f *= c == 0 ? scl0[src] : scl1[src];
-                if (A0eff > 0) {
-                    /* integrate-and-fire: continuous demand accumulates as
-                     * credit; energy moves only in whole action atoms
-                     * eps(w) = A0*w/2pi, affordable at fire time. Credit
-                     * is demand bookkeeping, never energy — unfired
-                     * credit lapses at 2 atoms. */
-                    double qa = A0eff * (c == 0 ? w1e[src] : w2e[src]) / TWO_PI;
-                    lacc[s] += f;
-                    if (lacc[s] > 2.0 * qa) lacc[s] = 2.0 * qa;
-                    double afford = 0.98 * (c == 0 ? Ee[src] : Em[src]);
-                    int kq = (int)(lacc[s] / qa);
-                    double mv = kq * qa;
-                    if (mv > afford) { kq = (int)(afford / qa); mv = kq * qa; }
-                    if (kq <= 0) continue;
-                    lacc[s] -= mv;
-                    f = mv;
-                }
+                /* S1/U2: transport within a mode is continuous — the
+                 * action atom lives at mode boundaries (conversions),
+                 * not on same-mode deposits. (The earlier transport
+                 * quantization froze few-quantum flow; see HBAR.md §6.) */
                 if (c == 0) Ee[src] -= f; else Em[src] -= f;
                 if (lem[s] <= 0) lph[s] = 0;
                 lem[s] += f;
@@ -1159,6 +1216,14 @@ static void step_field(void)
                         double R = 2.0 * fabs(det) * P.gamma_rough
                                    / (det * det + P.gamma_rough * P.gamma_rough);
                         double rough = take * P.rough_k * R;
+                        /* U2: roughness is a D->F conversion — it fires in
+                         * whole atoms at this channel's completed flight
+                         * cycle, through the receiver's D->F account. */
+                        double reF = A0eff * w2e[recv] / TWO_PI;
+                        double reD = A0eff * w1e[recv] / TWO_PI;
+                        rough = atoms_fire(rough, reF, reD, &qcnvF[recv]);
+                        rough = atoms_clamp(rough, take, reF, reD, &qcnvF[recv]);
+                        if (rough > 0) qatom_diag(0, atoms_w(w2e[recv], w1e[recv]), rough);
                         double back_s = rough * P.s_pull / (1.0 + P.s_pull);
                         Em[recv] += take - rough;
                         field_inject(recv, rough - back_s);
@@ -1277,8 +1342,13 @@ static void step_field(void)
                     }
                     exA[i] += dA;
                     exB[i] += dB;
-                    if (P.e_click > 0) {
-                        int n = (int)(Em[i] / P.e_click);
+                    /* U2: the click grain is the action atom of the
+                     * absorbing mode, eps(w1e) — a knob (e_click) only in
+                     * the continuous legacy limit. */
+                    double grain = A0eff > 0 ? A0eff * w1e[i] / TWO_PI
+                                             : P.e_click;
+                    if (grain > 0) {
+                        int n = (int)(Em[i] / grain);
                         for (int qn = clickn[i]; qn < n; qn++)
                             printf("# CLICK t=%.2f x=%.2f y=%.2f z=%.2f\n",
                                    sim_t, cx[i], cy[i], cz[i]);
@@ -1332,17 +1402,18 @@ static void step_field(void)
         if (cbeta[i] >= TWO_PI) { cbeta[i] -= TWO_PI; beat_fire = 1; }
         else if (cbeta[i] <= -TWO_PI) { cbeta[i] += TWO_PI; beat_fire = 1; }
         if (beat_fire) {
-            /* condensation F -> D, consuming the cell's own space.
-             * Quantized mode: conversion completes only in whole action
-             * atoms eps(w1e) — sub-atom amounts cannot condense (the
-             * photoelectric-threshold structure). */
+            /* condensation F -> D at the cell's completed beat cycle,
+             * consuming the cell's own space. U2: the conversion moves
+             * whole action atoms only — the threshold structure
+             * (photoelectric) IS the atom, not a tuned e_cond. */
             if (Ee[i] > P.e_cond) {
                 double d1 = P.f_conv * (Ee[i] - P.e_cond);
-                if (A0eff > 0) {
-                    double qa = A0eff * w1e[i] / TWO_PI;
-                    d1 = floor(d1 / qa) * qa;
-                }
+                double eF = A0eff * w1e[i] / TWO_PI;
+                double eD = A0eff * w2e[i] / TWO_PI;
+                d1 = atoms_fire(d1, eF, eD, &qcnvD[i]);
+                d1 = atoms_clamp(d1, 0.98 * Ee[i], eF, eD, &qcnvD[i]);
                 if (d1 > 0) {
+                    qatom_diag(1, atoms_w(w1e[i], w2e[i]), d1);
                     double dsp = P.s_pull * d1;
                     double avail = Es[i] - P.es_floor;
                     if (avail < 0) avail = 0;
@@ -1356,17 +1427,17 @@ static void step_field(void)
                     Em[i] += d1 + dsp;
                 }
             }
-            /* over-full: harmonics refuse the load, D -> F,S (quantized:
-             * emission in whole atoms too) */
+            /* over-full: harmonics refuse the load, D -> F,S — the same
+             * uniform law through the cell's D->F account */
             double tot = Em[i] + Ee[i];
             if (tot > P.cap) {
                 double d2 = P.f_evap * (tot - P.cap);
-                if (A0eff > 0) {
-                    double qa = A0eff * w1e[i] / TWO_PI;
-                    d2 = floor(d2 / qa) * qa;
-                }
-                if (d2 > Em[i]) d2 = Em[i];
+                double eF2 = A0eff * w2e[i] / TWO_PI;
+                double eD2 = A0eff * w1e[i] / TWO_PI;
+                d2 = atoms_fire(d2, eF2, eD2, &qcnvF[i]);
+                d2 = atoms_clamp(d2, Em[i], eF2, eD2, &qcnvF[i]);
                 if (d2 > 0) {
+                    qatom_diag(0, atoms_w(w2e[i], w1e[i]), d2);
                     double bs = d2 * P.s_pull / (1.0 + P.s_pull);
                     Em[i] -= d2;
                     field_inject(i, d2 - bs);
@@ -1582,7 +1653,7 @@ static void pair_report(double t, int final)
         double ret = pE0[p] > 0 ? (Em[i] + Em[j] + fl) / pE0[p] : 0;
         double flf = pE0[p] > 0 ? fl / pE0[p] : 0;
         double act = fl * 2.0 * d / P.C;
-        double xm = 0.5 * ((Em[i] + Ee[i]) + (Em[j] + Ee[j])) / P.cap;
+        double xm = 0.5 * (Em[i] + Em[j]) / P.cap;   /* pitch load (U3: dense) */
         double ratio = w2e[j] > 1e-12 ? w2e[i] / w2e[j] : 0;
         double shed = pE0[p] - (Em[i] + Em[j] + fl);
         double flq = A0eff > 0
