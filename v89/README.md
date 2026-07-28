@@ -44,13 +44,16 @@ If a question seems to need prior context, the answer is to derive it from
 ## The law, as it stands (2026-07-28)
 
 What the constraints have produced so far, in one place. One table of
-constants — `battery/laws_V2z.cfg` — passes every experiment in the program
-(17/17), with only apparatus differing between them: conservation, field
+constants — `battery/laws_V2g.cfg` — passes every experiment in the program
+(20/20), with only apparatus differing between them: conservation, field
 packets, heavy and light blobs, curvature linearity, CHSH, the rung tongue,
 the pair tuning curve, the comma, the fifth, double-slit fringes,
 single-quantum clicks, the eraser, HOM ordering, sub- and above-threshold
-conversion, and ħ-linearity. The table is not a list of fixes; it states a
-short set of laws.
+conversion, ħ-linearity, momentum of light, the gravitational footprint,
+and occultation. The table is not a list of fixes; it states a short set
+of laws, and it is guarded by the **ratchet rule** (`battery/README.md`):
+every modification runs the full battery, and experiments that pass join
+the gate.
 
 1. **Amplitudes within a mode; atoms at the boundaries; integers in
    closure.** Inside a mode, energy moves as continuous amplitude —
@@ -90,14 +93,40 @@ short set of laws.
    retreat inside the computed boundary x_skirt = 2Γ/(q·(w₂ − 2Γ)), and
    the battery guards it.
 
+5. **Momentum is the first moment of conversion.** Not fundamental — it
+   is the energy centroid's velocity, and its conservation is the
+   center-of-energy theorem: reciprocity of paired two-ended ledger
+   moves plus statistical isotropy of the foam, replacing Noether.
+   Measured: a field packet is ballistic through the foam (cos 0.999 at
+   0.40 C) with its momentum current forward in the books; a sealed
+   blob exerts no self-force. Where it fails is load-bearing: absorbed
+   light's momentum does not survive the conversion (recoil deficit
+   ~100×) — radiation pressure joins kappa_reac = 1 and moving-clock
+   dilation as acceptance criteria for the amplitude completion.
+
+6. **Space flows — pressure pushes, nothing reaches out.** Space is a
+   mode like the others, so it moves through the same channels: each
+   link carries space from its higher-pressure end at the channel's own
+   conductance, outflow-limited, never drawing on the empty side (there
+   is no suction). Pressure carries a displacement term from load —
+   matter is converted space, so a mass pushes space out and MAINTAINS
+   an extended graded depression: the gravitational footprint (core
+   ~0.5 of vacuum, halo to r ≈ 6, a faint displaced-space ridge, no far
+   tail — a sealed mass is not a steady space-flux monopole; the 1/r
+   field awaits measured space throughput). The loaded core is a mirror
+   by the same pitch law that mutes the slit wall — matter is
+   emergently opaque, and a passing beam exits shifted away
+   (occultation); the halo's true lensing pull is measured at the right
+   sign, two orders below the foam floor (recorded).
+
 Four placements of the atom competed as whole law tables (source- vs
 destination-sized; per-cycle floor vs credit). V2 — source-sized atoms
 with the two-atom credit — is the unique full pass (V1 15/17, V3 16/17,
 V4 16/17), and the failures are discriminations, not accidents: a floor
 cannot pay the comma, and destination-sizing taxes a translating front.
-V2z is V2 with the bias constant retired (17/17, one fewer free
-constant). Full record and the annealing history: `ROADMAP.md` §6;
-harness and verdicts: `battery/`.
+V2z retired the bias constant (§6.10); V2g added the space-transport
+law (s_k, s_disp — both load-bearing) and is the standing table. Full
+record: `ROADMAP.md` §6 and §7; harness and verdicts: `battery/`.
 
 ## What is inherited
 

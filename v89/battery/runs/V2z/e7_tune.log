@@ -6,6 +6,7 @@
 # cfg k_dep=1.2 k_dep_m=2 cap=2.5 e_s0=1 es_floor=0.05
 # cfg e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
 # cfg kappa_lock=1 kappa_align=0.5 kappa_freq=0 kappa_reac=0 sigma_tumble=0.01
+# cfg space: s_k=0 s_disp=0 es_gx=0
 # cfg dt=0.02 T=60 diag_every=500 snap_every=0
 # cfg center=(-1,-1,-1) amp=1 sigma=2.5 k=(0,0,0) prealign=0 noise_amp=0.08
 # cfg music: comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004
@@ -443,6 +444,7 @@
 # PAIR t=60.0 p=57 d=1.210 pq=1:1 delta=+0.233 x=0.063 ratio=1.0047 dth=-0.160 gg=0.9400 fl=0.175 ret=0.656 shed=0.167 act=0.2060 flq=0.17
 # PAIR t=60.0 p=58 d=1.281 pq=1:1 delta=+0.074 x=0.139 ratio=1.0085 dth=-0.050 gg=0.9939 fl=0.146 ret=0.924 shed=0.058 act=0.2855 flq=0.25
 # PAIR t=60.0 p=59 d=1.546 pq=1:1 delta=+0.031 x=0.350 ratio=0.9957 dth=-0.133 gg=0.9455 fl=0.015 ret=0.983 shed=0.029 act=0.0817 flq=0.07
+# RESULT es_shells 0.94:1.0000 2.81:0.9992 4.69:0.9992 6.56:0.9999 8.44:0.9998 10.31:0.9995 12.19:0.9995 14.06:0.9996
 # RESULT conservation E0=19466.832514 Efinal=19466.832514 rel_drift=1.869e-16
 # RESULT roughness_radiated=0.395018 (dissonant dense deliveries converted to field, conserved)
 # RESULT curvature_fit defA_per_Em=0.00268 r2=0.0100 (linear defect ~ converted energy)

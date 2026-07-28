@@ -6,6 +6,7 @@
 # cfg k_dep=1.2 k_dep_m=2 cap=2.5 e_s0=1 es_floor=0.05
 # cfg e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
 # cfg kappa_lock=1 kappa_align=0.5 kappa_freq=0 kappa_reac=0 sigma_tumble=0.01
+# cfg space: s_k=0 s_disp=0 es_gx=0
 # cfg dt=0.02 T=40 diag_every=100 snap_every=0
 # cfg center=(-1,-1,-1) amp=1 sigma=2.5 k=(0,0,0) prealign=0 noise_amp=0.6
 # cfg music: comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004
@@ -100,6 +101,7 @@
 # QATOM t=39.16 dir=FD w=1.64455062 e=0.300999115225
 # QATOM t=39.86 dir=FD w=1.63652422 e=0.299530057658
 40.000	5524.94858	1029.8907	738.670705	82.1701962	7375.68018284	-2.466e-16	32028	9.942	10.050	9.943	0.123	17.1773	0.8421	1261.6	0.8428	0.9992	1.50931	1.52345	9.9179	10.0384	9.9158	0.44065	-1.2391	0.8485	39.609	2.3997	-15.973
+# RESULT es_shells 0.62:0.9676 1.88:0.9700 3.12:0.9724 4.38:0.9702 5.62:0.9751 6.88:0.9759 8.12:0.9752 9.38:0.9736
 # RESULT conservation E0=7375.68018284 Efinal=7375.68018284 rel_drift=-2.466e-16
 # RESULT roughness_radiated=0.723413 (dissonant dense deliveries converted to field, conserved)
 # RESULT curvature_fit defA_per_Em=1.22080 r2=0.9999 (linear defect ~ converted energy)

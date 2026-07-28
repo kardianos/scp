@@ -44,8 +44,8 @@ usual sense, because nothing has a trajectory.
 
 ## The unified law (synthesis, 2026-07-28)
 
-One law table — `v89/battery/laws_V2z.cfg` — passes all 17 experiments with
-only apparatus varying (`python3 v89/battery/battery.py --laws laws_V2z.cfg`).
+One law table — `v89/battery/laws_V2g.cfg` — passes all 20 experiments with
+only apparatus varying (`python3 v89/battery/battery.py --laws laws_V2g.cfg`).
 The synthesis, in full in `v89/README.md` ("The law, as it stands"):
 **amplitudes within a mode** (transport is never quantized); **atoms at mode
 boundaries** (every conversion fires in whole action atoms ε = A₀ω/2π at the
@@ -53,10 +53,15 @@ source's pitch, two-atom credit; ħ-linearity measured to ~1e−8); **load
 flattens pitch and flight is load** (x = (Em + flload)/cap; vacuum optics
 linear, Kerr = loaded matter); **the choir's correction derived then
 retired** (the restoring bias is the interference cross-flow of coherent
-exchange — derived in `v89/s2/`, unnecessary at rate level post-flload:
-17/17 with zero bias constant; kappa_reac=1 full-pass is the S2-full
-acceptance criterion); **the vacuum skirt** (confirmed scored prediction).
-Record: `v89/ROADMAP.md` §6 (§6.10 for the retirement).
+exchange — derived in `v89/s2/`, unnecessary at rate level post-flload;
+kappa_reac=1 full-pass is an S2-full acceptance criterion); **the vacuum
+skirt** (confirmed scored prediction); **momentum as the first moment of
+conversion** (center-of-energy theorem replaces Noether; p1 gated; the ~100×
+radiation-pressure deficit at the conversion door is recorded — another
+S2-full criterion); **space flows: pressure pushes, nothing reaches out**
+(s_k/s_disp: a mass maintains its extended graded depression — the
+gravitational footprint g1; matter is emergently opaque — occultation g3;
+no far tail without space throughput). Record: `v89/ROADMAP.md` §6–§7.
 
 **The ratchet rule (v89/battery/README.md):** every kernel or law-table
 modification runs the FULL battery before commit; experiments that pass and

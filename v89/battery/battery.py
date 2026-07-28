@@ -29,14 +29,14 @@ LAW_KEYS = {
     "kappa_lock", "kappa_align", "kappa_freq", "kappa_reac", "sigma_tumble",
     "comb_limit", "rough_k",
     "gamma_rough", "mob_sym", "mob_floor", "field_J", "quant_A0",
-    "quant_mode",
+    "quant_mode", "s_k", "s_disp",
 }
 BANNED_IN_APPARATUS = LAW_KEYS | {"e_click"}  # e_click: retired into eps(w)
 
 EXPS = ["e1_conserve", "e2_pulse", "e3a_blob", "e3b_blob_tilt", "e4_curve",
         "e5_bell", "e6_pairs", "e7_tune", "e8_comma", "e9_fifth", "d1_slit",
         "t1_tonomura", "q2_eraser", "t4_hom", "qt_lo", "qt_hi",
-        "p1_beam"]
+        "p1_beam", "g1_footprint", "g3_shadow"]
 # p2_press: recorded, NOT gated (ratchet rule: tests enter as they PASS).
 # Measured 2026-07-28: absorption happens but the field's momentum does
 # not survive the conversion — recoil deficit ~100x (predicted 0.13C,
@@ -412,12 +412,41 @@ def chk_p2(log):
         f"absorbed={absorbed:.1f}"
 
 
+def chk_g1(log):
+    # the gravitational footprint: a sealed mass maintains a graded space
+    # depression against transport (displacement holds it open)
+    d, ok = conservation_ok(log)
+    m = re.search(r"# RESULT es_shells((?: [\d.]+:[\d.]+)+)", log)
+    s = grab(log, r"# RESULT blob_drift .*speed=([\d.-]+)", 0)
+    if m is None or s is None:
+        return False, f"drift={d:.2e} incomplete"
+    sh = [float(p.split(":")[1]) for p in m.group(1).split()]
+    core = sh[0]
+    far = sum(sh[-3:]) / 3
+    dip = core / far if far > 0 else 1
+    return (ok and dip <= 0.8 and s <= 0.002), \
+        f"drift={d:.2e} core/far={dip:.3f} sealed_speed={s}"
+
+
+def chk_g3(log):
+    # occultation: the transmitted beam exits displaced AWAY from the
+    # mass (the loaded core is a mirror — matter is emergently opaque)
+    d, ok = conservation_ok(log)
+    g = grab(log, r"# RESULT exit_face E=([\d.e+-]+) y=([\d.-]+) z=([\d.-]+)")
+    if g is None:
+        return False, f"drift={d:.2e} no exit_face"
+    fE, fy, _ = g
+    return (ok and fE >= 1.0 and fy >= 24.0), \
+        f"drift={d:.2e} E_exit={fE:.2f} y_exit={fy:.2f} (launch 22.5, mass at 18)"
+
+
 CHECKS = {"e1_conserve": chk_e1, "e2_pulse": chk_e2, "e3a_blob": chk_e3a,
           "e3b_blob_tilt": chk_e3b, "e4_curve": chk_e4, "e5_bell": chk_e5,
           "e6_pairs": chk_e6, "e7_tune": chk_e7, "e8_comma": chk_e8,
           "e9_fifth": chk_e9, "d1_slit": chk_d1, "t1_tonomura": chk_t1,
           "q2_eraser": chk_q2, "t4_hom": chk_hom, "qt_lo": chk_qt_lo,
-          "qt_hi": chk_qt_hi, "p1_beam": chk_p1, "p2_press": chk_p2}
+          "qt_hi": chk_qt_hi, "p1_beam": chk_p1, "p2_press": chk_p2,
+          "g1_footprint": chk_g1, "g3_shadow": chk_g3}
 
 
 def chk_linearity(all_logs, a0):

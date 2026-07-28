@@ -65,6 +65,8 @@ typedef struct {
     double kappa_lock, kappa_align, sigma_tumble;
     double kappa_freq;           /* A1: dispersive exchange bias (frequency entrainment) */
     double kappa_reac;           /* S2: derived reactive exchange (choir's correction, no posit) */
+    double s_k, s_disp;          /* G: space-mode transport (pressure pushes) + displacement */
+    double es_gx;                /* apparatus: imposed initial space gradient along x */
     double dt, T;
     int diag_every, snap_every;
     char snap_dir[256];
@@ -152,6 +154,7 @@ static void cfg_defaults(void)
     P.kappa_lock = 0.9; P.kappa_align = 0.5; P.sigma_tumble = 0.01;
     P.kappa_freq = 0.0;
     P.kappa_reac = 0.0;
+    P.s_k = 0.0; P.s_disp = 0.0; P.es_gx = 0.0;
     P.dt = 0.02; P.T = 40.0;
     P.diag_every = 50; P.snap_every = 0;
     strcpy(P.snap_dir, "snaps");
@@ -241,6 +244,9 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "kappa_align")) P.kappa_align = atof(v);
     else if (!strcmp(k, "kappa_freq")) P.kappa_freq = atof(v);
     else if (!strcmp(k, "kappa_reac")) P.kappa_reac = atof(v);
+    else if (!strcmp(k, "s_k")) P.s_k = atof(v);
+    else if (!strcmp(k, "s_disp")) P.s_disp = atof(v);
+    else if (!strcmp(k, "es_gx")) P.es_gx = atof(v);
     else if (!strcmp(k, "sigma_tumble")) P.sigma_tumble = atof(v);
     else if (!strcmp(k, "dt")) P.dt = atof(v);
     else if (!strcmp(k, "T")) P.T = atof(v);
@@ -358,6 +364,7 @@ static void print_cfg(void)
            P.e_cond, P.f_conv, P.f_evap, P.s_pull);
     printf("# cfg kappa_lock=%g kappa_align=%g kappa_freq=%g kappa_reac=%g sigma_tumble=%g\n",
            P.kappa_lock, P.kappa_align, P.kappa_freq, P.kappa_reac, P.sigma_tumble);
+    printf("# cfg space: s_k=%g s_disp=%g es_gx=%g\n", P.s_k, P.s_disp, P.es_gx);
     printf("# cfg dt=%g T=%g diag_every=%d snap_every=%d\n",
            P.dt, P.T, P.diag_every, P.snap_every);
     printf("# cfg center=(%g,%g,%g) amp=%g sigma=%g k=(%g,%g,%g) prealign=%d noise_amp=%g\n",
@@ -494,6 +501,7 @@ static long qfire_n = 0;             /* conversion fire counter (QATOM diag) */
 static signed char *cflag;
 static double *fsum;                 /* per-cell total geometric joining weight */
 static double *flload;               /* per-cell pitch share of in-flight dense energy */
+static double *sprq, *swl;           /* space transport: per-cell wants, per-link flux */
 static int *clickn;                  /* record grains already logged per cell */
 static double sim_t = 0.0;
 static double *expose_frz = NULL;    /* shutter: frozen screen record */
@@ -598,6 +606,12 @@ static void build_field(void)
         th2[i] = frand() * TWO_PI;
         cbeta[i] = frand() * TWO_PI;
         Es[i] = P.e_s0;
+        /* apparatus: imposed space gradient (G-battery initial condition) */
+        if (P.es_gx != 0) {
+            Es[i] = P.e_s0 * (1.0 + P.es_gx * (cx[i] - 0.5 * P.L) / (0.5 * P.L));
+            double flo = P.es_floor + 0.02;
+            if (Es[i] < flo) Es[i] = flo;
+        }
     }
 
     /* --- candidate channels: areas of effect overlap (1.15 margin) --- */
@@ -666,6 +680,8 @@ static void build_field(void)
     clickn = calloc(NC, sizeof(int));
     fsum = calloc(NC, sizeof(double));
     flload = calloc(NC, sizeof(double));
+    sprq = calloc(NC, sizeof(double));
+    swl = calloc(NL, sizeof(double));
     qcnvD = calloc(NC, sizeof(double));
     qcnvF = calloc(NC, sizeof(double));
 
@@ -1087,6 +1103,47 @@ static void step_field(void)
         if (fl <= 0) continue;
         flload[li[l]] += 0.5 * fl;
         flload[lj[l]] += 0.5 * fl;
+    }
+
+    /* pass S: space-mode transport — PRESSURE PUSHES, nothing reaches out.
+     * Space is a mode like the others, so it flows through the same
+     * channels: each link carries space from its higher-pressure end
+     * toward its lower-pressure end, at the channel's own conductance.
+     * The flux ORIGINATES from the pressurized side's store (outflow-
+     * limited above the conversion floor); an empty cell never draws —
+     * there is no suction. Pressure carries a displacement term from
+     * load: matter IS converted space, so a loaded cell pushes space out
+     * (pi = Es + s_disp*(Em+Ee)), which is how a mass MAINTAINS its
+     * depression instead of having it merely frozen in. Exactly paired
+     * ledger moves; the depression a mass holds is the gravitational
+     * footprint the G-battery measures. */
+    if (P.s_k > 0) {
+        for (int i = 0; i < NC; i++) sprq[i] = 0.0;
+        for (int l = 0; l < NL; l++) {
+            swl[l] = 0.0;
+            if (lA[l] <= 0) continue;
+            int i = li[l], j = lj[l];
+            double pi_ = Es[i] + P.s_disp * (Em[i] + Ee[i]);
+            double pj_ = Es[j] + P.s_disp * (Em[j] + Ee[j]);
+            double dp = pi_ - pj_;
+            if (dp == 0) continue;
+            double w = (lA[l] / Aref) * (dref / ld[l]);
+            double f = P.s_k * dt * w * dp;
+            swl[l] = f;
+            sprq[f > 0 ? i : j] += fabs(f);
+        }
+        for (int l = 0; l < NL; l++) {
+            double f = swl[l];
+            if (f == 0) continue;
+            int src = f > 0 ? li[l] : lj[l];
+            int dst = f > 0 ? lj[l] : li[l];
+            double avail = Es[src] - P.es_floor;
+            if (avail <= 0) continue;
+            double mag = fabs(f);
+            if (sprq[src] > avail) mag *= avail / sprq[src];
+            Es[src] -= mag;
+            Es[dst] += mag;
+        }
     }
 
     /* pass 1: live radii, effective frequencies, clear requests */
@@ -2055,6 +2112,42 @@ static void final_report(void)
 {
     double tEs = ksum(Es, NC), tEm = ksum(Em, NC), tEe = ksum(Ee, NC), tET = ksum(lem, 4 * NL);
     double tot = tEs + tEm + tEe + tET;
+    /* exit face (G-battery): the +x absorbing face is a recorder — the
+     * transverse centroid of what it recorded is the transmitted beam's
+     * exit position (lensing: compare against the no-mass baseline) */
+    if (P.edge_sink > 0) {
+        double fm = P.edge_sink + 0.8;
+        double fE = 0, fy = 0, fz = 0;
+        for (int i = 0; i < NC; i++) {
+            if (cflag[i] != 3) continue;
+            if (cx[i] < P.L - fm) continue;
+            if (cy[i] < fm || cy[i] > P.L - fm) continue;
+            if (cz[i] < fm || cz[i] > P.L - fm) continue;
+            fE += Em[i];
+            fy += Em[i] * cy[i];
+            fz += Em[i] * cz[i];
+        }
+        if (fE > 1e-12) { fy /= fE; fz /= fE; }
+        printf("# RESULT exit_face E=%.5g y=%.4f z=%.4f\n", fE, fy, fz);
+    }
+
+    /* space profile (G-battery): shell means of Es around the seed
+     * center — the gravitational footprint, if any law maintains one */
+    {
+        double shE[8]; int shN[8];
+        double dr = 0.5 * P.L / 8.0;
+        for (int k = 0; k < 8; k++) { shE[k] = 0; shN[k] = 0; }
+        for (int i = 0; i < NC; i++) {
+            if (cflag[i]) continue;
+            double dx = cx[i] - cenx, dy = cy[i] - ceny, dz = cz[i] - cenz;
+            int k = (int)(sqrt(dx * dx + dy * dy + dz * dz) / dr);
+            if (k < 8) { shE[k] += Es[i]; shN[k]++; }
+        }
+        printf("# RESULT es_shells");
+        for (int k = 0; k < 8; k++)
+            printf(" %.2f:%.4f", (k + 0.5) * dr, shN[k] ? shE[k] / shN[k] : 0);
+        printf("\n");
+    }
     printf("# RESULT conservation E0=%.12g Efinal=%.12g rel_drift=%.3e\n",
            E0_total, tot, E0_total != 0 ? (tot - E0_total) / E0_total : 0);
 

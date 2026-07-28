@@ -767,3 +767,40 @@ dilation; P2.)
 
 **e3a is the standing self-force null** (a sealed blob does not
 accelerate): it guards P-experiments against spurious momentum creation.
+
+**G — the pressure law (ADOPTED: `battery/laws_V2g.cfg` is the standing
+table, 20/20).** The user's steer, verbatim physics: "atmospheric
+suction" does not exist; "atmospheric pressure" does — nothing reaches
+out. The law (kernel pass S): space is a mode like the others and flows
+through the same channels — each link carries space from its
+higher-pressure end at the channel's own conductance, outflow-limited
+above es_floor, never drawing on the empty side; pressure carries a
+displacement term from load, pi = Es + s_disp·(Em+Ee), because matter
+IS converted space (PRINCIPLE §4.2 as a kernel law). Exactly paired
+ledger moves; conservation at the floor throughout.
+
+Measured under the candidate and adopted at s_k = 0.06, s_disp = 0.3
+(robustness window s_k ∈ [0.02, ~0.15]; at 0.2 over-mobile space stirs
+the e3a rim un-sealed — the upper edge is physical):
+
+* **g1 — the gravitational footprint (GATED):** a sealed mass maintains
+  an extended graded depression — core 0.52 of vacuum, halo to r ≈ 6,
+  a faint displaced-space ridge outside, and NO far tail: a sealed blob
+  at equilibrium is not a steady space-flux monopole. The 1/r far field
+  therefore requires steady space THROUGHPUT (a mass that cycles
+  space) — the named next question, measurable as blob space
+  throughput. Sealing improves under the law (e3a 0.00174 → 0.00084).
+* **g3 — occultation (GATED):** the loaded core is a mirror by the same
+  pitch law that mutes the slit wall — matter is emergently opaque; the
+  transmitted beam exits displaced AWAY from the mass (+2.5 at b=4.5;
+  the bar is conservative against the foam's own toward-bias). The
+  halo's true lensing pull is present at the RIGHT SIGN in the
+  candidate-vs-frozen comparison (~0.015 toward the mass) — two orders
+  below the foam bias floor at this box scale: RECORDED, not gated.
+* **g2 — dense free-fall (RECORDED, not gated):** a light blob in a
+  frozen 3%/unit space gradient shows no drift above the ~1e-3 chaos
+  floor in 120 t.u. Rate-level dense transport does not resolve the
+  landscape; wave-borne matter should (S2-full's set again).
+
+Net free constants this arc: kappa_freq retired (−1, §6.10); s_k and
+s_disp added (+2, both load-bearing: g1 fails without either).

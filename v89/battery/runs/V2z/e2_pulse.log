@@ -6,6 +6,7 @@
 # cfg k_dep=1.2 k_dep_m=2 cap=2.5 e_s0=1 es_floor=0.05
 # cfg e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
 # cfg kappa_lock=1 kappa_align=0.5 kappa_freq=0 kappa_reac=0 sigma_tumble=0.01
+# cfg space: s_k=0 s_disp=0 es_gx=0
 # cfg dt=0.02 T=24 diag_every=50 snap_every=0
 # cfg center=(6,-1,-1) amp=0.25 sigma=2.5 k=(1.1,0,0) prealign=1 noise_amp=0
 # cfg music: comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004
@@ -38,6 +39,7 @@
 22.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188256	0.000	0.000	0.000	0.000	20.6538	0.8454	0	0.8498	0.9948	1.65000	1.65000	15.0981	17.6822	17.8615	0	0	0	40.088	-5.0235	0.89881
 23.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188256	0.000	0.000	0.000	0.000	20.9891	0.8454	0	0.8498	0.9948	1.65000	1.65000	15.2908	17.6572	17.8655	0	0	0	38.623	-5.0383	1.3238
 24.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188256	0.000	0.000	0.000	0.000	22.0994	0.8454	0	0.8498	0.9948	1.65000	1.65000	15.4772	17.6319	17.8717	0	0	0	37.293	-5.027	1.8206
+# RESULT es_shells 1.12:1.0000 3.38:1.0000 5.62:1.0000 7.88:1.0000 10.12:1.0000 12.38:1.0000 14.62:1.0000 16.88:1.0000
 # RESULT conservation E0=31632.2128025 Efinal=31632.2128025 rel_drift=0.000e+00
 # RESULT roughness_radiated=0 (dissonant dense deliveries converted to field, conserved)
 # RESULT front_speed v=0.6040 v_over_C=0.6040 r2=0.9836 (foam tortuosity keeps v below C)

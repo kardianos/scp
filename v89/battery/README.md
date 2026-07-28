@@ -28,16 +28,26 @@ python3 battery.py --laws laws_V2z.cfg [--jobs 10] [--only e6_pairs ...] [--skip
 Outputs `runs/<variant>/<experiment>.log` + `summary.tsv`, prints the
 pass/fail table, exits nonzero on any fail.
 
-## The experiments (16 runs + 1 cross-check)
+## The experiments (19 runs + 1 cross-check)
 
 e1 conservation (all mechanisms live) · e2 field packet ≥0.3C · e3a heavy
 blob seals · e3b light tilted blob translates · e4 curvature linearity ·
 e5 CHSH · e6 rung tongue in the foam · e7 tuning curve (P4) · e8 the comma
 is paid, monotone · e9 the fifth (3:2) lives · d1 double-slit fringes ·
 t1 Tonomura clicks · q2 eraser ± · t4 HOM ordering · qt_lo sub-threshold
-(nothing condenses) · qt_hi above-threshold (condensation) · LIN: every
-fired grain across every log sits on the eps(w) = A0·w/2π grid (ħ-linearity
-as a battery invariant).
+(nothing condenses) · qt_hi above-threshold (condensation) · p1 momentum
+of light (ballistic centroid + forward momentum current) · g1 the
+gravitational footprint (a mass maintains its extended space depression)
+· g3 occultation (matter is emergently opaque; beam exits away) · LIN:
+every fired grain across every log sits on the eps(w) = A0·w/2π grid
+(ħ-linearity as a battery invariant).
+
+**Recorded, NOT gated** (ratchet rule: tests enter as they pass; these
+encode real claims that currently fail or sit below measurement floors —
+see ROADMAP §7): p2 radiation pressure (absorbed light's momentum does
+not survive conversion, deficit ~100× — S2-full criterion); g2 dense
+free-fall in a frozen space gradient (below the ~1e-3 chaos floor);
+halo lensing (right sign, two orders below the foam bias floor).
 
 ## Variant verdict (2026-07-28, after §6.10 S2 retirement)
 
@@ -45,7 +55,8 @@ as a battery invariant).
 |---|---|---|
 | V1 | source atom, per-cycle floor | 15/17 — the floor cannot pay the comma (e8) or fit e4 |
 | V2 | source atom, credit, kappa_freq=0.6 | 17/17 — the §6.9 table; the bias buys margin, not passes |
-| **V2z** | **source atom, credit, NO bias (kf=0, kr=0)** | **17/17 — the standing law table (one fewer free constant)** |
+| V2z | source atom, credit, NO bias (kf=0, kr=0) | 17/17 then 18/18 with p1 — the §6.10 retirement point |
+| **V2g** | **V2z + space transport (s_k=0.06, s_disp=0.3)** | **20/20 — the standing law table (footprint + occultation gated; robustness s_k ∈ [0.02, ~0.15])** |
 | V2d | source atom, credit, kappa_reac=1 (derived reactive term) | 16/17 — e3b decoheres: rate transport cannot host the raw current; kept as the S2 exhibit and S2-full acceptance criterion |
 | V3 | destination atom, floor | 16/17 — e8 (comma needs memory) |
 | V4 | destination atom, credit | 16/17 — e3b (dense-atom tax perturbs the front) |
