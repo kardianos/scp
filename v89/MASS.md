@@ -278,3 +278,43 @@ E — THEORY DEBTS FEEDING MASS
   s_disp — old sinks slowly push space inward on long runs; prefer the
   piston for T > 500 once built (kernel-wide fix only via the ratchet).
   comp12 probe fleet launched (zero code change).
+
+* **2026-07-28 (B1 fleet v2 — the accidental open-chain control, and
+  the ring_m fix).** The fixed-`ring_x` compensated seeds REJECTED
+  themselves by their own closure printout: foam jitter inflated the
+  actual loop length ~10%, the lock recursion dumped the whole defect
+  (~π) on the seam link, seam gate ≈ 0 — comp12/comp6/unwound ran as
+  OPEN CHAINS, not rings. The topological A/B did not happen. But the
+  chains are a control we didn't plan: chains leaked −0.092…−0.097
+  %/t.u. where the well-closed auto-seeded rings (closure 2.9988) ran
+  −0.051…−0.058 — **closing the loop is worth ~1.7× by itself**,
+  independent of winding. Fix per the design note: `ring_m` seeding
+  (uniform ω = 2π·m·C/L_ring from the ACTUAL picked loop) — measured
+  closures now EXACT (5.0000 / 6.0000 / 2.0000). Fleet v3 (m=5 wound
+  vs m=6 unwound vs m=2 one-way) running; seeder change ratchet-gated
+  in the same batch. Standing rule: a ring seed is accepted only if
+  its closure printout is integer to <0.05.
+
+* **2026-07-28 (A1 + A2: NO PLATEAU — THE SKIRT IS THE PARTICLE-KILLER).**
+  A1 (ring6, T=5000, open box): the deceleration through t=1000
+  (−0.00118 → −0.00063) was not a plateau approach — past t≈1000 the
+  leak ACCELERATED (−0.00146) and the ring dissolved entirely by
+  t≈1900 (M=0, n=0). At death the per-voice load was ≈0.05–0.06 — the
+  vacuum-skirt boundary x_skirt = 0.0617. Mechanism: leak thins the
+  voices → pitch approaches the room's → the skirt dissolves them
+  (e7's law, now the mass campaign's central enemy). Sharpened C1:
+  FAILED for ring6 — lifetime ≈ 1.5–2e3 t.u. A2 (5 foam seeds,
+  T=1000): the slow-leak class is seed-robust (late rates −5e-5 …
+  −6e-4; 3–4/5 surviving at t=1000, one dead, one fragmented) — not a
+  seed accident, but all on the same road. VERDICT: closure retards
+  (4×; closing the loop alone worth 1.7×) but does not stop; a
+  particle requires leak → 0 at some x* > x_skirt, i.e. an
+  EQUILIBRIUM, not a slow death.
+  **PRE-REGISTERED PREDICTION (before fleet v3 lands):** if skirt-
+  death is the mechanism, v3_comp12 (m=5, per-voice x ≈ 0.32 — 5×
+  above the skirt) must vastly outlive the m=3 ring6 (x ≈ 0.128);
+  lifetime ordering by seeded load, not by winding per se.
+  Follow-ups queued: A1c closed-box (no edge_sink: does the ring's own
+  shed bath recondense — self-atmosphere vs starvation); the piston B+
+  arm (ambient pressure raising the dissolution barrier) becomes the
+  strongest stabilization candidate.

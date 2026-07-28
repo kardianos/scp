@@ -82,6 +82,7 @@ typedef struct {
     int lump_diag;               /* MASS apparatus: connected-lump census rows */
     double lump_thr;             /* census membership threshold on free Em */
     int ring_n, ring_wind;       /* MASS apparatus: ring seed (voices, winding) */
+    int ring_m;                  /* target closure integer (<0 = per-link auto) */
     double ring_d, ring_x;       /* ring spacing; load (<0 = tuning-curve auto) */
     long trials;                 /* bell trials per angle combo */
     double aA1, aA2, aB1, aB2;   /* analyzer angles, degrees */
@@ -174,6 +175,7 @@ static void cfg_defaults(void)
     P.rad_diag = 0;
     P.lump_diag = 0; P.lump_thr = 0.1;
     P.ring_n = 0; P.ring_wind = 0; P.ring_d = 1.25; P.ring_x = -1;
+    P.ring_m = -1;
     P.trials = 200000;
     P.aA1 = 0.0; P.aA2 = 45.0; P.aB1 = 22.5; P.aB2 = 67.5;
     P.npairs = 48;
@@ -286,6 +288,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "lump_thr")) P.lump_thr = atof(v);
     else if (!strcmp(k, "ring_n")) P.ring_n = atoi(v);
     else if (!strcmp(k, "ring_wind")) P.ring_wind = atoi(v);
+    else if (!strcmp(k, "ring_m")) P.ring_m = atoi(v);
     else if (!strcmp(k, "ring_d")) P.ring_d = atof(v);
     else if (!strcmp(k, "ring_x")) P.ring_x = atof(v);
     else if (!strcmp(k, "trials")) P.trials = atol(v);
@@ -918,6 +921,13 @@ static void build_field(void)
             }
             pick[k] = best;
         }
+        double Lring = 0;
+        for (int k = 0; k < n; k++) {
+            int u = pick[k], un = pick[(k + 1) % n];
+            double ex = cx[un] - cx[u], ey = cy[un] - cy[u], ez = cz[un] - cz[u];
+            Lring += sqrt(ex * ex + ey * ey + ez * ez);
+        }
+        double om_m = P.ring_m >= 0 ? TWO_PI * P.ring_m * P.C / Lring : -1;
         for (int k = 0; k < n; k++) {
             int u = pick[k], up = pick[(k + n - 1) % n], un = pick[(k + 1) % n];
             double dpx = cx[u] - cx[up], dpy = cy[u] - cy[up], dpz = cz[u] - cz[up];
@@ -925,7 +935,11 @@ static void build_field(void)
             double dp_ = sqrt(dpx * dpx + dpy * dpy + dpz * dpz);
             double dn_ = sqrt(dnx * dnx + dny * dny + dnz * dnz);
             double dbar = 0.5 * (dp_ + dn_);
-            double xk = P.ring_x >= 0 ? P.ring_x
+            /* ring_m: uniform pitch from the ACTUAL loop length — closure
+             * exact by construction; the closure integer is the seeded
+             * topology class m = N/2 - w (B1 design note) */
+            double xk = om_m > 0 ? (P.w2 / om_m - 1.0) / P.q_detune
+                      : P.ring_x >= 0 ? P.ring_x
                        : (P.w2 * dbar / (M_PI * P.C) - 1.0) / P.q_detune;
             if (xk < 0.02) xk = 0.02;
             double add = xk * P.cap / (1.0 + P.s_pull);
@@ -960,9 +974,9 @@ static void build_field(void)
                                + TWO_PI * (double)P.ring_wind / n
                                + 8.0 * TWO_PI, TWO_PI);
         }
-        printf("# ring: seeded n=%d R=%.2f d_target=%.2f "
-               "closure/2pi=%.4f wind=%d\n",
-               n, Rr, P.ring_d, closure / TWO_PI, P.ring_wind);
+        printf("# ring: seeded n=%d R=%.2f d_target=%.2f Lring=%.3f "
+               "closure/2pi=%.4f wind=%d ring_m=%d\n",
+               n, Rr, P.ring_d, Lring, closure / TWO_PI, P.ring_wind, P.ring_m);
         free(pick);
     } else if (P.init == 5) {
         /* double slit: wall (detuned medium) with two vacuum windows,
