@@ -44,7 +44,8 @@ an exactly paired ledger move or an exactly unitary rotation.
   source bandwidth, not mechanism.
 * Field dispersion is quadratic (electron-like), not linear (photon-like).
 * Vacuum is Kerr-nonlinear by default (load detuning); optics runs impose
-  the linear regime (q_detune = 0).
+  the linear regime (q_detune = 0). *(§6 U3 removes the imposition:
+  detune sourced by dense occupation only.)*
 * Which-path recorders attenuate what they dephase (kick-scattering);
   real experiments can mark paths losslessly — repaired by Tier 2 below.
 * Clicks are thresholded accumulations, not indivisible quanta — repaired
@@ -63,7 +64,8 @@ an exactly paired ledger move or an exactly unitary rotation.
    Missing: exchange direction correlated with detuning sign
    (∝ ∂res/∂x), a paired move. Success: interval lifetimes extend by
    orders; rungs become two-sided attractors (fixes the below-rung
-   fall-through).
+   fall-through). *(May emerge natively from §6 U1 amplitude coupling —
+   beat-signed energy exchange; test there before adding a mechanism.)*
 2. **Interval identity hysteresis.** The comb argmax flips instantly; a
    held interval should need a decisive margin to change its name.
 3. **Rings — the fabric's chords.** Σωᵢdᵢ/C = 2πm for triangles; narrower
@@ -84,7 +86,9 @@ an exactly paired ledger move or an exactly unitary rotation.
    solitons (self-focusing vs dispersion), four-wave mixing, condensation
    as saturable absorption. Tension to keep visible: real vacuum is linear
    to extreme precision; the model must explain why its field-mode
-   q_detune is tiny or be wrong.
+   q_detune is tiny or be wrong. *(Resolved on paper by §6 U3: detune is
+   sourced by dense occupation, so vacuum is linear with q_detune ≠ 0;
+   loaded matter stays Kerr. Nonlinear-optics-in-matter remains open.)*
 8. **Chirality/polarization.** The ± of u± as two field species: vector
    optics, lossless which-path tagging, eraser, field-level Bell with real
    analyzers. (Executed below — Tier 2.)
@@ -92,6 +96,7 @@ an exactly paired ledger move or an exactly unitary rotation.
    vs engineering a linear branch. Either commit to the electron reading
    or find the massless mode.
 10. **c unification.** Tie dense C and field v_g to one ceiling.
+    *(Absorbed into §6 U6.)*
 
 **C. The gravity–optics bridge**
 
@@ -175,6 +180,11 @@ an exactly paired ledger move or an exactly unitary rotation.
 ---
 
 ## 4. Execution order and acceptance criteria
+
+> **2026-07-27, standing FIRST PRIORITY: §6 — unification.** One law
+> table, every experiment, no per-experiment physics switches. The items
+> below were the double-slit campaign's order and are executed; §6
+> governs what runs next.
 
 Reality-correspondence is the acceptance test at each step; deviations are
 recorded, not smoothed.
@@ -305,3 +315,215 @@ Verdict: the exchange registry works and shows the boson/fermion split
 with the right signs and delay dependence; the deep dip needs a larger
 apparatus (long adiabatic coupler, spatial mode filtering, reservoir
 source). Queued as tier-4 fidelity work alongside the §4 list.
+
+---
+
+## 6. UNIFICATION — one law table, every experiment (FIRST PRIORITY)
+
+**Scoped 2026-07-27 at the user's direction.** The demand: one kernel and
+**one set of law constants** under which *every* standing experiment
+passes, with only **apparatus** varying between runs — geometry, sources,
+seeds, instruments, durations. No per-experiment physics switches. The
+`quant_A0` on/off seam posed the question; the audit below shows the seam
+is much wider, and §6.3 argues that almost all of it has a single cause.
+
+### 6.1 Law vs apparatus
+
+A parameter is a **law constant** if it states what the fabric *is* or
+how conversion *works*: frequencies of the plane pair, coupling and
+conversion rates, gate/resonance structure, the action atom, saturation,
+space pull. A parameter is **apparatus** if it states what we built in
+the fabric or how we look at it: box, duration, seeds, source amplitude/
+wavevector/width, wall/slit/screen/coupler geometry, detuned-mute
+strength, analyzer angles, shutter and choice times, diagnostic cadence.
+Apparatus may vary per experiment (real labs differ); law constants may
+not. "Pass all simulations without changing any parameters" =
+**no law constant varies by experiment.**
+
+### 6.2 The audit (12 standing cfgs + defaults, 2026-07-27)
+
+Law constants currently taking more than one value across the battery:
+
+| constant | default | values in use (where) | seam class |
+|---|---|---|---|
+| `quant_A0` | 0 (off) | 0 everywhere; >0 for threshold/ħ physics (reg_*_Q) | the quantum switch |
+| `e_cond` | 0.30 | 0.2 (e1), 0.25 (e4), **99 = disabled** (e2, e6–e9, d1, t4) | law disabled per run |
+| `q_detune` | 0.35 | 0.35 (dense era), **0** (d1, t4 — forced-linear optics), **1.2** (e9 — fifth reachability) | law disabled / retuned per run |
+| `w1` | 1.5 | 1.5 (e2), 1.65 (d1, t4) | fabric constant, two values |
+| `w2` | 0.93 | 0.93 (e3, e4), **2.9** (e6–e9 — puts the unison rung inside the link window) | fabric constant, two values |
+| `field_J` | 0.06 | 0.06 (dense-era cfgs, vestigial), **1.8** (d1, t4) | fabric constant, two values |
+| `p_gate` | 4 | **2** (d1 — soft gates for diffraction), 4, **8** (e3b, e6–e9 — rim seal) | sharpness knob per regime |
+| `gamma_res_m` | =gamma_res | **0.02** (e3, e6–e8), **0.12** (e9; /pq → same 0.02) | width knob per regime |
+| `k_dep·k_dep_m` | 1.2 | 2.4 (e3b, e6–e8), 1.2 (e9) | rate knob per regime |
+| `s_pull` | 0.5 | 0.5 (e4), **0.15** (e6–e9) | space-pull (gravity coupling), two values |
+| `f_conv` | 0.25 | 0.25, 0.4 (e4) | rate knob |
+| `kappa_lock` | 0.9 | 0.9, 1.0 (most dense runs) | entrainment knob |
+| `kappa_align` | 0.5 | 0.5, **0.1** (d1 — under-diffraction fix) | alignment knob per regime |
+| `mob_floor` | 0.01 | 0.01, **0.002** (e9 — bleed control) | floor knob per regime |
+| `e_click` | 0 | 0.15 (d1 family) | instrument grain that should be physics |
+
+Notes. (a) `k_dep` alone is dead for transport since the amplitude
+repair — field wants are skipped (`c==0 continue`); only the dense
+product `k_dep·k_dep_m` acts. (b) The load variable is
+`x = (Em+Ee)/cap` — *field* energy detunes cells, which is the sole
+reason optics must force `q_detune=0`. (c) `e_cond` is a hand threshold
+on `Ee`; eight runs disable it with 99. (d) Everything not listed
+(`C`, `cap`, `e_s0`, foam statistics `dmin/r0/rjit`, `comb_limit`,
+`rough_k`, `gamma_rough`, `mob_sym`, `lock_floor`, `sigma_tumble`,
+`f_evap`, `gamma_res`) is already single-valued — the fabric is closer
+to unified than the cfg sprawl suggests.
+
+### 6.3 The thesis — one cause under most seams
+
+The field sector, since the amplitude repair, has **no per-run physics
+switches inside itself**: the same unitary law does free packets, slits,
+fringes, eraser, delayed choice, Bell, and HOM, with only apparatus
+varying. Every remaining seam lives in, or protects, the **dense sector's
+classical rate machinery**:
+
+* The tail-phase gate Δ = θᵢ − ω·d/C − θⱼ **is a retarded amplitude
+  overlap written as a classical gate.** Under amplitudes,
+  ((1+cosΔ)/2)^p is |⟨retarded src|rcv⟩|² at p=1, and *effective*
+  sharpness grows dynamically with accumulated coherence — `p_gate`
+  (2 vs 4 vs 8) stops being a knob.
+* Entrainment is what coupled amplitudes do natively (phase pulling).
+  The hand-coded imprint machinery is a rate-era model of it — and it is
+  exactly what broke under quantization (imprints riding transfer lumps:
+  corr_e3b drift does not recover even at ~70 atoms). Amplitude coupling
+  has no lumps to ride — `kappa_lock` and the granularity defect retire
+  together.
+* A resonance width is 1/coherence-time. `gamma_res_m` as a tuned number
+  is the rate-era stand-in — retires under amplitudes.
+* `e_cond` (and its 99-disables) is a hand threshold where reality has
+  the **action atom**: conversion fires when a whole atom of demand
+  exists. The E1-Q photoelectric result already demonstrated this — the
+  threshold *emerged* from `quant_A0` and would make `e_cond=99` in
+  optics runs unnecessary (optical demand is sub-atom there).
+* `e_click` is the same confession at the screen: the click grain should
+  be ε(ω) = A₀ω/2π, not a knob (tier-1 already samples MCWF; only the
+  grain size is hand-set).
+* `q_detune=0` in optics protects against a mis-sourced load: with
+  x = Em/cap (dense occupation only), vacuum optics is linear
+  **automatically** — Kerr nonlinearity becomes a property of loaded
+  matter, as in reality — and `q_detune` takes one value everywhere.
+* `quant_A0` itself sits on the wrong boundary: as a *transport* law it
+  froze flow (E3b, E6); in reality ħ lives at **mode boundaries** —
+  absorption, emission, detection — and in **closure integers** (levels).
+  Intra-mode transport is amplitude-continuous.
+
+**Architecture in one line: amplitudes within a mode; atoms at mode
+boundaries; integers in closure.** (This is quantum mechanics' own
+architecture: unitary evolution between events; quantized exchange at
+events; quantized levels from boundary conditions.) On this thesis the
+parameter seams are not fifteen independent tuning problems — they are
+shadows of the dense sector still lacking its amplitude completion, plus
+a small residue of genuine constants to be fixed once.
+
+### 6.4 The construction
+
+* **U1 — dense amplitudes.** ψ_D = (b₁, b₂) per cell on the dense plane;
+  Em = |ψ_D|², th2 = arg ψ_D become derived caches (mirroring the field
+  repair exactly). Dense links become pairwise norm-conserving rotations
+  whose **retarded phase ω·d/C is built into the rotation axis** and
+  whose strength is geometry × comb weight × mutual coupling ×
+  symmetric normalization ŵ = w/√(sᵢsⱼ). Gates, entrainment, tongue
+  widths, and the flight delay all become interference phenomena rather
+  than rate rules; the dense flight registry retires (retardation lives
+  in the hop phase); C2 roughness moves to conversion events. Expected
+  knob retirements: `p_gate`, `kappa_lock`, `gamma_res_m`, `k_dep_m`
+  (absorbed into one dense coupling), the imprint machinery.
+* **U2 — atoms at conversions only.** All S↔D↔F conversions
+  integrate-and-fire in whole atoms ε = A₀ω/2π, A₀ = e_s0·d̄/C (auto —
+  no new constant), **sampled by the claim rule** (MCWF, as tier 1) not
+  deterministic credit. Intra-mode transport is never quantized.
+  Retires: `e_cond` (threshold = one atom of demand), `e_click`
+  (grain = ε at the screen), and the `quant_A0` on/off seam itself —
+  the machinery is permanently on, but it lives where ħ lives.
+* **U3 — load detune from dense occupation only.** x = Em/cap. Vacuum
+  optics linear automatically; `q_detune` single-valued. Reachability
+  constraint: the fifth needs (1+q)/1 ≥ 3/2 ⇒ q ≥ 0.5 — propose
+  **q_detune = 1.2 as the law value**; tuning curves x*(d) re-derive,
+  and the reachable interval vocabulary becomes a *prediction* of q
+  rather than a per-run accommodation.
+* **U4 — fabric constants fixed once.** Propose **w1 = 1.65,
+  w2 = 2.9, field_J = 1.8** (the optics-grade values; w2 chosen so the
+  unison rung d* = π(1+q·x)/w2 sits inside the nearest-neighbour link
+  window at working occupancies). e2/e3/e4 apparatus recompute (source
+  kx, tilt kx = w_eff(x)) — apparatus recompute is allowed; law revalue
+  is not.
+* **U5 — surviving rates joint-passed.** Whatever knobs survive U1–U3
+  (`s_pull`, `f_conv`, `f_evap`, `kappa_align`, `mob_floor`,
+  `sigma_tumble`, `rough_k`, `gamma_rough`, dense coupling scale) get
+  **one value each**, selected by running the full battery jointly, not
+  per experiment.
+* **U6 — one ceiling (absorbs open area B10).** The same C appears as
+  the retardation in both sectors' hop phases; field_J and the dense
+  coupling both derive from conductance × mode overlap. Stretch goal
+  inside U1's rewrite; at minimum, document the two speeds against one
+  C honestly.
+
+### 6.5 The protocol — "no parameter changes" made operational
+
+1. **One `LAWS` block** — a canonical text block of every law constant —
+   pasted byte-identical into all cfgs (`laws_check.sh` diffs the block
+   across cfgs and refuses a battery run on mismatch). Apparatus blocks
+   are free.
+2. **The battery** = the 14 standing experiments (e1, e2, e3a, e3b, e4,
+   e5 Bell, e6, e7, e8, e9, d1, t1 Tonomura, q2 eraser, t4 HOM) **plus
+   the quantum set** (photoelectric threshold, grain linearity ε ∝ ω,
+   click statistics) — every one under the same LAWS block, quantum
+   machinery permanently on.
+3. **Acceptance is physics, not bytes** (laws change ⇒ numbers move;
+   the *claims* must survive): conservation at the floor; e2 packet
+   advances ≥ 0.3C; e3a sealed / e3b translates along the tilt; e4
+   ΔA–E_dense linearity r² > 0.95; e5 S > 2.7 vs LHV 1.41; e6/e7 tongue
+   matches the computed profile; e8 shed monotone in |δ₀| (one-sided);
+   e9 fifth locks at computed d* for tens of t.u.; d1 fringes at
+   parameter-free loci with V_norm ≥ 0.25 + tiers 1–3 signatures
+   (clicks rebuild fringes; EGY equality; eraser ±; delayed choice;
+   no-signaling); t4 g_b < 0.5 < g_f with delay recovery; threshold:
+   sub-atom demand condenses nothing at any intensity; linearity:
+   grain ∝ ω across modes. Deviations recorded, not smoothed.
+4. **Baselines**: current set frozen as `reg_*_{R,R2,Q}` (committed).
+   The unified battery writes `reg2_*` — a new baseline generation, not
+   edits to the old one.
+
+### 6.6 Execution stages
+
+* **S1 — cheap decisive test first (no dense rewrite).** Implement U2
+  (atoms → conversions only; transport unquantized) + U3 (x = Em/cap)
+  on the current kernel; draft the LAWS block with §6.4's proposed
+  values; run the full battery. This alone predicts: flow physics
+  restored (e3b drift, e6 locks) *with* thresholds kept, optics linear
+  without `q_detune=0`, `e_cond`/`e_click` switches gone. If S1 passes
+  everything, U1 becomes fidelity work rather than rescue; if it fails,
+  the failure localizes the thesis.
+* **S2 — U1, the dense amplitude completion** (the big rewrite), walls
+  pre-listed from the field repair: sign/seed pairing (κ = −k with
+  exp(−iτX)), symmetric normalization against foam disorder,
+  direction-aware metrics (energy centroid, not radius), linear-regime
+  discipline. Re-derive the CONSONANCE laws in amplitude form (the
+  ladder derivation §III carries over — the gate algebra is unchanged,
+  it just becomes literal).
+* **S3 — U4/U5 joint-pass sweep** → freeze THE law table; write
+  `reg2_*` baselines; update CELLFAB.md §2 laws and the params table.
+* **S4 — quantum battery under unified laws**: HBAR §4 discriminating
+  tests (linearity, photoelectric, blackbody bath, shot noise,
+  cross-sector A₀ consistency); update forks F-ħ and the tier ledger.
+
+### 6.7 Honest risks
+
+* **w2 = 2.9 blob re-seal is not guaranteed** (ω·d moves regime); if the
+  blob cannot seal at the unified w2, that tension — containment window
+  vs rung window — is a finding to record, possibly the first real
+  constraint on the fabric's frequency pair.
+* **E8's one-sided ratchet must re-emerge** from interference + atomic
+  conversion; the current shed mechanism lives in rate machinery. If the
+  comma does not get paid under U1, the thesis loses a limb.
+* Claim-rule conversions add stochasticity to e4 curvature — linearity
+  must survive ensemble averaging.
+* The fifth's numbers move under one q_detune (they were tuned at 1.2
+  with bespoke rates); e9's *claim* (locks at computed d*, finite
+  lifetime, Tenney ordering) is what must survive.
+* Field sector and quantum tiers 0–4 are untouched by design — any
+  regression there is an implementation bug, full stop.
