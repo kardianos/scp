@@ -42,7 +42,7 @@ A candidate is a PARTICLE when, under the standing law table, unedited:
 
 | bar | criterion |
 |---|---|
-| **C1 lifetime** | free dense mass constant: |dM/dt| ≤ 1e-3 sustained over T ≥ 1000 (vs ~0.1–0.5 today) |
+| **C1 lifetime** | free dense mass constant: |dM/dt| ≤ 1e-3 sustained over T ≥ 1000 (vs ~0.1–0.5 today). *(Sharpened 2026-07-28 after ring6 met the letter while losing 38% of its mass: a PLATEAU also requires deceleration to |dM/dt| ≤ 1e-4 or extrapolated half-life ≥ 10⁴ — a slow steady death does not count.)* |
 | **C2 self-force null** | centroid speed ≤ the e3a bar (no self-acceleration) |
 | **C3 not a seed accident** | survives an ensemble of foam seeds (≥ 5), not one lucky foam |
 | **C4 identity** | survives a perturbation (weak packet strike) and returns to its mass plateau |
@@ -137,3 +137,31 @@ measured speedup), then M0/M1. Ensembles are mandatory (foam chaos
   Known: blobs leak (−0.13…−0.54), self-insulate under pressure,
   footprint maintained, no steady throughput (G4). Nothing yet meets
   C1. Speedup ladder in progress (bench/BENCH.md).
+
+* **2026-07-28 (later) — M0 + first M1: THE LEAK IS ROUGHNESS, AND
+  CLOSURE RETARDS IT.** Instruments landed (conversion ledgers # CONV,
+  lump census # LUMP, init=ring seeder; 21/21 inert gate, f2c8d5d).
+  M0 taxonomy, heavy blob [50,300]: lump loss −0.0879/t.u. of which
+  roughness (off-rung deliveries radiating D→F) = −0.0455 (52%),
+  bulk evaporation = 0.0000 EXACTLY (a settled blob never exceeds cap
+  — pass 6's over-full door never opens), condensation reclaims +0.005,
+  spread-to-crumbs −0.008; residual ≈ −0.039 consistent with in-flight
+  dense inventory growth (tET check owed). So the stable-particle
+  problem IS the consonance problem: stop the internal deliveries being
+  rough and the drain stops — exactly what a ring of rung-locked pairs
+  is designed to do (the R window vanishes on-rung).
+  M1, equal-mass (~2–4 units): gaussian control −0.232 %/t.u.; ring6
+  −0.058 (4.0× slower); ring12 −0.051 (4.5×); ring6 with naive winding
+  m_w=1 −0.119 — the distributed twist DETUNES the locked gates
+  (winding must be absorbed into the per-link rungs to help; redesign
+  queued). Ring6 seeds close at exactly m=3 (closure/2π = 2.9988).
+  T=1000: ring6 leak DECELERATES monotonically (−0.00118 → −0.00081 →
+  −0.00063 across [50,300]/[300,600]/[600,1000]) and consolidates to
+  n=1; M 2.01 → 1.25. Under the C1 rate bar for the whole horizon but
+  38% mass lost → C1 sharpened (see §2). ring12: flat ~−0.0008, n=2.
+  Census caveat: thr=0.1 sees voice arcs as separate lumps early
+  (spacing > rim threshold); n>1 does not by itself mean the chord
+  broke — per-lump gate diagnostics wanted.
+  **Queued next:** M1b ring6 at T=5000 (plateau vs ever-slowing decay),
+  C3 ensemble over foam seeds, winding-compensated ring seeds,
+  pressure-annealed ring (R1×R3), the flight-inventory residual check.
