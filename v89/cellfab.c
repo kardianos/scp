@@ -505,6 +505,12 @@ static signed char *cflag;
 static double *fsum;                 /* per-cell total geometric joining weight */
 static double *flload;               /* per-cell pitch share of in-flight dense energy */
 static double *sprq, *swl;           /* space transport: per-cell wants, per-link flux */
+static double *sscl;                 /* space transport: per-cell outflow scale */
+static double *th1s, *th2s;          /* clock snapshot: sources read pre-pass values */
+static double *nsnap;                /* normals snapshot for the parallel alignment */
+static double *roughq;               /* per-cell rough fires this step (QATOM flush) */
+static double *rngbuf;               /* serial gaussian draws for the parallel tumble */
+static int *lcol, *colstart, *colidx, ncolors;  /* edge coloring (pass F hops) */
 static double srad[8];               /* radial space flux accumulator (G4 shells) */
 static double srad_t0 = 0;           /* window start for the flux rate */
 static int *clickn;                  /* record grains already logged per cell */
@@ -687,6 +693,12 @@ static void build_field(void)
     flload = calloc(NC, sizeof(double));
     sprq = calloc(NC, sizeof(double));
     swl = calloc(NL, sizeof(double));
+    sscl = calloc(NC, sizeof(double));
+    th1s = calloc(NC, sizeof(double));
+    th2s = calloc(NC, sizeof(double));
+    roughq = calloc(NC, sizeof(double));
+    rngbuf = calloc(6 * (size_t)NC, sizeof(double));
+    nsnap = calloc(6 * (size_t)NC, sizeof(double));
     qcnvD = calloc(NC, sizeof(double));
     qcnvF = calloc(NC, sizeof(double));
 
@@ -710,6 +722,45 @@ static void build_field(void)
         clidx[fill[li[l]]++] = l;
         clidx[fill[lj[l]]++] = l;
     }
+
+    /* edge coloring for the parallel field hops: links in one color
+     * share no cell, so a color batch applies its pair rotations
+     * conflict-free; batches run in fixed color order — deterministic
+     * for any thread count (the operator ordering differs from the old
+     * sequential sweep at roundoff level; physics-gated). */
+    lcol = malloc(NL * sizeof(int));
+    ncolors = 0;
+    {
+        unsigned char *used = calloc(4096, 1);
+        for (int l = 0; l < NL; l++) {
+            int hi = 0;
+            for (int q = cls[li[l]]; q < cls[li[l] + 1]; q++) {
+                int o = clidx[q];
+                if (o < l) { used[lcol[o]] = 1; if (lcol[o] > hi) hi = lcol[o]; }
+            }
+            for (int q = cls[lj[l]]; q < cls[lj[l] + 1]; q++) {
+                int o = clidx[q];
+                if (o < l) { used[lcol[o]] = 1; if (lcol[o] > hi) hi = lcol[o]; }
+            }
+            int c = 0;
+            while (used[c]) c++;
+            lcol[l] = c;
+            if (c + 1 > ncolors) ncolors = c + 1;
+            for (int k = 0; k <= hi; k++) used[k] = 0;
+        }
+        free(used);
+    }
+    colstart = calloc(ncolors + 1, sizeof(int));
+    colidx = malloc(NL * sizeof(int));
+    for (int l = 0; l < NL; l++) colstart[lcol[l] + 1]++;
+    for (int c = 0; c < ncolors; c++) colstart[c + 1] += colstart[c];
+    {
+        int *cf = malloc((ncolors + 1) * sizeof(int));
+        memcpy(cf, colstart, (ncolors + 1) * sizeof(int));
+        for (int l = 0; l < NL; l++) colidx[cf[lcol[l]]++] = l;
+        free(cf);
+    }
+    printf("# edge coloring: %d colors for %d links\n", ncolors, NL);
     free(fill);
 
     /* --- seed center --- */
@@ -1102,12 +1153,14 @@ static void step_field(void)
      * of its two ends, so energy in transit between a pair's voices does
      * not lighten the pair (found via e7: the mutual-flight shelter was
      * detuning the very pair it shelters — every pair sharp of the rung). */
-    for (int i = 0; i < NC; i++) flload[i] = 0.0;
-    for (int l = 0; l < NL; l++) {
-        double fl = lem[SLOT(l, 1, 0)] + lem[SLOT(l, 1, 1)];
-        if (fl <= 0) continue;
-        flload[li[l]] += 0.5 * fl;
-        flload[lj[l]] += 0.5 * fl;
+#pragma omp parallel for schedule(static)
+    for (int i = 0; i < NC; i++) {
+        double fl = 0;
+        for (int q = cls[i]; q < cls[i + 1]; q++) {
+            int l = clidx[q];
+            fl += lem[SLOT(l, 1, 0)] + lem[SLOT(l, 1, 1)];
+        }
+        flload[i] = 0.5 * fl;
     }
 
     /* pass S: space-mode transport — PRESSURE PUSHES, nothing reaches out.
@@ -1123,7 +1176,11 @@ static void step_field(void)
      * ledger moves; the depression a mass holds is the gravitational
      * footprint the G-battery measures. */
     if (P.s_k > 0) {
-        for (int i = 0; i < NC; i++) sprq[i] = 0.0;
+        /* three deterministic phases (Jacobi form): per-link wants from
+         * the pre-step state; per-cell outflow scales; per-cell gather
+         * apply — every link's resolved move computed identically from
+         * both endpoints, so the paired books close with no scatter. */
+#pragma omp parallel for schedule(static)
         for (int l = 0; l < NL; l++) {
             swl[l] = 0.0;
             if (lA[l] <= 0) continue;
@@ -1133,24 +1190,44 @@ static void step_field(void)
             double dp = pi_ - pj_;
             if (dp == 0) continue;
             double w = (lA[l] / Aref) * (dref / ld[l]);
-            double f = P.s_k * dt * w * dp;
-            swl[l] = f;
-            sprq[f > 0 ? i : j] += fabs(f);
+            swl[l] = P.s_k * dt * w * dp;
         }
-        for (int l = 0; l < NL; l++) {
-            double f = swl[l];
-            if (f == 0) continue;
-            int src = f > 0 ? li[l] : lj[l];
-            int dst = f > 0 ? lj[l] : li[l];
-            double avail = Es[src] - P.es_floor;
-            if (avail <= 0) continue;
-            double mag = fabs(f);
-            if (sprq[src] > avail) mag *= avail / sprq[src];
-            Es[src] -= mag;
-            Es[dst] += mag;
-            /* G4 instrument (apparatus-gated): radial projection of the
-             * move, binned by shell (positive = outward space transport) */
-            if (P.rad_diag) {
+#pragma omp parallel for schedule(static)
+        for (int i = 0; i < NC; i++) {
+            double rq = 0;
+            for (int q = cls[i]; q < cls[i + 1]; q++) {
+                int l = clidx[q];
+                double f = swl[l];
+                if ((f > 0 && li[l] == i) || (f < 0 && lj[l] == i))
+                    rq += fabs(f);
+            }
+            sprq[i] = rq;
+            double avail = Es[i] - P.es_floor;
+            sscl[i] = (avail <= 0) ? 0.0
+                     : (rq > avail ? avail / rq : 1.0);
+        }
+#pragma omp parallel for schedule(static)
+        for (int i = 0; i < NC; i++) {
+            double de = 0;
+            for (int q = cls[i]; q < cls[i + 1]; q++) {
+                int l = clidx[q];
+                double f = swl[l];
+                if (f == 0) continue;
+                int src = f > 0 ? li[l] : lj[l];
+                double mag = fabs(f) * sscl[src];
+                de += (src == i) ? -mag : mag;
+            }
+            Es[i] += de;
+        }
+        /* G4 instrument (apparatus-gated, serial): radial projection of
+         * the resolved moves, binned by shell (positive = outward) */
+        if (P.rad_diag) {
+            for (int l = 0; l < NL; l++) {
+                double f = swl[l];
+                if (f == 0) continue;
+                int src = f > 0 ? li[l] : lj[l];
+                double mag = fabs(f) * sscl[src];
+                if (mag == 0) continue;
                 double mx = 0.5 * (cx[li[l]] + cx[lj[l]]) - cenx;
                 double my = 0.5 * (cy[li[l]] + cy[lj[l]]) - ceny;
                 double mz = 0.5 * (cz[li[l]] + cz[lj[l]]) - cenz;
@@ -1158,15 +1235,15 @@ static void step_field(void)
                 int k = (int)(rr / (0.5 * P.L / 8.0));
                 if (rr > 1e-9 && k < 8) {
                     double sgn = src == li[l] ? 1.0 : -1.0;
-                    double proj = sgn * (lux[l] * mx + luy[l] * my
-                                         + luz[l] * mz) / rr;
-                    srad[k] += mag * proj;
+                    srad[k] += mag * sgn * (lux[l] * mx + luy[l] * my
+                                            + luz[l] * mz) / rr;
                 }
             }
         }
     }
 
     /* pass 1: live radii, effective frequencies, clear requests */
+#pragma omp parallel for schedule(static)
     for (int i = 0; i < NC; i++) {
         double ratio = Es[i] / P.e_s0;
         cr[i] = cr0[i] * cbrt(ratio > 0 ? ratio : 0);
@@ -1187,6 +1264,7 @@ static void step_field(void)
     }
 
     /* pass 2: channel geometry + desired deposits (resonant joining) */
+#pragma omp parallel for schedule(static)
     for (int l = 0; l < NL; l++) {
         int i = li[l], j = lj[l];
         double d = ld[l], ri = cr[i], rj = cr[j];
@@ -1341,46 +1419,88 @@ static void step_field(void)
                 if (w_ij < 0) w_ij = 0;
                 if (w_ji < 0) w_ji = 0;
             }
-            if (w_ij > 0) { lwant[SLOT(l, c, 0)] = w_ij; if (c == 0) req0[i] += w_ij; else req1[i] += w_ij; }
-            if (w_ji > 0) { lwant[SLOT(l, c, 1)] = w_ji; if (c == 0) req0[j] += w_ji; else req1[j] += w_ji; }
+            if (w_ij > 0) lwant[SLOT(l, c, 0)] = w_ij;
+            if (w_ji > 0) lwant[SLOT(l, c, 1)] = w_ji;
         }
     }
 
-    /* pass 3: outflow limiter (never overdraw a ledger) */
+    /* pass 3: outflow limiter (never overdraw a ledger) — per-cell
+     * gather of this cell's outbound wants over its incident links */
+#pragma omp parallel for schedule(static)
     for (int i = 0; i < NC; i++) {
+        double r0 = 0, r1 = 0;
+        for (int q = cls[i]; q < cls[i + 1]; q++) {
+            int l = clidx[q];
+            int dir = li[l] == i ? 0 : 1;
+            r0 += lwant[SLOT(l, 0, dir)];
+            r1 += lwant[SLOT(l, 1, dir)];
+        }
+        req0[i] = r0; req1[i] = r1;
         double a0 = 0.98 * Ee[i], a1 = 0.98 * Em[i];
-        scl0[i] = (req0[i] > a0 && req0[i] > 0) ? a0 / req0[i] : 1.0;
-        scl1[i] = (req1[i] > a1 && req1[i] > 0) ? a1 / req1[i] : 1.0;
+        scl0[i] = (r0 > a0 && r0 > 0) ? a0 / r0 : 1.0;
+        scl1[i] = (r1 > a1 && r1 > 0) ? a1 / r1 : 1.0;
     }
 
     /* pass 4: apply deposits into channel flight (paired ledger moves).
      * Resonant joining begins at the boundary: each deposit entrains the
      * receiver's clock toward the retarded tail, weighted by how much is
-     * arriving against what the receiver already coherently holds. */
+     * arriving against what the receiver already coherently holds.
+     * Three deterministic phases: resolve deposits per link (each slot
+     * owned by one link), debit sources per cell, entrain receivers per
+     * cell — same books, no scatter. Foreign clocks are read from a
+     * pre-pass snapshot so receiver updates cannot race source reads. */
+#pragma omp parallel for schedule(static)
+    for (int i = 0; i < NC; i++) { th1s[i] = th1[i]; th2s[i] = th2[i]; }
+#pragma omp parallel for schedule(static)
     for (int l = 0; l < NL; l++) {
         if (lA[l] <= 0) continue;
         int i = li[l], j = lj[l];
-        double d = ld[l];
         for (int c = 0; c < 2; c++) {
             for (int dir = 0; dir < 2; dir++) {
                 int s = SLOT(l, c, dir);
                 double f = lwant[s];
                 if (f <= 0) continue;
                 int src = dir == 0 ? i : j;
-                int rcv = dir == 0 ? j : i;
                 f *= c == 0 ? scl0[src] : scl1[src];
                 /* S1/U2: transport within a mode is continuous — the
                  * action atom lives at mode boundaries (conversions),
                  * not on same-mode deposits. (The earlier transport
                  * quantization froze few-quantum flow; see HBAR.md §6.) */
-                if (c == 0) Ee[src] -= f; else Em[src] -= f;
+                lwant[s] = f;               /* resolved deposit */
                 if (lem[s] <= 0) lph[s] = 0;
                 lem[s] += f;
                 lflux[2 * l + c] += f;
-                double mobr = c == 0 ? Ee[rcv] : Em[rcv];
+            }
+        }
+    }
+#pragma omp parallel for schedule(static)
+    for (int i = 0; i < NC; i++) {
+        double d0 = 0, d1 = 0;
+        for (int q = cls[i]; q < cls[i + 1]; q++) {
+            int l = clidx[q];
+            if (lA[l] <= 0) continue;
+            int dir = li[l] == i ? 0 : 1;
+            d0 += lwant[SLOT(l, 0, dir)] > 0 ? lwant[SLOT(l, 0, dir)] : 0;
+            d1 += lwant[SLOT(l, 1, dir)] > 0 ? lwant[SLOT(l, 1, dir)] : 0;
+        }
+        Ee[i] -= d0;
+        Em[i] -= d1;
+    }
+#pragma omp parallel for schedule(static)
+    for (int i = 0; i < NC; i++) {
+        for (int q = cls[i]; q < cls[i + 1]; q++) {
+            int l = clidx[q];
+            if (lA[l] <= 0) continue;
+            int dir = li[l] == i ? 1 : 0;   /* the direction ARRIVING at i */
+            int src = dir == 0 ? li[l] : lj[l];
+            double d = ld[l];
+            for (int c = 0; c < 2; c++) {
+                double f = lwant[SLOT(l, c, dir)];
+                if (f <= 0) continue;
+                double mobr = c == 0 ? Ee[i] : Em[i];
                 double wsrc = c == 0 ? w1e[src] : w2e[src];
-                double thsrc = c == 0 ? th1[src] : th2[src];
-                double *thr = c == 0 ? &th1[rcv] : &th2[rcv];
+                double thsrc = c == 0 ? th1s[src] : th2s[src];
+                double *thr = c == 0 ? &th1[i] : &th2[i];
                 double ms = 1.0, mr = 1.0;
                 if (c == 1) {
                     ms = dir == 0 ? lq[l] : lp[l];
@@ -1393,19 +1513,27 @@ static void step_field(void)
         }
     }
 
-    /* pass 5: advance cycles; deliver only on completion (rate C, gate) */
-    for (int l = 0; l < NL; l++) {
-        if (lA[l] <= 0) continue;   /* pinched channel: flight holds, conserved */
-        int i = li[l], j = lj[l];
-        double adv = dt * P.C / ld[l];
-        for (int c = 0; c < 2; c++) {
-            for (int dir = 0; dir < 2; dir++) {
+    /* pass 5: advance cycles; deliver only on completion (rate C, gate).
+     * Gathered by receiver: each slot's deliveries are handled by the
+     * cell that receives them (slot ownership is unique), foreign
+     * clocks from the snapshot, rough fires deferred to the serial
+     * QATOM flush in pass 6. */
+#pragma omp parallel for schedule(static)
+    for (int i2 = 0; i2 < NC; i2++) { th1s[i2] = th1[i2]; th2s[i2] = th2[i2]; }
+#pragma omp parallel for schedule(static) reduction(+:rough_total)
+    for (int recv = 0; recv < NC; recv++) {
+        for (int q = cls[recv]; q < cls[recv + 1]; q++) {
+            int l = clidx[q];
+            if (lA[l] <= 0) continue;   /* pinched channel: flight holds, conserved */
+            int i = li[l], j = lj[l];
+            int dir = li[l] == recv ? 1 : 0;   /* the direction ARRIVING here */
+            int send = dir == 0 ? i : j;
+            double adv = dt * P.C / ld[l];
+            for (int c = 0; c < 2; c++) {
                 int s = SLOT(l, c, dir);
                 if (lem[s] <= 0) continue;
                 lph[s] += adv;
                 if (lph[s] < 1.0) continue;
-                int recv = dir == 0 ? j : i;
-                int send = dir == 0 ? i : j;
                 double freec = P.cap - (Em[recv] + Ee[recv]);
                 double take = lem[s];
                 if (take > freec) take = freec > 0 ? freec : 0;
@@ -1433,7 +1561,7 @@ static void step_field(void)
                         double reD = A0eff * w1e[recv] / TWO_PI;
                         rough = atoms_fire(rough, reF, reD, &qcnvF[recv]);
                         rough = atoms_clamp(rough, take, reF, reD, &qcnvF[recv]);
-                        if (rough > 0) qatom_diag(0, atoms_w(w2e[recv], w1e[recv]), rough);
+                        if (rough > 0) roughq[recv] += rough;
                         double back_s = rough * P.s_pull / (1.0 + P.s_pull);
                         Em[recv] += take - rough;
                         field_inject(recv, rough - back_s);
@@ -1442,7 +1570,7 @@ static void step_field(void)
                     }
                     /* completion reinforces the join: lock receiver's clock */
                     double wsend = c == 0 ? w1e[send] : w2e[send];
-                    double thsend = c == 0 ? th1[send] : th2[send];
+                    double thsend = c == 0 ? th1s[send] : th2s[send];
                     double *thr = c == 0 ? &th1[recv] : &th2[recv];
                     double ms = 1.0, mr = 1.0;
                     if (c == 1) {
@@ -1467,6 +1595,7 @@ static void step_field(void)
      * native: anti-phased arrivals cancel in components while the norm
      * redistributes to the constructive loci — interference as consonance
      * geometry, with energy never destroyed. */
+#pragma omp parallel for schedule(static)
     for (int i = 0; i < NC; i++) {
         double ang = w1e[i] * dt;
         double cc = cos(ang), ss = sin(ang);
@@ -1483,35 +1612,45 @@ static void step_field(void)
      * its accidental contact geometry: symmetric normalization of the hop
      * weights removes the foam's diagonal disorder (the dominant wave
      * scatterer), leaving only the geometric (off-diagonal) texture */
-    for (int i = 0; i < NC; i++) fsum[i] = 0;
-    for (int l = 0; l < NL; l++) {
-        if (lA[l] <= 0) continue;
-        double w = (lA[l] / Aref) * (dref / ld[l]);
-        fsum[li[l]] += w;
-        fsum[lj[l]] += w;
+#pragma omp parallel for schedule(static)
+    for (int i = 0; i < NC; i++) {
+        double s = 0;
+        for (int q = cls[i]; q < cls[i + 1]; q++) {
+            int l = clidx[q];
+            if (lA[l] <= 0) continue;
+            s += (lA[l] / Aref) * (dref / ld[l]);
+        }
+        fsum[i] = s;
     }
-    for (int l = 0; l < NL; l++) {
-        if (lA[l] <= 0) continue;
-        int i = li[l], j = lj[l];
-        double si = fsum[i], sj = fsum[j];
-        if (si <= 1e-12 || sj <= 1e-12) continue;
-        /* hop U = exp(-i tau X). With the seed convention theta = -k*x
-         * (down-path clocks lag, kappa = -k), this pairing propagates the
-         * packet along +k: v_g = +t*sum d*sin(k*d). Verified by centroid. */
-        double w = (lA[l] / Aref) * (dref / ld[l]);
-        double tau = P.field_J * w / sqrt(si * sj) * dt;
-        double cc = cos(tau), ss = sin(tau);
-        double a1i = fa1[i], a2i = fa2[i], a1j = fa1[j], a2j = fa2[j];
-        fa1[i] = cc * a1i + ss * a2j;
-        fa2[i] = cc * a2i - ss * a1j;
-        fa1[j] = cc * a1j + ss * a2i;
-        fa2[j] = cc * a2j - ss * a1i;
-        if (pol_on) {
-            double b1i = fb1[i], b2i = fb2[i], b1j = fb1[j], b2j = fb2[j];
-            fb1[i] = cc * b1i + ss * b2j;
-            fb2[i] = cc * b2i - ss * b1j;
-            fb1[j] = cc * b1j + ss * b2i;
-            fb2[j] = cc * b2j - ss * b1i;
+    /* hops in edge-color batches: within a color no two links share a
+     * cell, so the pair rotations apply conflict-free; colors run in
+     * fixed order (thread-count-independent result) */
+    for (int cb = 0; cb < ncolors; cb++) {
+#pragma omp parallel for schedule(static)
+        for (int q = colstart[cb]; q < colstart[cb + 1]; q++) {
+            int l = colidx[q];
+            if (lA[l] <= 0) continue;
+            int i = li[l], j = lj[l];
+            double si = fsum[i], sj = fsum[j];
+            if (si <= 1e-12 || sj <= 1e-12) continue;
+            /* hop U = exp(-i tau X). With the seed convention theta = -k*x
+             * (down-path clocks lag, kappa = -k), this pairing propagates the
+             * packet along +k: v_g = +t*sum d*sin(k*d). Verified by centroid. */
+            double w = (lA[l] / Aref) * (dref / ld[l]);
+            double tau = P.field_J * w / sqrt(si * sj) * dt;
+            double cc = cos(tau), ss = sin(tau);
+            double a1i = fa1[i], a2i = fa2[i], a1j = fa1[j], a2j = fa2[j];
+            fa1[i] = cc * a1i + ss * a2j;
+            fa2[i] = cc * a2i - ss * a1j;
+            fa1[j] = cc * a1j + ss * a2i;
+            fa2[j] = cc * a2j - ss * a1i;
+            if (pol_on) {
+                double b1i = fb1[i], b2i = fb2[i], b1j = fb1[j], b2j = fb2[j];
+                fb1[i] = cc * b1i + ss * b2j;
+                fb2[i] = cc * b2i - ss * b1j;
+                fb1[j] = cc * b1j + ss * b2i;
+                fb2[j] = cc * b2j - ss * b1i;
+            }
         }
     }
     for (int i = 0; i < NC; i++) {
@@ -1597,13 +1736,24 @@ static void step_field(void)
             }
         }
     }
+#pragma omp parallel for schedule(static)
     for (int i = 0; i < NC; i++) {
         Ee[i] = fa1[i] * fa1[i] + fa2[i] * fa2[i]
               + (pol_on ? fb1[i] * fb1[i] + fb2[i] * fb2[i] : 0);
         if (Ee[i] > 1e-20) th1[i] = atan2(fa2[i], fa1[i]);
     }
 
-    /* pass 6: dense clock + beat-gated conversion (complete cycles only) */
+    /* pass 6: dense clock + beat-gated conversion (complete cycles only).
+     * SERIAL by design: the QATOM diagnostic counter and print stream
+     * stay deterministic. Deferred rough fires from pass 5 flush here
+     * first, in cell order (aggregated per cell per step — sums of
+     * whole atoms remain whole multiples on the eps(w) grid). */
+    for (int i = 0; i < NC; i++) {
+        if (roughq[i] > 0) {
+            qatom_diag(0, atoms_w(w2e[i], w1e[i]), roughq[i]);
+            roughq[i] = 0;
+        }
+    }
     for (int i = 0; i < NC; i++) {
         th2[i] = fmod(th2[i] + w2e[i] * dt, TWO_PI);
         if (cflag[i]) continue;   /* instruments do not beat-convert */
@@ -1662,6 +1812,23 @@ static void step_field(void)
      * toward containing the flux direction (n perpendicular to u), so the
      * planes' intersection line rotates onto the direction of transfer. */
     double sq = P.sigma_tumble * sqrt(dt);
+    /* the gaussian stream is drawn SERIALLY in the exact legacy order
+     * (cell-major, plane, xyz) so the tumble noise is bit-identical to
+     * the single-thread kernel; the apply loop then runs parallel,
+     * reading neighbor normals from a snapshot (no read/write race). */
+    if (sq > 0)
+        for (int i = 0; i < NC; i++)
+            for (int k = 0; k < 6; k++) rngbuf[6 * (size_t)i + k] = grand();
+#pragma omp parallel for schedule(static)
+    for (int i = 0; i < NC; i++) {
+        nsnap[6 * (size_t)i + 0] = n1x[i];
+        nsnap[6 * (size_t)i + 1] = n1y[i];
+        nsnap[6 * (size_t)i + 2] = n1z[i];
+        nsnap[6 * (size_t)i + 3] = n2x[i];
+        nsnap[6 * (size_t)i + 4] = n2y[i];
+        nsnap[6 * (size_t)i + 5] = n2z[i];
+    }
+#pragma omp parallel for schedule(static)
     for (int i = 0; i < NC; i++) {
         for (int c = 0; c < 2; c++) {
             double mx = c == 0 ? n1x[i] : n2x[i];
@@ -1673,9 +1840,10 @@ static void step_field(void)
                 double fl = lflux[2 * l + c];
                 if (fl <= 0) continue;
                 int o = li[l] == i ? lj[l] : li[l];
-                double ox = c == 0 ? n1x[o] : n2x[o];
-                double oy = c == 0 ? n1y[o] : n2y[o];
-                double oz = c == 0 ? n1z[o] : n2z[o];
+                const double *no = nsnap + 6 * (size_t)o + 3 * c;
+                double ox = no[0];
+                double oy = no[1];
+                double oz = no[2];
                 double sgn = (mx * ox + my * oy + mz * oz) >= 0 ? 1.0 : -1.0;
                 double du = mx * lux[l] + my * luy[l] + mz * luz[l];
                 ax += fl * (sgn * ox - du * lux[l]);
@@ -1688,7 +1856,10 @@ static void step_field(void)
                 double w = P.kappa_align * dt / fsum;
                 vx += w * ax; vy += w * ay; vz += w * az;
             }
-            if (sq > 0) { vx += sq * grand(); vy += sq * grand(); vz += sq * grand(); }
+            if (sq > 0) {
+                const double *g = rngbuf + 6 * (size_t)i + 3 * c;
+                vx += sq * g[0]; vy += sq * g[1]; vz += sq * g[2];
+            }
             double nn = sqrt(vx * vx + vy * vy + vz * vz);
             if (nn > 1e-12) {
                 double *nx = c == 0 ? &n1x[i] : &n2x[i];

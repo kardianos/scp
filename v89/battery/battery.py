@@ -81,10 +81,13 @@ def purity_check(laws_path):
 
 
 def build_kernel():
-    cmd = ["gcc", "-O2", "-march=native", "-o", BIN, SRC, "-lm"]
+    cmd = ["gcc", "-O2", "-march=native", "-fopenmp", "-o", BIN, SRC, "-lm"]
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
         sys.exit(f"kernel build failed:\n{r.stderr}")
+
+
+RUN_THREADS = "1"   # per-run OpenMP threads; set from --jobs in main
 
 
 def run_one(laws_path, variant, name):
@@ -98,8 +101,10 @@ def run_one(laws_path, variant, name):
         app = fh.read()
     with open(cfg, "w") as fh:
         fh.write(laws + "\n# --- apparatus ---\n" + app)
+    env = dict(os.environ, OMP_NUM_THREADS=RUN_THREADS)
     with open(log, "w") as fh:
-        r = subprocess.run([BIN, cfg], stdout=fh, stderr=subprocess.STDOUT)
+        r = subprocess.run([BIN, cfg], stdout=fh, stderr=subprocess.STDOUT,
+                           env=env)
     return name, r.returncode
 
 
@@ -532,6 +537,9 @@ def main():
         sys.exit(2)
     print(f"# purity OK: laws={sorted(LAW_KEYS).__len__()} keys, "
           f"apparatus clean; variant={variant}")
+
+    global RUN_THREADS
+    RUN_THREADS = str(max(1, (os.cpu_count() or 8) // args.jobs))
 
     if not args.skip_run:
         build_kernel()
