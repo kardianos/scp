@@ -72,7 +72,80 @@ smuggle them in.
 EM1–EM4 are apparatus-only and can ratchet into the battery as they
 pass; EM5 is a law-table event.
 
-## 5. Log
+---
+
+## 5. MASS ↔ EMF workflow (2026-07-29)
+
+Cross-link: `MASS.md` §5c (exact mass = first MASS goal).
+
+**Doctrine**
+
+1. MASS owns the critical path until **P19** (M-R1 sharpness) is green
+   or honestly blocked.
+2. EMF owns a **parallel cheap lane**: EM1, EM2, packet/click tooling
+   for C4 and M0 field-channel taxonomy.
+3. **Apparatus EMF ∥ MASS always OK** on `laws_V2g`.
+4. **Law-table EMF (EM5)** only in a planned **alternation** after a
+   MASS checkpoint (or on a variant table that does not claim standing
+   particle status until both pass).
+5. EMF **falsifies / certifies** dense packages; it does **not** mint
+   the mass pin (hardening / attractor).
+6. **P2 radiation pressure** is dense-side / S2-full (translation IS
+   the current) — joint graduation with a C1 object, not an early EMF
+   solo milestone and not a reason to delay MASS hardening.
+
+### Mode P — parallel (default)
+
+| id | work | MASS assist | blocks MASS? |
+|---|---|---|---|
+| EM1 | ω(k), v_g both polarizations | massless contrast vs pinned dense package | no |
+| EM2 | 1/r² field flux | radial instrument practice for g5 | no |
+| EM4 | Malus (when cheap) | two-plane amplitude honesty | no |
+| tools | field packet, CONV/M0 field share | C4 prep; leak-as-field taxonomy | no |
+
+Rules: no `kappa_plast` on EMF runs; full battery if any law key
+changes; visuals standing practice; free cores during long MASS fleet
+jobs are the intended host for Mode P.
+
+### Mode A — alternating gates
+
+```
+after MASS W1 (frozen mechanism nulls)
+  → EM1 or EM2 + battery purity snapshot
+after MASS W2 plateau claim (plast/harden)
+  → C4 weak packet series; require return to same total package mass
+after MASS P19 multi-seed
+  → optional EM3 Doppler if translating matter exists
+after MASS P21 kick program
+  → shared kick / packet apparatus
+then EM5 design on variant table
+  → joint: battery + particle + P2 acceptance
+```
+
+Each alternation ends with: standing table green; MASS claim restated
+with measured **total package** (bound + flight).
+
+### Mode J — joint (needs mass-like object)
+
+| experiment | needs | pays |
+|---|---|---|
+| C4 packet identity | C1 candidate | exact-mass stress |
+| P2 radiation pressure | C1 + S2-full path | EMF gap + dense translation |
+| g5 / C5 | exact mass + internal cycle | 1/r space source |
+| occultation by mass | non-leaking mass | g3-class with real particle |
+
+Until exact mass: build instruments only; do not set EMF success bars
+that require a proton analog.
+
+### Process
+
+* EMF ladder EM1–EM4 may run in parallel with PRESTRESS W1–W2.
+* EM5 / S2-full law edits: schedule explicitly; never mid-P19.
+* Integer-ledger track (`INT_LEDGER.md`) is shared numerics future —
+  field and dense both benefit from exact paired moves; not a gate
+  for EM1–EM2.
+
+## 6. Log
 
 * **2026-07-28** — document opened. Standing table laws_V2g (21/21).
   Known deviations catalogued from ROADMAP §1 + P/G campaigns. Next
@@ -84,3 +157,10 @@ pass; EM5 is a law-table event.
   frames alongside analytics: `viz/render_slice.py` (Ee panel + series
   mode). Visuals have caught what numbers missed; the requirement is in
   the MASS tech tree (D1) and the task tree.
+
+* **2026-07-29 (MASS↔EMF coupling written).** Exact mass is MASS's
+  first goal (`MASS.md` §5c). This file §5 records parallel cheap lane
+  (EM1/EM2/C4 tools), alternating gates (EM5/P2 after MASS checkpoints),
+  and joint exams. P2 remains dense-side acceptance. Sequencing update:
+  EMF apparatus work no longer waits for a finished particle; law-level
+  EMF still waits for a MASS pin attempt on record.

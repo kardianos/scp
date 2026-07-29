@@ -1,0 +1,68 @@
+{
+  "data_edits": [
+    "Optional pre-wave: emit diode-16.net (N=16 m=4 \u03c6=\u03c0/2) via formfind/morpho before claiming P-B directly.",
+    "Optional: export morpho ring8_m2_x0.9 (closer diode-like G(\u03c0)=0) and ring16_m8 if later waves need them.",
+    "Optional score_net columns: x50, c_eff=|late_dmdt|/nv, Law-A predicted t_death residual \u2014 not required to launch cube showdown.",
+    "When Wave3: emit flight-corrected comp12 x=0.233 and ring6 x=0.117 as distinct files (P18) separate from c8_ring12 x=0.439."
+  ],
+  "go_no_go": "GO_WITH_FIXES",
+  "must_fix_before_wave1": [
+    "Rebuild binary: gcc -O2 -march=native -fopenmp -o /home/d/code/scp/v89/cellfab /home/d/code/scp/v89/cellfab.c -lm (or battery.py rebuild); refuse fleet if binary older than cellfab.c without rebuild.",
+    "Smoke: python3 /home/d/code/scp/v89/prestress/run_net.py --name smoke_pair --net /home/d/code/scp/v89/prestress/foam/smoke_pair.net --T 20 --threads 2 --no-render; require rc=0, # net: line, # LUMP rows, score_net append.",
+    "Always pass absolute --net paths (run_net writes net_file= verbatim; relative paths fail off-cwd).",
+    "Wave1 frozen only: do NOT pass --extra kappa_plast=...; leave laws_V2g default \u03ba=0.",
+    "Launch ops: 2 concurrent \u00d7 OMP 4 threads; background T=3000 (~15 min); create runs/ via harness.",
+    "Register/log cube arm as on-disk c2_cube150 (min_gate=0.4009 mean=0.8655) vs ctrl \u2014 not PREDICTIONS 'min\u22650.95'.",
+    "Log diode arm as morpho ring8_m3 proxy only; do not claim theory diode-16 (N=16 m=4 x\u22480.83).",
+    "For Law-A residuals, compute measured x50=Emfree(t\u224850)/(nv*cap=2.5) from logs (score_net omits x50).",
+    "Skin/tube \u22654600\u20134700 falsifiers: T=3000 censors them \u2014 decide cube in-band at T=3000; schedule T\u22655000 only if alive/near-band and claim needs upset bar.",
+    "Chiral-pump: separate short run --T 200 --snap_every 250 on c8_ring12; default snap_every=25000 is fine for death runs only."
+  ],
+  "must_fix_before_wave2": [
+    "Re-run python3 v89/battery/battery.py --laws laws_V2g.cfg after any rebuild; require 21/21 before trusting \u03ba_plast experiments as ratchet-clean.",
+    "Never add kappa_plast/tau_harden to laws_V2g.cfg; only --extra on run_net.",
+    "Extend score_net (or side script) for # NETG mean@t\u2248200, optional # PLAST summary, and roughness trajectory for PLAST-1 bars (gates\u22650.9 by ~200; roughness halved in [200,1000]).",
+    "Update LEDGER P15 status from 'building pass D' to implemented; refresh RESUME pending block.",
+    "Wave2 depends on frozen c2 control from Wave1; do not interpret PLAST-1 without that baseline.",
+    "Watch foam plastic contamination (anneal probe: ~40k links moved around a leaker); require control \u03ba=0 vs \u03ba>0 comparison."
+  ],
+  "open_cross_checks": [
+    "cellfab binary mtime vs cellfab.c (unverified without stat) \u2014 rebuild is the fix.",
+    "Whether on-disk V2g 21/21 was produced from the post-plast binary specifically (logs show \u03ba=0 path only; commit claims 21/21).",
+    "diode \u03c6 convention: theory diode-16 vs morpho ring8_m3 G(90\u00b0) \u2014 fleet measures proxy, not exact P-B.",
+    "score_net m0 uses first-LUMP biggest mass, not necessarily census M_sum(t=50) for x50 \u2014 residual Law A needs explicit t\u224850 Emfree.",
+    "c5_tube6 parasite-dense (13 parasites, min_gate=0.055) vs clean wound-mutual exception narrative.",
+    "T=3000 cannot fully test skin\u22654700 / tube\u22654600 upset bars.",
+    "theory hex-prism 0 demotions vs formfind over-constraint (structural vs foam feasibility)."
+  ],
+  "plan_edits": [
+    "RESUME.md state: HEAD a1d5fc1; plast committed; battery 21/21 on disk; only Phase-2 fleet launch pending \u2014 drop 'UNCOMMITTED pending battery' wording.",
+    "RESUME Wave1 list: replace bare 'diode-16 (EMIT FIRST\u2026)' with 'ring8_m3 morpho proxy (diode-16 emit optional, not showdown-critical)'.",
+    "PREDICTIONS.md arm (a): re-register as best frozen formfind retune (c2 mean~0.87/min~0.40) vs ctrl; defer min\u22650.95 to PLAST-1 or P15 post-anneal.",
+    "PREDICTIONS arm (c) tube: either re-register for c5_tube6 N=12 mass\u2248comp12 with measured-x50 Law A, or require true N\u224824 seed before scoring \u22654600 exception.",
+    "LEDGER: P15 status \u2192 implemented; dedupe B formfind agent row (API-error + LANDED).",
+    "Runbook: document --snap_every 250 for spectra vs default 25000 for death; absolute paths standing rule already in RESUME L197 \u2014 enforce in launch scripts."
+  ],
+  "recommended_wave1_order": [
+    "0-SMOKE (serial, must pass): python3 /home/d/code/scp/v89/prestress/run_net.py --name smoke_pair --net /home/d/code/scp/v89/prestress/foam/smoke_pair.net --T 20 --threads 2 --no-render",
+    "1-PARALLEL A: python3 /home/d/code/scp/v89/prestress/run_net.py --name w1_c8_spectra --net /home/d/code/scp/v89/prestress/candidates/c8_ring12.net --T 200 --threads 4 --snap_every 250",
+    "1-PARALLEL B: python3 /home/d/code/scp/v89/prestress/run_net.py --name w1_c2_cube150 --net /home/d/code/scp/v89/prestress/candidates/c2_cube150.net --T 3000 --threads 4",
+    "2-PARALLEL A: python3 /home/d/code/scp/v89/prestress/run_net.py --name w1_c2_cube150_ctrl --net /home/d/code/scp/v89/prestress/candidates/c2_cube150_ctrl.net --T 3000 --threads 4",
+    "2-PARALLEL B: python3 /home/d/code/scp/v89/prestress/run_net.py --name w1_ring8_m3 --net /home/d/code/scp/v89/prestress/morpho/nets/ring8_m3.net --T 3000 --threads 4",
+    "3-PARALLEL A: python3 /home/d/code/scp/v89/prestress/run_net.py --name w1_c8_ring12 --net /home/d/code/scp/v89/prestress/candidates/c8_ring12.net --T 3000 --threads 4",
+    "3-PARALLEL B: python3 /home/d/code/scp/v89/prestress/run_net.py --name w1_c5_tube6 --net /home/d/code/scp/v89/prestress/candidates/c5_tube6.net --T 3000 --threads 4",
+    "4-SERIAL/PAIR: python3 /home/d/code/scp/v89/prestress/run_net.py --name w1_c4_ring12_chords --net /home/d/code/scp/v89/prestress/candidates/c4_ring12_chords.net --T 3000 --threads 4",
+    "POST: score against PREDICTIONS load-line band using measured x50 from logs; treat ring8_m3 as ladder proxy only; if c2 alive at 3000 with late_dmdt\u22641e-4, queue T=5000 follow-up before claiming skin upset."
+  ],
+  "summary": "Wave1 frozen-foam cube showdown is launchable after short operational/doc fixes: rebuild+smoke cellfab, absolute --net paths, score c2 as best-frozen (min_gate~0.40/mean~0.87) not min\u22650.95, and log ring8_m3 as diode ladder proxy (no diode-16.net). score_net t_death+late_dmdt at T=3000 can decide load-line vs skin; full PREDICTIONS (x50 auto, tube N\u224824, skin\u22654700, chiral spectra) is not auto-instrumented. RESUME 'pending battery/uncommitted plast' is stale vs HEAD a1d5fc1 and on-disk V2g 21/21. Kernel not broken for \u03ba_plast=0.",
+  "trusted_convergences": [
+    "Inventory: 28 kernel-ready seeds (18 candidates + 10 morpho); Wave1 nets present; runs/ clean slate.",
+    "ring8_m3 on disk; diode-16 absent \u2014 proxy path is real, theory geometry is not.",
+    "score_net t_death (biggest lump <0.3\u00b7m0) + late_dmdt + alive sufficient for cube load-line band vs plateau proxy.",
+    "run_net snap_every default 25000 vs RESUME spectra snap_every=250 mismatch is real and scoped to chiral arm only.",
+    "RESUME pending-battery is stale vs commit a1d5fc1 + V2g summary 21/21; plast default-off via memset + guards; laws_V2g has no kappa_plast.",
+    "c2_cube150 gates min=0.4009 mean=0.8655 and formfind ~0.85 ceiling contradict PREDICTIONS min\u22650.95 ideal \u2014 showdown still valid as best-frozen vs ctrl.",
+    "E+D vacuum-bleed / gate-independent c0 is the designed primary null; formfind leak rank must not set launch priority.",
+    "c8_ring12 formfind matches comp12 voice-mass (x=0.439164) \u2014 valid validation twin."
+  ]
+}

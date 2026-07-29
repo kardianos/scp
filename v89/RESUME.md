@@ -142,6 +142,24 @@ ratios (ring6:comp12:diode = 6.6:1:0.5) — the fleet decides.
    PLAST-1's control comparison and the PLAST-0(c) κ*-battery arm
    are the guards). Log: scratchpad/plast_pair.log.
 
+## Program priority (updated 2026-07-29)
+
+**Exact mass (M-R1 / P19) is the first goal of the MASS program** —
+sharp universal package, not merely long life. Full statement:
+`MASS.md` §5c. PRESTRESS waves below are the mechanism → pin →
+spectrum path toward that goal.
+
+**MASS ↔ EMF:** parallel cheap EMF (EM1/EM2, C4 tools) OK anytime;
+EM5/P2 only after MASS checkpoints. See `EMF.md` §5.
+
+**Integer ledger:** design only, `INT_LEDGER.md` — does not block fleet.
+FP64 remains production truth type.
+
+**Plasticity battery:** DONE at HEAD `a1d5fc1` (21/21); RESUME's older
+"pending battery" wording is obsolete. κ still only via `--extra`.
+
+**Plan audit:** `prestress/audit/AUDIT_2026-07-29.md` — GO_WITH_FIXES.
+
 ## Next-session runbook (PRESTRESS-2, task #44 — nothing launched yet)
 
 Fleet = every avenue, mis-tuned controls, ≥3 foam seeds for scored
@@ -151,41 +169,57 @@ claims, visuals per run (standing practice). Launch pattern:
         [--T 3000] [--extra kappa_plast=1.0] [--threads 4]
 
 (2 concurrent × 4 threads on the 8-core box; T=3000 ≈ 15 min each;
-run in background, never foreground >10 min.)
+run in background, never foreground >10 min. **Absolute `--net` paths.**)
 
-Wave 1 — the showdown (frozen foam): c2_cube150 vs c2_cube150_ctrl;
-c8_ring12 (validation twin of comp12); diode-16 (EMIT IT FIRST with
-formfind or take morpho's ring8_m3 as the ladder's proxy); ring8_m3;
-c5_tube6; c4_ring12_chords. Score against: load line (E), leak ratios
-(A §9), chiral-pump lines ν=0.64/1.05 (D §3 — needs a T=200
-snap_every=250 spectra run on comp12 first), flux moment 2.15 (A P-D).
-Wave 2 — plasticity: PLAST-1 (c2_cube150 ±kappa_plast=κ*; bars: gates
-≥0.9 by t≈200, roughness halved, leak below control; prize = first C1
-plateau); PLAST-3 (c1_cube125 WITH parasites + plasticity —
-self-sealing test); then PLAST-2 anneal-then-kick (tau_harden 50).
-Wave 3 — flight-corrected comp12 (x=0.233, P-A), ring9_m3
-discriminator, negative controls (Möbius, octahedron, all ctrl twins),
-Hopf pair, fifth-triangle (species probe), free-search finds.
-Wave 4 — mass-spectrum gates (task #46): P19 cross-seed clustering
-under hardening; P20 m-family coexistence; P21 inertia tensor
-(ring vs shell kicks; D's comma-tax-freeze discriminator applies).
+### Wave 1 — frozen foam mechanism nulls (κ=0) — expect M-R1 fail
 
-Verdicts: one row per run in LEDGER "Verdicts" + dated MASS.md entry
-(user requirement: every possibility written down, then its result).
+Prep: rebuild/smoke cellfab; T=20 smoke_pair. Spectra first or parallel
+with first long job: `c8_ring12` `--T 200 --snap_every 250`.
+
+Runs: c2_cube150 vs c2_cube150_ctrl (log as **best frozen retune**
+min~0.40/mean~0.87 — **not** PREDICTIONS min≥0.95); c8_ring12;
+**ring8_m3 as diode ladder proxy** (emit true diode-16 offline, optional);
+c5_tube6; c4_ring12_chords. Score: load line on **measured x50**, leak
+ratios, spectra ν, flux moment if instrumented. T=3000 decides in-band
+death; T≥5000 only if alive/near skin≥4700 or tube≥4600 upset.
+
+Optional parallel: EMF EM1 or EM2 on free cores (`EMF.md` §6 Mode P).
+
+### Wave 2 — pin hunt (plasticity + hardening) — first exact-mass chance
+
+PLAST-1: c2_cube150 ±kappa_plast=κ* (bars: live gates ≥0.9 by t≈200,
+roughness halved, leak below control; prize = C1 plateau). PLAST-3:
+c1_cube125 + parasites + plast (self-seal). PLAST-2: anneal-then-kick
+with tau_harden. **Any plateau → C4 packet + M0 field-channel before
+"exact mass" language.** Watch foam plastic contamination vs κ=0 control.
+
+### Wave 3 — package + discriminators
+
+Flight-corrected comp12 (x=0.233, P-A) — mass = bound+flight; ring9_m3;
+negatives (Möbius, octahedron, ctrl twins); Hopf; fifth-triangle;
+free-search. Size/N as species axes only.
+
+### Wave 4 — spectrum gates (MASS first goal lives here)
+
+**P19 first** (hardened multi-seed mass cluster vs frozen null) — gate
+for taking mass seriously. Then P20 m-families; P21 inertia tensor
+(ring vs shell; quant comma-tax freeze). Prefer ≥5 seeds for C3-class
+claims.
+
+Verdicts: one row per run in LEDGER "Verdicts" + dated MASS.md entry.
 
 ## Task list at pause
 
-- #44 PRESTRESS-2 (pending): the fleet above.
+- #44 PRESTRESS-2 (pending): Wave 1 fleet (+ optional EMF Mode P).
 - #45 PRESTRESS-3 (pending): verdicts → LEDGER/MASS.md/memory/commits.
-- #46 PRESTRESS-4 (pending): M-R1..R3 requirement tests (P19–P21).
-- #41 MASS-C1' piston (pending, pre-existing): now doubly motivated —
-  D's "load maintenance is the only active lock" + (ii)'s locus-shift
-  tripwire rides the same apparatus.
-- #39 MASS-A3/A4 certification (pending): unblocks if PLAST-1 produces
-  the first plateau.
-- #32/#33 SPEED-3/4 (pending, deferred): revisit only if fleet wall
-  time hurts (current 2.94× at 8 threads stands).
-- Historical context tasks #29–#40: completed, see MASS.md.
+- #46 PRESTRESS-4 (pending): **P19 first**, then P20/P21.
+- #41 MASS-C1' piston (pending): load maintenance + locus-shift tripwire.
+- #39 MASS-A3/A4 (pending): unblocks on first true plateau + C4; **A4'
+  P19** before "standing particle" language.
+- EMF Mode P (pending, parallel): EM1 and/or EM2 apparatus-only.
+- INT_LEDGER (design only): no implementation task until opened.
+- #32/#33 SPEED-3/4 (deferred): only if fleet wall time hurts.
+- Historical #29–#40: completed, see MASS.md.
 
 ## Standing rules that bind the next session
 
@@ -194,4 +228,5 @@ pre-v89 material; visuals every campaign; deterministic (byte-identical
 at any thread count — the # PLAST diag is serial for this reason);
 laws_V2g remains THE standing table (kappa_plast enters experiments as
 an explicit extra key, never silently into the table); fleet runs in
-background; absolute paths (Bash cwd resets).
+background; absolute paths (Bash cwd resets); exact mass before g5;
+EMF law changes only at MASS checkpoints.

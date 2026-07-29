@@ -131,6 +131,105 @@ Sequencing per user (2026-07-28): the speedup ladder first (real
 measured speedup), then M0/M1. Ensembles are mandatory (foam chaos
 ±30%), which is exactly why the speedup matters.
 
+---
+
+## 5c. First goal: EXACT MASS (2026-07-29)
+
+**Standing first goal of the MASS program** (user, 2026-07-29): not
+merely long life, not larger objects — **exact mass** as nature has
+it: sharp, universal, package-complete energy per species.
+
+### What exact mass demands (structural)
+
+| id | demand | v89 statement | test |
+|---|---|---|---|
+| **M-R1** | specific / sharp mass | species mass is an **attractor point**, not a valley segment | **P19**: hardened-annealed objects of one species across foam seeds cluster in mass far tighter than seed scatter; frozen-foam null scatters with the foam |
+| **M-R2** | families | ≥2 coexisting stable m-classes (neutrino / p–n pattern) | **P20** |
+| **M-R3** | particle vs quasiparticle | inertia is a tensor; shells isotropic, rings anisotropic | **P21** |
+| **M-R4** | why these masses | spectrum from (N,m,topology)×pitch law + hardening selection | fleet census is the first prediction |
+
+Standing tension: lock manifold ω(x)·d = πmC is a **continuum valley**.
+Plain plasticity anneals gates but leaves mass continuous; **hardening**
+re-pins x*(d) and is the candidate that restores a discrete spectrum.
+Mass bookkeeping = **total conserved package** (bound + flight; P18).
+
+Priority stack (do not invert):
+
+1. Plateau (true C1, not slow death)
+2. Attractor pin (hardening / equal)
+3. Multi-seed cluster (P19) — **the exact-mass gate**
+4. Family multiplicity (P20)
+5. Inertia character (P21)
+6. Size/N/a as species labels and basin quality — not as a substitute for the pin
+
+Certification still C1–C5; **taking mass seriously** is gated by
+M-R1..R3 (P19–P21). C5/g5 only after exact mass.
+
+### MASS ↔ EMF coupling (parallel / alternating)
+
+Full EMF-side writeup: `EMF.md` §5. Doctrine:
+
+* **MASS owns the critical path** until P19 is green or honestly blocked.
+* **EMF owns a parallel cheap lane** (EM1, EM2; packet tools for C4/M0).
+* **Apparatus EMF ∥ MASS always OK.** Law-table EMF (EM5) only at a
+  planned alternation after a MASS checkpoint.
+* EMF can **falsify / certify** a package; it cannot **mint** the pin.
+
+Canonical detail: **`EMF.md` §5** (Mode P parallel / Mode A gates /
+Mode J joint). Summary:
+
+* **P:** EM1, EM2, M0 field-channel, packet tools on `laws_V2g`; no κ_plast; no EM5.
+* **A:** after W1 → EM1/2+battery; after W2 plateau → C4; after P19 → optional EM3; after P21 → shared kicks; then EM5 on variant table → joint battery+C1+P2.
+* **J:** C4, P2, g5/C5, occultation — need mass candidate; until then instrument rehearsal only.
+
+**P2** is a joint graduation exam — not an early EMF milestone and not
+a reason to delay hardening.
+
+### PRESTRESS / MASS wave adjustments (exact-mass first)
+
+Supersedes loose reading of RESUME waves where they conflict with M-R1.
+
+| Wave | Role under exact-mass first | Adjustments |
+|---|---|---|
+| **W1 frozen foam** | Mechanism nulls (load line, vacuum bleed); **expected to fail M-R1** (foam-accidental masses) | Cube = best frozen retune (c2 min~0.40/mean~0.87), not PREDICTIONS min≥0.95; diode = ring8_m3 proxy; spectra T=200 snap_every=250 separate; T=3000 decides in-band death — queue T≥5000 only if alive/near upset bar; absolute `--net`; κ=0 only |
+| **W2 plasticity** | **Pin hunt** — anneal + hardening; first place exact mass can appear | PLAST-1 bars + **hardening on** before claiming attractor; control κ=0 vs κ>0 (foam rewrite watch); live `# NETG` gates for bar (score_net seed-only is insufficient); never put κ into laws_V2g |
+| **W3 discriminators** | Species / parasite / flight package — labels and basins | P18 flight-corrected seeds; mass = bound+flight; ring9_m3, negatives; size/N only as discrete species axes |
+| **W4 spectrum** | **M-R1 first** (P19), then P20, then P21 | P19 is the program gate for "taking mass seriously"; P20/P21 after a pin exists; multi-seed ≥3 (prefer ≥5 for C3) |
+
+**Process adjustments**
+
+* Every possibility → LEDGER row + MASS.md dated verdict (unchanged).
+* Every plateau claim → C4 packet stress + M0 field-channel check before
+  "exact mass" language.
+* Scorer: add or side-script **x50**, **c_eff**, optional live gate@t;
+  align t_death definition with corpus or document the 0.3·m0 rule.
+* Size/L studies: after or lightly interleaved with W1; **not** a path
+  around the pin. Grow L only for embed/edge artifacts; no pre-v89 grid.
+* Numerics: FP64 remains battery truth type; integer ledger is a
+  **future** track (`INT_LEDGER.md`) — does not block waves.
+* EMF cheap lane fills free cores; does not reorder W1–W2.
+
+### Tech-tree delta (exact-mass first)
+
+```
+A — CERTIFICATION  [reordered emphasis]
+├── … C1 plateau remains necessary …
+├── A3'  C4 packet identity + total-package mass   [with EMF tools]
+├── A4'  P19 sharpness across seeds (M-R1)         [GATE: taking mass seriously]
+├── A4   battery ratchet of standing particle        [after A4']
+└── A5   g5 / C5                                     [after exact mass]
+
+F — PIN (was implicit in P15)
+├── F1  PLAST-1 anneal A/B
+├── F2  hardening → attractor (not valley)
+└── F3  frozen-foam null vs hardened cluster
+
+G — EMF ASSIST (see EMF.md §5)
+├── G1  EM1/EM2 parallel cheap lane
+├── G2  C4 / M0 field-channel at every plateau claim
+└── G3  EM5 / P2 only after MASS checkpoint
+```
+
 ## 5b. The tech tree (2026-07-28, after M0/M1)
 
 Standing practice on every node: **analytics AND rendered frames**
@@ -713,3 +812,26 @@ combined) if H1 shows the hole matters.
   Recorded as a watch item for the A/B arms (control comparisons +
   the κ*-battery arm are the guards). κ*=1.0 provisional (τ<10 t.u.,
   near the adiabatic floor).
+
+* **2026-07-29 (EXACT MASS = first MASS goal; MASS↔EMF workflow;
+  wave adjustments; integer-ledger track opened).** User: exact mass
+  (sharp universal package) is the first goal of the MASS program —
+  see §5c. PRESTRESS waves re-read under that gate: W1 mechanism
+  nulls (expect M-R1 fail on frozen foam); W2 pin hunt (plast+harden);
+  W3 discriminators/package; W4 P19 first then P20/P21. EMF parallel
+  cheap lane (EM1/EM2, C4 tools); EM5/P2 only at alternation after
+  MASS checkpoint — full coupling in EMF.md §5 and MASS §5c. Size is
+  species/basin, not a substitute for the attractor. Tentative
+  integer-based simulator design: `v89/INT_LEDGER.md` (does not block
+  fleet; FP64 remains standing truth type). Audit of PRESTRESS plan:
+  `prestress/audit/AUDIT_2026-07-29.md` (GO_WITH_FIXES).
+
+* **2026-07-29 (INTEGER LEDGER: cellfabi 20/20 — numerics gate green).**
+  Alternate kernel `cellfabi.c` (production `cellfab.c` untouched).
+  Linear LUT failed conservation (15/20); minimax poly trig restored
+  i_m0/i_m1 to 20/20. Mode 3 field per-step snap killed e3b translation
+  (speed 0.002); shadow-only iEe + matter int writeback fixed e3b
+  (speed 0.00344) and full **20/20** on laws_V2g CHECKS with integer
+  sum_err=0. Mode 2 left dead (FP drift ~5e−13). Speed side note: e1
+  wall ~0.8–0.9× of fp64 (not the goal). Writeup:
+  `int_ledger/RESULTS.md`. MASS fleet still user-gated.

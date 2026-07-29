@@ -225,6 +225,14 @@ bit-faithful).
    "0 demotions" (structural feasibility ≠ foam feasibility; the
    prism's π-rung parasite is an absorption candidate).
 
+## Program gate (2026-07-29)
+
+**Exact mass (M-R1 / P19) is the first MASS goal** — see `MASS.md` §5c.
+Wave reading: W1 frozen mechanism nulls (expect M-R1 fail); W2 pin
+(plast+harden); W3 package/discriminators; W4 **P19 first**, then P20/P21.
+MASS↔EMF: `EMF.md` §5. Integer ledger: `INT_LEDGER.md` (no fleet block).
+Audit: `prestress/audit/AUDIT_2026-07-29.md`.
+
 ## Verdicts
 
 (filled as simulations complete; every simulated possibility gets a row and a
