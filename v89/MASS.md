@@ -835,3 +835,11 @@ combined) if H1 shows the hole matters.
   sum_err=0. Mode 2 left dead (FP drift ~5e−13). Speed side note: e1
   wall ~0.8–0.9× of fp64 (not the goal). Writeup:
   `int_ledger/RESULTS.md`. MASS fleet still user-gated.
+
+* **2026-07-29 (INTEGER DEFAULT + MASS/EMF program START).** User promoted
+  i_m3 path: `cellfab.c` = integer ledger mode 3 default; `cellfabf.c` =
+  FP64 reference. Battery smoke e1+e3b PASS. PRESTRESS Wave 1 fleet
+  launched (spectra, cube±ctrl, c8, ring8_m3, tube, chords) on integer
+  kernel. EMF Mode P: EM1 kx dispersion scan launched in parallel
+  (`emf/em1_dispersion.py`). Exact mass (M-R1) remains the first MASS
+  goal; Wave 1 is frozen-foam mechanism nulls (expect M-R1 fail).

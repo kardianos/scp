@@ -164,3 +164,8 @@ that require a proton analog.
   and joint exams. P2 remains dense-side acceptance. Sequencing update:
   EMF apparatus work no longer waits for a finished particle; law-level
   EMF still waits for a MASS pin attempt on record.
+
+* **2026-07-29 (Mode P start — EM1 launched).** Parallel with PRESTRESS
+  Wave 1 on integer default `cellfab`. Instrument: `emf/em1_dispersion.py`
+  (kx sweep of field pulse under laws_V2g; front_speed → em1_dispersion.tsv).
+  No law change. Kernel default is integer matter ledger (field unitary FP).

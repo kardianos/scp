@@ -159,7 +159,7 @@ FP64 reference: `cellfabf.c` → `cellfabf`. Results:
 **Plasticity:** in kernel (κ via `--extra` only). Plan audit:
 `prestress/audit/AUDIT_2026-07-29.md` — GO_WITH_FIXES.
 
-## Next-session runbook (PRESTRESS-2, task #44 — nothing launched yet)
+## Next-session runbook (PRESTRESS-2, task #44 — Wave 1 FLEET LAUNCHED 2026-07-29 (integer cellfab))
 
 Fleet = every avenue, mis-tuned controls, ≥3 foam seeds for scored
 claims, visuals per run (standing practice). Launch pattern:
