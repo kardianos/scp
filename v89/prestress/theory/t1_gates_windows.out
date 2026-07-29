@@ -1,0 +1,119 @@
+========================================================================
+A. GATE ALGEBRA — anchors vs measured/claimed numbers
+========================================================================
+  phi=pi (m=6/N=12 unwound ring): back gate gate(2phi)=gate(2pi)     = 1
+  phi=5pi/6 (comp12 m=5): back gate gate(5pi/3)     [measured 0.100] = 0.100113
+  phi=2pi/3 (comp6 m=2): back gate gate(4pi/3)      [B1: 1.53e-5]    = 1.52588e-05
+  phi=pi/2 (diode point): back gate gate(pi) EXACT ZERO              = 0
+  desert: gate(2.6184)                              [B1: ~4e-10 @ ~2.6] = 4.00564e-10
+  drift duty: <gate> over a full slip = C(16,8)/2^16                 = 0.196381
+  <gate> numeric check: 0.196381
+  gate(0.16) = 0.9500  (B1 said 0.9 there; actual 0.9 point below)
+  flat top: gate >= 0.99  <=>  |psi| <= 0.070881 rad
+  flat top: gate >= 0.95  <=>  |psi| <= 0.160060 rad
+  flat top: gate >= 0.9  <=>  |psi| <= 0.229270 rad
+  flat top: gate >= 0.5  <=>  |psi| <= 0.584464 rad
+  quadratic top: gate ~= exp(-p*psi^2/4) = exp(-2 psi^2)   (check exp(-2*0.2292^2)=0.9003)
+  inflection (stiffness validity): psi_infl = 2*atan(1/sqrt(2p-1)) = 0.5054 rad
+
+========================================================================
+B. WINDOWS — pitch, skirt, contact, reachable rung integers
+========================================================================
+  vacuum skirt x_skirt = 2G/(q(w2-2G)) = 0.061728   [README: 0.0617]
+  pitch window (soft edges):
+    x= 0.0617  omega=2.7001  Es_seed=0.9799  r_live=0.8443  2r=1.6885
+    x= 0.1000  omega=2.5893  Es_seed=0.9674  r_live=0.8407  2r=1.6813
+    x= 0.1200  omega=2.5350  Es_seed=0.9609  r_live=0.8388  2r=1.6775
+    x= 0.2000  omega=2.3387  Es_seed=0.9348  r_live=0.8311  2r=1.6622
+    x= 0.3205  omega=2.0944  Es_seed=0.8955  r_live=0.8193  2r=1.6386
+    x= 0.4100  omega=1.9437  Es_seed=0.8663  r_live=0.8103  2r=1.6206
+    x= 0.4359  omega=1.9040  Es_seed=0.8578  r_live=0.8076  2r=1.6153
+    x= 0.5000  omega=1.8125  Es_seed=0.8370  r_live=0.8010  2r=1.6021
+    x= 0.7050  omega=1.5710  Es_seed=0.7701  r_live=0.7791  2r=1.5582
+    x= 0.8000  omega=1.4796  Es_seed=0.7391  r_live=0.7685  2r=1.5371
+    x= 0.9000  omega=1.3942  Es_seed=0.7065  r_live=0.7571  2r=1.5141
+    x= 1.0000  omega=1.3182  Es_seed=0.6739  r_live=0.7452  2r=1.4904
+  practical omega window (x in [x_skirt, 0.9]): [1.3942, 2.7000]
+  (brief said ~(1.36, 2.75): exact values above; x=1.0 hard floor gives 1.3182)
+  candidate-link build cut: d < 1.15*(cr0_i+cr0_j); nominal 2*1.15*r0 = 1.9550, jitter range [1.8377, 2.0723]
+  LIVE channel needs lens overlap of loaded radii: d < r_i(x)+r_j(x)  (A<=0 links carry nothing; flight on pinched links holds)
+
+  strut ladder d = pi*m/omega over the pitch window:
+    m=1: d in [1.1636, 2.2533]   <-- inside link window
+    m=2: d in [2.3271, 4.5066]   UNREACHABLE (beyond candidate cut 2.07)
+    m=3: d in [3.4907, 6.7598]   UNREACHABLE (beyond candidate cut 2.07)
+
+  strut existence (nominal radii): pi/omega(x) < 2 r(x)  =>  x <= 0.4129  (omega >= 1.9392, d <= 1.6200)
+  worst-case jitter (-6% both radii):            x <= 0.3476  (omega >= 2.0464, d <= 1.5352)
+  STRUT WINDOW: x in [0.0617, 0.41] (design floor 2*x_skirt = 0.123), d = pi/omega in [1.1636, 1.620]
+
+  cable phase drop phi = omega*d/C; back gate = gate(2 phi) exactly
+  diode phi=pi/2: requires d = pi/(2 omega) >= dmin  =>  omega <= pi/2 = 1.5708  =>  x >= 0.7052
+    diode window: x in [0.7052, 0.9], d = pi/(2 omega) in [1.0000, 1.1266]
+  second diode phi=3pi/2: d = 3pi/(2 omega) >= 1.7453 vs live ceiling 1.6885 at that load  =>  UNREACHABLE
+
+  reachable phi window vs omega (cables, both ends at x(omega)):
+    x=0.0617 omega=2.7001: phi in [2.7001, 4.5592]  (d in [1, 1.689])
+    x=0.1200 omega=2.5350: phi in [2.5350, 4.2525]  (d in [1, 1.678])
+    x=0.2000 omega=2.3387: phi in [2.3387, 3.8874]  (d in [1, 1.662])
+    x=0.3200 omega=2.0954: phi in [2.0954, 3.4337]  (d in [1, 1.639])
+    x=0.4100 omega=1.9437: phi in [1.9437, 3.1499]  (d in [1, 1.621])
+    x=0.5000 omega=1.8125: phi in [1.8125, 2.9038]  (d in [1, 1.602])
+    x=0.7050 omega=1.5710: phi in [1.5710, 2.4479]  (d in [1, 1.558])
+    x=0.9000 omega=1.3942: phi in [1.3942, 2.1110]  (d in [1, 1.514])
+
+========================================================================
+C. JITTER TOLERANCE — strut length error dd vs gates
+========================================================================
+  Tree/seed lock (forward psi=0 exact): the whole per-link defect sits on
+  the back gate, psi_b = 2*omega*dd  =>  g_b = cos^16(omega*dd).
+  Entrained equilibrium (E6 P2: comma tempered evenly): psi_f = psi_b =
+  omega*dd  =>  both gates cos^16(omega*dd/2). Tempering doubles tolerance.
+  gate >= 0.9:
+    tree lock:  |dd| <= 0.114635/omega     = 3.65% of strut length pi/omega
+    tempered:   |dd| <= 0.229270/omega     = 7.30% of strut length
+      omega=1.9424: tree 0.0590, tempered 0.1180
+      omega=2.0944: tree 0.0547, tempered 0.1095
+      omega=2.5139: tree 0.0456, tempered 0.0912
+      omega=2.7002: tree 0.0425, tempered 0.0849
+  gate >= 0.99:
+    tree lock:  |dd| <= 0.035440/omega     = 1.13% of strut length pi/omega
+    tempered:   |dd| <= 0.070881/omega     = 2.26% of strut length
+      omega=1.9424: tree 0.0182, tempered 0.0365
+      omega=2.0944: tree 0.0169, tempered 0.0338
+      omega=2.5139: tree 0.0141, tempered 0.0282
+      omega=2.7002: tree 0.0131, tempered 0.0263
+  NOTE the tolerance as a FRACTION of the strut length is omega-independent:
+  3.65%/7.29% (gate 0.9), 1.13%/2.26% (gate 0.99). Blue-noise foam placement
+  error is ~10-20% of d  =>  raw seeded shells sit at gates ~0.5-0.7 (measured
+  cube: mean 0.6) — annealing/entrainment-grown skins are REQUIRED, or picks
+  must be mined for equal lengths (P3).
+========================================================================
+D. PAIR TONGUE — G^2(delta), against E6 measured points
+========================================================================
+  half-max of G^2: delta_half = 0.8296 rad (ladder printed 0.83)
+  delta   G2_computed   G2_measured(E6)
+   0.17         0.972   0.965
+   0.31         0.908   0.899
+   0.56         0.730   0.721
+   0.70         0.611   0.607
+   0.98         0.379   0.277
+   1.26         0.199   0.036
+  (off-tongue fails faster than the even-split formula — nonlinear unlock, as logged)
+
+========================================================================
+E. RING GEOMETRY FACTOR — seeded plane alignment gpl(N)
+========================================================================
+  Ring seeder sets both planes transverse to the OUTGOING chord; for a
+  planar ring, n1 = z for every voice and n2 = u_out x z. On link k->k+1:
+  source axial factor 1 exactly; receiver picks up the polygon turn 2pi/N:
+  axj = cos^2(2pi/N), (n2_i.n2_j)^2 = cos^2(2pi/N)  =>  gpl = cos^4(2pi/N).
+  If kappa_align settles the axes onto the bisector: gpl -> cos^4(pi/N).
+    N=  4: seeded gpl = 0.0000   bisector gpl = 0.2500
+    N=  5: seeded gpl = 0.0091   bisector gpl = 0.4284
+    N=  6: seeded gpl = 0.0625   bisector gpl = 0.5625
+    N=  8: seeded gpl = 0.2500   bisector gpl = 0.7286
+    N= 12: seeded gpl = 0.5625   bisector gpl = 0.8705
+    N= 16: seeded gpl = 0.7286   bisector gpl = 0.9253
+    N= 24: seeded gpl = 0.8705   bisector gpl = 0.9662
+  N=6 pays a 9x conductance penalty vs N=12 at seed; N=4 is dead (turn=90deg).

@@ -453,3 +453,75 @@ combined) if H1 shows the hole matters.
   current, rough deliveries may reorganize). H2 tension spectroscopy
   remains meaningful; H3 (circulation torus) deprioritized until a
   skin can hold.
+
+* **2026-07-28 (PRESTRESS campaign opened — the math/geometry program,
+  user directive).** The tension-surface problem goes to mathematics
+  first: force-density / prestress form-finding + sparse symbolic
+  discovery OUTSIDE the sim, then EVERY surviving possibility through
+  cellfab. The v89 translation (ledger: `prestress/LEDGER.md`): the
+  force-density matrix's role is played by the weighted phase-lock
+  Laplacian B·W·Bᵀ; struts = both-gate links (need the π-rung: one
+  shared length d = π/ω per component); cables = forward-only links
+  (free φ, back-gate leak, per-cycle Diophantine closure ω·L = 2πm —
+  ring_m generalized); prestress = seeded load + winding; mechanisms =
+  soft modes of the Laplacian + load-sector drift. Five agents working
+  in parallel: theory (drift theorem, counting, bipartite
+  generalization), stability (the sign of load-transport feedback —
+  self-repair vs runaway; modal H2 predictions), regression (leak-law
+  STLSQ over the 74-log corpus + pre-registered predictions),
+  form-finding solver (real-foam picks/tuning/phases → .net seeds),
+  morphological search (catalog + evolutionary backtracer). New
+  instrument: `init=net` (kernel places externally-solved networks;
+  prints # NETGATE per-edge + PARASITE report) — smoke test exact
+  (π-rung pair gates 1.0000/1.0000), ratchet battery running.
+
+* **2026-07-28 (SETUP FINDING — the H1 cube carried 12 unscored
+  parasitic links).** The a=1.25 cube's face diagonals (≈1.77) sit
+  INSIDE the candidate-link ceiling 1.15·(rᵢ+rⱼ) ≈ 1.96: every face
+  of the H1 cube had off-rung diagonal channels (φ = ω·1.77 ≈ 3.5 rad,
+  far off the π-rung) that the 12-edge gate report never scored —
+  roughness radiators built into the seed. A cube at a ≥ ~1.35 pushes
+  diagonals past the ceiling (parasite-free), and a ≈ 1.5 additionally
+  puts the edges at the foam's natural d̄ = 1.505. Ledger P2. The
+  NETGATE parasite scan exists precisely so this class of confound
+  cannot recur unscored.
+
+* **2026-07-28 (P15 opened — cell plasticity, user proposition).** The
+  frozen jittered foam may itself be the obstruction: physically the
+  cells are plastic — under tension and harmonic misalignment they
+  would realign their planes and morph until the structure hardens;
+  on a frozen foam the slightest misalignment kills, in reality cells
+  would constantly realign BY FORCE. v89-native reading: cx/cy/cz are
+  scaffold only — d_ij is a link RETARDATION, not a distance in a
+  container, so plasticity is link-property dynamics (no background
+  to embed in, no triangle inequalities to obey). Sixth agent
+  investigating: misfit-gradient flow on d (force = ∂roughness/∂d,
+  work conservation-booked), metric-from-space (d from live Es — is
+  the pressure law already an annealing channel?), node motion
+  (probably too costly — honest assessment), and lock-hardening
+  (anneal-then-freeze — a route to the FIRST true equilibrium).
+  Law-change class: any implementation is ratchet-gated with vacuum
+  required inert. Ledger P15.
+
+* **2026-07-28 (REGRESSION LANDED — death is the load line; gates
+  don't set the leak in the existing corpus).** The sparse-regression
+  agent (23 unique mass runs, 9 uncensored deaths) found: (1) t_death
+  = 274·(x50/0.0617)^1.066, R²=0.99, CV R²=0.97 — one term beats every
+  two-term rival; (2) a UNIVERSAL per-voice current c₀ = 4.25e-4
+  Em/t.u./voice (MAD 3%) across rings/chains/shells with seeded gate
+  min spanning 1.5e-5→1.0 — seeded gate quality does NOT set the leak;
+  roughness ≈ 0 for structured objects (roughness is the BLOB killer —
+  this sharpens, not contradicts, H1: the cube died of load drain like
+  everything else, and its 0.6 gates were not what killed it); (3) the
+  ONE exception: wound-mutual comp12 at c_eff ≤ 0.40·c₀ (t 4879 vs
+  1696 predicted) — the only structural effect in the corpus.
+  PRE-REGISTERED: the exact-retuned cube dies ON the line at t≈1875
+  (band 1250–2810) despite perfect gates; consonant-skin mechanism is
+  real only if it exceeds 4700 or plateaus. The wound tube is the
+  structural bet (≥4600). P1/P2 are now a clean discriminating
+  experiment between the load-line law and the consonant-skin story.
+  Candidate gate-independent channel: the mob_floor trickle (theory/
+  stability agents to confirm); if so, the design target shifts from
+  "open gates" to "RECAPTURE the floor trickle" — exactly what the
+  comp12 exception hints. Corpus correction: a1 ring6 census death =
+  1667 (my "~1900" was loose). Files: prestress/regress/.

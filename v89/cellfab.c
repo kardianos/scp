@@ -136,6 +136,11 @@ typedef struct {
      * A0 = e_s0 * dbar / C — the space-cell grain, no new constant. */
     double quant_A0;
     int quant_mode;              /* U2 variant: 1 src+floor, 2 src+credit, 3 dst+floor, 4 dst+credit */
+    /* PRESTRESS (init=net): externally form-found consonant network —
+     * the solver (v89/prestress/formfind.py) picked cells and solved
+     * (omega, loads, phases) on the actual foam; the kernel places and
+     * reports. File: 'V x y z xk th2' vertices, 'E a b' intended edges. */
+    char net_file[256];
 } Cfg;
 
 static Cfg P;
@@ -235,6 +240,7 @@ static void set_kv(const char *k, const char *v)
         else if (!strcmp(v, "hom")) P.init = 6;
         else if (!strcmp(v, "ring")) P.init = 7;
         else if (!strcmp(v, "shell")) P.init = 8;
+        else if (!strcmp(v, "net")) P.init = 9;
         else fprintf(stderr, "# WARN unknown init '%s'\n", v);
     }
     else if (!strcmp(k, "L")) P.L = atof(v);
@@ -352,6 +358,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "hom_det")) P.hom_det = atof(v);
     else if (!strcmp(k, "quant_A0")) P.quant_A0 = atof(v);
     else if (!strcmp(k, "quant_mode")) P.quant_mode = atoi(v);
+    else if (!strcmp(k, "net_file")) { strncpy(P.net_file, v, 255); P.net_file[255] = 0; }
     else fprintf(stderr, "# WARN unknown key '%s'\n", k);
 }
 
@@ -381,7 +388,7 @@ static void load_cfg(const char *path)
 static void print_cfg(void)
 {
     const char *modes[] = { "field", "bell", "ladder" };
-    const char *inits[] = { "vacuum", "noise", "pulse", "blob", "pairs", "slit", "hom", "ring", "shell" };
+    const char *inits[] = { "vacuum", "noise", "pulse", "blob", "pairs", "slit", "hom", "ring", "shell", "net" };
     printf("# cellfab — v89 cell-fabric kernel (no lattice, no prior code)\n");
     printf("# cfg seed=%lu mode=%s init=%s\n", P.seed, modes[P.mode], inits[P.init]);
     printf("# cfg L=%g dmin=%g r0=%g rjit=%g\n", P.L, P.dmin, P.r0, P.rjit);
@@ -1178,6 +1185,146 @@ static void build_field(void)
             printf("# shell core: es_core=%.2f r_core=%.2f cells=%d\n",
                    P.es_core, P.r_core, ncore);
         }
+    } else if (P.init == 9) {
+        /* PRESTRESS — the net seed. Form-finding happened OUTSIDE the
+         * kernel (v89/prestress/formfind.py) on the ACTUAL foam of this
+         * seed: cells picked, uniform-or-not loads, exact lock phases,
+         * integer rungs. The kernel only places voices with the standard
+         * primitive and reports gate quality: over the intended edges
+         * (a->b as listed) AND over every PARASITIC candidate link among
+         * seeded cells — unintended pairs exchange off-rung and radiate,
+         * so the report scores what the old shell report missed. */
+        enum { NVMAX = 4096, NEMAX = 16384 };
+        static double vx[NVMAX], vy[NVMAX], vz[NVMAX], vxk[NVMAX], vth[NVMAX];
+        static int ea[NEMAX], eb[NEMAX];
+        FILE *nf = fopen(P.net_file, "r");
+        if (!nf) { fprintf(stderr, "# ERROR cannot open net_file '%s'\n", P.net_file); exit(1); }
+        int nv = 0, ne = 0;
+        char nln[512];
+        while (fgets(nln, sizeof(nln), nf)) {
+            if (nln[0] == 'V') {
+                if (nv >= NVMAX) { fprintf(stderr, "# ERROR net: >%d vertices\n", NVMAX); exit(1); }
+                if (sscanf(nln + 1, "%lf %lf %lf %lf %lf",
+                           &vx[nv], &vy[nv], &vz[nv], &vxk[nv], &vth[nv]) != 5) {
+                    fprintf(stderr, "# ERROR net: bad V line: %s", nln); exit(1);
+                }
+                nv++;
+            } else if (nln[0] == 'E') {
+                if (ne >= NEMAX) { fprintf(stderr, "# ERROR net: >%d edges\n", NEMAX); exit(1); }
+                if (sscanf(nln + 1, "%d %d", &ea[ne], &eb[ne]) != 2) {
+                    fprintf(stderr, "# ERROR net: bad E line: %s", nln); exit(1);
+                }
+                ne++;
+            }
+        }
+        fclose(nf);
+        for (int e = 0; e < ne; e++)
+            if (ea[e] < 0 || ea[e] >= nv || eb[e] < 0 || eb[e] >= nv) {
+                fprintf(stderr, "# ERROR net: edge %d references vertex out of range\n", e);
+                exit(1);
+            }
+        int *npick = malloc(nv * sizeof(int));
+        double worst = 0;
+        for (int k = 0; k < nv; k++) {
+            int best = -1; double bd = 1e30;
+            for (int i = 0; i < NC; i++) {
+                if (cflag[i]) continue;
+                int used = 0;
+                for (int q = 0; q < k; q++) if (npick[q] == i) used = 1;
+                if (used) continue;
+                double dx = cx[i] - vx[k], dy = cy[i] - vy[k], dz = cz[i] - vz[k];
+                double dd = dx * dx + dy * dy + dz * dz;
+                if (dd < bd) { bd = dd; best = i; }
+            }
+            if (best < 0) { fprintf(stderr, "# ERROR net: no free cell for vertex %d\n", k); exit(1); }
+            npick[k] = best;
+            if (sqrt(bd) > worst) worst = sqrt(bd);
+        }
+        double ncx_ = 0, ncy_ = 0, ncz_ = 0;
+        for (int k = 0; k < nv; k++) { ncx_ += vx[k]; ncy_ += vy[k]; ncz_ += vz[k]; }
+        ncx_ /= nv; ncy_ /= nv; ncz_ /= nv;
+        for (int k = 0; k < nv; k++) {
+            int u = npick[k];
+            double xk = vxk[k];
+            if (xk < 0.02) xk = 0.02;
+            double add = xk * P.cap / (1.0 + P.s_pull);
+            Em[u] += add;
+            double pull = P.s_pull * add;
+            double avail = Es[u] - P.es_floor;
+            if (pull > avail) pull = avail > 0 ? avail : 0;
+            Es[u] -= pull;
+            Em[u] += pull;
+            /* axis: transverse to the first intended edge here; fallback
+             * radial from the net centroid (kappa_align adapts onward) */
+            double ux = 0, uy = 0, uz = 0;
+            for (int e = 0; e < ne; e++) {
+                int o = ea[e] == k ? eb[e] : (eb[e] == k ? ea[e] : -1);
+                if (o < 0) continue;
+                ux = cx[npick[o]] - cx[u]; uy = cy[npick[o]] - cy[u]; uz = cz[npick[o]] - cz[u];
+                break;
+            }
+            double un = sqrt(ux * ux + uy * uy + uz * uz);
+            if (un < 1e-9) {
+                ux = cx[u] - ncx_; uy = cy[u] - ncy_; uz = cz[u] - ncz_;
+                un = sqrt(ux * ux + uy * uy + uz * uz);
+            }
+            if (un < 1e-9) { ux = 0; uy = 0; uz = 1; un = 1; }
+            ux /= un; uy /= un; uz /= un;
+            double ax = 0, ay = 0, az = 1;
+            if (fabs(uz) > 0.9) { ax = 1; az = 0; }
+            double dp2 = ax * ux + ay * uy + az * uz;
+            double t1x = ax - dp2 * ux, t1y = ay - dp2 * uy, t1z = az - dp2 * uz;
+            double tn = sqrt(t1x * t1x + t1y * t1y + t1z * t1z);
+            t1x /= tn; t1y /= tn; t1z /= tn;
+            n1x[u] = t1x; n1y[u] = t1y; n1z[u] = t1z;
+            n2x[u] = uy * t1z - uz * t1y;
+            n2y[u] = uz * t1x - ux * t1z;
+            n2z[u] = ux * t1y - uy * t1x;
+            th2[u] = fmod(vth[k] + 8.0 * TWO_PI, TWO_PI);
+        }
+        double gmin = 1, gsum = 0; int gn = 0;
+        for (int e = 0; e < ne; e++) {
+            int u = npick[ea[e]], w = npick[eb[e]];
+            double dx = cx[w] - cx[u], dy = cy[w] - cy[u], dz = cz[w] - cz[u];
+            double dd = sqrt(dx * dx + dy * dy + dz * dz);
+            double wu = P.w2 / (1.0 + P.q_detune * (Em[u] / P.cap));
+            double wv = P.w2 / (1.0 + P.q_detune * (Em[w] / P.cap));
+            double pf = wrap_pi(th2[u] - wu * dd / P.C - th2[w]);
+            double pb = wrap_pi(th2[w] - wv * dd / P.C - th2[u]);
+            double gf = gate_of(pf), gb = gate_of(pb);
+            printf("# NETGATE %d %d d=%.4f psi_f=%+.4f psi_b=%+.4f gf=%.4f gb=%.4f\n",
+                   ea[e], eb[e], dd, pf, pb, gf, gb);
+            if (gf < gmin) gmin = gf;
+            gsum += gf; gn++;
+        }
+        int npar = 0; double gpar_max = 0;
+        for (int a = 0; a < nv; a++)
+            for (int b = a + 1; b < nv; b++) {
+                int u = npick[a], w = npick[b];
+                double dx = cx[w] - cx[u], dy = cy[w] - cy[u], dz = cz[w] - cz[u];
+                double d2 = dx * dx + dy * dy + dz * dz;
+                double cut = 1.15 * (cr0[u] + cr0[w]);
+                if (d2 >= cut * cut) continue;
+                int listed = 0;
+                for (int e = 0; e < ne; e++)
+                    if ((ea[e] == a && eb[e] == b) || (ea[e] == b && eb[e] == a)) listed = 1;
+                if (listed) continue;
+                double dd = sqrt(d2);
+                double wu = P.w2 / (1.0 + P.q_detune * (Em[u] / P.cap));
+                double wv = P.w2 / (1.0 + P.q_detune * (Em[w] / P.cap));
+                double pf = wrap_pi(th2[u] - wu * dd / P.C - th2[w]);
+                double pb = wrap_pi(th2[w] - wv * dd / P.C - th2[u]);
+                double gf = gate_of(pf), gb = gate_of(pb);
+                double g = gf > gb ? gf : gb;
+                if (g > gpar_max) gpar_max = g;
+                npar++;
+                printf("# NETGATE P %d %d d=%.4f psi_f=%+.4f psi_b=%+.4f gf=%.4f gb=%.4f\n",
+                       a, b, dd, pf, pb, gf, gb);
+            }
+        printf("# net: seeded nv=%d ne=%d worst_pick=%.3f gates min=%.4f mean=%.4f "
+               "parasites=%d gpar_max=%.4f file=%s\n",
+               nv, ne, worst, gmin, gn ? gsum / gn : 0.0, npar, gpar_max, P.net_file);
+        free(npick);
     } else if (P.init == 5) {
         /* double slit: wall (detuned medium) with two vacuum windows,
          * screen + edge sinks (record media), optional which-path

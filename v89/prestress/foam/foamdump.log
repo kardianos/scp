@@ -1,0 +1,24 @@
+# cellfab — v89 cell-fabric kernel (no lattice, no prior code)
+# cfg seed=20260727 mode=field init=vacuum
+# cfg L=24 dmin=1 r0=0.85 rjit=0.06
+# cfg C=1 w1=1.65 w2=2.9 q_detune=1.2 gamma_res=0.25 gamma_res_m=0.1 p_gate=8
+# cfg lock_floor=0.005
+# cfg k_dep=1.2 k_dep_m=2 cap=2.5 e_s0=1 es_floor=0.05
+# cfg e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# cfg kappa_lock=1 kappa_align=0.5 kappa_freq=0 kappa_reac=0 sigma_tumble=0.01
+# cfg space: s_k=0.06 s_disp=0.3 es_gx=0
+# cfg dt=0.02 T=0.1 diag_every=5 snap_every=1
+# cfg center=(-1,-1,-1) amp=1 sigma=2.5 k=(0,0,0) prealign=0 noise_amp=0
+# cfg music: comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004
+# cfg field sector: two-component signed amplitude, unitary hops, field_J=1.8
+# action atom: A0=1.1500 (dbar=1.5053) mode=2 — eps(w)=A0*w/2pi; atoms at mode boundaries, transport continuous
+# edge coloring: 29 colors for 85886 links
+# fabric: cells=9741 channels=85886 mean_degree=17.63 box=24 dmin=1
+# t	E_space	E_dense	E_field	E_transfer	E_total	rel_drift	live_ch	cm_x	cm_y	cm_z	contain	front_r	r_core	defA	r_far	r_ratio	w_core	w_far
+0.000	9741	0	0	0	9741	0.000e+00	57687	0.000	0.000	0.000	0.000	0.0000	0.8443	0	0.8499	0.9934	1.65000	1.65000	0.0000	0.0000	0.0000	0	0	0	0	0	0
+# CONV t=0.00 cond=0 evap=0 rough=0 back_s=0
+0.100	9741	0	0	0	9741	0.000e+00	57687	0.000	0.000	0.000	0.000	0.0000	0.8443	0	0.8499	0.9934	1.65000	1.65000	0.0000	0.0000	0.0000	0	0	0	0	0	0
+# CONV t=0.10 cond=0 evap=0 rough=0 back_s=0
+# RESULT es_shells 0.75:1.0000 2.25:1.0000 3.75:1.0000 5.25:1.0000 6.75:1.0000 8.25:1.0000 9.75:1.0000 11.25:1.0000
+# RESULT conservation E0=9741 Efinal=9741 rel_drift=0.000e+00
+# RESULT roughness_radiated=0 (dissonant dense deliveries converted to field, conserved)

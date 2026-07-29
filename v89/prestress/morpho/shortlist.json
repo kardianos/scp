@@ -1,0 +1,1535 @@
+{
+ "laws": {
+  "w2": 2.9,
+  "q_detune": 1.2,
+  "cap": 2.5,
+  "p_gate": 8,
+  "gamma_res_m": 0.1,
+  "x_skirt": 0.0617,
+  "seed_window_x": [
+   0.25,
+   0.9
+  ],
+  "omega_window": [
+   1.3942307692307692,
+   2.230769230769231
+  ]
+ },
+ "score_weights": {
+  "W_BACK": 0.5,
+  "W_PAR": 1.0,
+  "W_VAC": 0.11,
+  "G_RAND": 0.19638,
+  "PEN_OPEN": 0.25,
+  "PEN_BRIDGE": 0.12
+ },
+ "shortlist": [
+  {
+   "name": "ring8_m3",
+   "class": "ring",
+   "note": "phi=3pi/4 wound-1: back gate G(90)=0.0039, d=1.407",
+   "n": 8,
+   "ne": 8,
+   "bipartite": true,
+   "stats": {
+    "tries": 12,
+    "embed_ok": 11,
+    "realizability": 0.9166666666666666,
+    "sigma_d_med": 0.17580088786590578
+   },
+   "verdict": "scored",
+   "omega": 1.3942,
+   "x": 0.9,
+   "leak_per_voice": 0.0024,
+   "leak_edge": 0.0062,
+   "leak_par": 0.0,
+   "leak_vac": 0.0133,
+   "npar": 1,
+   "gpar_max": 0.0,
+   "nopen": 0,
+   "nbridge": 0,
+   "wind": 1.332,
+   "n_strut": 0,
+   "n_cable": 8,
+   "cycles": [
+    [
+     8,
+     12.024,
+     2.6681
+    ]
+   ],
+   "cells": [
+    5258,
+    2556,
+    6590,
+    27,
+    6181,
+    4791,
+    1181,
+    3904
+   ],
+   "edges": [
+    {
+     "i": 27,
+     "j": 6181,
+     "label": "cable_fwd",
+     "psi_f": 0.0142,
+     "psi_b": 2.3218,
+     "gf": 0.9996,
+     "gb": 0.0
+    },
+    {
+     "i": 27,
+     "j": 6590,
+     "label": "cable_fwd",
+     "psi_f": -0.0142,
+     "psi_b": 2.8037,
+     "gf": 0.9996,
+     "gb": 0.0
+    },
+    {
+     "i": 1181,
+     "j": 3904,
+     "label": "cable_fwd",
+     "psi_f": 0.0142,
+     "psi_b": 2.5537,
+     "gf": 0.9996,
+     "gb": 0.0
+    },
+    {
+     "i": 1181,
+     "j": 4791,
+     "label": "cable_fwd",
+     "psi_f": -0.0142,
+     "psi_b": 1.9572,
+     "gf": 0.9996,
+     "gb": 0.0001
+    },
+    {
+     "i": 2556,
+     "j": 5258,
+     "label": "cable_fwd",
+     "psi_f": -0.0142,
+     "psi_b": 1.6687,
+     "gf": 0.9996,
+     "gb": 0.0017
+    },
+    {
+     "i": 2556,
+     "j": 6590,
+     "label": "cable_fwd",
+     "psi_f": 0.0142,
+     "psi_b": 1.9779,
+     "gf": 0.9996,
+     "gb": 0.0001
+    },
+    {
+     "i": 3904,
+     "j": 5258,
+     "label": "cable_fwd",
+     "psi_f": 0.0142,
+     "psi_b": 1.5723,
+     "gf": 0.9996,
+     "gb": 0.0039
+    },
+    {
+     "i": 4791,
+     "j": 6181,
+     "label": "cable_fwd",
+     "psi_f": -0.0142,
+     "psi_b": 1.8822,
+     "gf": 0.9996,
+     "gb": 0.0002
+    }
+   ],
+   "penalty": 0.0,
+   "total": 0.0024,
+   "rank": 1
+  },
+  {
+   "name": "ring12_m6",
+   "class": "anchor",
+   "note": "unwound strut ring (m=6): died 2221",
+   "n": 12,
+   "ne": 12,
+   "bipartite": true,
+   "stats": {
+    "tries": 12,
+    "embed_ok": 4,
+    "realizability": 0.3333333333333333,
+    "sigma_d_med": 0.17123690111732814
+   },
+   "verdict": "scored",
+   "omega": 1.4071,
+   "x": 0.8841,
+   "leak_per_voice": 0.0097,
+   "leak_edge": 0.096,
+   "leak_par": 0.0,
+   "leak_vac": 0.0205,
+   "npar": 1,
+   "gpar_max": 0.0,
+   "nopen": 0,
+   "nbridge": 0,
+   "wind": 1.915,
+   "n_strut": 0,
+   "n_cable": 12,
+   "cycles": [
+    [
+     12,
+     18.239,
+     4.0848
+    ]
+   ],
+   "cells": [
+    2603,
+    899,
+    5844,
+    8106,
+    9460,
+    704,
+    3577,
+    1279,
+    5174,
+    7786,
+    3096,
+    648
+   ],
+   "edges": [
+    {
+     "i": 648,
+     "j": 2603,
+     "label": "cable_fwd",
+     "psi_f": 0.0478,
+     "psi_b": 1.146,
+     "gf": 0.9954,
+     "gb": 0.0618
+    },
+    {
+     "i": 648,
+     "j": 3096,
+     "label": "cable_fwd",
+     "psi_f": -0.0478,
+     "psi_b": 2.1892,
+     "gf": 0.9954,
+     "gb": 0.0
+    },
+    {
+     "i": 704,
+     "j": 3577,
+     "label": "cable_fwd",
+     "psi_f": 0.0478,
+     "psi_b": 1.7363,
+     "gf": 0.9954,
+     "gb": 0.0009
+    },
+    {
+     "i": 704,
+     "j": 9460,
+     "label": "cable_fwd",
+     "psi_f": -0.0478,
+     "psi_b": 2.963,
+     "gf": 0.9954,
+     "gb": 0.0
+    },
+    {
+     "i": 899,
+     "j": 2603,
+     "label": "cable_fwd",
+     "psi_f": -0.0478,
+     "psi_b": 2.4375,
+     "gf": 0.9954,
+     "gb": 0.0
+    },
+    {
+     "i": 899,
+     "j": 5844,
+     "label": "cable_fwd",
+     "psi_f": 0.0478,
+     "psi_b": 1.3966,
+     "gf": 0.9954,
+     "gb": 0.014
+    },
+    {
+     "i": 1279,
+     "j": 3577,
+     "label": "cable_fwd",
+     "psi_f": -0.0478,
+     "psi_b": 2.2636,
+     "gf": 0.9954,
+     "gb": 0.0
+    },
+    {
+     "i": 1279,
+     "j": 5174,
+     "label": "cable_fwd",
+     "psi_f": 0.0478,
+     "psi_b": 1.7851,
+     "gf": 0.9954,
+     "gb": 0.0006
+    },
+    {
+     "i": 3096,
+     "j": 7786,
+     "label": "cable_fwd",
+     "psi_f": -0.0478,
+     "psi_b": 1.8458,
+     "gf": 0.9954,
+     "gb": 0.0003
+    },
+    {
+     "i": 5174,
+     "j": 7786,
+     "label": "cable_fwd",
+     "psi_f": 0.0478,
+     "psi_b": 1.5427,
+     "gf": 0.9954,
+     "gb": 0.0049
+    },
+    {
+     "i": 5844,
+     "j": 8106,
+     "label": "cable_fwd",
+     "psi_f": 0.0478,
+     "psi_b": 2.3482,
+     "gf": 0.9954,
+     "gb": 0.0
+    },
+    {
+     "i": 8106,
+     "j": 9460,
+     "label": "cable_fwd",
+     "psi_f": 0.0478,
+     "psi_b": 2.318,
+     "gf": 0.9954,
+     "gb": 0.0
+    }
+   ],
+   "penalty": 0.0,
+   "total": 0.0097,
+   "rank": 2
+  },
+  {
+   "name": "ring16_m8",
+   "class": "ring",
+   "note": "large strut ring n=16",
+   "n": 16,
+   "ne": 16,
+   "bipartite": true,
+   "stats": {
+    "tries": 12,
+    "embed_ok": 2,
+    "realizability": 0.16666666666666666,
+    "sigma_d_med": 0.19651001685009312
+   },
+   "verdict": "scored",
+   "omega": 1.3942,
+   "x": 0.9,
+   "leak_per_voice": 0.0119,
+   "leak_edge": 0.1631,
+   "leak_par": 0.0,
+   "leak_vac": 0.0266,
+   "npar": 0,
+   "gpar_max": 0.0,
+   "nopen": 0,
+   "nbridge": 0,
+   "wind": 2.71,
+   "n_strut": 0,
+   "n_cable": 16,
+   "cycles": [
+    [
+     16,
+     23.838,
+     5.2896
+    ]
+   ],
+   "cells": [
+    1633,
+    1886,
+    157,
+    2139,
+    8851,
+    999,
+    604,
+    2578,
+    8352,
+    4617,
+    2720,
+    4962,
+    3689,
+    6571,
+    4650,
+    5365
+   ],
+   "edges": [
+    {
+     "i": 157,
+     "j": 1886,
+     "label": "cable_fwd",
+     "psi_f": -0.0689,
+     "psi_b": 1.9484,
+     "gf": 0.9906,
+     "gb": 0.0001
+    },
+    {
+     "i": 157,
+     "j": 2139,
+     "label": "cable_fwd",
+     "psi_f": 0.0689,
+     "psi_b": 1.8851,
+     "gf": 0.9906,
+     "gb": 0.0002
+    },
+    {
+     "i": 604,
+     "j": 999,
+     "label": "cable_fwd",
+     "psi_f": -0.0689,
+     "psi_b": 2.8631,
+     "gf": 0.9906,
+     "gb": 0.0
+    },
+    {
+     "i": 604,
+     "j": 2578,
+     "label": "cable_fwd",
+     "psi_f": 0.0689,
+     "psi_b": 1.6891,
+     "gf": 0.9906,
+     "gb": 0.0014
+    },
+    {
+     "i": 999,
+     "j": 8851,
+     "label": "cable_fwd",
+     "psi_f": -0.0689,
+     "psi_b": 2.1398,
+     "gf": 0.9906,
+     "gb": 0.0
+    },
+    {
+     "i": 1633,
+     "j": 1886,
+     "label": "cable_fwd",
+     "psi_f": 0.0689,
+     "psi_b": 2.2289,
+     "gf": 0.9906,
+     "gb": 0.0
+    },
+    {
+     "i": 1633,
+     "j": 5365,
+     "label": "cable_fwd",
+     "psi_f": -0.0689,
+     "psi_b": 2.3142,
+     "gf": 0.9906,
+     "gb": 0.0
+    },
+    {
+     "i": 2139,
+     "j": 8851,
+     "label": "cable_fwd",
+     "psi_f": 0.0689,
+     "psi_b": 2.5769,
+     "gf": 0.9906,
+     "gb": 0.0
+    },
+    {
+     "i": 2578,
+     "j": 8352,
+     "label": "cable_fwd",
+     "psi_f": 0.0689,
+     "psi_b": 1.4263,
+     "gf": 0.9906,
+     "gb": 0.0115
+    },
+    {
+     "i": 2720,
+     "j": 4617,
+     "label": "cable_fwd",
+     "psi_f": -0.0689,
+     "psi_b": 1.5944,
+     "gf": 0.9906,
+     "gb": 0.0032
+    },
+    {
+     "i": 2720,
+     "j": 4962,
+     "label": "cable_fwd",
+     "psi_f": 0.0689,
+     "psi_b": 2.4321,
+     "gf": 0.9906,
+     "gb": 0.0
+    },
+    {
+     "i": 3689,
+     "j": 4962,
+     "label": "cable_fwd",
+     "psi_f": -0.0689,
+     "psi_b": 1.5414,
+     "gf": 0.9906,
+     "gb": 0.0049
+    },
+    {
+     "i": 3689,
+     "j": 6571,
+     "label": "cable_fwd",
+     "psi_f": 0.0689,
+     "psi_b": 2.8138,
+     "gf": 0.9906,
+     "gb": 0.0
+    },
+    {
+     "i": 4617,
+     "j": 8352,
+     "label": "cable_fwd",
+     "psi_f": -0.0689,
+     "psi_b": 2.4611,
+     "gf": 0.9906,
+     "gb": 0.0
+    },
+    {
+     "i": 4650,
+     "j": 5365,
+     "label": "cable_fwd",
+     "psi_f": 0.0689,
+     "psi_b": 2.5283,
+     "gf": 0.9906,
+     "gb": 0.0
+    },
+    {
+     "i": 4650,
+     "j": 6571,
+     "label": "cable_fwd",
+     "psi_f": -0.0689,
+     "psi_b": 1.6165,
+     "gf": 0.9906,
+     "gb": 0.0027
+    }
+   ],
+   "penalty": 0.0,
+   "total": 0.0119,
+   "rank": 3
+  },
+  {
+   "name": "ring10_m4",
+   "class": "ring",
+   "note": "phi=4pi/5: back gate G(72)=0.026",
+   "n": 10,
+   "ne": 10,
+   "bipartite": true,
+   "stats": {
+    "tries": 12,
+    "embed_ok": 8,
+    "realizability": 0.6666666666666666,
+    "sigma_d_med": 0.18823692067831893
+   },
+   "verdict": "scored",
+   "omega": 1.3942,
+   "x": 0.9,
+   "leak_per_voice": 0.0183,
+   "leak_edge": 0.1671,
+   "leak_par": 0.0001,
+   "leak_vac": 0.0161,
+   "npar": 2,
+   "gpar_max": 0.0001,
+   "nopen": 0,
+   "nbridge": 0,
+   "wind": 1.944,
+   "n_strut": 0,
+   "n_cable": 10,
+   "cycles": [
+    [
+     10,
+     13.772,
+     3.056
+    ]
+   ],
+   "cells": [
+    1170,
+    2447,
+    4712,
+    1491,
+    3670,
+    2578,
+    7344,
+    219,
+    6110,
+    5251
+   ],
+   "edges": [
+    {
+     "i": 219,
+     "j": 6110,
+     "label": "cable_fwd",
+     "psi_f": -0.0753,
+     "psi_b": 2.7971,
+     "gf": 0.9887,
+     "gb": 0.0
+    },
+    {
+     "i": 219,
+     "j": 7344,
+     "label": "cable_fwd",
+     "psi_f": 0.0753,
+     "psi_b": 2.1787,
+     "gf": 0.9887,
+     "gb": 0.0
+    },
+    {
+     "i": 1170,
+     "j": 2447,
+     "label": "cable_fwd",
+     "psi_f": -0.0753,
+     "psi_b": 2.7999,
+     "gf": 0.9887,
+     "gb": 0.0
+    },
+    {
+     "i": 1170,
+     "j": 5251,
+     "label": "cable_fwd",
+     "psi_f": 0.0753,
+     "psi_b": 2.6684,
+     "gf": 0.9887,
+     "gb": 0.0
+    },
+    {
+     "i": 1491,
+     "j": 3670,
+     "label": "cable_fwd",
+     "psi_f": -0.0753,
+     "psi_b": 2.2317,
+     "gf": 0.9887,
+     "gb": 0.0
+    },
+    {
+     "i": 1491,
+     "j": 4712,
+     "label": "cable_fwd",
+     "psi_f": 0.0753,
+     "psi_b": 2.4427,
+     "gf": 0.9887,
+     "gb": 0.0
+    },
+    {
+     "i": 2447,
+     "j": 4712,
+     "label": "cable_fwd",
+     "psi_f": -0.0753,
+     "psi_b": 1.0286,
+     "gf": 0.9887,
+     "gb": 0.109
+    },
+    {
+     "i": 2578,
+     "j": 3670,
+     "label": "cable_fwd",
+     "psi_f": 0.0753,
+     "psi_b": 2.6838,
+     "gf": 0.9887,
+     "gb": 0.0
+    },
+    {
+     "i": 2578,
+     "j": 7344,
+     "label": "cable_fwd",
+     "psi_f": -0.0753,
+     "psi_b": 2.9809,
+     "gf": 0.9887,
+     "gb": 0.0
+    },
+    {
+     "i": 5251,
+     "j": 6110,
+     "label": "cable_fwd",
+     "psi_f": 0.0753,
+     "psi_b": 2.6172,
+     "gf": 0.9887,
+     "gb": 0.0
+    }
+   ],
+   "penalty": 0.0,
+   "total": 0.0183,
+   "rank": 4
+  },
+  {
+   "name": "ring12_m5",
+   "class": "anchor",
+   "note": "comp12 wound cable ring (m=5): alive t=5000",
+   "n": 12,
+   "ne": 12,
+   "bipartite": true,
+   "stats": {
+    "tries": 12,
+    "embed_ok": 10,
+    "realizability": 0.8333333333333334,
+    "sigma_d_med": 0.18671580397541498
+   },
+   "verdict": "scored",
+   "omega": 1.7039,
+   "x": 0.585,
+   "leak_per_voice": 0.0203,
+   "leak_edge": 0.2085,
+   "leak_par": 0.007,
+   "leak_vac": 0.0282,
+   "npar": 3,
+   "gpar_max": 0.0047,
+   "nopen": 0,
+   "nbridge": 0,
+   "wind": 1.807,
+   "n_strut": 1,
+   "n_cable": 11,
+   "cycles": [
+    [
+     12,
+     15.461,
+     4.1929
+    ]
+   ],
+   "cells": [
+    4617,
+    3018,
+    7058,
+    8611,
+    5876,
+    6032,
+    745,
+    6737,
+    1655,
+    9085,
+    1491,
+    3670
+   ],
+   "edges": [
+    {
+     "i": 745,
+     "j": 6032,
+     "label": "cable_fwd",
+     "psi_f": -0.0849,
+     "psi_b": 2.4584,
+     "gf": 0.9857,
+     "gb": 0.0
+    },
+    {
+     "i": 745,
+     "j": 6737,
+     "label": "strut",
+     "psi_f": 0.0849,
+     "psi_b": -0.0458,
+     "gf": 0.9857,
+     "gb": 0.9958
+    },
+    {
+     "i": 1491,
+     "j": 3670,
+     "label": "cable_fwd",
+     "psi_f": 0.0849,
+     "psi_b": 1.1549,
+     "gf": 0.9857,
+     "gb": 0.059
+    },
+    {
+     "i": 1491,
+     "j": 9085,
+     "label": "cable_fwd",
+     "psi_f": -0.0849,
+     "psi_b": 2.6567,
+     "gf": 0.9857,
+     "gb": 0.0
+    },
+    {
+     "i": 1655,
+     "j": 6737,
+     "label": "cable_fwd",
+     "psi_f": -0.0849,
+     "psi_b": 1.6623,
+     "gf": 0.9857,
+     "gb": 0.0018
+    },
+    {
+     "i": 1655,
+     "j": 9085,
+     "label": "cable_fwd",
+     "psi_f": 0.0849,
+     "psi_b": 2.7725,
+     "gf": 0.9857,
+     "gb": 0.0
+    },
+    {
+     "i": 3018,
+     "j": 4617,
+     "label": "cable_fwd",
+     "psi_f": -0.0849,
+     "psi_b": 1.6153,
+     "gf": 0.9857,
+     "gb": 0.0027
+    },
+    {
+     "i": 3018,
+     "j": 7058,
+     "label": "cable_fwd",
+     "psi_f": 0.0849,
+     "psi_b": 2.4435,
+     "gf": 0.9857,
+     "gb": 0.0
+    },
+    {
+     "i": 3670,
+     "j": 4617,
+     "label": "cable_fwd",
+     "psi_f": 0.0849,
+     "psi_b": 1.7079,
+     "gf": 0.9857,
+     "gb": 0.0012
+    },
+    {
+     "i": 5876,
+     "j": 6032,
+     "label": "cable_fwd",
+     "psi_f": 0.0849,
+     "psi_b": 1.9491,
+     "gf": 0.9857,
+     "gb": 0.0001
+    },
+    {
+     "i": 5876,
+     "j": 8611,
+     "label": "cable_fwd",
+     "psi_f": -0.0849,
+     "psi_b": 2.3679,
+     "gf": 0.9857,
+     "gb": 0.0
+    },
+    {
+     "i": 7058,
+     "j": 8611,
+     "label": "cable_fwd",
+     "psi_f": 0.0849,
+     "psi_b": 1.7968,
+     "gf": 0.9857,
+     "gb": 0.0005
+    }
+   ],
+   "penalty": 0.0,
+   "total": 0.0203,
+   "rank": 5
+  },
+  {
+   "name": "free_0",
+   "class": "free-search",
+   "note": "backtracer find",
+   "n": 12,
+   "ne": 12,
+   "bipartite": true,
+   "verdict": "scored",
+   "omega": 1.7039,
+   "x": 0.585,
+   "leak_per_voice": 0.0203,
+   "leak_edge": 0.2085,
+   "leak_par": 0.007,
+   "leak_vac": 0.0282,
+   "npar": 3,
+   "gpar_max": 0.0047,
+   "nopen": 0,
+   "nbridge": 0,
+   "wind": 1.807,
+   "n_strut": 1,
+   "n_cable": 11,
+   "cycles": [
+    [
+     12,
+     15.461,
+     4.1929
+    ]
+   ],
+   "cells": [
+    745,
+    1491,
+    1655,
+    3018,
+    3670,
+    4617,
+    5876,
+    6032,
+    6737,
+    7058,
+    8611,
+    9085
+   ],
+   "edges": [
+    {
+     "i": 745,
+     "j": 6032,
+     "label": "cable_fwd",
+     "psi_f": -0.0849,
+     "psi_b": 2.4584,
+     "gf": 0.9857,
+     "gb": 0.0
+    },
+    {
+     "i": 745,
+     "j": 6737,
+     "label": "strut",
+     "psi_f": 0.0849,
+     "psi_b": -0.0458,
+     "gf": 0.9857,
+     "gb": 0.9958
+    },
+    {
+     "i": 1491,
+     "j": 3670,
+     "label": "cable_fwd",
+     "psi_f": 0.0849,
+     "psi_b": 1.1549,
+     "gf": 0.9857,
+     "gb": 0.059
+    },
+    {
+     "i": 1491,
+     "j": 9085,
+     "label": "cable_fwd",
+     "psi_f": -0.0849,
+     "psi_b": 2.6567,
+     "gf": 0.9857,
+     "gb": 0.0
+    },
+    {
+     "i": 1655,
+     "j": 6737,
+     "label": "cable_fwd",
+     "psi_f": -0.0849,
+     "psi_b": 1.6623,
+     "gf": 0.9857,
+     "gb": 0.0018
+    },
+    {
+     "i": 1655,
+     "j": 9085,
+     "label": "cable_fwd",
+     "psi_f": 0.0849,
+     "psi_b": 2.7725,
+     "gf": 0.9857,
+     "gb": 0.0
+    },
+    {
+     "i": 3018,
+     "j": 4617,
+     "label": "cable_fwd",
+     "psi_f": -0.0849,
+     "psi_b": 1.6153,
+     "gf": 0.9857,
+     "gb": 0.0027
+    },
+    {
+     "i": 3018,
+     "j": 7058,
+     "label": "cable_fwd",
+     "psi_f": 0.0849,
+     "psi_b": 2.4435,
+     "gf": 0.9857,
+     "gb": 0.0
+    },
+    {
+     "i": 3670,
+     "j": 4617,
+     "label": "cable_fwd",
+     "psi_f": 0.0849,
+     "psi_b": 1.7079,
+     "gf": 0.9857,
+     "gb": 0.0012
+    },
+    {
+     "i": 5876,
+     "j": 6032,
+     "label": "cable_fwd",
+     "psi_f": 0.0849,
+     "psi_b": 1.9491,
+     "gf": 0.9857,
+     "gb": 0.0001
+    },
+    {
+     "i": 5876,
+     "j": 8611,
+     "label": "cable_fwd",
+     "psi_f": -0.0849,
+     "psi_b": 2.3679,
+     "gf": 0.9857,
+     "gb": 0.0
+    },
+    {
+     "i": 7058,
+     "j": 8611,
+     "label": "cable_fwd",
+     "psi_f": 0.0849,
+     "psi_b": 1.7968,
+     "gf": 0.9857,
+     "gb": 0.0005
+    }
+   ],
+   "penalty": 0.0,
+   "total": 0.0203,
+   "stats": {
+    "realizability": 1.0,
+    "sigma_d_med": null,
+    "tries": 1,
+    "embed_ok": 1
+   },
+   "rank": 6
+  },
+  {
+   "name": "ring6_m2",
+   "class": "anchor",
+   "note": "comp6 one-way (m=2): died 3836; 2nd-nbr 1.905 parasites?",
+   "n": 6,
+   "ne": 6,
+   "bipartite": true,
+   "stats": {
+    "tries": 12,
+    "embed_ok": 12,
+    "realizability": 1.0,
+    "sigma_d_med": 0.16004264654392328
+   },
+   "verdict": "scored",
+   "omega": 2.0784,
+   "x": 0.3294,
+   "leak_per_voice": 0.0244,
+   "leak_edge": 0.0926,
+   "leak_par": 0.0253,
+   "leak_vac": 0.0284,
+   "npar": 3,
+   "gpar_max": 0.0085,
+   "nopen": 0,
+   "nbridge": 0,
+   "wind": 0.689,
+   "n_strut": 1,
+   "n_cable": 5,
+   "cycles": [
+    [
+     6,
+     6.987,
+     2.3112
+    ]
+   ],
+   "cells": [
+    718,
+    3415,
+    7302,
+    7548,
+    7160,
+    4707
+   ],
+   "edges": [
+    {
+     "i": 718,
+     "j": 3415,
+     "label": "cable_fwd",
+     "psi_f": -0.0772,
+     "psi_b": 1.9032,
+     "gf": 0.9882,
+     "gb": 0.0002
+    },
+    {
+     "i": 718,
+     "j": 4707,
+     "label": "cable_fwd",
+     "psi_f": 0.0772,
+     "psi_b": 1.5298,
+     "gf": 0.9882,
+     "gb": 0.0054
+    },
+    {
+     "i": 3415,
+     "j": 7302,
+     "label": "strut",
+     "psi_f": -0.0772,
+     "psi_b": 0.0444,
+     "gf": 0.9882,
+     "gb": 0.9961
+    },
+    {
+     "i": 4707,
+     "j": 7160,
+     "label": "cable_fwd",
+     "psi_f": 0.0772,
+     "psi_b": 1.7473,
+     "gf": 0.9882,
+     "gb": 0.0008
+    },
+    {
+     "i": 7160,
+     "j": 7548,
+     "label": "cable_fwd",
+     "psi_f": 0.0772,
+     "psi_b": 1.2824,
+     "gf": 0.9882,
+     "gb": 0.0289
+    },
+    {
+     "i": 7302,
+     "j": 7548,
+     "label": "cable_fwd",
+     "psi_f": -0.0772,
+     "psi_b": 2.149,
+     "gf": 0.9882,
+     "gb": 0.0
+    }
+   ],
+   "penalty": 0.0,
+   "total": 0.0244,
+   "rank": 7
+  },
+  {
+   "name": "theta_666_d1.5",
+   "class": "theta",
+   "note": "3 arms x6 edges; junction deg 3",
+   "n": 17,
+   "ne": 18,
+   "bipartite": true,
+   "stats": {
+    "tries": 12,
+    "embed_ok": 3,
+    "realizability": 0.25,
+    "sigma_d_med": 0.1884326552484346
+   },
+   "verdict": "scored",
+   "omega": 1.3942,
+   "x": 0.9,
+   "leak_per_voice": 0.0262,
+   "leak_edge": 0.4011,
+   "leak_par": 0.0176,
+   "leak_vac": 0.0271,
+   "npar": 2,
+   "gpar_max": 0.0176,
+   "nopen": 0,
+   "nbridge": 0,
+   "wind": 3.802,
+   "n_strut": 0,
+   "n_cable": 18,
+   "cycles": [
+    [
+     12,
+     17.825,
+     3.9554
+    ],
+    [
+     12,
+     19.118,
+     4.2423
+    ]
+   ],
+   "cells": [
+    5212,
+    347,
+    3122,
+    6374,
+    5060,
+    3072,
+    6553,
+    2220,
+    3306,
+    3008,
+    6376,
+    2323,
+    443,
+    8118,
+    8567,
+    310,
+    4914
+   ],
+   "edges": [
+    {
+     "i": 310,
+     "j": 4914,
+     "label": "cable_fwd",
+     "psi_f": 0.0347,
+     "psi_b": 1.3684,
+     "gf": 0.9976,
+     "gb": 0.0169
+    },
+    {
+     "i": 310,
+     "j": 8567,
+     "label": "cable_fwd",
+     "psi_f": -0.0347,
+     "psi_b": -2.9205,
+     "gf": 0.9976,
+     "gb": 0.0
+    },
+    {
+     "i": 347,
+     "j": 3122,
+     "label": "cable_fwd",
+     "psi_f": -0.1209,
+     "psi_b": 1.5569,
+     "gf": 0.9712,
+     "gb": 0.0044
+    },
+    {
+     "i": 347,
+     "j": 5212,
+     "label": "cable_fwd",
+     "psi_f": 0.1209,
+     "psi_b": 2.2415,
+     "gf": 0.9712,
+     "gb": 0.0
+    },
+    {
+     "i": 443,
+     "j": 5212,
+     "label": "cable_fwd",
+     "psi_f": -0.0347,
+     "psi_b": 1.2966,
+     "gf": 0.9976,
+     "gb": 0.0266
+    },
+    {
+     "i": 443,
+     "j": 8118,
+     "label": "cable_fwd",
+     "psi_f": 0.0347,
+     "psi_b": 1.703,
+     "gf": 0.9976,
+     "gb": 0.0013
+    },
+    {
+     "i": 2220,
+     "j": 3306,
+     "label": "cable_fwd",
+     "psi_f": 0.0862,
+     "psi_b": 2.0818,
+     "gf": 0.9852,
+     "gb": 0.0
+    },
+    {
+     "i": 2220,
+     "j": 5212,
+     "label": "cable_fwd",
+     "psi_f": -0.0862,
+     "psi_b": 1.8792,
+     "gf": 0.9852,
+     "gb": 0.0002
+    },
+    {
+     "i": 2323,
+     "j": 6376,
+     "label": "cable_fwd",
+     "psi_f": -0.0862,
+     "psi_b": 1.1968,
+     "gf": 0.9852,
+     "gb": 0.0472
+    },
+    {
+     "i": 2323,
+     "j": 6553,
+     "label": "cable_fwd",
+     "psi_f": 0.0862,
+     "psi_b": 1.7997,
+     "gf": 0.9852,
+     "gb": 0.0005
+    },
+    {
+     "i": 3008,
+     "j": 3306,
+     "label": "cable_fwd",
+     "psi_f": -0.0862,
+     "psi_b": 1.4813,
+     "gf": 0.9852,
+     "gb": 0.0078
+    },
+    {
+     "i": 3008,
+     "j": 6376,
+     "label": "cable_fwd",
+     "psi_f": 0.0862,
+     "psi_b": 2.6234,
+     "gf": 0.9852,
+     "gb": 0.0
+    },
+    {
+     "i": 3072,
+     "j": 5060,
+     "label": "cable_fwd",
+     "psi_f": 0.1209,
+     "psi_b": 1.9449,
+     "gf": 0.9712,
+     "gb": 0.0001
+    },
+    {
+     "i": 3072,
+     "j": 6553,
+     "label": "cable_fwd",
+     "psi_f": -0.1209,
+     "psi_b": 2.7474,
+     "gf": 0.9712,
+     "gb": 0.0
+    },
+    {
+     "i": 3122,
+     "j": 6374,
+     "label": "cable_fwd",
+     "psi_f": -0.1209,
+     "psi_b": -2.9195,
+     "gf": 0.9712,
+     "gb": 0.0
+    },
+    {
+     "i": 4914,
+     "j": 6553,
+     "label": "cable_fwd",
+     "psi_f": 0.0347,
+     "psi_b": 2.2633,
+     "gf": 0.9976,
+     "gb": 0.0
+    },
+    {
+     "i": 5060,
+     "j": 6374,
+     "label": "cable_fwd",
+     "psi_f": 0.1209,
+     "psi_b": 2.777,
+     "gf": 0.9712,
+     "gb": 0.0
+    },
+    {
+     "i": 8118,
+     "j": 8567,
+     "label": "cable_fwd",
+     "psi_f": 0.0347,
+     "psi_b": 0.9628,
+     "gf": 0.9976,
+     "gb": 0.1451
+    }
+   ],
+   "penalty": 0.0,
+   "total": 0.0262,
+   "rank": 8
+  }
+ ],
+ "negative_controls": [
+  {
+   "name": "mobius6_d1.5",
+   "class": "control",
+   "note": "NEG: Mobius ladder k=6 even => odd cycles",
+   "n": 12,
+   "ne": 18,
+   "bipartite": false,
+   "stats": {
+    "tries": 12,
+    "embed_ok": 0,
+    "realizability": 0.0,
+    "sigma_d_med": null
+   },
+   "verdict": "UNREALIZABLE"
+  },
+  {
+   "name": "octahedron_d1.5",
+   "class": "control",
+   "note": "NEG: odd cycles; also equator 4-cycles fail",
+   "n": 6,
+   "ne": 12,
+   "bipartite": false,
+   "stats": {
+    "tries": 12,
+    "embed_ok": 5,
+    "realizability": 0.4166666666666667,
+    "sigma_d_med": 0.25164492517447334
+   },
+   "verdict": "scored",
+   "omega": 1.7188,
+   "x": 0.5726,
+   "leak_per_voice": 0.8336,
+   "leak_edge": 4.9887,
+   "leak_par": 0.0,
+   "leak_vac": 0.0132,
+   "npar": 1,
+   "gpar_max": 0.0,
+   "nopen": 0,
+   "nbridge": 0,
+   "wind": 2.474,
+   "n_strut": 0,
+   "n_cable": 12,
+   "cycles": [
+    [
+     4,
+     5.692,
+     1.557
+    ],
+    [
+     3,
+     4.682,
+     1.2809
+    ],
+    [
+     3,
+     4.312,
+     1.1796
+    ],
+    [
+     4,
+     5.532,
+     1.5133
+    ],
+    [
+     4,
+     5.704,
+     1.5605
+    ],
+    [
+     3,
+     4.655,
+     1.2735
+    ],
+    [
+     3,
+     4.247,
+     1.1617
+    ]
+   ],
+   "cells": [
+    6813,
+    2180,
+    8007,
+    8261,
+    2020,
+    5925
+   ],
+   "edges": [
+    {
+     "i": 2020,
+     "j": 2180,
+     "label": "cable_fwd",
+     "psi_f": -0.45,
+     "psi_b": 1.5241,
+     "gf": 0.6646,
+     "gb": 0.0056
+    },
+    {
+     "i": 2020,
+     "j": 6813,
+     "label": "cable_fwd",
+     "psi_f": -0.8395,
+     "psi_b": 2.4903,
+     "gf": 0.2339,
+     "gb": 0.0
+    },
+    {
+     "i": 2020,
+     "j": 8007,
+     "label": "cable_bwd",
+     "psi_f": 0.7079,
+     "psi_b": 0.2233,
+     "gf": 0.3592,
+     "gb": 0.9049
+    },
+    {
+     "i": 2020,
+     "j": 8261,
+     "label": "cable_bwd",
+     "psi_f": 0.5816,
+     "psi_b": -0.0099,
+     "gf": 0.5034,
+     "gb": 0.9998
+    },
+    {
+     "i": 2180,
+     "j": 5925,
+     "label": "cable_bwd",
+     "psi_f": 1.5473,
+     "psi_b": 0.1685,
+     "gf": 0.0047,
+     "gb": 0.9448
+    },
+    {
+     "i": 2180,
+     "j": 8007,
+     "label": "cable_fwd",
+     "psi_f": -0.6573,
+     "psi_b": -3.116,
+     "gf": 0.4148,
+     "gb": 0.0
+    },
+    {
+     "i": 2180,
+     "j": 8261,
+     "label": "cable_fwd",
+     "psi_f": -1.3401,
+     "psi_b": 2.3775,
+     "gf": 0.0203,
+     "gb": 0.0
+    },
+    {
+     "i": 5925,
+     "j": 6813,
+     "label": "cable_fwd",
+     "psi_f": -0.5879,
+     "psi_b": 2.1467,
+     "gf": 0.4959,
+     "gb": 0.0
+    },
+    {
+     "i": 5925,
+     "j": 8007,
+     "label": "cable_bwd",
+     "psi_f": 1.0979,
+     "psi_b": 0.0179,
+     "gf": 0.0787,
+     "gb": 0.9994
+    },
+    {
+     "i": 5925,
+     "j": 8261,
+     "label": "cable_bwd",
+     "psi_f": 1.0373,
+     "psi_b": -0.1496,
+     "gf": 0.1048,
+     "gb": 0.9562
+    },
+    {
+     "i": 6813,
+     "j": 8007,
+     "label": "cable_fwd",
+     "psi_f": -1.1485,
+     "psi_b": 1.3202,
+     "gf": 0.061,
+     "gb": 0.023
+    },
+    {
+     "i": 6813,
+     "j": 8261,
+     "label": "cable_fwd",
+     "psi_f": -0.2788,
+     "psi_b": 2.083,
+     "gf": 0.8555,
+     "gb": 0.0
+    }
+   ],
+   "penalty": 0.0,
+   "total": 0.8336
+  }
+ ],
+ "exotics": {
+  "fifth_bridge": {
+   "w_low_window": [
+    1.3942307692307692,
+    1.4871794871794872
+   ],
+   "example": {
+    "w_low": 1.45,
+    "w_high": 2.175,
+    "x_low": 0.8333333333333334,
+    "x_high": 0.2777777777777779
+   },
+   "bridge_d_m1": 0.7222052077217915,
+   "bridge_d_m2": 1.444410415443583,
+   "acceptance_det": 0.016666666666666666,
+   "dx_tolerance_rms": 0.0035421468469044007,
+   "res_on_tooth": 0.16666666666666666
+  },
+  "hopf_geometry": {
+   "R": 2.4148145657226707,
+   "min_dist": 2.41481456572267,
+   "ceiling": 1.96,
+   "clean": true
+  }
+ }
+}
