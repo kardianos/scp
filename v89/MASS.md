@@ -360,3 +360,96 @@ E — THEORY DEBTS FEEDING MASS
   leaks toward the skirt; the stabilization routes standing are the
   piston (raise the ambient barrier) and roughness elimination.
   Next: piston build (C1'), then the B+ pressure arm on comp12.
+
+### R5. The pressurized bubble — surface tension + the higgs hole
+(user proposition, 2026-07-28)
+
+The proposition: a stable particle has strong surface tension (a
+consonant, self-insulating skin) and a DENSITY HOLE — the "higgs
+hole", the reverse of matter: dense-empty, space-rich — which is
+load-bearing in the circulation/tension pattern. v89 translation: an
+enclosed Es overpressure pushes OUT (pressure law) while ambient
+pushes IN — a Laplace bubble with an equilibrium radius: the restoring
+term every ring lacked (a 1D loop encloses no volume; only a closed
+2-surface can trap a pocket). NOT the excluded pre-v89 shell import:
+this is built from the v89 space-transport law, which did not exist
+before.
+
+**Derived selection rule (new):** a consonant closed surface must be
+BIPARTITE — the reachable pair rung is the antiphase π-rung, which
+cannot close around odd cycles; triangulated shells (icosahedra) are
+frustrated; the CUBE (all 4-cycles, face diagonals beyond the contact
+ceiling) is the minimal consonant shell. If shells become species,
+"why these shapes" starts here.
+
+H-ladder: H1 the bubble (cube shell + pressurized core) vs three
+controls (shell without pressure / solid ball at matched mass / naked
+pocket); H2 tension spectroscopy (breathing mode + fracture threshold
+— "strong glass" = stiff and brittle vs flowing); H3 the circulation
+round (toroidal tube enclosing the pocket — winding + hole + surface
+combined) if H1 shows the hole matters.
+
+* **2026-07-28 (H1 pre-registration, before the fleet lands).** Seeder
+  facts: foam discreteness inflates cell-scale cubes (nearest-vertex
+  picks: a_target 1.25 → abar 1.43, x/voice 0.264); seed gates
+  imperfect (min ≈ 0 on a co-tree edge — cycle defects concentrate);
+  we let entrainment finish the seeding (e6: lock acquisition ~10
+  t.u.) and MEASURE whether the shell self-locks. PREDICTIONS, per the
+  proposition: lifetime ordering bubble > shell-without-pressure >
+  solid ball (matched mass); the bubble's core Es excess persists
+  (trapped by the skin) where the naked pocket's disperses at the bare
+  pass-S rate; equilibrium signature = late |dM/dt| ≤ 1e-4 with core
+  pressure maintained. If the hole is NOT load-bearing (bubble ≈
+  shell0), the proposition's hole clause fails honestly while the
+  shell clause may still stand.
+
+* **2026-07-28 (H1 v1: the hole was empty — instruments caught it).**
+  `# shell core: cells=0` — the tiny cube's vertex picks consumed the
+  central cells, so the "bubble" arm ran with NO pocket: h1_bubble and
+  h1_shell0 produced byte-identical logs (death t=1222 — incidental
+  determinism proof, no hole test). Valid scraps: unpressurized
+  mini-shell ≈ matched solid ball (1222 vs 1158) — no enclosure
+  benefit at this size and seed quality (gates mean 0.64, min 0).
+  Seeder fixed: vertex picks exclude the core ball; core seeding
+  guarantees ≥1 cell (2 seeded); edge-uniformity refinement passes.
+  The exclusion pushes the cube outward (abar 1.59, x/voice 0.39 —
+  heavier, farther from the skirt; both arms share the seed so the
+  A/B stays clean). H1 v2 running: bubble vs shell0 vs pocket,
+  T=5000, ratchet gate chained. Pre-registration unchanged.
+
+* **2026-07-28 (H1 v2: hole test confounded AGAIN — correction).** My
+  v2 log claim "both arms share the seed" was WRONG: the core
+  exclusion was conditional on es_core>0, so shell0 picked a tighter
+  cube (abar 1.237, x/voice 0.118 — skirt-class light) while the
+  bubble sat at abar 1.586, x 0.387. shell0's death at 237 is light-
+  shell skirt physics, not a pressure result. What v2 does show:
+  bubble (heavy shell + 2-cell pocket) died 1749 — below comp12's
+  >5000: the bubble class does not yet beat rings at this seed
+  quality; the naked pocket disperses by ~t=100 (the bare pass-S
+  rate the skin must beat). Fix: core exclusion now unconditional on
+  r_core (geometry identical across arms; only Es differs). h1_shell0
+  v3 running with matched geometry + gate. The A/B that decides the
+  hole clause is pressure on/off at IDENTICAL picks.
+
+* **2026-07-28 (H1 v3: THE CLEAN A/B — the hole clause falsified at
+  this scale, and the reason is a mechanism statement).** Matched
+  geometry at last (identical seed lines, abar 1.586, x/voice 0.387):
+  pressurized bubble died 1749; unpressurized twin died 1814 — no
+  effect within foam chaos (±30%). The 2-cell ×1.3 pocket buys
+  nothing, and the arithmetic says why it could not: (a) the pocket's
+  excess (~0.6) is ~10× smaller than the shell's leak by t=1000; (b)
+  more fundamentally, THE LEAK LEAVES AS FIELD (roughness radiation,
+  D→F) — space pressure pushes the space mode and cannot dam a field
+  channel. The hole cannot fix this killer at any scale UNLESS the
+  skin first closes the field channel. VERDICT on the proposition:
+  hole clause falsified as tested; the surface-tension clause is
+  SHARPENED into the requirement — a particle's skin must be
+  CONSONANT (on-rung or gate-closed everywhere: nothing rough to
+  radiate). No jittered mini-cube achieves it (gates mean 0.6). The
+  standing stabilization routes after H1: (1) consonant-skin
+  engineering (larger/annealed shells where jitter averages out;
+  entrainment-grown rather than seeded skins), (2) the piston
+  (outside pressure — C1'), (3) S2-full (if translation is the
+  current, rough deliveries may reorganize). H2 tension spectroscopy
+  remains meaningful; H3 (circulation torus) deprioritized until a
+  skin can hold.

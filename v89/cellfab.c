@@ -83,6 +83,9 @@ typedef struct {
     double lump_thr;             /* census membership threshold on free Em */
     int ring_n, ring_wind;       /* MASS apparatus: ring seed (voices, winding) */
     int ring_m;                  /* target closure integer (<0 = per-link auto) */
+    int shell_n;                 /* H: closed-shell seed (8=cube; 0=pocket only) */
+    double shell_a, shell_x;     /* shell edge target; load (<0 = pi-rung auto) */
+    double es_core, r_core;      /* H: the hole — core space store; core radius */
     double ring_d, ring_x;       /* ring spacing; load (<0 = tuning-curve auto) */
     long trials;                 /* bell trials per angle combo */
     double aA1, aA2, aB1, aB2;   /* analyzer angles, degrees */
@@ -176,6 +179,8 @@ static void cfg_defaults(void)
     P.lump_diag = 0; P.lump_thr = 0.1;
     P.ring_n = 0; P.ring_wind = 0; P.ring_d = 1.25; P.ring_x = -1;
     P.ring_m = -1;
+    P.shell_n = 8; P.shell_a = 1.5; P.shell_x = -1;
+    P.es_core = -1; P.r_core = 0.8;
     P.trials = 200000;
     P.aA1 = 0.0; P.aA2 = 45.0; P.aB1 = 22.5; P.aB2 = 67.5;
     P.npairs = 48;
@@ -229,6 +234,7 @@ static void set_kv(const char *k, const char *v)
         else if (!strcmp(v, "slit")) P.init = 5;
         else if (!strcmp(v, "hom")) P.init = 6;
         else if (!strcmp(v, "ring")) P.init = 7;
+        else if (!strcmp(v, "shell")) P.init = 8;
         else fprintf(stderr, "# WARN unknown init '%s'\n", v);
     }
     else if (!strcmp(k, "L")) P.L = atof(v);
@@ -289,6 +295,11 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "ring_n")) P.ring_n = atoi(v);
     else if (!strcmp(k, "ring_wind")) P.ring_wind = atoi(v);
     else if (!strcmp(k, "ring_m")) P.ring_m = atoi(v);
+    else if (!strcmp(k, "shell_n")) P.shell_n = atoi(v);
+    else if (!strcmp(k, "shell_a")) P.shell_a = atof(v);
+    else if (!strcmp(k, "shell_x")) P.shell_x = atof(v);
+    else if (!strcmp(k, "es_core")) P.es_core = atof(v);
+    else if (!strcmp(k, "r_core")) P.r_core = atof(v);
     else if (!strcmp(k, "ring_d")) P.ring_d = atof(v);
     else if (!strcmp(k, "ring_x")) P.ring_x = atof(v);
     else if (!strcmp(k, "trials")) P.trials = atol(v);
@@ -370,7 +381,7 @@ static void load_cfg(const char *path)
 static void print_cfg(void)
 {
     const char *modes[] = { "field", "bell", "ladder" };
-    const char *inits[] = { "vacuum", "noise", "pulse", "blob", "pairs", "slit", "hom", "ring" };
+    const char *inits[] = { "vacuum", "noise", "pulse", "blob", "pairs", "slit", "hom", "ring", "shell" };
     printf("# cellfab — v89 cell-fabric kernel (no lattice, no prior code)\n");
     printf("# cfg seed=%lu mode=%s init=%s\n", P.seed, modes[P.mode], inits[P.init]);
     printf("# cfg L=%g dmin=%g r0=%g rjit=%g\n", P.L, P.dmin, P.r0, P.rjit);
@@ -978,6 +989,195 @@ static void build_field(void)
                "closure/2pi=%.4f wind=%d ring_m=%d\n",
                n, Rr, P.ring_d, Lring, closure / TWO_PI, P.ring_wind, P.ring_m);
         free(pick);
+    } else if (P.init == 8) {
+        /* H-series — the pressurized bubble (user proposition 2026-07-28:
+         * a stable particle has strong surface tension and a density
+         * hole, the "higgs hole" — dense-empty, space-rich, load-
+         * bearing). Consonant closed surfaces must be BIPARTITE: the
+         * reachable pair rung is the antiphase pi-rung, which cannot
+         * close around odd cycles — triangulated shells are frustrated;
+         * the CUBE is the minimal consonant shell (all 4-cycles; face
+         * diagonals beyond the contact ceiling). Uniform pitch from the
+         * ACTUAL mean edge (pi-rung), phases by spanning tree in the
+         * bipartite classes; the core cells get a space overpressure
+         * (an initial condition; E0 is computed after seeding). */
+        double ccx = 0.5 * P.L, ccy = 0.5 * P.L, ccz = 0.5 * P.L;
+        int nsh = P.shell_n == 8 ? 8 : 0;
+        int pick[8];
+        if (nsh == 8) {
+            double h = 0.5 * P.shell_a;
+            for (int k = 0; k < 8; k++) {
+                double tx = ccx + ((k & 1) ? h : -h);
+                double ty = ccy + ((k & 2) ? h : -h);
+                double tz = ccz + ((k & 4) ? h : -h);
+                int best = -1; double bd = 1e30;
+                for (int i = 0; i < NC; i++) {
+                    if (cflag[i]) continue;
+                    /* the hole is load-bearing: vertex picks may not
+                     * consume the core ball */
+                    double hx = cx[i] - ccx, hy = cy[i] - ccy, hz = cz[i] - ccz;
+                    if (P.r_core > 0
+                        && hx * hx + hy * hy + hz * hz < P.r_core * P.r_core)
+                        continue;
+                    int used = 0;
+                    for (int q = 0; q < k; q++) if (pick[q] == i) used = 1;
+                    if (used) continue;
+                    double dx = cx[i] - tx, dy = cy[i] - ty, dz = cz[i] - tz;
+                    double dd = dx * dx + dy * dy + dz * dz;
+                    if (dd < bd) { bd = dd; best = i; }
+                }
+                pick[k] = best;
+            }
+            /* refine picks for EDGE UNIFORMITY: for each vertex try its
+             * runner-up candidates, keep swaps that reduce the spread
+             * of the 12 edge lengths (foam jitter otherwise concentrates
+             * cycle defects on co-tree edges — measured gates min 0) */
+            for (int pass = 0; pass < 3; pass++) {
+                for (int k = 0; k < 8; k++) {
+                    double h = 0.5 * P.shell_a;
+                    double tx = ccx + ((k & 1) ? h : -h);
+                    double ty = ccy + ((k & 2) ? h : -h);
+                    double tz = ccz + ((k & 4) ? h : -h);
+                    double bestscore = 1e30; int bestc = pick[k];
+                    for (int i = 0; i < NC; i++) {
+                        if (cflag[i]) continue;
+                        double hx = cx[i] - ccx, hy = cy[i] - ccy, hz = cz[i] - ccz;
+                        if (P.r_core > 0
+                            && hx * hx + hy * hy + hz * hz < P.r_core * P.r_core)
+                            continue;
+                        double dx = cx[i] - tx, dy = cy[i] - ty, dz = cz[i] - tz;
+                        if (dx * dx + dy * dy + dz * dz > 1.44) continue;
+                        int used = 0;
+                        for (int q = 0; q < 8; q++)
+                            if (q != k && pick[q] == i) used = 1;
+                        if (used) continue;
+                        double sc = 0;
+                        for (int b = 0; b < 3; b++) {
+                            int k2 = k ^ (1 << b);
+                            double ex = cx[pick[k2]] - cx[i];
+                            double ey = cy[pick[k2]] - cy[i];
+                            double ez = cz[pick[k2]] - cz[i];
+                            double dd = sqrt(ex * ex + ey * ey + ez * ez);
+                            sc += (dd - P.shell_a) * (dd - P.shell_a);
+                        }
+                        if (sc < bestscore) { bestscore = sc; bestc = i; }
+                    }
+                    pick[k] = bestc;
+                }
+            }
+            /* cube edges: vertices differing in exactly one axis bit */
+            double abar = 0; int ne = 0;
+            for (int k = 0; k < 8; k++)
+                for (int b = 0; b < 3; b++) {
+                    int k2 = k ^ (1 << b);
+                    if (k2 < k) continue;
+                    double ex = cx[pick[k2]] - cx[pick[k]];
+                    double ey = cy[pick[k2]] - cy[pick[k]];
+                    double ez = cz[pick[k2]] - cz[pick[k]];
+                    abar += sqrt(ex * ex + ey * ey + ez * ez);
+                    ne++;
+                }
+            abar /= ne;
+            double om = M_PI * P.C / abar;
+            double xs = P.shell_x >= 0 ? P.shell_x
+                       : (P.w2 / om - 1.0) / P.q_detune;
+            if (xs < 0.02) xs = 0.02;
+            for (int k = 0; k < 8; k++) {
+                int u = pick[k];
+                double add = xs * P.cap / (1.0 + P.s_pull);
+                Em[u] += add;
+                double pull = P.s_pull * add;
+                double avail = Es[u] - P.es_floor;
+                if (pull > avail) pull = avail > 0 ? avail : 0;
+                Es[u] -= pull;
+                Em[u] += pull;
+                /* planes transverse to the radial direction (the surface) */
+                double ux = cx[u] - ccx, uy = cy[u] - ccy, uz = cz[u] - ccz;
+                double un = sqrt(ux * ux + uy * uy + uz * uz);
+                if (un > 1e-9) { ux /= un; uy /= un; uz /= un; }
+                double ax = 0, ay = 0, az = 1;
+                if (fabs(uz) > 0.9) { ax = 1; az = 0; }
+                double dp2 = ax * ux + ay * uy + az * uz;
+                double t1x = ax - dp2 * ux, t1y = ay - dp2 * uy, t1z = az - dp2 * uz;
+                double tn = sqrt(t1x * t1x + t1y * t1y + t1z * t1z);
+                t1x /= tn; t1y /= tn; t1z /= tn;
+                n1x[u] = t1x; n1y[u] = t1y; n1z[u] = t1z;
+                n2x[u] = uy * t1z - uz * t1y;
+                n2y[u] = uz * t1x - ux * t1z;
+                n2z[u] = ux * t1y - uy * t1x;
+            }
+            /* phases: BFS over cube edges from vertex 0, seedlock each */
+            int seen[8] = {0}, qb[8], hq = 0, tq = 0;
+            th2[pick[0]] = frand() * TWO_PI;
+            seen[0] = 1; qb[tq++] = 0;
+            while (hq < tq) {
+                int k = qb[hq++];
+                for (int b = 0; b < 3; b++) {
+                    int k2 = k ^ (1 << b);
+                    if (seen[k2]) continue;
+                    double ex = cx[pick[k2]] - cx[pick[k]];
+                    double ey = cy[pick[k2]] - cy[pick[k]];
+                    double ez = cz[pick[k2]] - cz[pick[k]];
+                    double dd = sqrt(ex * ex + ey * ey + ez * ez);
+                    th2[pick[k2]] = fmod(th2[pick[k]] - om * dd / P.C
+                                         + 8.0 * TWO_PI, TWO_PI);
+                    seen[k2] = 1; qb[tq++] = k2;
+                }
+            }
+            /* report seed gate quality over all 12 edges */
+            double gmin = 1, gsum = 0;
+            for (int k = 0; k < 8; k++)
+                for (int b = 0; b < 3; b++) {
+                    int k2 = k ^ (1 << b);
+                    if (k2 < k) continue;
+                    double ex = cx[pick[k2]] - cx[pick[k]];
+                    double ey = cy[pick[k2]] - cy[pick[k]];
+                    double ez = cz[pick[k2]] - cz[pick[k]];
+                    double dd = sqrt(ex * ex + ey * ey + ez * ez);
+                    double ps = wrap_pi(th2[pick[k]] - om * dd / P.C
+                                        - th2[pick[k2]]);
+                    double g = gate_of(ps);
+                    if (g < gmin) gmin = g;
+                    gsum += g;
+                }
+            printf("# shell: cube a_target=%.2f abar=%.3f omega=%.4f "
+                   "x=%.4f gates min=%.3f mean=%.3f\n",
+                   P.shell_a, abar, om, xs, gmin, gsum / 12.0);
+        }
+        /* the hole: core space overpressure (skip shell cells) */
+        if (P.es_core > 0) {
+            int ncore = 0;
+            for (int i = 0; i < NC; i++) {
+                if (cflag[i]) continue;
+                int isv = 0;
+                for (int q = 0; q < nsh; q++) if (pick[q] == i) isv = 1;
+                if (isv) continue;
+                double dx = cx[i] - ccx, dy = cy[i] - ccy, dz = cz[i] - ccz;
+                if (dx * dx + dy * dy + dz * dz < P.r_core * P.r_core) {
+                    Es[i] = P.es_core;
+                    ncore++;
+                }
+            }
+            while (ncore < 1) {
+                /* never seed an empty hole: take the nearest free
+                 * non-vertex cell */
+                int best = -1; double bd = 1e30;
+                for (int i = 0; i < NC; i++) {
+                    if (cflag[i] || Es[i] == P.es_core) continue;
+                    int isv = 0;
+                    for (int q = 0; q < nsh; q++) if (pick[q] == i) isv = 1;
+                    if (isv) continue;
+                    double dx = cx[i] - ccx, dy = cy[i] - ccy, dz = cz[i] - ccz;
+                    double dd = dx * dx + dy * dy + dz * dz;
+                    if (dd < bd) { bd = dd; best = i; }
+                }
+                if (best < 0) break;
+                Es[best] = P.es_core;
+                ncore++;
+            }
+            printf("# shell core: es_core=%.2f r_core=%.2f cells=%d\n",
+                   P.es_core, P.r_core, ncore);
+        }
     } else if (P.init == 5) {
         /* double slit: wall (detuned medium) with two vacuum windows,
          * screen + edge sinks (record media), optional which-path
