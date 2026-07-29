@@ -109,19 +109,18 @@ suite timing table exists.
 
 ---
 
-## 6. Recommendation
+## 6. Recommendation (updated — promoted)
 
 | Use | Kernel |
 |-----|--------|
-| Standing science / MASS waves | **`cellfab` FP64** until cellfabi is promoted by explicit decision |
-| Numerics / package honesty experiments | **`cellfabi` mode 3** (battery-green) |
-| Trig-only A/B | mode 0 |
-| Measure quantize noise | mode 1 shadow |
+| **DEFAULT development / MASS / EMF** | **`cellfab`** (`cellfab.c`, ledger_mode=3) |
+| FP64 A/B reference | **`cellfabf`** (`cellfabf.c`) |
+| Trig-only / no ledger | `ledger_mode=0` on cellfab |
+| Measure quantize noise | `ledger_mode=1` |
 | Mode 2 | do not use until redesigned |
 
-**Promotion criteria (suggested):** byte-stable OpenMP parity check;
-mode 3 full battery green on a clean tree (done once); document e3b speed
-margin; optional second foam seed on e3b/g1.
+Promoted 2026-07-29 by user after 20/20 battery. Watch e3b speed margin
+(0.00344 vs bar 0.003) under further law changes.
 
 ---
 

@@ -1,10 +1,9 @@
 /*
- * cellfabi.c — INTEGER-LEDGER variant of cellfab (v89).
- * Production FP64 kernel remains cellfab.c (byte-untouched).
- * ledger_mode 0=off 1=shadow 2=dense+space 3=full — INT_LEDGER.md
- * Trig via quarter-wave LUT (int_ledger/trig_lut.inc).
+ * cellfabf.c — FP64 reference kernel (libm trig, no integer ledger).
+ * DEFAULT development kernel is cellfab.c (integer ledger mode 3).
+ * Build: gcc ... -o cellfabf cellfabf.c -lm
  *
- * Base lineage: cellfab.c — v89 cell-fabric kernel. Written fresh for the v89 program;
+ * Original cellfab.c (pre-2026-07-29 integer promotion). Written fresh for the v89 program;
  * shares no code, no lattice, no format with any pre-v89 instrument.
  *
  * Ontology (see CELLFAB.md, subordinate to PRINCIPLE.md):
@@ -40,9 +39,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <stdint.h>
-#include "int_ledger/ledger.h"
-#include "int_ledger/trig_lut.inc"
 #include <stdint.h>
 #include <sys/stat.h>
 
@@ -157,8 +153,6 @@ typedef struct {
      * lock-consolidation: locked time stiffens the link (work-
      * hardening); a kick that unlocks re-softens it. */
     double kappa_plast, tau_harden;
-    int ledger_mode;
-    double ledger_u;
 } Cfg;
 
 static Cfg P;
@@ -242,8 +236,6 @@ static void cfg_defaults(void)
     P.hom_det = 7.0;
     P.quant_A0 = 0.0;
     P.quant_mode = 1;
-    P.ledger_mode = 0;
-    P.ledger_u = 1e-12;
 }
 
 static void set_kv(const char *k, const char *v)
@@ -381,8 +373,6 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "net_file")) { strncpy(P.net_file, v, 255); P.net_file[255] = 0; }
     else if (!strcmp(k, "kappa_plast")) P.kappa_plast = atof(v);
     else if (!strcmp(k, "tau_harden")) P.tau_harden = atof(v);
-    else if (!strcmp(k, "ledger_mode")) P.ledger_mode = atoi(v);
-    else if (!strcmp(k, "ledger_u")) P.ledger_u = atof(v);
     else fprintf(stderr, "# WARN unknown key '%s'\n", k);
 }
 
@@ -442,9 +432,6 @@ static void print_cfg(void)
     if (P.kappa_plast > 0)
         printf("# cfg plast: kappa_plast=%g tau_harden=%g (P15 retardation plasticity)\n",
                P.kappa_plast, P.tau_harden);
-    if (P.ledger_mode > 0)
-        printf("# cfg ledger: mode=%d u=%.3e (cellfabi INT_LEDGER)\n",
-               P.ledger_mode, P.ledger_u > 0 ? P.ledger_u : 1e-12);
     if (P.init == 4)
         printf("# cfg pairs: n=%d x0=%g x1=%g pq=%d:%d seedlock=%d d=[%g,%g] gap=%g\n",
                P.npairs, P.pair_x0, P.pair_x1, P.pair_p, P.pair_q,
@@ -506,7 +493,7 @@ static double frand(void) { return (double)(xrand() >> 11) * (1.0 / 900719925474
 static double grand(void)
 {
     double u1 = frand() + 1e-18, u2 = frand();
-    return sqrt(-2.0 * log(u1)) * cos(TWO_PI * u2); /* libm; not gate path */
+    return sqrt(-2.0 * log(u1)) * cos(TWO_PI * u2);
 }
 
 static double wrap_pi(double a)
@@ -516,12 +503,9 @@ static double wrap_pi(double a)
     return a - M_PI;
 }
 
-
-/* lut_cos/lut_sin: provided by int_ledger/trig_lut.inc */
-
 static double gate_of(double dphi)
 {
-    double g = 0.5 * (1.0 + lut_cos(dphi));
+    double g = 0.5 * (1.0 + cos(dphi));
     int ip = (int)P.p_gate;
     if ((double)ip == P.p_gate && ip >= 1 && ip <= 8) {
         double r = 1.0;
@@ -551,15 +535,6 @@ static double *n1x, *n1y, *n1z, *n2x, *n2y, *n2z;
 static double *th1, *th2, *cbeta;
 static double *w1e, *w2e;
 static double *Es, *Em, *Ee;         /* Ee is now a derived cache: |psi|^2 */
-/* INT_LEDGER accounts (cellfabi) */
-static int64_t *iEs, *iEm, *iEe, *ilem;
-static double *rEs, *rEm, *rEe, *rlem;   /* residual carry */
-static double *snapEs, *snapEm, *snapEe, *snaplem; /* shadow prev FP */
-static int64_t E0_int = 0;
-static double ledger_u_eff = 1e-12;
-static double led_max_abs_diff = 0;  /* max |E - iE*u| this run */
-static int64_t led_max_sum_err = 0;  /* max |sum_iE - E0_int| */
-static long led_steps = 0;
 static double *fa1, *fa2;            /* the repair: field amplitude on the plane pair (H) */
 static double *fb1, *fb2;            /* tier 2: second chirality/polarization component (V) */
 static int pol_on = 0;               /* V component active (tag_rate > 0) */
@@ -622,11 +597,6 @@ static int *cls, *clidx;
 #define SLOT(l, c, d) (4 * (l) + 2 * (c) + (d))
 
 static double E0_total = 0.0;
-static void ledger_alloc(void);
-static void ledger_seed_from_fp(void);
-static void ledger_commit_step(void);
-static void ledger_diag(double t);
-static int64_t ledger_sum_all(void);
 static double cenx, ceny, cenz;      /* seed center for diagnostics */
 
 /* diagnostic sample store */
@@ -891,8 +861,8 @@ static void build_field(void)
         /* ambient field churn (any init): the stressor / the room tone */
         for (int i = 0; i < NC; i++) {
             double e0 = frand() * P.noise_amp, ph = frand() * TWO_PI;
-            fa1[i] += sqrt(e0) * lut_cos(ph);
-            fa2[i] += sqrt(e0) * lut_sin(ph);
+            fa1[i] += sqrt(e0) * cos(ph);
+            fa2[i] += sqrt(e0) * sin(ph);
         }
     }
     if (P.init == 4) {
@@ -978,11 +948,11 @@ static void build_field(void)
          * local chord (kappa_align adapts them from there). */
         int n = P.ring_n > 0 ? P.ring_n : 6;
         int *pick = malloc(n * sizeof(int));
-        double Rr = P.ring_d / (2.0 * lut_sin(M_PI / n));
+        double Rr = P.ring_d / (2.0 * sin(M_PI / n));
         for (int k = 0; k < n; k++) {
             double phk = TWO_PI * k / n;
-            double tx = 0.5 * P.L + Rr * lut_cos(phk);
-            double ty = 0.5 * P.L + Rr * lut_sin(phk);
+            double tx = 0.5 * P.L + Rr * cos(phk);
+            double ty = 0.5 * P.L + Rr * sin(phk);
             double tz = 0.5 * P.L;
             int best = -1; double bd = 1e30;
             for (int i = 0; i < NC; i++) {
@@ -1414,8 +1384,8 @@ static void build_field(void)
             }
             if (cflag[i] == 0 && cx[i] > P.src_lo && cx[i] < P.src_hi) {
                 double ph = -P.kx * (cx[i] - P.src_lo);
-                fa1[i] += sqrt(P.amp) * lut_cos(ph);
-                fa2[i] += sqrt(P.amp) * lut_sin(ph);
+                fa1[i] += sqrt(P.amp) * cos(ph);
+                fa2[i] += sqrt(P.amp) * sin(ph);
                 nsrc++;
             }
         }
@@ -1454,11 +1424,11 @@ static void build_field(void)
             if (g < 1e-4) continue;
             double ph = -P.kx * (cx[i] - xs);
             if (in1) {
-                fa1[i] += sqrt(P.amp * g) * lut_cos(ph);
-                fa2[i] += sqrt(P.amp * g) * lut_sin(ph);
+                fa1[i] += sqrt(P.amp * g) * cos(ph);
+                fa2[i] += sqrt(P.amp * g) * sin(ph);
             } else if (!P.hom_solo) {
-                fb1[i] += sqrt(P.amp * g) * lut_cos(ph);
-                fb2[i] += sqrt(P.amp * g) * lut_sin(ph);
+                fb1[i] += sqrt(P.amp * g) * cos(ph);
+                fb2[i] += sqrt(P.amp * g) * sin(ph);
             }
         }
         printf("# hom: wire_cells=%d coupler_cells=%d sinks=%d wires_y=%.1f/%.1f coupler_x=[%g,%g]\n",
@@ -1472,8 +1442,8 @@ static void build_field(void)
             if (g < 1e-3) continue;
             double tilt = -(P.kx * dx + P.ky * dy + P.kz * dz);
             if (P.init == 2) {
-                fa1[i] += sqrt(P.amp * g) * lut_cos(tilt);
-                fa2[i] += sqrt(P.amp * g) * lut_sin(tilt);
+                fa1[i] += sqrt(P.amp * g) * cos(tilt);
+                fa2[i] += sqrt(P.amp * g) * sin(tilt);
             } else {
                 double add = P.amp * g;
                 if (Em[i] + add > 0.95 * P.cap) add = 0.95 * P.cap - Em[i];
@@ -1520,8 +1490,8 @@ static void build_field(void)
             double g = exp(-rr2 / s2);
             if (g < 1e-3) continue;
             double tilt = -(P.aux_kx * dx + P.aux_ky * dy + P.aux_kz * dz);
-            fa1[i] += sqrt(P.aux_amp * g) * lut_cos(tilt);
-            fa2[i] += sqrt(P.aux_amp * g) * lut_sin(tilt);
+            fa1[i] += sqrt(P.aux_amp * g) * cos(tilt);
+            fa2[i] += sqrt(P.aux_amp * g) * sin(tilt);
         }
     }
 
@@ -1568,226 +1538,8 @@ static void build_field(void)
     printf("# fabric: cells=%d channels=%d mean_degree=%.2f box=%g dmin=%g\n",
            NC, NL, mdeg, P.L, P.dmin);
     if (P.snap_every > 0) mkdir(P.snap_dir, 0755);
-    if (P.ledger_mode > 0) {
-        ledger_alloc();
-        ledger_seed_from_fp();
-    }
 }
 
-
-/* ===================== INT_LEDGER runtime ===================== */
-
-static void ledger_free(void)
-{
-    free(iEs); free(iEm); free(iEe); free(ilem);
-    free(rEs); free(rEm); free(rEe); free(rlem);
-    free(snapEs); free(snapEm); free(snapEe); free(snaplem);
-    iEs = iEm = iEe = ilem = NULL;
-    rEs = rEm = rEe = rlem = NULL;
-    snapEs = snapEm = snapEe = snaplem = NULL;
-}
-
-static void ledger_alloc(void)
-{
-    if (P.ledger_mode <= 0) return;
-    ledger_u_eff = (P.ledger_u > 0) ? P.ledger_u : 1e-12;
-    iEs = calloc(NC, sizeof(int64_t));
-    iEm = calloc(NC, sizeof(int64_t));
-    iEe = calloc(NC, sizeof(int64_t));
-    ilem = calloc((size_t)4 * NL, sizeof(int64_t));
-    rEs = calloc(NC, sizeof(double));
-    rEm = calloc(NC, sizeof(double));
-    rEe = calloc(NC, sizeof(double));
-    rlem = calloc((size_t)4 * NL, sizeof(double));
-    snapEs = calloc(NC, sizeof(double));
-    snapEm = calloc(NC, sizeof(double));
-    snapEe = calloc(NC, sizeof(double));
-    snaplem = calloc((size_t)4 * NL, sizeof(double));
-    if (!iEs || !iEm || !iEe || !ilem || !rEs || !snapEs) {
-        fprintf(stderr, "# FATAL ledger alloc\n");
-        exit(2);
-    }
-}
-
-static int64_t ledger_sum_all(void)
-{
-    int64_t s = 0;
-    for (int i = 0; i < NC; i++) s += iEs[i] + iEm[i] + iEe[i];
-    for (int k = 0; k < 4 * NL; k++) s += ilem[k];
-    return s;
-}
-
-/* Seed integers from current FP state; residuals zero; snapshots set. */
-static void ledger_seed_from_fp(void)
-{
-    if (P.ledger_mode <= 0) return;
-    double u = ledger_u_eff;
-    for (int i = 0; i < NC; i++) {
-        iEs[i] = led_from_fp(Es[i], u);
-        iEm[i] = led_from_fp(Em[i], u);
-        iEe[i] = led_from_fp(Ee[i], u);
-        rEs[i] = rEm[i] = rEe[i] = 0;
-        snapEs[i] = Es[i];
-        snapEm[i] = Em[i];
-        snapEe[i] = Ee[i];
-    }
-    for (int k = 0; k < 4 * NL; k++) {
-        ilem[k] = led_from_fp(lem[k], u);
-        rlem[k] = 0;
-        snaplem[k] = lem[k];
-    }
-    /* repair global sum so E0_int matches sum of rounded accounts:
-     * difference absorbed into Es[0] deterministically */
-    int64_t target = 0;
-    for (int i = 0; i < NC; i++) {
-        target += led_from_fp(Es[i], u) + led_from_fp(Em[i], u) + led_from_fp(Ee[i], u);
-    }
-    for (int k = 0; k < 4 * NL; k++) target += led_from_fp(lem[k], u);
-    /* use exact sum of assigned ints */
-    E0_int = ledger_sum_all();
-    led_max_abs_diff = 0;
-    led_max_sum_err = 0;
-    led_steps = 0;
-    printf("# LEDGER seed mode=%d u=%.3e E0_int=%lld NC=%d NL=%d\n",
-           P.ledger_mode, u, (long long)E0_int, NC, NL);
-}
-
-/* Sync FP Es/Em (and optionally Ee/lem) FROM integer truth (modes 2–3). */
-static void ledger_fp_from_int(int include_field)
-{
-    if (P.ledger_mode < 2) return;
-    double u = ledger_u_eff;
-    for (int i = 0; i < NC; i++) {
-        Es[i] = led_to_fp(iEs[i], u);
-        Em[i] = led_to_fp(iEm[i], u);
-        if (include_field) Ee[i] = led_to_fp(iEe[i], u);
-    }
-    if (include_field && P.ledger_mode >= 3) {
-        for (int k = 0; k < 4 * NL; k++) lem[k] = led_to_fp(ilem[k], u);
-    }
-}
-
-/* Apply net FP change since snapshot into integer accounts (all modes ≥1).
- * Uses per-account residual. Then optional re-sync FP from int (mode ≥2). */
-static void ledger_commit_step(void)
-{
-    if (P.ledger_mode <= 0) return;
-    double u = ledger_u_eff;
-    /* mode>=2: Es/Em/lem integer truth (writeback).
-     * mode>=3: also tracks iEe (field) with residual, but does NOT snap
-     * fa amplitudes each step — that killed e3b translation. Field stays
-     * unitary FP; iEe is the integer shadow of |psi|^2 energy. */
-    int ds = (P.ledger_mode >= 2);        /* Es/Em truth */
-    int flight = (P.ledger_mode >= 2);    /* lem truth */
-    int track_field = (P.ledger_mode >= 1); /* always track if ledger on */
-    (void)track_field;
-
-    for (int i = 0; i < NC; i++) {
-        double dEs = Es[i] - snapEs[i];
-        double dEm = Em[i] - snapEm[i];
-        double dEe = Ee[i] - snapEe[i];
-        int64_t nEs = led_qdelta(dEs / u, &rEs[i]);
-        int64_t nEm = led_qdelta(dEm / u, &rEm[i]);
-        int64_t nEe = led_qdelta(dEe / u, &rEe[i]);
-        iEs[i] += nEs;
-        iEm[i] += nEm;
-        iEe[i] += nEe;
-        if (ds) {
-            /* truth is integer for dense+space */
-            Es[i] = led_to_fp(iEs[i], u);
-            Em[i] = led_to_fp(iEm[i], u);
-        }
-        /* field: iEe tracks FP Ee; no writeback (preserves unitary hops) */
-        snapEs[i] = Es[i];
-        snapEm[i] = Em[i];
-        snapEe[i] = Ee[i];
-        double a = fabs(Es[i] - led_to_fp(iEs[i], u));
-        double b = fabs(Em[i] - led_to_fp(iEm[i], u));
-        double c = fabs(Ee[i] - led_to_fp(iEe[i], u));
-        if (a > led_max_abs_diff) led_max_abs_diff = a;
-        if (b > led_max_abs_diff) led_max_abs_diff = b;
-        if (c > led_max_abs_diff) led_max_abs_diff = c;
-    }
-    for (int k = 0; k < 4 * NL; k++) {
-        double d = lem[k] - snaplem[k];
-        int64_t n = led_qdelta(d / u, &rlem[k]);
-        ilem[k] += n;
-        if (flight) lem[k] = led_to_fp(ilem[k], u);
-        snaplem[k] = lem[k];
-        double a = fabs(lem[k] - led_to_fp(ilem[k], u));
-        if (a > led_max_abs_diff) led_max_abs_diff = a;
-    }
-
-    /* Mode ≥2: enforce exact integer conservation by parking error on cell 0 Es */
-    if (P.ledger_mode >= 2) {
-        int64_t s = ledger_sum_all();
-        int64_t err = s - E0_int;
-        if (err != 0 && NC > 0) {
-            iEs[0] -= err;
-            Es[0] = led_to_fp(iEs[0], u);
-            snapEs[0] = Es[0];
-        }
-    }
-
-
-    /* keep Ee cache = |psi|^2 after matter ledger writeback */
-    if (P.ledger_mode >= 2) {
-        for (int i = 0; i < NC; i++) {
-            Ee[i] = fa1[i]*fa1[i] + fa2[i]*fa2[i]
-                  + fb1[i]*fb1[i] + fb2[i]*fb2[i];
-            snapEe[i] = Ee[i];
-            /* re-anchor iEe to current field energy (shadow, not writeback) */
-            if (P.ledger_mode >= 3) {
-                iEe[i] = led_from_fp(Ee[i], u);
-                rEe[i] = 0;
-            }
-        }
-        /* re-park exact int sum after re-anchor */
-        if (P.ledger_mode >= 2) {
-            int64_t s = ledger_sum_all();
-            int64_t err = s - E0_int;
-            if (err != 0 && NC > 0) {
-                iEs[0] -= err;
-                Es[0] = led_to_fp(iEs[0], u);
-                snapEs[0] = Es[0];
-            }
-        }
-    }
-
-    int64_t serr = ledger_sum_all() - E0_int;
-    if (serr < 0) serr = -serr;
-    if (serr > led_max_sum_err) led_max_sum_err = serr;
-    led_steps++;
-}
-
-static void ledger_diag(double t)
-{
-    if (P.ledger_mode <= 0) return;
-    int64_t s = ledger_sum_all();
-    int64_t err = s - E0_int;
-    double u = ledger_u_eff;
-    double maxdiff = 0;
-    for (int i = 0; i < NC; i++) {
-        double a = fabs(Es[i] - led_to_fp(iEs[i], u));
-        double b = fabs(Em[i] - led_to_fp(iEm[i], u));
-        double c = fabs(Ee[i] - led_to_fp(iEe[i], u));
-        if (a > maxdiff) maxdiff = a;
-        if (b > maxdiff) maxdiff = b;
-        if (c > maxdiff) maxdiff = c;
-    }
-    printf("# LEDGER t=%.3f mode=%d sum_err=%lld max|E-iEu|=%.3e "
-           "run_max_diff=%.3e run_max_sum_err=%lld steps=%ld E0_int=%lld sum=%lld\n",
-           t, P.ledger_mode, (long long)err, maxdiff,
-           led_max_abs_diff, (long long)led_max_sum_err, led_steps,
-           (long long)E0_int, (long long)s);
-}
-
-
-static void ledger_alloc(void);
-static void ledger_seed_from_fp(void);
-static void ledger_commit_step(void);
-static void ledger_diag(double t);
-static int64_t ledger_sum_all(void);
 /* ------------------------------------------------------------------ */
 /* one step                                                            */
 /* ------------------------------------------------------------------ */
@@ -1804,8 +1556,8 @@ static void field_inject(int i, double dE)
         fa1[i] *= fac;
         fa2[i] *= fac;
     } else {
-        fa1[i] = sqrt(dE) * lut_cos(th2[i]);
-        fa2[i] = sqrt(dE) * lut_sin(th2[i]);
+        fa1[i] = sqrt(dE) * cos(th2[i]);
+        fa2[i] = sqrt(dE) * sin(th2[i]);
     }
     Ee[i] = e + dE;
 }
@@ -2138,7 +1890,7 @@ static void step_field(void)
                  * kappa_reac = 1 is the unitarity point, not a tuned
                  * strength (v89/s2/choir_pull.c: sign restoring, window
                  * ~2*Gamma_b inherent in res x lock loss, rim
-                 * protection inherent in lut_sin(psi) averaging to zero for
+                 * protection inherent in sin(psi) averaging to zero for
                  * unlocked pairs). */
                 double ps_ij = wrap_pi(lq[l] * thi - lq[l] * wi * d / P.C
                                        - lp[l] * thj);
@@ -2147,8 +1899,8 @@ static void step_field(void)
                 double Sm = sqrt(mi_eff * mj_eff);
                 double hh = sqrt(head_i * head_j);
                 double reac = P.kappa_reac * 0.5 * base * hh * Sm;
-                w_ij -= reac * g_ij * lut_sin(ps_ij);
-                w_ji -= reac * g_ji * lut_sin(ps_ji);
+                w_ij -= reac * g_ij * sin(ps_ij);
+                w_ji -= reac * g_ji * sin(ps_ji);
                 if (w_ij < 0) w_ij = 0;
                 if (w_ji < 0) w_ji = 0;
             }
@@ -2169,13 +1921,13 @@ static void step_field(void)
                                       - lq[l] * thi);
                 double Smp = sqrt(mi_eff * mj_eff);
                 if (Smp > 0) {
-                    double hf = 0.5 * (1.0 + lut_cos(ps_f));
-                    double hb = 0.5 * (1.0 + lut_cos(ps_b));
+                    double hf = 0.5 * (1.0 + cos(ps_f));
+                    double hb = 0.5 * (1.0 + cos(ps_b));
                     double Gf = pow(hf, P.p_gate), Gb = pow(hb, P.p_gate);
                     double Gfp = hf > 1e-12
-                                 ? -0.5 * P.p_gate * (Gf / hf) * lut_sin(ps_f) : 0.0;
+                                 ? -0.5 * P.p_gate * (Gf / hf) * sin(ps_f) : 0.0;
                     double Gbp = hb > 1e-12
-                                 ? -0.5 * P.p_gate * (Gb / hb) * lut_sin(ps_b) : 0.0;
+                                 ? -0.5 * P.p_gate * (Gb / hb) * sin(ps_b) : 0.0;
                     double dVdd = (Gfp * Gb * lq[l] * wi
                                    + Gf * Gbp * lp[l] * wj) / P.C;
                     double kpl = P.kappa_plast;
@@ -2421,7 +2173,7 @@ static void step_field(void)
             if (si <= 1e-12 || sj <= 1e-12) continue;
             /* hop U = exp(-i tau X). With the seed convention theta = -k*x
              * (down-path clocks lag, kappa = -k), this pairing propagates the
-             * packet along +k: v_g = +t*sum d*lut_sin(k*d). Verified by centroid. */
+             * packet along +k: v_g = +t*sum d*sin(k*d). Verified by centroid. */
             double w = (lA[l] / Aref) * (dref / ld[l]);
             double tau = P.field_J * w / sqrt(si * sj) * dt;
             double cc, ss;
@@ -2462,8 +2214,8 @@ static void step_field(void)
                         double adeg = P.analyzer_deg;
                         if (P.t_choice > 0 && sim_t < P.t_choice) adeg = -999;
                         if (adeg > -900) {
-                            double ca = lut_cos(adeg * M_PI / 180.0);
-                            double sa = lut_sin(adeg * M_PI / 180.0);
+                            double ca = cos(adeg * M_PI / 180.0);
+                            double sa = sin(adeg * M_PI / 180.0);
                             double c1 = ca * fa1[i] + sa * fb1[i];
                             double c2 = ca * fa2[i] + sa * fb2[i];
                             double ep = c1 * c1 + c2 * c2;
@@ -2498,7 +2250,7 @@ static void step_field(void)
                  * chirality pair. Lossless marking: no energy taken, no
                  * phase noise added; the path is written into the tag */
                 double tr = P.tag_rate * dt;
-                double ct = lut_cos(tr), st = lut_sin(tr);
+                double ct = cos(tr), st = sin(tr);
                 double h1 = fa1[i], h2 = fa2[i], v1 = fb1[i], v2 = fb2[i];
                 fa1[i] = ct * h1 - st * v1;
                 fa2[i] = ct * h2 - st * v2;
@@ -2508,7 +2260,7 @@ static void step_field(void)
             if (P.sigma_det > 0) {
                 /* kick recorder (round-2 style back-action) */
                 double kick = P.sigma_det * sqrt(dt) * grand();
-                double cc = lut_cos(kick), ss = lut_sin(kick);
+                double cc = cos(kick), ss = sin(kick);
                 double a1 = fa1[i], a2 = fa2[i];
                 fa1[i] = cc * a1 + ss * a2;
                 fa2[i] = -ss * a1 + cc * a2;
@@ -2861,7 +2613,6 @@ static void diag_row(double t)
 
     printf("# CONV t=%.2f cond=%.6g evap=%.6g rough=%.6g back_s=%.6g\n",
            t, cond_total, evap_total, rough_total, backs_total);
-    if (P.ledger_mode > 0) ledger_diag(t);
     if (P.kappa_plast > 0) {
         /* P15 diag — serial (byte-identical at any thread count):
          * last step's plastic forces + cumulative geometry drift */
@@ -3047,7 +2798,7 @@ static void pair_report(double t, int final)
  * Equal-pair rung m: w_eff*d/C = pi*m with w_eff = w2/(1+q*x)
  *   -> tuning curve x*(d,m) = (w2*d/(pi*m*C) - 1)/q
  * Tongue (entrained equilibrium splits the comma delta evenly):
- *   G^2(delta) = ((1+lut_cos(delta/2))/2)^(2*p_gate)
+ *   G^2(delta) = ((1+cos(delta/2))/2)^(2*p_gate)
  * Strangulation: channel dies at d > 2*r0*(1 - s_pull*x*cap/e_s0)^(1/3). */
 static void run_ladder(void)
 {
@@ -3091,7 +2842,7 @@ static void run_ladder(void)
     for (double d = P.pair_dlo; d <= P.pair_dhi + 1e-9; d += 0.05) {
         double xs = (P.w2 * d / (M_PI * P.C) - 1.0) / P.q_detune;
         double delta = wrap_pi(2.0 * we * d / P.C);
-        double g2 = pow(0.5 * (1.0 + lut_cos(delta / 2.0)), p2);
+        double g2 = pow(0.5 * (1.0 + cos(delta / 2.0)), p2);
         printf("%.3f\t%.3f\t%+.3f\t%.4f\n", d, xs, delta, g2);
     }
     printf("# RESULT ladder m_max=1 for nearest-neighbour links (2*pi*2/(w_sum_max*d_max) > 1)\n");
@@ -3214,7 +2965,7 @@ static void sample_quanta(void)
         double yc = ylo + (b + 0.5) * bw;
         double rA = sqrt(D * D + (yc - yA) * (yc - yA));
         double rB = sqrt(D * D + (yc - yB) * (yc - yB));
-        double cph = lut_cos(kmag * (rA - rB) / 2.0);
+        double cph = cos(kmag * (rA - rB) / 2.0);
         double pred = cph * cph;
         printf("# QHIST %.2f\t%d\t%.3f\n", yc, qhist[b], pred);
         if (fabs(yc - 0.5 * P.L) < 5.5) {
@@ -3282,12 +3033,6 @@ static void final_report(void)
         for (int k = 0; k < 8; k++)
             printf(" %.2f:%.4f", (k + 0.5) * dr, shN[k] ? shE[k] / shN[k] : 0);
         printf("\n");
-    }
-    if (P.ledger_mode > 0) {
-        int64_t s = ledger_sum_all();
-        printf("# RESULT LEDGER mode=%d E0_int=%lld sum_int=%lld max_sum_err=%lld max|E-iEu|=%.3e steps=%ld\n",
-               P.ledger_mode, (long long)E0_int, (long long)s,
-               (long long)led_max_sum_err, led_max_abs_diff, led_steps);
     }
     printf("# RESULT conservation E0=%.12g Efinal=%.12g rel_drift=%.3e\n",
            E0_total, tot, E0_total != 0 ? (tot - E0_total) / E0_total : 0);
@@ -3386,7 +3131,7 @@ static void final_report(void)
             double yc = ylo + (b + 0.5) * bw;
             double rA = sqrt(D * D + (yc - yA) * (yc - yA));
             double rB = sqrt(D * D + (yc - yB) * (yc - yB));
-            double cph = lut_cos(kmag * (rA - rB) / 2.0);
+            double cph = cos(kmag * (rA - rB) / 2.0);
             double pred = cph * cph;
             printf("# SCREEN %.2f\t%.4f\t%.3f\n", yc, hist[b], pred);
             if (fabs(yc - 0.5 * P.L) < 13.0) {
@@ -3432,7 +3177,7 @@ static void final_report(void)
                 double yc = ylo + (b + 0.5) * bw;
                 double rA2 = sqrt(D * D + (yc - yA) * (yc - yA));
                 double rB2 = sqrt(D * D + (yc - yB) * (yc - yB));
-                double cph = lut_cos(kmag * (rA2 - rB2) / 2.0);
+                double cph = cos(kmag * (rA2 - rB2) / 2.0);
                 double pred = cph * cph;
                 printf("# SCREENAB %.2f\t%.4f\t%.4f\t%.3f\n", yc, hA[b], hB[b], pred);
                 if (fabs(yc - 0.5 * P.L) < 5.5) {
@@ -3476,12 +3221,12 @@ static void run_bell(void)
                 /* joint harmonic: unpolarized until the first cycle completes */
                 int Ap = frand() < 0.5;
                 double lam = Ap ? a : a + M_PI / 2.0;
-                double cb = lut_cos(b - lam);
+                double cb = cos(b - lam);
                 int Bp = frand() < cb * cb;
                 acc_j += (Ap == Bp) ? 1 : -1;
                 /* LHV control: private phase fixed at the source */
                 double lam0 = frand() * M_PI;
-                double ca2 = lut_cos(a - lam0), cb2 = lut_cos(b - lam0);
+                double ca2 = cos(a - lam0), cb2 = cos(b - lam0);
                 int Ap2 = frand() < ca2 * ca2;
                 int Bp2 = frand() < cb2 * cb2;
                 acc_l += (Ap2 == Bp2) ? 1 : -1;
@@ -3490,8 +3235,8 @@ static void run_bell(void)
             El[ia][ib] = (double)acc_l / (double)P.trials;
             printf("%.1f\t%.1f\t%+.4f\t%+.4f\t%+.4f\t%+.4f\n",
                    A[ia] * 180 / M_PI, B[ib] * 180 / M_PI,
-                   Ej[ia][ib], lut_cos(2.0 * (a - b)),
-                   El[ia][ib], 0.5 * lut_cos(2.0 * (a - b)));
+                   Ej[ia][ib], cos(2.0 * (a - b)),
+                   El[ia][ib], 0.5 * cos(2.0 * (a - b)));
         }
     }
     double Sj = Ej[0][0] + Ej[1][0] + Ej[1][1] - Ej[0][1];
@@ -3537,7 +3282,6 @@ int main(int argc, char **argv)
     ds_defA = malloc(nsamp_max * sizeof(double));
 
     E0_total = ksum(Es, NC) + ksum(Em, NC) + ksum(Ee, NC) + ksum(lem, 4 * NL);
-    if (P.ledger_mode > 0) ledger_seed_from_fp();
 
     printf("# t\tE_space\tE_dense\tE_field\tE_transfer\tE_total\trel_drift\tlive_ch\tcm_x\tcm_y\tcm_z\tcontain\tfront_r\tr_core\tdefA\tr_far\tr_ratio\tw_core\tw_far\n");
     diag_row(0.0);
@@ -3549,7 +3293,6 @@ int main(int argc, char **argv)
         want_th1 = (P.diag_every > 0 && s % P.diag_every == 0)
                 || (P.snap_every > 0 && s % P.snap_every == 0) || s == NS;
         step_field();
-        if (P.ledger_mode > 0) ledger_commit_step();
         if (P.init == 5 && P.t_expose > 0 && !expose_frz && sim_t >= P.t_expose) {
             /* the shutter closes: the record so far is the photograph */
             expose_frz = malloc(NC * sizeof(double));

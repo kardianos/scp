@@ -142,7 +142,7 @@ ratios (ring6:comp12:diode = 6.6:1:0.5) — the fleet decides.
    PLAST-1's control comparison and the PLAST-0(c) κ*-battery arm
    are the guards). Log: scratchpad/plast_pair.log.
 
-## Program priority (updated 2026-07-29)
+## Program priority (updated 2026-07-29, integer default)
 
 **Exact mass (M-R1 / P19) is the first goal of the MASS program** —
 sharp universal package, not merely long life. Full statement:
@@ -152,13 +152,12 @@ spectrum path toward that goal.
 **MASS ↔ EMF:** parallel cheap EMF (EM1/EM2, C4 tools) OK anytime;
 EM5/P2 only after MASS checkpoints. See `EMF.md` §5.
 
-**Integer ledger:** design only, `INT_LEDGER.md` — does not block fleet.
-FP64 remains production truth type.
+**Kernel default = integer ledger (mode 3):** `cellfab.c` → `cellfab`.
+FP64 reference: `cellfabf.c` → `cellfabf`. Results:
+`int_ledger/RESULTS.md` (20/20). Use `ledger_mode=0` only for A/B.
 
-**Plasticity battery:** DONE at HEAD `a1d5fc1` (21/21); RESUME's older
-"pending battery" wording is obsolete. κ still only via `--extra`.
-
-**Plan audit:** `prestress/audit/AUDIT_2026-07-29.md` — GO_WITH_FIXES.
+**Plasticity:** in kernel (κ via `--extra` only). Plan audit:
+`prestress/audit/AUDIT_2026-07-29.md` — GO_WITH_FIXES.
 
 ## Next-session runbook (PRESTRESS-2, task #44 — nothing launched yet)
 

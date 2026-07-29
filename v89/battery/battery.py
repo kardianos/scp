@@ -19,6 +19,8 @@ import sys
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 V89 = os.path.dirname(ROOT)
+# DEFAULT kernel is integer-ledger cellfab.c (mode 3). FP64 reference:
+# cellfabf.c → build separately as cellfabf for A/B only.
 SRC = os.path.join(V89, "cellfab.c")
 BIN = os.path.join(V89, "cellfab")
 

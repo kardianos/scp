@@ -1,31 +1,33 @@
-# Integer ledger kernel track (`cellfabi`)
+# Integer ledger kernel track
 
-Production kernel **`v89/cellfab.c`** is unchanged (FP64).
+**DEFAULT development kernel (2026-07-29):** `v89/cellfab.c` with
+`ledger_mode=3` (full integer matter ledger). Battery and prestress build
+`cellfab` from that file.
 
-Alternate binary **`v89/cellfabi`** (`cellfabi.c`):
+**FP64 reference:** `v89/cellfabf.c` → binary `cellfabf` (A/B only).
 
 | `ledger_mode` | Behaviour |
 |---|---|
-| **0** | FP64 dynamics + **LUT trig** (no integer accounts) |
-| **1** | **Shadow:** FP64 truth + parallel int64 accounts (quantized Δ + residual) |
-| **2** | Dense+space+flight truth: Es/Em/lem from int; field Ee still FP-derived |
-| **3** | **Full** energy ledger: + Ee from int with amplitude rescale to match |
-
-Config keys (cellfabi only):
+| **0** | FP dynamics + poly trig (no integer accounts) |
+| **1** | **Shadow:** FP truth + parallel int64 accounts |
+| **2** | dense+space+flight writeback (not battery-green as first written) |
+| **3** | **DEFAULT** — Es/Em/lem integer truth; field unitary FP + iEe shadow |
 
 ```
-ledger_mode=1
+# optional override (default is already 3 in cellfab.c)
+ledger_mode=3
 ledger_u=1e-12
 ```
 
-Trig: `gen_trig_lut.py` → `trig_lut.inc` (quarter-wave cos, N=4096).
+Trig: `gen_trig_lut.py` → `trig_lut.inc` (minimax poly cos/sin).
 Helpers: `ledger.h`. Design: `../INT_LEDGER.md`.
 
 ## Build
 
 ```bash
-python3 v89/int_ledger/gen_trig_lut.py
-gcc -O2 -march=native -fopenmp -o v89/cellfabi v89/cellfabi.c -lm
+python3 v89/int_ledger/gen_trig_lut.py   # if trig_lut.inc missing
+gcc -O2 -march=native -fopenmp -o v89/cellfab  v89/cellfab.c  -lm   # DEFAULT
+gcc -O2 -march=native -fopenmp -o v89/cellfabf v89/cellfabf.c -lm  # FP64 ref
 ```
 
 ## Compare to FP64 battery

@@ -1,9 +1,9 @@
 # INT_LEDGER — tentative integer-based simulator design
 
-**Status:** implemented as `cellfabi.c` (2026-07-29). Production remains
-`cellfab.c` (FP64). Full battery **20/20** on modes 0, 1, 3 after poly
-trig + field-snap fix — see `int_ledger/RESULTS.md`. MASS waves were
-blocked during numerics by user request; unblocking is a separate call.
+**Status:** **DEFAULT kernel** as of 2026-07-29 user decision: `cellfab.c`
+is the integer-ledger path (`ledger_mode=3` default). FP64 reference
+renamed **`cellfabf.c`**. Full battery **20/20** on modes 0, 1, 3 — see
+`int_ledger/RESULTS.md`. MASS+EMF program unblocked for development.
 
 Subordinate to `PRINCIPLE.md`. Motivation: energy is never destroyed;
 atoms at mode boundaries; exact-mass (M-R1) wants a package that cannot

@@ -102,12 +102,12 @@ def main():
     modes = [int(x) for x in a.modes.split(",") if x.strip() != ""]
 
     if not a.skip_build:
-        print("building cellfab + cellfabi...")
+        print("building cellfabf (FP64) + cellfab (integer default)...")
+        build("cellfabf", "cellfabf.c")
         build("cellfab", "cellfab.c")
-        build("cellfabi", "cellfabi.c")
 
-    bin_fab = os.path.join(V89, "cellfab")
-    bin_i = os.path.join(V89, "cellfabi")
+    bin_fab = os.path.join(V89, "cellfabf")   # pure FP64 reference
+    bin_i = os.path.join(V89, "cellfab")      # integer-capable default
     root_out = os.path.join(HERE, "runs")
     os.makedirs(root_out, exist_ok=True)
 
