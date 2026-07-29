@@ -843,3 +843,13 @@ combined) if H1 shows the hole matters.
   kernel. EMF Mode P: EM1 kx dispersion scan launched in parallel
   (`emf/em1_dispersion.py`). Exact mass (M-R1) remains the first MASS
   goal; Wave 1 is frozen-foam mechanism nulls (expect M-R1 fail).
+
+* **2026-07-29 (PRESTRESS Wave 1 COMPLETE — Go fleet; frozen foam nulls).**
+  Orchestrator rewritten in Go (`prestress/fleet.go`): child Cmds only, skip-if-
+  done, max=2 concurrent — no pgrep self-match. All 7 wave-1 jobs finished
+  under integer default cellfab (mode 3). SCORES: cube150 death 908 vs ctrl
+  698 (retune helps modestly, not skin≥4700); c8 449; ring8_m3 1631
+  (longest); tube 1042 (not ≥4600 exception); chords 630. No C1 plateau.
+  Consonant-skin rate-level on frozen foam **fails** the pre-registered
+  showdown. LEDGER Verdicts filled. Next: Wave 2 plasticity (pin hunt) /
+  score x50 load-line residuals; EM1 already done (k-dependent v_g).
