@@ -1,0 +1,135 @@
+========================================================================
+A. ODD-CYCLE PAYMENT LEMMA — how many struts can an odd cycle carry
+========================================================================
+  A cycle with n_s struts and n_c cables needs (mod 2pi)
+      sum_cables +-phi  ==  pi * n_s .
+  Reachability over the sign choices: the set of reachable residues of a
+  sum of n_c terms, each in +-B(omega). Scan omega.
+  triangle (length 3):
+    n_s=0: PAYABLE for omega in [1.394, 2.700]  (x in [0.062, 0.900])
+    n_s=1: NOT payable at any omega in window
+    n_s=2: NOT payable at any omega in window
+    n_s=3: NOT payable at any omega in window
+  pentagon (length 5):
+    n_s=0: PAYABLE for omega in [1.394, 2.700]  (x in [0.062, 0.900])
+    n_s=1: PAYABLE for omega in [1.939, 2.700]  (x in [0.062, 0.413])
+    n_s=2: PAYABLE for omega in [1.939, 2.700]  (x in [0.062, 0.413])
+    n_s=3: NOT payable at any omega in window
+    n_s=4: NOT payable at any omega in window
+    n_s=5: NOT payable at any omega in window
+  heptagon (length 7):
+    n_s=0: PAYABLE for omega in [1.394, 2.700]  (x in [0.062, 0.900])
+    n_s=1: PAYABLE for omega in [1.939, 2.700]  (x in [0.062, 0.413])
+    n_s=2: PAYABLE for omega in [1.939, 2.700]  (x in [0.062, 0.413])
+    n_s=3: PAYABLE for omega in [1.939, 2.700]  (x in [0.062, 0.413])
+    n_s=4: PAYABLE for omega in [1.939, 2.700]  (x in [0.062, 0.413])
+    n_s=5: NOT payable at any omega in window
+    n_s=6: NOT payable at any omega in window
+    n_s=7: NOT payable at any omega in window
+
+  => TRIANGLES admit NO struts (all-cable wound m=1 only, omega <= ~2.09).
+     PENTAGONS admit at most 2 struts. Parity alone (bipartization) badly
+     UNDERSTATES the demotion cost: geometry windows bite harder than Z2.
+========================================================================
+B. FRUSTRATION INDEX (graph-only lower bound) vs THE REAL COST
+========================================================================
+  K4 (tetrahedral frame)   n= 4 E= 6  maxcut= 4  frustration index (edges to delete for bipartite) = 2
+  triangular prism         n= 6 E= 9  maxcut= 7  frustration index (edges to delete for bipartite) = 2
+  cube                     n= 8 E=12  maxcut=12  frustration index (edges to delete for bipartite) = 0
+  pentagonal prism         n=10 E=15  maxcut=13  frustration index (edges to delete for bipartite) = 2
+  hexagonal prism          n=12 E=18  maxcut=18  frustration index (edges to delete for bipartite) = 0
+  icosahedron (5-reg)      n=12 E=30  maxcut=20  frustration index (edges to delete for bipartite) = 10
+  dodecahedron             n=20 E=30  maxcut=24  frustration index (edges to delete for bipartite) = 6
+  The ledger/brief expectation 'a 3-regular closed strut shell is
+  over-constrained by exactly 2 => demote 2 links' matches the frustration
+  index only for K4 and the triangular prism — and even there DEMOTION !=
+  DELETION: a demoted link still carries its cycle phase, and part A shows
+  triangles cannot be paid by 1 or 2 cables. The real minimum demotions:
+    K4:               no consonant realization AT ALL (part C)
+    triangular prism: 6 cables (both triangles all-cable), 3 vertical struts (part D)
+    cube:             0 (bipartite, all-strut) — the H-series selection rule
+    pentagonal prism: 10 cables (both pentagons), 5 vertical struts (part D)
+    hexagonal prism:  0 — BIPARTITE (all faces even). Ledger P4's 'over-
+                      constrained by 2' is REFUTED: it needs no demotion.
+
+========================================================================
+C. K4 IS DEAD — the diagonal-hole argument + exhaustive check
+========================================================================
+  All triangles => all-cable (part A). All-cable K4 = 4 phases pairwise
+  in the allowed band S = B u (2pi-B). Pigeonhole: 4 points on the circle,
+  the two 'diagonal' pairs have separation = sum of two adjacent gaps in
+  [2*lo, 2pi-2*lo]; the band's hole (omega*dmax, 2pi-omega*dmax) swallows
+  that whole interval whenever omega*dmax < 2*omega*dmin + hole-margin.
+  Numeric check over the full window:
+  omega=1.394 band=[1.394,2.111] hole=(2.111,4.172): best residual^2 = 0.4522  => infeasible
+  omega=1.600 band=[1.600,2.503] hole=(2.503,3.780): best residual^2 = 0.243  => infeasible
+  omega=1.900 band=[1.900,3.068] hole=(3.068,3.215): best residual^2 = 0.4394  => infeasible
+  omega=2.094 band=[2.094,3.431] hole=(3.431,2.852): best residual^2 = 1.096  => infeasible
+  omega=2.400 band=[2.400,4.002] hole=(4.002,2.282): best residual^2 = 2.022  => infeasible
+  omega=2.700 band=[2.700,4.559] hole=(4.559,1.724): best residual^2 = 0.09418  => infeasible
+  (diagonal separations forced into [2*lo, 2pi-2*lo] which sits inside the hole)
+
+========================================================================
+D. EXPLICIT FEASIBLE DESIGNS — verified phase assignments
+========================================================================
+  prism3 tube (B1c, n=3): omega=2.0200 x=0.3630 struts=3 cables=6  -> ALL CONSTRAINTS MET
+    lengths: struts d=pi/omega=1.5552, triangle cables d=phi/omega=1.0368  (contact ceiling 1.6301)
+    triangle winding m=1; per-cable back gate = gate(2phi)=1.53e-05
+  prism5 tube (m=2 belts): omega=2.3000 x=0.2174 struts=5 cables=10  -> ALL CONSTRAINTS MET
+    struts d=1.3659; pentagon cables d=1.0927; back gate 0.0337
+  hexagonal prism ALL-STRUT (P4 refutation): omega=2.3000 x=0.2174 struts=18 cables=0  -> ALL CONSTRAINTS MET
+    all 18 edges d=pi/omega=1.3659; needs equilateral realization (tolerances: t1 part C)
+  cube ALL-STRUT (H-series rule): omega=2.3000 x=0.2174 struts=12 cables=0  -> ALL CONSTRAINTS MET
+
+  wound ring feasibility (N,m): need phi=2pi*m/N in B(omega) for some omega:
+    N= 3: m=1 (phi=120deg, omega<= 2.09, x>=0.321, back=1.5e-05); m=2 (phi=240deg, omega<= 2.70, x>=0.062, back=1.5e-05)
+    N= 4: m=1 (phi=90deg, omega<= 1.57, x>=0.707, back=0); m=2 (phi=180deg, omega<= 2.70, x>=0.062, back=1)
+    N= 5: m=2 (phi=144deg, omega<= 2.51, x>=0.129, back=0.034); m=3 (phi=216deg, omega<= 2.70, x>=0.062, back=0.034)
+    N= 6: m=2 (phi=120deg, omega<= 2.09, x>=0.321, back=1.5e-05); m=3 (phi=180deg, omega<= 2.70, x>=0.062, back=1); m=4 (phi=240deg, omega<= 2.70, x>=0.062, back=1.5e-05)
+    N= 7: m=2 (phi=103deg, omega<= 1.79, x>=0.516, back=3.6e-11); m=3 (phi=154deg, omega<= 2.69, x>=0.065, back=0.19); m=4 (phi=206deg, omega<= 2.70, x>=0.062, back=0.19); m=5 (phi=257deg, omega<= 2.70, x>=0.062, back=3.6e-11)
+    N= 8: m=2 (phi=90deg, omega<= 1.57, x>=0.707, back=0); m=3 (phi=135deg, omega<= 2.35, x>=0.193, back=0.0039); m=4 (phi=180deg, omega<= 2.70, x>=0.062, back=1); m=5 (phi=225deg, omega<= 2.70, x>=0.062, back=0.0039)
+    N= 9: m=2 (phi=80deg, omega<= 1.39, x>=0.900, back=6.8e-13); m=3 (phi=120deg, omega<= 2.09, x>=0.321, back=1.5e-05); m=4 (phi=160deg, omega<= 2.70, x>=0.062, back=0.37); m=5 (phi=200deg, omega<= 2.70, x>=0.062, back=0.37); m=6 (phi=240deg, omega<= 2.70, x>=0.062, back=1.5e-05)
+    N=10: m=3 (phi=108deg, omega<= 1.88, x>=0.450, back=6.9e-09); m=4 (phi=144deg, omega<= 2.51, x>=0.129, back=0.034); m=5 (phi=180deg, omega<= 2.70, x>=0.062, back=1); m=6 (phi=216deg, omega<= 2.70, x>=0.062, back=0.034); m=7 (phi=252deg, omega<= 2.70, x>=0.062, back=6.9e-09)
+    N=11: m=3 (phi=98deg, omega<= 1.71, x>=0.577, back=2.8e-14); m=4 (phi=131deg, omega<= 2.28, x>=0.226, back=0.0011); m=5 (phi=164deg, omega<= 2.70, x>=0.062, back=0.52); m=6 (phi=196deg, omega<= 2.70, x>=0.062, back=0.52); m=7 (phi=229deg, omega<= 2.70, x>=0.062, back=0.0011)
+    N=12: m=3 (phi=90deg, omega<= 1.57, x>=0.707, back=0); m=4 (phi=120deg, omega<= 2.09, x>=0.321, back=1.5e-05); m=5 (phi=150deg, omega<= 2.62, x>=0.090, back=0.1); m=6 (phi=180deg, omega<= 2.70, x>=0.062, back=1); m=7 (phi=210deg, omega<= 2.70, x>=0.062, back=0.1); m=8 (phi=240deg, omega<= 2.70, x>=0.062, back=1.5e-05)
+
+========================================================================
+E. MULTI-CYCLE TUNABILITY — one omega, several closures
+========================================================================
+  Cable cycles quantize omega: omega * Lambda_a / C in 2pi*Z, with
+  Lambda_a the SIGNED cycle length (traversal vs lock orientation).
+  Lambda_a = 0 ('balanced' cycles: equal forward and backward length)
+  impose NOTHING — free. Unbalanced cycles must be pairwise commensurable
+  with integers reachable in the window: m_a in Lambda_a*[w_min, w_max]/2pi.
+  theta graph 15 vs 9 (ratio 5:3): (m1=5,m2=3,omega=2.0944)
+  theta graph 15 vs 10 (3:2): (m1=6,m2=4,omega=2.5133)
+  theta graph 15 vs 11 (15:11): NO exact common omega — geometry must be tuned
+  theta 15.08 vs 9 (foam-jittered): NO exact common omega — geometry must be tuned
+  Tolerance to a mistuned second cycle: its comma delta spreads over its
+  N links (t3): all gates >= 0.9 needs |delta| <= N*0.229 rad (tempered) —
+  the standing seed-acceptance 'closure integer to <0.05' (0.314 rad) meets
+  this for N >= 2. Torus net N1 x N2 uniform-phi: needs m1*N2 == 0 mod N1
+  (phi = 2pi*m1/N1 = 2pi*m2/N2). Examples: 12x12 any m; 12x8: m1 in {0,2,4,..}.
+
+========================================================================
+F. ICOSAHEDRON (all triangles, 5-regular) — anneal probe
+========================================================================
+  omega=1.394: best residual^2 = 1.909  => infeasible (as the hole argument predicts)
+  omega=1.700: best residual^2 = 0.8965  => infeasible (as the hole argument predicts)
+  omega=2.094: best residual^2 = 4.491  => infeasible (as the hole argument predicts)
+
+========================================================================
+G. THE COUNTING THEOREM (per connected component)
+========================================================================
+  Unknowns: theta (n-1, mod the time-translation gauge) + omega (1) = n.
+  Forward locks: E equations mod 2pi; rank over theta = n-1; the remaining
+  B = E-n+1 become CYCLE conditions carrying integer freedoms.
+  Struts add their rung condition; with only m=1 reachable this fixes
+  d_l = pi/omega — E_s geometric equalities (equal strut lengths), NOT
+  theta/omega equations, plus pi-residues in every cycle they touch.
+  Generic solvability on a FIXED foam:  deficit = (#unbalanced cable
+  cycles - 1)_+ quantizations  +  E_s length equalities  +  the cycle
+  payment conditions of part A.  With free geometry (form-finding moves
+  picks): 3n-6 placement dof absorb the length equalities generically
+  for n >= 6; what remains are (i) the Diophantine closures and (ii) the
+  payment lemma — DISCRETE obstructions no continuous tuning removes.

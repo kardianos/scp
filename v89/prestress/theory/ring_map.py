@@ -688,7 +688,7 @@ def cmd_pair():
 def cmd_unlock():
     net = get_net('pair')
     st0 = relax(net)
-    lo, hi = 0.0, 1.2
+    lo, hi = 0.0, 0.95 * float(st0[1].min())
     for _ in range(24):
         mid = 0.5 * (lo + hi)
         st = [x.copy() for x in st0]

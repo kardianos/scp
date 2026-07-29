@@ -1,0 +1,92 @@
+comb ratios (w_j/w_i = q/p, pq<=6): ['1/6', '1/5', '1/4', '1/3', '1/2', '2/3', '1', '3/2', '2', '3', '4', '5', '6']
+pitch window: hard [1.3182, 2.7000] (x<=1.0), practical [1.3942, 2.7000] (x<=0.9)
+max in-window pitch ratio: 2.0483 (hard), 1.9366 (practical)
+
+ODD 3-CYCLE with interval rungs [practical x<=0.9]:  feasible assignments: 3
+   ratios ['2/3', '3/2', '1'] w0=2.091 m=(2, 2, 1) d=[1.502, 1.502, 1.502] x=[0.322, 0.9, 0.322]
+   ratios ['1', '2/3', '3/2'] w0=2.091 m=(1, 2, 2) d=[1.502, 1.502, 1.502] x=[0.322, 0.322, 0.9]
+   ratios ['3/2', '1', '2/3'] w0=1.394 m=(2, 1, 2) d=[1.502, 1.502, 1.502] x=[0.9, 0.322, 0.322]
+ODD 3-CYCLE with interval rungs [hard x<=1.0]:  feasible assignments: 3
+   ratios ['2/3', '3/2', '1'] w0=2.014 m=(2, 2, 1) d=[1.56, 1.56, 1.56] x=[0.367, 0.967, 0.367]
+   ratios ['1', '2/3', '3/2'] w0=2.014 m=(1, 2, 2) d=[1.56, 1.56, 1.56] x=[0.367, 0.367, 0.967]
+   ratios ['3/2', '1', '2/3'] w0=1.343 m=(2, 1, 2) d=[1.56, 1.56, 1.56] x=[0.967, 0.367, 0.367]
+ODD 5-CYCLE with interval rungs [practical x<=0.9]:  feasible assignments: 10
+   ratios ['2/3', '3/2', '2/3', '3/2', '1'] w0=2.091 m=(2, 2, 2, 2, 1) d=[1.502, 1.502, 1.502, 1.502, 1.502] x=[0.322, 0.9, 0.322, 0.9, 0.322]
+   ratios ['2/3', '3/2', '1', '2/3', '3/2'] w0=2.091 m=(2, 2, 1, 2, 2) d=[1.502, 1.502, 1.502, 1.502, 1.502] x=[0.322, 0.9, 0.322, 0.322, 0.9]
+   ratios ['2/3', '3/2', '1', '1', '1'] w0=2.091 m=(2, 2, 1, 1, 1) d=[1.502, 1.502, 1.502, 1.502, 1.502] x=[0.322, 0.9, 0.322, 0.322, 0.322]
+   ratios ['1', '2/3', '3/2', '2/3', '3/2'] w0=2.091 m=(1, 2, 2, 2, 2) d=[1.502, 1.502, 1.502, 1.502, 1.502] x=[0.322, 0.322, 0.9, 0.322, 0.9]
+   ratios ['1', '2/3', '3/2', '1', '1'] w0=2.091 m=(1, 2, 2, 1, 1) d=[1.502, 1.502, 1.502, 1.502, 1.502] x=[0.322, 0.322, 0.9, 0.322, 0.322]
+   ratios ['1', '1', '2/3', '3/2', '1'] w0=2.091 m=(1, 1, 2, 2, 1) d=[1.502, 1.502, 1.502, 1.502, 1.502] x=[0.322, 0.322, 0.322, 0.9, 0.322]
+ODD 5-CYCLE with interval rungs [hard x<=1.0]:  feasible assignments: 25
+   ratios ['1/2', '3/2', '1', '2/3', '2'] w0=2.681 m=(1, 2, 1, 2, 1) d=[1.172, 1.563, 1.563, 1.563, 1.172] x=[0.068, 0.97, 0.369, 0.369, 0.97]
+   ratios ['1/2', '2', '2/3', '3/2', '1'] w0=2.636 m=(1, 1, 2, 2, 1) d=[1.192, 1.192, 1.192, 1.192, 1.192] x=[0.083, 1.0, 0.083, 0.542, 0.083]
+   ratios ['1/2', '2', '1', '2/3', '3/2'] w0=2.636 m=(1, 1, 1, 2, 2) d=[1.192, 1.192, 1.192, 1.192, 1.192] x=[0.083, 1.0, 0.083, 0.083, 0.542]
+   ratios ['2/3', '3/2', '1/2', '2', '1'] w0=2.636 m=(2, 2, 1, 1, 1) d=[1.192, 1.192, 1.192, 1.192, 1.192] x=[0.083, 0.542, 0.083, 1.0, 0.083]
+   ratios ['2/3', '3/2', '2/3', '3/2', '1'] w0=2.014 m=(2, 2, 2, 2, 1) d=[1.56, 1.56, 1.56, 1.56, 1.56] x=[0.367, 0.967, 0.367, 0.967, 0.367]
+   ratios ['2/3', '3/2', '1', '1/2', '2'] w0=2.636 m=(2, 2, 1, 1, 1) d=[1.192, 1.192, 1.192, 1.192, 1.192] x=[0.083, 0.542, 0.083, 0.083, 1.0]
+
+RESULT — the brief's expectation is REFUTED in one direction: interval
+rungs CAN beat 1:1 bipartiteness. The loophole is even-m rungs: an
+interval link's rung sum (q w_i + p w_j) = 2 q w_i is TWICE the 1:1 sum
+at matched pitch, so m=2 lands at in-window length d = pi*m/(2 w_i) while
+its drop phi = pi*m == 0 (mod 2pi) — a 'ferromagnetic' bond in the
+antiphase Ising picture. Parity sum y.m mod 2 then closes odd cycles.
+1:1-ONLY strut networks remain strictly bipartite (m=1 forced).
+========================================================================
+THE FIFTH-TRIANGLE — smallest odd strut-grade cycle (design card)
+========================================================================
+  v0 --(3:2, m=2)-- v1 --(2:3, m=2)-- v2 --(1:1, m=1)-- v0
+  all three links BOTH-GATE on-rung; all lengths equal d = pi/w0
+  w0 window   x0=x2      w1=2w0/3  x1        d=pi/w0  contact margin (nom)
+  w0=2.091   x0=0.322   w1=1.394  x1=0.900   1.5024   +0.0737  (x1 beyond practical)
+  w0=2.200   x0=0.265   w1=1.467  x1=0.814   1.4280   +0.1637
+  w0=2.350   x0=0.195   w1=1.567  x1=0.709   1.3368   +0.2734
+  w0=2.500   x0=0.133   w1=1.667  x1=0.617   1.2566   +0.3696
+  COST (fragility, quantified): the interval links run at comb amplitude
+  1/(pq) = 1/6 and acceptance Gamma_m/(pq) = 0.0167 rad/t.u. (vs 0.1 for
+  1:1) — 6x weaker exchange, 6x narrower tongue; the measured interval
+  lifetime hierarchy (E9: fifth ~20 t.u. by detuning drift) applies to the
+  3:2 legs. The heavy voice (x1 ~ 0.75-0.9) has headroom 0.1-0.25 and one
+  fluctuation of margin to the cap. PREDICTION: the fifth-triangle forms
+  and holds while its 3:2 legs stay in the Gamma/6 tongue, then dies by
+  interval drift — lifetime between the naked fifth (~20 t.u.) and a
+  closed unison ring (>10^3), closer to the fifth. Worth one fleet probe;
+  not a mass-particle candidate.
+========================================================================
+(b) BEAT-CONSONANCE / STROBOSCOPIC LOCK — verdict
+========================================================================
+KERNEL FACTS (verified):
+  1. Dense-to-dense transport is CONTINUOUS — 'transport within a mode is
+     continuous; the action atom lives at mode boundaries' (pass 4, the
+     comment block before the deposit loop; atoms_fire is called ONLY in
+     pass 5 roughness and pass 6 beat conversion/evaporation).
+  2. A drifting 1:1 link (uniform d, det = dw) has psi(t) = dw*t: the gate
+     opens periodically with duty <gate> = C(16,8)/2^16 = 0.19638.
+  3. Deliveries complete every d/C regardless of gate phase; the delivered
+     amount is the integral of gated deposits — no event for the beat to
+     synchronize onto. The delivery-time entrainment kick IS beat-sampled:
+     stroboscopic freezing of the sampled phase needs dw*d/C = 2pi*k.
+  stroboscopic commensurability needs dw = 2pi*C/d = 5.027 rad/t.u.
+  comb acceptance (1:1): res(dw) = gm^2/(gm^2+dw^2) = 3.96e-04  (vs 1 on-tune)
+  measured unlock boundary (S2): |det| ~ 2*Gamma_m = 0.2
+  => the first strobe point sits 25x beyond the unlock
+     boundary with 4 orders of magnitude less exchange — nothing to lock.
+  4. The action atoms quantize AMOUNTS of conversion, not timing; the
+     credit pool lapses at 2 atoms (atoms_fire) — no phase is stored, so
+     there is no atom-clock for the gate window to entrain.
+  5. What a detuned link ACTUALLY does at delivery: radiate. Rough fraction
+     R(det) = 2|det|*G_r/(det^2+G_r^2) * rough_k of every delivered parcel:
+     det=0.05: rough fraction 0.069
+     det=0.10: rough fraction 0.135
+     det=0.20: rough fraction 0.241
+     det=0.40: rough fraction 0.341
+     det=0.80: rough fraction 0.315   <- M0: this channel is 52% of blob loss
+     det=1.60: rough fraction 0.199
+VERDICT: refuted. Beat-consonance with quantization CANNOT rescue
+non-uniform omega: (i) transport carries no atoms to synchronize; (ii) the
+strobe commensurability point lies ~20x outside the comb acceptance, where
+exchange is already dead; (iii) sustained det is precisely the roughness
+channel — the measured particle-killer, not a lock. The ONLY discrete
+beat-locks in the kernel are the comb's own p:q rungs (rate 1/(pq),
+acceptance Gamma_m/(pq)) — already in the law table, already measured to
+die young (E9: unison >> fifth > octave).

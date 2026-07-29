@@ -1,0 +1,100 @@
+========================================================================
+A. STRUCTURE CHECKS on a random consonant network
+========================================================================
+  rows=14 (cables 8, struts 3x2), cells=9
+  ker Q: smallest eigenvalues [0.         0.47766153] -> exactly 1 zero mode = global clock shift (time-translation gauge); rank(Q) = 8 = n-1
+  cycle space dim (ker M^T) = 6 = rows - (n-1)   (graph cycles 3 + strut 2-cycles 3)
+  stationarity |M^T W psi| = 5.22e-15  => residual psi* lies in W^-1 ker(M^T): DEFECTS LIVE IN THE CYCLE SPACE
+
+========================================================================
+B. THE 1/w LAW — commas distribute in inverse proportion to stiffness
+========================================================================
+  Single cycle with defect delta (mod 2pi): the wrapped-LS residual is
+      psi_l = -delta * (1/w_l) / sum_k (1/w_k)     [series compliance]
+  Uniform w => even tempering: E6's measured 'comma tempered evenly' is the
+  uniform-stiffness special case. Wound ring12 (m=5), comma delta=0.6:
+  seed (seq lock):   11 links psi=0, seam psi=-0.6000 (gate 0.4814)  <- fixed-ring_x fleet's measured seam dump
+  wrapped LS:        psi_l = -0.0500 each (predicted -0.0500), gates 0.9950
+  one soft link (w=0.1): psi_soft=-0.2857 (pred -0.2857), others -0.0286 (pred -0.0286)
+  => commas CONCENTRATE on soft links (low flow*stiffness); the ring_m
+     seeder fix = set delta -> 0 so there is nothing to distribute.
+  comma cost min sum(w psi^2) = delta^2/sum(1/w): uniform 0.03000, soft-link 0.01714
+
+========================================================================
+C. STRUT 2-CYCLES — the pair rung inside the same formalism
+========================================================================
+  strut with phi = pi + 0.3: round-trip defect (mod 2pi) = -0.6000
+  wrapped LS splits it evenly: psi = (-0.3000, -0.3000) — E6 P2's tempered comma as the strut-2-cycle residual
+  tempered gates 0.8347 x 0.8347 (product 0.6967)  vs  tree lock 1.0 x 0.4814 (product 0.4814)
+  => entrainment BEATS seeding on the two-gate product (exp(-4x^2) vs exp(-8x^2), x = omega*dd)
+
+========================================================================
+D. JITTERED CUBE — gate budget vs foam placement noise
+========================================================================
+  Cube, all struts, target phi=pi; jitter: phi_l = pi + omega*dd_l,
+  dd_l ~ N(0, sigma_d), omega=2.20 (abar 1.43 class). BFS = the kernel
+  shell seeder (tree gates 1, co-tree edges eat whole cycle defects);
+  LS = what entrainment anneals toward. 100 foams, ALL 24 directed gates:
+  sigma_d/a    BFS mean/min        LS mean/min
+    0.02      0.979 / 0.883        0.993 / 0.970
+    0.05      0.884 / 0.443        0.952 / 0.816
+    0.08      0.783 / 0.174        0.895 / 0.625
+    0.10      0.719 / 0.064        0.841 / 0.476
+    0.12      0.670 / 0.039        0.797 / 0.339
+    0.15      0.626 / 0.013        0.731 / 0.231
+  Measured H1 cube: gates mean 0.60-0.64, min ~0 at seed => the foam's
+  effective sigma_d/a ~ 0.10-0.15 for nearest-pick cubes. The LS/annealed
+  assignment lifts the dead minimum gate by an order of magnitude and adds
+  +0.05-0.1 mean — but CANNOT beat the sum rule: the cycle defect is
+  invariant, only its distribution is designable. Gate budget per cycle:
+  sum psi = -delta_c exactly. The only real cures are delta_c -> 0
+  (equal-length mining P3 / plasticity F) or softer w on sacrificial links.
+
+========================================================================
+E. INTERVAL NETWORKS — integer incidence, omega-gauge, the Z2
+========================================================================
+  p:q rows (pass 2): psi_ij = q theta_i - p theta_j - q omega_i d/C.
+  Integer coefficient matrix M_pq (+q at i, -p at j). Gauge: theta ->
+  theta + omega tau shifts psi_ij by (q w_i - p w_j) tau = 0 at lock:
+  ker Q_pq = the OMEGA-VECTOR (uniform-omega nets: the constant vector).
+  Solvability of M_pq theta == phi (mod 2pi): for every integer left-null
+  vector y of M_pq:  y . phi == 0 (mod 2pi).
+  Octave triangle (A-B 1:1, B-C 2 th_B - th_C, C-A th_C - 2 th_A):
+  y = (2,1,1):  y.M_pq = [0, 0, 0]   (the left-null lattice generator)
+  Both-gate (strut) rungs put HALF-PERIOD targets on the links:
+  phi = (pi m1, pi m2, pi m3)  =>  y.phi = pi(2 m1 + m2 + m3) == 0 mod 2pi
+  <=>  m2 + m3 == 0  (mod 2)   — a Z2 PARITY on rung integers.
+  The Z2 is the ratio (clock period 2pi)/(pair-rung spacing pi) = 2; it is
+  the same Z2 that makes 1:1 strut networks bipartite (all m_l = 1: every
+  cycle needs an even strut count). Cable targets are full-period free
+  (continuous phi), so cables carry no parity — they pay it (t2 part A).
+
+========================================================================
+F. W FROM THE KERNEL — the stiffness of a real ring link
+========================================================================
+  comp12 ring link: geo=0.5282 gpl=0.5625 head=0.679 Em=0.801  K=0.3883/t.u.  w = K*p/4 = 0.7765 per rad^2
+  ring6 link: geo=0.5866 gpl=0.0625 head=0.872 Em=0.320  K=0.0246/t.u.  w = K*p/4 = 0.0491 per rad^2
+  (res=1 on-comb, mob_eff=Em for equal voices.) These w set which links
+  absorb comma under jitter: ring6's 9x smaller gpl makes its links 9x
+  SOFTER — same comma, 9x slower internal exchange to re-temper it.
+
+========================================================================
+G. THE DICTIONARY — force density method <-> consonant network
+========================================================================
+  FDM tensegrity                      v89 consonant network
+  ----------------------------------  ------------------------------------
+  node coordinates x                  clock phases theta (+ pitch omega)
+  member force density q = t/l        phase stiffness w_l = K_l p_gate/4
+                                        (K_l = kd km geo gpl res head mob)
+  equilibrium  D x = f                stationarity  Q theta = B W phi
+  external load f                     retardation targets phi = omega d/C
+  self-stress (ker of equilibrium     divergence-free circulating flux
+    on edge space)                      sigma in ker B — winding (t5)
+  mechanism (rigidity kernel)         ker Q beyond the omega-gauge: free
+                                        retunings (balanced cycles' free
+                                        omega; disconnected components)
+  prestress stabilizes mechanisms     flux adds entrainment damping +
+                                        gyroscopic precession, NOT static
+                                        stiffness; protection = gate desert
+  form-finding (choose q, solve x)    choose (topology, m, intervals),
+                                        solve (picks, omega, theta, x*)

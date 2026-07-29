@@ -1,0 +1,129 @@
+========================================================================
+1. STEADY CIRCULATION + THE FLIGHT-LOAD FIXED POINT
+========================================================================
+  On-lock ring: per-direction throughput (pass-2 chain, gates 1/g_b):
+     sigma_f = kd*km*geo*gpl*res(0)*head*Em,   sigma_b = g_b*sigma_f
+  Slot inventory is a sawtooth (fills for d/C, delivers whole): mean
+  lem = sigma*d/(2C) per slot; flload = 0.5*(2 links)*(sigma_f+sigma_b)
+  *d/(2C) = (sigma_f+sigma_b)*d/(2C). PITCH LOAD x = (Em+flload)/cap:
+  the seeder puts x*cap ALL in Em => a fresh ring wakes up FLAT of its
+  rung by flload/cap and sheds to the rung (F1's one-sided ratchet,
+  measured as the early fast 'leak'). Fixed point per class:
+  class                       gpl   sig_f  flload  Em_eq flight% seed_x_corr
+  ring6  (m=3, pi-rung)    0.0625  0.0227  0.0283 0.2917    8.9%      0.1167
+  comp12 (m=5, wound)      0.5625  0.3185  0.2190 0.5823   27.3%      0.2329
+  comp6  (m=2, one-way)    0.0625  0.0684  0.0376 1.0522    3.5%      0.4209
+  diode8 (m=2, phi=pi/2)   0.2500  0.2294  0.1201 1.7549    6.4%      0.7020
+  prism3 tube belts        0.0625  0.0763  0.0395 0.8680    4.4%      0.3472
+  => CENSUS CAVEAT QUANTIFIED: 3-27% of a wound ring's rung mass lives
+  IN FLIGHT (lem), invisible to the Em-census — part of the measured early
+  M drop is inventory transfer, not loss (M0's -0.039 residual, tET check).
+  SEEDING RULE: seed Em = x*cap - flload_eq (last column * cap), or accept
+  the F1 shed. NOTE ring6's tiny gpl (0.0625) makes its internal exchange
+  ~9x weaker than comp12's — slower re-temper, weaker entrainment grip.
+
+========================================================================
+2. DIVERGENCE-FREEDOM — the self-stress identification
+========================================================================
+  Every kernel move is exactly paired (deposit debits source at resolve;
+  delivery credits receiver; roughness/back_s split at the receiver), so
+  per cell:  dEm/dt = in - out + cond - rough_local - evap.
+  STEADY STATE (dEm/dt = 0) with no conversions (uniform-omega interior:
+  det = 0 => rough = 0; Em < cap => evap = 0; Ee ~ 0 => cond = 0) gives
+  in = out at every voice: the dense flux sigma is DIVERGENCE-FREE, i.e.
+  sigma lies in ker(B) — the cycle space. That is precisely the FDM
+  self-stress: member forces in equilibrium with zero external load.
+  It is AUTOMATIC at steady state (conservation), NOT instantaneously.
+  A leaking structure's divergence = its conversion/bleed rate — the
+  self-stress decays with the leak (G4's moral for space flux, here for
+  dense flux). C5's 'internal cycling at constant mass' = a nonzero
+  self-stress with zero divergence everywhere INCLUDING the rim.
+
+========================================================================
+3. LINEARIZED PHASE DYNAMICS — damping vs gyroscopic precession
+========================================================================
+  Perturb clocks u_k = dtheta_k around lock. Each arriving parcel kicks
+  the receiver by klock*mix*(u_send - u_recv) (passes 4c and 5, receiver
+  only). Per unit time (deposit-time + delivery-time):
+     R = klock*sigma*[1/(Em+lockf) + 1/(Em+lockf+sigma*d/C)] ~ 2*klock*sigma/Em
+  Ring:  du_k/dt = R_f (u_{k-1}-u_k) + R_b (u_{k+1}-u_k),  R_b/R_f = g_b.
+  Modes u ~ e^{i 2pi j k/N}:
+     lambda_j = -(R_f+R_b)(1 - cos(2pi j/N))  +/- i (R_f-R_b) sin(2pi j/N)
+  DECAY is set by the SUM (total exchange); NET circulation (R_f - R_b)
+  contributes ONLY the imaginary part: perturbations precess around the
+  loop while decaying — gyroscopic coupling, derived. Circulation does
+  NOT add restoring stiffness. Numbers (slowest mode j=1):
+  ring6  (m=3, pi-rung)    R_f=0.1427 R_b=0.1427/t.u.  decay_1=0.14271  precession_1=0.00000 rad/t.u.
+  comp12 (m=5, wound)      R_f=0.8563 R_b=0.1039/t.u.  decay_1=0.12863  precession_1=0.37620 rad/t.u.
+  comp6  (m=2, one-way)    R_f=0.1242 R_b=0.0000/t.u.  decay_1=0.06212  precession_1=0.10758 rad/t.u.
+  diode8 (m=2, phi=pi/2)   R_f=0.2440 R_b=0.0000/t.u.  decay_1=0.07147  precession_1=0.17255 rad/t.u.
+  prism3 tube belts        R_f=0.1661 R_b=0.0000/t.u.  decay_1=0.24915  precession_1=0.14384 rad/t.u.
+  => relock time after a kick ~ 1/decay_1: tens to thousands of t.u. for
+  the slowest mode — consistent with rings surviving perturbation but
+  re-tempering slowly. ring6's grip is an order weaker than comp12's.
+
+========================================================================
+4. THE UNWIND BARRIER — desert, capture, slip kinematics
+========================================================================
+  One link's phase error against detune: dpsi/dt = dw - R0*gate(psi)*psi,
+  R0 = 2*klock*sigma0/Em (restoring rides the FLUX, which rides the gate).
+  max restoring at psi* = 0.495 rad, gate(psi*) = 0.610,
+  capture: |dw| <= R0 * 0.3017.
+  ring6  (m=3, pi-rung)    capture |dw| <= 0.0469 rad/t.u.  (clipped by comb unlock at 2*Gamma_m = 0.2: eff 0.0469)
+  comp12 (m=5, wound)      capture |dw| <= 0.3300 rad/t.u.  (clipped by comb unlock at 2*Gamma_m = 0.2: eff 0.2000)
+  comp6  (m=2, one-way)    capture |dw| <= 0.0392 rad/t.u.  (clipped by comb unlock at 2*Gamma_m = 0.2: eff 0.0392)
+  THE DESERT: restoring ~ 0 wherever gate ~ 0: gate(1.5)=6.75e-03,
+  gate(2.618)=4.05e-10, gate(pi)=0 exactly. Between psi ~ 1.2 and
+  2pi-1.2 a slipping link is neither pushed back NOR pushed on — the slip
+  has no motor. To unwind (m -> m-1) a link must CROSS the desert: it
+  needs a sustained one-sided detune dw for a time T ~ (2pi-2.4)/dw; at
+  the post-unlock drift scale dw ~ 2*Gamma_m = 0.2 that is T ~ 19 t.u.
+  of coherent detune — but a UNIFORM ring leaks uniformly: pairwise det
+  stays 0 and no motor ever appears. VERDICT: winding protection is the
+  gate desert + detune-symmetry (B1's argument, now quantitative), NOT
+  gyroscopic stiffness. Slip risk concentrates where symmetry breaks:
+  unequal voices (census mass steps), rim contacts, strike transients.
+
+========================================================================
+5. THE LEAK FLOOR — vacuum bleed per voice, vs measured
+========================================================================
+  A rung voice at pitch w(x) bleeds through EVERY candidate link to the
+  vacuum choir (w2 = 2.9). Per rim link (pass-2 chain):
+     lam_1 = kd*km*geo*gpl_rim*res(Dw)*<g>*head_vac*sqrt(Em*mob_floor*cap)
+  Dw = w2*q*x/(1+q*x) (detune to vacuum), res = gm^2/(gm^2+Dw^2),
+  head_vac ~ 1, mob-floor sqrt because the vacuum partner is silent.
+  Fraction R(Dw)*rough_k of delivered bleed RADIATES (D->F); the rest is
+  dense crumbs (partially recondensable). Bands: <g> in [0.196 random,
+  1.0 recruited], gpl_rim in [0.07 random, 0.3 partial], n_rim ~ 8-12.
+  class                        Dw     res       lam/voice (band) rough%
+  ring6  (m=3, pi-rung)     0.386  0.0629   [7.09e-04, 1.55e-02]  33.9%
+  comp12 (m=5, wound)       0.806  0.0152   [2.57e-04, 5.63e-03]  31.4%
+  comp6  (m=2, one-way)     0.996  0.0100   [1.91e-04, 4.18e-03]  28.1%
+  diode8 (m=2, phi=pi/2)    1.374  0.0053   [1.20e-04, 2.62e-03]  22.5%
+  prism3 tube belts         0.880  0.0128   [2.28e-04, 4.98e-03]  30.1%
+  Measured anchors: ring6 early leak 1.1e-3/t.u. total (M 1.92, 6 voices)
+  = 1.9e-4/voice — a factor ~3.7 BELOW the band's low edge: the formula is
+  an UPPER-BOUND family (it overestimates rim recruitment <g>, ignores
+  crumb-neighbor headroom loss and the measured recondensation reclaim).
+  comp12 late (~3e-4/t.u. absolute at M=0.59) matches the low edge within
+  ~2x once Em_eq is taken at its late value (sqrt(Em) scaling). The
+  load-bearing claim is the SCALING LAW, not the prefactor:
+  lam ~ sqrt(x)*res(Dw(x)) falls monotonically with load —
+    ring6  (m=3, pi-rung)    sqrt(x)*res = 0.02249
+    comp12 (m=5, wound)      sqrt(x)*res = 0.00859
+    comp6  (m=2, one-way)    sqrt(x)*res = 0.00659
+    diode8 (m=2, phi=pi/2)   sqrt(x)*res = 0.00457
+    prism3 tube belts        sqrt(x)*res = 0.00768
+  ring6 : comp12 : diode8 = 6.6 : 1 : 0.5 per unit mass — heavier rungs
+  are QUIETER against the vacuum in the resonance factor alone, on top of
+  being farther from the skirt. The floor never reaches zero while any
+  candidate link to the choir exists: mob_floor*cap = 0.01 guarantees a
+  sqrt(Em*0.01) trickle — the design goal is to make res(Dw)*<g> small
+  (heavy, and phase-decoupled rims) and let recondensation recycle crumbs.
+  FLUX-MOMENT INSTRUMENT (per-ring circulation signature, MASS open item):
+  loop-tangential sum of lem imbalance = N*(sigma_f-sigma_b)*d/(2C):
+    ring6  (m=3, pi-rung)    predicted loop flux moment = 0.0000
+    comp12 (m=5, wound)      predicted loop flux moment = 2.1498
+    comp6  (m=2, one-way)    predicted loop flux moment = 0.2257
+    diode8 (m=2, phi=pi/2)   predicted loop flux moment = 0.9606
+    prism3 tube belts        predicted loop flux moment = 0.1186

@@ -34,12 +34,13 @@ ring_m (per-cycle Diophantine closure).
 
 | stream | question | deliverable | status |
 |---|---|---|---|
-| A theory | consonant-network mathematics: drift theorem, counting, the lock Laplacian, bipartite generalization, flux-as-prestress | prestress/THEORY.md | running |
-| D stability | sign of load-transport feedback (self-repair vs runaway), modal spectrum predictions (H2 lines), death taxonomy, active-lock assessment | prestress/STABILITY.md | running |
+| A theory | consonant-network mathematics: drift theorem, counting, the lock Laplacian, bipartite generalization, flux-as-prestress | prestress/THEORY.md | **LANDED** (see findings below) |
+| D stability | sign of load-transport feedback (self-repair vs runaway), modal spectrum predictions (H2 lines), death taxonomy, active-lock assessment | prestress/STABILITY.md | **LANDED** (see findings below) |
 | E regression | sparse leak/death-law discovery over the 74-log MASS corpus + pre-registered predictions for Phase-2 | prestress/regress/ | **LANDED** (see findings below) |
-| B formfind | pick/tune/phase solver on the real foam (foam_s20260727.tsv); candidates C1–C8 + controls as .net seedfiles | prestress/formfind.py, candidates/ | running |
-| C morpho | topology catalog + free evolutionary search + exotics; top-8 shortlist + negative controls | prestress/morpho/ | running |
-| F plasticity | user proposition: cells are plastic — the frozen foam is the obstruction; harmonic misfit force realigns/morphs cells until hard; formalize (retardation plasticity / metric-from-space / node motion / work-hardening), conservation bookkeeping, convergence, experiment designs | prestress/PLASTICITY.md | running |
+| B formfind | pick/tune/phase solver on the real foam (foam_s20260727.tsv); candidates C1–C8 + controls as .net seedfiles | prestress/formfind.py, candidates/ | see row below (API-error resume) |
+| C morpho | topology catalog + free evolutionary search + exotics; top-8 shortlist + negative controls | prestress/morpho/ | **LANDED** (quick pass complete; deep pass died at checkpoint — rerun: `python3 search.py --tries 60 --restarts 6 --steps 1400`) |
+| B formfind | pick/tune/phase solver on the real foam; C1–C8 + controls as .net seedfiles | prestress/formfind.py, candidates/ | **LANDED** (see findings below) |
+| F plasticity | user proposition: cells are plastic — the frozen foam is the obstruction; harmonic misfit force realigns/morphs cells until hard; formalize (retardation plasticity / metric-from-space / node motion / work-hardening), conservation bookkeeping, convergence, experiment designs | prestress/PLASTICITY.md | **LANDED**: retardation plasticity + hardening recommended (ḋ = −κ·Φ·∂V/∂d, Φ = the S2 reactive prefactor; vacuum exactly inert; anneals cube 7%→0% in ~20 t.u.; hardening = first C1-plateau candidate); metric-from-space rank-deficient (kept as piston tripwire); node motion rejected (re-imports background). Implementing as pass D, ratchet-gated |
 
 Toolchain: numpy/scipy/sympy + Maxima present. PySR/Julia absent (hand-rolled
 STLSQ instead). Lean/lake absent — P12 formal certificate recorded as
@@ -54,7 +55,7 @@ Status flow: proposed → solved (outside sim) → seeded → SIMULATED → verd
 | P1 | cube a=1.25 exact-retune: per-link phases + ω from actual geometry (H1 done right) | H1 verdict + form-finding | proposed |
 | P2 | parasite-free cube a≈1.5: face diagonals (1.77 at a=1.25) sit INSIDE the link ceiling (~1.96) — the H1 cube carried 12 unscored off-rung face links; a≥1.35 pushes them out and puts edges at the foam's natural d̄=1.505 | found during setup, 2026-07-28 | proposed |
 | P3 | equilateral-strut mining: search the foam for near-equal-length bipartite subgraphs (the foam supplies the geometry or it doesn't — measure) | translation | proposed |
-| P4 | hexagonal prism n=12 (3-regular; expected over-constrained by 2 ⇒ mixed strut/cable split) | counting | proposed |
+| P4 | hexagonal prism n=12 (3-regular, bipartite; CORRECTED by theory: 0 demotions needed — all-strut feasible; a P3 mining target) | counting (corrected 2026-07-29) | proposed |
 | P5 | tube: stacked wound rings co-rotating (B1c rescue), axial struts at the π-rung | B1 design note | proposed |
 | P6 | quad-mesh torus k×l with winding pair (m1,m2) — homology species labels | theory | proposed |
 | P7 | ring12 + consonant chords (stiffening; chord rung feasibility TBD) | translation | proposed |
@@ -64,8 +65,14 @@ Status flow: proposed → solved (outside sim) → seeded → SIMULATED → verd
 | P11 | free-search champion: whatever the evolutionary backtracer finds that the catalog missed | morpho | proposed |
 | P12 | formal stability certificate (Lean) for the winning quadratic form | user workflow §6 | blocked: no Lean toolchain (numeric certificate fallback available) |
 | P13 | truncated octahedron n=24 (bipartite 3-regular) if the foam supplies it | catalog | proposed |
-| P14 | beat-locked pairs: Δω synchronized to the action-atom cadence (stroboscopic lock) — expressibility check first | exotics | proposed |
-| P15 | CELL PLASTICITY (user, 2026-07-28): the frozen foam is the obstruction — plastic cells would realign under harmonic misfit force and morph until hard. d_ij is a link retardation, not a Euclidean distance (no background to embed in) ⇒ plasticity = link-property dynamics; options: misfit gradient flow on d / metric-from-space (d from live Es — the pressure law as annealing channel) / node motion / lock-hardening hysteresis (first equilibrium?). LAW-change class: ratchet-gated, vacuum must stay frozen | user proposition | agent working |
+| P14 | beat-locked pairs: Δω synchronized to the action-atom cadence (stroboscopic lock) | exotics | **CLOSED NEGATIVE on paper** (theory §6: transport carries no atoms; strobe point 25× beyond the unlock window; sustained detune IS the roughness channel) |
+| P16 | **DIODE-16** (theory §2): cable ring N=16 at φ=π/2 per link — back gate EXACTLY 0 (gate(π)=0), m=4, d≈1.08, x≈0.83; parasite-safe; highest-load candidate ⇒ load line alone predicts ~4400+; theory leak ratio 0.5 vs comp12's 1 | theory discovery | proposed |
+| P17 | fifth-triangle {3:2, 2:3, 1:1} — odd cycle closed by even-m interval rungs, ω₀≈2.35, d=1.337 uniform: the first NON-bipartite consonant object; Γ/6 tongue ⇒ predicted fragile (species probe, not a mass candidate) | theory §5 refutation of strict bipartiteness | proposed |
+| P18 | flight-corrected seeds: up to 27% of a wound ring's rung mass is census-invisible FLIGHT inventory — comp12 should seed x=0.233 (not 0.321), ring6 0.117; P-A predicts the retune kills the early shed | theory §7 | proposed |
+| P19 | MASS SHARPNESS (user M-R1): species mass must be an attractor point, not a valley segment — hardened-annealed objects across foam seeds must cluster tighter than seed scatter (hardening = the pinning mechanism; frozen foam = the null) | user mass-spectrum note, 2026-07-29 | proposed |
+| P20 | M-FAMILIES (user M-R2, neutrino pattern): ≥2 coexisting stable m-classes of one topology on one foam, masses distinct beyond scatter (ring m-ladder; chirality split; gate desert = transition barrier) | user mass-spectrum note | proposed |
+| P21 | INERTIA TENSOR (user M-R3, quasiparticle pattern): kick experiments must return a tensor; pre-registered: rings anisotropic (quasiparticle-class), shells isotropic (particle-class); all-anisotropic = no true particles yet | user mass-spectrum note | proposed |
+| P15 | CELL PLASTICITY (user, 2026-07-28): the frozen foam is the obstruction — plastic cells would realign under harmonic misfit force and morph until hard. Formalized: ḋ_l = −κ_plast·Φ_l·∂V/∂d (retardation plasticity; d is a link property, no background to embed in) + lock-hardening. Diagnosis CONFIRMED in-model: foam supplies 16% strut spread, shells need ≤2%; flow anneals cube to gates 0.996 in ~20 t.u.; amputates frustrated seams; vacuum exactly inert (Φ=0 with no dense) | user proposition → design accepted | building pass D (ratchet-gated) |
 
 ## Agent findings (as they land)
 
@@ -101,6 +108,122 @@ If the load line wins, the leak channel is gate-independent (candidate:
 the mob_floor trickle — to be confirmed by the theory/stability
 agents), and the design target shifts from "open gates" to "recapture
 the floor trickle" — which is exactly what the comp12 exception hints.
+
+### D stability (landed 2026-07-28) — prestress/STABILITY.md
+
+Anchors reproduced first (ring12 gates 1.0000/0.1001 = measured; load
+invariant under locked flow to 5 digits). Results:
+
+1. **SIGN VERDICT: HEAVY→LIGHT — RESTORING.** On a rung the locked
+   gate offsets are exact negatives (even gates ⇒ zero odd flow at any
+   entrainment); mobility symmetric above the floor; the sole surviving
+   asymmetry is headroom ⇒ the heavy voice feeds the light one.
+   λ_detune = −0.19/t.u. (pair, exact map; analytic −0.135/−0.166 with
+   flight delay). Unlock needs dE ≈ 0.95·store — detune runaway
+   unreachable. **Consonant networks self-repair internally.**
+2. **The common mode is neutral: passive nets die of ENVIRONMENT
+   BLEED** (vacuum-side: res_vac·mob_floor·g_plain), never of
+   detuning. Independent convergence with E's load line: two agents,
+   two methods, one killer — the vacuum bleed, not the structure.
+3. **Mode lines (pre-registered):** ring6/cube dense sector is
+   OVERDAMPED — no breathing line; slowest relaxation −0.009±0.002/t.u.
+   **Wound ring12 is a CHIRAL PUMP:** co-propagating load waves grow at
+   n=±1: +0.035±0.01/t.u., ν=0.64±0.05 rad/t.u.; n=±2: +0.053±0.01,
+   ν=1.05±0.08; ONE propagation sense (±n split = closure-integer
+   signature); saturates at x_std≈0.06–0.10 then slow drain −6e-4/t.u.
+   — the measured comp12 class reproduced from theory. π-rung/one-way
+   rings immune.
+4. **Death taxonomy:** D1 skirt slide dominant (exp decay, knee at
+   x=0.0617, terminal (t_d−t)^{1–2}); D3 seam/strangulation — **the
+   ā=1.586 cube's own gravitational footprint (g1 Es depression)
+   shrinks local radii and closes its own edges** — a self-
+   strangulation channel for long struts; D4 parasites self-tune into
+   satellite channels; D2 pump overload only for wound even rings
+   (saturating). NEW DESIGN CONSTRAINT for B/C candidates: strut
+   length must clear the LOADED death radius (C1' geometry: ~1.48–1.6
+   band) — the parasite-free a≈1.5 cube may sit near the
+   strangulation edge; check per candidate.
+5. **Minimal active lock: none needed for phases — load maintenance
+   only** (the C1′ piston B+ arm on a π-rung ring_m-exact ring;
+   feeding is life support, not stability). Bonus discriminator:
+   under quant_mode=2 credit, kicked mass loss is exactly 0 (vs
+   0.3–0.9 continuous) — the action atom freezes the comma tax for
+   transients.
+
+**Campaign implication:** the two landed agents agree the killer is
+the vacuum bleed. Static seed phases cannot close the vacuum-facing
+gates (foam sits at vacuum pitch ω=w2; Δω sweeps every foam-facing
+gate through open) — which explains c₀'s universality. The routes
+that remain against the bleed: (a) the chiral pump / wound-mutual
+recapture (comp12's ×2.5), (b) load maintenance (piston), (c) any
+plasticity/hardening channel (agent F pending).
+
+### C morpho (landed 2026-07-29) — prestress/morpho/ (quick pass)
+
+Deliverables: MORPHO.md (rulebook + catalog + free search + exotics +
+per-candidate ledger), search.py (kernel-verified scorer), shortlist.json,
+**nets/ — 10 kernel-ready init=net seeds**. Results:
+
+1. **The back-gate ladder** (top class): each winding step down from
+   comp12's φ=150° kills back-leak exponentially while RAISING load —
+   and the measured death law favors load. Top-3: ring8_m3 (leak/voice
+   0.058, x=0.56), ring12_m5 re-solved on this foam (0.064), ring10_m4
+   (0.067). [Cross-check vs theory's diode-16: theory puts the exact
+   back-gate zero at φ=π/2; morpho's ladder tops out at ring8_m3 —
+   reconcile the φ convention (gate(2φ) vs gate(φ)) when the sims run
+   both. Both agree on the direction: wind down, load up.]
+2. **Most surprising:** comp6 carries ~5 expected second-neighbour
+   parasites (chords 1.905, in-ceiling with P=0.835, gates 0.53 OPEN at
+   lock) — its death may be parasites, not one-way-ness. CONVERGES with
+   theory §9 (independent methods, same finding). Discriminating probe
+   shortlisted: ring9_m3 — odd-N cable ring, parasite-free by geometry.
+3. **Surfaces are foam-starved at n≤32**: every 2D skin/tube is
+   paper-consonant but realizes parasite-dense on this foam. Free
+   search independently converges to fused small cycles; found a
+   non-bipartite cable-pentagon + strut-quad hybrid class the catalog
+   missed.
+4. Negative controls: mobius6_d1.5 (leak 0.373), octahedron_d1.5
+   (0.721), + icosahedron/antiprism4/ring13_strut frustrated refs.
+5. Exotics: fifth-bridge geometrically real (d=1.44) but 0.4% load
+   tolerance vs ±30% foam chaos — deferred; beat-locks NOT expressible
+   (phaseless atom credit) — P14 doubly closed; double-tori need n≥72;
+   the **Hopf ring pair** (two linked rings, zero cross-channels — a
+   purely topological bond) shortlisted instead.
+
+### B formfind (landed 2026-07-29) — prestress/formfind.py + candidates/
+
+18 .net seeds (incl. mis-tuned ctrl twins), 9 reports, summary.tsv.
+**VALIDATION: MATCH both anchors** (ring12: Lring 16.542, closure 5.0000,
+x 0.439164 = comp12's voice masses; cube: abar 1.586, ω 1.9809, gates
+0.001/0.597 at print precision — the solver IS the kernel's seeder,
+bit-faithful).
+
+1. **PHANTOM EDGES (new setup finding):** 2 of the H1 cube's intended
+   edges are NOT foam links (the shell seeder never checks the link
+   rule d < 1.15(rᵢ+rⱼ)) — the cube was built with two nonexistent
+   channels. The init=net kernel path + formfind check both score real
+   links only.
+2. **Cube-deficit decomposition** (H1 cells): 0.597 kernel → 0.616
+   dropping phantoms → 0.676 exact phases (min gate 0.001→0.130,
+   ~130×) → 0.851 better picks → **remainder ≈0.15 is irreducible
+   foam length spread (σ_d≈0.14, search-saturated)**. Exact retuning
+   buys mean 0.60→0.85 but cannot reach 0.95 on the frozen foam —
+   P15 plasticity is the only route past the ceiling.
+3. **Best by predicted leak: c2_cube150** (leak 3.23, min 0.401, mean
+   0.866, parasites all dark ≤1e-4); per-live-direction: c4 ring12+
+   chords (0.146; the consonant chord algebra WORKS — unwound m=6
+   ring + 4π cable chords + cross-strut weave at gates 0.995–1.000),
+   c5 tube (0.167; mass-matched to comp12 within 0.2% — the clean
+   structural comparator; rings m=2 exact one-way).
+4. **comp12 itself carries 1 half-open parasitic link (g_b=0.48)** —
+   even the champion has an unscored channel.
+5. **Infeasible on this foam:** C6 torus (minor-cycle m=1 forces x to
+   the 0.9 ceiling; row closures can't be integer in the link window;
+   29–48 parasites), C7 truncated octahedron (spread 1.04–1.97, min
+   0.035, near-soft gap 0.012). C3 all-strut hex prism over-
+   constrained in PRACTICE (min 0.044) — note tension with theory's
+   "0 demotions" (structural feasibility ≠ foam feasibility; the
+   prism's π-rung parasite is an absorption candidate).
 
 ## Verdicts
 

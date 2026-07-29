@@ -141,6 +141,14 @@ typedef struct {
      * (omega, loads, phases) on the actual foam; the kernel places and
      * reports. File: 'V x y z xk th2' vertices, 'E a b' intended edges. */
     char net_file[256];
+    /* P15 — retardation plasticity (prestress/PLASTICITY.md): the link
+     * retardation d yields to the harmonic misfit force — the S2 odd
+     * term acting on its geometric conjugate. Geometry is not a ledger
+     * (precedent: cr, normals); vacuum exactly inert (force ∝ Sm = 0).
+     * kappa_plast = 0 is the exact legacy kernel. tau_harden > 0 adds
+     * lock-consolidation: locked time stiffens the link (work-
+     * hardening); a kick that unlocks re-softens it. */
+    double kappa_plast, tau_harden;
 } Cfg;
 
 static Cfg P;
@@ -359,6 +367,8 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "quant_A0")) P.quant_A0 = atof(v);
     else if (!strcmp(k, "quant_mode")) P.quant_mode = atoi(v);
     else if (!strcmp(k, "net_file")) { strncpy(P.net_file, v, 255); P.net_file[255] = 0; }
+    else if (!strcmp(k, "kappa_plast")) P.kappa_plast = atof(v);
+    else if (!strcmp(k, "tau_harden")) P.tau_harden = atof(v);
     else fprintf(stderr, "# WARN unknown key '%s'\n", k);
 }
 
@@ -415,6 +425,9 @@ static void print_cfg(void)
            P.comb_limit, P.rough_k, P.gamma_rough, P.mob_sym, P.mob_floor);
     printf("# cfg field sector: two-component signed amplitude, unitary hops, field_J=%g\n",
            P.field_J);
+    if (P.kappa_plast > 0)
+        printf("# cfg plast: kappa_plast=%g tau_harden=%g (P15 retardation plasticity)\n",
+               P.kappa_plast, P.tau_harden);
     if (P.init == 4)
         printf("# cfg pairs: n=%d x0=%g x1=%g pq=%d:%d seedlock=%d d=[%g,%g] gap=%g\n",
                P.npairs, P.pair_x0, P.pair_x1, P.pair_p, P.pair_q,
@@ -544,6 +557,12 @@ static double *fsum;                 /* per-cell total geometric joining weight 
 static double *flload;               /* per-cell pitch share of in-flight dense energy */
 static double *sprq, *swl;           /* space transport: per-cell wants, per-link flux */
 static double *sscl;                 /* space transport: per-cell outflow scale */
+static double *ldd;                  /* P15: per-link plastic force buffer (Jacobi) */
+static double *lhard;                /* P15: per-link locked-time consolidation */
+static double *ld_init;              /* P15: built lengths (drift diagnostics) */
+static int net_nv = 0, net_ne = 0;   /* init=net: retained for runtime gate diag */
+static int *net_pick = NULL;
+static int net_ea[16384], net_eb[16384];
 static double *th1s, *th2s;          /* clock snapshot: sources read pre-pass values */
 static double *nsnap;                /* normals snapshot for the parallel alignment */
 static int want_th1 = 1;             /* refresh the diagnostic th1 cache this step */
@@ -740,6 +759,10 @@ static void build_field(void)
     nsnap = calloc(6 * (size_t)NC, sizeof(double));
     qcnvD = calloc(NC, sizeof(double));
     qcnvF = calloc(NC, sizeof(double));
+    ldd = calloc(NL, sizeof(double));
+    lhard = calloc(NL, sizeof(double));
+    ld_init = malloc(NL * sizeof(double));
+    memcpy(ld_init, ld, NL * sizeof(double));
 
     /* the action atom: A0 from the space-cell grain (no new constant) */
     double dsum = 0;
@@ -1324,7 +1347,11 @@ static void build_field(void)
         printf("# net: seeded nv=%d ne=%d worst_pick=%.3f gates min=%.4f mean=%.4f "
                "parasites=%d gpar_max=%.4f file=%s\n",
                nv, ne, worst, gmin, gn ? gsum / gn : 0.0, npar, gpar_max, P.net_file);
-        free(npick);
+        /* retain picks/edges for the runtime # NETG gate diagnostic */
+        net_nv = nv; net_ne = ne;
+        net_pick = npick;
+        memcpy(net_ea, ea, ne * sizeof(int));
+        memcpy(net_eb, eb, ne * sizeof(int));
     } else if (P.init == 5) {
         /* double slit: wall (detuned medium) with two vacuum windows,
          * screen + edge sinks (record media), optional which-path
@@ -1717,6 +1744,7 @@ static void step_field(void)
     }
 
     /* pass 2: channel geometry + desired deposits (resonant joining) */
+    if (P.kappa_plast > 0) memset(ldd, 0, NL * sizeof(double));
 #pragma omp parallel for schedule(static)
     for (int l = 0; l < NL; l++) {
         int i = li[l], j = lj[l];
@@ -1871,6 +1899,42 @@ static void step_field(void)
                 w_ji -= reac * g_ji * sin(ps_ji);
                 if (w_ij < 0) w_ij = 0;
                 if (w_ji < 0) w_ji = 0;
+            }
+            if (c == 1 && P.kappa_plast > 0) {
+                /* P15 — retardation plasticity (prestress/PLASTICITY.md):
+                 * the S2 odd term on its geometric conjugate. The misfit
+                 * force walks the link's retardation toward the rung:
+                 * dd = -kappa*Phi*dV/dd, V = 1 - G(psi_f)G(psi_b),
+                 * dpsi_f/dd = -q*wi/C, dpsi_b/dd = -p*wj/C; Phi*dt =
+                 * base*Sm (the gate-free sympathetic urge). Vacuum is
+                 * exactly inert (Sm = 0 when either side is truly
+                 * silent); instruments excluded by the cflag guard
+                 * above. Buffered write (Jacobi): applied in pass D so
+                 * every link computes from this step's lengths. */
+                double ps_f = wrap_pi(lq[l] * thi - lq[l] * wi * d / P.C
+                                      - lp[l] * thj);
+                double ps_b = wrap_pi(lp[l] * thj - lp[l] * wj * d / P.C
+                                      - lq[l] * thi);
+                double Smp = sqrt(mi_eff * mj_eff);
+                if (Smp > 0) {
+                    double hf = 0.5 * (1.0 + cos(ps_f));
+                    double hb = 0.5 * (1.0 + cos(ps_b));
+                    double Gf = pow(hf, P.p_gate), Gb = pow(hb, P.p_gate);
+                    double Gfp = hf > 1e-12
+                                 ? -0.5 * P.p_gate * (Gf / hf) * sin(ps_f) : 0.0;
+                    double Gbp = hb > 1e-12
+                                 ? -0.5 * P.p_gate * (Gb / hb) * sin(ps_b) : 0.0;
+                    double dVdd = (Gfp * Gb * lq[l] * wi
+                                   + Gf * Gbp * lp[l] * wj) / P.C;
+                    double kpl = P.kappa_plast;
+                    if (P.tau_harden > 0)
+                        kpl /= 1.0 + lhard[l] / P.tau_harden;
+                    ldd[l] = -kpl * base * Smp * dVdd;  /* base carries dt */
+                    if (P.tau_harden > 0)
+                        lhard[l] = Gf * Gb > 0.9
+                                   ? lhard[l] + dt
+                                   : (lhard[l] > dt ? lhard[l] - dt : 0.0);
+                }
             }
             if (w_ij > 0) lwant[SLOT(l, c, 0)] = w_ij;
             if (w_ji > 0) lwant[SLOT(l, c, 1)] = w_ji;
@@ -2040,6 +2104,21 @@ static void step_field(void)
                 else lph[s] -= 1.0;                  /* residual rides again */
             }
         }
+    }
+
+    /* pass D — P15 retardation plasticity: apply the buffered misfit
+     * forces. Jacobi (all links computed from this step's lengths);
+     * each ld[l] written only by its own link — deterministic at any
+     * thread count. Geometry is not a ledger: no energy moves. Floor
+     * d >= 0.5 keeps adv and geo bounded; no ceiling — a link that
+     * strangles itself freezes sealed (lA -> 0 zeroes the force). */
+    if (P.kappa_plast > 0) {
+#pragma omp parallel for schedule(static)
+        for (int l = 0; l < NL; l++)
+            if (ldd[l] != 0.0) {
+                ld[l] += ldd[l];
+                if (ld[l] < 0.5) ld[l] = 0.5;
+            }
     }
 
     /* pass F: the repaired field sector — unitary amplitude dynamics.
@@ -2530,6 +2609,45 @@ static void diag_row(double t)
 
     printf("# CONV t=%.2f cond=%.6g evap=%.6g rough=%.6g back_s=%.6g\n",
            t, cond_total, evap_total, rough_total, backs_total);
+    if (P.kappa_plast > 0) {
+        /* P15 diag — serial (byte-identical at any thread count):
+         * last step's plastic forces + cumulative geometry drift */
+        long mv = 0, hardn = 0;
+        double sdd = 0, maxc = 0;
+        for (int l = 0; l < NL; l++) {
+            if (ldd[l] != 0.0) { mv++; sdd += fabs(ldd[l]); }
+            double cum = fabs(ld[l] - ld_init[l]);
+            if (cum > maxc) maxc = cum;
+            if (P.tau_harden > 0 && lhard[l] > P.tau_harden) hardn++;
+        }
+        printf("# PLAST t=%.2f moved=%ld sum_dd=%.3e max_cum=%.4f hard_n=%ld\n",
+               t, mv, sdd, maxc, hardn);
+    }
+    if (P.init == 9 && net_nv > 0) {
+        /* runtime NETG — live gate quality over the intended edges
+         * (live pitches w2e include flight load; live lengths ld
+         * include plasticity): the D3 debt made visible */
+        double gmn = 1, gsm = 0; int gn2 = 0;
+        for (int e = 0; e < net_ne; e++) {
+            int u = net_pick[net_ea[e]], w = net_pick[net_eb[e]];
+            int lf = -1;
+            for (int q = cls[u]; q < cls[u + 1]; q++) {
+                int l = clidx[q];
+                if (li[l] == w || lj[l] == w) { lf = l; break; }
+            }
+            if (lf < 0) continue;
+            double dd = ld[lf];
+            double pf = wrap_pi(th2[u] - w2e[u] * dd / P.C - th2[w]);
+            double pb = wrap_pi(th2[w] - w2e[w] * dd / P.C - th2[u]);
+            double gf = gate_of(pf), gb = gate_of(pb);
+            double g = gf > gb ? gf : gb;
+            if (g < gmn) gmn = g;
+            gsm += 0.5 * (gf + gb); gn2++;
+        }
+        if (gn2)
+            printf("# NETG t=%.2f gates min=%.4f mean=%.4f edges=%d\n",
+                   t, gmn, gsm / gn2, gn2);
+    }
     if (P.lump_diag) lumps_row(t);
 
     /* G4 — radial throughput report: per shell, the accumulated space-
@@ -2917,6 +3035,33 @@ static void final_report(void)
 
     printf("# RESULT roughness_radiated=%.6g (dissonant dense deliveries converted to field, conserved)\n",
            rough_total);
+    if (P.kappa_plast > 0) {
+        long mvd = 0; double maxc = 0;
+        for (int l = 0; l < NL; l++) {
+            double c_ = fabs(ld[l] - ld_init[l]);
+            if (c_ > 0) mvd++;
+            if (c_ > maxc) maxc = c_;
+        }
+        printf("# RESULT plast links_moved=%ld max|d-d0|=%.4f "
+               "(vacuum inertness: both must be 0 in Em-free runs)\n",
+               mvd, maxc);
+    }
+    if (P.init == 9 && net_nv > 0) {
+        for (int e = 0; e < net_ne; e++) {
+            int u = net_pick[net_ea[e]], w = net_pick[net_eb[e]];
+            int lf = -1;
+            for (int q = cls[u]; q < cls[u + 1]; q++) {
+                int l = clidx[q];
+                if (li[l] == w || lj[l] == w) { lf = l; break; }
+            }
+            if (lf < 0) continue;
+            double dd = ld[lf];
+            double pf = wrap_pi(th2[u] - w2e[u] * dd / P.C - th2[w]);
+            double pb = wrap_pi(th2[w] - w2e[w] * dd / P.C - th2[u]);
+            printf("# NETGATE F %d %d d=%.4f psi_f=%+.4f psi_b=%+.4f gf=%.4f gb=%.4f\n",
+                   net_ea[e], net_eb[e], dd, pf, pb, gate_of(pf), gate_of(pb));
+        }
+    }
 
     int h = nsamp / 2;
     double kk = sqrt(P.kx * P.kx + P.ky * P.ky + P.kz * P.kz);
