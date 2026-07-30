@@ -868,3 +868,30 @@ combined) if H1 shows the hole matters.
   tube/chords/hex), harden τ=50. W3: flight233, ring ladder, hopf, free,
   negatives, torus/truncocta. W4: harden P19-lite + m-family P20 on single
   foam (full multi-seed formfind deferred). κ*=1.0 primary. Integer cellfab.
+
+* **2026-07-30 (Wave 2 COMPLETE + SCORED — plasticity topology-dependent).**
+  All 13 W2 jobs done (integer cellfab mode 3; `max_sum_err=0`). Writeup:
+  `prestress/WAVE2_RESULTS.md` + `WAVE2_SCORED.tsv`. Plasticity is live
+  (`# PLAST` moved~10k links by t=200, max_cum~0.3–0.5) but **does not
+  lock gates** (cube g50≈0.93 → g200≈0.25–0.28; pre-reg ≥0.9@200 **fails**).
+  Lifetimes vs W1: tube **1613** (1.55×, longest W2, 0.74×LawA ON_BAND);
+  c8 **1269** (2.83×, best relative rescue); cube κ=0.5 **1287** (1.42×);
+  hex +18%; chords **127** (hurt); **ring8_m3 14** (W1 champion killed);
+  **c1+κ 30** vs frozen 1013 (PLAST-3 self-seal **fails catastrophically**).
+  Harden engages (hard_n→7.6k) but no life win on these short objects. No
+  C1; M-R1 still blocked. κ*=1 not universal — mid-κ better on cube; do
+  not promote into laws_V2g.
+
+* **2026-07-30 (Waves 3–4 COMPLETE — full PRESTRESS program scored).**
+  Fleet `[fleet] complete wave=2-4`: W3 14/14, W4 9/9. Rollup:
+  `prestress/PROGRAM_RESULTS.md`; `WAVE3_RESULTS.md`, `WAVE4_RESULTS.md`.
+  **Longest life overall: w3_free1 t_death=2572 (1.14×LawA)** — only
+  object above Law A point estimate; free formfind, still dies. Best
+  engineered frozen: ring12_m5 **1940** (0.80×). flight233 **347** fails
+  load-down rescue. Plast double-edged on packages (mobius↑ hopf↓).
+  **P19-lite fail** (cube/c8/ring8 harden die 1017/1102/14). **P20 fail**
+  (no coexisting m-classes; harden kills ring12_m5 1940→26 and ring8→14;
+  m6 survives ~1401). tube_harden 1437 not exception. **Program closed
+  claims:** no C1, no M-R1 on single foam, no universal κ, no frozen
+  gates-alone skin. **Open:** multi-foam P19, κ re-pin on free1/m5/tube,
+  Law A death-definition A/B, P21 deferred.

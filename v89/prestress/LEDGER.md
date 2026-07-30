@@ -265,6 +265,40 @@ MASS.md log entry)
 
 **W1 campaign verdict:** no C1; frozen-foam topology hunt closed for “gates alone.” Absolute Law A calibration early for all objects under this scorer/kernel (ratios 0.22–0.58) — flag for death-definition / corpus A/B. Next: Wave 2 plasticity.
 
+| **W2 c2_plast1_k05** (PLAST-1) | seed 0.401/0.866; x50=0.389 LawA=1952; g50=0.93 g200=0.28 | t_death **1287** (0.66×LawA; 1.42× W1) | Best cube under plast; **gates do not lock ≥0.9@200**. No C1. |
+| **W2 c2_plast1_k1** | same seed; g50=0.93 g200=0.25 | t_death **988** (~W1) | κ=1 not better than 0.5 on cube. |
+| **W2 c2_plast1_ctrl_k1** | seed 0.469/0.865 | t_death **1071** (1.53× W1 ctrl) | Plast lifts ctrl; retune advantage shrinks under d-motion. |
+| **W2 c2_harden** | κ=1 τ=50; hard_n→7.6k | t_death **1017** | Harden engages; no life win vs κ=1 alone. |
+| **W2 c1_frozen** (PLAST-3 ctrl) | 0.130/0.610; x50=0.376 | t_death **1013** | Baseline. |
+| **W2 c1_plast3_k1** | same seed; g50=0.80 | t_death **30** | **Self-seal fails catastrophically.** |
+| **W2 c8_k1** | 1.000/1.000; x50=0.405 | t_death **1269** (2.83× W1) | Largest relative rescue; still MID vs LawA. |
+| **W2 ring8_m3_k1** / harden | 0.000/0.270; x50=0.545 | t_death **14** | **W1 longest killed** by κ=1 (dies before harden). |
+| **W2 tube_k1** | 0.055/0.862; x50=0.431 | t_death **1613** (0.74×LawA; 1.55× W1) | **Longest W2; ON_BAND.** Still ≪4600 exception. |
+| **W2 chords_k1** | 0.219/0.926 | t_death **127** (0.20× W1) | Plast hurts chord-heavy graph. |
+| **W2 hex_frozen / hex_k1** | gmin 0.044 | 986 / **1160** | Modest +18% under κ. |
+
+**W2 campaign verdict:** plasticity is **live and topology-dependent** (lifetime factors 0.01–2.8×). Reduced-model claims (gates lock ≥0.9, parasite self-seal, universal upgrade) **fail at rate level** on foam 20260727. Best object tube_k1; best rescue c8_k1; worst anti-results ring8 and c1 under κ=1. No C1; M-R1 still blocked. Full writeup: `WAVE2_RESULTS.md`.
+
+| **W3 free1** | 0.765/0.953; x50=0.446 LawA=2255 | t_death **2572** (**1.14×LawA**) | **Longest in program**; ON_BAND; free formfind. Still dies — not C1. |
+| **W3 ring12_m5** | 0.001/0.590; x50=0.479 | t_death **1940** (0.80×LawA) | Best engineered frozen ring. |
+| **W3 ring12_m6** | 0.200/0.821 | t_death **1402** (0.70×) | m-ladder mid. |
+| **W3 ring10_m4 / ring9_m3** | high x50 | 846 / 761 | EARLY. |
+| **W3 hopf / hopf_k1** | 0/0.612 | 1093 / **76** | Plast kills hopf. |
+| **W3 mobius / mobius_k1** | 0.003/0.575 | 521 / **1074** | Plast helps mobius. |
+| **W3 flight233** | 0.400/0.596; x50=0.203 | t_death **347** | Load-down **not** a rescue vs W1 c8. |
+| **W3 free0 / octa** | — | 855 / 718 | Ordinary. |
+| **W3 torus / truncocta** | par 29/11; T=2000 | 1672 / 1551 | Infeas ≠ instant death; not particles. |
+
+**W3 campaign verdict:** free1 longest (1.14×LawA); ring12_m5 best engineered; flight233 fails; plast still double-edged. Writeup: `WAVE3_RESULTS.md`.
+
+| **W4 p19 cube/c8/ring8 harden** | κ=1 τ=50 T=4000 | 1017 / 1102 / **14** | No pin-to-mass; ring8 dies pre-harden. |
+| **W4 p20 m-ladder harden** | m5/m6/m8/m9/m10 | m6 **1401**; m5 **26**; m8 **14** | **No coexistence**; harden kills best frozen m5. |
+| **W4 tube_harden** | — | **1437** | < W2 tube_k1; not ≥4600. |
+
+**W4 campaign verdict:** P19-lite and P20 **fail** on single foam under κ=1/τ=50. Harden active (hard_n large) but not life-saving. Writeup: `WAVE4_RESULTS.md`. Program rollup: `PROGRAM_RESULTS.md`.
+
+**FULL PROGRAM (W1–4) verdict:** 43 scored jobs; **no C1, no M-R1, no P20 families, no tube exception.** Plasticity real and topology-dependent. Longest life: free1 2572. Closed: frozen gates-alone skin; universal κ; single-foam harden mass recipe. Open: multi-foam P19, κ re-pin on free1/m5/tube only, Law A death-definition A/B.
+
 ## Instruments
 
 - `foam/foam_s20260727.tsv` — the standard foam geometry (9741 cells, L=24,
