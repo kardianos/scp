@@ -853,3 +853,11 @@ combined) if H1 shows the hole matters.
   Consonant-skin rate-level on frozen foam **fails** the pre-registered
   showdown. LEDGER Verdicts filled. Next: Wave 2 plasticity (pin hunt) /
   score x50 load-line residuals; EM1 already done (k-dependent v_g).
+
+* **2026-07-29 (Wave 1 SCORED + writeup — frozen foam closed for gates-alone).**
+  Full table: `prestress/WAVE1_RESULTS.md` + `runs/WAVE1_SCORED.tsv`.
+  Measured x50 → Law A: cube 908 vs pred 1928 (0.47×, EARLY; ctrl 698,
+  retune/ctrl=1.30×); c8 449 (gates=1); ring8_m3 1631 longest (0.58×LawA);
+  tube 1042 (not ≥4600); chords 630. No plateau. Skin claim fails. All
+  deaths early vs Law A (0.22–0.58×) — scorers/kernel vs corpus calibration
+  open. Integer sum_err=0. **Next: Wave 2 PLAST (pin hunt).**

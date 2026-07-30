@@ -159,7 +159,7 @@ FP64 reference: `cellfabf.c` → `cellfabf`. Results:
 **Plasticity:** in kernel (κ via `--extra` only). Plan audit:
 `prestress/audit/AUDIT_2026-07-29.md` — GO_WITH_FIXES.
 
-## Next-session runbook (PRESTRESS-2, task #44 — Wave 1 COMPLETE 2026-07-29 (Go fleet.go; all 7 jobs; see LEDGER Verdicts))
+## Next-session runbook (PRESTRESS-2, task #44 — Wave 1 COMPLETE + SCORED 2026-07-29 — see prestress/WAVE1_RESULTS.md (cube early; skin fails; ring8_m3 longest; tube not exception))
 
 Fleet = every avenue, mis-tuned controls, ≥3 foam seeds for scored
 claims, visuals per run (standing practice). Launch pattern:
@@ -209,9 +209,10 @@ Verdicts: one row per run in LEDGER "Verdicts" + dated MASS.md entry.
 
 ## Task list at pause
 
-- #44 PRESTRESS-2 (pending): Wave 1 fleet (+ optional EMF Mode P).
-- #45 PRESTRESS-3 (pending): verdicts → LEDGER/MASS.md/memory/commits.
-- #46 PRESTRESS-4 (pending): **P19 first**, then P20/P21.
+- #44 PRESTRESS-2 (**done**): Wave 1 complete + scored — `WAVE1_RESULTS.md`.
+- #45 PRESTRESS-3 (**done** for W1): LEDGER/MASS/WAVE1_RESULTS writeup.
+- #46 PRESTRESS-4 (pending): **P19 first**, then P20/P21 (after Wave 2 pin).
+- Wave 2 PLAST (pending): next mechanism after frozen-foam nulls.
 - #41 MASS-C1' piston (pending): load maintenance + locus-shift tripwire.
 - #39 MASS-A3/A4 (pending): unblocks on first true plateau + C4; **A4'
   P19** before "standing particle" language.

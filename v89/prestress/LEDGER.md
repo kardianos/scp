@@ -240,11 +240,15 @@ MASS.md log entry)
 
 | id | seeded gates (min/mean) | lifetime vs control | verdict |
 |---|---|---|---|
-| **W1 c2_cube150** (P1/P2 retune) | 0.401 / 0.866 | t_death **908** (ctrl **698**); both dead; neither in load-line band 1250–2810 nor skin ≥4700 | **Load-line / early death.** Retune buys ~30% vs mis-phased twin, not a plateau. Consonant-skin rate-level claim **fails** on frozen foam. Integer ledger sum_err=0. |
-| **W1 c8_ring12** (comp12 twin) | 1.000 / 1.000 | t_death **449** (T=3000); spectra T=200 still alive | Short structural life on this foam under int kernel; needs x50 load-line score + spectra analysis. Parasite gpar_max=0.48. |
-| **W1 ring8_m3** (diode ladder proxy) | 0.000 / 0.270 | t_death **1631** — **longest** Wave-1 object | Best frozen lifetime in wave; still dies; back-gate ladder direction plausible, not a particle. |
-| **W1 c5_tube6** (wound tube bet) | 0.055 / 0.862 | t_death **1042** ≪ predicted ≥4600 exception | **Not** the comp12-class exception on this seed; on/near load line. |
-| **W1 c4_chords** | 0.219 / 0.926 | t_death **630** | No chirality protection from chords alone. |
+| **W1 c2_cube150** (P1/P2 retune) | 0.401 / 0.866; **x50=0.385** LawA=1928 | t_death **908** (0.47×LawA); ctrl **698** (1.30× retune/ctrl) | **EARLY vs load line; not skin.** Retune helps modestly. Consonant-skin rate-level **fails**. Full writeup: `WAVE1_RESULTS.md`. |
+| **W1 c2_cube150_ctrl** | 0.469 / 0.865; x50=0.381 | t_death **698** | Mis-phased twin; dies sooner than retune. |
+| **W1 c8_ring12** (comp12 twin) | 1.000 / 1.000; x50=0.413 LawA=2080 | t_death **449** (0.22×LawA) | Gates perfect; short life. Gate quality ≠ lifetime. Parasite gpar=0.48. |
+| **W1 c8_spectra** | same seed class | T=200 censored | Spectra arm only; not a death score. |
+| **W1 ring8_m3** (diode ladder proxy) | 0.000 / 0.270; x50=0.547 LawA=2802 | t_death **1631** (0.58×LawA) — **longest W1** | Load/back-gate direction OK; still not a particle. |
+| **W1 c5_tube6** (wound tube bet) | 0.055 / 0.862; x50=0.427 LawA=2153 | t_death **1042** (0.48×LawA) ≪ 4600 | **Not** exception class on this seed. |
+| **W1 c4_chords** | 0.219 / 0.926; x50=0.522 LawA=2671 | t_death **630** (0.24×LawA) | Closure without chirality insufficient. |
+
+**W1 campaign verdict:** no C1; frozen-foam topology hunt closed for “gates alone.” Absolute Law A calibration early for all objects under this scorer/kernel (ratios 0.22–0.58) — flag for death-definition / corpus A/B. Next: Wave 2 plasticity.
 
 ## Instruments
 

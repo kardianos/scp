@@ -1,0 +1,8 @@
+name	role	nv	x50	t_x50	LawA	t_death	t_end	ratio_td_LawA	c_eff	c0_ref	late_dmdt	m0_big	gmin	gmean	par	gpar	drift	led_err	verdict	note
+w1_c2_cube150	cube retune	8	0.384765	50	1928.08	908	3000	0.470935	0.000889495	0.000425	-0.0021725	6.96024	0.4008	0.8655	4	0.0001	1.866e-16	0	EARLY vs load line	load line ~1875 band 1250-2810; skin if >=4700
+w1_c2_cube150_ctrl	cube ctrl	8	0.380755	50	1906.67	698	3000	0.366083	0.00114275	0.000425	0.000170299	6.96024	0.469	0.8648	4	0.0002	3.732e-16	0	control twin	mis-phased twin of cube
+w1_c8_ring12	comp12 twin	12	0.413147	50	2080.05	449	3000	0.21586	0.00195683	0.000425	-0.00112701	6.58746	1	1	1	0.484	-9.326e-16	0	short life despite gates=1	exception class? or load line
+w1_c8_spectra	comp12 spectra T=200	12	0.413147	50	2080.05		200		0.00439308	0.000425	-0.0138974	6.58746	1	1	1	0.484	-6.155e-15	0	spectra only (T=200)	short; not death score
+w1_ring8_m3	diode ladder proxy	8	0.54646	50	2802.49	1631	3000	0.581983	0.000743041	0.000425	-0.000131144	11.1683	0	0.2697	7	0.0717	-1.119e-15	0	longest W1; still dies	high x low back-gate
+w1_c5_tube6	wound tube	12	0.426737	50	2153.06	1042	3000	0.483961	0.000875808	0.000425	5.13824e-05	13.1997	0.0552	0.8618	13	0.4772	-1.865e-16	0	NOT exception (on/near line)	exception if >=4600
+w1_c4_ring12_chords	chords	20	0.522388	50	2671.08	630	3000	0.235859	0.00182813	0.000425	-0.00212885	18.7513	0.2193	0.9264	6	0.1299	6.52e-15	0	on/near line (chirality needed?)	between line and exception 2000-3400
