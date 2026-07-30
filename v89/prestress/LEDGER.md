@@ -233,6 +233,21 @@ Wave reading: W1 frozen mechanism nulls (expect M-R1 fail); W2 pin
 MASS↔EMF: `EMF.md` §5. Integer ledger: `INT_LEDGER.md` (no fleet block).
 Audit: `prestress/audit/AUDIT_2026-07-29.md`.
 
+
+## Waves 2–4 pre-registration (launched 2026-07-29)
+
+| arm | pre-reg |
+|-----|---------|
+| PLAST-1 cube κ=1 vs W1 κ=0 | gates mean≥0.9 by t≈200; t_death > W1 908 or late\|dM/dt\| lower; prize C1 |
+| PLAST-1 κ=0.5 | mid-window; slower anneal OK if gates lock |
+| PLAST-3 c1+κ | parasites darken / self-seal vs frozen c1 |
+| Topo+κ (ring8,c8,tube,chords,hex) | plast helps best topologies most |
+| Harden τ=50 | less late gate churn; mass tighter (P19 prep) |
+| flight233 | less early shed than c8 x=0.439 |
+| ring9/ladder | odd-N / m-family ranking |
+| negatives | die fast / frustrated (mobius, octa) |
+| P20 m-family | distinct late masses beyond scatter under harden |
+
 ## Verdicts
 
 (filled as simulations complete; every simulated possibility gets a row and a

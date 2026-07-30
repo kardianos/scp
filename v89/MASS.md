@@ -861,3 +861,10 @@ combined) if H1 shows the hole matters.
   tube 1042 (not ≥4600); chords 630. No plateau. Skin claim fails. All
   deaths early vs Law A (0.22–0.58×) — scorers/kernel vs corpus calibration
   open. Integer sum_err=0. **Next: Wave 2 PLAST (pin hunt).**
+
+* **2026-07-29 (FULL PROGRAM LAUNCH — Waves 2–4).** User: do Wave 2 topo+
+  plasticity and run the full program. Go fleet extended (`-wave 2-4|all`).
+  W2: PLAST-1 cube κ∈{0.5,1} ±ctrl, PLAST-3 c1±κ, topo under κ (ring8/c8/
+  tube/chords/hex), harden τ=50. W3: flight233, ring ladder, hopf, free,
+  negatives, torus/truncocta. W4: harden P19-lite + m-family P20 on single
+  foam (full multi-seed formfind deferred). κ*=1.0 primary. Integer cellfab.
