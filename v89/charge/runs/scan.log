@@ -1,0 +1,13 @@
+launch: q9_dw0p00.cfg pid=3096007
+launch: q9_dw0p03.cfg pid=3096008
+launch: q9_dw0p06.cfg pid=3112935
+launch: q9_dw0p09.cfg pid=3113139
+launch: q9_dw0p12.cfg pid=3130667
+launch: q9_dw0p15.cfg pid=3130668
+launch: q9_dw0p18.cfg pid=3149452
+launch: q9_dw0p21.cfg pid=3149611
+launch: q9_dw0p25.cfg pid=3166641
+launch: q9_dw0p30.cfg pid=3167063
+launch: q9_dw0p40.cfg pid=3183895
+launch: q9_dw0p55.cfg pid=3184171
+scan complete

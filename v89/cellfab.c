@@ -161,6 +161,17 @@ typedef struct {
      * lock-consolidation: locked time stiffens the link (work-
      * hardening); a kick that unlocks re-softens it. */
     double kappa_plast, tau_harden;
+    /* Q9 apparatus (CHARGE.md §7, 2026-07-31) — DICHOTOMY GUARD: no
+     * charge state is introduced anywhere. pin_net holds init=net
+     * voices' Em at their seeded targets by moving the difference into
+     * ONE reservoir account inside the conservation sum (the piston
+     * pattern applied to Em — energy books only). slip_diag measures
+     * the EXISTING phase (th2, live pitch w2e, live length ld) across
+     * net edges and counts its holonomy — a derived observable, never
+     * a species. Both default-off (exact legacy kernel); both serial
+     * (byte-identical at any thread count). */
+    int pin_net;
+    int slip_diag;
     int ledger_mode;
     double ledger_u;
 } Cfg;
@@ -246,6 +257,8 @@ static void cfg_defaults(void)
     P.hom_det = 7.0;
     P.quant_A0 = 0.0;
     P.quant_mode = 1;
+    P.pin_net = 0;
+    P.slip_diag = 0;
     P.ledger_mode = 3;  /* DEFAULT: full integer matter ledger */
     P.ledger_u = 1e-12;
 }
@@ -385,6 +398,8 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "net_file")) { strncpy(P.net_file, v, 255); P.net_file[255] = 0; }
     else if (!strcmp(k, "kappa_plast")) P.kappa_plast = atof(v);
     else if (!strcmp(k, "tau_harden")) P.tau_harden = atof(v);
+    else if (!strcmp(k, "pin_net")) P.pin_net = atoi(v);
+    else if (!strcmp(k, "slip_diag")) P.slip_diag = atoi(v);
     else if (!strcmp(k, "ledger_mode")) P.ledger_mode = atoi(v);
     else if (!strcmp(k, "ledger_u")) P.ledger_u = atof(v);
     else fprintf(stderr, "# WARN unknown key '%s'\n", k);
@@ -596,6 +611,18 @@ static double *ld_init;              /* P15: built lengths (drift diagnostics) *
 static int net_nv = 0, net_ne = 0;   /* init=net: retained for runtime gate diag */
 static int *net_pick = NULL;
 static int net_ea[16384], net_eb[16384];
+/* Q9 apparatus state: one reservoir account + derived phase counters */
+static double Rpin = 0.0;            /* FP pin reservoir (ledger off / mode 1) */
+static int64_t iRpin = 0;            /* integer pin reservoir (inside the sum) */
+static double *net_pin_tgt = NULL;   /* per-vertex seeded Em targets */
+static int64_t *net_pin_itgt = NULL;
+static double *net_pin_res = NULL;   /* mode-1 quantization residuals */
+static int *slip_lf = NULL;          /* per-net-edge resolved link (lazy) */
+static double *slip_psi_prev = NULL, *slip_psi_unw = NULL, *slip_dwb_unw = NULL;
+static double *slip_psi_mid = NULL, *slip_dwb_mid = NULL;
+static double *slip_psi_w = NULL, *slip_dwb_w = NULL;
+static double slip_t_mid = 0.0, slip_t_w = 0.0;
+static int slip_mid_set = 0;
 static double *th1s, *th2s;          /* clock snapshot: sources read pre-pass values */
 static double *nsnap;                /* normals snapshot for the parallel alignment */
 static int want_th1 = 1;             /* refresh the diagnostic th1 cache this step */
@@ -1390,6 +1417,11 @@ static void build_field(void)
         net_pick = npick;
         memcpy(net_ea, ea, ne * sizeof(int));
         memcpy(net_eb, eb, ne * sizeof(int));
+        if (P.pin_net) {
+            /* pin targets = the seeded loads, read back exactly */
+            net_pin_tgt = malloc(nv * sizeof(double));
+            for (int k = 0; k < nv; k++) net_pin_tgt[k] = Em[npick[k]];
+        }
     } else if (P.init == 5) {
         /* double slit: wall (detuned medium) with two vacuum windows,
          * screen + edge sinks (record media), optional which-path
@@ -1618,7 +1650,7 @@ static int64_t ledger_sum_all(void)
     int64_t s = 0;
     for (int i = 0; i < NC; i++) s += iEs[i] + iEm[i] + iEe[i];
     for (int k = 0; k < 4 * NL; k++) s += ilem[k];
-    return s;
+    return s + iRpin;   /* pin reservoir is inside the conservation sum */
 }
 
 /* Seed integers from current FP state; residuals zero; snapshots set. */
@@ -1784,6 +1816,109 @@ static void ledger_diag(double t)
            t, P.ledger_mode, (long long)err, maxdiff,
            led_max_abs_diff, (long long)led_max_sum_err, led_steps,
            (long long)E0_int, (long long)s);
+}
+
+/* ============ Q9 apparatus: load pinning + slip diagnostics ============
+ * pin_apply(): end-of-step reservoir exchange holding each net voice's
+ * Em at its seeded target. Integer path is an exact int64 move (iEm ->
+ * iRpin); conservation stays max_sum_err=0 by construction. Runs after
+ * ledger_commit_step so snapshots stay consistent. Serial.
+ * slip_track(): per-step measurement of the net edges' forward gate
+ * phase psi_f = th2[u] - w2e[u]*d/C - th2[w], unwrapped -> the holonomy
+ * count (slips), plus the integral of the bare pitch difference
+ * (w2e[u]-w2e[w]) for the Josephson comparison. Measurement only. */
+static double pin_R(void)
+{
+    return (P.ledger_mode >= 2) ? led_to_fp(iRpin, ledger_u_eff) : Rpin;
+}
+
+static void pin_apply(void)
+{
+    if (net_nv <= 0 || !net_pin_tgt) return;
+    if (P.ledger_mode >= 2) {
+        double u = ledger_u_eff;
+        if (!net_pin_itgt) {
+            net_pin_itgt = malloc(net_nv * sizeof(int64_t));
+            for (int k = 0; k < net_nv; k++)
+                net_pin_itgt[k] = led_from_fp(net_pin_tgt[k], u);
+        }
+        for (int k = 0; k < net_nv; k++) {
+            int c = net_pick[k];
+            int64_t dq = iEm[c] - net_pin_itgt[k];
+            if (dq) {
+                iRpin += dq;
+                iEm[c] = net_pin_itgt[k];
+                Em[c] = led_to_fp(iEm[c], u);
+                snapEm[c] = Em[c];
+            }
+        }
+    } else if (P.ledger_mode == 1) {
+        double u = ledger_u_eff;
+        if (!net_pin_res) net_pin_res = calloc(net_nv, sizeof(double));
+        for (int k = 0; k < net_nv; k++) {
+            int c = net_pick[k];
+            double dfp = Em[c] - net_pin_tgt[k];
+            if (dfp != 0.0) {
+                Rpin += dfp;
+                Em[c] = net_pin_tgt[k];
+                snapEm[c] = Em[c];
+                int64_t dq = led_qdelta(dfp / u, &net_pin_res[k]);
+                iEm[c] -= dq;
+                iRpin += dq;
+            }
+        }
+    } else {
+        for (int k = 0; k < net_nv; k++) {
+            int c = net_pick[k];
+            double dfp = Em[c] - net_pin_tgt[k];
+            if (dfp != 0.0) { Rpin += dfp; Em[c] = net_pin_tgt[k]; }
+        }
+    }
+}
+
+static void slip_track(double t)
+{
+    if (net_ne <= 0 || net_nv <= 0) return;
+    if (!slip_lf) {
+        slip_lf = malloc(net_ne * sizeof(int));
+        slip_psi_prev = malloc(net_ne * sizeof(double));
+        slip_psi_unw = calloc(net_ne, sizeof(double));
+        slip_dwb_unw = calloc(net_ne, sizeof(double));
+        slip_psi_mid = calloc(net_ne, sizeof(double));
+        slip_dwb_mid = calloc(net_ne, sizeof(double));
+        slip_psi_w = calloc(net_ne, sizeof(double));
+        slip_dwb_w = calloc(net_ne, sizeof(double));
+        slip_t_w = t;
+        for (int e = 0; e < net_ne; e++) {
+            int u = net_pick[net_ea[e]], w = net_pick[net_eb[e]];
+            int lf = -1;
+            for (int q = cls[u]; q < cls[u + 1]; q++) {
+                int l = clidx[q];
+                if (li[l] == w || lj[l] == w) { lf = l; break; }
+            }
+            slip_lf[e] = lf;
+            if (lf < 0) { slip_psi_prev[e] = 0; continue; }
+            slip_psi_prev[e] = wrap_pi(th2[u] - w2e[u] * ld[lf] / P.C - th2[w]);
+        }
+        return;
+    }
+    for (int e = 0; e < net_ne; e++) {
+        int lf = slip_lf[e];
+        if (lf < 0) continue;
+        int u = net_pick[net_ea[e]], w = net_pick[net_eb[e]];
+        double pf = wrap_pi(th2[u] - w2e[u] * ld[lf] / P.C - th2[w]);
+        slip_psi_unw[e] += wrap_pi(pf - slip_psi_prev[e]);
+        slip_psi_prev[e] = pf;
+        slip_dwb_unw[e] += (w2e[u] - w2e[w]) * P.dt;
+    }
+    if (!slip_mid_set && t >= 0.5 * P.T) {
+        for (int e = 0; e < net_ne; e++) {
+            slip_psi_mid[e] = slip_psi_unw[e];
+            slip_dwb_mid[e] = slip_dwb_unw[e];
+        }
+        slip_t_mid = t;
+        slip_mid_set = 1;
+    }
 }
 
 
@@ -2765,6 +2900,7 @@ static void diag_row(double t)
     double tEs = ksum(Es, NC), tEm = ksum(Em, NC), tEe = ksum(Ee, NC);
     double tET = ksum(lem, 4 * NL);
     double tot = tEs + tEm + tEe + tET;
+    if (P.pin_net) tot += pin_R();
     double drift = E0_total != 0 ? (tot - E0_total) / E0_total : 0;
     if (!isfinite(tot)) { fprintf(stderr, "# FATAL non-finite energy at t=%g\n", t); exit(2); }
 
@@ -2904,6 +3040,21 @@ static void diag_row(double t)
         if (gn2)
             printf("# NETG t=%.2f gates min=%.4f mean=%.4f edges=%d\n",
                    t, gmn, gsm / gn2, gn2);
+    }
+    if (P.pin_net && net_nv > 0)
+        printf("# PIN t=%.2f R=%.9g nv=%d\n", t, pin_R(), net_nv);
+    if (P.slip_diag && slip_lf) {
+        for (int e = 0; e < net_ne; e++) {
+            if (slip_lf[e] < 0) continue;
+            double dtw = t - slip_t_w;
+            double nuw = dtw > 0 ? (slip_psi_unw[e] - slip_psi_w[e]) / (TWO_PI * dtw) : 0;
+            double dbw = dtw > 0 ? (slip_dwb_unw[e] - slip_dwb_w[e]) / dtw : 0;
+            printf("# SLIP t=%.2f e=%d psi=%+.4f unw=%+.3f nu_win=%+.6f dwb_win=%+.6f\n",
+                   t, e, slip_psi_prev[e], slip_psi_unw[e], nuw, dbw);
+            slip_psi_w[e] = slip_psi_unw[e];
+            slip_dwb_w[e] = slip_dwb_unw[e];
+        }
+        slip_t_w = t;
     }
     if (P.lump_diag) lumps_row(t);
 
@@ -3251,6 +3402,7 @@ static void final_report(void)
 {
     double tEs = ksum(Es, NC), tEm = ksum(Em, NC), tEe = ksum(Ee, NC), tET = ksum(lem, 4 * NL);
     double tot = tEs + tEm + tEe + tET;
+    if (P.pin_net) tot += pin_R();
     /* exit face (G-battery): the +x absorbing face is a recorder — the
      * transverse centroid of what it recorded is the transmitted beam's
      * exit position (lensing: compare against the no-mass baseline) */
@@ -3323,6 +3475,25 @@ static void final_report(void)
             double pb = wrap_pi(th2[w] - w2e[w] * dd / P.C - th2[u]);
             printf("# NETGATE F %d %d d=%.4f psi_f=%+.4f psi_b=%+.4f gf=%.4f gb=%.4f\n",
                    net_ea[e], net_eb[e], dd, pf, pb, gate_of(pf), gate_of(pb));
+        }
+    }
+    if (P.pin_net && net_nv > 0)
+        printf("# RESULT pin R=%.9g nv=%d (reservoir inside the conservation sum)\n",
+               pin_R(), net_nv);
+    if (P.slip_diag && slip_lf) {
+        for (int e = 0; e < net_ne; e++) {
+            if (slip_lf[e] < 0) continue;
+            double t1 = slip_mid_set ? slip_t_mid : 0.0;
+            double p1 = slip_mid_set ? slip_psi_mid[e] : 0.0;
+            double b1 = slip_mid_set ? slip_dwb_mid[e] : 0.0;
+            double dtw = P.T - t1;
+            double nu = dtw > 0 ? (slip_psi_unw[e] - p1) / (TWO_PI * dtw) : 0;
+            double dwb = dtw > 0 ? (slip_dwb_unw[e] - b1) / dtw : 0;
+            int locked = fabs(slip_psi_unw[e] - p1) < TWO_PI;
+            printf("# RESULT slip e=%d nu_slip=%+.6f dw_bare=%+.6f dw_over_2pi=%+.6f "
+                   "slips=%+.2f locked=%d window=[%.1f,%.1f]\n",
+                   e, nu, dwb, dwb / TWO_PI, (slip_psi_unw[e] - p1) / TWO_PI,
+                   locked, t1, P.T);
         }
     }
 
@@ -3554,6 +3725,8 @@ int main(int argc, char **argv)
                 || (P.snap_every > 0 && s % P.snap_every == 0) || s == NS;
         step_field();
         if (P.ledger_mode > 0) ledger_commit_step();
+        if (P.pin_net && net_nv > 0) pin_apply();
+        if (P.slip_diag && net_nv > 0) slip_track(sim_t);
         if (P.init == 5 && P.t_expose > 0 && !expose_frz && sim_t >= P.t_expose) {
             /* the shutter closes: the record so far is the photograph */
             expose_frz = malloc(NC * sizeof(double));

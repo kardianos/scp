@@ -11,6 +11,7 @@
 # cfg center=(-1,-1,-1) amp=1 sigma=2.5 k=(0,0,0) prealign=0 noise_amp=0
 # cfg music: comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004
 # cfg field sector: two-component signed amplitude, unitary hops, field_J=1.8
+# cfg ledger: mode=3 u=1.000e-12 (cellfabi INT_LEDGER)
 # bell mode: analyzers pass with the kernel's plane-overlap law cos^2(delta)
 # joint: pair = ONE unfinished conversion; first completed cycle collapses the shared phase
 # lhv:   same cos^2 responder, but a private pre-assigned phase per packet

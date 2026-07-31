@@ -1,0 +1,59 @@
+# cellfab — v89 cell-fabric kernel (no lattice, no prior code)
+# cfg seed=20260727 mode=field init=net
+# cfg L=24 dmin=1 r0=0.85 rjit=0.06
+# cfg C=1 w1=1.65 w2=2.9 q_detune=1.2 gamma_res=0.25 gamma_res_m=0.1 p_gate=8
+# cfg lock_floor=0.005
+# cfg k_dep=1.2 k_dep_m=2 cap=2.5 e_s0=1 es_floor=0.05
+# cfg e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# cfg kappa_lock=1 kappa_align=0.5 kappa_freq=0 kappa_reac=0 sigma_tumble=0.01
+# cfg space: s_k=0.06 s_disp=0.3 es_gx=0
+# cfg dt=0.02 T=20 diag_every=250 snap_every=0
+# cfg center=(-1,-1,-1) amp=1 sigma=2.5 k=(0,0,0) prealign=0 noise_amp=0
+# cfg music: comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004
+# cfg field sector: two-component signed amplitude, unitary hops, field_J=1.8
+# cfg ledger: mode=3 u=1.000e-12 (cellfabi INT_LEDGER)
+# action atom: A0=1.1500 (dbar=1.5053) mode=2 — eps(w)=A0*w/2pi; atoms at mode boundaries, transport continuous
+# edge coloring: 29 colors for 85886 links
+# NETGATE 0 1 d=1.4080 psi_f=-0.0000 psi_b=-0.0000 gf=1.0000 gb=1.0000
+# net: seeded nv=2 ne=1 worst_pick=0.000 gates min=1.0000 mean=1.0000 parasites=0 gpar_max=0.0000 file=/home/d/code/scp/v89/charge/nets/smoke_dw055.net
+# fabric: cells=9741 channels=85886 mean_degree=17.63 box=24 dmin=1
+# LEDGER seed mode=3 u=1.000e-12 E0_int=9742158730434782 NC=9741 NL=85886
+# LEDGER seed mode=3 u=1.000e-12 E0_int=9742158730434782 NC=9741 NL=85886
+# t	E_space	E_dense	E_field	E_transfer	E_total	rel_drift	live_ch	cm_x	cm_y	cm_z	contain	front_r	r_core	defA	r_far	r_ratio	w_core	w_far
+0.000	9740.82619	1.33254	0	0	9742.15873043	0.000e+00	57686	10.884	13.938	13.312	1.000	0.0000	0.8440	0	0.8499	0.9931	1.64479	1.65000	0.0000	0.0000	0.0000	0	0	0	0	0	0
+# CONV t=0.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=0.000 mode=3 sum_err=0 max|E-iEu|=4.348e-13 run_max_diff=0.000e+00 run_max_sum_err=0 steps=0 E0_int=9742158730434782 sum=9742158730434782
+# NETG t=0.00 gates min=1.0000 mean=1.0000 edges=1
+# PIN t=0.00 R=0 nv=2
+5.000	9740.82619	1.33441092	0	0.00587758657	9742.15873043	1.867e-16	57686	10.886	13.937	13.312	1.000	0.0000	0.8440	0.17926	0.8499	0.9931	1.64470	1.65000	0.0000	0.0000	0.0000	0.0026489	-0.00096459	0.00077044	0	0	0
+# CONV t=5.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=5.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=250 E0_int=9742158730434782 sum=9742158730434782
+# NETG t=5.00 gates min=0.0000 mean=0.0000 edges=1
+# PIN t=5.00 R=-0.00774850557 nv=2
+# SLIP t=5.00 e=0 psi=+2.7024 unw=+2.691 nu_win=+0.086015 dwb_win=+0.549079
+10.000	9740.82619	1.34762168	0	0.0159792378	9742.15873043	0.000e+00	57687	10.896	13.922	13.312	1.000	0.0000	0.8440	0.20368	0.8499	0.9930	1.64442	1.65000	0.0000	0.0000	0.0000	0.00049867	-0.0025487	0.0006627	0	0	0
+# CONV t=10.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=10.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=500 E0_int=9742158730434782 sum=9742158730434782
+# NETG t=10.00 gates min=0.2416 mean=0.2400 edges=1
+# PIN t=10.00 R=-0.0310609246 nv=2
+# SLIP t=10.00 e=0 psi=-0.8303 unw=+5.442 nu_win=+0.087551 dwb_win=+0.548405
+15.000	9740.82619	1.35778903	0	0.016909211	9742.15873043	0.000e+00	57687	10.903	13.913	13.313	1.000	0.0000	0.8439	0.19828	0.8499	0.9930	1.64435	1.65000	0.0000	0.0000	0.0000	0.00063202	0.00066923	0.0013129	0	0	0
+# CONV t=15.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=15.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=750 E0_int=9742158730434782 sum=9742158730434782
+# NETG t=15.00 gates min=0.0002 mean=0.0002 edges=1
+# PIN t=15.00 R=-0.0421582575 nv=2
+# SLIP t=15.00 e=0 psi=+1.8918 unw=+8.164 nu_win=+0.086648 dwb_win=+0.548658
+20.000	9740.82619	1.35672496	0	0.0230229173	9742.15873043	-1.867e-16	57688	10.903	13.915	13.314	1.000	0.0000	0.8439	0.18791	0.8499	0.9929	1.64435	1.65000	0.0000	0.0000	0.0000	0.00044395	0.00050697	0.00058875	0	0	0
+# CONV t=20.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=20.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=1000 E0_int=9742158730434782 sum=9742158730434782
+# NETG t=20.00 gates min=0.0021 mean=0.0021 edges=1
+# PIN t=20.00 R=-0.0472078998 nv=2
+# SLIP t=20.00 e=0 psi=-1.6433 unw=+10.912 nu_win=+0.087474 dwb_win=+0.549803
+# RESULT es_shells 0.75:1.0007 2.25:0.9950 3.75:1.0004 5.25:1.0002 6.75:1.0000 8.25:1.0000 9.75:1.0000 11.25:1.0000
+# RESULT LEDGER mode=3 E0_int=9742158730434782 sum_int=9742158730434782 max_sum_err=0 max|E-iEu|=0.000e+00 steps=1000
+# RESULT conservation E0=9742.15873043 Efinal=9742.15873043 rel_drift=-1.867e-16
+# RESULT roughness_radiated=0 (dissonant dense deliveries converted to field, conserved)
+# NETGATE F 0 1 d=1.4080 psi_f=-1.6433 psi_b=+1.6435 gf=0.0021 gb=0.0021
+# RESULT pin R=-0.0472078998 nv=2 (reservoir inside the conservation sum)
+# RESULT slip e=0 nu_slip=+0.087061 dw_bare=+0.549231 dw_over_2pi=+0.087413 slips=+0.87 locked=1 window=[10.0,20.0]
+# RESULT curvature_fit defA_per_Em=4.80156 r2=0.4405 (linear defect ~ converted energy)

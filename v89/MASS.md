@@ -895,3 +895,131 @@ combined) if H1 shows the hole matters.
   claims:** no C1, no M-R1 on single foam, no universal κ, no frozen
   gates-alone skin. **Open:** multi-foam P19, κ re-pin on free1/m5/tube,
   Law A death-definition A/B, P21 deferred.
+
+* **2026-07-31 (LEG-3 CORRECTED — user: the particle is a flux MACHINE;
+  balance, not sealing).** Session analysis had derived a no-particle
+  bound under laws_V2g (universal bleed c₀ ⇒ t ≈ cap·(x−x_skirt)/c₀ —
+  ceiling ~4.9k t.u. at the x≈0.9 window edge, ~12k at comp12-class
+  recapture; the 43 wave deaths bracket this clock; closure-ladder
+  arithmetic verified: N=12 ring on L=16.542 admits exactly m=4..7,
+  x* = (w2/ω−1)/q at ω = 2πm/L reproduces Em/voice 1.0979, frozen-foam
+  within-species scatter ~7.8% vs inter-m gaps ~48%) and proposed
+  leak ≡ 0 (acceptance-gated mob_floor) as the fixed-mass requirement.
+  **User disputed the interpretation, and the dispute is decisive:**
+  stability does not require leak = 0; it requires (1) continuous
+  fundamental movement and (2) a structure that FORCES field intake in
+  movement to equal field outtake. The stable particle is not a thing
+  but a machine (not literally) that binds field continuously. Mass
+  requires T > 0; T = 0 is fundamentally impossible — asymptotic
+  approach only — and a mass approaches c but never reaches it for a
+  similar-but-different reason.
+  Why the correction wins on the program's own terms: a sealed
+  zero-leak structure would be stable at EVERY point of the lock
+  valley (ω(x)·d = πmC is a continuum — §5c's standing tension), i.e.
+  a continuum of stable masses = the M-R1 failure mode; the sealing
+  route manufactures a marginal valley. The flux picture gives the
+  attractor for free: dM/dt = I(x) − O(x); a fixed point x* with
+  I′ < O′ is restoring — excess sheds, deficit refills — which IS
+  M-R1's "attractor point, not valley segment"; C4 return becomes the
+  restoring flow itself; and it unifies with C5/g5: steady throughput
+  at constant mass is no longer a bonus property, it is the stability
+  mechanism, and the intake flow is the 1/r far-field source G4 said
+  was missing. Pin candidates ranked to date: frozen retune (falsified
+  W1), hardening (falsified as implemented W4), flux balance
+  (standing, untested).
+  Measured anchors reread as the two books of the balance: OUTTAKE —
+  universal c₀ = 4.25e-4 Em/t.u./voice, gate-independent. INTAKE —
+  condensation reclaim +0.005 vs rough −0.0455 on the blob (9:1
+  under-supplied); comp12-class recapture 60% (c_eff = 0.40·c₀ — the
+  best machine yet, 40% short of balance); the closed-box null (a ring
+  in its own shed bath dies the same — passive self-atmosphere does
+  NOT re-enter; intake must be structural/resonant); G4's inward
+  refill (vacuum PUSHES space into an over-deep depression — an
+  embryonic intake mechanism, no suction required, already measured).
+  The wave theorem restated: under laws_V2g, I(x) < O(x) for every
+  tested structure above the skirt — the balance never closes; the
+  remedy direction is COMPLETE THE INTAKE SIDE, not gate the floor.
+  Doctrine mappings recorded: T > 0 ↔ existence is the running of the
+  conversion cycle (PRINCIPLE 4.4: identity is the succession; a
+  zero-cycle structure is not cold, it is absent), with the atom
+  affordability floor as the zero-point hook (HBAR.md candidate 4);
+  v → c ↔ translation is conversion spending the same cycle budget —
+  the internal share → 0 as v → C but cannot reach 0 (same root,
+  other channel; moving-clock dilation is already an S2-full
+  acceptance criterion).
+  EXPERIMENT REFRAMES: (a) the parked-pair run becomes the
+  BALANCE-CURVE instrument — per-window signed intake/outtake books
+  (# CONV already splits cond/rough/back_s) vs x, pair first;
+  (b) the piston is promoted from life support to the INTAKE KNOB —
+  map I(x, es) vs O(x); the fixed-point locus (existence, position,
+  slopes) is the deliverable; if balance requires es > e_s0, isolated
+  particles are impossible under V2g and the missing law is
+  intake-side; (c) S2-full's mass-facing question reframes to
+  intake-side coherence — rate-level condensation is incoherent, but
+  a phase-locked structure should RESONANTLY recondense its own
+  radiated field (stimulated recapture: the choir mechanism at the
+  field door) — joins kr=1, P2, dilation as amplitude-completion
+  acceptance territory; (d) pre-registrable prediction: at a balance
+  fixed point the species mass width obeys σ_M² ∝ (bath noise)/|I′−O′|
+  — P19's cluster width becomes a DERIVED quantity, not just a demand.
+
+* **2026-07-31 (SUBSTRATE VERDICT — user: the foam was an improved
+  stepping stone but will fail as a viable means; we need a NUMERIC
+  replacement — a different simulation mechanism, not a different
+  concept. + CHARGE DEPENDENCY: MASS for nucleon-class objects is
+  blocked on the EMF charge construction — see `CHARGE.md`.)**
+  Diagnosis (the receipts, all measured): the frozen jittered foam is
+  QUENCHED DISORDER — σ_d/d̄ ≈ 9.3% where shells need ≤2% (the
+  frozen-foam ceiling: exact retune saturates at mean gate 0.851,
+  ≈0.15 irreducible); species masses are foam accidents (σ_x/x ≈ 7.8%
+  within-species vs 48% inter-m gaps — M-R1 impossible per-instance);
+  observables chaotic at ±30%; the foam bias floor (~0.9) drowns
+  lensing (0.015) and free-fall; plasticity fights the frozen vacuum
+  matrix instead of fixing it (W2–W4: topology-conditioned, gates
+  collapse). Doctrinally the frozen foam sits on the constraint-2
+  checklist: "fixed connectivity not itself produced by the current
+  energy structure." CONCEPTS KEEP (cells as processes, links as
+  retardations, gates/rungs/closure, atoms, mode books, integer
+  conservation); the SUBSTRATE MECHANISM changes. The ladder:
+  **S1 — annealed geometry generator (cheap, immediate, apparatus
+  only):** replace the foam generator with a Lloyd/centroidal-relaxed
+  (hyperuniform, statistically isotropic, non-crystalline) cell
+  geometry, target σ_d ≤ 2–3%. Kernel untouched. Quantified
+  predictions: gate deficit scales ~σ_d² ⇒ 0.15 → ~0.01 (retuned
+  shells reach mean gates ≥0.98 — the min≥0.95 PREDICTIONS threshold
+  frozen foam could never meet); P19 within-species scatter
+  σ_L/L = σ_d/(d̄√N) → gap/σ ≈ 24 at N=12 (from 6.2); long-wavelength
+  noise floor drops ~an order — the g2/lensing/halo-hint (0.015,
+  right-sign) measurements become decidable; visibility ceiling
+  (V≈0.46, foam scatter) rises toward 1. Gates: full battery on the
+  new substrate (bars were calibrated in foam chaos — expect margins
+  to IMPROVE; any experiment secretly relying on disorder gets
+  flagged); isotropy-of-propagation check (hyperuniform NOT
+  crystalline — no magic directions). Risk: none to the kernel; it is
+  a generator + battery re-baseline.
+  **S2 — coordinate-free diagnostic (optional):** degree-regular
+  graph, uniform d exactly, positions retained only for instruments
+  (P15 already established cx/cy/cz are scaffold). Tests whether ANY
+  residual geometric noise matters; doctrinally cleanest frozen form.
+  **S3 — the real replacement (kernel-2 design track, "livefab"):**
+  the dynamic complex — link/cell creation-annihilation as conversion
+  events (CONSTRUCTION.md rewrites), integer-ledger-booked per
+  rewrite, deterministic via serial event flush (the QATOM pattern).
+  The vacuum SELF-ANNEALS (σ_d → 0 dynamically — disorder removed
+  without imposing a grid); structures own their local geometry (the
+  M-R1 universality mechanism P15 wanted, without fighting a frozen
+  matrix); space-mode books gain their missing face (cell creation =
+  space conversion made literal). Prediction worth recording: a
+  self-annealed vacuum sits at its own π-rung, d̄_vac = π/w2 = 1.083
+  — close to the pinned quant_A0 = 1.15 — so on S3 the action atom
+  A₀ = e_s0·d̄_vac/C becomes DERIVED from law constants instead of
+  pinned per-box (resolves the recorded A₀ apparatus leak). S1
+  results should carry over to S3 (S1 ≈ S3's fixed point, frozen).
+  **Sequencing under both directives:** S1 build + battery → re-fight
+  the W1 showdown and the flux-balance instrument on quiet geometry
+  (MASS-simple: the pin at N=2 upward) → EM5 (law event, doubly
+  motivated: Maxwell cone + polarization substrate for charge) →
+  CHARGE.md ladder Q1–Q5 → nucleon-class MASS (3-voice machines,
+  Q6–Q8, p/n split analog). The old "MASS owns the critical path until
+  P19" is amended: for nucleon-class objects the critical path runs
+  THROUGH the charge construction.

@@ -169,3 +169,67 @@ that require a proton analog.
   Wave 1 on integer default `cellfab`. Instrument: `emf/em1_dispersion.py`
   (kx sweep of field pulse under laws_V2g; front_speed → em1_dispersion.tsv).
   No law change. Kernel default is integer matter ledger (field unitary FP).
+
+* **2026-07-31 (EM1 SCORED — the field mode is a lattice band, not a
+  cone; + the relativity/Maxwell analysis, user directive).** Measured
+  v_g(kx): 0.3499/0.5215/0.5767/0.6054/0.6092/0.3445/0.2258 at kx =
+  0.4/0.7/1.0/1.1/1.4/1.7/2.0. Fit: **v_g = 0.610·sin(k·1.410), R²=0.93**
+  — a tight-binding cosine band with effective spacing 1.410 ≈ the foam's
+  d̄=1.505 (−6%); band peak at k≈1.11, zone edge ≈2.23 (v_g collapse by
+  k=2.0 measured, r² of front fit degrades to 0.56 there — tortuosity).
+  v_g spread 2.7× across the scan: **no Lorentz cone — the deepest gap
+  (§2) is now quantified**, and the structure is identified: scalar
+  per-species hops on cells ⇒ quadratic band bottom.
+  ANALYSIS (recorded; full text in session log, verdicts here):
+  user chain "intake depletion ⇒ lensing; recursion capped at c ⇒
+  movement, hence gravity, relativistic" — split verdicts:
+  (1) mass depletes the medium via its intake books — measured (g1
+  es_shells 0.593 core / halo to r≈5 / ridge ~1.003 at r≈7–8; G4).
+  (2) movement = front conversion consuming destination space (PRINCIPLE
+  4.4) ⇒ c_local must rise with local Es: the BRIDGE law, c_local =
+  C·f(Es/e_s0), f(1)=1, exponent p. Standing table has p ≡ 0 BY
+  CONSTRUCTION (bound-energy-only pitch; ambient-invariance is the
+  piston tripwire); g2 null bounds it operationally: s·p < 2.8e-4
+  (v<1e-3 after 120 t.u. in a 3%/unit gradient).
+  (3) lensing = refraction in the intake-maintained depression: TRUE
+  conditional on the bridge; measured FALSE today (halo hint 0.015
+  two orders below foam floor). Worked on the MEASURED footprint at
+  p=1: α(b) = 0.57/0.63/0.60/0.32/0.06 rad at b=1.5/2.25/3/4/5.25 —
+  strong-lens regime (the sim footprint is DEEP; real-gravity weakness
+  relocates into footprint-depth-per-mass normalization) — plus a
+  parameter-free signature: **an anti-lensing annulus at b≈8 (−0.011
+  rad, bends AWAY) from the displaced-space ridge**. Core clock at
+  p=1: 41% slow (p=0.5: 23%).
+  (4) recursion capped at c ⇒ Lorentz: FALSE as-implemented (field =
+  band, above; dense ceiling ~3–6e-3 C ⇒ γ−1 ~ 1e-5 unreachable), but
+  PROVED CONDITIONALLY, two theorems: (a) SIGN THEOREM — incoherent
+  destination-limited hopping in an Es gradient drifts AWAY from mass
+  (master equation: net = P·(f_i−f_j) < 0 into the depression); only
+  phase-coherent (wave) transport refracts TOWARD it ⇒ the equivalence
+  principle REQUIRES wave-borne dense transport — S2-full joins gravity
+  as its acceptance territory. (b) LOCK-LORENTZ THEOREM — a two-way
+  closure (rung) translating on a universal cone keeps its closure
+  integers iff internal rates dilate by exactly γ=1/√(1−v²/C²) and
+  longitudinal locks contract by 1/γ (round trips d/(C−v)+d/(C+v);
+  isotropic closure forces the contraction); the rung ladder is
+  Lorentz-covariant iff exchange rides ONE cone. Pre-registered test
+  once wave-borne translation exists: translate a locked pair, beat
+  slows by γ, d* contracts by 1/γ.
+  MAXWELL MAPPING (design, not implementation): helicity basis F± =
+  E ± icB obeys i∂tF± = ±C∇×F± (Riemann–Silberstein) — first-order,
+  linear cone, two polarizations = the chiral pair. v89-native form:
+  amplitudes on LINKS (PRINCIPLE §3 already puts actuation in the
+  link-transverse plane pair = the local polarization frame), curl =
+  signed circulation over cell faces; the antisymmetric inter-plane
+  coupling is EM5. With the bridge, variable c(r) enters as an
+  impedance-matched medium (ε=μ=n): gravity bends and delays but never
+  reflects — "nothing reaches out" preserved. Missing honestly: the
+  source term (∇·E = ρ awaits the charge construction — winding/
+  chirality imbalance lead). EM5 GATES when scheduled (per §5, at a
+  MASS checkpoint or on a variant table): full battery; EM1-flat
+  (v_g = C at all k, both polarizations — this scan is the gate
+  instrument); c unification falls out; then bridge arms: α(b) table +
+  ridge anti-lens annulus as scored predictions; g2 free-fall SIGN
+  test (equivalence-principle discriminator); clock-pair redshift;
+  piston rung-shift tripwire doubles as the ruler-response (factor-2)
+  measurement. No kernel or law edits made in this session.
