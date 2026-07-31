@@ -963,6 +963,30 @@ combined) if H1 shows the hole matters.
   fixed point the species mass width obeys σ_M² ∝ (bath noise)/|I′−O′|
   — P19's cluster width becomes a DERIVED quantity, not just a demand.
 
+
+* **2026-07-31 (RESUMPTION on the S1 milestone — THE BALANCE CURVE
+  MEASURED; the flux-machine instrument works).** Programs reopened per
+  the recorded critical path (S1 done: battery 21/21 without the foam).
+  **M-B1** (new instrument `mass_balance/`): pinned pairs (pin_net
+  reservoir, exact integer books) on the Q9 bridge, rung-mistune ladder
+  δ0 ∈ ±0.15, closed box, T=600; B(δ0) = −dR/dt late-window. RESULTS:
+  (1) **no zero crossing — the V2g no-particle theorem measured
+  microscopically** (B ∈ [8.9e-4, 2.5e-3] Em/t.u., all draining);
+  (2) **B_min = 8.85e-4 vs pre-registered 2·c₀·cap = 8.5e-4** — the
+  corpus load-line bleed reproduced within 4% by an independent
+  instrument (macro↔micro cross-validation of c₀);
+  (3) SURPRISE: **the minimum sits at δ0 ≈ +0.08, not at the rung** —
+  loading past the rung detunes the pair away from vacuum pitch
+  (insulation) faster than rung mismatch costs, until roughness bites
+  (+0.15: 3× jump); light side rises steeply toward the skirt. THE
+  PARTICLE WANTS TO RIDE SLIGHTLY HEAVY — where the balance fixed
+  point must be engineered. rough=0 on all locked arms (drain is the
+  smooth mob_floor bleed — corpus mechanism confirmed). Caveats:
+  single link (absolute scale foam-owned ±30% per Q9); shape,
+  no-crossing, and the c₀ match are the claims. Next: the piston
+  (intake knob) against this measured curve — I(x,es) vs the B(δ0)
+  baseline; S1-substrate version once a geom_dump apparatus exists.
+
 * **2026-07-31 (SUBSTRATE VERDICT — user: the foam was an improved
   stepping stone but will fail as a viable means; we need a NUMERIC
   replacement — a different simulation mechanism, not a different

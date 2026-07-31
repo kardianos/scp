@@ -170,6 +170,16 @@ that require a proton analog.
   (kx sweep of field pulse under laws_V2g; front_speed → em1_dispersion.tsv).
   No law change. Kernel default is integer matter ledger (field unitary FP).
 
+* **2026-07-31 (EM2 attempt — DESIGN GAP found, deferred honestly).**
+  A k=0 field pulse sits at the band bottom (v_g = 0, EM1's measured
+  dispersion) — it DISPERSES, it does not emit: the 1/r² flux law needs
+  a CONTINUOUS point source, and no such apparatus exists (the slit
+  source slab is the only sustained drive). EM2 deferred until a
+  point-emitter apparatus (driven cell at fixed ω/amplitude, ledgered
+  like the piston) is built. Side observation kept: the same pulse on
+  V2s spreads ~30× less field flux than on the foam at t=28 (sparser
+  network) — the substrate matters to field-sector calibrations too.
+
 * **2026-07-31 (EM1 SCORED — the field mode is a lattice band, not a
   cone; + the relativity/Maxwell analysis, user directive).** Measured
   v_g(kx): 0.3499/0.5215/0.5767/0.6054/0.6092/0.3445/0.2258 at kx =

@@ -366,3 +366,25 @@ ensembles even for Q9-class runs.
 Next on the ladder: Q10 (slip chirality under plane swap — same
 apparatus, add the two-plane handedness readout) on the current foam;
 Q11 waits for S1.
+
+### 7.7 Resumption results (2026-07-31, post-S1)
+
+**Q10-lite — C-symmetry of the slip sector: EXACT.** The weak-link I–V
+is antisymmetric under voice swap (kink ↔ antikink): ν(−Δω) = −ν(Δω)
+measured at three points — running branch −0.032043 vs +0.032046
+(1:10⁴), −0.063162 vs +0.063157 (8:10⁶), locked branch symmetric
+(|ν| ≤ 3e-5 both signs at |Δω|=0.056). No built-in rectification;
+charge conjugation is an exact symmetry of the transport law. (Full
+Q10 — the two-plane handedness registration of single slips — still
+open; needs a per-slip plane-resolved counter.)
+
+**Q11 status:** substrate-unblocked (S1 green) but seeder-blocked —
+the .net format carries no interval column (E a b defaults 1:1), so a
+ℤ₃ cycle (3:1/1:3/1:1 content) cannot yet be placed. Next apparatus
+item: per-edge `E a b p q` extension (ratchet-gated), then Q11 runs on
+V2s.
+
+**M-B1 cross-link:** the balance-curve instrument (MASS.md this date)
+measured the pair drain floor B_min = 8.85e-4 ≈ 2·c₀·cap — the same
+mob_floor bleed that sets Q9's dissipation books; one microscopic
+channel now measured from both programs' sides.
