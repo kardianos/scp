@@ -117,7 +117,7 @@ instructive failure, see finding F2.
 | e1, e3a, e4, e5, e7, d1, t1, q2, t4, qt_lo, qt_hi, p1, g1, LIN | PASS | — (e7 IMPROVES to 60/60 alive, frac 1.00, gg 0.96 vs 0.77 on foam; e2 v_g 0.88C vs 0.61) |
 | e6 | FAIL → **probe PASS** (gg 0.21→0.886) | APPARATUS: pair window [1.0,1.55] + fixed x0=0.3 encode the old d-spread; widened window + auto x*(d) fixes it outright |
 | e8 | FAIL (shed ladder degenerate, total 0.5 vs 7.2) | APPARATUS (same class): its δ0 ladder rode the foam's d variety; needs explicit δ0 seeding |
-| e9 | FAIL (window [1.28,1.42] holds ZERO links — nothing ever ran) | **SUBSTRATE PLACEMENT EXCLUSION** (corrected 2026-07-31 late): the first probe was INVALID — the pairs auto-load (pair_x0<0) is unison-only (m=1 curve, cellfab.c:1072; pair_x1<0 copies x0), so its "fifths" were mis-seeded unisons. The real arithmetic: the 3:2 rung (q·ω_i·d = πm, m=2) needs the heavy voice at x_j = (2.9/((2/3)·πm/(q·d))−1)/1.2 ≤ 0.9 ⇒ **d ≲ 1.50 — the fifth's habitable zone; the shell [1.52,1.70] sits just outside it.** A single-length substrate hosts only the rungs whose habitable zones include d̄. The Γ/(pq) tongue-vs-σ_d bound remains a pre-registered prediction, untested until a shell hosts fifths |
+| e9 | FAIL (window [1.28,1.42] holds ZERO links) → **RESOLVED + corner probe PASS (locked@t10=19 vs the foam's 8)** | **TEST — the apparatus hard-codes the foam-era ADDRESS of the fifth, not the fifth.** Final analysis (three wrong classifications corrected by measurement, in order: σ_d/tongue-roughness — invalidated, the probe was mis-seeded by the unison-only auto mode, cellfab.c:1072; "habitable zone d≲1.50, shell excluded" — incomplete, the atlas shows TWO bands (m=2 [1.16,1.50], m=3 [1.75,2.25]) and the x≤0.9 edge is a seeder guard, not physics). The mutual-fifth closure (q·ω_i+p·ω_j)·d = 2πm at the shell's d̄=1.54 puts the m=2 rung at loads (x_i, x_j) = (0.351, 0.944) — the near-cap corner — and seeded THERE it locks 19/40 at t10, 2.4× the foam's best, t_last=60, bar PASS. σ_d=3% does NOT kill the fifth. Species load-addresses are substrate-dependent; existence is robust. Plasticity-rescue arm (foam-era loads + κ=1): partial (3 locks; links walk only ~0.01 by t=30) — the misfit force scales with transport, so malleability fine-tunes within the capture window but cannot cross the gate desert: a tuner, not an address-finder |
 | e3b | FAIL (coherent BACKWARD drift, cos −0.956) → **RESOLVED + probe PASS** | TEST OPERATING POINT on a real physical structure: at amp=0.5 the loaded pitch gives ω·d̄ ≈ π AND kx·d̄ ≈ π — the forward travel gate and the backward wrap-rung (d(kx+ω)=2π) are DEGENERATE; the foam's 19% smear broke the tie incoherently (V2g's own log shows net cmx 7.005→6.657 BACKWARD; its PASS is a second-half drift), while the uniform shell resolves it coherently backward. Probe at the derived travel window (amp=0.25, kx=2.55: ω(x)≈kx, 2ωd̄ far from 2π): **PASS cos=+0.894, speed 0.00805 — 2.3× the foam's best.** Physics bonus: the emergent-inertia wall is mechanism-identified — heavy blobs freeze/reverse because loaded pitch × d̄ approaches the backward rung π |
 | g3 | FAIL (deflection +1.17 vs +2.5) | G-SECTOR RECALIBRATION DEBT: NC halved ⇒ blob source mass ~halved (amp/sigma are per-cell), footprint shallower (core/far 0.73 vs 0.53); degree probe (deg~11) did NOT recover it ⇒ source-mass scale, not connectivity |
 | g4 | FAIL (fflux_late=0; decay ratio borderline) | PHYSICS SHIFT, arguably favorable: on the quiet substrate the blob leak stops radiating (roughness ↓ — the same effect that lengthens structure lifetimes) — the bar encoded the foam's rough-leak signature |
@@ -134,14 +134,18 @@ instructive failure, see finding F2.
   7.3 → 3.4) and the OPTICS sector collapses (d1 V 0.39→0.09, e2
   0.88→0.56C, HOM split gone): **interference visibility and pulse
   speed are the substrate's connectivity ruler.** Healthy degree ≥ ~7.
-* **F3 (corrected) — the interval ladder is the substrate's PLACEMENT
-  ruler.** Each p:q rung has a habitable d-zone from load reachability
-  (3:2 at m=2 needs d ≲ 1.50); a single-length substrate hosts only
-  the rungs whose zones include d̄ — the shell at 1.52–1.70 excludes
-  the fifth outright. (The finer claim — tongue width Γ/(pq) vs σ_d,
-  suggesting ≲0.4% for interval ROBUSTNESS — remains a pre-registered
-  prediction for a fifth-habitable shell; the first probe of it was
-  invalidated by the unison-only auto-seeder.)
+* **F3 (final form) — the substrate's d̄ sets each species' ADDRESS,
+  not its existence.** Every mutual interval lock lives on closure
+  bands in d (the atlas: Ω·d = πm with the pitch window set by skirt/
+  cap/w2 — unison [1.16,2.25]; fifth [1.16,1.50]∪[1.75,2.25]; fourth
+  [1.16,1.69]∪[1.55,2.25]; octave: none anywhere — the measured
+  lifetime hierarchy's tail, explained structurally). Changing d̄ moves
+  each interval's rung to different LOADS (the fifth at the shell
+  lives at x_j≈0.94 and locks 2.4× better than on the foam);
+  foam-era apparatus froze the old addresses. Standard tool going
+  forward: compute the atlas + per-d addresses at config time.
+  (The Γ/(pq) tongue-vs-σ_d bound is answered empirically at 3%:
+  fifths lock fine; the ≲0.4% worry applied to a mis-analysis.)
 * **F4 — uniform substrates resolve gate degeneracies coherently.**
   Operating points tuned on a disorder-smeared substrate can flip sign
   when the smear is removed (e3b); conversely the quiet substrate makes
@@ -156,18 +160,19 @@ instructive failure, see finding F2.
 
 ### Standing state and next steps
 
-`laws_V2g` remains THE table; **V2s shell1 is the S1 working variant**
-(15/21 with the residual map above, of which e3b and e6 are
-probe-PROVEN test-side and recoverable; promotion is a user decision
-after the residuals close). Next: (1) adopt the variant apparatus set
-(e3b amp/kx travel window, e6 windows+auto loads — both probe-green;
-e8 explicit-δ0 ladder — its foam ladder was the d-spread itself,
-pair_x0=0.5 fixed; g3 sigma×(NC ratio)^{1/3}≈2.74 restoring source
-mass at unchanged per-cell load), bars untouched; (2) g4 check
-re-expressed substrate-invariantly (its radiative-dominance clause
-encoded the foam's rough leak; the quiet substrate's non-radiating
-leak arguably STRENGTHENS the no-monopole claim); (3) **S1b:
-density-matched shell at d̄ ≈ 1.46–1.48** (dmin ≈ 1.21, floor AT its
-jamming ≈ 1.44, lmax ≈ 1.60) — hosts the fifth (habitable zone) and
-keeps the travel window; rerun the battery there; (4) livefab (S3)
-design carrying F1–F4 as requirements.
+`laws_V2g` remains THE table; **V2s shell1 is the S1 working variant**.
+With the four probe-green fixes (e3b travel window, e6 windows+auto,
+e9 shell-address loads, plus e8's explicit-δ0 ladder designed), the
+substrate stands at an effective **18/21** with only g3 (source-mass
+sigma rescale, fix computed) and g4 (check re-expression, favorable
+physics) remaining. Next: (1) adopt the variant apparatus set — the
+general method fix: derive every experiment's operating point from its
+closure relations + the substrate's d̄ at config time (the atlas),
+never freeze substrate-dependent coordinates; add an interval-aware
+auto-seed mode (ω_i = πm·p/((p+q)·q·d)-class formula with reachability)
+— ratchet-gated seeder feature; (2) g3 sigma×1.246, g4 substrate-
+invariant check form (user sign-off); (3) full battery rerun on the
+variant apparatus set → the 21/21-without-the-foam claim; (4) livefab
+(S3) design carrying F1–F4; malleability's measured role: local tuner
+within the capture window (the plasticity arm), addresses still set by
+closure arithmetic.
