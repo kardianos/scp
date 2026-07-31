@@ -172,6 +172,19 @@ typedef struct {
      * (byte-identical at any thread count). */
     int pin_net;
     int slip_diag;
+    /* SUBSTRATE ladder S1 (MASS.md 2026-07-31): optional deterministic
+     * anneal of the cell scaffold toward uniform neighbor spacing,
+     * applied BEFORE radii/normals/phases are drawn — the RNG stream is
+     * untouched, so geom_relax=0 is the byte-identical legacy foam and
+     * a geom_relax>0 run shares the legacy draw sequence (only geometry
+     * moves). The substrate is apparatus, not law: no physics touched.
+     * geom_runi=1 additionally sets uniform radii r=r0 (the jitter draw
+     * is still consumed, keeping the stream aligned). */
+    int geom_relax;              /* anneal sweeps (0 = legacy foam) */
+    double geom_relax_k;         /* spring step per sweep */
+    double geom_dtar;            /* target spacing (<0 = auto: initial mean) */
+    int geom_runi;               /* 1 = uniform radii r0 */
+    double geom_lmax;            /* absolute channel-ceiling trim (0 = legacy rule) */
     int ledger_mode;
     double ledger_u;
 } Cfg;
@@ -259,6 +272,11 @@ static void cfg_defaults(void)
     P.quant_mode = 1;
     P.pin_net = 0;
     P.slip_diag = 0;
+    P.geom_relax = 0;
+    P.geom_relax_k = 0.05;
+    P.geom_dtar = -1.0;
+    P.geom_runi = 0;
+    P.geom_lmax = 0.0;
     P.ledger_mode = 3;  /* DEFAULT: full integer matter ledger */
     P.ledger_u = 1e-12;
 }
@@ -400,6 +418,11 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "tau_harden")) P.tau_harden = atof(v);
     else if (!strcmp(k, "pin_net")) P.pin_net = atoi(v);
     else if (!strcmp(k, "slip_diag")) P.slip_diag = atoi(v);
+    else if (!strcmp(k, "geom_relax")) P.geom_relax = atoi(v);
+    else if (!strcmp(k, "geom_relax_k")) P.geom_relax_k = atof(v);
+    else if (!strcmp(k, "geom_dtar")) P.geom_dtar = atof(v);
+    else if (!strcmp(k, "geom_runi")) P.geom_runi = atoi(v);
+    else if (!strcmp(k, "geom_lmax")) P.geom_lmax = atof(v);
     else if (!strcmp(k, "ledger_mode")) P.ledger_mode = atoi(v);
     else if (!strcmp(k, "ledger_u")) P.ledger_u = atof(v);
     else fprintf(stderr, "# WARN unknown key '%s'\n", k);
@@ -716,6 +739,90 @@ static void build_field(void)
     NC = n;
     free(head); free(nxt);
 
+    /* --- S1 substrate anneal (apparatus; serial; RNG-free) ---
+     * REPULSION-TO-CONTACT: pairs closer than the contact floor dtar
+     * push apart each sweep (dynamic pair set is SAFE for pure
+     * repulsion — no densification; a spring/attractive version was
+     * measured and rejected: it densifies or stalls at the random
+     * graph's ~18% frustration floor). At near-jamming density the
+     * first neighbor shell piles up sharply at the floor; geom_lmax
+     * then trims the channel ceiling to that shell — the substrate
+     * becomes contact-shell links with small sigma_d instead of the
+     * legacy wide window. dtar<0 = auto: 0.985 of the monodisperse
+     * jamming estimate for the box's realized density. */
+    if (P.geom_relax > 0) {
+        double dtar = P.geom_dtar;
+        if (dtar <= 0) {
+            double vol = P.L * P.L * P.L;
+            dtar = 0.985 * cbrt(6.0 * 0.64 * vol / (M_PI * (double)NC));
+        }
+        double rcut = dtar;
+        int g3 = (int)(P.L / rcut); if (g3 < 1) g3 = 1;
+        int nb3 = g3 * g3 * g3;
+        int *h3 = malloc(nb3 * sizeof(int));
+        int *x3 = malloc(NC * sizeof(int));
+        double *fx = calloc(NC, sizeof(double));
+        double *fy = calloc(NC, sizeof(double));
+        double *fz = calloc(NC, sizeof(double));
+        long nclose = 0;
+        printf("# GEOM relax start: NC=%d contact_floor=%.4f sweeps=%d k=%g\n",
+               NC, dtar, P.geom_relax, P.geom_relax_k);
+        for (int sw = 1; sw <= P.geom_relax; sw++) {
+            for (int b = 0; b < nb3; b++) h3[b] = -1;
+            for (int i = 0; i < NC; i++) {
+                int bx = (int)(cx[i] / P.L * g3), by = (int)(cy[i] / P.L * g3),
+                    bz = (int)(cz[i] / P.L * g3);
+                if (bx >= g3) bx = g3 - 1;
+                if (by >= g3) by = g3 - 1;
+                if (bz >= g3) bz = g3 - 1;
+                if (bx < 0) bx = 0;
+                if (by < 0) by = 0;
+                if (bz < 0) bz = 0;
+                int b = (bx * g3 + by) * g3 + bz;
+                x3[i] = h3[b]; h3[b] = i;
+            }
+            for (int i = 0; i < NC; i++) fx[i] = fy[i] = fz[i] = 0;
+            nclose = 0;
+            for (int i = 0; i < NC; i++) {
+                int bx = (int)(cx[i] / P.L * g3), by = (int)(cy[i] / P.L * g3),
+                    bz = (int)(cz[i] / P.L * g3);
+                if (bx >= g3) bx = g3 - 1;
+                if (by >= g3) by = g3 - 1;
+                if (bz >= g3) bz = g3 - 1;
+                for (int ax = bx - 1; ax <= bx + 1; ax++)
+                    for (int ay = by - 1; ay <= by + 1; ay++)
+                        for (int az = bz - 1; az <= bz + 1; az++) {
+                            if (ax < 0 || ay < 0 || az < 0 ||
+                                ax >= g3 || ay >= g3 || az >= g3) continue;
+                            for (int q = h3[(ax * g3 + ay) * g3 + az]; q >= 0; q = x3[q]) {
+                                if (q <= i) continue;
+                                double dx = cx[q] - cx[i], dy = cy[q] - cy[i],
+                                       dz = cz[q] - cz[i];
+                                double d2 = dx * dx + dy * dy + dz * dz;
+                                if (d2 >= rcut * rcut || d2 <= 0) continue;
+                                double d = sqrt(d2);
+                                nclose++;
+                                double f = P.geom_relax_k * (dtar - d) / d;
+                                fx[i] -= f * dx; fy[i] -= f * dy; fz[i] -= f * dz;
+                                fx[q] += f * dx; fy[q] += f * dy; fz[q] += f * dz;
+                            }
+                        }
+            }
+            for (int i = 0; i < NC; i++) {
+                cx[i] += fx[i]; cy[i] += fy[i]; cz[i] += fz[i];
+                if (cx[i] < 1e-6) cx[i] = 1e-6;
+                if (cy[i] < 1e-6) cy[i] = 1e-6;
+                if (cz[i] < 1e-6) cz[i] = 1e-6;
+                if (cx[i] > P.L - 1e-6) cx[i] = P.L - 1e-6;
+                if (cy[i] > P.L - 1e-6) cy[i] = P.L - 1e-6;
+                if (cz[i] > P.L - 1e-6) cz[i] = P.L - 1e-6;
+            }
+        }
+        printf("# GEOM relax done: residual_close_pairs=%ld (below floor %.4f)\n",
+               nclose, dtar);
+        free(h3); free(x3); free(fx); free(fy); free(fz);
+    }
+
     /* --- cell state --- */
     cr0 = malloc(NC * sizeof(double));
     cr  = malloc(NC * sizeof(double));
@@ -733,6 +840,7 @@ static void build_field(void)
 
     for (int i = 0; i < NC; i++) {
         cr0[i] = P.r0 * (1.0 + P.rjit * (2.0 * frand() - 1.0));
+        if (P.geom_runi) cr0[i] = P.r0;   /* draw consumed: stream aligned */
         cr[i] = cr0[i];
         rand_unit(&n1x[i], &n1y[i], &n1z[i]);
         rand_unit(&n2x[i], &n2y[i], &n2z[i]);
@@ -783,6 +891,7 @@ static void build_field(void)
                             double dx = cx[q] - cx[i], dy = cy[q] - cy[i], dz = cz[q] - cz[i];
                             double d2 = dx * dx + dy * dy + dz * dz;
                             double cut = 1.15 * (cr0[i] + cr0[q]);
+                            if (P.geom_lmax > 0 && cut > P.geom_lmax) cut = P.geom_lmax;
                             if (d2 >= cut * cut) continue;
                             if (pass == 1) {
                                 double d = sqrt(d2);
@@ -801,6 +910,15 @@ static void build_field(void)
         }
     }
     free(head2); free(nxt2);
+
+    if (P.geom_relax > 0) {
+        double s = 0, ss = 0;
+        for (int l = 0; l < NL; l++) { s += ld[l]; ss += ld[l] * ld[l]; }
+        double mean = NL ? s / NL : 0;
+        double sg = NL ? sqrt(ss / NL - mean * mean) : 0;
+        printf("# GEOM links: NL=%d dbar=%.4f sigma_d=%.4f (%.2f%%)\n",
+               NL, mean, sg, mean > 0 ? 100.0 * sg / mean : 0);
+    }
 
     lA = calloc(NL, sizeof(double));
     lA0 = calloc(NL, sizeof(double));
@@ -1392,6 +1510,7 @@ static void build_field(void)
                 double dx = cx[w] - cx[u], dy = cy[w] - cy[u], dz = cz[w] - cz[u];
                 double d2 = dx * dx + dy * dy + dz * dz;
                 double cut = 1.15 * (cr0[u] + cr0[w]);
+                if (P.geom_lmax > 0 && cut > P.geom_lmax) cut = P.geom_lmax;
                 if (d2 >= cut * cut) continue;
                 int listed = 0;
                 for (int e = 0; e < ne; e++)

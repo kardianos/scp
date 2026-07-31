@@ -1,0 +1,125 @@
+# cellfab — v89 cell-fabric kernel (no lattice, no prior code)
+# cfg seed=20260727 mode=field init=slit
+# cfg L=30 dmin=1.25 r0=0.85 rjit=0.06
+# cfg C=1 w1=1.65 w2=2.9 q_detune=1.2 gamma_res=0.25 gamma_res_m=0.1 p_gate=8
+# cfg lock_floor=0.005
+# cfg k_dep=1.2 k_dep_m=2 cap=2.5 e_s0=1 es_floor=0.05
+# cfg e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# cfg kappa_lock=1 kappa_align=0.5 kappa_freq=0 kappa_reac=0 sigma_tumble=0.01
+# cfg space: s_k=0.06 s_disp=0.3 es_gx=0
+# cfg dt=0.02 T=70 diag_every=250 snap_every=0
+# cfg center=(-1,-1,-1) amp=0.25 sigma=2.5 k=(1.1,0,0) prealign=1 noise_amp=0
+# cfg music: comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004
+# cfg field sector: two-component signed amplitude, unitary hops, field_J=1.8
+# cfg ledger: mode=3 u=1.000e-12 (cellfabi INT_LEDGER)
+# cfg slit: wall_x=11.5 th=1.6 sep=9 hw=2 screen_x=23.5 src=[1.5,8.5] absorb=2 detune=8 which_path=0 tap=0.06 sigma_det=6 block=0
+# GEOM relax start: NC=9741 contact_floor=1.4400 sweeps=800 k=0.3
+# GEOM relax done: residual_close_pairs=14355 (below floor 1.4400)
+# GEOM links: NL=29034 dbar=1.4726 sigma_d=0.0516 (3.50%)
+# action atom: A0=1.1500 (dbar=1.4726) mode=2 — eps(w)=A0*w/2pi; atoms at mode boundaries, transport continuous
+# edge coloring: 13 colors for 29034 links
+# slit: wall=285 screen=1706 sink=2523 recorder=0 source_cells=1679 slitA_y=10.50 slitB_y=19.50
+# fabric: cells=9741 channels=29034 mean_degree=5.96 box=30 dmin=1.25
+# LEDGER seed mode=3 u=1.000e-12 E0_int=10160750000000000 NC=9741 NL=29034
+# LEDGER seed mode=3 u=1.000e-12 E0_int=10160750000000000 NC=9741 NL=29034
+# t	E_space	E_dense	E_field	E_transfer	E_total	rel_drift	live_ch	cm_x	cm_y	cm_z	contain	front_r	r_core	defA	r_far	r_ratio	w_core	w_far
+0.000	9741	0	419.75	0	10160.75	0.000e+00	29027	0.000	0.000	0.000	0.000	22.2918	0.8451	0	0.8499	0.9943	1.65000	1.65000	5.0196	14.9208	14.9613	0	0	0	460.8	-0.26977	5.7252
+# CONV t=0.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=0.000 mode=3 sum_err=0 max|E-iEu|=2.826e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=0 E0_int=10160750000000000 sum=10160750000000000
+5.000	9741	35.7282995	384.0217	0	10160.75	6.266e-15	29026	0.000	0.000	0.000	0.000	22.7821	0.8451	5.78	0.8499	0.9944	1.65000	1.84559	7.8654	14.8955	15.0328	0	0	0	108.47	-2.7433	5.6073
+# CONV t=5.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=5.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.499e-12 run_max_sum_err=0 steps=250 E0_int=10160750000000000 sum=10160750000000000
+# QATOM t=5.08 dir=FD w=1.65 e=0.301996504517
+10.000	9740.8641	69.5295661	350.35545	0.000882346155	10160.75	7.698e-15	29028	8.656	8.499	15.895	0.000	22.7821	0.8452	9.9061	0.8499	0.9945	1.65000	1.84550	8.1749	14.9013	15.1051	3.3321e-05	-7.3518e-05	7.9862e-05	-60.727	-8.6483	0.1416
+# CONV t=10.00 cond=0.90599 evap=0 rough=0 back_s=0
+# LEDGER t=10.000 mode=3 sum_err=0 max|E-iEu|=4.999e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=500 E0_int=10160750000000000 sum=10160750000000000
+15.000	9740.54701	101.896621	318.294104	0.0122690456	10160.75	1.253e-15	29028	8.958	14.330	15.521	0.000	22.7821	0.8453	14.216	0.8498	0.9947	1.65000	1.84534	7.9193	14.8166	15.1821	-0.0050794	0.00089534	-0.00088644	-25.75	6.0689	1.5624
+# CONV t=15.00 cond=3.01996 evap=0 rough=0 back_s=0
+# LEDGER t=15.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=750 E0_int=10160750000000000 sum=10160750000000000
+20.000	9739.82226	148.499144	272.387803	0.0407913466	10160.75	2.506e-15	29028	8.361	15.955	13.775	0.077	22.7821	0.8451	18.462	0.8498	0.9944	1.65000	1.84511	8.3161	14.9127	15.3534	-0.015196	0.0061043	-0.0023518	0.3884	7.9569	4.6808
+# CONV t=20.00 cond=7.85159 evap=0 rough=0 back_s=0
+# LEDGER t=20.000 mode=3 sum_err=0 max|E-iEu|=4.999e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=1000 E0_int=10160750000000000 sum=10160750000000000
+25.000	9739.27871	189.781585	231.546528	0.143176222	10160.75	2.327e-15	29027	7.584	16.076	15.314	0.053	22.1469	0.8452	22.958	0.8498	0.9946	1.65000	1.84488	8.7367	14.9659	15.4508	0.018692	0.010271	-0.0083065	3.7656	4.3653	4.4235
+# CONV t=25.00 cond=11.4753 evap=0 rough=0 back_s=0
+# LEDGER t=25.000 mode=3 sum_err=0 max|E-iEu|=4.999e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=1250 E0_int=10160750000000000 sum=10160750000000000
+# CLICK t=25.72 x=23.59 y=14.05 z=15.67
+# CLICK t=28.86 x=23.99 y=18.05 z=26.09
+30.000	9739.09753	223.615364	197.907012	0.130098293	10160.75	1.969e-15	29027	7.633	15.876	15.436	0.048	22.7821	0.8452	24.57	0.8498	0.9946	1.65000	1.84477	9.0163	15.0116	15.4564	-0.012	-0.021394	-0.020759	3.2344	2.2192	2.4087
+# CONV t=30.00 cond=12.6832 evap=0 rough=0 back_s=0
+# LEDGER t=30.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=1500 E0_int=10160750000000000 sum=10160750000000000
+35.000	9738.91633	249.932578	171.799192	0.101901761	10160.75	1.969e-15	29027	7.545	15.749	15.282	0.044	22.7821	0.8453	26.376	0.8498	0.9947	1.65000	1.84468	9.3071	15.1052	15.3550	0.0041149	-0.0051471	-0.0041007	2.7649	-0.63944	-3.7979
+# CONV t=35.00 cond=13.8911 evap=0 rough=0 back_s=0
+# LEDGER t=35.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=1750 E0_int=10160750000000000 sum=10160750000000000
+# CLICK t=36.22 x=23.67 y=14.65 z=21.12
+40.000	9738.82576	270.718318	151.013704	0.192216217	10160.75	2.864e-15	29026	7.579	15.693	15.318	0.042	21.9732	0.8454	27.398	0.8498	0.9949	1.65000	1.84468	9.4175	15.0765	15.2434	0.04705	-0.032039	0.0011876	-7.7345	1.7738	0.58165
+# CONV t=40.00 cond=14.4949 evap=0 rough=0 back_s=0
+# LEDGER t=40.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=2000 E0_int=10160750000000000 sum=10160750000000000
+45.000	9738.78046	288.275644	133.470516	0.223377333	10160.75	-3.580e-16	29025	7.530	15.687	15.302	0.042	22.7821	0.8452	28.482	0.8498	0.9947	1.65000	1.84465	9.4011	14.9699	15.2277	-0.02154	-0.00042527	-0.0020682	-7.1525	-1.1699	0.36487
+# CONV t=45.00 cond=14.7969 evap=0 rough=0 back_s=0
+# LEDGER t=45.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=2250 E0_int=10160750000000000 sum=10160750000000000
+# QATOM t=45.60 dir=FD w=1.64918828 e=0.301847936096
+# CLICK t=47.56 x=23.55 y=10.71 z=11.16
+# CLICK t=47.84 x=23.58 y=16.01 z=23.29
+50.000	9738.64459	304.47183	117.33608	0.297501172	10160.75	-4.297e-15	29025	7.534	15.693	15.458	0.041	22.0567	0.8451	29.892	0.8498	0.9945	1.65000	1.84462	9.5609	14.9637	15.2355	-0.0091607	-0.027999	0.012773	-3.2211	0.3748	2.0763
+# CONV t=50.00 cond=15.7027 evap=0 rough=0 back_s=0
+# LEDGER t=50.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=2500 E0_int=10160750000000000 sum=10160750000000000
+# CLICK t=53.32 x=23.75 y=13.52 z=12.98
+# CLICK t=54.06 x=23.56 y=26.23 z=16.10
+# shutter closed at t=55.0
+55.000	9738.59932	318.055564	103.831406	0.263711062	10160.75	-6.087e-15	29026	7.546	15.675	15.530	0.064	22.7821	0.8451	30.573	0.8498	0.9945	1.65000	1.84461	9.6218	14.9653	15.3620	-0.017247	-0.0057176	0.0075189	-3.2447	3.1844	-0.56124
+# CONV t=55.00 cond=16.0045 evap=0 rough=0 back_s=0
+# LEDGER t=55.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=2750 E0_int=10160750000000000 sum=10160750000000000
+60.000	9738.50874	330.842427	91.035017	0.363819338	10160.75	-3.580e-15	29026	7.624	15.666	15.599	0.083	22.1469	0.8452	31.294	0.8497	0.9946	1.65000	1.84458	9.7020	15.0259	15.3462	0.011375	0.094696	0.037937	-1.84	0.56796	-0.2395
+# CONV t=60.00 cond=16.6084 evap=0 rough=0 back_s=0
+# LEDGER t=60.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=3000 E0_int=10160750000000000 sum=10160750000000000
+65.000	9738.46344	341.882115	80.1168609	0.287586685	10160.75	-3.938e-15	29025	7.646	15.631	15.694	0.082	22.0567	0.8452	31.62	0.8497	0.9947	1.65000	1.84458	9.7684	15.1325	15.3552	-0.020821	-0.0059872	-0.0064208	-3.0896	2.6595	-0.55457
+# CONV t=65.00 cond=16.9104 evap=0 rough=0 back_s=0
+# LEDGER t=65.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=3250 E0_int=10160750000000000 sum=10160750000000000
+70.000	9738.46344	350.795777	71.0437757	0.447010249	10160.75	-2.864e-15	29024	7.650	15.626	15.670	0.084	21.3888	0.8453	31.642	0.8497	0.9948	1.65000	1.84458	9.8335	15.2430	15.4648	-0.009592	-0.051426	0.0036989	-1.6694	0.7029	1.6346
+# CONV t=70.00 cond=16.9104 evap=0 rough=0 back_s=0
+# LEDGER t=70.000 mode=3 sum_err=0 max|E-iEu|=4.999e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=3500 E0_int=10160750000000000 sum=10160750000000000
+# RESULT es_shells 0.94:1.0012 2.81:1.0011 4.69:1.0003 6.56:0.9970 8.44:0.9986 10.31:0.9997 12.19:1.0009 14.06:1.0068
+# RESULT LEDGER mode=3 E0_int=10160750000000000 sum_int=10160750000000000 max_sum_err=0 max|E-iEu|=1.500e-12 steps=3500
+# RESULT conservation E0=10160.75 Efinal=10160.75 rel_drift=-2.864e-15
+# RESULT roughness_radiated=0 (dissonant dense deliveries converted to field, conserved)
+# RESULT curvature_fit defA_per_Em=0.08587 r2=0.9709 (linear defect ~ converted energy)
+# SCREEN y_center exposure predicted_cos2 (lambda=5.712)
+# SCREEN 1.88	0.1405	0.805
+# SCREEN 2.62	0.5609	0.881
+# SCREEN 3.38	0.3609	0.945
+# SCREEN 4.12	0.5888	0.988
+# SCREEN 4.88	0.4666	0.999
+# SCREEN 5.62	0.4247	0.969
+# SCREEN 6.38	0.2647	0.889
+# SCREEN 7.12	0.4675	0.756
+# SCREEN 7.88	0.4608	0.577
+# SCREEN 8.62	0.3929	0.372
+# SCREEN 9.38	0.7905	0.178
+# SCREEN 10.12	0.6411	0.040
+# SCREEN 10.88	0.8463	0.002
+# SCREEN 11.62	0.8870	0.090
+# SCREEN 12.38	0.6293	0.296
+# SCREEN 13.12	1.0662	0.568
+# SCREEN 13.88	1.2888	0.824
+# SCREEN 14.62	0.8283	0.979
+# SCREEN 15.38	0.8857	0.979
+# SCREEN 16.12	1.0315	0.824
+# SCREEN 16.88	0.8300	0.568
+# SCREEN 17.62	0.9610	0.296
+# SCREEN 18.38	0.9545	0.090
+# SCREEN 19.12	0.5710	0.002
+# SCREEN 19.88	0.4276	0.040
+# SCREEN 20.62	0.4036	0.178
+# SCREEN 21.38	0.4359	0.372
+# SCREEN 22.12	0.4227	0.577
+# SCREEN 22.88	0.2780	0.756
+# SCREEN 23.62	0.3686	0.889
+# SCREEN 24.38	0.4103	0.969
+# SCREEN 25.12	0.4402	0.999
+# SCREEN 25.88	0.6868	0.988
+# SCREEN 26.62	0.2007	0.945
+# SCREEN 27.38	0.4907	0.881
+# SCREEN 28.12	0.0945	0.805
+# RESULT fringe_visibility_central=0.086 centre_max=0.857 (n=2) first_minima=0.721 (n=6)
+# RESULT fringe_visibility_wide=-0.183 bright_mean=0.498 (n=14) dark_mean=0.721 (n=6)
+# RESULT screen_exposure=20.9991 whichpath_record A=0.0000 B=0.0000

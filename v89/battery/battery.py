@@ -90,6 +90,7 @@ def build_kernel():
 
 
 RUN_THREADS = "1"   # per-run OpenMP threads; set from --jobs in main
+EXTRAS = []         # apparatus k=v lines appended to every merged cfg
 
 
 def run_one(laws_path, variant, name):
@@ -103,6 +104,8 @@ def run_one(laws_path, variant, name):
         app = fh.read()
     with open(cfg, "w") as fh:
         fh.write(laws + "\n# --- apparatus ---\n" + app)
+        if EXTRAS:
+            fh.write("\n# --- extras ---\n" + "\n".join(EXTRAS) + "\n")
     env = dict(os.environ, OMP_NUM_THREADS=RUN_THREADS)
     with open(log, "w") as fh:
         r = subprocess.run([BIN, cfg], stdout=fh, stderr=subprocess.STDOUT,
@@ -526,10 +529,19 @@ def main():
     ap.add_argument("--jobs", type=int, default=8)
     ap.add_argument("--only", nargs="*", default=None)
     ap.add_argument("--skip-run", action="store_true")
+    ap.add_argument("--extra", nargs="*", default=[],
+                    help="apparatus k=v lines appended to every merged cfg "
+                         "(e.g. geom_relax=400); NOT law keys")
+    ap.add_argument("--tag", default="",
+                    help="suffix for the variant run dir (keeps baselines)")
     args = ap.parse_args()
 
     laws_path = os.path.join(ROOT, args.laws)
     variant = re.sub(r"^laws_|\.cfg$", "", os.path.basename(args.laws))
+    if args.tag:
+        variant = variant + "_" + args.tag
+    global EXTRAS
+    EXTRAS = args.extra
     exps = args.only if args.only else EXPS
 
     errs = purity_check(laws_path)
