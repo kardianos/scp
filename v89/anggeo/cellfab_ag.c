@@ -194,6 +194,10 @@ typedef struct {
 
 static Cfg P;
 
+/* ANGGEO kernel A: free-frame toggles (see ang_frame below) */
+static int ANG_FREE = 0;
+static int ANG_DIAG = 0;
+
 static void cfg_defaults(void)
 {
     memset(&P, 0, sizeof(P));
@@ -428,6 +432,8 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "geom_dtar")) P.geom_dtar = atof(v);
     else if (!strcmp(k, "geom_runi")) P.geom_runi = atoi(v);
     else if (!strcmp(k, "geom_lmax")) P.geom_lmax = atof(v);
+    else if (!strcmp(k, "ang_free")) ANG_FREE = atoi(v);
+    else if (!strcmp(k, "ang_diag")) ANG_DIAG = atoi(v);
     else if (!strcmp(k, "ledger_mode")) P.ledger_mode = atoi(v);
     else if (!strcmp(k, "ledger_u")) P.ledger_u = atof(v);
     else fprintf(stderr, "# WARN unknown key '%s'\n", k);
@@ -576,6 +582,34 @@ static double gate_of(double dphi)
         return r;
     }
     return pow(g, P.p_gate);
+}
+
+
+/* ANGGEO (alternative kernel A): release the seeders' rigid square
+ * frames. Both normals stay transverse to the channel (the functional
+ * requirement — the link lies in both planes, axi = 1), but their
+ * mutual angle beta is drawn free instead of enforced at 90 deg.
+ * ang_free=0 reproduces the production kernel exactly. */
+static void ang_frame(double ux, double uy, double uz,
+                      double t1x, double t1y, double t1z,
+                      double *o1x, double *o1y, double *o1z,
+                      double *o2x, double *o2y, double *o2z)
+{
+    double t2x = uy * t1z - uz * t1y;
+    double t2y = uz * t1x - ux * t1z;
+    double t2z = ux * t1y - uy * t1x;
+    if (!ANG_FREE) {
+        *o1x = t1x; *o1y = t1y; *o1z = t1z;
+        *o2x = t2x; *o2y = t2y; *o2z = t2z;
+        return;
+    }
+    double p1 = frand() * TWO_PI, p2 = frand() * TWO_PI;
+    *o1x = cos(p1) * t1x + sin(p1) * t2x;
+    *o1y = cos(p1) * t1y + sin(p1) * t2y;
+    *o1z = cos(p1) * t1z + sin(p1) * t2z;
+    *o2x = cos(p2) * t1x + sin(p2) * t2x;
+    *o2y = cos(p2) * t1y + sin(p2) * t2y;
+    *o2z = cos(p2) * t1z + sin(p2) * t2z;
 }
 
 static void rand_unit(double *x, double *y, double *z)
@@ -1099,10 +1133,9 @@ static void build_field(void)
                 double t1x = ax - dp * ux, t1y = ay - dp * uy, t1z = az - dp * uz;
                 double tn = sqrt(t1x * t1x + t1y * t1y + t1z * t1z);
                 t1x /= tn; t1y /= tn; t1z /= tn;
-                n1x[u] = t1x; n1y[u] = t1y; n1z[u] = t1z;
-                n2x[u] = uy * t1z - uz * t1y;
-                n2y[u] = uz * t1x - ux * t1z;
-                n2z[u] = ux * t1y - uy * t1x;
+                ang_frame(ux, uy, uz, t1x, t1y, t1z,
+                          &n1x[u], &n1y[u], &n1z[u],
+                          &n2x[u], &n2y[u], &n2z[u]);
             }
             double we = P.w2 / (1.0 + P.q_detune * (Em[i] / P.cap));
             th2[i] = frand() * TWO_PI;
@@ -1186,10 +1219,9 @@ static void build_field(void)
             double t1x = ax - dp2 * ux, t1y = ay - dp2 * uy, t1z = az - dp2 * uz;
             double tn = sqrt(t1x * t1x + t1y * t1y + t1z * t1z);
             t1x /= tn; t1y /= tn; t1z /= tn;
-            n1x[u] = t1x; n1y[u] = t1y; n1z[u] = t1z;
-            n2x[u] = uy * t1z - uz * t1y;
-            n2y[u] = uz * t1x - ux * t1z;
-            n2z[u] = ux * t1y - uy * t1x;
+            ang_frame(ux, uy, uz, t1x, t1y, t1z,
+                      &n1x[u], &n1y[u], &n1z[u],
+                      &n2x[u], &n2y[u], &n2z[u]);
         }
         double closure = 0;
         th2[pick[0]] = frand() * TWO_PI;
@@ -1320,10 +1352,9 @@ static void build_field(void)
                 double t1x = ax - dp2 * ux, t1y = ay - dp2 * uy, t1z = az - dp2 * uz;
                 double tn = sqrt(t1x * t1x + t1y * t1y + t1z * t1z);
                 t1x /= tn; t1y /= tn; t1z /= tn;
-                n1x[u] = t1x; n1y[u] = t1y; n1z[u] = t1z;
-                n2x[u] = uy * t1z - uz * t1y;
-                n2y[u] = uz * t1x - ux * t1z;
-                n2z[u] = ux * t1y - uy * t1x;
+                ang_frame(ux, uy, uz, t1x, t1y, t1z,
+                          &n1x[u], &n1y[u], &n1z[u],
+                          &n2x[u], &n2y[u], &n2z[u]);
             }
             /* phases: BFS over cube edges from vertex 0, seedlock each */
             int seen[8] = {0}, qb[8], hq = 0, tq = 0;
@@ -1488,10 +1519,9 @@ static void build_field(void)
             double t1x = ax - dp2 * ux, t1y = ay - dp2 * uy, t1z = az - dp2 * uz;
             double tn = sqrt(t1x * t1x + t1y * t1y + t1z * t1z);
             t1x /= tn; t1y /= tn; t1z /= tn;
-            n1x[u] = t1x; n1y[u] = t1y; n1z[u] = t1z;
-            n2x[u] = uy * t1z - uz * t1y;
-            n2y[u] = uz * t1x - ux * t1z;
-            n2z[u] = ux * t1y - uy * t1x;
+            ang_frame(ux, uy, uz, t1x, t1y, t1z,
+                      &n1x[u], &n1y[u], &n1z[u],
+                      &n2x[u], &n2y[u], &n2z[u]);
             th2[u] = fmod(vth[k] + 8.0 * TWO_PI, TWO_PI);
         }
         double gmin = 1, gsum = 0; int gn = 0;
@@ -3168,6 +3198,18 @@ static void diag_row(double t)
     }
     if (P.pin_net && net_nv > 0)
         printf("# PIN t=%.2f R=%.9g nv=%d\n", t, pin_R(), net_nv);
+    if (ANG_DIAG) {
+        double sa = 0, sl = 0; long na = 0, nl = 0;
+        for (int i = 0; i < NC; i++) {
+            if (cflag[i]) continue;
+            double cb = fabs(n1x[i] * n2x[i] + n1y[i] * n2y[i]
+                             + n1z[i] * n2z[i]);
+            sa += cb; na++;
+            if (Em[i] > 0.05) { sl += cb; nl++; }
+        }
+        printf("# ANG t=%.2f mean|cosb|=%.4f n=%ld loaded|cosb|=%.4f nl=%ld\n",
+               t, na ? sa / na : 0, na, nl ? sl / nl : 0, nl);
+    }
     if (P.slip_diag && slip_lf) {
         for (int e = 0; e < net_ne; e++) {
             if (slip_lf[e] < 0) continue;

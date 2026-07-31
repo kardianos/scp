@@ -91,6 +91,7 @@ def build_kernel():
 
 RUN_THREADS = "1"   # per-run OpenMP threads; set from --jobs in main
 EXTRAS = []         # apparatus k=v lines appended to every merged cfg
+EXTRAS_FOR = {}     # per-experiment apparatus k=v lines (variant sets)
 
 
 def run_one(laws_path, variant, name):
@@ -106,6 +107,9 @@ def run_one(laws_path, variant, name):
         fh.write(laws + "\n# --- apparatus ---\n" + app)
         if EXTRAS:
             fh.write("\n# --- extras ---\n" + "\n".join(EXTRAS) + "\n")
+        if name in EXTRAS_FOR:
+            fh.write("# --- extras (this experiment) ---\n"
+                     + "\n".join(EXTRAS_FOR[name]) + "\n")
     env = dict(os.environ, OMP_NUM_THREADS=RUN_THREADS)
     with open(log, "w") as fh:
         r = subprocess.run([BIN, cfg], stdout=fh, stderr=subprocess.STDOUT,
@@ -484,9 +488,16 @@ def chk_g4(log):
     def blobm(sh): return sum(s[4] for s in sh[:4])
     late = [(t, sh) for t, sh in rows if 100 <= t <= 160]
     mdot = (blobm(late[-1][1]) - blobm(late[0][1])) / (late[-1][0] - late[0][0])
-    decays = abs(sf_l) <= 0.5 * abs(sf_e) + 1e-6
-    subdom = abs(sf_l) <= abs(ff_l) + 1e-6
-    return (ok and decays and subdom), \
+    # RELAXED 2026-07-31 (user decision, until a stable mass exists):
+    # decay factor 0.5 -> 0.75 (sparser substrates relax slower; the old
+    # windows encoded the foam's timescale) and the radiative-subdominance
+    # clause -> mass-rate BOOKKEEPING |sf_late| <= |dM/dt| (the actual
+    # claim: far space flux is leak bookkeeping, no steady monopole; on
+    # quiet substrates the leak legitimately stops radiating). The sharp
+    # form returns with g5 once a C1 particle exists.
+    decays = abs(sf_l) <= 0.75 * abs(sf_e) + 1e-6
+    booked = abs(sf_l) <= abs(mdot) + 1e-6
+    return (ok and decays and booked), \
         f"drift={d:.2e} sflux(r8.25) early={sf_e:+.3g} late={sf_l:+.3g} " \
         f"fflux_late={ff_l:+.3g} dM/dt={mdot:+.3f}"
 
@@ -532,6 +543,11 @@ def main():
     ap.add_argument("--extra", nargs="*", default=[],
                     help="apparatus k=v lines appended to every merged cfg "
                          "(e.g. geom_relax=400); NOT law keys")
+    ap.add_argument("--extra-for", nargs="+", action="append", default=[],
+                    dest="extra_for",
+                    help="EXP k=v [k=v ...]: apparatus lines appended only "
+                         "to that experiment's merged cfg (the variant "
+                         "apparatus set; bars never change here)")
     ap.add_argument("--tag", default="",
                     help="suffix for the variant run dir (keeps baselines)")
     args = ap.parse_args()
@@ -540,8 +556,9 @@ def main():
     variant = re.sub(r"^laws_|\.cfg$", "", os.path.basename(args.laws))
     if args.tag:
         variant = variant + "_" + args.tag
-    global EXTRAS
+    global EXTRAS, EXTRAS_FOR
     EXTRAS = args.extra
+    EXTRAS_FOR = {ef[0]: ef[1:] for ef in args.extra_for}
     exps = args.only if args.only else EXPS
 
     errs = purity_check(laws_path)

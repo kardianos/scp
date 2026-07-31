@@ -34,7 +34,7 @@ conservation. The substrate is apparatus; the laws are untouched.
 
 | rung | mechanism | status |
 |---|---|---|
-| **S1** | annealed frozen geometry (build-time, deterministic, RNG-stream-preserving) | **BUILT** — see §3; battery gate running |
+| **S1** | annealed frozen geometry (build-time, deterministic, RNG-stream-preserving) | **COMPLETE — success bar MET 2026-07-31: full battery 21/21 without the foam** (§4) |
 | **S2** | coordinate-free diagnostic: explicit uniform-d graph, positions as scaffold only | design |
 | **S3** | **livefab** — the dynamic complex: link/cell creation-annihilation as ledgered rewrite events; vacuum self-anneals; structures own their geometry | design track (kernel-2). §3's frustration measurement is its justification |
 

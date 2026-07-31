@@ -12,39 +12,361 @@
 # cfg music: comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004
 # cfg field sector: two-component signed amplitude, unitary hops, field_J=1.8
 # cfg ledger: mode=3 u=1.000e-12 (cellfabi INT_LEDGER)
-# cfg pairs: n=40 x0=0.2 x1=0.717 pq=3:2 seedlock=1 d=[1.28,1.42] gap=5
+# cfg pairs: n=40 x0=0.3513 x1=0.9436 pq=3:2 seedlock=1 d=[1.53,1.55] gap=5
 # GEOM relax start: NC=9741 contact_floor=1.5200 sweeps=800 k=0.3
 # GEOM relax done: residual_close_pairs=23624 (below floor 1.5200)
 # GEOM links: NL=37058 dbar=1.5437 sigma_d=0.0465 (3.01%)
 # action atom: A0=1.1500 (dbar=1.5437) mode=2 — eps(w)=A0*w/2pi; atoms at mode boundaries, transport continuous
 # edge coloring: 14 colors for 37058 links
-# pairs: seeded 0 of 40 requested, d=[1.28,1.42], x0=0.2, phases=locked
+# pairs: seeded 40 of 40 requested, d=[1.53,1.55], x0=0.351, phases=locked
 # fabric: cells=9741 channels=37058 mean_degree=7.61 box=30 dmin=1.25
-# LEDGER seed mode=3 u=1.000e-12 E0_int=9741000000000000 NC=9741 NL=37058
-# LEDGER seed mode=3 u=1.000e-12 E0_int=9741000000000000 NC=9741 NL=37058
+# LEDGER seed mode=3 u=1.000e-12 E0_int=9853600000000000 NC=9741 NL=37058
+# LEDGER seed mode=3 u=1.000e-12 E0_int=9853600000000000 NC=9741 NL=37058
 # t	E_space	E_dense	E_field	E_transfer	E_total	rel_drift	live_ch	cm_x	cm_y	cm_z	contain	front_r	r_core	defA	r_far	r_ratio	w_core	w_far
-0.000	9741	0	0	0	9741	0.000e+00	36224	0.000	0.000	0.000	0.000	0.0000	0.8431	0	0.8498	0.9921	1.65000	1.65000	0.0000	0.0000	0.0000	0	0	0	0	0	0
+0.000	9724.11	129.49	0	0	9853.6	0.000e+00	36172	14.235	15.455	15.700	0.032	0.0000	0.8431	0	0.8493	0.9928	1.65000	1.64439	0.0000	0.0000	0.0000	0	0	0	0	0	0
 # CONV t=0.00 cond=0 evap=0 rough=0 back_s=0
-# LEDGER t=0.000 mode=3 sum_err=0 max|E-iEu|=2.011e-17 run_max_diff=0.000e+00 run_max_sum_err=0 steps=0 E0_int=9741000000000000 sum=9741000000000000
-10.000	9741	0	0	0	9741	0.000e+00	36224	0.000	0.000	0.000	0.000	0.0000	0.8431	0	0.8498	0.9921	1.65000	1.65000	0.0000	0.0000	0.0000	0	0	0	0	0	0
+# LEDGER t=0.000 mode=3 sum_err=0 max|E-iEu|=8.698e-14 run_max_diff=0.000e+00 run_max_sum_err=0 steps=0 E0_int=9853600000000000 sum=9853600000000000
+# PAIR t=0.0 p=0 d=1.540 pq=3:2 delta=+0.002 x=0.647 ratio=1.5000 dth=-0.000 gg=1.0000 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=1 d=1.532 pq=3:2 delta=-0.068 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9909 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=2 d=1.534 pq=3:2 delta=-0.049 x=0.647 ratio=1.5000 dth=-0.000 gg=0.9952 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=3 d=1.537 pq=3:2 delta=-0.028 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9984 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=4 d=1.533 pq=3:2 delta=-0.054 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9942 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=5 d=1.540 pq=3:2 delta=-0.001 x=0.647 ratio=1.5000 dth=-0.000 gg=1.0000 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=6 d=1.537 pq=3:2 delta=-0.025 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9988 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=7 d=1.549 pq=3:2 delta=+0.074 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9892 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=8 d=1.540 pq=3:2 delta=+0.002 x=0.647 ratio=1.5000 dth=-0.000 gg=1.0000 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=9 d=1.549 pq=3:2 delta=+0.072 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9898 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=10 d=1.538 pq=3:2 delta=-0.018 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9994 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=11 d=1.532 pq=3:2 delta=-0.062 x=0.647 ratio=1.5000 dth=-0.000 gg=0.9923 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=12 d=1.532 pq=3:2 delta=-0.065 x=0.647 ratio=1.5000 dth=-0.000 gg=0.9917 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=13 d=1.540 pq=3:2 delta=-0.003 x=0.647 ratio=1.5000 dth=+0.000 gg=1.0000 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=14 d=1.531 pq=3:2 delta=-0.072 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9897 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=15 d=1.544 pq=3:2 delta=+0.034 x=0.647 ratio=1.5000 dth=-0.000 gg=0.9977 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=16 d=1.530 pq=3:2 delta=-0.079 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9875 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=17 d=1.531 pq=3:2 delta=-0.077 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9883 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=18 d=1.541 pq=3:2 delta=+0.012 x=0.647 ratio=1.5000 dth=-0.000 gg=0.9997 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=19 d=1.535 pq=3:2 delta=-0.043 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9963 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=20 d=1.536 pq=3:2 delta=-0.035 x=0.647 ratio=1.5000 dth=-0.000 gg=0.9976 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=21 d=1.537 pq=3:2 delta=-0.022 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9990 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=22 d=1.545 pq=3:2 delta=+0.044 x=0.647 ratio=1.5000 dth=-0.000 gg=0.9962 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=23 d=1.535 pq=3:2 delta=-0.040 x=0.647 ratio=1.5000 dth=-0.000 gg=0.9969 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=24 d=1.535 pq=3:2 delta=-0.042 x=0.647 ratio=1.5000 dth=-0.000 gg=0.9964 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=25 d=1.538 pq=3:2 delta=-0.016 x=0.647 ratio=1.5000 dth=-0.000 gg=0.9995 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=26 d=1.544 pq=3:2 delta=+0.031 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9980 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=27 d=1.545 pq=3:2 delta=+0.038 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9971 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=28 d=1.530 pq=3:2 delta=-0.081 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9869 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=29 d=1.534 pq=3:2 delta=-0.049 x=0.647 ratio=1.5000 dth=-0.000 gg=0.9953 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=30 d=1.535 pq=3:2 delta=-0.037 x=0.647 ratio=1.5000 dth=-0.000 gg=0.9973 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=31 d=1.545 pq=3:2 delta=+0.043 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9963 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=32 d=1.536 pq=3:2 delta=-0.032 x=0.647 ratio=1.5000 dth=-0.000 gg=0.9979 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=33 d=1.538 pq=3:2 delta=-0.013 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9997 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=34 d=1.534 pq=3:2 delta=-0.045 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9959 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=35 d=1.542 pq=3:2 delta=+0.014 x=0.647 ratio=1.5000 dth=-0.000 gg=0.9996 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=36 d=1.533 pq=3:2 delta=-0.060 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9927 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=37 d=1.534 pq=3:2 delta=-0.050 x=0.647 ratio=1.5000 dth=-0.000 gg=0.9951 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=38 d=1.539 pq=3:2 delta=-0.012 x=0.647 ratio=1.5000 dth=-0.000 gg=0.9997 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+# PAIR t=0.0 p=39 d=1.541 pq=3:2 delta=+0.012 x=0.647 ratio=1.5000 dth=+0.000 gg=0.9997 fl=0.000 ret=1.000 shed=0.000 act=0.0000 flq=0.00
+10.000	9724.11	129.404514	0	0.0854860306	9853.6	0.000e+00	36129	14.235	15.456	15.702	0.032	0.0000	0.8434	2.456	0.8492	0.9931	1.64999	1.64437	0.0000	0.0000	0.0000	-0.0024911	-0.0049167	0.0015782	0	0	0
 # CONV t=10.00 cond=0 evap=0 rough=0 back_s=0
-# LEDGER t=10.000 mode=3 sum_err=0 max|E-iEu|=2.011e-17 run_max_diff=0.000e+00 run_max_sum_err=0 steps=500 E0_int=9741000000000000 sum=9741000000000000
-20.000	9741	0	0	0	9741	0.000e+00	36224	0.000	0.000	0.000	0.000	0.0000	0.8431	0	0.8498	0.9921	1.65000	1.65000	0.0000	0.0000	0.0000	0	0	0	0	0	0
+# LEDGER t=10.000 mode=3 sum_err=0 max|E-iEu|=2.159e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=500 E0_int=9853600000000000 sum=9853600000000000
+# PAIR t=10.0 p=0 d=1.540 pq=3:2 delta=+0.009 x=0.646 ratio=1.4979 dth=-0.040 gg=0.9949 fl=0.001 ret=0.998 shed=0.005 act=0.0101 flq=0.01
+# PAIR t=10.0 p=1 d=1.532 pq=3:2 delta=-0.073 x=0.647 ratio=1.4886 dth=-0.234 gg=0.7417 fl=0.000 ret=0.999 shed=0.003 act=0.0000 flq=0.00
+# PAIR t=10.0 p=2 d=1.534 pq=1:1 delta=-1.084 x=0.646 ratio=1.4681 dth=-0.675 gg=0.0003 fl=0.000 ret=0.997 shed=0.009 act=0.0001 flq=0.00
+# PAIR t=10.0 p=3 d=1.537 pq=3:2 delta=-0.027 x=0.647 ratio=1.4976 dth=-0.062 gg=0.9766 fl=0.000 ret=0.999 shed=0.002 act=0.0001 flq=0.00
+# PAIR t=10.0 p=4 d=1.533 pq=1:1 delta=-1.084 x=0.646 ratio=1.4746 dth=-0.714 gg=0.0002 fl=0.000 ret=0.998 shed=0.005 act=0.0000 flq=0.00
+# PAIR t=10.0 p=5 d=1.540 pq=1:1 delta=-1.056 x=0.647 ratio=1.4837 dth=-0.019 gg=0.0876 fl=0.000 ret=0.999 shed=0.004 act=0.0001 flq=0.00
+# PAIR t=10.0 p=6 d=1.537 pq=3:2 delta=-0.031 x=0.647 ratio=1.4879 dth=-0.254 gg=0.7455 fl=0.000 ret=0.999 shed=0.002 act=0.0018 flq=0.00
+# PAIR t=10.0 p=7 d=1.549 pq=3:2 delta=+0.077 x=0.646 ratio=1.4895 dth=-0.203 gg=0.8919 fl=0.000 ret=0.998 shed=0.008 act=0.0000 flq=0.00
+# PAIR t=10.0 p=8 d=1.540 pq=3:2 delta=+0.009 x=0.646 ratio=1.4987 dth=-0.020 gg=0.9989 fl=0.000 ret=0.998 shed=0.005 act=0.0000 flq=0.00
+# PAIR t=10.0 p=9 d=1.549 pq=3:2 delta=+0.071 x=0.647 ratio=1.4966 dth=-0.079 gg=0.9875 fl=0.000 ret=1.000 shed=0.001 act=0.0004 flq=0.00
+# PAIR t=10.0 p=10 d=1.538 pq=1:1 delta=-1.065 x=0.647 ratio=1.4813 dth=+0.819 gg=0.2229 fl=0.000 ret=0.999 shed=0.004 act=0.0000 flq=0.00
+# PAIR t=10.0 p=11 d=1.532 pq=1:1 delta=-1.081 x=0.646 ratio=1.4826 dth=+1.355 gg=0.0159 fl=0.000 ret=0.998 shed=0.007 act=0.0000 flq=0.00
+# PAIR t=10.0 p=12 d=1.532 pq=3:2 delta=-0.056 x=0.646 ratio=1.4987 dth=-0.006 gg=0.9923 fl=0.000 ret=0.998 shed=0.007 act=0.0000 flq=0.00
+# PAIR t=10.0 p=13 d=1.540 pq=1:1 delta=-1.058 x=0.647 ratio=1.4841 dth=+0.406 gg=0.3022 fl=0.000 ret=0.999 shed=0.003 act=0.0000 flq=0.00
+# PAIR t=10.0 p=14 d=1.531 pq=1:1 delta=-1.086 x=0.647 ratio=1.4835 dth=-0.090 gg=0.0520 fl=0.000 ret=0.999 shed=0.003 act=0.0000 flq=0.00
+# PAIR t=10.0 p=15 d=1.544 pq=3:2 delta=+0.037 x=0.647 ratio=1.5003 dth=+0.001 gg=0.9971 fl=0.000 ret=0.999 shed=0.002 act=0.0000 flq=0.00
+# PAIR t=10.0 p=16 d=1.530 pq=3:2 delta=-0.078 x=0.647 ratio=1.5001 dth=+0.001 gg=0.9884 fl=0.000 ret=1.000 shed=0.001 act=0.0000 flq=0.00
+# PAIR t=10.0 p=17 d=1.531 pq=1:1 delta=-1.094 x=0.647 ratio=1.4767 dth=-0.610 gg=0.0006 fl=0.000 ret=0.999 shed=0.002 act=0.0001 flq=0.00
+# PAIR t=10.0 p=18 d=1.541 pq=1:1 delta=-1.054 x=0.646 ratio=1.4778 dth=+0.300 gg=0.2603 fl=0.000 ret=0.998 shed=0.005 act=0.0002 flq=0.00
+# PAIR t=10.0 p=19 d=1.535 pq=1:1 delta=-1.072 x=0.646 ratio=1.4831 dth=+1.380 gg=0.0130 fl=0.000 ret=0.998 shed=0.008 act=0.0000 flq=0.00
+# PAIR t=10.0 p=20 d=1.536 pq=1:1 delta=-1.066 x=0.645 ratio=1.4809 dth=+1.332 gg=0.0186 fl=0.000 ret=0.996 shed=0.014 act=0.0000 flq=0.00
+# PAIR t=10.0 p=21 d=1.537 pq=1:1 delta=-1.072 x=0.647 ratio=1.4753 dth=-0.092 gg=0.0553 fl=0.000 ret=1.000 shed=0.002 act=0.0002 flq=0.00
+# PAIR t=10.0 p=22 d=1.545 pq=1:1 delta=-1.040 x=0.646 ratio=1.4769 dth=-0.372 gg=0.0096 fl=0.000 ret=0.998 shed=0.008 act=0.0000 flq=0.00
+# PAIR t=10.0 p=23 d=1.535 pq=1:1 delta=-1.073 x=0.647 ratio=1.4837 dth=+1.123 gg=0.0693 fl=0.000 ret=0.999 shed=0.002 act=0.0000 flq=0.00
+# PAIR t=10.0 p=24 d=1.535 pq=1:1 delta=-1.072 x=0.646 ratio=1.4826 dth=+1.076 gg=0.0876 fl=0.000 ret=0.998 shed=0.006 act=0.0000 flq=0.00
+# PAIR t=10.0 p=25 d=1.538 pq=1:1 delta=-1.065 x=0.646 ratio=1.4774 dth=+0.292 gg=0.2469 fl=0.000 ret=0.998 shed=0.006 act=0.0001 flq=0.00
+# PAIR t=10.0 p=26 d=1.544 pq=1:1 delta=-1.044 x=0.647 ratio=1.4822 dth=-0.030 gg=0.0881 fl=0.000 ret=0.999 shed=0.004 act=0.0001 flq=0.00
+# PAIR t=10.0 p=27 d=1.545 pq=3:2 delta=+0.042 x=0.647 ratio=1.5000 dth=-0.005 gg=0.9972 fl=0.000 ret=0.999 shed=0.003 act=0.0000 flq=0.00
+# PAIR t=10.0 p=28 d=1.530 pq=1:1 delta=-1.096 x=0.647 ratio=1.4756 dth=+0.082 gg=0.1147 fl=0.000 ret=0.999 shed=0.002 act=0.0004 flq=0.00
+# PAIR t=10.0 p=29 d=1.534 pq=3:2 delta=-0.054 x=0.647 ratio=1.4920 dth=-0.171 gg=0.8520 fl=0.000 ret=1.000 shed=0.001 act=0.0005 flq=0.00
+# PAIR t=10.0 p=30 d=1.535 pq=3:2 delta=-0.035 x=0.646 ratio=1.4867 dth=-0.275 gg=0.7085 fl=0.000 ret=0.998 shed=0.008 act=0.0007 flq=0.00
+# PAIR t=10.0 p=31 d=1.545 pq=3:2 delta=+0.050 x=0.646 ratio=1.4942 dth=-0.115 gg=0.9656 fl=0.000 ret=0.998 shed=0.007 act=0.0001 flq=0.00
+# PAIR t=10.0 p=32 d=1.536 pq=3:2 delta=-0.031 x=0.646 ratio=1.4902 dth=-0.196 gg=0.8359 fl=0.000 ret=0.998 shed=0.006 act=0.0043 flq=0.00
+# PAIR t=10.0 p=33 d=1.538 pq=1:1 delta=-1.063 x=0.647 ratio=1.4816 dth=-0.032 gg=0.0793 fl=0.000 ret=0.999 shed=0.003 act=0.0000 flq=0.00
+# PAIR t=10.0 p=34 d=1.534 pq=1:1 delta=-1.076 x=0.647 ratio=1.4831 dth=-0.601 gg=0.0008 fl=0.000 ret=0.999 shed=0.003 act=0.0000 flq=0.00
+# PAIR t=10.0 p=35 d=1.542 pq=1:1 delta=-1.052 x=0.647 ratio=1.4811 dth=+0.694 gg=0.2891 fl=0.000 ret=0.999 shed=0.003 act=0.0003 flq=0.00
+# PAIR t=10.0 p=36 d=1.533 pq=1:1 delta=-1.092 x=0.647 ratio=1.4697 dth=+0.226 gg=0.1917 fl=0.000 ret=0.999 shed=0.002 act=0.0006 flq=0.00
+# PAIR t=10.0 p=37 d=1.534 pq=3:2 delta=-0.057 x=0.647 ratio=1.4850 dth=-0.307 gg=0.6350 fl=0.000 ret=0.999 shed=0.003 act=0.0005 flq=0.00
+# PAIR t=10.0 p=38 d=1.539 pq=3:2 delta=-0.010 x=0.647 ratio=1.5001 dth=+0.001 gg=0.9998 fl=0.000 ret=1.000 shed=0.001 act=0.0000 flq=0.00
+# PAIR t=10.0 p=39 d=1.541 pq=3:2 delta=+0.015 x=0.647 ratio=1.4991 dth=-0.027 gg=0.9982 fl=0.001 ret=0.999 shed=0.002 act=0.0083 flq=0.01
+20.000	9724.11	129.408596	0	0.0814034718	9853.6	0.000e+00	36098	14.235	15.455	15.701	0.032	0.0000	0.8435	2.2264	0.8492	0.9932	1.64998	1.64436	0.0000	0.0000	0.0000	-0.0047171	-0.000155	0.0029397	0	0	0
 # CONV t=20.00 cond=0 evap=0 rough=0 back_s=0
-# LEDGER t=20.000 mode=3 sum_err=0 max|E-iEu|=2.011e-17 run_max_diff=0.000e+00 run_max_sum_err=0 steps=1000 E0_int=9741000000000000 sum=9741000000000000
-30.000	9741	0	0	0	9741	0.000e+00	36224	0.000	0.000	0.000	0.000	0.0000	0.8431	0	0.8498	0.9921	1.65000	1.65000	0.0000	0.0000	0.0000	0	0	0	0	0	0
+# LEDGER t=20.000 mode=3 sum_err=0 max|E-iEu|=2.201e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=1000 E0_int=9853600000000000 sum=9853600000000000
+# PAIR t=20.0 p=0 d=1.540 pq=3:2 delta=+0.012 x=0.646 ratio=1.4982 dth=-0.097 gg=0.9671 fl=0.001 ret=0.998 shed=0.007 act=0.0101 flq=0.01
+# PAIR t=20.0 p=1 d=1.532 pq=3:2 delta=-0.063 x=0.646 ratio=1.4873 dth=-0.574 gg=0.2246 fl=0.000 ret=0.997 shed=0.009 act=0.0000 flq=0.00
+# PAIR t=20.0 p=2 d=1.534 pq=1:1 delta=-1.078 x=0.643 ratio=1.4637 dth=-0.558 gg=0.0012 fl=0.000 ret=0.994 shed=0.020 act=0.0000 flq=0.00
+# PAIR t=20.0 p=3 d=1.537 pq=3:2 delta=-0.019 x=0.646 ratio=1.4975 dth=-0.128 gg=0.9269 fl=0.000 ret=0.998 shed=0.007 act=0.0001 flq=0.00
+# PAIR t=20.0 p=4 d=1.533 pq=1:1 delta=-1.080 x=0.645 ratio=1.4731 dth=-0.504 gg=0.0021 fl=0.000 ret=0.996 shed=0.011 act=0.0000 flq=0.00
+# PAIR t=20.0 p=5 d=1.540 pq=1:1 delta=-1.055 x=0.646 ratio=1.4843 dth=+0.311 gg=0.2653 fl=0.000 ret=0.998 shed=0.005 act=0.0000 flq=0.00
+# PAIR t=20.0 p=6 d=1.537 pq=3:2 delta=-0.025 x=0.646 ratio=1.4872 dth=-0.591 gg=0.2280 fl=0.000 ret=0.998 shed=0.007 act=0.0018 flq=0.00
+# PAIR t=20.0 p=7 d=1.549 pq=3:2 delta=+0.084 x=0.645 ratio=1.4885 dth=-0.514 gg=0.4039 fl=0.000 ret=0.996 shed=0.012 act=0.0000 flq=0.00
+# PAIR t=20.0 p=8 d=1.540 pq=3:2 delta=+0.011 x=0.646 ratio=1.4985 dth=-0.058 gg=0.9891 fl=0.000 ret=0.998 shed=0.007 act=0.0000 flq=0.00
+# PAIR t=20.0 p=9 d=1.549 pq=3:2 delta=+0.076 x=0.646 ratio=1.4960 dth=-0.178 gg=0.9191 fl=0.000 ret=0.998 shed=0.005 act=0.0004 flq=0.00
+# PAIR t=20.0 p=10 d=1.538 pq=1:1 delta=-1.061 x=0.646 ratio=1.4805 dth=+1.113 gg=0.0725 fl=0.000 ret=0.997 shed=0.010 act=0.0001 flq=0.00
+# PAIR t=20.0 p=11 d=1.532 pq=1:1 delta=-1.077 x=0.645 ratio=1.4817 dth=+1.665 gg=0.0009 fl=0.000 ret=0.996 shed=0.012 act=0.0000 flq=0.00
+# PAIR t=20.0 p=12 d=1.532 pq=3:2 delta=-0.040 x=0.644 ratio=1.4957 dth=-0.100 gg=0.9425 fl=0.000 ret=0.995 shed=0.016 act=0.0000 flq=0.00
+# PAIR t=20.0 p=13 d=1.540 pq=1:1 delta=-1.054 x=0.646 ratio=1.4832 dth=+0.735 gg=0.2698 fl=0.000 ret=0.997 shed=0.010 act=0.0000 flq=0.00
+# PAIR t=20.0 p=14 d=1.531 pq=1:1 delta=-1.084 x=0.646 ratio=1.4837 dth=+0.237 gg=0.2038 fl=0.000 ret=0.998 shed=0.007 act=0.0000 flq=0.00
+# PAIR t=20.0 p=15 d=1.544 pq=3:2 delta=+0.040 x=0.647 ratio=1.5006 dth=+0.013 gg=0.9941 fl=0.000 ret=0.999 shed=0.003 act=0.0000 flq=0.00
+# PAIR t=20.0 p=16 d=1.530 pq=3:2 delta=-0.072 x=0.646 ratio=1.4995 dth=-0.009 gg=0.9868 fl=0.000 ret=0.998 shed=0.005 act=0.0000 flq=0.00
+# PAIR t=20.0 p=17 d=1.531 pq=1:1 delta=-1.093 x=0.647 ratio=1.4762 dth=-0.372 gg=0.0066 fl=0.000 ret=0.999 shed=0.003 act=0.0000 flq=0.00
+# PAIR t=20.0 p=18 d=1.541 pq=1:1 delta=-1.053 x=0.646 ratio=1.4781 dth=+0.560 gg=0.3244 fl=0.000 ret=0.998 shed=0.006 act=0.0002 flq=0.00
+# PAIR t=20.0 p=19 d=1.535 pq=1:1 delta=-1.067 x=0.644 ratio=1.4815 dth=+1.695 gg=0.0006 fl=0.000 ret=0.995 shed=0.015 act=0.0000 flq=0.00
+# PAIR t=20.0 p=20 d=1.536 pq=1:1 delta=-1.061 x=0.643 ratio=1.4795 dth=+1.623 gg=0.0013 fl=0.000 ret=0.994 shed=0.021 act=0.0000 flq=0.00
+# PAIR t=20.0 p=21 d=1.537 pq=1:1 delta=-1.070 x=0.646 ratio=1.4723 dth=+0.116 gg=0.1465 fl=0.000 ret=0.997 shed=0.008 act=0.0000 flq=0.00
+# PAIR t=20.0 p=22 d=1.545 pq=1:1 delta=-1.037 x=0.645 ratio=1.4760 dth=-0.129 gg=0.0540 fl=0.000 ret=0.996 shed=0.012 act=0.0000 flq=0.00
+# PAIR t=20.0 p=23 d=1.535 pq=1:1 delta=-1.072 x=0.647 ratio=1.4836 dth=+1.447 gg=0.0074 fl=0.000 ret=0.999 shed=0.005 act=0.0000 flq=0.00
+# PAIR t=20.0 p=24 d=1.535 pq=1:1 delta=-1.071 x=0.646 ratio=1.4824 dth=+1.391 gg=0.0119 fl=0.000 ret=0.997 shed=0.008 act=0.0000 flq=0.00
+# PAIR t=20.0 p=25 d=1.538 pq=1:1 delta=-1.061 x=0.644 ratio=1.4748 dth=+0.531 gg=0.3203 fl=0.000 ret=0.995 shed=0.015 act=0.0000 flq=0.00
+# PAIR t=20.0 p=26 d=1.544 pq=1:1 delta=-1.043 x=0.646 ratio=1.4826 dth=+0.280 gg=0.2594 fl=0.000 ret=0.998 shed=0.005 act=0.0004 flq=0.00
+# PAIR t=20.0 p=27 d=1.545 pq=3:2 delta=+0.045 x=0.647 ratio=1.5006 dth=+0.002 gg=0.9956 fl=0.000 ret=0.999 shed=0.004 act=0.0000 flq=0.00
+# PAIR t=20.0 p=28 d=1.530 pq=1:1 delta=-1.095 x=0.647 ratio=1.4745 dth=+0.303 gg=0.2290 fl=0.000 ret=0.999 shed=0.005 act=0.0000 flq=0.00
+# PAIR t=20.0 p=29 d=1.534 pq=3:2 delta=-0.051 x=0.647 ratio=1.4920 dth=-0.391 gg=0.4960 fl=0.000 ret=0.999 shed=0.003 act=0.0005 flq=0.00
+# PAIR t=20.0 p=30 d=1.535 pq=3:2 delta=-0.031 x=0.645 ratio=1.4868 dth=-0.641 gg=0.1731 fl=0.000 ret=0.997 shed=0.010 act=0.0007 flq=0.00
+# PAIR t=20.0 p=31 d=1.545 pq=3:2 delta=+0.054 x=0.646 ratio=1.4940 dth=-0.279 gg=0.7729 fl=0.000 ret=0.997 shed=0.010 act=0.0001 flq=0.00
+# PAIR t=20.0 p=32 d=1.536 pq=3:2 delta=-0.026 x=0.646 ratio=1.4901 dth=-0.472 gg=0.3870 fl=0.000 ret=0.997 shed=0.009 act=0.0043 flq=0.00
+# PAIR t=20.0 p=33 d=1.538 pq=1:1 delta=-1.061 x=0.646 ratio=1.4801 dth=+0.262 gg=0.2349 fl=0.000 ret=0.997 shed=0.008 act=0.0000 flq=0.00
+# PAIR t=20.0 p=34 d=1.534 pq=1:1 delta=-1.074 x=0.647 ratio=1.4836 dth=-0.279 gg=0.0159 fl=0.000 ret=0.999 shed=0.004 act=0.0000 flq=0.00
+# PAIR t=20.0 p=35 d=1.542 pq=1:1 delta=-1.050 x=0.646 ratio=1.4803 dth=+0.983 gg=0.1319 fl=0.000 ret=0.998 shed=0.006 act=0.0000 flq=0.00
+# PAIR t=20.0 p=36 d=1.533 pq=1:1 delta=-1.087 x=0.645 ratio=1.4644 dth=+0.349 gg=0.2566 fl=0.000 ret=0.996 shed=0.013 act=0.0001 flq=0.00
+# PAIR t=20.0 p=37 d=1.534 pq=3:2 delta=-0.052 x=0.646 ratio=1.4856 dth=-0.711 gg=0.1077 fl=0.000 ret=0.998 shed=0.006 act=0.0005 flq=0.00
+# PAIR t=20.0 p=38 d=1.539 pq=3:2 delta=-0.002 x=0.646 ratio=1.4987 dth=-0.018 gg=0.9985 fl=0.000 ret=0.998 shed=0.006 act=0.0000 flq=0.00
+# PAIR t=20.0 p=39 d=1.541 pq=3:2 delta=+0.029 x=0.645 ratio=1.4967 dth=-0.081 gg=0.9819 fl=0.001 ret=0.996 shed=0.012 act=0.0083 flq=0.01
+30.000	9724.11	129.335258	0	0.154742213	9853.6	0.000e+00	36072	14.234	15.455	15.701	0.032	0.0000	0.8435	1.2823	0.8492	0.9933	1.64996	1.64435	0.0000	0.0000	0.0000	-0.00014498	-0.0054281	0.00023333	0	0	0
 # CONV t=30.00 cond=0 evap=0 rough=0 back_s=0
-# LEDGER t=30.000 mode=3 sum_err=0 max|E-iEu|=2.011e-17 run_max_diff=0.000e+00 run_max_sum_err=0 steps=1500 E0_int=9741000000000000 sum=9741000000000000
-40.000	9741	0	0	0	9741	0.000e+00	36224	0.000	0.000	0.000	0.000	0.0000	0.8431	0	0.8498	0.9921	1.65000	1.65000	0.0000	0.0000	0.0000	0	0	0	0	0	0
+# LEDGER t=30.000 mode=3 sum_err=0 max|E-iEu|=2.220e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=1500 E0_int=9853600000000000 sum=9853600000000000
+# PAIR t=30.0 p=0 d=1.540 pq=3:2 delta=+0.015 x=0.646 ratio=1.4987 dth=-0.141 gg=0.9310 fl=0.001 ret=0.997 shed=0.008 act=0.0101 flq=0.01
+# PAIR t=30.0 p=1 d=1.532 pq=3:2 delta=-0.061 x=0.646 ratio=1.4878 dth=-0.917 gg=0.0238 fl=0.000 ret=0.997 shed=0.010 act=0.0000 flq=0.00
+# PAIR t=30.0 p=2 d=1.534 pq=1:1 delta=-1.077 x=0.643 ratio=1.4642 dth=-0.453 gg=0.0036 fl=0.000 ret=0.993 shed=0.022 act=0.0000 flq=0.00
+# PAIR t=30.0 p=3 d=1.537 pq=3:2 delta=-0.015 x=0.646 ratio=1.4979 dth=-0.195 gg=0.8486 fl=0.000 ret=0.997 shed=0.009 act=0.0001 flq=0.00
+# PAIR t=30.0 p=4 d=1.533 pq=1:1 delta=-1.079 x=0.645 ratio=1.4728 dth=-0.298 gg=0.0134 fl=0.000 ret=0.996 shed=0.014 act=0.0000 flq=0.00
+# PAIR t=30.0 p=5 d=1.540 pq=1:1 delta=-1.053 x=0.646 ratio=1.4849 dth=+0.650 gg=0.3047 fl=0.000 ret=0.998 shed=0.007 act=0.0000 flq=0.00
+# PAIR t=30.0 p=6 d=1.537 pq=3:2 delta=-0.018 x=0.645 ratio=1.4863 dth=-0.961 gg=0.0198 fl=0.000 ret=0.997 shed=0.010 act=0.0018 flq=0.00
+# PAIR t=30.0 p=7 d=1.549 pq=3:2 delta=+0.087 x=0.645 ratio=1.4889 dth=-0.824 gg=0.0812 fl=0.000 ret=0.996 shed=0.013 act=0.0000 flq=0.00
+# PAIR t=30.0 p=8 d=1.540 pq=3:2 delta=+0.013 x=0.646 ratio=1.4984 dth=-0.102 gg=0.9643 fl=0.000 ret=0.998 shed=0.007 act=0.0000 flq=0.00
+# PAIR t=30.0 p=9 d=1.549 pq=3:2 delta=+0.086 x=0.645 ratio=1.4944 dth=-0.320 gg=0.7294 fl=0.000 ret=0.997 shed=0.011 act=0.0004 flq=0.00
+# PAIR t=30.0 p=10 d=1.538 pq=1:1 delta=-1.060 x=0.645 ratio=1.4811 dth=+1.410 gg=0.0100 fl=0.000 ret=0.997 shed=0.011 act=0.0001 flq=0.00
+# PAIR t=30.0 p=11 d=1.532 pq=1:1 delta=-1.074 x=0.644 ratio=1.4804 dth=+1.970 gg=0.0000 fl=0.000 ret=0.994 shed=0.018 act=0.0000 flq=0.00
+# PAIR t=30.0 p=12 d=1.532 pq=3:2 delta=-0.038 x=0.644 ratio=1.4962 dth=-0.212 gg=0.8057 fl=0.000 ret=0.995 shed=0.017 act=0.0000 flq=0.00
+# PAIR t=30.0 p=13 d=1.540 pq=1:1 delta=-1.051 x=0.645 ratio=1.4829 dth=+1.058 gg=0.0951 fl=0.000 ret=0.996 shed=0.013 act=0.0000 flq=0.00
+# PAIR t=30.0 p=14 d=1.531 pq=1:1 delta=-1.077 x=0.644 ratio=1.4808 dth=+0.553 gg=0.3086 fl=0.000 ret=0.994 shed=0.019 act=0.0000 flq=0.00
+# PAIR t=30.0 p=15 d=1.544 pq=3:2 delta=+0.042 x=0.647 ratio=1.5009 dth=+0.032 gg=0.9870 fl=0.000 ret=0.999 shed=0.005 act=0.0000 flq=0.00
+# PAIR t=30.0 p=16 d=1.530 pq=3:2 delta=-0.070 x=0.646 ratio=1.4998 dth=-0.021 gg=0.9825 fl=0.000 ret=0.998 shed=0.005 act=0.0000 flq=0.00
+# PAIR t=30.0 p=17 d=1.531 pq=1:1 delta=-1.091 x=0.646 ratio=1.4768 dth=-0.131 gg=0.0395 fl=0.000 ret=0.998 shed=0.005 act=0.0000 flq=0.00
+# PAIR t=30.0 p=18 d=1.541 pq=1:1 delta=-1.048 x=0.645 ratio=1.4763 dth=+0.817 gg=0.2274 fl=0.000 ret=0.995 shed=0.015 act=0.0002 flq=0.00
+# PAIR t=30.0 p=19 d=1.535 pq=1:1 delta=-1.065 x=0.644 ratio=1.4819 dth=+2.007 gg=0.0000 fl=0.000 ret=0.994 shed=0.018 act=0.0000 flq=0.00
+# PAIR t=30.0 p=20 d=1.536 pq=1:1 delta=-1.058 x=0.642 ratio=1.4794 dth=+1.919 gg=0.0000 fl=0.000 ret=0.992 shed=0.026 act=0.0000 flq=0.00
+# PAIR t=30.0 p=21 d=1.537 pq=1:1 delta=-1.066 x=0.645 ratio=1.4718 dth=+0.308 gg=0.2541 fl=0.000 ret=0.996 shed=0.013 act=0.0000 flq=0.00
+# PAIR t=30.0 p=22 d=1.545 pq=1:1 delta=-1.036 x=0.645 ratio=1.4764 dth=+0.117 gg=0.1685 fl=0.000 ret=0.996 shed=0.013 act=0.0000 flq=0.00
+# PAIR t=30.0 p=23 d=1.535 pq=1:1 delta=-1.070 x=0.646 ratio=1.4832 dth=+1.774 gg=0.0002 fl=0.000 ret=0.998 shed=0.007 act=0.0000 flq=0.00
+# PAIR t=30.0 p=24 d=1.535 pq=1:1 delta=-1.070 x=0.645 ratio=1.4826 dth=+1.707 gg=0.0005 fl=0.000 ret=0.997 shed=0.010 act=0.0000 flq=0.00
+# PAIR t=30.0 p=25 d=1.538 pq=1:1 delta=-1.060 x=0.644 ratio=1.4753 dth=+0.764 gg=0.2534 fl=0.000 ret=0.995 shed=0.016 act=0.0000 flq=0.00
+# PAIR t=30.0 p=26 d=1.544 pq=1:1 delta=-1.041 x=0.646 ratio=1.4829 dth=+0.597 gg=0.3258 fl=0.000 ret=0.998 shed=0.007 act=0.0004 flq=0.00
+# PAIR t=30.0 p=27 d=1.545 pq=3:2 delta=+0.051 x=0.646 ratio=1.5002 dth=+0.009 gg=0.9927 fl=0.000 ret=0.998 shed=0.008 act=0.0000 flq=0.00
+# PAIR t=30.0 p=28 d=1.530 pq=1:1 delta=-1.093 x=0.646 ratio=1.4748 dth=+0.522 gg=0.2976 fl=0.000 ret=0.998 shed=0.008 act=0.0000 flq=0.00
+# PAIR t=30.0 p=29 d=1.534 pq=3:2 delta=-0.048 x=0.647 ratio=1.4921 dth=-0.607 gg=0.1981 fl=0.000 ret=0.999 shed=0.005 act=0.0005 flq=0.00
+# PAIR t=30.0 p=30 d=1.535 pq=3:2 delta=-0.026 x=0.645 ratio=1.4869 dth=-1.003 gg=0.0133 fl=0.000 ret=0.996 shed=0.013 act=0.0007 flq=0.00
+# PAIR t=30.0 p=31 d=1.545 pq=3:2 delta=+0.056 x=0.645 ratio=1.4942 dth=-0.441 gg=0.5009 fl=0.000 ret=0.997 shed=0.010 act=0.0001 flq=0.00
+# PAIR t=30.0 p=32 d=1.536 pq=3:2 delta=-0.021 x=0.645 ratio=1.4896 dth=-0.747 gg=0.0950 fl=0.000 ret=0.996 shed=0.012 act=0.0043 flq=0.00
+# PAIR t=30.0 p=33 d=1.538 pq=1:1 delta=-1.057 x=0.644 ratio=1.4778 dth=+0.542 gg=0.3226 fl=0.000 ret=0.995 shed=0.015 act=0.0000 flq=0.00
+# PAIR t=30.0 p=34 d=1.534 pq=1:1 delta=-1.073 x=0.646 ratio=1.4843 dth=+0.051 gg=0.1117 fl=0.000 ret=0.998 shed=0.006 act=0.0000 flq=0.00
+# PAIR t=30.0 p=35 d=1.542 pq=1:1 delta=-1.045 x=0.644 ratio=1.4777 dth=+1.259 gg=0.0304 fl=0.000 ret=0.995 shed=0.016 act=0.0000 flq=0.00
+# PAIR t=30.0 p=36 d=1.533 pq=1:1 delta=-1.086 x=0.644 ratio=1.4638 dth=+0.450 gg=0.2923 fl=0.000 ret=0.995 shed=0.016 act=0.0004 flq=0.00
+# PAIR t=30.0 p=37 d=1.534 pq=3:2 delta=-0.049 x=0.646 ratio=1.4863 dth=-1.098 gg=0.0048 fl=0.000 ret=0.998 shed=0.007 act=0.0005 flq=0.00
+# PAIR t=30.0 p=38 d=1.539 pq=3:2 delta=-0.001 x=0.646 ratio=1.4989 dth=-0.053 gg=0.9888 fl=0.000 ret=0.998 shed=0.007 act=0.0000 flq=0.00
+# PAIR t=30.0 p=39 d=1.541 pq=3:2 delta=+0.033 x=0.645 ratio=1.4968 dth=-0.173 gg=0.9057 fl=0.001 ret=0.996 shed=0.014 act=0.0083 flq=0.01
+40.000	9724.11	129.359667	0	0.130332708	9853.6	0.000e+00	36051	14.235	15.455	15.701	0.032	0.0000	0.8435	0.18865	0.8492	0.9934	1.64992	1.64434	0.0000	0.0000	0.0000	6.0014e-05	-0.00019936	0.0040092	0	0	0
 # CONV t=40.00 cond=0 evap=0 rough=0 back_s=0
-# LEDGER t=40.000 mode=3 sum_err=0 max|E-iEu|=2.011e-17 run_max_diff=0.000e+00 run_max_sum_err=0 steps=2000 E0_int=9741000000000000 sum=9741000000000000
-50.000	9741	0	0	0	9741	0.000e+00	36224	0.000	0.000	0.000	0.000	0.0000	0.8431	0	0.8498	0.9921	1.65000	1.65000	0.0000	0.0000	0.0000	0	0	0	0	0	0
+# LEDGER t=40.000 mode=3 sum_err=0 max|E-iEu|=2.136e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=2000 E0_int=9853600000000000 sum=9853600000000000
+# PAIR t=40.0 p=0 d=1.540 pq=3:2 delta=+0.018 x=0.645 ratio=1.4991 dth=-0.173 gg=0.8972 fl=0.001 ret=0.997 shed=0.010 act=0.0101 flq=0.01
+# PAIR t=40.0 p=1 d=1.532 pq=3:2 delta=-0.060 x=0.645 ratio=1.4881 dth=-1.247 gg=0.0009 fl=0.000 ret=0.997 shed=0.010 act=0.0000 flq=0.00
+# PAIR t=40.0 p=2 d=1.534 pq=1:1 delta=-1.072 x=0.642 ratio=1.4626 dth=-0.350 gg=0.0092 fl=0.000 ret=0.991 shed=0.030 act=0.0000 flq=0.00
+# PAIR t=40.0 p=3 d=1.537 pq=3:2 delta=-0.009 x=0.645 ratio=1.4981 dth=-0.256 gg=0.7612 fl=0.000 ret=0.996 shed=0.013 act=0.0001 flq=0.00
+# PAIR t=40.0 p=4 d=1.533 pq=1:1 delta=-1.078 x=0.645 ratio=1.4733 dth=-0.089 gg=0.0544 fl=0.000 ret=0.996 shed=0.015 act=0.0000 flq=0.00
+# PAIR t=40.0 p=5 d=1.540 pq=1:1 delta=-1.051 x=0.645 ratio=1.4848 dth=+0.996 gg=0.1252 fl=0.000 ret=0.997 shed=0.011 act=0.0000 flq=0.00
+# PAIR t=40.0 p=6 d=1.537 pq=3:2 delta=-0.016 x=0.645 ratio=1.4866 dth=-1.332 gg=0.0004 fl=0.000 ret=0.996 shed=0.012 act=0.0018 flq=0.00
+# PAIR t=40.0 p=7 d=1.549 pq=3:2 delta=+0.095 x=0.644 ratio=1.4877 dth=-1.151 gg=0.0058 fl=0.000 ret=0.994 shed=0.019 act=0.0000 flq=0.00
+# PAIR t=40.0 p=8 d=1.540 pq=3:2 delta=+0.018 x=0.645 ratio=1.4977 dth=-0.154 gg=0.9189 fl=0.000 ret=0.997 shed=0.011 act=0.0000 flq=0.00
+# PAIR t=40.0 p=9 d=1.549 pq=3:2 delta=+0.088 x=0.645 ratio=1.4947 dth=-0.469 gg=0.4788 fl=0.000 ret=0.996 shed=0.012 act=0.0004 flq=0.00
+# PAIR t=40.0 p=10 d=1.538 pq=1:1 delta=-1.058 x=0.645 ratio=1.4813 dth=+1.715 gg=0.0005 fl=0.000 ret=0.996 shed=0.013 act=0.0001 flq=0.00
+# PAIR t=40.0 p=11 d=1.532 pq=1:1 delta=-1.072 x=0.643 ratio=1.4805 dth=+2.272 gg=0.0000 fl=0.000 ret=0.994 shed=0.021 act=0.0000 flq=0.00
+# PAIR t=40.0 p=12 d=1.532 pq=3:2 delta=-0.037 x=0.644 ratio=1.4965 dth=-0.314 gg=0.6410 fl=0.000 ret=0.994 shed=0.018 act=0.0000 flq=0.00
+# PAIR t=40.0 p=13 d=1.540 pq=1:1 delta=-1.050 x=0.645 ratio=1.4835 dth=+1.388 gg=0.0118 fl=0.000 ret=0.996 shed=0.015 act=0.0000 flq=0.00
+# PAIR t=40.0 p=14 d=1.531 pq=1:1 delta=-1.075 x=0.643 ratio=1.4809 dth=+0.858 gg=0.1989 fl=0.000 ret=0.993 shed=0.021 act=0.0000 flq=0.00
+# PAIR t=40.0 p=15 d=1.544 pq=3:2 delta=+0.045 x=0.646 ratio=1.5014 dth=+0.061 gg=0.9706 fl=0.000 ret=0.998 shed=0.006 act=0.0000 flq=0.00
+# PAIR t=40.0 p=16 d=1.530 pq=3:2 delta=-0.069 x=0.646 ratio=1.5000 dth=-0.025 gg=0.9811 fl=0.000 ret=0.998 shed=0.006 act=0.0000 flq=0.00
+# PAIR t=40.0 p=17 d=1.531 pq=1:1 delta=-1.089 x=0.646 ratio=1.4763 dth=+0.115 gg=0.1349 fl=0.000 ret=0.997 shed=0.009 act=0.0000 flq=0.00
+# PAIR t=40.0 p=18 d=1.541 pq=1:1 delta=-1.046 x=0.644 ratio=1.4760 dth=+1.062 gg=0.0933 fl=0.000 ret=0.995 shed=0.017 act=0.0002 flq=0.00
+# PAIR t=40.0 p=19 d=1.535 pq=1:1 delta=-1.063 x=0.643 ratio=1.4816 dth=+2.324 gg=0.0000 fl=0.000 ret=0.994 shed=0.021 act=0.0000 flq=0.00
+# PAIR t=40.0 p=20 d=1.536 pq=1:1 delta=-1.055 x=0.641 ratio=1.4790 dth=+2.211 gg=0.0000 fl=0.000 ret=0.991 shed=0.030 act=0.0000 flq=0.00
+# PAIR t=40.0 p=21 d=1.537 pq=1:1 delta=-1.065 x=0.644 ratio=1.4722 dth=+0.504 gg=0.3165 fl=0.000 ret=0.995 shed=0.016 act=0.0000 flq=0.00
+# PAIR t=40.0 p=22 d=1.545 pq=1:1 delta=-1.035 x=0.645 ratio=1.4767 dth=+0.367 gg=0.3070 fl=0.000 ret=0.996 shed=0.014 act=0.0000 flq=0.00
+# PAIR t=40.0 p=23 d=1.535 pq=1:1 delta=-1.069 x=0.645 ratio=1.4824 dth=+2.095 gg=0.0000 fl=0.000 ret=0.997 shed=0.010 act=0.0000 flq=0.00
+# PAIR t=40.0 p=24 d=1.535 pq=1:1 delta=-1.068 x=0.645 ratio=1.4831 dth=+2.030 gg=0.0000 fl=0.000 ret=0.996 shed=0.012 act=0.0000 flq=0.00
+# PAIR t=40.0 p=25 d=1.538 pq=1:1 delta=-1.058 x=0.644 ratio=1.4755 dth=+1.004 gg=0.1211 fl=0.000 ret=0.994 shed=0.018 act=0.0000 flq=0.00
+# PAIR t=40.0 p=26 d=1.544 pq=1:1 delta=-1.040 x=0.646 ratio=1.4829 dth=+0.919 gg=0.1686 fl=0.000 ret=0.997 shed=0.009 act=0.0004 flq=0.00
+# PAIR t=40.0 p=27 d=1.545 pq=3:2 delta=+0.054 x=0.646 ratio=1.5005 dth=+0.017 gg=0.9895 fl=0.000 ret=0.997 shed=0.009 act=0.0000 flq=0.00
+# PAIR t=40.0 p=28 d=1.530 pq=1:1 delta=-1.091 x=0.645 ratio=1.4749 dth=+0.748 gg=0.2511 fl=0.000 ret=0.997 shed=0.011 act=0.0000 flq=0.00
+# PAIR t=40.0 p=29 d=1.534 pq=3:2 delta=-0.043 x=0.646 ratio=1.4917 dth=-0.833 gg=0.0490 fl=0.000 ret=0.998 shed=0.007 act=0.0005 flq=0.00
+# PAIR t=40.0 p=30 d=1.535 pq=3:2 delta=-0.023 x=0.645 ratio=1.4876 dth=-1.353 gg=0.0003 fl=0.000 ret=0.996 shed=0.014 act=0.0007 flq=0.00
+# PAIR t=40.0 p=31 d=1.545 pq=3:2 delta=+0.058 x=0.645 ratio=1.4942 dth=-0.597 gg=0.2697 fl=0.000 ret=0.996 shed=0.012 act=0.0001 flq=0.00
+# PAIR t=40.0 p=32 d=1.536 pq=3:2 delta=-0.014 x=0.644 ratio=1.4888 dth=-1.048 gg=0.0093 fl=0.000 ret=0.995 shed=0.016 act=0.0043 flq=0.00
+# PAIR t=40.0 p=33 d=1.538 pq=1:1 delta=-1.056 x=0.644 ratio=1.4775 dth=+0.807 gg=0.2313 fl=0.000 ret=0.995 shed=0.017 act=0.0000 flq=0.00
+# PAIR t=40.0 p=34 d=1.534 pq=1:1 delta=-1.070 x=0.645 ratio=1.4837 dth=+0.386 gg=0.2852 fl=0.000 ret=0.997 shed=0.010 act=0.0000 flq=0.00
+# PAIR t=40.0 p=35 d=1.542 pq=1:1 delta=-1.043 x=0.644 ratio=1.4782 dth=+1.528 gg=0.0034 fl=0.000 ret=0.994 shed=0.019 act=0.0000 flq=0.00
+# PAIR t=40.0 p=36 d=1.533 pq=1:1 delta=-1.083 x=0.643 ratio=1.4623 dth=+0.541 gg=0.3053 fl=0.000 ret=0.993 shed=0.022 act=0.0000 flq=0.00
+# PAIR t=40.0 p=37 d=1.534 pq=3:2 delta=-0.044 x=0.645 ratio=1.4864 dth=-1.475 gg=0.0000 fl=0.000 ret=0.997 shed=0.010 act=0.0005 flq=0.00
+# PAIR t=40.0 p=38 d=1.539 pq=3:2 delta=-0.000 x=0.646 ratio=1.4990 dth=-0.082 gg=0.9734 fl=0.000 ret=0.998 shed=0.007 act=0.0000 flq=0.00
+# PAIR t=40.0 p=39 d=1.541 pq=3:2 delta=+0.036 x=0.644 ratio=1.4972 dth=-0.256 gg=0.7956 fl=0.001 ret=0.995 shed=0.016 act=0.0083 flq=0.01
+50.000	9724.11	129.28455	0	0.205449764	9853.6	-1.846e-16	36034	14.234	15.455	15.702	0.032	0.0000	0.8435	-0.84978	0.8492	0.9934	1.64991	1.64434	0.0000	0.0000	0.0000	-0.0007879	-0.0057597	0.001057	0	0	0
 # CONV t=50.00 cond=0 evap=0 rough=0 back_s=0
-# LEDGER t=50.000 mode=3 sum_err=0 max|E-iEu|=2.011e-17 run_max_diff=0.000e+00 run_max_sum_err=0 steps=2500 E0_int=9741000000000000 sum=9741000000000000
-60.000	9741	0	0	0	9741	0.000e+00	36224	0.000	0.000	0.000	0.000	0.0000	0.8431	0	0.8498	0.9921	1.65000	1.65000	0.0000	0.0000	0.0000	0	0	0	0	0	0
+# LEDGER t=50.000 mode=3 sum_err=0 max|E-iEu|=2.077e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=2500 E0_int=9853600000000000 sum=9853600000000000
+# PAIR t=50.0 p=0 d=1.540 pq=3:2 delta=+0.022 x=0.645 ratio=1.4992 dth=-0.199 gg=0.8675 fl=0.001 ret=0.996 shed=0.012 act=0.0101 flq=0.01
+# PAIR t=50.0 p=1 d=1.532 pq=3:2 delta=-0.056 x=0.645 ratio=1.4881 dth=-1.571 gg=0.0000 fl=0.000 ret=0.996 shed=0.013 act=0.0000 flq=0.00
+# PAIR t=50.0 p=2 d=1.534 pq=1:1 delta=-1.070 x=0.641 ratio=1.4629 dth=-0.251 gg=0.0201 fl=0.000 ret=0.990 shed=0.032 act=0.0000 flq=0.00
+# PAIR t=50.0 p=3 d=1.537 pq=3:2 delta=-0.006 x=0.645 ratio=1.4987 dth=-0.303 gg=0.6864 fl=0.000 ret=0.996 shed=0.014 act=0.0001 flq=0.00
+# PAIR t=50.0 p=4 d=1.533 pq=1:1 delta=-1.076 x=0.644 ratio=1.4731 dth=+0.124 gg=0.1468 fl=0.000 ret=0.995 shed=0.017 act=0.0000 flq=0.00
+# PAIR t=50.0 p=5 d=1.540 pq=1:1 delta=-1.049 x=0.645 ratio=1.4846 dth=+1.340 gg=0.0171 fl=0.000 ret=0.996 shed=0.014 act=0.0000 flq=0.00
+# PAIR t=50.0 p=6 d=1.537 pq=3:2 delta=-0.015 x=0.645 ratio=1.4870 dth=-1.695 gg=0.0000 fl=0.000 ret=0.996 shed=0.012 act=0.0018 flq=0.00
+# PAIR t=50.0 p=7 d=1.549 pq=3:2 delta=+0.099 x=0.643 ratio=1.4873 dth=-1.492 gg=0.0001 fl=0.000 ret=0.993 shed=0.021 act=0.0000 flq=0.00
+# PAIR t=50.0 p=8 d=1.540 pq=3:2 delta=+0.019 x=0.645 ratio=1.4977 dth=-0.218 gg=0.8406 fl=0.000 ret=0.996 shed=0.012 act=0.0000 flq=0.00
+# PAIR t=50.0 p=9 d=1.549 pq=3:2 delta=+0.090 x=0.645 ratio=1.4951 dth=-0.609 gg=0.2727 fl=0.000 ret=0.996 shed=0.013 act=0.0004 flq=0.00
+# PAIR t=50.0 p=10 d=1.538 pq=1:1 delta=-1.057 x=0.644 ratio=1.4817 dth=+2.025 gg=0.0000 fl=0.000 ret=0.995 shed=0.015 act=0.0001 flq=0.00
+# PAIR t=50.0 p=11 d=1.532 pq=1:1 delta=-1.070 x=0.643 ratio=1.4806 dth=+2.578 gg=0.0000 fl=0.000 ret=0.993 shed=0.024 act=0.0000 flq=0.00
+# PAIR t=50.0 p=12 d=1.532 pq=3:2 delta=-0.030 x=0.643 ratio=1.4953 dth=-0.415 gg=0.4748 fl=0.000 ret=0.993 shed=0.023 act=0.0000 flq=0.00
+# PAIR t=50.0 p=13 d=1.540 pq=1:1 delta=-1.049 x=0.644 ratio=1.4839 dth=+1.725 gg=0.0004 fl=0.000 ret=0.995 shed=0.015 act=0.0000 flq=0.00
+# PAIR t=50.0 p=14 d=1.531 pq=1:1 delta=-1.074 x=0.643 ratio=1.4814 dth=+1.170 gg=0.0533 fl=0.000 ret=0.993 shed=0.023 act=0.0000 flq=0.00
+# PAIR t=50.0 p=15 d=1.544 pq=3:2 delta=+0.046 x=0.646 ratio=1.5018 dth=+0.103 gg=0.9363 fl=0.000 ret=0.998 shed=0.006 act=0.0000 flq=0.00
+# PAIR t=50.0 p=16 d=1.530 pq=3:2 delta=-0.066 x=0.646 ratio=1.4998 dth=-0.025 gg=0.9822 fl=0.000 ret=0.997 shed=0.008 act=0.0000 flq=0.00
+# PAIR t=50.0 p=17 d=1.531 pq=1:1 delta=-1.087 x=0.645 ratio=1.4760 dth=+0.357 gg=0.2600 fl=0.000 ret=0.996 shed=0.012 act=0.0000 flq=0.00
+# PAIR t=50.0 p=18 d=1.541 pq=1:1 delta=-1.045 x=0.643 ratio=1.4760 dth=+1.309 gg=0.0213 fl=0.000 ret=0.994 shed=0.020 act=0.0002 flq=0.00
+# PAIR t=50.0 p=19 d=1.535 pq=1:1 delta=-1.061 x=0.643 ratio=1.4815 dth=+2.643 gg=0.0000 fl=0.000 ret=0.992 shed=0.025 act=0.0000 flq=0.00
+# PAIR t=50.0 p=20 d=1.536 pq=1:1 delta=-1.052 x=0.641 ratio=1.4793 dth=+2.508 gg=0.0000 fl=0.000 ret=0.990 shed=0.034 act=0.0000 flq=0.00
+# PAIR t=50.0 p=21 d=1.537 pq=1:1 delta=-1.062 x=0.644 ratio=1.4718 dth=+0.702 gg=0.2815 fl=0.000 ret=0.994 shed=0.019 act=0.0000 flq=0.00
+# PAIR t=50.0 p=22 d=1.545 pq=1:1 delta=-1.033 x=0.644 ratio=1.4761 dth=+0.619 gg=0.3250 fl=0.000 ret=0.994 shed=0.018 act=0.0000 flq=0.00
+# PAIR t=50.0 p=23 d=1.535 pq=1:1 delta=-1.067 x=0.645 ratio=1.4818 dth=+2.408 gg=0.0000 fl=0.000 ret=0.996 shed=0.013 act=0.0000 flq=0.00
+# PAIR t=50.0 p=24 d=1.535 pq=1:1 delta=-1.067 x=0.645 ratio=1.4833 dth=+2.358 gg=0.0000 fl=0.000 ret=0.996 shed=0.013 act=0.0000 flq=0.00
+# PAIR t=50.0 p=25 d=1.538 pq=1:1 delta=-1.057 x=0.643 ratio=1.4753 dth=+1.244 gg=0.0337 fl=0.000 ret=0.994 shed=0.020 act=0.0000 flq=0.00
+# PAIR t=50.0 p=26 d=1.544 pq=1:1 delta=-1.036 x=0.645 ratio=1.4827 dth=+1.239 gg=0.0343 fl=0.000 ret=0.996 shed=0.015 act=0.0004 flq=0.00
+# PAIR t=50.0 p=27 d=1.545 pq=3:2 delta=+0.056 x=0.645 ratio=1.5009 dth=+0.033 gg=0.9819 fl=0.000 ret=0.997 shed=0.010 act=0.0000 flq=0.00
+# PAIR t=50.0 p=28 d=1.530 pq=1:1 delta=-1.090 x=0.645 ratio=1.4752 dth=+0.977 gg=0.1330 fl=0.000 ret=0.996 shed=0.012 act=0.0000 flq=0.00
+# PAIR t=50.0 p=29 d=1.534 pq=3:2 delta=-0.041 x=0.646 ratio=1.4920 dth=-1.057 gg=0.0075 fl=0.000 ret=0.997 shed=0.008 act=0.0005 flq=0.00
+# PAIR t=50.0 p=30 d=1.535 pq=3:2 delta=-0.020 x=0.644 ratio=1.4881 dth=-1.688 gg=0.0000 fl=0.000 ret=0.995 shed=0.016 act=0.0007 flq=0.00
+# PAIR t=50.0 p=31 d=1.545 pq=3:2 delta=+0.063 x=0.644 ratio=1.4935 dth=-0.770 gg=0.1072 fl=0.000 ret=0.995 shed=0.015 act=0.0001 flq=0.00
+# PAIR t=50.0 p=32 d=1.536 pq=3:2 delta=-0.012 x=0.644 ratio=1.4888 dth=-1.357 gg=0.0003 fl=0.000 ret=0.995 shed=0.017 act=0.0043 flq=0.00
+# PAIR t=50.0 p=33 d=1.538 pq=1:1 delta=-1.056 x=0.644 ratio=1.4775 dth=+1.072 gg=0.0889 fl=0.000 ret=0.995 shed=0.017 act=0.0000 flq=0.00
+# PAIR t=50.0 p=34 d=1.534 pq=1:1 delta=-1.068 x=0.645 ratio=1.4835 dth=+0.717 gg=0.2729 fl=0.000 ret=0.996 shed=0.013 act=0.0000 flq=0.00
+# PAIR t=50.0 p=35 d=1.542 pq=1:1 delta=-1.041 x=0.643 ratio=1.4786 dth=+1.805 gg=0.0001 fl=0.000 ret=0.994 shed=0.021 act=0.0000 flq=0.00
+# PAIR t=50.0 p=36 d=1.533 pq=1:1 delta=-1.081 x=0.643 ratio=1.4625 dth=+0.629 gg=0.2959 fl=0.000 ret=0.993 shed=0.023 act=0.0000 flq=0.00
+# PAIR t=50.0 p=37 d=1.534 pq=3:2 delta=-0.041 x=0.645 ratio=1.4869 dth=-1.842 gg=0.0000 fl=0.000 ret=0.996 shed=0.012 act=0.0005 flq=0.00
+# PAIR t=50.0 p=38 d=1.539 pq=3:2 delta=+0.002 x=0.646 ratio=1.4988 dth=-0.110 gg=0.9538 fl=0.000 ret=0.997 shed=0.008 act=0.0000 flq=0.00
+# PAIR t=50.0 p=39 d=1.541 pq=3:2 delta=+0.040 x=0.644 ratio=1.4972 dth=-0.329 gg=0.6801 fl=0.001 ret=0.994 shed=0.018 act=0.0083 flq=0.01
+60.000	9724.11	129.290312	0	0.199688356	9853.6	-1.846e-16	36025	14.234	15.455	15.702	0.032	0.0000	0.8435	-1.7853	0.8492	0.9934	1.64993	1.64433	0.0000	0.0000	0.0000	-0.003981	-0.0036451	0.002478	0	0	0
 # CONV t=60.00 cond=0 evap=0 rough=0 back_s=0
-# LEDGER t=60.000 mode=3 sum_err=0 max|E-iEu|=2.011e-17 run_max_diff=0.000e+00 run_max_sum_err=0 steps=3000 E0_int=9741000000000000 sum=9741000000000000
-# RESULT es_shells 0.94:1.0000 2.81:1.0000 4.69:1.0000 6.56:1.0000 8.44:1.0000 10.31:1.0000 12.19:1.0000 14.06:1.0000
-# RESULT LEDGER mode=3 E0_int=9741000000000000 sum_int=9741000000000000 max_sum_err=0 max|E-iEu|=0.000e+00 steps=3000
-# RESULT conservation E0=9741 Efinal=9741 rel_drift=0.000e+00
+# LEDGER t=60.000 mode=3 sum_err=0 max|E-iEu|=2.190e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=3000 E0_int=9853600000000000 sum=9853600000000000
+# PAIR t=60.0 p=0 d=1.540 pq=3:2 delta=+0.024 x=0.645 ratio=1.4998 dth=-0.215 gg=0.8477 fl=0.001 ret=0.996 shed=0.013 act=0.0101 flq=0.01
+# PAIR t=60.0 p=1 d=1.532 pq=3:2 delta=-0.052 x=0.644 ratio=1.4880 dth=-1.903 gg=0.0000 fl=0.000 ret=0.995 shed=0.015 act=0.0000 flq=0.00
+# PAIR t=60.0 p=2 d=1.534 pq=1:1 delta=-1.065 x=0.639 ratio=1.4610 dth=-0.153 gg=0.0399 fl=0.000 ret=0.987 shed=0.041 act=0.0000 flq=0.00
+# PAIR t=60.0 p=3 d=1.537 pq=3:2 delta=-0.001 x=0.644 ratio=1.4991 dth=-0.337 gg=0.6332 fl=0.000 ret=0.995 shed=0.016 act=0.0001 flq=0.00
+# PAIR t=60.0 p=4 d=1.533 pq=1:1 delta=-1.073 x=0.643 ratio=1.4720 dth=+0.330 gg=0.2588 fl=0.000 ret=0.993 shed=0.022 act=0.0000 flq=0.00
+# PAIR t=60.0 p=5 d=1.540 pq=1:1 delta=-1.047 x=0.644 ratio=1.4851 dth=+1.690 gg=0.0006 fl=0.000 ret=0.995 shed=0.015 act=0.0000 flq=0.00
+# PAIR t=60.0 p=6 d=1.537 pq=3:2 delta=-0.013 x=0.645 ratio=1.4871 dth=-2.050 gg=0.0000 fl=0.000 ret=0.996 shed=0.013 act=0.0018 flq=0.00
+# PAIR t=60.0 p=7 d=1.549 pq=3:2 delta=+0.102 x=0.643 ratio=1.4875 dth=-1.840 gg=0.0000 fl=0.000 ret=0.993 shed=0.023 act=0.0000 flq=0.00
+# PAIR t=60.0 p=8 d=1.540 pq=3:2 delta=+0.021 x=0.645 ratio=1.4977 dth=-0.280 gg=0.7463 fl=0.000 ret=0.996 shed=0.013 act=0.0000 flq=0.00
+# PAIR t=60.0 p=9 d=1.549 pq=3:2 delta=+0.094 x=0.644 ratio=1.4951 dth=-0.742 gg=0.1382 fl=0.000 ret=0.995 shed=0.016 act=0.0004 flq=0.00
+# PAIR t=60.0 p=10 d=1.538 pq=1:1 delta=-1.055 x=0.644 ratio=1.4819 dth=+2.340 gg=0.0000 fl=0.000 ret=0.995 shed=0.018 act=0.0001 flq=0.00
+# PAIR t=60.0 p=11 d=1.532 pq=1:1 delta=-1.068 x=0.642 ratio=1.4805 dth=+2.885 gg=0.0000 fl=0.000 ret=0.992 shed=0.026 act=0.0000 flq=0.00
+# PAIR t=60.0 p=12 d=1.532 pq=3:2 delta=-0.022 x=0.642 ratio=1.4944 dth=-0.565 gg=0.2597 fl=0.000 ret=0.991 shed=0.028 act=0.0000 flq=0.00
+# PAIR t=60.0 p=13 d=1.540 pq=1:1 delta=-1.047 x=0.644 ratio=1.4836 dth=+2.066 gg=0.0000 fl=0.000 ret=0.994 shed=0.019 act=0.0000 flq=0.00
+# PAIR t=60.0 p=14 d=1.531 pq=1:1 delta=-1.073 x=0.643 ratio=1.4818 dth=+1.490 gg=0.0051 fl=0.000 ret=0.992 shed=0.025 act=0.0000 flq=0.00
+# PAIR t=60.0 p=15 d=1.544 pq=3:2 delta=+0.048 x=0.646 ratio=1.5023 dth=+0.156 gg=0.8754 fl=0.000 ret=0.998 shed=0.008 act=0.0000 flq=0.00
+# PAIR t=60.0 p=16 d=1.530 pq=3:2 delta=-0.064 x=0.646 ratio=1.4999 dth=-0.034 gg=0.9790 fl=0.000 ret=0.997 shed=0.009 act=0.0000 flq=0.00
+# PAIR t=60.0 p=17 d=1.531 pq=1:1 delta=-1.086 x=0.645 ratio=1.4767 dth=+0.604 gg=0.2983 fl=0.000 ret=0.996 shed=0.013 act=0.0000 flq=0.00
+# PAIR t=60.0 p=18 d=1.541 pq=1:1 delta=-1.044 x=0.643 ratio=1.4762 dth=+1.560 gg=0.0025 fl=0.000 ret=0.994 shed=0.021 act=0.0002 flq=0.00
+# PAIR t=60.0 p=19 d=1.535 pq=1:1 delta=-1.058 x=0.642 ratio=1.4815 dth=+2.963 gg=0.0000 fl=0.000 ret=0.991 shed=0.028 act=0.0000 flq=0.00
+# PAIR t=60.0 p=20 d=1.536 pq=1:1 delta=-1.050 x=0.640 ratio=1.4794 dth=+2.810 gg=0.0000 fl=0.000 ret=0.988 shed=0.037 act=0.0000 flq=0.00
+# PAIR t=60.0 p=21 d=1.537 pq=1:1 delta=-1.059 x=0.643 ratio=1.4714 dth=+0.901 gg=0.1769 fl=0.000 ret=0.993 shed=0.024 act=0.0000 flq=0.00
+# PAIR t=60.0 p=22 d=1.545 pq=1:1 delta=-1.031 x=0.643 ratio=1.4757 dth=+0.865 gg=0.2018 fl=0.000 ret=0.993 shed=0.021 act=0.0000 flq=0.00
+# PAIR t=60.0 p=23 d=1.535 pq=1:1 delta=-1.067 x=0.645 ratio=1.4819 dth=+2.722 gg=0.0000 fl=0.000 ret=0.996 shed=0.013 act=0.0000 flq=0.00
+# PAIR t=60.0 p=24 d=1.535 pq=1:1 delta=-1.065 x=0.644 ratio=1.4840 dth=+2.693 gg=0.0000 fl=0.000 ret=0.995 shed=0.015 act=0.0000 flq=0.00
+# PAIR t=60.0 p=25 d=1.538 pq=1:1 delta=-1.055 x=0.643 ratio=1.4749 dth=+1.484 gg=0.0052 fl=0.000 ret=0.993 shed=0.023 act=0.0000 flq=0.00
+# PAIR t=60.0 p=26 d=1.544 pq=1:1 delta=-1.035 x=0.644 ratio=1.4832 dth=+1.566 gg=0.0023 fl=0.000 ret=0.995 shed=0.016 act=0.0004 flq=0.00
+# PAIR t=60.0 p=27 d=1.545 pq=3:2 delta=+0.059 x=0.645 ratio=1.5011 dth=+0.061 gg=0.9646 fl=0.000 ret=0.996 shed=0.012 act=0.0000 flq=0.00
+# PAIR t=60.0 p=28 d=1.530 pq=1:1 delta=-1.087 x=0.645 ratio=1.4759 dth=+1.215 gg=0.0412 fl=0.000 ret=0.996 shed=0.014 act=0.0000 flq=0.00
+# PAIR t=60.0 p=29 d=1.534 pq=3:2 delta=-0.039 x=0.646 ratio=1.4924 dth=-1.272 gg=0.0008 fl=0.000 ret=0.997 shed=0.010 act=0.0005 flq=0.00
+# PAIR t=60.0 p=30 d=1.535 pq=3:2 delta=-0.016 x=0.644 ratio=1.4887 dth=-2.007 gg=0.0000 fl=0.000 ret=0.995 shed=0.018 act=0.0007 flq=0.00
+# PAIR t=60.0 p=31 d=1.545 pq=3:2 delta=+0.065 x=0.644 ratio=1.4934 dth=-0.950 gg=0.0302 fl=0.000 ret=0.995 shed=0.016 act=0.0001 flq=0.00
+# PAIR t=60.0 p=32 d=1.536 pq=3:2 delta=-0.010 x=0.644 ratio=1.4890 dth=-1.660 gg=0.0000 fl=0.000 ret=0.994 shed=0.018 act=0.0043 flq=0.00
+# PAIR t=60.0 p=33 d=1.538 pq=1:1 delta=-1.056 x=0.644 ratio=1.4775 dth=+1.338 gg=0.0175 fl=0.000 ret=0.995 shed=0.017 act=0.0000 flq=0.00
+# PAIR t=60.0 p=34 d=1.534 pq=1:1 delta=-1.067 x=0.645 ratio=1.4841 dth=+1.053 gg=0.0975 fl=0.000 ret=0.996 shed=0.014 act=0.0000 flq=0.00
+# PAIR t=60.0 p=35 d=1.542 pq=1:1 delta=-1.040 x=0.643 ratio=1.4792 dth=+2.091 gg=0.0000 fl=0.000 ret=0.993 shed=0.023 act=0.0000 flq=0.00
+# PAIR t=60.0 p=36 d=1.533 pq=1:1 delta=-1.079 x=0.642 ratio=1.4618 dth=+0.720 gg=0.2673 fl=0.000 ret=0.991 shed=0.028 act=0.0000 flq=0.00
+# PAIR t=60.0 p=37 d=1.534 pq=3:2 delta=-0.038 x=0.645 ratio=1.4875 dth=-2.195 gg=0.0000 fl=0.000 ret=0.996 shed=0.013 act=0.0005 flq=0.00
+# PAIR t=60.0 p=38 d=1.539 pq=3:2 delta=+0.003 x=0.646 ratio=1.4987 dth=-0.145 gg=0.9204 fl=0.000 ret=0.997 shed=0.009 act=0.0000 flq=0.00
+# PAIR t=60.0 p=39 d=1.541 pq=3:2 delta=+0.050 x=0.643 ratio=1.4958 dth=-0.431 gg=0.5137 fl=0.001 ret=0.992 shed=0.025 act=0.0083 flq=0.01
+# RESULT es_shells 0.94:1.0010 2.81:0.9902 4.69:1.0000 6.56:0.9986 8.44:0.9996 10.31:0.9977 12.19:0.9985 14.06:0.9987
+# RESULT LEDGER mode=3 E0_int=9853600000000000 sum_int=9853600000000000 max_sum_err=0 max|E-iEu|=0.000e+00 steps=3000
+# RESULT conservation E0=9853.6 Efinal=9853.6 rel_drift=-1.846e-16
 # RESULT roughness_radiated=0 (dissonant dense deliveries converted to field, conserved)
+# RESULT curvature_fit defA_per_Em=10.86318 r2=0.2550 (linear defect ~ converted energy)
+# PAIR t=60.0 p=0 d=1.540 pq=3:2 delta=+0.024 x=0.645 ratio=1.4998 dth=-0.215 gg=0.8477 fl=0.001 ret=0.996 shed=0.013 act=0.0101 flq=0.01
+# PAIR t=60.0 p=1 d=1.532 pq=3:2 delta=-0.052 x=0.644 ratio=1.4880 dth=-1.903 gg=0.0000 fl=0.000 ret=0.995 shed=0.015 act=0.0000 flq=0.00
+# PAIR t=60.0 p=2 d=1.534 pq=1:1 delta=-1.065 x=0.639 ratio=1.4610 dth=-0.153 gg=0.0399 fl=0.000 ret=0.987 shed=0.041 act=0.0000 flq=0.00
+# PAIR t=60.0 p=3 d=1.537 pq=3:2 delta=-0.001 x=0.644 ratio=1.4991 dth=-0.337 gg=0.6332 fl=0.000 ret=0.995 shed=0.016 act=0.0001 flq=0.00
+# PAIR t=60.0 p=4 d=1.533 pq=1:1 delta=-1.073 x=0.643 ratio=1.4720 dth=+0.330 gg=0.2588 fl=0.000 ret=0.993 shed=0.022 act=0.0000 flq=0.00
+# PAIR t=60.0 p=5 d=1.540 pq=1:1 delta=-1.047 x=0.644 ratio=1.4851 dth=+1.690 gg=0.0006 fl=0.000 ret=0.995 shed=0.015 act=0.0000 flq=0.00
+# PAIR t=60.0 p=6 d=1.537 pq=3:2 delta=-0.013 x=0.645 ratio=1.4871 dth=-2.050 gg=0.0000 fl=0.000 ret=0.996 shed=0.013 act=0.0018 flq=0.00
+# PAIR t=60.0 p=7 d=1.549 pq=3:2 delta=+0.102 x=0.643 ratio=1.4875 dth=-1.840 gg=0.0000 fl=0.000 ret=0.993 shed=0.023 act=0.0000 flq=0.00
+# PAIR t=60.0 p=8 d=1.540 pq=3:2 delta=+0.021 x=0.645 ratio=1.4977 dth=-0.280 gg=0.7463 fl=0.000 ret=0.996 shed=0.013 act=0.0000 flq=0.00
+# PAIR t=60.0 p=9 d=1.549 pq=3:2 delta=+0.094 x=0.644 ratio=1.4951 dth=-0.742 gg=0.1382 fl=0.000 ret=0.995 shed=0.016 act=0.0004 flq=0.00
+# PAIR t=60.0 p=10 d=1.538 pq=1:1 delta=-1.055 x=0.644 ratio=1.4819 dth=+2.340 gg=0.0000 fl=0.000 ret=0.995 shed=0.018 act=0.0001 flq=0.00
+# PAIR t=60.0 p=11 d=1.532 pq=1:1 delta=-1.068 x=0.642 ratio=1.4805 dth=+2.885 gg=0.0000 fl=0.000 ret=0.992 shed=0.026 act=0.0000 flq=0.00
+# PAIR t=60.0 p=12 d=1.532 pq=3:2 delta=-0.022 x=0.642 ratio=1.4944 dth=-0.565 gg=0.2597 fl=0.000 ret=0.991 shed=0.028 act=0.0000 flq=0.00
+# PAIR t=60.0 p=13 d=1.540 pq=1:1 delta=-1.047 x=0.644 ratio=1.4836 dth=+2.066 gg=0.0000 fl=0.000 ret=0.994 shed=0.019 act=0.0000 flq=0.00
+# PAIR t=60.0 p=14 d=1.531 pq=1:1 delta=-1.073 x=0.643 ratio=1.4818 dth=+1.490 gg=0.0051 fl=0.000 ret=0.992 shed=0.025 act=0.0000 flq=0.00
+# PAIR t=60.0 p=15 d=1.544 pq=3:2 delta=+0.048 x=0.646 ratio=1.5023 dth=+0.156 gg=0.8754 fl=0.000 ret=0.998 shed=0.008 act=0.0000 flq=0.00
+# PAIR t=60.0 p=16 d=1.530 pq=3:2 delta=-0.064 x=0.646 ratio=1.4999 dth=-0.034 gg=0.9790 fl=0.000 ret=0.997 shed=0.009 act=0.0000 flq=0.00
+# PAIR t=60.0 p=17 d=1.531 pq=1:1 delta=-1.086 x=0.645 ratio=1.4767 dth=+0.604 gg=0.2983 fl=0.000 ret=0.996 shed=0.013 act=0.0000 flq=0.00
+# PAIR t=60.0 p=18 d=1.541 pq=1:1 delta=-1.044 x=0.643 ratio=1.4762 dth=+1.560 gg=0.0025 fl=0.000 ret=0.994 shed=0.021 act=0.0002 flq=0.00
+# PAIR t=60.0 p=19 d=1.535 pq=1:1 delta=-1.058 x=0.642 ratio=1.4815 dth=+2.963 gg=0.0000 fl=0.000 ret=0.991 shed=0.028 act=0.0000 flq=0.00
+# PAIR t=60.0 p=20 d=1.536 pq=1:1 delta=-1.050 x=0.640 ratio=1.4794 dth=+2.810 gg=0.0000 fl=0.000 ret=0.988 shed=0.037 act=0.0000 flq=0.00
+# PAIR t=60.0 p=21 d=1.537 pq=1:1 delta=-1.059 x=0.643 ratio=1.4714 dth=+0.901 gg=0.1769 fl=0.000 ret=0.993 shed=0.024 act=0.0000 flq=0.00
+# PAIR t=60.0 p=22 d=1.545 pq=1:1 delta=-1.031 x=0.643 ratio=1.4757 dth=+0.865 gg=0.2018 fl=0.000 ret=0.993 shed=0.021 act=0.0000 flq=0.00
+# PAIR t=60.0 p=23 d=1.535 pq=1:1 delta=-1.067 x=0.645 ratio=1.4819 dth=+2.722 gg=0.0000 fl=0.000 ret=0.996 shed=0.013 act=0.0000 flq=0.00
+# PAIR t=60.0 p=24 d=1.535 pq=1:1 delta=-1.065 x=0.644 ratio=1.4840 dth=+2.693 gg=0.0000 fl=0.000 ret=0.995 shed=0.015 act=0.0000 flq=0.00
+# PAIR t=60.0 p=25 d=1.538 pq=1:1 delta=-1.055 x=0.643 ratio=1.4749 dth=+1.484 gg=0.0052 fl=0.000 ret=0.993 shed=0.023 act=0.0000 flq=0.00
+# PAIR t=60.0 p=26 d=1.544 pq=1:1 delta=-1.035 x=0.644 ratio=1.4832 dth=+1.566 gg=0.0023 fl=0.000 ret=0.995 shed=0.016 act=0.0004 flq=0.00
+# PAIR t=60.0 p=27 d=1.545 pq=3:2 delta=+0.059 x=0.645 ratio=1.5011 dth=+0.061 gg=0.9646 fl=0.000 ret=0.996 shed=0.012 act=0.0000 flq=0.00
+# PAIR t=60.0 p=28 d=1.530 pq=1:1 delta=-1.087 x=0.645 ratio=1.4759 dth=+1.215 gg=0.0412 fl=0.000 ret=0.996 shed=0.014 act=0.0000 flq=0.00
+# PAIR t=60.0 p=29 d=1.534 pq=3:2 delta=-0.039 x=0.646 ratio=1.4924 dth=-1.272 gg=0.0008 fl=0.000 ret=0.997 shed=0.010 act=0.0005 flq=0.00
+# PAIR t=60.0 p=30 d=1.535 pq=3:2 delta=-0.016 x=0.644 ratio=1.4887 dth=-2.007 gg=0.0000 fl=0.000 ret=0.995 shed=0.018 act=0.0007 flq=0.00
+# PAIR t=60.0 p=31 d=1.545 pq=3:2 delta=+0.065 x=0.644 ratio=1.4934 dth=-0.950 gg=0.0302 fl=0.000 ret=0.995 shed=0.016 act=0.0001 flq=0.00
+# PAIR t=60.0 p=32 d=1.536 pq=3:2 delta=-0.010 x=0.644 ratio=1.4890 dth=-1.660 gg=0.0000 fl=0.000 ret=0.994 shed=0.018 act=0.0043 flq=0.00
+# PAIR t=60.0 p=33 d=1.538 pq=1:1 delta=-1.056 x=0.644 ratio=1.4775 dth=+1.338 gg=0.0175 fl=0.000 ret=0.995 shed=0.017 act=0.0000 flq=0.00
+# PAIR t=60.0 p=34 d=1.534 pq=1:1 delta=-1.067 x=0.645 ratio=1.4841 dth=+1.053 gg=0.0975 fl=0.000 ret=0.996 shed=0.014 act=0.0000 flq=0.00
+# PAIR t=60.0 p=35 d=1.542 pq=1:1 delta=-1.040 x=0.643 ratio=1.4792 dth=+2.091 gg=0.0000 fl=0.000 ret=0.993 shed=0.023 act=0.0000 flq=0.00
+# PAIR t=60.0 p=36 d=1.533 pq=1:1 delta=-1.079 x=0.642 ratio=1.4618 dth=+0.720 gg=0.2673 fl=0.000 ret=0.991 shed=0.028 act=0.0000 flq=0.00
+# PAIR t=60.0 p=37 d=1.534 pq=3:2 delta=-0.038 x=0.645 ratio=1.4875 dth=-2.195 gg=0.0000 fl=0.000 ret=0.996 shed=0.013 act=0.0005 flq=0.00
+# PAIR t=60.0 p=38 d=1.539 pq=3:2 delta=+0.003 x=0.646 ratio=1.4987 dth=-0.145 gg=0.9204 fl=0.000 ret=0.997 shed=0.009 act=0.0000 flq=0.00
+# PAIR t=60.0 p=39 d=1.541 pq=3:2 delta=+0.050 x=0.643 ratio=1.4958 dth=-0.431 gg=0.5137 fl=0.001 ret=0.992 shed=0.025 act=0.0083 flq=0.01
+# RESULT pair_tongue |delta|<0.6: n=18 gg=0.384 ret=0.995 fl=0.000 | 0.6-1.2: n=22 gg=0.064 ret=0.993 fl=0.000 | >1.2: n=0 gg=0.000 ret=0.000 fl=0.000
