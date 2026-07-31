@@ -117,8 +117,8 @@ instructive failure, see finding F2.
 | e1, e3a, e4, e5, e7, d1, t1, q2, t4, qt_lo, qt_hi, p1, g1, LIN | PASS | — (e7 IMPROVES to 60/60 alive, frac 1.00, gg 0.96 vs 0.77 on foam; e2 v_g 0.88C vs 0.61) |
 | e6 | FAIL → **probe PASS** (gg 0.21→0.886) | APPARATUS: pair window [1.0,1.55] + fixed x0=0.3 encode the old d-spread; widened window + auto x*(d) fixes it outright |
 | e8 | FAIL (shed ladder degenerate, total 0.5 vs 7.2) | APPARATUS (same class): its δ0 ladder rode the foam's d variety; needs explicit δ0 seeding |
-| e9 | FAIL (0 locks even with 40 per-pair on-rung auto-seeded fifths) | **SUBSTRATE PHYSICS — the fifth is the σ_d ruler**: the 3:2 tongue is Γ_m/(pq)=Γ/6 ≈ 0.017; even the 3.0% shell gives δ spread ~7× the tongue. Interval physics demands σ_d ≲ 0.4% (the fifth-bridge number) — livefab territory (S3) |
-| e3b | FAIL (coherent BACKWARD drift, cos −0.956) | **OPEN MECHANISM**: backward at kx=2.08 AND kx=1.0 (probe), at d̄=1.545 (>π/ω_load) AND d̄=1.472 (<π/ω_load, shell2) — not the zone edge, not the π gate resonance alone; |cos|≈1 so transport is coherent with reversed sign. Needs a # DBG gate/flux-asymmetry session |
+| e9 | FAIL (window [1.28,1.42] holds ZERO links — nothing ever ran) | **SUBSTRATE PLACEMENT EXCLUSION** (corrected 2026-07-31 late): the first probe was INVALID — the pairs auto-load (pair_x0<0) is unison-only (m=1 curve, cellfab.c:1072; pair_x1<0 copies x0), so its "fifths" were mis-seeded unisons. The real arithmetic: the 3:2 rung (q·ω_i·d = πm, m=2) needs the heavy voice at x_j = (2.9/((2/3)·πm/(q·d))−1)/1.2 ≤ 0.9 ⇒ **d ≲ 1.50 — the fifth's habitable zone; the shell [1.52,1.70] sits just outside it.** A single-length substrate hosts only the rungs whose habitable zones include d̄. The Γ/(pq) tongue-vs-σ_d bound remains a pre-registered prediction, untested until a shell hosts fifths |
+| e3b | FAIL (coherent BACKWARD drift, cos −0.956) → **RESOLVED + probe PASS** | TEST OPERATING POINT on a real physical structure: at amp=0.5 the loaded pitch gives ω·d̄ ≈ π AND kx·d̄ ≈ π — the forward travel gate and the backward wrap-rung (d(kx+ω)=2π) are DEGENERATE; the foam's 19% smear broke the tie incoherently (V2g's own log shows net cmx 7.005→6.657 BACKWARD; its PASS is a second-half drift), while the uniform shell resolves it coherently backward. Probe at the derived travel window (amp=0.25, kx=2.55: ω(x)≈kx, 2ωd̄ far from 2π): **PASS cos=+0.894, speed 0.00805 — 2.3× the foam's best.** Physics bonus: the emergent-inertia wall is mechanism-identified — heavy blobs freeze/reverse because loaded pitch × d̄ approaches the backward rung π |
 | g3 | FAIL (deflection +1.17 vs +2.5) | G-SECTOR RECALIBRATION DEBT: NC halved ⇒ blob source mass ~halved (amp/sigma are per-cell), footprint shallower (core/far 0.73 vs 0.53); degree probe (deg~11) did NOT recover it ⇒ source-mass scale, not connectivity |
 | g4 | FAIL (fflux_late=0; decay ratio borderline) | PHYSICS SHIFT, arguably favorable: on the quiet substrate the blob leak stops radiating (roughness ↓ — the same effect that lengthens structure lifetimes) — the bar encoded the foam's rough-leak signature |
 
@@ -134,9 +134,20 @@ instructive failure, see finding F2.
   7.3 → 3.4) and the OPTICS sector collapses (d1 V 0.39→0.09, e2
   0.88→0.56C, HOM split gone): **interference visibility and pulse
   speed are the substrate's connectivity ruler.** Healthy degree ≥ ~7.
-* **F3 — the fifth is the substrate's σ_d ruler.** Unison locks thrive
-  at 3% (e7 perfect); 3:2 locks need ≲0.4%. The interval ladder grades
-  substrates: unison → S1; intervals → S3.
+* **F3 (corrected) — the interval ladder is the substrate's PLACEMENT
+  ruler.** Each p:q rung has a habitable d-zone from load reachability
+  (3:2 at m=2 needs d ≲ 1.50); a single-length substrate hosts only
+  the rungs whose zones include d̄ — the shell at 1.52–1.70 excludes
+  the fifth outright. (The finer claim — tongue width Γ/(pq) vs σ_d,
+  suggesting ≲0.4% for interval ROBUSTNESS — remains a pre-registered
+  prediction for a fifth-habitable shell; the first probe of it was
+  invalidated by the unison-only auto-seeder.)
+* **F4 — uniform substrates resolve gate degeneracies coherently.**
+  Operating points tuned on a disorder-smeared substrate can flip sign
+  when the smear is removed (e3b); conversely the quiet substrate makes
+  real structures sharp: the inertia wall = the ω·d̄ → π backward-rung
+  approach, now mechanism-identified and probe-confirmed (light blob in
+  the travel window: cos +0.894 at 2.3× foam speed).
 * Constraint set for any future substrate: floor at jamming; degree
   ≥ 7 (optics green); σ_d per the interval content needed; d̄ inside
   the loaded-pitch gate window; per-experiment apparatus constants
@@ -146,10 +157,17 @@ instructive failure, see finding F2.
 ### Standing state and next steps
 
 `laws_V2g` remains THE table; **V2s shell1 is the S1 working variant**
-(15/21 with the residual map above; promotion is a user decision after
-the residuals close). Next: (1) e3b backward-drift diagnosis
-(debug=1 # DBG sectors); (2) e8 explicit-δ0 apparatus + e6 window
-adoption for the variant apparatus set (bars untouched); (3) G-sector
-recalibration (blob source mass per NC); (4) optional density-matched
-shell scan (dmin ≈ 1.21, floor at jamming ≈ 1.44) if a lower d̄ is
-wanted; (5) livefab (S3) design carrying F1–F3 as requirements.
+(15/21 with the residual map above, of which e3b and e6 are
+probe-PROVEN test-side and recoverable; promotion is a user decision
+after the residuals close). Next: (1) adopt the variant apparatus set
+(e3b amp/kx travel window, e6 windows+auto loads — both probe-green;
+e8 explicit-δ0 ladder — its foam ladder was the d-spread itself,
+pair_x0=0.5 fixed; g3 sigma×(NC ratio)^{1/3}≈2.74 restoring source
+mass at unchanged per-cell load), bars untouched; (2) g4 check
+re-expressed substrate-invariantly (its radiative-dominance clause
+encoded the foam's rough leak; the quiet substrate's non-radiating
+leak arguably STRENGTHENS the no-monopole claim); (3) **S1b:
+density-matched shell at d̄ ≈ 1.46–1.48** (dmin ≈ 1.21, floor AT its
+jamming ≈ 1.44, lmax ≈ 1.60) — hosts the fifth (habitable zone) and
+keeps the travel window; rerun the battery there; (4) livefab (S3)
+design carrying F1–F4 as requirements.
