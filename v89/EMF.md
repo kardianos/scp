@@ -180,6 +180,34 @@ that require a proton analog.
   V2s spreads ~30× less field flux than on the foam at t=28 (sparser
   network) — the substrate matters to field-sector calibrations too.
 
+* **2026-07-31 (EM2 v2 MEASURED with the point emitter — the field is
+  scatter-dominated at L=24; no 1/r² zone exists to test).** Emitter
+  apparatus battery-gated (em_src_*, reservoir-exact injection). Driven
+  at ω=0.43 to steady state: the late radial field-current profile is
+  NOT flux-flat on either substrate (V2g: 0.0015→0.008 rising with r;
+  V2s: larger fluxes, same non-conservation) — transport is diffusive
+  (foam scatter), not ballistic radiation. HONEST VERDICT: EM2's claim
+  cannot be tested below the scattering mean free path; EM6
+  (mean-free-path vs regularity) is the prerequisite measurement, or
+  the EM5 cone changes the transport class. EM2 stays open, now with
+  its blocker measured rather than assumed.
+
+* **2026-07-31 (EM5 prototype — maxfab v1 verdict + v2 direction).**
+  Standalone discrete-Maxwell prototype (emf/maxfab.c) per the design:
+  E on links, B on 2-cells, leapfrog curl pair, energy drift ~1e-5.
+  v1 (unweighted, ALL foam triangles as 2-cells): NO cone — a flat
+  localized resonance at ω≈1.48 (k-independent) over a large frozen
+  kernel: the all-triangles complex is over-complete (~7 faces/edge)
+  and metric-less. v2 (scipy prototype: Delaunay tetrahedralization,
+  faces = true 2-cells (5.2/edge), barycentric hodge weights):
+  k-dependence appears (ω = 0.98 at kx=1.0) but low-k is masked by the
+  gradient-kernel's spectral leakage; v3 (transverse projection via
+  weighted Poisson + windowed DFT) running — the cone bar is ω(k)
+  linear through the origin at small k. Verdict either way feeds the
+  EM5 law design: the operator class and its required metric
+  structure are being pinned down BEFORE any production law change,
+  per doctrine.
+
 * **2026-07-31 (EM1 SCORED — the field mode is a lattice band, not a
   cone; + the relativity/Maxwell analysis, user directive).** Measured
   v_g(kx): 0.3499/0.5215/0.5767/0.6054/0.6092/0.3445/0.2258 at kx =

@@ -388,3 +388,19 @@ V2s.
 measured the pair drain floor B_min = 8.85e-4 ≈ 2·c₀·cap — the same
 mob_floor bleed that sets Q9's dissipation books; one microscopic
 channel now measured from both programs' sides.
+
+### 7.8 Q11 first light (2026-07-31): the circulator, and the instrument gap
+
+The fifth-triangle (P17 address: cells 3928/4407/5902, sides
+1.33–1.38, phase-chain closure residual 0.11 rad) placed via the new
+interval-net edges (`E a b p q`, battery-gated). Unpinned: loads drift
+off 3:2, the triangle runs as a phase-slip circulator whose books
+close like Kirchhoff (ν₀ = +0.15822 vs ν₁+ν₂ = 0.15849 — 0.2%).
+Pinned: a clean two-edge circulator (ν₀ = +0.121 ≈ −ν₁; the 1:1 edge
+SILENT at ν₂ = 0.005 — A and C hold coherence across the cycle).
+**Locked-vs-free on the 3:2 edges is undecidable with the current
+instrument**: slip_track uses the unison phase, and a locked p:q edge
+advances that variable exactly like a free one. Required for Q11 v2
+(small, ratchet-gated): comb-aware slip books — Φ = q·θᵢ − p·θⱼ from
+the link's lp/lq — plus the same in the # NETG gate report. Then the
+ℤ₆ holonomy count is readable directly.

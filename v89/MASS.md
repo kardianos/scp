@@ -987,6 +987,30 @@ combined) if H1 shows the hole matters.
   (intake knob) against this measured curve — I(x,es) vs the B(δ0)
   baseline; S1-substrate version once a geom_dump apparatus exists.
 
+* **2026-07-31 (M-B2 — THE PRESSURE SURFACE MAPPED: what insulates is
+  CONTRAST, and the operating point stacks).** Piston built (C1'
+  design, reservoir-exact: 1939 Es units cycled at drift 0.000e+00;
+  battery 21/21 with piston + interval-net edges + EM2 emitter all
+  default-off). B(δ0, es) measured on the M-B1 bridge: **dB/des > 0
+  above es≈0.85** (pressure inflates vacuum-facing contact areas —
+  opens the bleed: at the rung 0.67/1.09/1.41/2.25 e-3 across es
+  0.85/1.0/1.15/1.30) and **U-TURN below** (es 0.65/0.50/0.35 →
+  0.68/0.77/0.76 e-3): no zero crossing — the V2g no-particle
+  statement survives the pressure axis. THE MECHANISM THE U-SHAPE
+  PROVES: insulation = the CONTRAST between ambient and the
+  structure's own pocket, not absolute low pressure (a depressurized
+  box erases the pocket's gradient). Best measured operating point:
+  ride-heavy (δ0=+0.08) + es=0.85 → **B = 4.6e-4 ≈ 0.54·c₀/voice** —
+  comp12-recapture territory via INDEPENDENT physics (environment
+  contrast vs winding). The self-consistency loop is now quantified at
+  every link: mass → footprint (g1) → local contrast → reduced bleed
+  (M-B2) → longer life (load line). DESIGN FORWARD: a heavy
+  wound-mutual ring carries its OWN contrast (no piston needed);
+  if channels stack, c_eff ~ 0.2·c₀ → ~5× load-line → the C1
+  extrapolated-half-life bar comes into range. Next: comp12-class
+  ring, measure its self-pocket depth + drain; the mass-vs-pocket
+  curve is the remaining calibration.
+
 * **2026-07-31 (SUBSTRATE VERDICT — user: the foam was an improved
   stepping stone but will fail as a viable means; we need a NUMERIC
   replacement — a different simulation mechanism, not a different
