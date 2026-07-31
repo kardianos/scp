@@ -175,6 +175,17 @@ typedef struct {
      * (byte-identical at any thread count). */
     int pin_net;
     int slip_diag;
+    /* C1' PISTON (design/C1_piston_design.md; flux-machine intake knob):
+     * boundary cells within piston_m of any face have their SPACE store
+     * held on a schedule es(t): es0 before t0, linear ramp to es1 by t1,
+     * held after. Difference booked into a reservoir INSIDE the
+     * conservation sum (the pin_net pattern applied to Es). Default off. */
+    double piston_m, piston_es0, piston_es1, piston_t0, piston_t1;
+    /* EM2 point emitter: one cell driven coherently in the field plane
+     * at pitch em_src_w, amplitude em_src_amp, until em_src_t1 (0 = all
+     * run). Injected energy debited from a source reservoir inside the
+     * conservation sum. Default off. */
+    double em_src_amp, em_src_w, em_src_x, em_src_y, em_src_z, em_src_t1;
     /* SUBSTRATE ladder S1 (MASS.md 2026-07-31): optional deterministic
      * anneal of the cell scaffold toward uniform neighbor spacing,
      * applied BEFORE radii/normals/phases are drawn — the RNG stream is
@@ -276,6 +287,11 @@ static void cfg_defaults(void)
     P.quant_mode = 1;
     P.pin_net = 0;
     P.slip_diag = 0;
+    P.piston_m = 0; P.piston_es0 = 1.0; P.piston_es1 = 1.0;
+    P.piston_t0 = 0; P.piston_t1 = 0;
+    P.em_src_amp = 0; P.em_src_w = 0.43;
+    P.em_src_x = -1; P.em_src_y = -1; P.em_src_z = -1;
+    P.em_src_t1 = 0;
     P.geom_relax = 0;
     P.geom_relax_k = 0.05;
     P.geom_dtar = -1.0;
@@ -423,6 +439,17 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "tau_harden")) P.tau_harden = atof(v);
     else if (!strcmp(k, "pin_net")) P.pin_net = atoi(v);
     else if (!strcmp(k, "slip_diag")) P.slip_diag = atoi(v);
+    else if (!strcmp(k, "piston_m")) P.piston_m = atof(v);
+    else if (!strcmp(k, "piston_es0")) P.piston_es0 = atof(v);
+    else if (!strcmp(k, "piston_es1")) P.piston_es1 = atof(v);
+    else if (!strcmp(k, "piston_t0")) P.piston_t0 = atof(v);
+    else if (!strcmp(k, "piston_t1")) P.piston_t1 = atof(v);
+    else if (!strcmp(k, "em_src_amp")) P.em_src_amp = atof(v);
+    else if (!strcmp(k, "em_src_w")) P.em_src_w = atof(v);
+    else if (!strcmp(k, "em_src_x")) P.em_src_x = atof(v);
+    else if (!strcmp(k, "em_src_y")) P.em_src_y = atof(v);
+    else if (!strcmp(k, "em_src_z")) P.em_src_z = atof(v);
+    else if (!strcmp(k, "em_src_t1")) P.em_src_t1 = atof(v);
     else if (!strcmp(k, "geom_relax")) P.geom_relax = atoi(v);
     else if (!strcmp(k, "geom_relax_k")) P.geom_relax_k = atof(v);
     else if (!strcmp(k, "geom_dtar")) P.geom_dtar = atof(v);
@@ -651,6 +678,18 @@ static double *slip_psi_mid = NULL, *slip_dwb_mid = NULL;
 static double *slip_psi_w = NULL, *slip_dwb_w = NULL;
 static double slip_t_mid = 0.0, slip_t_w = 0.0;
 static int slip_mid_set = 0;
+/* piston + emitter state (reservoir accounts inside the sum) */
+static unsigned char *pis_mask = NULL;
+static int pis_n = 0;
+static double Rpis = 0.0;
+static int64_t iRpis = 0;
+static double *pis_res = NULL;       /* mode-1 residuals */
+static int src_cell = -1;
+static double Rsrc = 0.0;
+static int64_t iRsrc = 0;
+static double src_res = 0.0;
+/* init=net: optional per-edge interval registration (E a b p q) */
+static signed char net_ep[16384], net_eq[16384];
 static double *th1s, *th2s;          /* clock snapshot: sources read pre-pass values */
 static double *nsnap;                /* normals snapshot for the parallel alignment */
 static int want_th1 = 1;             /* refresh the diagnostic th1 cache this step */
@@ -1423,9 +1462,14 @@ static void build_field(void)
                 nv++;
             } else if (nln[0] == 'E') {
                 if (ne >= NEMAX) { fprintf(stderr, "# ERROR net: >%d edges\n", NEMAX); exit(1); }
-                if (sscanf(nln + 1, "%d %d", &ea[ne], &eb[ne]) != 2) {
+                int pp = 1, qq = 1;
+                int got = sscanf(nln + 1, "%d %d %d %d",
+                                 &ea[ne], &eb[ne], &pp, &qq);
+                if (got != 2 && got != 4) {
                     fprintf(stderr, "# ERROR net: bad E line: %s", nln); exit(1);
                 }
+                net_ep[ne] = (signed char)pp;
+                net_eq[ne] = (signed char)qq;
                 ne++;
             }
         }
@@ -1547,6 +1591,24 @@ static void build_field(void)
             net_pin_tgt = malloc(nv * sizeof(double));
             for (int k = 0; k < nv; k++) net_pin_tgt[k] = Em[npick[k]];
         }
+        /* interval edges (E a b p q): register the comb ratio on the
+         * actual link so gates/comb see the p:q lock (the pairs-seeder
+         * convention; orientation follows the link's (li,lj)). */
+        for (int e = 0; e < ne; e++) {
+            if (net_ep[e] == 1 && net_eq[e] == 1) continue;
+            int u = npick[ea[e]], w = npick[eb[e]];
+            int lf = -1;
+            for (int l = 0; l < NL; l++)
+                if ((li[l] == u && lj[l] == w) || (li[l] == w && lj[l] == u)) { lf = l; break; }
+            if (lf < 0) {
+                printf("# NETPQ e=%d %d:%d NO LINK (skipped)\n", e, net_ep[e], net_eq[e]);
+                continue;
+            }
+            if (li[lf] == u) { lp[lf] = net_ep[e]; lq[lf] = net_eq[e]; }
+            else { lp[lf] = net_eq[e]; lq[lf] = net_ep[e]; }
+            printf("# NETPQ e=%d (%d-%d) pq=%d:%d link=%d\n",
+                   e, ea[e], eb[e], net_ep[e], net_eq[e], lf);
+        }
     } else if (P.init == 5) {
         /* double slit: wall (detuned medium) with two vacuum windows,
          * screen + edge sinks (record media), optional which-path
@@ -1655,6 +1717,21 @@ static void build_field(void)
      * as sinks (record media), for open-space experiments under any
      * init — e.g. so a radiation-pressure strike is not followed by the
      * unabsorbed remainder reverberating in the closed box. */
+    if (P.piston_m > 0) {
+        pis_mask = calloc(NC, 1);
+        double m = P.piston_m;
+        for (int i = 0; i < NC; i++) {
+            if (cflag[i]) continue;
+            if (cx[i] < m || cx[i] > P.L - m || cy[i] < m || cy[i] > P.L - m
+                || cz[i] < m || cz[i] > P.L - m) {
+                pis_mask[i] = 1;
+                pis_n++;
+            }
+        }
+        printf("# piston: margin=%g cells=%d es %g -> %g over t=[%g,%g]\n",
+               P.piston_m, pis_n, P.piston_es0, P.piston_es1,
+               P.piston_t0, P.piston_t1);
+    }
     if (P.edge_sink > 0) {
         int nes = 0;
         double m = P.edge_sink;
@@ -1775,7 +1852,7 @@ static int64_t ledger_sum_all(void)
     int64_t s = 0;
     for (int i = 0; i < NC; i++) s += iEs[i] + iEm[i] + iEe[i];
     for (int k = 0; k < 4 * NL; k++) s += ilem[k];
-    return s + iRpin;   /* pin reservoir is inside the conservation sum */
+    return s + iRpin + iRpis + iRsrc;   /* reservoirs inside the sum */
 }
 
 /* Seed integers from current FP state; residuals zero; snapshots set. */
@@ -2046,6 +2123,115 @@ static void slip_track(double t)
     }
 }
 
+
+/* ============ C1' piston + EM2 point emitter ============ */
+static double pis_target(double t)
+{
+    if (P.piston_t1 <= P.piston_t0)
+        return t >= P.piston_t0 ? P.piston_es1 : P.piston_es0;
+    if (t <= P.piston_t0) return P.piston_es0;
+    if (t >= P.piston_t1) return P.piston_es1;
+    return P.piston_es0 + (P.piston_es1 - P.piston_es0)
+           * (t - P.piston_t0) / (P.piston_t1 - P.piston_t0);
+}
+
+static double pis_R(void)
+{
+    return (P.ledger_mode >= 2) ? led_to_fp(iRpis, ledger_u_eff) : Rpis;
+}
+
+static void piston_apply(double t)
+{
+    if (!pis_mask) return;
+    double tgt = pis_target(t);
+    if (tgt < P.es_floor) tgt = P.es_floor;
+    if (P.ledger_mode >= 2) {
+        double u = ledger_u_eff;
+        int64_t itgt = led_from_fp(tgt, u);
+        for (int i = 0; i < NC; i++) {
+            if (!pis_mask[i]) continue;
+            int64_t dq = iEs[i] - itgt;
+            if (dq) {
+                iRpis += dq;
+                iEs[i] = itgt;
+                Es[i] = led_to_fp(itgt, u);
+                snapEs[i] = Es[i];
+            }
+        }
+    } else if (P.ledger_mode == 1) {
+        double u = ledger_u_eff;
+        if (!pis_res) pis_res = calloc(NC, sizeof(double));
+        for (int i = 0; i < NC; i++) {
+            if (!pis_mask[i]) continue;
+            double dfp = Es[i] - tgt;
+            if (dfp != 0.0) {
+                Rpis += dfp;
+                Es[i] = tgt;
+                snapEs[i] = Es[i];
+                int64_t dq = led_qdelta(dfp / u, &pis_res[i]);
+                iEs[i] -= dq;
+                iRpis += dq;
+            }
+        }
+    } else {
+        for (int i = 0; i < NC; i++) {
+            if (!pis_mask[i]) continue;
+            double dfp = Es[i] - tgt;
+            if (dfp != 0.0) { Rpis += dfp; Es[i] = tgt; }
+        }
+    }
+}
+
+static double src_R(void)
+{
+    return (P.ledger_mode >= 2) ? led_to_fp(iRsrc, ledger_u_eff) : Rsrc;
+}
+
+static void src_apply(double t)
+{
+    if (P.em_src_amp <= 0) return;
+    if (P.em_src_t1 > 0 && t > P.em_src_t1) return;
+    if (src_cell < 0) {
+        double sx = P.em_src_x < 0 ? 0.5 * P.L : P.em_src_x;
+        double sy = P.em_src_y < 0 ? 0.5 * P.L : P.em_src_y;
+        double sz = P.em_src_z < 0 ? 0.5 * P.L : P.em_src_z;
+        double bd = 1e30;
+        for (int i = 0; i < NC; i++) {
+            if (cflag[i]) continue;
+            double dx = cx[i] - sx, dy = cy[i] - sy, dz = cz[i] - sz;
+            double dd = dx * dx + dy * dy + dz * dz;
+            if (dd < bd) { bd = dd; src_cell = i; }
+        }
+        printf("# em_src: cell=%d at (%.2f,%.2f,%.2f) amp=%g w=%g\n",
+               src_cell, cx[src_cell], cy[src_cell], cz[src_cell],
+               P.em_src_amp, P.em_src_w);
+    }
+    int c = src_cell;
+    double ee0 = fa1[c] * fa1[c] + fa2[c] * fa2[c]
+               + fb1[c] * fb1[c] + fb2[c] * fb2[c];
+    double ph = -P.em_src_w * t;
+    fa1[c] += P.em_src_amp * P.dt * cos(ph);
+    fa2[c] += P.em_src_amp * P.dt * sin(ph);
+    double ee1 = fa1[c] * fa1[c] + fa2[c] * fa2[c]
+               + fb1[c] * fb1[c] + fb2[c] * fb2[c];
+    double dfp = ee1 - ee0;
+    Ee[c] = ee1;
+    if (P.ledger_mode >= 1) {
+        snapEe[c] = ee1;
+        if (P.ledger_mode >= 3) {
+            double u = ledger_u_eff;
+            int64_t old = iEe[c];
+            iEe[c] = led_from_fp(ee1, u);
+            iRsrc -= (iEe[c] - old);
+        } else {
+            double u = ledger_u_eff;
+            int64_t dq = led_qdelta(dfp / u, &src_res);
+            iEe[c] += dq;
+            iRsrc -= dq;
+        }
+    }
+    Rsrc -= dfp;
+}
 
 static void ledger_alloc(void);
 static void ledger_seed_from_fp(void);
@@ -3026,6 +3212,8 @@ static void diag_row(double t)
     double tET = ksum(lem, 4 * NL);
     double tot = tEs + tEm + tEe + tET;
     if (P.pin_net) tot += pin_R();
+    if (pis_mask) tot += pis_R();
+    if (P.em_src_amp > 0) tot += src_R();
     double drift = E0_total != 0 ? (tot - E0_total) / E0_total : 0;
     if (!isfinite(tot)) { fprintf(stderr, "# FATAL non-finite energy at t=%g\n", t); exit(2); }
 
@@ -3168,6 +3356,11 @@ static void diag_row(double t)
     }
     if (P.pin_net && net_nv > 0)
         printf("# PIN t=%.2f R=%.9g nv=%d\n", t, pin_R(), net_nv);
+    if (pis_mask)
+        printf("# PIS t=%.2f es_tgt=%.4f R=%.9g n=%d\n",
+               t, pis_target(t), pis_R(), pis_n);
+    if (P.em_src_amp > 0 && src_cell >= 0)
+        printf("# SRC t=%.2f R=%.9g cell=%d\n", t, src_R(), src_cell);
     if (P.slip_diag && slip_lf) {
         for (int e = 0; e < net_ne; e++) {
             if (slip_lf[e] < 0) continue;
@@ -3528,6 +3721,8 @@ static void final_report(void)
     double tEs = ksum(Es, NC), tEm = ksum(Em, NC), tEe = ksum(Ee, NC), tET = ksum(lem, 4 * NL);
     double tot = tEs + tEm + tEe + tET;
     if (P.pin_net) tot += pin_R();
+    if (pis_mask) tot += pis_R();
+    if (P.em_src_amp > 0) tot += src_R();
     /* exit face (G-battery): the +x absorbing face is a recorder — the
      * transverse centroid of what it recorded is the transmitted beam's
      * exit position (lensing: compare against the no-mass baseline) */
@@ -3605,6 +3800,12 @@ static void final_report(void)
     if (P.pin_net && net_nv > 0)
         printf("# RESULT pin R=%.9g nv=%d (reservoir inside the conservation sum)\n",
                pin_R(), net_nv);
+    if (pis_mask)
+        printf("# RESULT piston R=%.9g n=%d es_final=%.4f\n",
+               pis_R(), pis_n, pis_target(P.T));
+    if (P.em_src_amp > 0)
+        printf("# RESULT em_src R=%.9g cell=%d (injected = -R)\n",
+               src_R(), src_cell);
     if (P.slip_diag && slip_lf) {
         for (int e = 0; e < net_ne; e++) {
             if (slip_lf[e] < 0) continue;
@@ -3852,6 +4053,8 @@ int main(int argc, char **argv)
         if (P.ledger_mode > 0) ledger_commit_step();
         if (P.pin_net && net_nv > 0) pin_apply();
         if (P.slip_diag && net_nv > 0) slip_track(sim_t);
+        if (pis_mask) piston_apply(sim_t);
+        if (P.em_src_amp > 0) src_apply(sim_t);
         if (P.init == 5 && P.t_expose > 0 && !expose_frz && sim_t >= P.t_expose) {
             /* the shutter closes: the record so far is the photograph */
             expose_frz = malloc(NC * sizeof(double));
