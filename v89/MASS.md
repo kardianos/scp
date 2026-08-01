@@ -1203,3 +1203,43 @@ combined) if H1 shows the hole matters.
   Ratchet note: a literature transfer adopted as a pre-registration
   and killed same-day is the mapping working as intended — the
   correspondences (LIT.md) locate mechanisms, not authorities.
+
+* **2026-08-01 (M-B5 PRE-REGISTRATION — the W1 re-fight as desert
+  riders; written before launch).** Task #4 arm 2: W1-class free
+  candidates re-addressed onto the annealed substrate at the M-B4
+  habitat. F3 with teeth: on V2s (d̄_link=1.5449, ceiling
+  geom_lmax=1.70) the strut length π/ω at desert loads is 1.86 —
+  ABOVE the ceiling — so no strut structure can ride the desert;
+  cable rings can, and the winding integer IS the address dial:
+  ω = 2πm/L_ring, x = (w2/ω−1)/q. Candidates (formfind_v2s.py,
+  deterministic, all picks exact / links true / chord-free / closure
+  ≤4e-15): **v2s_ring12_m5** (comp12-class, L_ring=18.491, x=0.5891
+  mid-desert), **v2s_ring12_m5_ctrl** (same cells/loads, phases
+  mean-tuned ignoring lengths — W1 ctrl convention; per-gate rms
+  0.073 rad ⇒ ~1% gate dimming: rate-level prediction ctrl≈m5),
+  **v2s_ring12_m6** (same cells, rung winding, x=0.3520 — the
+  address A/B on identical topology), **v2s_ring8_m3** (x=0.7256
+  upper desert; the finder surfaced an exactly-regular octagon,
+  edge spread 1e-4 — the anneal crystallizes patches), **v2s_free1**
+  (lone voice x=0.60 at box center — load-line baseline). Substrate
+  check: NC=5039, degree 7.28, σ_d=3.00% — matches S1 exactly.
+  PREDICTIONS (from the measured M-B4 curve, B_pv = pair B/2,
+  log-linear interp, spike excluded as fast-transit; integral
+  t_pred = ∫ cap/B_pv dx from x_skirt): free1 33.6k, ring12_m5
+  32.2k, ring12_m6 7.7k, ring8_m3 45.5k t.u. — vs foam load lines
+  3.2k/3.1k/1.7k/3.9k at the same addresses: the curve claims a
+  ~10× quiet-geometry dividend. T=5000 first leg ⇒ census is
+  CENSORED for desert riders; the DECISIVE first-leg bars are:
+  (1) **curve transfer**: in-situ per-voice drain −dEm/dt/N at the
+  object's current x matches B_pv(x) within 2× (pinned-pair curve →
+  free objects); (2) **address A/B**: drain ratio m6/m5 ≈ 2.3
+  (4.43e-5/1.89e-5) on identical cells+topology; (3) **tongue
+  transit**: free1/m5/ring8 start above the fifth coincidence and
+  must cross x=0.4167±0.011 with a brief ~100× drain episode; m6
+  starts BELOW it and must show none; (4) **ctrl**: within 10% of
+  m5 drain (any large split = texture physics beyond rate level);
+  (5) census, where reached, ≥ its t_pred·0.5 (W1 foam landed
+  1.14–1.43× its line). Configs: V2s = mb1s keys verbatim (dmin=1.25,
+  geom_relax=800/k=0.3/dtar=1.52/lmax=1.70, seed=20260727, L=24),
+  free evolution (no pin), W1 boundary edge_sink=1.6, T=5000,
+  lump_diag=1. Runs: mass_balance/runs/w1s_*.
