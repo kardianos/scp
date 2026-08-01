@@ -1243,3 +1243,64 @@ combined) if H1 shows the hole matters.
   geom_relax=800/k=0.3/dtar=1.52/lmax=1.70, seed=20260727, L=24),
   free evolution (no pin), W1 boundary edge_sink=1.6, T=5000,
   lump_diag=1. Runs: mass_balance/runs/w1s_*.
+
+* **2026-08-01 (M-B5 SCORED — the balance landscape GOVERNS free
+  objects; ring recapture dividend; winding parity = exchange
+  topology; census censored-alive).** All five runs T=5000 complete,
+  ledger mode 3 exact end-to-end (run_max_sum_err=0 over 250k steps,
+  rel_drift ≤1.1e-15). THE BARS (score_w1s.py; figure
+  runs/w1s_drain_vs_curve.png):
+  (1) **CURVE TRANSFER 5/5 PASS** — windowed per-voice drain over
+  the current address, divided by the M-B4 pinned-pair curve:
+  free1 1.42, ring12_m5 0.72, ctrl 0.68, ring12_m6 1.11, ring8_m3
+  0.56 (bar [0.5, 2]). The balance landscape measured on a pinned
+  pair GOVERNS free objects — the curve is a property of
+  (address, substrate), object-dependent only through O(1)
+  structure factors. m6 walks 0.352→0.199 and TRACKS the curve the
+  whole way down (1.11 median while B_pv rises under it).
+  (2) **Ring recapture dividend**: closed cable rings shed at
+  0.56–0.72× the pair reference — closure helps at RATE level on
+  quiet geometry (foam M-B3 found closure = cohesion only; the
+  desert makes it a rate lever too).
+  (3) **Phases buy nothing at rate level**: ctrl/m5 = 0.947 (bar
+  ≤10% ✓), pre-registered from the 1% mean gate dimming; the seed
+  echo measured it (ctrl gates mean 0.9895 vs predicted 0.989).
+  (4) **FINDING — winding parity flips exchange topology**: m=N/2
+  makes every edge a strut (2ω·d=2π, back gates open) ⇒ two-way
+  flight load; measured A/B m6/m5 = 5.60 vs the 2.34 address
+  prediction ⇒ a ~2.4× two-way-flight structure factor the
+  pre-registration missed (it treated m as address only). m6 also
+  cluster-merges (two-way binding) where m5 voices stay distinct —
+  the strut ring buys cohesion and pays throughput; flight is load,
+  now structurally resolved by winding parity.
+  (5) **ALL ALIVE at T=5000** (census censored, as pre-registered).
+  x-walks: free1 0.600→0.549, m5 0.589→0.550, ctrl →0.572, m6
+  0.352→0.199 (fastest; skirt arrival extrapolates ~t≈9k), ring8
+  0.726→0.673. Measured-rate lifetimes: m5 ≈ 45k t.u., free1 ≈
+  24k — vs foam free1's census 2572: the ~10× quiet-geometry
+  dividend is now MEASURED at rate level, not just predicted.
+  (6) **Box dense inventory EXACTLY conserved at T=5000** in an
+  ABSORBING box (E_dense+E_transfer = seed to 6 decimals, all
+  runs): after 5000 t.u. nothing shed has exited — the measured
+  drain is REDISTRIBUTION (object → local haze), not yet system
+  loss. NEW OPEN ITEM (cheap): does the haze ever exit on V2s, or
+  is gross shed fully recaptured at box scale? (Extend one run, or
+  score the haze radius growth from # RAD.) Note the foam W1
+  "drain" was also an object book — the system-loss axis was never
+  measured there either.
+  (7) Tongue-transit bar N/A this leg — walk rates (Δx ≈ 0.04–0.15
+  per 5000) reach x_fifth only for m6, which started below it;
+  as-designed at these bleed rates.
+  Instrument note (for replication): the per-voice book = sum of
+  listed lump masses rescaled for the top-K listing cap, over
+  seeded voices — survives cluster merges (m6), the listing cap
+  (n=12 lists 10), and haze re-count (Emfree includes shed haze;
+  box inventory hides gross shed entirely). Cohesion via m1 is NOT
+  cross-substrate comparable (V2s degree 7.3 ⇒ rings list as N
+  singles; foam 17.6 ⇒ haze bridges merge them).
+  C1 IMPLICATION: heavy desert-riders hold their addresses and
+  outlive every foam multiple at rate level; the candidate that
+  combines the levers — a cable ring (recapture 0.7×) parked at the
+  desert minimum — is the current best object in the program.
+  Files: prestress/formfind_v2s.py, prestress/candidates/v2s_*.net,
+  runs/w1s_*.{cfg,log}, score_w1s.py, plot_w1s.py.
