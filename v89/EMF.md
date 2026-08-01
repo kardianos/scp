@@ -353,3 +353,28 @@ that require a proton analog.
   table first per §5; livefab (S3) remains the doctrinal home where
   faces arise from construction. Files: emf/maxfab_lg.py,
   runs/lg_ladder_foam.log.
+
+* **2026-08-01 (EM5 books — the named design problem RESOLVED by
+  kernel precedent; no code yet).** Re-read of ledger_commit_step
+  (cellfab.c ~1948–1969) answers "integer-exact transfers for a
+  wave sector": the EXISTING field mode already is one. Its
+  amplitudes stay unitary FP with NO integer writeback (the
+  writeback experiment killed e3b translation and was reverted);
+  iEe is an integer SHADOW of the |ψ|² energy, booked per cell by
+  delta-quantization with per-account residuals — and that
+  combination holds max_sum_err=0 through the full battery with the
+  field live (d1/EM1). Doctrine reading: AMPLITUDES WITHIN A MODE
+  (the wave sector evolves unitarily, un-quantized), ATOMS AT MODE
+  BOUNDARIES (any EM5↔matter conversion door, when built, fires in
+  whole atoms through the credit machinery like every door). So EM5
+  needs: (1) init-time face complex (linked triples, A_f, lumped
+  *1_e/*2_f with κ multiplicity) — deterministic apparatus; (2)
+  default-off sector state: chiral pair on links + B on faces,
+  leapfrog curl pair, all code guarded by em5 (byte-identity off);
+  (3) per-cell EM energy lumped into its own account (Eem/iEem)
+  extending ledger_commit_step by the exact Ee pattern — shadow
+  tracking, no amplitude writeback; (4) gate instrument: in-kernel
+  box-ladder dispersion rows (the EM1-flat bar, v_g=C both
+  polarizations). Sequencing per §5 workflow: M-B5 (in flight) is
+  the MASS checkpoint; the EM5 build follows it as the planned
+  alternation, variant-table first.
