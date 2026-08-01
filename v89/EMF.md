@@ -271,3 +271,52 @@ that require a proton analog.
   test (equivalence-principle discriminator); clock-pair redshift;
   piston rung-shift tripwire doubles as the ruler-response (factor-2)
   measurement. No kernel or law edits made in this session.
+
+* **2026-07-31 (EM5 PROTOTYPE VERDICT — THE CONE BAR IS MET; the
+  operator class is pinned, and the "disorder scatter" was the box).**
+  The v3 instrument chain, each step measured (emf/maxfab_dec.py;
+  logs emf/runs/dec_*.log): (1) the v3b local-probe DFT produced
+  non-monotonic ω(k) at small k — a sig=2.5 packet at kx=0.3 spans
+  Δk≈±0.4 and the probe latches onto the wrong line; replaced by the
+  standard dispersion instrument (box-wide tapered cos(kx·x) seed,
+  transverse-projected to div-residual ~1e-9, complex projection onto
+  the seeded mode, Hann DFT). (2) Off-ladder sweep: slope ~1.0,
+  intercept ~1% of slope, but R² 0.975–0.984 — FAILS the
+  pre-registered R²≥0.99 with per-point deviations ±4–6%. (3) The
+  disorder-attribution control (pre-registered: annealed S1 geometry,
+  σ_d 3.0% vs foam 9.3%, scatter should halve) FALSIFIED my disorder
+  hypothesis: the annealed sweep reproduces the foam's deviation
+  pattern nearly point-for-point (0.5 high, 0.7 low) — scatter
+  indifferent to substrate disorder but repeating per-k on the same
+  box = FINITE-BOX MODE SNAPPING: the projection latches onto the
+  nearest available box mode (Δk = 2π/24 ≈ 0.26), so the x-axis, not
+  the dispersion, carried the error (readings 0.540@kx0.5, 1.035@kx1.0
+  sit ON the 2π/24 ladder). (4) THE LADDER MEASUREMENT (kx = 2πn/24,
+  n=1..8; target ≡ available mode): **foam ω = 0.942·k + 0.043,
+  R² = 1.0000; annealed ω = 0.921·k + 0.050, R² = 0.9999 — the
+  pre-registered cone bar (|b| ≤ 0.1·m, R² ≥ 0.99) is MET on BOTH
+  substrates**; residuals ±0.003 (0.3%); gentle zone-edge softening
+  −9/−11% by k≈2.1 (vs the production sin-band's v_g collapse to
+  0.23); energy drift ≤2e-3 over T=120–180. Apparatus notes for
+  replication: tet trim cut = 1.6×median Delaunay edge (fixed cuts
+  overtrim sparser geometries — the annealed set lost 38% of tets and
+  went NaN on isolated nodes; NN-median fails on dense foam whose
+  dmin contacts bias it low); isolated-node guard in the Poisson
+  preconditioner. DESIGN CONSEQUENCES (EM5): (a) the operator class
+  is THE fix — E on links, B on 2-cells, leapfrog curl pair with
+  metric (barycentric-dual) weights gives a cone on the existing
+  production foam; no substrate change required for the cone itself
+  (the annealed substrate still owns the gate/species sectors). (b)
+  The production kernel lacks 2-cells: EM5 needs a face complex +
+  two hodge weight fields — the largest ratchet event yet named; the
+  natural staging is a variant-table trial (battery --tag) before any
+  standing-table change, and livefab (S3) is the doctrinal home where
+  faces arise from construction instead of Delaunay import. (c) The
+  chiral pair (F± = the two link-transverse plane amplitudes,
+  i∂tF± = ±C·curlF±) is algebraically free once curl exists — two
+  polarizations, first-order cone, Riemann–Silberstein form per the
+  Maxwell mapping entry. (d) c_DEC ≈ 0.94·C is a geometric constant
+  of the complex; the law sets C, the complex sets the ~6% — EM1-flat
+  (v_g = C at all k) remains the gate instrument, now with a measured
+  operator that can meet it. (e) Missing honestly, unchanged: the
+  source term (∇·E = ρ) awaits the charge construction (Q-ladder).

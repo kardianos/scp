@@ -1,0 +1,23 @@
+# trim: dnn=1.028 cut=1.748 kept=33821/62097
+# maxfab_dec: NC=9741 NT=33821 NF=82006 NE=58025 (faces/edge=4.24)
+# lambda_max=529.32 dt=0.0200
+# kx=0.20 div: 1.370e+01 -> 1.089e-09 (cg info=0)
+# RESULT dec kx=0.20 omega_peak=0.020 Hdrift=1.70e-06
+# kx=0.30 div: 1.304e+01 -> 1.274e-09 (cg info=0)
+# RESULT dec kx=0.30 omega_peak=0.020 Hdrift=1.56e-04
+# kx=0.40 div: 1.385e+01 -> 1.193e-09 (cg info=0)
+# RESULT dec kx=0.40 omega_peak=0.020 Hdrift=2.93e-05
+# kx=0.50 div: 1.367e+01 -> 1.196e-09 (cg info=0)
+# RESULT dec kx=0.50 omega_peak=0.020 Hdrift=6.78e-05
+# kx=0.70 div: 1.364e+01 -> 1.133e-09 (cg info=0)
+# RESULT dec kx=0.70 omega_peak=0.020 Hdrift=8.29e-05
+# kx=1.00 div: 1.308e+01 -> 1.284e-09 (cg info=0)
+# RESULT dec kx=1.00 omega_peak=0.020 Hdrift=2.90e-04
+# kx=1.40 div: 1.289e+01 -> 1.280e-09 (cg info=0)
+# RESULT dec kx=1.40 omega_peak=0.020 Hdrift=4.27e-04
+# kx=1.70 div: 1.268e+01 -> 1.210e-09 (cg info=0)
+# RESULT dec kx=1.70 omega_peak=0.020 Hdrift=4.73e-04
+# kx=2.00 div: 1.227e+01 -> 1.076e-09 (cg info=0)
+# RESULT dec kx=2.00 omega_peak=0.020 Hdrift=5.36e-04
+# CONE fit (k<=1): omega = -0.000*k +0.020, R2=1.0000 -> NOT a cone (bar failed)
+# bar: |b| <= 0.1*m and R2 >= 0.99 (pre-registered)

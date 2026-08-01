@@ -1071,3 +1071,74 @@ combined) if H1 shows the hole matters.
   Q6–Q8, p/n split analog). The old "MASS owns the critical path until
   P19" is amended: for nucleon-class objects the critical path runs
   THROUGH the charge construction.
+
+* **2026-07-31 (M-B3 STACK SCORED — the piston cannot help a
+  self-shaped machine; overpressure is lethal and one-sided; the
+  death-definition calibration lands and dissolves most of the c8
+  "anomaly").** Three arms of the W1 c8_ring12 net (V2g verbatim,
+  closed box edge_sink=0, T=5000; the ONLY physics delta vs the W1
+  baseline cfg is the boundary): bare / piston→es 0.85 / piston→es
+  1.15 (ramp done by t≈105, held). Matched-definition table
+  (cohesion = the W1 scorer rule, first t with m1 < 0.3·m0; census =
+  last t with n>0; drain = −dM_tot/dt over [100, 0.8·census] per
+  voice):
+
+  | arm | cohesion | deep 0.1·m0 | census | census/LawA | drain/c₀ |
+  |---|---|---|---|---|---|
+  | W1 absorbing | 449 | 2663 | 2972 | 1.43 | 0.85 |
+  | bare closed | 730 | 2510 | 2640 | 1.27 | 1.19 |
+  | piston 0.85 | 620 | 2320 | 2450 | 1.18 | 1.15 |
+  | piston 1.15 | 600 | 910 | 1190 | 0.57 | 2.41 |
+
+  VERDICTS. (1) **NO STACK** — pumping ambient to the M-B2 optimum
+  changes nothing on any definition (0.85–0.93×). The M-B2 pocket
+  effect (0.54·c₀) was measured on a PINNED featherweight pair; a
+  free heavy lump already runs at the bleed floor inside its own
+  footprint, and a uniform ambient shift cannot sharpen a self-shaped
+  pocket — measured: shell contrast collapses 0.043→0.012 under the
+  0.85 piston at zero lifetime cost, so ambient-shell contrast is not
+  the life variable for a self-shaped machine; the footprint is
+  self-referential. (2) **OVERPRESSURE IS LETHAL AND ONE-SIDED** —
+  ambient 1.15 doubles per-voice bleed (2.41·c₀), halves census life
+  (0.45×), and leaves early cohesion untouched (600 ≈ 730): the first
+  measured LEVEL dependence of the bleed, dB/dEs_ambient > 0 above
+  baseline and ≈ 0 below (one-sided valve; flux-machine consistent —
+  intake is pressure-fed, overfeeding raises through-flux, and
+  through-flux is roughness leak). The bridge tripwire (pitch
+  ambient-invariance) is a different quantity and untouched. (3)
+  **THE BATH BUYS COHESION ONLY** — closed vs absorbing: +63% on the
+  cohesion rule (449→730; M_tot@1000 1.55×), −11% at census
+  (2972→2640) — consistent with the 07-28 light-ring closed-box null.
+  (A provisional "5.9× bath lever" read mid-session was a
+  death-definition artifact, caught by re-scoring the W1 log under
+  census.) (4) **DEATH-DEF CALIBRATION (open item, closed):** the W1
+  scorer's 0.3·m0 measures COHESION (how long the biggest lump holds
+  ≥30% of seed mass); census measures SURVIVAL (last fragment). They
+  differ 4–6.6× on the same log. Under census the "c8-twin 449 vs
+  comp12 4879" anomaly largely dissolves (2972 vs 4879 = 1.6×, both
+  above their load lines); the 10.9× split is a COHESION split:
+  exact closure (comp12, ring_m=5) holds the lump TOGETHER ~10×
+  longer, while the twin sheds ~70% of m1 by t≈450–730 in EVERY
+  environment — structural, matching the chiral-pump saturation
+  prediction (07-29 stability entry). C1 IMPLICATION: the M-B2
+  stacking hypothesis (piston → c_eff ~ 0.2·c₀ → ~5× load line) is
+  FALSIFIED as pistoned; no arm exceeds 1.43×LawA census. Cohesion
+  lever: closure (~10×). Survival levers above the line: none new —
+  intake-side coherence remains the open path (user direction).
+  Files: mass_balance/runs/stack_*.{cfg,log}, score_stack.py (emits
+  the full table).
+
+* **2026-07-31 (M-B3b — THE MASS-vs-POCKET CALIBRATION, free from the
+  bare arm).** The stack test's bare arm sweeps M 13.2→0 through its
+  own decay, and each # RAD row gives the shell-min pocket depth: the
+  M-B2 "remaining calibration" comes free. **depth = 4.38e-3·M
+  + 0.0009, R² = 0.977** (254 points, M > 0.5; depth = outer-shell
+  mean − inner-shell min of Es). Two structural reads: (1) intercept
+  ≈ 0 — the pocket exists only while the mass does (g4's
+  no-steady-monopole reproduced by an independent instrument); (2)
+  the footprint takes ~40–100 t.u. to establish (t=0 depth 0.026 →
+  steady 0.053), consistent with the s_k equalization scale (~40
+  t.u.) in the law-table header. Combined with M-B2's dB/d(contrast)
+  measurement this closes the loop numerically: M → depth (4.4e-3/Em,
+  this entry) → bleed reduction (M-B2 surface) → life (load line).
+  Scored from mass_balance/runs/stack_bare.log; no new runs.

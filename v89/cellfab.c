@@ -678,6 +678,17 @@ static double *slip_psi_mid = NULL, *slip_dwb_mid = NULL;
 static double *slip_psi_w = NULL, *slip_dwb_w = NULL;
 static double slip_t_mid = 0.0, slip_t_w = 0.0;
 static int slip_mid_set = 0;
+/* fixed-chart books (Q11 v2b): the live lp/lq is the comb DETECTOR's
+ * state and flips under flight-load detuning — a slip sum over a
+ * changing phase definition is not a holonomy count. Track in
+ * parallel the net's DECLARED p:q (link-oriented, frozen at seed):
+ * clean Z-countable slips in one chart; plus the detector flip count
+ * so live-book mixing is visible. Measurement only. */
+static signed char *slip_fp = NULL, *slip_fq = NULL;   /* declared p:q */
+static signed char *slip_lp_prev = NULL, *slip_lq_prev = NULL;
+static int *slip_flips = NULL;
+static double *slip_fpsi_prev = NULL, *slip_fpsi_unw = NULL, *slip_fdwb_unw = NULL;
+static double *slip_fpsi_mid = NULL, *slip_fdwb_mid = NULL;
 /* piston + emitter state (reservoir accounts inside the sum) */
 static unsigned char *pis_mask = NULL;
 static int pis_n = 0;
@@ -1545,11 +1556,12 @@ static void build_field(void)
             double dd = sqrt(dx * dx + dy * dy + dz * dz);
             double wu = P.w2 / (1.0 + P.q_detune * (Em[u] / P.cap));
             double wv = P.w2 / (1.0 + P.q_detune * (Em[w] / P.cap));
-            double pf = wrap_pi(th2[u] - wu * dd / P.C - th2[w]);
-            double pb = wrap_pi(th2[w] - wv * dd / P.C - th2[u]);
+            int sp = net_ep[e], sq = net_eq[e];
+            double pf = wrap_pi(sq * th2[u] - sq * wu * dd / P.C - sp * th2[w]);
+            double pb = wrap_pi(sp * th2[w] - sp * wv * dd / P.C - sq * th2[u]);
             double gf = gate_of(pf), gb = gate_of(pb);
-            printf("# NETGATE %d %d d=%.4f psi_f=%+.4f psi_b=%+.4f gf=%.4f gb=%.4f\n",
-                   ea[e], eb[e], dd, pf, pb, gf, gb);
+            printf("# NETGATE %d %d pq=%d:%d d=%.4f psi_f=%+.4f psi_b=%+.4f gf=%.4f gb=%.4f\n",
+                   ea[e], eb[e], sp, sq, dd, pf, pb, gf, gb);
             if (gf < gmin) gmin = gf;
             gsum += gf; gn++;
         }
@@ -2026,9 +2038,12 @@ static void ledger_diag(double t)
  * iRpin); conservation stays max_sum_err=0 by construction. Runs after
  * ledger_commit_step so snapshots stay consistent. Serial.
  * slip_track(): per-step measurement of the net edges' forward gate
- * phase psi_f = th2[u] - w2e[u]*d/C - th2[w], unwrapped -> the holonomy
- * count (slips), plus the integral of the bare pitch difference
- * (w2e[u]-w2e[w]) for the Josephson comparison. Measurement only. */
+ * phase, unwrapped -> the holonomy count (slips), plus the integral of
+ * the bare comb detune for the Josephson comparison. Measurement only.
+ * COMB-AWARE (Q11 v2): mirrors the kernel's own forward-gate phase in
+ * link order, psi_f = q*th2[i] - q*w2e[i]*d/C - p*th2[j] with (p,q)
+ * the edge's registered interval (kernel gate code, detw = q*wi-p*wj);
+ * reduces to the Q9 unison form at p=q=1. */
 static double pin_R(void)
 {
     return (P.ledger_mode >= 2) ? led_to_fp(iRpin, ledger_u_eff) : Rpin;
@@ -2090,6 +2105,14 @@ static void slip_track(double t)
         slip_dwb_mid = calloc(net_ne, sizeof(double));
         slip_psi_w = calloc(net_ne, sizeof(double));
         slip_dwb_w = calloc(net_ne, sizeof(double));
+        slip_fp = malloc(net_ne); slip_fq = malloc(net_ne);
+        slip_lp_prev = malloc(net_ne); slip_lq_prev = malloc(net_ne);
+        slip_flips = calloc(net_ne, sizeof(int));
+        slip_fpsi_prev = malloc(net_ne * sizeof(double));
+        slip_fpsi_unw = calloc(net_ne, sizeof(double));
+        slip_fdwb_unw = calloc(net_ne, sizeof(double));
+        slip_fpsi_mid = calloc(net_ne, sizeof(double));
+        slip_fdwb_mid = calloc(net_ne, sizeof(double));
         slip_t_w = t;
         for (int e = 0; e < net_ne; e++) {
             int u = net_pick[net_ea[e]], w = net_pick[net_eb[e]];
@@ -2099,24 +2122,50 @@ static void slip_track(double t)
                 if (li[l] == w || lj[l] == w) { lf = l; break; }
             }
             slip_lf[e] = lf;
-            if (lf < 0) { slip_psi_prev[e] = 0; continue; }
-            slip_psi_prev[e] = wrap_pi(th2[u] - w2e[u] * ld[lf] / P.C - th2[w]);
+            if (lf < 0) { slip_psi_prev[e] = 0; slip_fpsi_prev[e] = 0;
+                          slip_fp[e] = 1; slip_fq[e] = 1;
+                          slip_lp_prev[e] = 1; slip_lq_prev[e] = 1; continue; }
+            int i2 = li[lf], j2 = lj[lf];
+            /* declared chart, oriented to the link like the registration */
+            if (i2 == u) { slip_fp[e] = net_ep[e]; slip_fq[e] = net_eq[e]; }
+            else { slip_fp[e] = net_eq[e]; slip_fq[e] = net_ep[e]; }
+            slip_lp_prev[e] = lp[lf]; slip_lq_prev[e] = lq[lf];
+            slip_psi_prev[e] = wrap_pi(lq[lf] * th2[i2]
+                                       - lq[lf] * w2e[i2] * ld[lf] / P.C
+                                       - lp[lf] * th2[j2]);
+            slip_fpsi_prev[e] = wrap_pi(slip_fq[e] * th2[i2]
+                                        - slip_fq[e] * w2e[i2] * ld[lf] / P.C
+                                        - slip_fp[e] * th2[j2]);
         }
         return;
     }
     for (int e = 0; e < net_ne; e++) {
         int lf = slip_lf[e];
         if (lf < 0) continue;
-        int u = net_pick[net_ea[e]], w = net_pick[net_eb[e]];
-        double pf = wrap_pi(th2[u] - w2e[u] * ld[lf] / P.C - th2[w]);
+        int i2 = li[lf], j2 = lj[lf];
+        double pf = wrap_pi(lq[lf] * th2[i2]
+                            - lq[lf] * w2e[i2] * ld[lf] / P.C
+                            - lp[lf] * th2[j2]);
         slip_psi_unw[e] += wrap_pi(pf - slip_psi_prev[e]);
         slip_psi_prev[e] = pf;
-        slip_dwb_unw[e] += (w2e[u] - w2e[w]) * P.dt;
+        slip_dwb_unw[e] += (lq[lf] * w2e[i2] - lp[lf] * w2e[j2]) * P.dt;
+        if (lp[lf] != slip_lp_prev[e] || lq[lf] != slip_lq_prev[e]) {
+            slip_flips[e]++;
+            slip_lp_prev[e] = lp[lf]; slip_lq_prev[e] = lq[lf];
+        }
+        double ff = wrap_pi(slip_fq[e] * th2[i2]
+                            - slip_fq[e] * w2e[i2] * ld[lf] / P.C
+                            - slip_fp[e] * th2[j2]);
+        slip_fpsi_unw[e] += wrap_pi(ff - slip_fpsi_prev[e]);
+        slip_fpsi_prev[e] = ff;
+        slip_fdwb_unw[e] += (slip_fq[e] * w2e[i2] - slip_fp[e] * w2e[j2]) * P.dt;
     }
     if (!slip_mid_set && t >= 0.5 * P.T) {
         for (int e = 0; e < net_ne; e++) {
             slip_psi_mid[e] = slip_psi_unw[e];
             slip_dwb_mid[e] = slip_dwb_unw[e];
+            slip_fpsi_mid[e] = slip_fpsi_unw[e];
+            slip_fdwb_mid[e] = slip_fdwb_unw[e];
         }
         slip_t_mid = t;
         slip_mid_set = 1;
@@ -3343,8 +3392,11 @@ static void diag_row(double t)
             }
             if (lf < 0) continue;
             double dd = ld[lf];
-            double pf = wrap_pi(th2[u] - w2e[u] * dd / P.C - th2[w]);
-            double pb = wrap_pi(th2[w] - w2e[w] * dd / P.C - th2[u]);
+            int i2 = li[lf], j2 = lj[lf];
+            double pf = wrap_pi(lq[lf] * th2[i2] - lq[lf] * w2e[i2] * dd / P.C
+                                - lp[lf] * th2[j2]);
+            double pb = wrap_pi(lp[lf] * th2[j2] - lp[lf] * w2e[j2] * dd / P.C
+                                - lq[lf] * th2[i2]);
             double gf = gate_of(pf), gb = gate_of(pb);
             double g = gf > gb ? gf : gb;
             if (g < gmn) gmn = g;
@@ -3791,10 +3843,15 @@ static void final_report(void)
             }
             if (lf < 0) continue;
             double dd = ld[lf];
-            double pf = wrap_pi(th2[u] - w2e[u] * dd / P.C - th2[w]);
-            double pb = wrap_pi(th2[w] - w2e[w] * dd / P.C - th2[u]);
-            printf("# NETGATE F %d %d d=%.4f psi_f=%+.4f psi_b=%+.4f gf=%.4f gb=%.4f\n",
-                   net_ea[e], net_eb[e], dd, pf, pb, gate_of(pf), gate_of(pb));
+            int i2 = li[lf], j2 = lj[lf];
+            double pf = wrap_pi(lq[lf] * th2[i2] - lq[lf] * w2e[i2] * dd / P.C
+                                - lp[lf] * th2[j2]);
+            double pb = wrap_pi(lp[lf] * th2[j2] - lp[lf] * w2e[j2] * dd / P.C
+                                - lq[lf] * th2[i2]);
+            printf("# NETGATE F %d %d pq=%d:%d d=%.4f psi_f=%+.4f psi_b=%+.4f "
+                   "gf=%.4f gb=%.4f\n",
+                   net_ea[e], net_eb[e], lp[lf], lq[lf], dd, pf, pb,
+                   gate_of(pf), gate_of(pb));
         }
     }
     if (P.pin_net && net_nv > 0)
@@ -3812,14 +3869,23 @@ static void final_report(void)
             double t1 = slip_mid_set ? slip_t_mid : 0.0;
             double p1 = slip_mid_set ? slip_psi_mid[e] : 0.0;
             double b1 = slip_mid_set ? slip_dwb_mid[e] : 0.0;
+            double f1 = slip_mid_set ? slip_fpsi_mid[e] : 0.0;
+            double fb1 = slip_mid_set ? slip_fdwb_mid[e] : 0.0;
             double dtw = P.T - t1;
             double nu = dtw > 0 ? (slip_psi_unw[e] - p1) / (TWO_PI * dtw) : 0;
             double dwb = dtw > 0 ? (slip_dwb_unw[e] - b1) / dtw : 0;
+            double fnu = dtw > 0 ? (slip_fpsi_unw[e] - f1) / (TWO_PI * dtw) : 0;
+            double fdwb = dtw > 0 ? (slip_fdwb_unw[e] - fb1) / dtw : 0;
             int locked = fabs(slip_psi_unw[e] - p1) < TWO_PI;
-            printf("# RESULT slip e=%d nu_slip=%+.6f dw_bare=%+.6f dw_over_2pi=%+.6f "
-                   "slips=%+.2f locked=%d window=[%.1f,%.1f]\n",
-                   e, nu, dwb, dwb / TWO_PI, (slip_psi_unw[e] - p1) / TWO_PI,
-                   locked, t1, P.T);
+            int flocked = fabs(slip_fpsi_unw[e] - f1) < TWO_PI;
+            printf("# RESULT slip e=%d pq=%d:%d nu_slip=%+.6f dw_bare=%+.6f "
+                   "dw_over_2pi=%+.6f slips=%+.2f locked=%d flips=%d "
+                   "fix_pq=%d:%d fix_nu=%+.6f fix_dwb2pi=%+.6f fix_slips=%+.2f "
+                   "fix_locked=%d window=[%.1f,%.1f]\n",
+                   e, lp[slip_lf[e]], lq[slip_lf[e]], nu, dwb, dwb / TWO_PI,
+                   (slip_psi_unw[e] - p1) / TWO_PI, locked, slip_flips[e],
+                   slip_fp[e], slip_fq[e], fnu, fdwb / TWO_PI,
+                   (slip_fpsi_unw[e] - f1) / TWO_PI, flocked, t1, P.T);
         }
     }
 

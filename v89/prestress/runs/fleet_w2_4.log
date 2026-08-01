@@ -1,0 +1,74 @@
+[fleet] wave=2-4 max=2 threads=4 pending=36/36
+[fleet] START w2 w2_c2_plast1_k05 T=3000 extra=[kappa_plast=0.5]
+[fleet] START w2 w2_c2_plast1_k1 T=3000 extra=[kappa_plast=1.0]
+[fleet] DONE  w2_c2_plast1_k05 in 33m29s
+[fleet] START w2 w2_c2_plast1_ctrl_k1 T=3000 extra=[kappa_plast=1.0]
+[fleet] DONE  w2_c2_plast1_k1 in 35m17s
+[fleet] START w2 w2_c1_plast3_k1 T=3000 extra=[kappa_plast=1.0]
+[fleet] DONE  w2_c2_plast1_ctrl_k1 in 30m42s
+[fleet] START w2 w2_c1_frozen T=3000 extra=[]
+[fleet] DONE  w2_c1_plast3_k1 in 31m12s
+[fleet] START w2 w2_ring8_m3_k1 T=3000 extra=[kappa_plast=1.0]
+[fleet] DONE  w2_c1_frozen in 29m17s
+[fleet] START w2 w2_c8_k1 T=3000 extra=[kappa_plast=1.0]
+[fleet] DONE  w2_ring8_m3_k1 in 30m51s
+[fleet] START w2 w2_tube_k1 T=3000 extra=[kappa_plast=1.0]
+[fleet] DONE  w2_c8_k1 in 31m34s
+[fleet] START w2 w2_chords_k1 T=3000 extra=[kappa_plast=1.0]
+[fleet] DONE  w2_tube_k1 in 31m5s
+[fleet] START w2 w2_hex_frozen T=3000 extra=[]
+[fleet] DONE  w2_chords_k1 in 30m54s
+[fleet] START w2 w2_hex_k1 T=3000 extra=[kappa_plast=1.0]
+[fleet] DONE  w2_hex_frozen in 29m55s
+[fleet] START w2 w2_c2_harden T=3000 extra=[kappa_plast=1.0 tau_harden=50]
+[fleet] DONE  w2_hex_k1 in 30m36s
+[fleet] START w2 w2_ring8_harden T=3000 extra=[kappa_plast=1.0 tau_harden=50]
+[fleet] DONE  w2_c2_harden in 31m18s
+[fleet] START w3 w3_c8_flight233 T=3000 extra=[]
+[fleet] DONE  w2_ring8_harden in 30m35s
+[fleet] START w3 w3_ring9_m3 T=3000 extra=[]
+[fleet] DONE  w3_c8_flight233 in 30m49s
+[fleet] START w3 w3_ring10_m4 T=3000 extra=[]
+[fleet] DONE  w3_ring9_m3 in 29m40s
+[fleet] START w3 w3_ring12_m5 T=3000 extra=[]
+[fleet] DONE  w3_ring10_m4 in 29m10s
+[fleet] START w3 w3_ring12_m6 T=3000 extra=[]
+[fleet] DONE  w3_ring12_m5 in 29m17s
+[fleet] START w3 w3_hopf T=3000 extra=[]
+[fleet] DONE  w3_ring12_m6 in 29m15s
+[fleet] START w3 w3_mobius T=3000 extra=[]
+[fleet] DONE  w3_hopf in 30m59s
+[fleet] START w3 w3_octahedron T=3000 extra=[]
+[fleet] DONE  w3_mobius in 30m34s
+[fleet] START w3 w3_free0 T=3000 extra=[]
+[fleet] DONE  w3_octahedron in 29m51s
+[fleet] START w3 w3_free1 T=3000 extra=[]
+[fleet] DONE  w3_free0 in 29m13s
+[fleet] START w3 w3_mobius_k1 T=3000 extra=[kappa_plast=1.0]
+[fleet] DONE  w3_free1 in 29m19s
+[fleet] START w3 w3_hopf_k1 T=3000 extra=[kappa_plast=1.0]
+[fleet] DONE  w3_mobius_k1 in 30m34s
+[fleet] START w3 w3_torus3x8 T=2000 extra=[]
+[fleet] DONE  w3_torus3x8 in 19m48s
+[fleet] START w3 w3_truncocta T=2000 extra=[]
+[fleet] DONE  w3_hopf_k1 in 31m43s
+[fleet] START w4 w4_p19_cube_harden T=4000 extra=[kappa_plast=1.0 tau_harden=50]
+[fleet] DONE  w3_truncocta in 20m15s
+[fleet] START w4 w4_p19_ring8_harden T=4000 extra=[kappa_plast=1.0 tau_harden=50]
+[fleet] DONE  w4_p19_cube_harden in 42m24s
+[fleet] START w4 w4_p19_c8_harden T=4000 extra=[kappa_plast=1.0 tau_harden=50]
+[fleet] DONE  w4_p19_ring8_harden in 41m28s
+[fleet] START w4 w4_p20_ring12_m5 T=3000 extra=[kappa_plast=1.0 tau_harden=50]
+[fleet] DONE  w4_p20_ring12_m5 in 34m50s
+[fleet] START w4 w4_p20_ring12_m6 T=3000 extra=[kappa_plast=1.0 tau_harden=50]
+[fleet] DONE  w4_p19_c8_harden in 46m0s
+[fleet] START w4 w4_p20_ring8_m3 T=3000 extra=[kappa_plast=1.0 tau_harden=50]
+[fleet] DONE  w4_p20_ring12_m6 in 36m47s
+[fleet] START w4 w4_p20_ring9_m3 T=3000 extra=[kappa_plast=1.0 tau_harden=50]
+[fleet] DONE  w4_p20_ring8_m3 in 36m15s
+[fleet] START w4 w4_p20_ring10_m4 T=3000 extra=[kappa_plast=1.0 tau_harden=50]
+[fleet] DONE  w4_p20_ring9_m3 in 40m0s
+[fleet] START w4 w4_tube_harden T=4000 extra=[kappa_plast=1.0 tau_harden=50]
+[fleet] DONE  w4_p20_ring10_m4 in 40m25s
+[fleet] DONE  w4_tube_harden in 38m1s
+[fleet] complete wave=2-4

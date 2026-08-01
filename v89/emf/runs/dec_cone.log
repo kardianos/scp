@@ -1,0 +1,18 @@
+# maxfab_dec: NC=9741 NT=56521 NF=115121 NE=68340 (faces/edge=5.05)
+# lambda_max=1051.17 dt=0.0200
+# kx=0.30 div: 2.062e+00 -> 1.461e-10 (cg info=0)
+# RESULT dec kx=0.30 omega_peak=0.700 probes=48 Hdrift=-1.72e-04
+# kx=0.50 div: 2.531e+00 -> 2.376e-10 (cg info=0)
+# RESULT dec kx=0.50 omega_peak=0.305 probes=48 Hdrift=-4.37e-04
+# kx=0.70 div: 2.184e+00 -> 2.122e-10 (cg info=0)
+# RESULT dec kx=0.70 omega_peak=1.185 probes=48 Hdrift=9.21e-04
+# kx=1.00 div: 2.269e+00 -> 2.222e-10 (cg info=0)
+# RESULT dec kx=1.00 omega_peak=1.265 probes=48 Hdrift=1.87e-04
+# kx=1.40 div: 2.212e+00 -> 1.747e-10 (cg info=0)
+# RESULT dec kx=1.40 omega_peak=1.280 probes=48 Hdrift=-8.03e-05
+# kx=1.70 div: 2.134e+00 -> 1.968e-10 (cg info=0)
+# RESULT dec kx=1.70 omega_peak=1.640 probes=48 Hdrift=2.56e-04
+# kx=2.00 div: 2.028e+00 -> 1.732e-10 (cg info=0)
+# RESULT dec kx=2.00 omega_peak=1.760 probes=48 Hdrift=7.49e-04
+# CONE fit (k<=1): omega = 1.113*k +0.168, R2=0.5490 -> NOT a cone (bar failed)
+# bar: |b| <= 0.1*m and R2 >= 0.99 (pre-registered)

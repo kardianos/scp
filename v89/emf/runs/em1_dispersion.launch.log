@@ -1,0 +1,9 @@
+kx=0.40  v=0.3499  v/C=0.3499  rc=0
+kx=0.70  v=0.5215  v/C=0.5215  rc=0
+kx=1.00  v=0.5767  v/C=0.5767  rc=0
+kx=1.10  v=0.6054  v/C=0.6054  rc=0
+kx=1.40  v=0.6092  v/C=0.6092  rc=0
+kx=1.70  v=0.3445  v/C=0.3445  rc=0
+kx=2.00  v=0.2258  v/C=0.2258  rc=0
+wrote /home/d/code/scp/v89/emf/runs/em1_dispersion.tsv
+# EM1 note: v range [0.2258, 0.6092] across kx — k-dependent (massive-like branch)

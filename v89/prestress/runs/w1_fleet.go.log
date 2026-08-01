@@ -1,0 +1,14 @@
+[fleet] SKIP w1_c8_spectra (already done)
+[fleet] SKIP w1_c2_cube150 (already done)
+[fleet] wave=1 max=2 threads=4 pending=5/7
+[fleet] START w1_c8_ring12 T=3000 threads=4 net=/home/d/code/scp/v89/prestress/candidates/c8_ring12.net
+[fleet] START w1_c2_cube150_ctrl T=3000 threads=4 net=/home/d/code/scp/v89/prestress/candidates/c2_cube150_ctrl.net
+[fleet] DONE  w1_c2_cube150_ctrl in 33m52s
+[fleet] START w1_ring8_m3 T=3000 threads=4 net=/home/d/code/scp/v89/prestress/morpho/nets/ring8_m3.net
+[fleet] DONE  w1_c8_ring12 in 35m43s
+[fleet] START w1_c5_tube6 T=3000 threads=4 net=/home/d/code/scp/v89/prestress/candidates/c5_tube6.net
+[fleet] DONE  w1_ring8_m3 in 35m53s
+[fleet] START w1_c4_ring12_chords T=3000 threads=4 net=/home/d/code/scp/v89/prestress/candidates/c4_ring12_chords.net
+[fleet] DONE  w1_c5_tube6 in 37m33s
+[fleet] DONE  w1_c4_ring12_chords in 29m35s
+[fleet] WAVE1 complete

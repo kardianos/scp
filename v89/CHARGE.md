@@ -404,3 +404,58 @@ advances that variable exactly like a free one. Required for Q11 v2
 (small, ratchet-gated): comb-aware slip books — Φ = q·θᵢ − p·θⱼ from
 the link's lp/lq — plus the same in the # NETG gate report. Then the
 ℤ₆ holonomy count is readable directly.
+
+### 7.9 Q11 v2 (2026-07-31): the dual-book instrument decides — partial
+### lock, comb-chart circulation, and the tongue-chatter discovery
+
+The §7.8 gap is closed, in two instrument steps that each taught
+physics (battery-gated; q9 unison regression EXACT at every step —
+all archived digits reproduced, fixed book ≡ live book on 1:1 nets).
+
+**Step 1 (comb-aware live books) exposed the architecture:** lp/lq is
+not a register but the comb DETECTOR's live state, re-derived each
+step from actual pitches (cellfab.c C1 comb scan). Even the PINNED
+fifth-triangle ends at pq=1:1 — and the final instrument counts why:
+**flips=867/865 per interval edge over T=600 (1.4/t.u.)** — the
+circulator's own flight load detunes the effective pitches and the
+3:2 tongue (width γ/6, the Tenney-height narrowing) is marginal
+against it, so the detector chatters. A slip sum over a chattering
+chart is not a holonomy count (live books read ±41 "slips" — chart
+mixing, not physics). FINDING, stated once: **interval locks are
+fragile under their own transport — complexity narrows tongues, so
+higher intervals are hard to HOLD, not just to reach.** (Unison, with
+the full-width tongue, is what the corpus locks on — same reason.)
+
+**Step 2 (dual books): slip_diag now tracks BOTH** the live chart
+(kernel-faithful, flip-counted) and the net's DECLARED p:q chart
+(frozen at seed, orientation-matched to the link) — clean ℤ-countable
+holonomy in one chart plus visibility of detector state. Measurement
+only; battery 21/21 (gate 2) and rerun for gate 3 with the dual books.
+
+**The fifth-triangle verdict (fixed 3:2/2:3 chart, window [300,600]):**
+
+| edge | declared | fix_nu | fix_dwb/2π | ratio | fix_slips | flips |
+|---|---|---|---|---|---|---|
+| A–B | 3:2 | −0.0144 | −0.0326 | **0.44** | −4.33 | 867 |
+| B–C | 2:3 | +0.0145 | +0.0327 | **0.44** | +4.36 | 865 |
+| C–A | 1:1 | +0.00005 | +0.00002 | — | +0.01 (LOCKED) | 0 |
+
+(1) **Locked-vs-free is now decidable, and the answer is PARTIAL
+LOCK**: pinned interval edges slip at 0.44× their bare comb detune —
+intermittent phase-locking at the tongue edge — vs the free arm's
+0.84–1.00 (free-running; its detector settles to 1:1 with 7/3/0
+flips). The old unison instrument read ±0.117 on these edges: a
+chart artifact, 8× the true comb-chart rate. (2) **First measured
+ℤ-holonomy circulation in the interval chart**: −4.33/+4.36/+0.01
+around the cycle — antisymmetric to 0.7%, Kirchhoff-closed to 0.04
+slips, the unison edge holding coherence exactly (both books, 0
+flips). The fifth-triangle is a comb-phase circulator. (3) The
+residual comb detune ON the pinned address, 0.205 rad/t.u., is the
+flight-load detuning measured directly (the pin holds Em; flight
+adds to x; the coincidence 2ω_A = 3ω_B shifts). NEXT (the Q11
+payload proper, §7.5): the fractional-export experiment — kick a
+single ⅓-class slip out of an interval cycle into unison vacuum;
+confinement or pair-creation. Needs a transient-kick apparatus
+(pin-target step or edge Δω pulse) — small, ratchet-gated, now
+designable against a measured baseline. Files:
+charge/runs/q11_*_v2.log, scratchpad q9_regress2 (exactness).
