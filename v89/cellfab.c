@@ -185,6 +185,8 @@ typedef struct {
     double pin_kick_dv, pin_kick_t0, pin_kick_t1;
     int pin_kick2_v;
     double pin_kick2_dv, pin_kick2_t0, pin_kick2_t1;
+    int pin_kick3_v;             /* Q13: third window — three-vertex coordinated pump */
+    double pin_kick3_dv, pin_kick3_t0, pin_kick3_t1;
     int slip_diag;
     /* C1' PISTON (design/C1_piston_design.md; flux-machine intake knob):
      * boundary cells within piston_m of any face have their SPACE store
@@ -305,6 +307,8 @@ static void cfg_defaults(void)
     P.pin_kick_t0 = 0; P.pin_kick_t1 = 0;
     P.pin_kick2_v = 0; P.pin_kick2_dv = 0;
     P.pin_kick2_t0 = 0; P.pin_kick2_t1 = 0;
+    P.pin_kick3_v = 0; P.pin_kick3_dv = 0;
+    P.pin_kick3_t0 = 0; P.pin_kick3_t1 = 0;
     P.slip_diag = 0;
     P.piston_m = 0; P.piston_es0 = 1.0; P.piston_es1 = 1.0;
     P.piston_t0 = 0; P.piston_t1 = 0;
@@ -469,6 +473,10 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "pin_kick2_dv")) P.pin_kick2_dv = atof(v);
     else if (!strcmp(k, "pin_kick2_t0")) P.pin_kick2_t0 = atof(v);
     else if (!strcmp(k, "pin_kick2_t1")) P.pin_kick2_t1 = atof(v);
+    else if (!strcmp(k, "pin_kick3_v")) P.pin_kick3_v = atoi(v);
+    else if (!strcmp(k, "pin_kick3_dv")) P.pin_kick3_dv = atof(v);
+    else if (!strcmp(k, "pin_kick3_t0")) P.pin_kick3_t0 = atof(v);
+    else if (!strcmp(k, "pin_kick3_t1")) P.pin_kick3_t1 = atof(v);
     else if (!strcmp(k, "slip_diag")) P.slip_diag = atoi(v);
     else if (!strcmp(k, "piston_m")) P.piston_m = atof(v);
     else if (!strcmp(k, "piston_es0")) P.piston_es0 = atof(v);
@@ -2425,6 +2433,8 @@ static int64_t net_pin_ikick = 0;
 static int net_pin_ikick_set = 0;
 static int64_t net_pin_ikick2 = 0;
 static int net_pin_ikick2_set = 0;
+static int64_t net_pin_ikick3 = 0;
+static int net_pin_ikick3_set = 0;
 
 static void pin_apply(double t)
 {
@@ -2433,6 +2443,8 @@ static void pin_apply(double t)
                 && t < P.pin_kick_t1) ? P.pin_kick_v : -1;
     int kick2 = (P.pin_kick2_dv != 0.0 && t >= P.pin_kick2_t0
                  && t < P.pin_kick2_t1) ? P.pin_kick2_v : -1;
+    int kick3 = (P.pin_kick3_dv != 0.0 && t >= P.pin_kick3_t0
+                 && t < P.pin_kick3_t1) ? P.pin_kick3_v : -1;
     if (P.ledger_mode >= 2) {
         double u = ledger_u_eff;
         if (!net_pin_itgt) {
@@ -2448,10 +2460,15 @@ static void pin_apply(double t)
             net_pin_ikick2 = led_from_fp(net_pin_tgt[kick2] + P.pin_kick2_dv, u);
             net_pin_ikick2_set = 1;
         }
+        if (kick3 >= 0 && !net_pin_ikick3_set) {
+            net_pin_ikick3 = led_from_fp(net_pin_tgt[kick3] + P.pin_kick3_dv, u);
+            net_pin_ikick3_set = 1;
+        }
         for (int k = 0; k < net_nv; k++) {
             int c = net_pick[k];
             int64_t tk = (k == kick) ? net_pin_ikick
-                       : (k == kick2) ? net_pin_ikick2 : net_pin_itgt[k];
+                       : (k == kick2) ? net_pin_ikick2
+                       : (k == kick3) ? net_pin_ikick3 : net_pin_itgt[k];
             int64_t dq = iEm[c] - tk;
             if (dq) {
                 iRpin += dq;
@@ -2466,7 +2483,8 @@ static void pin_apply(double t)
         for (int k = 0; k < net_nv; k++) {
             int c = net_pick[k];
             double tk = net_pin_tgt[k] + (k == kick ? P.pin_kick_dv : 0.0)
-                        + (k == kick2 ? P.pin_kick2_dv : 0.0);
+                        + (k == kick2 ? P.pin_kick2_dv : 0.0)
+                        + (k == kick3 ? P.pin_kick3_dv : 0.0);
             double dfp = Em[c] - tk;
             if (dfp != 0.0) {
                 Rpin += dfp;
@@ -2481,7 +2499,8 @@ static void pin_apply(double t)
         for (int k = 0; k < net_nv; k++) {
             int c = net_pick[k];
             double tk = net_pin_tgt[k] + (k == kick ? P.pin_kick_dv : 0.0)
-                        + (k == kick2 ? P.pin_kick2_dv : 0.0);
+                        + (k == kick2 ? P.pin_kick2_dv : 0.0)
+                        + (k == kick3 ? P.pin_kick3_dv : 0.0);
             double dfp = Em[c] - tk;
             if (dfp != 0.0) { Rpin += dfp; Em[c] = tk; }
         }
