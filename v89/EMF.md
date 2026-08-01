@@ -378,3 +378,36 @@ that require a proton analog.
   polarizations). Sequencing per §5 workflow: M-B5 (in flight) is
   the MASS checkpoint; the EM5 build follows it as the planned
   alternation, variant-table first.
+
+* **2026-08-01 (EM5 BUILT AND GATED — the sector is in the production
+  kernel; in-kernel ladder = the prototype fit EXACTLY; books hold at
+  the staggered-invariant class).** Task #5 executed. The sector
+  (cellfab.c, commit ce4c4e4): E on links, B on linked-triple faces
+  (enumerated at init from the production adjacency — NF=205886,
+  faces/edge 7.19, κ=1.798 on the foam, matching maxfab_lg), lumped
+  hodge weights, leapfrog curl pair, matrix-free CG transverse
+  projection for the ladder seed (div_resid 6e-9), all state guarded
+  by em5 (default 0). GATES, all green: (1) full battery 21/21 with
+  em5 off and the ENTIRE battery output byte-identical to the
+  pre-EM5 gate log; (2) thread determinism: em5-on run byte-identical
+  at 1 vs 4 threads (sector deliberately serial); (3) THE LADDER
+  (n=1..8 in-kernel, score_em5_ladder.py): **ω = 0.672·k + 0.033,
+  R² = 0.9997 — identical to the maxfab_lg prototype fit to every
+  printed digit**; zone-edge droop −7% at k=2.09 (prototype −9% at
+  2.1). The EM1-flat gate instrument is now LIVE in the production
+  kernel. (4) THE BOOKS (the named design problem, measured): the
+  STAGGERED leapfrog invariant is conserved to |Hdrift| ≤ 4e-14
+  over T=120–180 (the prototype's plain-form energy drifted 2e-3 —
+  the invariant choice was the fix); the sector's own integer
+  shadow account holds sum_err ≤ 150 units STATIC (≈1.5e-10,
+  non-accumulating) — the exactness class is bounded-O(√NC)-units,
+  not the literal 0 of matter's paired moves. RECORDED CONSEQUENCE:
+  the future EM5↔matter conversion door must book PAIRED integer
+  moves (like every matter door) to keep the joined pool at
+  sum_err=0; the v1 pool stays separate until then (design staged
+  in the 2026-08-01 books entry). NEXT (EM5 v2, when scheduled):
+  the second polarization (chiral pair on the two link-transverse
+  planes), then the c-calibration variant table (law C vs the
+  complex's geometric 0.672), then doors. Files: cellfab.c (em5_*),
+  emf/score_em5_ladder.py, emf/runs/em5_lad_n*.log,
+  emf/runs/em5_smoke.{cfg,log}.
