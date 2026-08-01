@@ -1,0 +1,1377 @@
+# cellfab — v89 cell-fabric kernel (no lattice, no prior code)
+# cfg seed=20260727 mode=field init=net
+# cfg L=24 dmin=1 r0=0.85 rjit=0.06
+# cfg C=1 w1=1.65 w2=2.9 q_detune=1.2 gamma_res=0.25 gamma_res_m=0.1 p_gate=8
+# cfg lock_floor=0.005
+# cfg k_dep=1.2 k_dep_m=2 cap=2.5 e_s0=1 es_floor=0.05
+# cfg e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# cfg kappa_lock=1 kappa_align=0.5 kappa_freq=0 kappa_reac=0 sigma_tumble=0.01
+# cfg space: s_k=0.06 s_disp=0.3 es_gx=0
+# cfg dt=0.02 T=600 diag_every=250 snap_every=0
+# cfg center=(-1,-1,-1) amp=1 sigma=2.5 k=(0,0,0) prealign=0 noise_amp=0
+# cfg music: comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004
+# cfg field sector: two-component signed amplitude, unitary hops, field_J=1.8
+# cfg ledger: mode=3 u=1.000e-12 (cellfabi INT_LEDGER)
+# action atom: A0=1.1500 (dbar=1.5053) mode=2 — eps(w)=A0*w/2pi; atoms at mode boundaries, transport continuous
+# edge coloring: 29 colors for 85886 links
+# NETGATE 0 1 pq=3:2 d=1.4687 psi_f=+0.0002 psi_b=-1.2394 gf=1.0000 gb=0.0372
+# NETGATE 1 2 pq=2:3 d=1.5998 psi_f=-0.0001 psi_b=-2.4720 gf=1.0000 gb=0.0000
+# NETGATE 2 3 pq=3:2 d=1.5933 psi_f=-0.0002 psi_b=-2.4106 gf=1.0000 gb=0.0000
+# NETGATE 3 4 pq=2:3 d=1.5845 psi_f=-0.0000 psi_b=-2.3282 gf=1.0000 gb=0.0000
+# NETGATE 4 5 pq=3:2 d=1.5389 psi_f=+0.0002 psi_b=-1.9000 gf=1.0000 gb=0.0002
+# NETGATE 5 0 pq=2:3 d=1.5916 psi_f=-0.0894 psi_b=-2.3056 gf=0.9841 gb=0.0000
+# NETGATE P 0 4 d=1.5686 psi_f=-1.5736 psi_b=+0.4845 gf=0.0038 gb=0.6224
+# net: seeded nv=6 ne=6 worst_pick=0.000 gates min=0.9841 mean=0.9974 parasites=1 gpar_max=0.6224 file=/home/d/code/scp/v89/charge/nets/q11h_fifth_hex.net
+# NETPQ e=0 (0-1) pq=3:2 link=24466
+# NETPQ e=1 (1-2) pq=2:3 link=24464
+# NETPQ e=2 (2-3) pq=3:2 link=48759
+# NETPQ e=3 (3-4) pq=2:3 link=9428
+# NETPQ e=4 (4-5) pq=3:2 link=9443
+# NETPQ e=5 (5-0) pq=2:3 link=56586
+# fabric: cells=9741 channels=85886 mean_degree=17.63 box=24 dmin=1
+# LEDGER seed mode=3 u=1.000e-12 E0_int=9746897315217393 NC=9741 NL=85886
+# LEDGER seed mode=3 u=1.000e-12 E0_int=9746897315217393 NC=9741 NL=85886
+# t	E_space	E_dense	E_field	E_transfer	E_total	rel_drift	live_ch	cm_x	cm_y	cm_z	contain	front_r	r_core	defA	r_far	r_ratio	w_core	w_far
+0.000	9740.1154	6.7819125	0	0	9746.89731522	0.000e+00	57682	3.311	18.931	9.768	0.000	0.0000	0.8443	0	0.8498	0.9934	1.65000	1.64954	0.0000	0.0000	0.0000	0	0	0	0	0	0
+# CONV t=0.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=0.000 mode=3 sum_err=0 max|E-iEu|=3.478e-13 run_max_diff=0.000e+00 run_max_sum_err=0 steps=0 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=0.00 gates min=0.9841 mean=0.5018 edges=6
+# PIN t=0.00 R=0 nv=6
+5.000	9740.1154	6.79031292	0	0.0198911067	9746.89731522	1.866e-16	57682	3.311	18.930	9.767	0.000	0.0000	0.8443	-0.047706	0.8498	0.9935	1.65000	1.64954	0.0000	0.0000	0.0000	0.00040602	-0.0026026	0.00099157	0	0	0
+# CONV t=5.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=5.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=5.00 gates min=0.9932 mean=0.5027 edges=6
+# PIN t=5.00 R=-0.0282915312 nv=6
+# SLIP t=5.00 e=0 psi=-1.2305 unw=+0.009 nu_win=+0.000283 dwb_win=+0.004167
+# SLIP t=5.00 e=1 psi=-0.0135 unw=-0.013 nu_win=-0.000427 dwb_win=-0.003361
+# SLIP t=5.00 e=2 psi=+0.0008 unw=+0.001 nu_win=+0.000033 dwb_win=-0.001019
+# SLIP t=5.00 e=3 psi=-2.3300 unw=-0.002 nu_win=-0.000057 dwb_win=-0.000889
+# SLIP t=5.00 e=4 psi=-0.0056 unw=-0.006 nu_win=-0.000186 dwb_win=-0.001693
+# SLIP t=5.00 e=5 psi=-0.0585 unw=+0.031 nu_win=+0.000988 dwb_win=+0.009350
+10.000	9740.1154	6.80126442	0	0.0447643884	9746.89731522	0.000e+00	57682	3.312	18.931	9.767	0.000	0.0000	0.8443	0.06513	0.8498	0.9935	1.65000	1.64953	0.0000	0.0000	0.0000	0.0050965	-0.0035347	0.0019511	0	0	0
+# CONV t=10.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=10.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=10.00 gates min=0.9263 mean=0.4908 edges=6
+# PIN t=10.00 R=-0.0641163113 nv=6
+# SLIP t=10.00 e=0 psi=-1.3785 unw=-0.139 nu_win=-0.004709 dwb_win=+0.007850
+# SLIP t=10.00 e=1 psi=-0.0205 unw=-0.020 nu_win=-0.000223 dwb_win=-0.000654
+# SLIP t=10.00 e=2 psi=+0.0013 unw=+0.001 nu_win=+0.000014 dwb_win=+0.000068
+# SLIP t=10.00 e=3 psi=-2.3569 unw=-0.029 nu_win=-0.000859 dwb_win=-0.006061
+# SLIP t=10.00 e=4 psi=-0.0387 unw=-0.039 nu_win=-0.001052 dwb_win=-0.007179
+# SLIP t=10.00 e=5 psi=-0.1954 unw=-0.106 nu_win=-0.004361 dwb_win=+0.009554
+15.000	9740.1154	6.80492387	0	0.0663549837	9746.89731522	1.866e-16	57682	3.311	18.931	9.767	0.000	0.0000	0.8443	0.15951	0.8498	0.9935	1.65000	1.64953	0.0000	0.0000	0.0000	0.0073995	-0.0050067	0.0093462	0	0	0
+# CONV t=15.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=15.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=15.00 gates min=0.7810 mean=0.4643 edges=6
+# PIN t=15.00 R=-0.0893663615 nv=6
+# SLIP t=15.00 e=0 psi=-1.5332 unw=-0.294 nu_win=-0.004926 dwb_win=+0.010941
+# SLIP t=15.00 e=1 psi=-0.0167 unw=-0.017 nu_win=+0.000120 dwb_win=+0.000929
+# SLIP t=15.00 e=2 psi=+0.0023 unw=+0.002 nu_win=+0.000031 dwb_win=+0.000234
+# SLIP t=15.00 e=3 psi=-2.4081 unw=-0.080 nu_win=-0.001630 dwb_win=-0.009481
+# SLIP t=15.00 e=4 psi=-0.0959 unw=-0.096 nu_win=-0.001821 dwb_win=-0.010746
+# SLIP t=15.00 e=5 psi=-0.3506 unw=-0.261 nu_win=-0.004939 dwb_win=+0.011042
+20.000	9740.1154	6.8099448	0	0.0950680277	9746.89731522	1.866e-16	57683	3.310	18.931	9.768	0.000	0.0000	0.8443	0.25091	0.8498	0.9935	1.65000	1.64953	0.0000	0.0000	0.0000	0.011865	-0.0069625	0.007711	0	0	0
+# CONV t=20.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=20.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=1000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=20.00 gates min=0.6651 mean=0.4391 edges=6
+# PIN t=20.00 R=-0.123100341 nv=6
+# SLIP t=20.00 e=0 psi=-1.6292 unw=-0.390 nu_win=-0.003053 dwb_win=+0.012038
+# SLIP t=20.00 e=1 psi=-0.0096 unw=-0.010 nu_win=+0.000224 dwb_win=+0.001422
+# SLIP t=20.00 e=2 psi=+0.0053 unw=+0.006 nu_win=+0.000098 dwb_win=+0.000294
+# SLIP t=20.00 e=3 psi=-2.4709 unw=-0.143 nu_win=-0.001997 dwb_win=-0.009874
+# SLIP t=20.00 e=4 psi=-0.1655 unw=-0.166 nu_win=-0.002215 dwb_win=-0.011164
+# SLIP t=20.00 e=5 psi=-0.4496 unw=-0.360 nu_win=-0.003152 dwb_win=+0.011612
+25.000	9740.1154	6.80840276	0	0.13201202	9746.89731522	0.000e+00	57683	3.308	18.933	9.769	0.000	0.0000	0.8443	0.33113	0.8498	0.9935	1.65000	1.64952	0.0000	0.0000	0.0000	0.01038	-0.011867	0.016832	0	0	0
+# CONV t=25.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=25.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=1250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=25.00 gates min=0.5969 mean=0.4180 edges=6
+# PIN t=25.00 R=-0.158502297 nv=6
+# SLIP t=25.00 e=0 psi=-1.6816 unw=-0.442 nu_win=-0.001668 dwb_win=+0.011908
+# SLIP t=25.00 e=1 psi=-0.0021 unw=-0.002 nu_win=+0.000239 dwb_win=+0.001582
+# SLIP t=25.00 e=2 psi=+0.0098 unw=+0.010 nu_win=+0.000142 dwb_win=+0.000673
+# SLIP t=25.00 e=3 psi=-2.5388 unw=-0.211 nu_win=-0.002162 dwb_win=-0.009818
+# SLIP t=25.00 e=4 psi=-0.2423 unw=-0.243 nu_win=-0.002446 dwb_win=-0.011532
+# SLIP t=25.00 e=5 psi=-0.5052 unw=-0.416 nu_win=-0.001769 dwb_win=+0.011368
+30.000	9740.1154	6.81575841	0	0.155681074	9746.89731522	1.866e-16	57682	3.310	18.933	9.767	0.000	0.0000	0.8443	0.39356	0.8498	0.9935	1.65000	1.64952	0.0000	0.0000	0.0000	0.01557	-0.014846	0.014833	0	0	0
+# CONV t=30.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=30.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=1500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=30.00 gates min=0.5806 mean=0.3997 edges=6
+# PIN t=30.00 R=-0.189527013 nv=6
+# SLIP t=30.00 e=0 psi=-1.6938 unw=-0.454 nu_win=-0.000389 dwb_win=+0.013014
+# SLIP t=30.00 e=1 psi=+0.0072 unw=+0.007 nu_win=+0.000296 dwb_win=+0.001936
+# SLIP t=30.00 e=2 psi=+0.0102 unw=+0.010 nu_win=+0.000012 dwb_win=-0.000197
+# SLIP t=30.00 e=3 psi=-2.6236 unw=-0.295 nu_win=-0.002698 dwb_win=-0.011177
+# SLIP t=30.00 e=4 psi=-0.3359 unw=-0.336 nu_win=-0.002980 dwb_win=-0.012893
+# SLIP t=30.00 e=5 psi=-0.5185 unw=-0.429 nu_win=-0.000422 dwb_win=+0.012991
+35.000	9740.1154	6.84801741	0	0.126324024	9746.89731522	1.866e-16	57682	3.309	18.932	9.768	0.000	0.0000	0.8443	0.44534	0.8498	0.9935	1.65000	1.64952	0.0000	0.0000	0.0000	0.0074835	-0.0004173	-0.0011631	0	0	0
+# CONV t=35.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=35.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=1750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=35.00 gates min=0.5899 mean=0.3802 edges=6
+# PIN t=35.00 R=-0.192428967 nv=6
+# SLIP t=35.00 e=0 psi=-1.6884 unw=-0.449 nu_win=+0.000171 dwb_win=+0.011687
+# SLIP t=35.00 e=1 psi=+0.0122 unw=+0.012 nu_win=+0.000160 dwb_win=+0.001328
+# SLIP t=35.00 e=2 psi=+0.0083 unw=+0.009 nu_win=-0.000059 dwb_win=-0.000428
+# SLIP t=35.00 e=3 psi=-2.7638 unw=-0.436 nu_win=-0.004463 dwb_win=-0.010920
+# SLIP t=35.00 e=4 psi=-0.4800 unw=-0.480 nu_win=-0.004586 dwb_win=-0.011851
+# SLIP t=35.00 e=5 psi=-0.5109 unw=-0.421 nu_win=+0.000242 dwb_win=+0.011718
+40.000	9740.1154	6.83563745	0	0.177576328	9746.89731522	1.866e-16	57682	3.310	18.935	9.765	0.000	0.0000	0.8443	0.4897	0.8498	0.9935	1.65000	1.64952	0.0000	0.0000	0.0000	0.002471	-0.002955	0.0041123	0	0	0
+# CONV t=40.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=40.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=2000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=40.00 gates min=0.4906 mean=0.3661 edges=6
+# PIN t=40.00 R=-0.231301306 nv=6
+# SLIP t=40.00 e=0 psi=-1.6428 unw=-0.403 nu_win=+0.001452 dwb_win=+0.012547
+# SLIP t=40.00 e=1 psi=+0.0196 unw=+0.020 nu_win=+0.000237 dwb_win=+0.001826
+# SLIP t=40.00 e=2 psi=+0.0087 unw=+0.009 nu_win=+0.000012 dwb_win=-0.000385
+# SLIP t=40.00 e=3 psi=-2.8709 unw=-0.543 nu_win=-0.003410 dwb_win=-0.011566
+# SLIP t=40.00 e=4 psi=-0.5923 unw=-0.592 nu_win=-0.003575 dwb_win=-0.012613
+# SLIP t=40.00 e=5 psi=-0.4690 unw=-0.380 nu_win=+0.001334 dwb_win=+0.012152
+45.000	9740.1154	6.83270357	0	0.210958512	9746.89731522	0.000e+00	57683	3.311	18.937	9.766	0.000	0.0000	0.8443	0.52804	0.8498	0.9935	1.65000	1.64951	0.0000	0.0000	0.0000	0.0108	-0.006004	0.0098751	0	0	0
+# CONV t=45.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=45.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=2250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=45.00 gates min=0.3449 mean=0.3578 edges=6
+# PIN t=45.00 R=-0.261749621 nv=6
+# SLIP t=45.00 e=0 psi=-1.5688 unw=-0.329 nu_win=+0.002357 dwb_win=+0.014076
+# SLIP t=45.00 e=1 psi=+0.0274 unw=+0.027 nu_win=+0.000247 dwb_win=+0.001717
+# SLIP t=45.00 e=2 psi=+0.0078 unw=+0.008 nu_win=-0.000027 dwb_win=-0.000327
+# SLIP t=45.00 e=3 psi=-2.9951 unw=-0.667 nu_win=-0.003954 dwb_win=-0.012580
+# SLIP t=45.00 e=4 psi=-0.7215 unw=-0.722 nu_win=-0.004113 dwb_win=-0.013555
+# SLIP t=45.00 e=5 psi=-0.3968 unw=-0.307 nu_win=+0.002297 dwb_win=+0.013661
+50.000	9740.1154	6.83332051	0	0.236118804	9746.89731522	3.732e-16	57682	3.306	18.934	9.767	0.000	0.0000	0.8443	0.56049	0.8498	0.9935	1.65000	1.64951	0.0000	0.0000	0.0000	0.0087771	-0.0074631	0.012032	0	0	0
+# CONV t=50.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=50.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=2500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=50.00 gates min=0.2145 mean=0.3568 edges=6
+# PIN t=50.00 R=-0.287526849 nv=6
+# SLIP t=50.00 e=0 psi=-1.4727 unw=-0.233 nu_win=+0.003057 dwb_win=+0.014211
+# SLIP t=50.00 e=1 psi=+0.0353 unw=+0.035 nu_win=+0.000253 dwb_win=+0.002013
+# SLIP t=50.00 e=2 psi=+0.0070 unw=+0.007 nu_win=-0.000027 dwb_win=-0.000716
+# SLIP t=50.00 e=3 psi=-3.1328 unw=-0.805 nu_win=-0.004383 dwb_win=-0.013319
+# SLIP t=50.00 e=4 psi=-0.8633 unw=-0.864 nu_win=-0.004514 dwb_win=-0.014068
+# SLIP t=50.00 e=5 psi=-0.3030 unw=-0.214 nu_win=+0.002985 dwb_win=+0.013662
+55.000	9740.1154	6.84541413	0	0.261789973	9746.89731522	1.866e-16	57682	3.306	18.936	9.766	0.000	0.0000	0.8443	0.58668	0.8498	0.9935	1.65000	1.64951	0.0000	0.0000	0.0000	0.012407	-0.0096917	0.012679	0	0	0
+# CONV t=55.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=55.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=2750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=55.00 gates min=0.1284 mean=0.3647 edges=6
+# PIN t=55.00 R=-0.325291647 nv=6
+# SLIP t=55.00 e=0 psi=-1.3520 unw=-0.113 nu_win=+0.003844 dwb_win=+0.015542
+# SLIP t=55.00 e=1 psi=+0.0444 unw=+0.044 nu_win=+0.000288 dwb_win=+0.001688
+# SLIP t=55.00 e=2 psi=+0.0076 unw=+0.008 nu_win=+0.000021 dwb_win=+0.000121
+# SLIP t=55.00 e=3 psi=+3.0066 unw=-0.948 nu_win=-0.004576 dwb_win=-0.013490
+# SLIP t=55.00 e=4 psi=-1.0154 unw=-1.016 nu_win=-0.004840 dwb_win=-0.015102
+# SLIP t=55.00 e=5 psi=-0.1851 unw=-0.096 nu_win=+0.003755 dwb_win=+0.015345
+60.000	9740.1154	6.83840695	0	0.298636775	9746.89731522	1.866e-16	57682	3.309	18.937	9.765	0.000	0.0000	0.8443	0.60862	0.8498	0.9935	1.65000	1.64951	0.0000	0.0000	0.0000	0.015237	-0.012972	0.013533	0	0	0
+# CONV t=60.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=60.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=3000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=60.00 gates min=0.0549 mean=0.3792 edges=6
+# PIN t=60.00 R=-0.355131269 nv=6
+# SLIP t=60.00 e=0 psi=-1.2132 unw=+0.026 nu_win=+0.004419 dwb_win=+0.015845
+# SLIP t=60.00 e=1 psi=+0.0490 unw=+0.049 nu_win=+0.000148 dwb_win=+0.001243
+# SLIP t=60.00 e=2 psi=+0.0103 unw=+0.010 nu_win=+0.000084 dwb_win=-0.000399
+# SLIP t=60.00 e=3 psi=+2.8379 unw=-1.117 nu_win=-0.005370 dwb_win=-0.015376
+# SLIP t=60.00 e=4 psi=-1.1900 unw=-1.190 nu_win=-0.005560 dwb_win=-0.016440
+# SLIP t=60.00 e=5 psi=-0.0433 unw=+0.046 nu_win=+0.004512 dwb_win=+0.016065
+65.000	9740.1154	6.85664784	0	0.288206427	9746.89731522	1.866e-16	57681	3.311	18.936	9.765	0.000	0.0000	0.8443	0.6266	0.8498	0.9935	1.65000	1.64950	0.0000	0.0000	0.0000	0.0050209	0.0010628	0.0065471	0	0	0
+# CONV t=65.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=65.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=3250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=65.00 gates min=0.0179 mean=0.3897 edges=6
+# PIN t=65.00 R=-0.362941807 nv=6
+# SLIP t=65.00 e=0 psi=-1.0548 unw=+0.185 nu_win=+0.005041 dwb_win=+0.014838
+# SLIP t=65.00 e=1 psi=+0.0560 unw=+0.056 nu_win=+0.000220 dwb_win=+0.001610
+# SLIP t=65.00 e=2 psi=+0.0072 unw=+0.007 nu_win=-0.000099 dwb_win=-0.000367
+# SLIP t=65.00 e=3 psi=+2.6050 unw=-1.350 nu_win=-0.007413 dwb_win=-0.013936
+# SLIP t=65.00 e=4 psi=-1.4226 unw=-1.423 nu_win=-0.007403 dwb_win=-0.014399
+# SLIP t=65.00 e=5 psi=+0.1085 unw=+0.198 nu_win=+0.004832 dwb_win=+0.014059
+70.000	9740.1154	6.87935264	0	0.300516908	9746.89731522	1.866e-16	57681	3.310	18.937	9.763	0.000	0.0000	0.8443	0.64166	0.8498	0.9935	1.65000	1.64950	0.0000	0.0000	0.0000	0.0020953	-0.0040167	0.0054558	0	0	0
+# CONV t=70.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=70.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=3500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=70.00 gates min=0.0052 mean=0.3927 edges=6
+# PIN t=70.00 R=-0.397957097 nv=6
+# SLIP t=70.00 e=0 psi=-0.8979 unw=+0.341 nu_win=+0.004995 dwb_win=+0.014988
+# SLIP t=70.00 e=1 psi=+0.0624 unw=+0.062 nu_win=+0.000204 dwb_win=+0.001547
+# SLIP t=70.00 e=2 psi=+0.0083 unw=+0.009 nu_win=+0.000037 dwb_win=+0.000118
+# SLIP t=70.00 e=3 psi=+2.4375 unw=-1.518 nu_win=-0.005332 dwb_win=-0.013241
+# SLIP t=70.00 e=4 psi=-1.5976 unw=-1.598 nu_win=-0.005569 dwb_win=-0.014734
+# SLIP t=70.00 e=5 psi=+0.2648 unw=+0.354 nu_win=+0.004975 dwb_win=+0.014816
+75.000	9740.1154	6.86257016	0	0.343685074	9746.89731522	1.866e-16	57681	3.308	18.937	9.769	0.000	0.0000	0.8443	0.65466	0.8498	0.9935	1.65000	1.64950	0.0000	0.0000	0.0000	0.0071376	-0.0054474	0.0063556	0	0	0
+# CONV t=75.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=75.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=3750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=75.00 gates min=0.0010 mean=0.3843 edges=6
+# PIN t=75.00 R=-0.424342782 nv=6
+# SLIP t=75.00 e=0 psi=-0.7266 unw=+0.513 nu_win=+0.005451 dwb_win=+0.015509
+# SLIP t=75.00 e=1 psi=+0.0702 unw=+0.070 nu_win=+0.000250 dwb_win=+0.002161
+# SLIP t=75.00 e=2 psi=+0.0059 unw=+0.006 nu_win=-0.000077 dwb_win=-0.000901
+# SLIP t=75.00 e=3 psi=+2.2547 unw=-1.700 nu_win=-0.005818 dwb_win=-0.014824
+# SLIP t=75.00 e=4 psi=-1.7854 unw=-1.786 nu_win=-0.005980 dwb_win=-0.015823
+# SLIP t=75.00 e=5 psi=+0.4347 unw=+0.524 nu_win=+0.005410 dwb_win=+0.015247
+80.000	9740.1154	6.86761007	0	0.364501108	9746.89731522	1.866e-16	57681	3.307	18.935	9.765	0.000	0.0000	0.8443	0.66712	0.8498	0.9935	1.65000	1.64950	0.0000	0.0000	0.0000	0.0066643	-0.0093779	0.0072629	0	0	0
+# CONV t=80.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=80.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=4000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=80.00 gates min=0.0001 mean=0.3656 edges=6
+# PIN t=80.00 R=-0.45019872 nv=6
+# SLIP t=80.00 e=0 psi=-0.5462 unw=+0.693 nu_win=+0.005745 dwb_win=+0.016157
+# SLIP t=80.00 e=1 psi=+0.0778 unw=+0.078 nu_win=+0.000242 dwb_win=+0.001452
+# SLIP t=80.00 e=2 psi=+0.0062 unw=+0.006 nu_win=+0.000010 dwb_win=-0.000227
+# SLIP t=80.00 e=3 psi=+2.0696 unw=-1.885 nu_win=-0.005893 dwb_win=-0.014859
+# SLIP t=80.00 e=4 psi=-1.9741 unw=-1.974 nu_win=-0.006006 dwb_win=-0.015435
+# SLIP t=80.00 e=5 psi=+0.6111 unw=+0.700 nu_win=+0.005614 dwb_win=+0.015508
+85.000	9740.1154	6.88139122	0	0.388987369	9746.89731522	0.000e+00	57681	3.305	18.937	9.763	0.000	0.0000	0.8443	0.67793	0.8498	0.9935	1.65000	1.64949	0.0000	0.0000	0.0000	0.012805	-0.010407	0.013397	0	0	0
+# CONV t=85.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=85.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=4250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=85.00 gates min=0.0002 mean=0.3400 edges=6
+# PIN t=85.00 R=-0.488466136 nv=6
+# SLIP t=85.00 e=0 psi=-0.3574 unw=+0.882 nu_win=+0.006009 dwb_win=+0.015994
+# SLIP t=85.00 e=1 psi=+0.0864 unw=+0.087 nu_win=+0.000274 dwb_win=+0.002017
+# SLIP t=85.00 e=2 psi=+0.0049 unw=+0.005 nu_win=-0.000044 dwb_win=-0.000733
+# SLIP t=85.00 e=3 psi=+1.8791 unw=-2.076 nu_win=-0.006063 dwb_win=-0.015182
+# SLIP t=85.00 e=4 psi=-2.1720 unw=-2.172 nu_win=-0.006300 dwb_win=-0.016657
+# SLIP t=85.00 e=5 psi=+0.7994 unw=+0.889 nu_win=+0.005993 dwb_win=+0.016184
+90.000	9740.1154	6.90849089	0	0.400442168	9746.89731522	1.866e-16	57680	3.306	18.942	9.768	0.000	0.0000	0.8443	0.68413	0.8498	0.9935	1.65000	1.64949	0.0000	0.0000	0.0000	0.014759	-0.009787	0.012163	0	0	0
+# CONV t=90.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=90.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=4500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=90.00 gates min=0.0014 mean=0.3136 edges=6
+# PIN t=90.00 R=-0.527020607 nv=6
+# SLIP t=90.00 e=0 psi=-0.1739 unw=+1.065 nu_win=+0.005842 dwb_win=+0.015526
+# SLIP t=90.00 e=1 psi=+0.0886 unw=+0.089 nu_win=+0.000070 dwb_win=+0.000850
+# SLIP t=90.00 e=2 psi=+0.0066 unw=+0.007 nu_win=+0.000054 dwb_win=+0.000360
+# SLIP t=90.00 e=3 psi=+1.6896 unw=-2.265 nu_win=-0.006034 dwb_win=-0.014213
+# SLIP t=90.00 e=4 psi=-2.3660 unw=-2.366 nu_win=-0.006174 dwb_win=-0.015128
+# SLIP t=90.00 e=5 psi=+0.9828 unw=+1.072 nu_win=+0.005837 dwb_win=+0.015231
+95.000	9740.1154	6.94427223	0	0.371697912	9746.89731522	1.866e-16	57680	3.302	18.938	9.766	0.000	0.0000	0.8443	0.68735	0.8498	0.9935	1.65000	1.64949	0.0000	0.0000	0.0000	-0.0010423	0.0036837	0.00071676	0	0	0
+# CONV t=95.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=95.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=4750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=95.00 gates min=0.0095 mean=0.2863 edges=6
+# PIN t=95.00 R=-0.53405769 nv=6
+# SLIP t=95.00 e=0 psi=+0.0187 unw=+1.258 nu_win=+0.006129 dwb_win=+0.013825
+# SLIP t=95.00 e=1 psi=+0.0958 unw=+0.096 nu_win=+0.000229 dwb_win=+0.002002
+# SLIP t=95.00 e=2 psi=+0.0070 unw=+0.007 nu_win=+0.000013 dwb_win=-0.000941
+# SLIP t=95.00 e=3 psi=+1.4533 unw=-2.502 nu_win=-0.007522 dwb_win=-0.013212
+# SLIP t=95.00 e=4 psi=-2.6028 unw=-2.603 nu_win=-0.007537 dwb_win=-0.013798
+# SLIP t=95.00 e=5 psi=+1.1709 unw=+1.260 nu_win=+0.005990 dwb_win=+0.013350
+100.000	9740.1154	6.92378247	0	0.416489273	9746.89731522	0.000e+00	57678	3.305	18.938	9.763	0.000	0.0000	0.8443	0.69156	0.8498	0.9935	1.65000	1.64948	0.0000	0.0000	0.0000	0.0059548	-0.0030921	0.0088191	0	0	0
+# CONV t=100.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=100.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=5000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=100.00 gates min=0.0181 mean=0.2617 edges=6
+# PIN t=100.00 R=-0.558359291 nv=6
+# SLIP t=100.00 e=0 psi=+0.2053 unw=+1.445 nu_win=+0.005941 dwb_win=+0.014567
+# SLIP t=100.00 e=1 psi=+0.1025 unw=+0.103 nu_win=+0.000214 dwb_win=+0.001549
+# SLIP t=100.00 e=2 psi=+0.0049 unw=+0.005 nu_win=-0.000066 dwb_win=-0.000182
+# SLIP t=100.00 e=3 psi=+1.2691 unw=-2.686 nu_win=-0.005862 dwb_win=-0.013496
+# SLIP t=100.00 e=4 psi=-2.7941 unw=-2.794 nu_win=-0.006090 dwb_win=-0.014886
+# SLIP t=100.00 e=5 psi=+1.3576 unw=+1.447 nu_win=+0.005942 dwb_win=+0.014590
+105.000	9740.1154	6.90869555	0	0.458152983	9746.89731522	0.000e+00	57678	3.304	18.941	9.762	0.000	0.0000	0.8443	0.69849	0.8498	0.9935	1.65000	1.64948	0.0000	0.0000	0.0000	0.0075269	-0.000478	0.0048049	0	0	0
+# CONV t=105.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=105.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=5250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=105.00 gates min=0.0048 mean=0.2396 edges=6
+# PIN t=105.00 R=-0.584936084 nv=6
+# SLIP t=105.00 e=0 psi=+0.3924 unw=+1.632 nu_win=+0.005954 dwb_win=+0.014740
+# SLIP t=105.00 e=1 psi=+0.1104 unw=+0.111 nu_win=+0.000250 dwb_win=+0.001770
+# SLIP t=105.00 e=2 psi=+0.0085 unw=+0.009 nu_win=+0.000113 dwb_win=-0.000389
+# SLIP t=105.00 e=3 psi=+1.0881 unw=-2.867 nu_win=-0.005760 dwb_win=-0.013487
+# SLIP t=105.00 e=4 psi=-2.9818 unw=-2.982 nu_win=-0.005973 dwb_win=-0.014643
+# SLIP t=105.00 e=5 psi=+1.5454 unw=+1.635 nu_win=+0.005979 dwb_win=+0.014516
+110.000	9740.1154	6.91088965	0	0.486929281	9746.89731522	1.866e-16	57678	3.303	18.940	9.757	0.000	0.0000	0.8443	0.7059	0.8498	0.9935	1.65000	1.64948	0.0000	0.0000	0.0000	0.014954	-0.00070358	0.012814	0	0	0
+# CONV t=110.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=110.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=5500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=110.00 gates min=0.0010 mean=0.2238 edges=6
+# PIN t=110.00 R=-0.615906477 nv=6
+# SLIP t=110.00 e=0 psi=+0.5842 unw=+1.824 nu_win=+0.006107 dwb_win=+0.014550
+# SLIP t=110.00 e=1 psi=+0.1188 unw=+0.119 nu_win=+0.000267 dwb_win=+0.001934
+# SLIP t=110.00 e=2 psi=+0.0021 unw=+0.002 nu_win=-0.000204 dwb_win=-0.000841
+# SLIP t=110.00 e=3 psi=+0.9009 unw=-3.054 nu_win=-0.005958 dwb_win=-0.014104
+# SLIP t=110.00 e=4 psi=+3.1115 unw=-3.172 nu_win=-0.006045 dwb_win=-0.014709
+# SLIP t=110.00 e=5 psi=+1.7330 unw=+1.822 nu_win=+0.005970 dwb_win=+0.014063
+115.000	9740.1154	6.89572155	0	0.537716861	9746.89731522	0.000e+00	57678	3.302	18.940	9.763	0.000	0.0000	0.8443	0.711	0.8498	0.9935	1.65000	1.64948	0.0000	0.0000	0.0000	0.013762	-0.0049349	0.011275	0	0	0
+# CONV t=115.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=115.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=5750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=115.00 gates min=0.0001 mean=0.2186 edges=6
+# PIN t=115.00 R=-0.651525959 nv=6
+# SLIP t=115.00 e=0 psi=+0.7762 unw=+2.016 nu_win=+0.006110 dwb_win=+0.014740
+# SLIP t=115.00 e=1 psi=+0.1212 unw=+0.121 nu_win=+0.000077 dwb_win=+0.000651
+# SLIP t=115.00 e=2 psi=+0.0044 unw=+0.005 nu_win=+0.000075 dwb_win=-0.000369
+# SLIP t=115.00 e=3 psi=+0.7124 unw=-3.243 nu_win=-0.006001 dwb_win=-0.014228
+# SLIP t=115.00 e=4 psi=+2.9214 unw=-3.362 nu_win=-0.006051 dwb_win=-0.014533
+# SLIP t=115.00 e=5 psi=+1.9273 unw=+2.017 nu_win=+0.006184 dwb_win=+0.014764
+120.000	9740.1154	6.94048005	0	0.541524402	9746.89731522	0.000e+00	57678	3.302	18.942	9.765	0.000	0.0000	0.8443	0.71456	0.8498	0.9935	1.65000	1.64947	0.0000	0.0000	0.0000	0.023867	-0.0055883	0.0084188	0	0	0
+# CONV t=120.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=120.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=6000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=120.00 gates min=0.0004 mean=0.2235 edges=6
+# PIN t=120.00 R=-0.700091998 nv=6
+# SLIP t=120.00 e=0 psi=+0.9727 unw=+2.212 nu_win=+0.006257 dwb_win=+0.014898
+# SLIP t=120.00 e=1 psi=+0.1283 unw=+0.128 nu_win=+0.000225 dwb_win=+0.002047
+# SLIP t=120.00 e=2 psi=+0.0013 unw=+0.001 nu_win=-0.000100 dwb_win=-0.000740
+# SLIP t=120.00 e=3 psi=+0.5245 unw=-3.431 nu_win=-0.005983 dwb_win=-0.014415
+# SLIP t=120.00 e=4 psi=+2.7302 unw=-3.553 nu_win=-0.006087 dwb_win=-0.015273
+# SLIP t=120.00 e=5 psi=+2.1184 unw=+2.208 nu_win=+0.006083 dwb_win=+0.014449
+125.000	9740.1154	6.92109218	0	0.563170599	9746.89731522	1.866e-16	57679	3.304	18.945	9.761	0.000	0.0000	0.8443	0.71305	0.8498	0.9935	1.65000	1.64947	0.0000	0.0000	0.0000	9.7742e-05	0.00053244	-0.0050204	0	0	0
+# CONV t=125.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=125.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=6250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=125.00 gates min=0.0001 mean=0.2405 edges=6
+# PIN t=125.00 R=-0.702350325 nv=6
+# SLIP t=125.00 e=0 psi=+1.1950 unw=+2.434 nu_win=+0.007075 dwb_win=+0.015355
+# SLIP t=125.00 e=1 psi=+0.1335 unw=+0.134 nu_win=+0.000165 dwb_win=+0.001101
+# SLIP t=125.00 e=2 psi=+0.0069 unw=+0.007 nu_win=+0.000179 dwb_win=+0.001287
+# SLIP t=125.00 e=3 psi=+0.2648 unw=-3.690 nu_win=-0.008266 dwb_win=-0.012690
+# SLIP t=125.00 e=4 psi=+2.4594 unw=-3.824 nu_win=-0.008619 dwb_win=-0.015115
+# SLIP t=125.00 e=5 psi=+2.3405 unw=+2.430 nu_win=+0.007071 dwb_win=+0.015392
+130.000	9740.1154	6.92184469	0	0.602479611	9746.89731522	3.732e-16	57679	3.303	18.948	9.760	0.000	0.0000	0.8443	0.71187	0.8498	0.9935	1.65000	1.64947	0.0000	0.0000	0.0000	0.0029916	-0.0011106	-0.0021523	0	0	0
+# CONV t=130.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=130.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=6500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=130.00 gates min=0.0000 mean=0.2477 edges=6
+# PIN t=130.00 R=-0.742411849 nv=6
+# SLIP t=130.00 e=0 psi=+1.3702 unw=+2.610 nu_win=+0.005577 dwb_win=+0.012639
+# SLIP t=130.00 e=1 psi=+0.1418 unw=+0.142 nu_win=+0.000267 dwb_win=+0.002457
+# SLIP t=130.00 e=2 psi=+0.0126 unw=+0.013 nu_win=+0.000183 dwb_win=-0.000315
+# SLIP t=130.00 e=3 psi=+0.1015 unw=-3.854 nu_win=-0.005198 dwb_win=-0.011289
+# SLIP t=130.00 e=4 psi=+2.2845 unw=-3.999 nu_win=-0.005568 dwb_win=-0.013384
+# SLIP t=130.00 e=5 psi=+2.5157 unw=+2.605 nu_win=+0.005577 dwb_win=+0.012592
+135.000	9740.1154	6.92620943	0	0.627454403	9746.89731522	1.866e-16	57678	3.306	18.939	9.759	0.000	0.0000	0.8443	0.71376	0.8498	0.9935	1.65000	1.64946	0.0000	0.0000	0.0000	0.0072426	-0.0086504	0.0093186	0	0	0
+# CONV t=135.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=135.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=6750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=135.00 gates min=0.0000 mean=0.2496 edges=6
+# PIN t=135.00 R=-0.771751385 nv=6
+# SLIP t=135.00 e=0 psi=+1.5477 unw=+2.787 nu_win=+0.005649 dwb_win=+0.013088
+# SLIP t=135.00 e=1 psi=+0.1491 unw=+0.149 nu_win=+0.000230 dwb_win=+0.001532
+# SLIP t=135.00 e=2 psi=+0.0104 unw=+0.011 nu_win=-0.000071 dwb_win=-0.000152
+# SLIP t=135.00 e=3 psi=-0.0609 unw=-4.016 nu_win=-0.005168 dwb_win=-0.011553
+# SLIP t=135.00 e=4 psi=+2.1179 unw=-4.166 nu_win=-0.005303 dwb_win=-0.012221
+# SLIP t=135.00 e=5 psi=+2.6910 unw=+2.780 nu_win=+0.005580 dwb_win=+0.012375
+140.000	9740.1154	6.93582194	0	0.648517417	9746.89731522	1.866e-16	57678	3.310	18.946	9.767	0.000	0.0000	0.8443	0.71675	0.8498	0.9935	1.65000	1.64946	0.0000	0.0000	0.0000	0.012495	-0.0019055	0.0095475	0	0	0
+# CONV t=140.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=140.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=7000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=140.00 gates min=0.0001 mean=0.2459 edges=6
+# PIN t=140.00 R=-0.802426911 nv=6
+# SLIP t=140.00 e=0 psi=+1.7263 unw=+2.966 nu_win=+0.005686 dwb_win=+0.012819
+# SLIP t=140.00 e=1 psi=+0.1557 unw=+0.156 nu_win=+0.000213 dwb_win=+0.001865
+# SLIP t=140.00 e=2 psi=+0.0091 unw=+0.009 nu_win=-0.000043 dwb_win=-0.001368
+# SLIP t=140.00 e=3 psi=-0.2342 unw=-4.189 nu_win=-0.005518 dwb_win=-0.012954
+# SLIP t=140.00 e=4 psi=+1.9413 unw=-4.342 nu_win=-0.005621 dwb_win=-0.013607
+# SLIP t=140.00 e=5 psi=+2.8673 unw=+2.957 nu_win=+0.005611 dwb_win=+0.012974
+145.000	9740.1154	6.92402054	0	0.696626485	9746.89731522	1.866e-16	57678	3.307	18.943	9.764	0.000	0.0000	0.8443	0.71658	0.8498	0.9935	1.65000	1.64946	0.0000	0.0000	0.0000	0.015536	-0.0079154	0.0083326	0	0	0
+# CONV t=145.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=145.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=7250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=145.00 gates min=0.0002 mean=0.2393 edges=6
+# PIN t=145.00 R=-0.838734575 nv=6
+# SLIP t=145.00 e=0 psi=+1.9003 unw=+3.140 nu_win=+0.005538 dwb_win=+0.012650
+# SLIP t=145.00 e=1 psi=+0.1605 unw=+0.161 nu_win=+0.000152 dwb_win=+0.001619
+# SLIP t=145.00 e=2 psi=+0.0052 unw=+0.005 nu_win=-0.000124 dwb_win=-0.000810
+# SLIP t=145.00 e=3 psi=-0.4026 unw=-4.358 nu_win=-0.005359 dwb_win=-0.012224
+# SLIP t=145.00 e=4 psi=+1.7728 unw=-4.511 nu_win=-0.005363 dwb_win=-0.012355
+# SLIP t=145.00 e=5 psi=+3.0415 unw=+3.131 nu_win=+0.005544 dwb_win=+0.011971
+150.000	9740.1154	6.94099027	0	0.716629157	9746.89731522	1.866e-16	57678	3.304	18.938	9.771	0.000	0.0000	0.8443	0.71673	0.8498	0.9935	1.65000	1.64945	0.0000	0.0000	0.0000	0.0092437	-0.0098647	0.013807	0	0	0
+# CONV t=150.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=150.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=7500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=150.00 gates min=0.0000 mean=0.2357 edges=6
+# PIN t=150.00 R=-0.875706981 nv=6
+# SLIP t=150.00 e=0 psi=+2.0657 unw=+3.305 nu_win=+0.005263 dwb_win=+0.012551
+# SLIP t=150.00 e=1 psi=+0.1664 unw=+0.166 nu_win=+0.000186 dwb_win=+0.001788
+# SLIP t=150.00 e=2 psi=+0.0086 unw=+0.009 nu_win=+0.000108 dwb_win=-0.000320
+# SLIP t=150.00 e=3 psi=-0.5568 unw=-4.512 nu_win=-0.004909 dwb_win=-0.011222
+# SLIP t=150.00 e=4 psi=+1.6134 unw=-4.670 nu_win=-0.005072 dwb_win=-0.012345
+# SLIP t=150.00 e=5 psi=-3.0815 unw=+3.291 nu_win=+0.005102 dwb_win=+0.012206
+155.000	9740.1154	6.94101414	0	0.714538598	9746.89731522	1.866e-16	57679	3.313	18.955	9.761	0.000	0.0000	0.8443	0.71607	0.8498	0.9935	1.65000	1.64945	0.0000	0.0000	0.0000	0.0024696	-0.0032048	0.0080346	0	0	0
+# CONV t=155.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=155.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=7750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=155.00 gates min=0.0000 mean=0.2376 edges=6
+# PIN t=155.00 R=-0.873640289 nv=6
+# SLIP t=155.00 e=0 psi=+2.2493 unw=+3.489 nu_win=+0.005846 dwb_win=+0.011726
+# SLIP t=155.00 e=1 psi=+0.1755 unw=+0.176 nu_win=+0.000289 dwb_win=+0.002058
+# SLIP t=155.00 e=2 psi=+0.0036 unw=+0.004 nu_win=-0.000159 dwb_win=-0.000869
+# SLIP t=155.00 e=3 psi=-0.7689 unw=-4.724 nu_win=-0.006751 dwb_win=-0.011190
+# SLIP t=155.00 e=4 psi=+1.3962 unw=-4.887 nu_win=-0.006916 dwb_win=-0.012400
+# SLIP t=155.00 e=5 psi=-2.8975 unw=+3.475 nu_win=+0.005854 dwb_win=+0.011746
+160.000	9740.1154	6.94043993	0	0.749684245	9746.89731522	1.866e-16	57679	3.319	18.951	9.773	0.000	0.0000	0.8443	0.71432	0.8498	0.9935	1.65000	1.64945	0.0000	0.0000	0.0000	0.0057069	-0.0045332	0.010497	0	0	0
+# CONV t=160.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=160.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=8000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=160.00 gates min=0.0000 mean=0.2449 edges=6
+# PIN t=160.00 R=-0.908211725 nv=6
+# SLIP t=160.00 e=0 psi=+2.4130 unw=+3.652 nu_win=+0.005211 dwb_win=+0.012015
+# SLIP t=160.00 e=1 psi=+0.1819 unw=+0.182 nu_win=+0.000205 dwb_win=+0.001642
+# SLIP t=160.00 e=2 psi=+0.0068 unw=+0.007 nu_win=+0.000102 dwb_win=-0.000381
+# SLIP t=160.00 e=3 psi=-0.9190 unw=-4.874 nu_win=-0.004776 dwb_win=-0.010420
+# SLIP t=160.00 e=4 psi=+1.2429 unw=-5.040 nu_win=-0.004877 dwb_win=-0.011039
+# SLIP t=160.00 e=5 psi=-2.7371 unw=+3.635 nu_win=+0.005107 dwb_win=+0.011372
+165.000	9740.1154	6.9310091	0	0.792829305	9746.89731522	1.866e-16	57679	3.317	18.941	9.763	0.000	0.0000	0.8443	0.7124	0.8498	0.9935	1.65000	1.64945	0.0000	0.0000	0.0000	0.00036121	-0.0062826	0.0036078	0	0	0
+# CONV t=165.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=165.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=8250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=165.00 gates min=0.0000 mean=0.2555 edges=6
+# PIN t=165.00 R=-0.941925953 nv=6
+# SLIP t=165.00 e=0 psi=+2.5783 unw=+3.818 nu_win=+0.005260 dwb_win=+0.011434
+# SLIP t=165.00 e=1 psi=+0.1924 unw=+0.192 nu_win=+0.000333 dwb_win=+0.002172
+# SLIP t=165.00 e=2 psi=+0.0030 unw=+0.003 nu_win=-0.000121 dwb_win=-0.000529
+# SLIP t=165.00 e=3 psi=-1.0715 unw=-5.026 nu_win=-0.004855 dwb_win=-0.010757
+# SLIP t=165.00 e=4 psi=+1.0832 unw=-5.200 nu_win=-0.005083 dwb_win=-0.012253
+# SLIP t=165.00 e=5 psi=-2.5740 unw=+3.799 nu_win=+0.005191 dwb_win=+0.011288
+170.000	9740.1154	6.93135302	0	0.829276236	9746.89731522	3.732e-16	57679	3.311	18.944	9.767	0.000	0.0000	0.8443	0.71211	0.8498	0.9935	1.65000	1.64945	0.0000	0.0000	0.0000	0.0094213	-0.0038494	0.010714	0	0	0
+# CONV t=170.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=170.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=8500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=170.00 gates min=0.0000 mean=0.2697 edges=6
+# PIN t=170.00 R=-0.978716811 nv=6
+# SLIP t=170.00 e=0 psi=+2.7586 unw=+3.998 nu_win=+0.005741 dwb_win=+0.012963
+# SLIP t=170.00 e=1 psi=+0.1961 unw=+0.196 nu_win=+0.000118 dwb_win=+0.001087
+# SLIP t=170.00 e=2 psi=+0.0076 unw=+0.008 nu_win=+0.000146 dwb_win=+0.000140
+# SLIP t=170.00 e=3 psi=-1.2371 unw=-5.192 nu_win=-0.005272 dwb_win=-0.011517
+# SLIP t=170.00 e=4 psi=+0.9080 unw=-5.375 nu_win=-0.005579 dwb_win=-0.013256
+# SLIP t=170.00 e=5 psi=-2.3897 unw=+3.983 nu_win=+0.005867 dwb_win=+0.013476
+175.000	9740.1154	7.003463	0	0.79722749	9746.89731522	0.000e+00	57678	3.314	18.942	9.763	0.000	0.0000	0.8443	0.70987	0.8498	0.9935	1.65000	1.64944	0.0000	0.0000	0.0000	0.015695	-0.01202	0.0093802	0	0	0
+# CONV t=175.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=175.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=8750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=175.00 gates min=0.0000 mean=0.2849 edges=6
+# PIN t=175.00 R=-1.01877804 nv=6
+# SLIP t=175.00 e=0 psi=+2.9369 unw=+4.176 nu_win=+0.005674 dwb_win=+0.012918
+# SLIP t=175.00 e=1 psi=+0.2016 unw=+0.202 nu_win=+0.000176 dwb_win=+0.001958
+# SLIP t=175.00 e=2 psi=+0.0063 unw=+0.006 nu_win=-0.000043 dwb_win=-0.000694
+# SLIP t=175.00 e=3 psi=-1.4074 unw=-5.362 nu_win=-0.005420 dwb_win=-0.012443
+# SLIP t=175.00 e=4 psi=+0.7353 unw=-5.548 nu_win=-0.005497 dwb_win=-0.012909
+# SLIP t=175.00 e=5 psi=-2.2154 unw=+4.157 nu_win=+0.005549 dwb_win=+0.012120
+180.000	9740.1154	6.95426123	0	0.877452041	9746.89731522	1.866e-16	57678	3.316	18.954	9.754	0.000	0.0000	0.8443	0.70703	0.8498	0.9935	1.65000	1.64944	0.0000	0.0000	0.0000	0.017446	-0.0053825	0.012664	0	0	0
+# CONV t=180.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=180.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=9000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=180.00 gates min=0.0001 mean=0.3023 edges=6
+# PIN t=180.00 R=-1.04980082 nv=6
+# SLIP t=180.00 e=0 psi=+3.1279 unw=+4.367 nu_win=+0.006079 dwb_win=+0.014119
+# SLIP t=180.00 e=1 psi=+0.2104 unw=+0.210 nu_win=+0.000279 dwb_win=+0.001923
+# SLIP t=180.00 e=2 psi=+0.0045 unw=+0.005 nu_win=-0.000057 dwb_win=-0.000537
+# SLIP t=180.00 e=3 psi=-1.5826 unw=-5.538 nu_win=-0.005578 dwb_win=-0.012816
+# SLIP t=180.00 e=4 psi=+0.5564 unw=-5.727 nu_win=-0.005696 dwb_win=-0.013644
+# SLIP t=180.00 e=5 psi=-2.0280 unw=+4.345 nu_win=+0.005966 dwb_win=+0.013561
+185.000	9740.1154	6.97382943	0	0.867607203	9746.89731522	1.866e-16	57678	3.320	18.953	9.770	0.000	0.0000	0.8443	0.70543	0.8498	0.9935	1.65000	1.64944	0.0000	0.0000	0.0000	0.0079072	0.0007511	0.0077475	0	0	0
+# CONV t=185.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=185.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=9250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=185.00 gates min=0.0013 mean=0.3229 edges=6
+# PIN t=185.00 R=-1.05952418 nv=6
+# SLIP t=185.00 e=0 psi=-2.9341 unw=+4.588 nu_win=+0.007042 dwb_win=+0.014511
+# SLIP t=185.00 e=1 psi=+0.2160 unw=+0.216 nu_win=+0.000178 dwb_win=+0.002146
+# SLIP t=185.00 e=2 psi=+0.0054 unw=+0.006 nu_win=+0.000029 dwb_win=-0.000711
+# SLIP t=185.00 e=3 psi=-1.8367 unw=-5.792 nu_win=-0.008088 dwb_win=-0.013575
+# SLIP t=185.00 e=4 psi=+0.2998 unw=-5.984 nu_win=-0.008167 dwb_win=-0.014299
+# SLIP t=185.00 e=5 psi=-1.8098 unw=+4.563 nu_win=+0.006945 dwb_win=+0.013800
+190.000	9740.1154	6.96687008	0	0.89437273	9746.89731522	3.732e-16	57678	3.318	18.955	9.763	0.001	0.0000	0.8443	0.70262	0.8498	0.9935	1.65000	1.64944	0.0000	0.0000	0.0000	0.0063574	-0.0088345	0.0097337	0	0	0
+# CONV t=190.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=190.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=9500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=190.00 gates min=0.0065 mean=0.3361 edges=6
+# PIN t=190.00 R=-1.07933036 nv=6
+# SLIP t=190.00 e=0 psi=-2.7337 unw=+4.789 nu_win=+0.006378 dwb_win=+0.013944
+# SLIP t=190.00 e=1 psi=+0.2248 unw=+0.225 nu_win=+0.000279 dwb_win=+0.001619
+# SLIP t=190.00 e=2 psi=+0.0021 unw=+0.002 nu_win=-0.000104 dwb_win=-0.000755
+# SLIP t=190.00 e=3 psi=-2.0282 unw=-5.983 nu_win=-0.006096 dwb_win=-0.013393
+# SLIP t=190.00 e=4 psi=+0.1043 unw=-6.179 nu_win=-0.006222 dwb_win=-0.014177
+# SLIP t=190.00 e=5 psi=-1.6114 unw=+4.761 nu_win=+0.006314 dwb_win=+0.013863
+195.000	9740.1154	6.96272094	0	0.930195228	9746.89731522	3.732e-16	57679	3.319	18.957	9.762	0.000	0.0000	0.8443	0.69833	0.8498	0.9935	1.65000	1.64944	0.0000	0.0000	0.0000	0.0038308	-0.0069483	0.011446	0	0	0
+# CONV t=195.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=195.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=9750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=195.00 gates min=0.0236 mean=0.3374 edges=6
+# PIN t=195.00 R=-1.11100372 nv=6
+# SLIP t=195.00 e=0 psi=-2.5368 unw=+4.986 nu_win=+0.006267 dwb_win=+0.013700
+# SLIP t=195.00 e=1 psi=+0.2312 unw=+0.231 nu_win=+0.000206 dwb_win=+0.002083
+# SLIP t=195.00 e=2 psi=+0.0009 unw=+0.001 nu_win=-0.000037 dwb_win=-0.000957
+# SLIP t=195.00 e=3 psi=-2.2112 unw=-6.166 nu_win=-0.005824 dwb_win=-0.012890
+# SLIP t=195.00 e=4 psi=-0.0859 unw=-6.369 nu_win=-0.006056 dwb_win=-0.014297
+# SLIP t=195.00 e=5 psi=-1.4140 unw=+4.959 nu_win=+0.006284 dwb_win=+0.013981
+200.000	9740.1154	6.96706893	0	0.965183672	9746.89731522	1.866e-16	57679	3.323	18.950	9.757	0.000	0.0000	0.8443	0.69477	0.8498	0.9935	1.64999	1.64943	0.0000	0.0000	0.0000	0.018303	-0.0068413	0.0082453	0	0	0
+# CONV t=200.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=200.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=10000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=200.00 gates min=0.0614 mean=0.3258 edges=6
+# PIN t=200.00 R=-1.15034016 nv=6
+# SLIP t=200.00 e=0 psi=-2.3476 unw=+5.175 nu_win=+0.006022 dwb_win=+0.013403
+# SLIP t=200.00 e=1 psi=+0.2352 unw=+0.235 nu_win=+0.000127 dwb_win=+0.000943
+# SLIP t=200.00 e=2 psi=+0.0046 unw=+0.005 nu_win=+0.000118 dwb_win=+0.000672
+# SLIP t=200.00 e=3 psi=-2.3902 unw=-6.345 nu_win=-0.005699 dwb_win=-0.012148
+# SLIP t=200.00 e=4 psi=-0.2747 unw=-6.558 nu_win=-0.006010 dwb_win=-0.014078
+# SLIP t=200.00 e=5 psi=-1.2221 unw=+5.150 nu_win=+0.006107 dwb_win=+0.013718
+205.000	9740.1154	6.99201719	0	0.976166435	9746.89731522	1.866e-16	57679	3.320	18.960	9.760	0.000	0.0000	0.8443	0.69112	0.8498	0.9935	1.64999	1.64943	0.0000	0.0000	0.0000	0.0054351	-0.010418	0.007285	0	0	0
+# CONV t=205.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=205.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=10250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=205.00 gates min=0.1072 mean=0.3081 edges=6
+# PIN t=205.00 R=-1.18627117 nv=6
+# SLIP t=205.00 e=0 psi=-2.1588 unw=+5.364 nu_win=+0.006011 dwb_win=+0.013418
+# SLIP t=205.00 e=1 psi=+0.2430 unw=+0.243 nu_win=+0.000249 dwb_win=+0.002504
+# SLIP t=205.00 e=2 psi=+0.0049 unw=+0.005 nu_win=+0.000007 dwb_win=-0.000912
+# SLIP t=205.00 e=3 psi=-2.5673 unw=-6.522 nu_win=-0.005638 dwb_win=-0.012305
+# SLIP t=205.00 e=4 psi=-0.4592 unw=-6.743 nu_win=-0.005873 dwb_win=-0.013556
+# SLIP t=205.00 e=5 psi=-1.0322 unw=+5.340 nu_win=+0.006044 dwb_win=+0.013076
+210.000	9740.1154	7.01007891	0	1.00623233	9746.89731522	0.000e+00	57679	3.323	18.961	9.758	0.000	0.0000	0.8443	0.68858	0.8498	0.9935	1.64999	1.64942	0.0000	0.0000	0.0000	0.010754	-0.013955	0.019284	0	0	0
+# CONV t=210.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=210.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=10500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=210.00 gates min=0.2238 mean=0.2963 edges=6
+# PIN t=210.00 R=-1.23439879 nv=6
+# SLIP t=210.00 e=0 psi=-1.9671 unw=+5.555 nu_win=+0.006101 dwb_win=+0.014119
+# SLIP t=210.00 e=1 psi=+0.2493 unw=+0.249 nu_win=+0.000199 dwb_win=+0.001450
+# SLIP t=210.00 e=2 psi=+0.0077 unw=+0.008 nu_win=+0.000092 dwb_win=+0.000298
+# SLIP t=210.00 e=3 psi=-2.7412 unw=-6.696 nu_win=-0.005536 dwb_win=-0.012864
+# SLIP t=210.00 e=4 psi=-0.6326 unw=-6.916 nu_win=-0.005520 dwb_win=-0.012940
+# SLIP t=210.00 e=5 psi=-0.8517 unw=+5.521 nu_win=+0.005747 dwb_win=+0.012448
+215.000	9740.1154	6.9817168	0	1.03451534	9746.89731522	0.000e+00	57679	3.314	18.951	9.758	0.001	0.0000	0.8443	0.68823	0.8498	0.9935	1.64999	1.64942	0.0000	0.0000	0.0000	-0.00082583	-0.00020402	0.00051437	0	0	0
+# CONV t=215.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=215.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=10750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=215.00 gates min=0.2073 mean=0.3004 edges=6
+# PIN t=215.00 R=-1.2343197 nv=6
+# SLIP t=215.00 e=0 psi=-1.7605 unw=+5.762 nu_win=+0.006577 dwb_win=+0.013318
+# SLIP t=215.00 e=1 psi=+0.2602 unw=+0.260 nu_win=+0.000348 dwb_win=+0.002645
+# SLIP t=215.00 e=2 psi=+0.0057 unw=+0.006 nu_win=-0.000064 dwb_win=-0.001312
+# SLIP t=215.00 e=3 psi=-2.9790 unw=-6.934 nu_win=-0.007566 dwb_win=-0.012200
+# SLIP t=215.00 e=4 psi=-0.8726 unw=-7.156 nu_win=-0.007638 dwb_win=-0.012985
+# SLIP t=215.00 e=5 psi=-0.6500 unw=+5.723 nu_win=+0.006420 dwb_win=+0.012770
+220.000	9740.1154	7.03465852	0	1.00285599	9746.89731522	1.866e-16	57679	3.313	18.950	9.758	0.001	0.0000	0.8443	0.68853	0.8498	0.9935	1.64999	1.64942	0.0000	0.0000	0.0000	0.0066258	-0.006629	0.011841	0	0	0
+# CONV t=220.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=220.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=11000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=220.00 gates min=0.2352 mean=0.3234 edges=6
+# PIN t=220.00 R=-1.25560206 nv=6
+# SLIP t=220.00 e=0 psi=-1.5724 unw=+5.950 nu_win=+0.005985 dwb_win=+0.012997
+# SLIP t=220.00 e=1 psi=+0.2657 unw=+0.266 nu_win=+0.000175 dwb_win=+0.001243
+# SLIP t=220.00 e=2 psi=+0.0033 unw=+0.003 nu_win=-0.000078 dwb_win=-0.000228
+# SLIP t=220.00 e=3 psi=+3.1311 unw=-7.107 nu_win=-0.005510 dwb_win=-0.012830
+# SLIP t=220.00 e=4 psi=-1.0518 unw=-7.335 nu_win=-0.005703 dwb_win=-0.014003
+# SLIP t=220.00 e=5 psi=-0.4617 unw=+5.911 nu_win=+0.005994 dwb_win=+0.013156
+225.000	9740.1154	7.02662408	0	1.04125834	9746.89731522	1.866e-16	57679	3.318	18.954	9.759	0.001	0.0000	0.8443	0.69035	0.8498	0.9935	1.64999	1.64942	0.0000	0.0000	0.0000	0.014613	-0.012702	0.0067428	0	0	0
+# CONV t=225.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=225.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=11250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=225.00 gates min=0.1130 mean=0.3551 edges=6
+# PIN t=225.00 R=-1.28596997 nv=6
+# SLIP t=225.00 e=0 psi=-1.3873 unw=+6.135 nu_win=+0.005893 dwb_win=+0.012702
+# SLIP t=225.00 e=1 psi=+0.2728 unw=+0.273 nu_win=+0.000224 dwb_win=+0.001663
+# SLIP t=225.00 e=2 psi=+0.0001 unw=+0.000 nu_win=-0.000100 dwb_win=-0.001401
+# SLIP t=225.00 e=3 psi=+2.9535 unw=-7.285 nu_win=-0.005655 dwb_win=-0.012415
+# SLIP t=225.00 e=4 psi=-1.2345 unw=-7.518 nu_win=-0.005815 dwb_win=-0.013383
+# SLIP t=225.00 e=5 psi=-0.2731 unw=+6.099 nu_win=+0.006005 dwb_win=+0.013407
+230.000	9740.1154	7.01214099	0	1.08674214	9746.89731522	0.000e+00	57679	3.311	18.951	9.758	0.001	0.0000	0.8443	0.6904	0.8498	0.9935	1.64999	1.64942	0.0000	0.0000	0.0000	0.013395	-0.0071219	0.010831	0	0	0
+# CONV t=230.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=230.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=11500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=230.00 gates min=0.0459 mean=0.3830 edges=6
+# PIN t=230.00 R=-1.31697069 nv=6
+# SLIP t=230.00 e=0 psi=-1.2015 unw=+6.321 nu_win=+0.005914 dwb_win=+0.012842
+# SLIP t=230.00 e=1 psi=+0.2770 unw=+0.277 nu_win=+0.000134 dwb_win=+0.001563
+# SLIP t=230.00 e=2 psi=-0.0014 unw=-0.001 nu_win=-0.000048 dwb_win=-0.000300
+# SLIP t=230.00 e=3 psi=+2.7820 unw=-7.456 nu_win=-0.005458 dwb_win=-0.012856
+# SLIP t=230.00 e=4 psi=-1.4117 unw=-7.695 nu_win=-0.005641 dwb_win=-0.014072
+# SLIP t=230.00 e=5 psi=-0.0865 unw=+6.286 nu_win=+0.005938 dwb_win=+0.012794
+235.000	9740.1154	7.04004402	0	1.10321036	9746.89731522	1.866e-16	57679	3.322	18.971	9.759	0.001	0.0000	0.8443	0.69106	0.8498	0.9935	1.64999	1.64941	0.0000	0.0000	0.0000	0.014011	-0.01567	0.010795	0	0	0
+# CONV t=235.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=235.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=11750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=235.00 gates min=0.0152 mean=0.3960 edges=6
+# PIN t=235.00 R=-1.36134194 nv=6
+# SLIP t=235.00 e=0 psi=-1.0067 unw=+6.516 nu_win=+0.006201 dwb_win=+0.014253
+# SLIP t=235.00 e=1 psi=+0.2848 unw=+0.285 nu_win=+0.000250 dwb_win=+0.001666
+# SLIP t=235.00 e=2 psi=+0.0047 unw=+0.005 nu_win=+0.000192 dwb_win=+0.000746
+# SLIP t=235.00 e=3 psi=+2.6061 unw=-7.632 nu_win=-0.005599 dwb_win=-0.011748
+# SLIP t=235.00 e=4 psi=-1.5977 unw=-7.881 nu_win=-0.005920 dwb_win=-0.013649
+# SLIP t=235.00 e=5 psi=+0.1084 unw=+6.481 nu_win=+0.006204 dwb_win=+0.013743
+240.000	9740.1154	7.06293268	0	1.13001812	9746.89731522	1.866e-16	57679	3.318	18.955	9.761	0.001	0.0000	0.8443	0.68848	0.8498	0.9935	1.64999	1.64941	0.0000	0.0000	0.0000	0.0092757	-0.018555	0.015155	0	0	0
+# CONV t=240.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=240.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=12000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=240.00 gates min=0.0037 mean=0.3882 edges=6
+# PIN t=240.00 R=-1.41103835 nv=6
+# SLIP t=240.00 e=0 psi=-0.8038 unw=+6.719 nu_win=+0.006457 dwb_win=+0.014465
+# SLIP t=240.00 e=1 psi=+0.2944 unw=+0.294 nu_win=+0.000303 dwb_win=+0.002492
+# SLIP t=240.00 e=2 psi=+0.0061 unw=+0.006 nu_win=+0.000045 dwb_win=-0.000233
+# SLIP t=240.00 e=3 psi=+2.4220 unw=-7.816 nu_win=-0.005862 dwb_win=-0.013404
+# SLIP t=240.00 e=4 psi=-1.7856 unw=-8.069 nu_win=-0.005980 dwb_win=-0.014137
+# SLIP t=240.00 e=5 psi=+0.3017 unw=+6.674 nu_win=+0.006154 dwb_win=+0.012938
+245.000	9740.1154	7.04461093	0	1.14286692	9746.89731522	0.000e+00	57679	3.321	18.946	9.760	0.001	0.0000	0.8443	0.68376	0.8498	0.9935	1.64999	1.64941	0.0000	0.0000	0.0000	0.0041449	-0.010286	0.011155	0	0	0
+# CONV t=245.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=245.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=12250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=245.00 gates min=0.0006 mean=0.3580 edges=6
+# PIN t=245.00 R=-1.40556541 nv=6
+# SLIP t=245.00 e=0 psi=-0.5834 unw=+6.939 nu_win=+0.007016 dwb_win=+0.014502
+# SLIP t=245.00 e=1 psi=+0.3017 unw=+0.302 nu_win=+0.000234 dwb_win=+0.001410
+# SLIP t=245.00 e=2 psi=+0.0072 unw=+0.007 nu_win=+0.000036 dwb_win=-0.000023
+# SLIP t=245.00 e=3 psi=+2.1723 unw=-8.066 nu_win=-0.007947 dwb_win=-0.013472
+# SLIP t=245.00 e=4 psi=-2.0397 unw=-8.323 nu_win=-0.008090 dwb_win=-0.014562
+# SLIP t=245.00 e=5 psi=+0.5175 unw=+6.890 nu_win=+0.006869 dwb_win=+0.014206
+250.000	9740.1154	7.02069078	0	1.19253673	9746.89731522	1.866e-16	57679	3.315	18.938	9.773	0.001	0.0000	0.8443	0.67647	0.8498	0.9935	1.64999	1.64941	0.0000	0.0000	0.0000	0.012072	-0.0027421	0.0034839	0	0	0
+# CONV t=250.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=250.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=12500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=250.00 gates min=0.0001 mean=0.3275 edges=6
+# PIN t=250.00 R=-1.43131507 nv=6
+# SLIP t=250.00 e=0 psi=-0.3861 unw=+7.136 nu_win=+0.006282 dwb_win=+0.013146
+# SLIP t=250.00 e=1 psi=+0.3091 unw=+0.309 nu_win=+0.000235 dwb_win=+0.002167
+# SLIP t=250.00 e=2 psi=+0.0025 unw=+0.003 nu_win=-0.000151 dwb_win=-0.001691
+# SLIP t=250.00 e=3 psi=+1.9806 unw=-8.258 nu_win=-0.006103 dwb_win=-0.013218
+# SLIP t=250.00 e=4 psi=-2.2365 unw=-8.520 nu_win=-0.006263 dwb_win=-0.014174
+# SLIP t=250.00 e=5 psi=+0.7173 unw=+7.090 nu_win=+0.006359 dwb_win=+0.013625
+255.000	9740.1154	6.99708154	0	1.23601108	9746.89731522	0.000e+00	57679	3.323	18.927	9.771	0.001	0.0000	0.8443	0.67387	0.8498	0.9935	1.64998	1.64940	0.0000	0.0000	0.0000	0.01921	-0.009867	0.013823	0	0	0
+# CONV t=255.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=255.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=12750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=255.00 gates min=0.0006 mean=0.2977 edges=6
+# PIN t=255.00 R=-1.45118017 nv=6
+# SLIP t=255.00 e=0 psi=-0.1819 unw=+7.341 nu_win=+0.006497 dwb_win=+0.014188
+# SLIP t=255.00 e=1 psi=+0.3133 unw=+0.313 nu_win=+0.000135 dwb_win=+0.001135
+# SLIP t=255.00 e=2 psi=+0.0003 unw=+0.000 nu_win=-0.000072 dwb_win=-0.000459
+# SLIP t=255.00 e=3 psi=+1.7880 unw=-8.450 nu_win=-0.006130 dwb_win=-0.014232
+# SLIP t=255.00 e=4 psi=-2.4333 unw=-8.717 nu_win=-0.006264 dwb_win=-0.015052
+# SLIP t=255.00 e=5 psi=+0.9228 unw=+7.295 nu_win=+0.006543 dwb_win=+0.014332
+260.000	9740.1154	7.03241471	0	1.22706849	9746.89731522	1.866e-16	57679	3.317	18.931	9.763	0.001	0.0000	0.8443	0.67506	0.8498	0.9935	1.64998	1.64940	0.0000	0.0000	0.0000	0.022334	-0.010657	0.01854	0	0	0
+# CONV t=260.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=260.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=13000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=260.00 gates min=0.0032 mean=0.2691 edges=6
+# PIN t=260.00 R=-1.47757075 nv=6
+# SLIP t=260.00 e=0 psi=+0.0205 unw=+7.543 nu_win=+0.006443 dwb_win=+0.014172
+# SLIP t=260.00 e=1 psi=+0.3225 unw=+0.323 nu_win=+0.000291 dwb_win=+0.002151
+# SLIP t=260.00 e=2 psi=-0.0033 unw=-0.003 nu_win=-0.000112 dwb_win=-0.001273
+# SLIP t=260.00 e=3 psi=+1.5946 unw=-8.644 nu_win=-0.006156 dwb_win=-0.013539
+# SLIP t=260.00 e=4 psi=-2.6306 unw=-8.914 nu_win=-0.006283 dwb_win=-0.014262
+# SLIP t=260.00 e=5 psi=+1.1260 unw=+7.499 nu_win=+0.006469 dwb_win=+0.014019
+265.000	9740.1154	7.03039521	0	1.27423406	9746.89731522	1.866e-16	57679	3.334	18.932	9.763	0.001	0.0000	0.8443	0.67692	0.8498	0.9935	1.64998	1.64940	0.0000	0.0000	0.0000	0.016896	-0.016732	0.011392	0	0	0
+# CONV t=265.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=265.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=13250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=265.00 gates min=0.0124 mean=0.2435 edges=6
+# PIN t=265.00 R=-1.52271683 nv=6
+# SLIP t=265.00 e=0 psi=+0.2139 unw=+7.736 nu_win=+0.006158 dwb_win=+0.013697
+# SLIP t=265.00 e=1 psi=+0.3300 unw=+0.330 nu_win=+0.000238 dwb_win=+0.001899
+# SLIP t=265.00 e=2 psi=-0.0043 unw=-0.004 nu_win=-0.000031 dwb_win=-0.000243
+# SLIP t=265.00 e=3 psi=+1.4150 unw=-8.823 nu_win=-0.005718 dwb_win=-0.013089
+# SLIP t=265.00 e=4 psi=-2.8107 unw=-9.094 nu_win=-0.005732 dwb_win=-0.013284
+# SLIP t=265.00 e=5 psi=+1.3114 unw=+7.684 nu_win=+0.005902 dwb_win=+0.012236
+270.000	9740.1154	7.03031597	0	1.31832473	9746.89731522	1.866e-16	57679	3.317	18.929	9.770	0.001	0.0000	0.8443	0.67639	0.8498	0.9935	1.64998	1.64940	0.0000	0.0000	0.0000	0.012296	-0.014537	0.016051	0	0	0
+# CONV t=270.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=270.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=13500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=270.00 gates min=0.0074 mean=0.2201 edges=6
+# PIN t=270.00 R=-1.56672825 nv=6
+# SLIP t=270.00 e=0 psi=+0.3958 unw=+7.918 nu_win=+0.005791 dwb_win=+0.013034
+# SLIP t=270.00 e=1 psi=+0.3375 unw=+0.338 nu_win=+0.000240 dwb_win=+0.002105
+# SLIP t=270.00 e=2 psi=+0.0037 unw=+0.004 nu_win=+0.000252 dwb_win=+0.000631
+# SLIP t=270.00 e=3 psi=+1.2524 unw=-8.986 nu_win=-0.005174 dwb_win=-0.010474
+# SLIP t=270.00 e=4 psi=-2.9824 unw=-9.266 nu_win=-0.005466 dwb_win=-0.012557
+# SLIP t=270.00 e=5 psi=+1.4877 unw=+7.860 nu_win=+0.005611 dwb_win=+0.012380
+275.000	9740.1154	7.09503405	0	1.25802361	9746.89731522	3.732e-16	57679	3.323	18.922	9.763	0.002	0.0000	0.8443	0.67461	0.8498	0.9935	1.64997	1.64940	0.0000	0.0000	0.0000	0.011152	-0.012648	0.0090575	0	0	0
+# CONV t=275.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=275.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=13750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=275.00 gates min=0.0015 mean=0.2009 edges=6
+# PIN t=275.00 R=-1.57114521 nv=6
+# SLIP t=275.00 e=0 psi=+0.5907 unw=+8.113 nu_win=+0.006202 dwb_win=+0.012205
+# SLIP t=275.00 e=1 psi=+0.3454 unw=+0.346 nu_win=+0.000252 dwb_win=+0.001495
+# SLIP t=275.00 e=2 psi=+0.0070 unw=+0.007 nu_win=+0.000107 dwb_win=-0.000017
+# SLIP t=275.00 e=3 psi=+1.0370 unw=-9.201 nu_win=-0.006856 dwb_win=-0.011689
+# SLIP t=275.00 e=4 psi=+3.0758 unw=-9.491 nu_win=-0.007160 dwb_win=-0.013398
+# SLIP t=275.00 e=5 psi=+1.6819 unw=+8.054 nu_win=+0.006182 dwb_win=+0.012436
+280.000	9740.1154	7.02799499	0	1.34491307	9746.89731522	1.866e-16	57679	3.327	18.916	9.768	0.002	0.0000	0.8443	0.67141	0.8498	0.9935	1.64997	1.64940	0.0000	0.0000	0.0000	0.0079189	-0.012109	0.0098131	0	0	0
+# CONV t=280.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=280.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=14000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=280.00 gates min=0.0003 mean=0.1915 edges=6
+# PIN t=280.00 R=-1.59099562 nv=6
+# SLIP t=280.00 e=0 psi=+0.7587 unw=+8.281 nu_win=+0.005349 dwb_win=+0.011449
+# SLIP t=280.00 e=1 psi=+0.3516 unw=+0.352 nu_win=+0.000198 dwb_win=+0.002021
+# SLIP t=280.00 e=2 psi=+0.0054 unw=+0.006 nu_win=-0.000050 dwb_win=-0.001261
+# SLIP t=280.00 e=3 psi=+0.8779 unw=-9.360 nu_win=-0.005065 dwb_win=-0.010949
+# SLIP t=280.00 e=4 psi=+2.9112 unw=-9.655 nu_win=-0.005238 dwb_win=-0.011913
+# SLIP t=280.00 e=5 psi=+1.8523 unw=+8.225 nu_win=+0.005422 dwb_win=+0.011653
+285.000	9740.1154	7.04046136	0	1.356898	9746.89731522	1.866e-16	57679	3.323	18.911	9.772	0.001	0.0000	0.8443	0.66992	0.8498	0.9935	1.64997	1.64939	0.0000	0.0000	0.0000	0.01728	-0.013593	0.01177	0	0	0
+# CONV t=285.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=285.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=14250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=285.00 gates min=0.0002 mean=0.1911 edges=6
+# PIN t=285.00 R=-1.61544692 nv=6
+# SLIP t=285.00 e=0 psi=+0.9373 unw=+8.460 nu_win=+0.005684 dwb_win=+0.012269
+# SLIP t=285.00 e=1 psi=+0.3572 unw=+0.357 nu_win=+0.000178 dwb_win=+0.001375
+# SLIP t=285.00 e=2 psi=+0.0013 unw=+0.002 nu_win=-0.000130 dwb_win=-0.000557
+# SLIP t=285.00 e=3 psi=+0.7103 unw=-9.528 nu_win=-0.005334 dwb_win=-0.011803
+# SLIP t=285.00 e=4 psi=+2.7408 unw=-9.826 nu_win=-0.005425 dwb_win=-0.012327
+# SLIP t=285.00 e=5 psi=+2.0306 unw=+8.403 nu_win=+0.005677 dwb_win=+0.011975
+290.000	9740.1154	7.05363786	0	1.38417017	9746.89731522	1.866e-16	57679	3.332	18.926	9.774	0.001	0.0000	0.8443	0.67101	0.8498	0.9935	1.64997	1.64939	0.0000	0.0000	0.0000	0.015137	-0.023287	0.010984	0	0	0
+# CONV t=290.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=290.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=14500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=290.00 gates min=0.0003 mean=0.1988 edges=6
+# PIN t=290.00 R=-1.65589559 nv=6
+# SLIP t=290.00 e=0 psi=+1.1177 unw=+8.640 nu_win=+0.005742 dwb_win=+0.012593
+# SLIP t=290.00 e=1 psi=+0.3664 unw=+0.366 nu_win=+0.000291 dwb_win=+0.002285
+# SLIP t=290.00 e=2 psi=-0.0003 unw=-0.000 nu_win=-0.000051 dwb_win=-0.000625
+# SLIP t=290.00 e=3 psi=+0.5444 unw=-9.694 nu_win=-0.005282 dwb_win=-0.011298
+# SLIP t=290.00 e=4 psi=+2.5689 unw=-9.998 nu_win=-0.005472 dwb_win=-0.012461
+# SLIP t=290.00 e=5 psi=+2.2098 unw=+8.582 nu_win=+0.005703 dwb_win=+0.012097
+295.000	9740.1154	7.070914	0	1.39931825	9746.89731522	0.000e+00	57679	3.326	18.928	9.781	0.002	0.0000	0.8443	0.66728	0.8498	0.9935	1.64996	1.64939	0.0000	0.0000	0.0000	0.016474	-0.011618	0.0070428	0	0	0
+# CONV t=295.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=295.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=14750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=295.00 gates min=0.0000 mean=0.2118 edges=6
+# PIN t=295.00 R=-1.6883198 nv=6
+# SLIP t=295.00 e=0 psi=+1.3014 unw=+8.824 nu_win=+0.005849 dwb_win=+0.012873
+# SLIP t=295.00 e=1 psi=+0.3727 unw=+0.373 nu_win=+0.000202 dwb_win=+0.001755
+# SLIP t=295.00 e=2 psi=-0.0008 unw=-0.001 nu_win=-0.000018 dwb_win=-0.000523
+# SLIP t=295.00 e=3 psi=+0.3747 unw=-9.863 nu_win=-0.005401 dwb_win=-0.012013
+# SLIP t=295.00 e=4 psi=+2.3994 unw=-10.167 nu_win=-0.005395 dwb_win=-0.012170
+# SLIP t=295.00 e=5 psi=+2.3862 unw=+8.759 nu_win=+0.005614 dwb_win=+0.011798
+300.000	9740.1154	7.05191984	0	1.44527358	9746.89731522	0.000e+00	57679	3.330	18.919	9.776	0.001	0.0000	0.8443	0.66561	0.8498	0.9935	1.64996	1.64939	0.0000	0.0000	0.0000	0.014517	-0.019055	0.016162	0	0	0
+# CONV t=300.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=300.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=15000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=300.00 gates min=0.0000 mean=0.2249 edges=6
+# PIN t=300.00 R=-1.71528097 nv=6
+# SLIP t=300.00 e=0 psi=+1.4895 unw=+9.012 nu_win=+0.005986 dwb_win=+0.013613
+# SLIP t=300.00 e=1 psi=+0.3816 unw=+0.382 nu_win=+0.000284 dwb_win=+0.001801
+# SLIP t=300.00 e=2 psi=-0.0031 unw=-0.003 nu_win=-0.000071 dwb_win=-0.000947
+# SLIP t=300.00 e=3 psi=+0.1954 unw=-10.043 nu_win=-0.005709 dwb_win=-0.012948
+# SLIP t=300.00 e=4 psi=+2.2168 unw=-10.350 nu_win=-0.005812 dwb_win=-0.013648
+# SLIP t=300.00 e=5 psi=+2.5707 unw=+8.943 nu_win=+0.005875 dwb_win=+0.013459
+305.000	9740.1154	7.09259443	0	1.41421849	9746.89731522	1.866e-16	57679	3.327	18.917	9.774	0.001	0.0000	0.8443	0.66471	0.8498	0.9935	1.64996	1.64939	0.0000	0.0000	0.0000	0.0074143	-0.0024647	0.0075739	0	0	0
+# CONV t=305.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=305.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=15250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=305.00 gates min=0.0001 mean=0.2339 edges=6
+# PIN t=305.00 R=-1.72490047 nv=6
+# SLIP t=305.00 e=0 psi=+1.6716 unw=+9.194 nu_win=+0.005797 dwb_win=+0.011352
+# SLIP t=305.00 e=1 psi=+0.3871 unw=+0.387 nu_win=+0.000174 dwb_win=+0.001890
+# SLIP t=305.00 e=2 psi=-0.0030 unw=-0.003 nu_win=+0.000002 dwb_win=-0.000138
+# SLIP t=305.00 e=3 psi=-0.0120 unw=-10.250 nu_win=-0.006600 dwb_win=-0.010091
+# SLIP t=305.00 e=4 psi=+2.0015 unw=-10.565 nu_win=-0.006854 dwb_win=-0.011986
+# SLIP t=305.00 e=5 psi=+2.7558 unw=+9.128 nu_win=+0.005891 dwb_win=+0.011496
+310.000	9740.1154	7.04484013	0	1.5025067	9746.89731522	1.866e-16	57679	3.330	18.908	9.782	0.001	0.0000	0.8443	0.66088	0.8498	0.9935	1.64996	1.64938	0.0000	0.0000	0.0000	0.016869	-0.0071508	0.0067419	0	0	0
+# CONV t=310.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=310.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=15500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=310.00 gates min=0.0003 mean=0.2351 edges=6
+# PIN t=310.00 R=-1.76543439 nv=6
+# SLIP t=310.00 e=0 psi=+1.8360 unw=+9.359 nu_win=+0.005233 dwb_win=+0.011584
+# SLIP t=310.00 e=1 psi=+0.3929 unw=+0.393 nu_win=+0.000187 dwb_win=+0.001344
+# SLIP t=310.00 e=2 psi=+0.0028 unw=+0.003 nu_win=+0.000184 dwb_win=+0.000814
+# SLIP t=310.00 e=3 psi=-0.1546 unw=-10.393 nu_win=-0.004539 dwb_win=-0.009236
+# SLIP t=310.00 e=4 psi=+1.8498 unw=-10.717 nu_win=-0.004828 dwb_win=-0.010919
+# SLIP t=310.00 e=5 psi=+2.9168 unw=+9.289 nu_win=+0.005124 dwb_win=+0.011108
+315.000	9740.1154	7.0782497	0	1.50630666	9746.89731522	3.732e-16	57679	3.338	18.913	9.786	0.001	0.0000	0.8443	0.66176	0.8498	0.9935	1.64996	1.64938	0.0000	0.0000	0.0000	0.01749	-0.015059	0.0060957	0	0	0
+# CONV t=315.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=315.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=15750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=315.00 gates min=0.0000 mean=0.2335 edges=6
+# PIN t=315.00 R=-1.80264391 nv=6
+# SLIP t=315.00 e=0 psi=+2.0065 unw=+9.529 nu_win=+0.005429 dwb_win=+0.011560
+# SLIP t=315.00 e=1 psi=+0.4022 unw=+0.402 nu_win=+0.000295 dwb_win=+0.002632
+# SLIP t=315.00 e=2 psi=+0.0035 unw=+0.004 nu_win=+0.000024 dwb_win=-0.000715
+# SLIP t=315.00 e=3 psi=-0.3093 unw=-10.548 nu_win=-0.004927 dwb_win=-0.010329
+# SLIP t=315.00 e=4 psi=+1.6848 unw=-10.882 nu_win=-0.005253 dwb_win=-0.012138
+# SLIP t=315.00 e=5 psi=+3.0864 unw=+9.459 nu_win=+0.005399 dwb_win=+0.011453
+320.000	9740.1154	7.03531339	0	1.58048142	9746.89731522	3.732e-16	57679	3.334	18.922	9.783	0.001	0.0000	0.8443	0.66419	0.8498	0.9935	1.64996	1.64938	0.0000	0.0000	0.0000	0.0078112	-0.010229	0.0069054	0	0	0
+# CONV t=320.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=320.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=16000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=320.00 gates min=0.0000 mean=0.2318 edges=6
+# PIN t=320.00 R=-1.83388237 nv=6
+# SLIP t=320.00 e=0 psi=+2.1801 unw=+9.703 nu_win=+0.005526 dwb_win=+0.012297
+# SLIP t=320.00 e=1 psi=+0.4070 unw=+0.407 nu_win=+0.000152 dwb_win=+0.001353
+# SLIP t=320.00 e=2 psi=+0.0058 unw=+0.006 nu_win=+0.000074 dwb_win=+0.000012
+# SLIP t=320.00 e=3 psi=-0.4685 unw=-10.707 nu_win=-0.005067 dwb_win=-0.010778
+# SLIP t=320.00 e=4 psi=+1.5233 unw=-11.043 nu_win=-0.005140 dwb_win=-0.011327
+# SLIP t=320.00 e=5 psi=-3.0260 unw=+9.630 nu_win=+0.005435 dwb_win=+0.011481
+325.000	9740.1154	7.08704174	0	1.56272411	9746.89731522	1.866e-16	57679	3.336	18.922	9.764	0.001	0.0000	0.8443	0.66501	0.8498	0.9935	1.64996	1.64937	0.0000	0.0000	0.0000	0.015869	-0.016825	0.0091797	0	0	0
+# CONV t=325.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=325.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=16250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=325.00 gates min=0.0000 mean=0.2320 edges=6
+# PIN t=325.00 R=-1.8678534 nv=6
+# SLIP t=325.00 e=0 psi=+2.3444 unw=+9.867 nu_win=+0.005229 dwb_win=+0.011469
+# SLIP t=325.00 e=1 psi=+0.4169 unw=+0.417 nu_win=+0.000316 dwb_win=+0.002416
+# SLIP t=325.00 e=2 psi=+0.0054 unw=+0.006 nu_win=-0.000016 dwb_win=-0.001285
+# SLIP t=325.00 e=3 psi=-0.6223 unw=-10.861 nu_win=-0.004896 dwb_win=-0.010902
+# SLIP t=325.00 e=4 psi=+1.3673 unw=-11.199 nu_win=-0.004968 dwb_win=-0.011546
+# SLIP t=325.00 e=5 psi=-2.8679 unw=+9.788 nu_win=+0.005033 dwb_win=+0.010982
+330.000	9740.1154	7.08426174	0	1.58477793	9746.89731522	0.000e+00	57679	3.356	18.928	9.783	0.001	0.0000	0.8443	0.66566	0.8498	0.9935	1.64996	1.64937	0.0000	0.0000	0.0000	0.019287	-0.012087	0.013987	0	0	0
+# CONV t=330.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=330.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=16500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=330.00 gates min=0.0000 mean=0.2361 edges=6
+# PIN t=330.00 R=-1.88712722 nv=6
+# SLIP t=330.00 e=0 psi=+2.5158 unw=+10.038 nu_win=+0.005455 dwb_win=+0.011985
+# SLIP t=330.00 e=1 psi=+0.4212 unw=+0.421 nu_win=+0.000135 dwb_win=+0.001279
+# SLIP t=330.00 e=2 psi=+0.0003 unw=+0.000 nu_win=-0.000161 dwb_win=-0.000693
+# SLIP t=330.00 e=3 psi=-0.7813 unw=-11.020 nu_win=-0.005062 dwb_win=-0.011701
+# SLIP t=330.00 e=4 psi=+1.2039 unw=-11.363 nu_win=-0.005198 dwb_win=-0.012517
+# SLIP t=330.00 e=5 psi=-2.6948 unw=+9.961 nu_win=+0.005509 dwb_win=+0.012216
+335.000	9740.1154	7.07083568	0	1.6046146	9746.89731522	0.000e+00	57679	3.344	18.910	9.781	0.001	0.0000	0.8443	0.66554	0.8498	0.9935	1.64996	1.64937	0.0000	0.0000	0.0000	0.018608	-0.014979	0.0062672	0	0	0
+# CONV t=335.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=335.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=16750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=335.00 gates min=0.0000 mean=0.2458 edges=6
+# PIN t=335.00 R=-1.89353784 nv=6
+# SLIP t=335.00 e=0 psi=+2.7144 unw=+10.237 nu_win=+0.006323 dwb_win=+0.013264
+# SLIP t=335.00 e=1 psi=+0.4286 unw=+0.429 nu_win=+0.000236 dwb_win=+0.001847
+# SLIP t=335.00 e=2 psi=+0.0046 unw=+0.005 nu_win=+0.000136 dwb_win=-0.000736
+# SLIP t=335.00 e=3 psi=-1.0089 unw=-11.247 nu_win=-0.007244 dwb_win=-0.012280
+# SLIP t=335.00 e=4 psi=+0.9749 unw=-11.592 nu_win=-0.007291 dwb_win=-0.012758
+# SLIP t=335.00 e=5 psi=-2.4976 unw=+10.158 nu_win=+0.006279 dwb_win=+0.012632
+340.000	9740.1154	7.07517208	0	1.62553157	9746.89731522	1.866e-16	57679	3.338	18.922	9.771	0.001	0.0000	0.8443	0.66258	0.8498	0.9935	1.64996	1.64937	0.0000	0.0000	0.0000	0.0065685	-0.013416	0.0083542	0	0	0
+# CONV t=340.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=340.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=17000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=340.00 gates min=0.0000 mean=0.2540 edges=6
+# PIN t=340.00 R=-1.91879121 nv=6
+# SLIP t=340.00 e=0 psi=+2.8846 unw=+10.407 nu_win=+0.005416 dwb_win=+0.011379
+# SLIP t=340.00 e=1 psi=+0.4361 unw=+0.436 nu_win=+0.000240 dwb_win=+0.001828
+# SLIP t=340.00 e=2 psi=-0.0014 unw=-0.001 nu_win=-0.000189 dwb_win=-0.000426
+# SLIP t=340.00 e=3 psi=-1.1657 unw=-11.404 nu_win=-0.004990 dwb_win=-0.010573
+# SLIP t=340.00 e=4 psi=+0.8116 unw=-11.755 nu_win=-0.005199 dwb_win=-0.011855
+# SLIP t=340.00 e=5 psi=-2.3298 unw=+10.326 nu_win=+0.005340 dwb_win=+0.011259
+345.000	9740.1154	7.09115419	0	1.65471541	9746.89731522	1.866e-16	57679	3.360	18.910	9.775	0.002	0.0000	0.8443	0.66177	0.8498	0.9935	1.64995	1.64936	0.0000	0.0000	0.0000	0.014009	-0.014357	0.020566	0	0	0
+# CONV t=345.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=345.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=17250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=345.00 gates min=0.0000 mean=0.2619 edges=6
+# PIN t=345.00 R=-1.96395715 nv=6
+# SLIP t=345.00 e=0 psi=+3.0377 unw=+10.560 nu_win=+0.004875 dwb_win=+0.010872
+# SLIP t=345.00 e=1 psi=+0.4405 unw=+0.441 nu_win=+0.000138 dwb_win=+0.001471
+# SLIP t=345.00 e=2 psi=+0.0074 unw=+0.008 nu_win=+0.000280 dwb_win=+0.000834
+# SLIP t=345.00 e=3 psi=-1.3009 unw=-11.539 nu_win=-0.004304 dwb_win=-0.008567
+# SLIP t=345.00 e=4 psi=+0.6679 unw=-11.899 nu_win=-0.004573 dwb_win=-0.010275
+# SLIP t=345.00 e=5 psi=-2.1779 unw=+10.478 nu_win=+0.004836 dwb_win=+0.010275
+350.000	9740.1154	7.11369162	0	1.66610859	9746.89731522	1.866e-16	57679	3.351	18.912	9.779	0.002	0.0000	0.8443	0.66353	0.8498	0.9935	1.64996	1.64936	0.0000	0.0000	0.0000	0.014199	-0.01259	0.010046	0	0	0
+# CONV t=350.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=350.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=17500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=350.00 gates min=0.0002 mean=0.2698 edges=6
+# PIN t=350.00 R=-1.99788777 nv=6
+# SLIP t=350.00 e=0 psi=-3.0982 unw=+10.708 nu_win=+0.004688 dwb_win=+0.010121
+# SLIP t=350.00 e=1 psi=+0.4508 unw=+0.451 nu_win=+0.000330 dwb_win=+0.002166
+# SLIP t=350.00 e=2 psi=+0.0070 unw=+0.007 nu_win=-0.000014 dwb_win=-0.000135
+# SLIP t=350.00 e=3 psi=-1.4321 unw=-11.670 nu_win=-0.004176 dwb_win=-0.008675
+# SLIP t=350.00 e=4 psi=+0.5297 unw=-12.037 nu_win=-0.004398 dwb_win=-0.010130
+# SLIP t=350.00 e=5 psi=-2.0363 unw=+10.619 nu_win=+0.004505 dwb_win=+0.009545
+355.000	9740.1154	7.091134	0	1.7162196	9746.89731522	1.866e-16	57679	3.354	18.901	9.777	0.001	0.0000	0.8443	0.66428	0.8498	0.9935	1.64995	1.64936	0.0000	0.0000	0.0000	0.021663	-0.014064	0.019912	0	0	0
+# CONV t=355.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=355.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=17750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=355.00 gates min=0.0011 mean=0.2807 edges=6
+# PIN t=355.00 R=-2.02544115 nv=6
+# SLIP t=355.00 e=0 psi=-2.9365 unw=+10.869 nu_win=+0.005146 dwb_win=+0.011262
+# SLIP t=355.00 e=1 psi=+0.4550 unw=+0.455 nu_win=+0.000134 dwb_win=+0.001066
+# SLIP t=355.00 e=2 psi=+0.0074 unw=+0.008 nu_win=+0.000015 dwb_win=-0.000265
+# SLIP t=355.00 e=3 psi=-1.5787 unw=-11.817 nu_win=-0.004667 dwb_win=-0.010485
+# SLIP t=355.00 e=4 psi=+0.3779 unw=-12.189 nu_win=-0.004834 dwb_win=-0.011445
+# SLIP t=355.00 e=5 psi=-1.8746 unw=+10.781 nu_win=+0.005148 dwb_win=+0.011421
+360.000	9740.1154	7.08222553	0	1.7539919	9746.89731522	1.866e-16	57680	3.352	18.911	9.788	0.001	0.0000	0.8443	0.66501	0.8498	0.9935	1.64995	1.64936	0.0000	0.0000	0.0000	0.016013	-0.013955	0.010093	0	0	0
+# CONV t=360.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=360.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=18000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=360.00 gates min=0.0043 mean=0.2936 edges=6
+# PIN t=360.00 R=-2.05430499 nv=6
+# SLIP t=360.00 e=0 psi=-2.7657 unw=+11.040 nu_win=+0.005437 dwb_win=+0.012200
+# SLIP t=360.00 e=1 psi=+0.4612 unw=+0.461 nu_win=+0.000195 dwb_win=+0.001815
+# SLIP t=360.00 e=2 psi=+0.0059 unw=+0.006 nu_win=-0.000048 dwb_win=-0.000977
+# SLIP t=360.00 e=3 psi=-1.7395 unw=-11.978 nu_win=-0.005117 dwb_win=-0.011805
+# SLIP t=360.00 e=4 psi=+0.2150 unw=-12.352 nu_win=-0.005184 dwb_win=-0.012236
+# SLIP t=360.00 e=5 psi=-1.7042 unw=+10.952 nu_win=+0.005425 dwb_win=+0.011792
+365.000	9740.1154	7.10530558	0	1.7234715	9746.89731522	1.866e-16	57681	3.353	18.906	9.789	0.001	0.0000	0.8443	0.66521	0.8498	0.9935	1.64995	1.64936	0.0000	0.0000	0.0000	0.012123	-0.016745	-0.0012594	0	0	0
+# CONV t=365.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=365.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=18250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=365.00 gates min=0.0223 mean=0.3034 edges=6
+# PIN t=365.00 R=-2.04686464 nv=6
+# SLIP t=365.00 e=0 psi=-2.5634 unw=+11.242 nu_win=+0.006439 dwb_win=+0.013237
+# SLIP t=365.00 e=1 psi=+0.4667 unw=+0.467 nu_win=+0.000176 dwb_win=+0.001426
+# SLIP t=365.00 e=2 psi=+0.0053 unw=+0.005 nu_win=-0.000020 dwb_win=-0.000179
+# SLIP t=365.00 e=3 psi=-1.9687 unw=-12.207 nu_win=-0.007298 dwb_win=-0.012130
+# SLIP t=365.00 e=4 psi=-0.0191 unw=-12.586 nu_win=-0.007452 dwb_win=-0.013210
+# SLIP t=365.00 e=5 psi=-1.5037 unw=+11.152 nu_win=+0.006380 dwb_win=+0.013071
+370.000	9740.1154	7.11841618	0	1.7391449	9746.89731522	1.866e-16	57681	3.353	18.895	9.748	0.002	0.0000	0.8443	0.6651	0.8498	0.9935	1.64995	1.64936	0.0000	0.0000	0.0000	0.010395	-0.0087243	0.0044923	0	0	0
+# CONV t=370.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=370.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=18500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=370.00 gates min=0.0602 mean=0.3063 edges=6
+# PIN t=370.00 R=-2.07564863 nv=6
+# SLIP t=370.00 e=0 psi=-2.3835 unw=+11.422 nu_win=+0.005727 dwb_win=+0.012243
+# SLIP t=370.00 e=1 psi=+0.4742 unw=+0.474 nu_win=+0.000240 dwb_win=+0.001961
+# SLIP t=370.00 e=2 psi=+0.0061 unw=+0.006 nu_win=+0.000026 dwb_win=-0.000517
+# SLIP t=370.00 e=3 psi=-2.1351 unw=-12.373 nu_win=-0.005296 dwb_win=-0.011248
+# SLIP t=370.00 e=4 psi=-0.1925 unw=-12.759 nu_win=-0.005521 dwb_win=-0.012608
+# SLIP t=370.00 e=5 psi=-1.3235 unw=+11.332 nu_win=+0.005737 dwb_win=+0.012159
+375.000	9740.1154	7.08693324	0	1.80817845	9746.89731522	0.000e+00	57680	3.355	18.908	9.790	0.002	0.0000	0.8443	0.66102	0.8498	0.9935	1.64994	1.64935	0.0000	0.0000	0.0000	0.013548	-0.016184	0.012451	0	0	0
+# CONV t=375.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=375.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=18750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=375.00 gates min=0.0617 mean=0.3029 edges=6
+# PIN t=375.00 R=-2.11319925 nv=6
+# SLIP t=375.00 e=0 psi=-2.2010 unw=+11.605 nu_win=+0.005808 dwb_win=+0.012633
+# SLIP t=375.00 e=1 psi=+0.4821 unw=+0.482 nu_win=+0.000250 dwb_win=+0.001917
+# SLIP t=375.00 e=2 psi=+0.0049 unw=+0.005 nu_win=-0.000038 dwb_win=-0.000189
+# SLIP t=375.00 e=3 psi=-2.3035 unw=-12.542 nu_win=-0.005360 dwb_win=-0.011127
+# SLIP t=375.00 e=4 psi=-0.3638 unw=-12.930 nu_win=-0.005450 dwb_win=-0.011914
+# SLIP t=375.00 e=5 psi=-1.1463 unw=+11.509 nu_win=+0.005643 dwb_win=+0.011691
+380.000	9740.1154	7.11191839	0	1.82125323	9746.89731522	1.866e-16	57680	3.380	18.906	9.778	0.002	0.0000	0.8443	0.65918	0.8498	0.9935	1.64994	1.64935	0.0000	0.0000	0.0000	0.014787	-0.01452	0.0021999	0	0	0
+# CONV t=380.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=380.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=19000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=380.00 gates min=0.1447 mean=0.2971 edges=6
+# PIN t=380.00 R=-2.15125917 nv=6
+# SLIP t=380.00 e=0 psi=-2.0155 unw=+11.790 nu_win=+0.005907 dwb_win=+0.012654
+# SLIP t=380.00 e=1 psi=+0.4887 unw=+0.489 nu_win=+0.000209 dwb_win=+0.001796
+# SLIP t=380.00 e=2 psi=+0.0083 unw=+0.008 nu_win=+0.000106 dwb_win=-0.000128
+# SLIP t=380.00 e=3 psi=-2.4713 unw=-12.710 nu_win=-0.005342 dwb_win=-0.011454
+# SLIP t=380.00 e=4 psi=-0.5390 unw=-13.106 nu_win=-0.005578 dwb_win=-0.012905
+# SLIP t=380.00 e=5 psi=-0.9635 unw=+11.692 nu_win=+0.005816 dwb_win=+0.012436
+385.000	9740.1154	7.09717826	0	1.86404338	9746.89731522	0.000e+00	57680	3.374	18.897	9.780	0.002	0.0000	0.8443	0.66033	0.8498	0.9935	1.64994	1.64935	0.0000	0.0000	0.0000	0.023317	-0.013123	0.012169	0	0	0
+# CONV t=385.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=385.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=19250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=385.00 gates min=0.2935 mean=0.2963 edges=6
+# PIN t=385.00 R=-2.1793092 nv=6
+# SLIP t=385.00 e=0 psi=-1.8239 unw=+11.982 nu_win=+0.006099 dwb_win=+0.013465
+# SLIP t=385.00 e=1 psi=+0.4934 unw=+0.494 nu_win=+0.000151 dwb_win=+0.001402
+# SLIP t=385.00 e=2 psi=+0.0080 unw=+0.008 nu_win=-0.000007 dwb_win=-0.000526
+# SLIP t=385.00 e=3 psi=-2.6541 unw=-12.892 nu_win=-0.005817 dwb_win=-0.012777
+# SLIP t=385.00 e=4 psi=-0.7250 unw=-13.292 nu_win=-0.005921 dwb_win=-0.013300
+# SLIP t=385.00 e=5 psi=-0.7730 unw=+11.883 nu_win=+0.006066 dwb_win=+0.013111
+390.000	9740.1154	7.11845079	0	1.86850513	9746.89731522	0.000e+00	57680	3.356	18.887	9.803	0.002	0.0000	0.8443	0.66162	0.8498	0.9935	1.64993	1.64935	0.0000	0.0000	0.0000	0.024674	-0.012132	0.011658	0	0	0
+# CONV t=390.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=390.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=19500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=390.00 gates min=0.1782 mean=0.3070 edges=6
+# PIN t=390.00 R=-2.20504347 nv=6
+# SLIP t=390.00 e=0 psi=-1.6280 unw=+12.178 nu_win=+0.006236 dwb_win=+0.014051
+# SLIP t=390.00 e=1 psi=+0.5011 unw=+0.501 nu_win=+0.000244 dwb_win=+0.002296
+# SLIP t=390.00 e=2 psi=+0.0051 unw=+0.005 nu_win=-0.000095 dwb_win=-0.001187
+# SLIP t=390.00 e=3 psi=-2.8361 unw=-13.074 nu_win=-0.005795 dwb_win=-0.013247
+# SLIP t=390.00 e=4 psi=-0.9121 unw=-13.479 nu_win=-0.005957 dwb_win=-0.014184
+# SLIP t=390.00 e=5 psi=-0.5787 unw=+12.077 nu_win=+0.006184 dwb_win=+0.013880
+395.000	9740.1154	7.12038273	0	1.86698155	9746.89731522	1.866e-16	57680	3.380	18.898	9.762	0.002	0.0000	0.8443	0.66228	0.8498	0.9935	1.64993	1.64934	0.0000	0.0000	0.0000	0.016299	-0.0098189	-0.00038789	0	0	0
+# CONV t=395.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=395.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=19750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=395.00 gates min=0.2932 mean=0.3348 edges=6
+# PIN t=395.00 R=-2.20545183 nv=6
+# SLIP t=395.00 e=0 psi=-1.3984 unw=+12.407 nu_win=+0.007308 dwb_win=+0.014963
+# SLIP t=395.00 e=1 psi=+0.5072 unw=+0.507 nu_win=+0.000195 dwb_win=+0.001393
+# SLIP t=395.00 e=2 psi=+0.0078 unw=+0.008 nu_win=+0.000089 dwb_win=+0.000335
+# SLIP t=395.00 e=3 psi=-3.0514 unw=-13.290 nu_win=-0.006852 dwb_win=-0.013608
+# SLIP t=395.00 e=4 psi=-1.1354 unw=-13.702 nu_win=-0.007108 dwb_win=-0.015159
+# SLIP t=395.00 e=5 psi=-0.3498 unw=+12.306 nu_win=+0.007286 dwb_win=+0.014786
+400.000	9740.1154	7.12760122	0	1.89687835	9746.89731522	1.866e-16	57680	3.370	18.893	9.778	0.002	0.0000	0.8443	0.66156	0.8498	0.9935	1.64993	1.64934	0.0000	0.0000	0.0000	0.0068701	-0.02515	0.0070853	0	0	0
+# CONV t=400.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=400.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=20000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=400.00 gates min=0.1470 mean=0.3597 edges=6
+# PIN t=400.00 R=-2.24256713 nv=6
+# SLIP t=400.00 e=0 psi=-1.2041 unw=+12.602 nu_win=+0.006184 dwb_win=+0.013430
+# SLIP t=400.00 e=1 psi=+0.5154 unw=+0.516 nu_win=+0.000262 dwb_win=+0.002050
+# SLIP t=400.00 e=2 psi=+0.0067 unw=+0.007 nu_win=-0.000035 dwb_win=-0.000674
+# SLIP t=400.00 e=3 psi=+3.0060 unw=-13.515 nu_win=-0.007187 dwb_win=-0.012034
+# SLIP t=400.00 e=4 psi=-1.3632 unw=-13.930 nu_win=-0.007250 dwb_win=-0.012685
+# SLIP t=400.00 e=5 psi=-0.1562 unw=+12.500 nu_win=+0.006162 dwb_win=+0.012705
+405.000	9740.1154	7.14424589	0	1.9125909	9746.89731522	1.866e-16	57680	3.362	18.900	9.777	0.002	0.0000	0.8443	0.66029	0.8498	0.9935	1.64994	1.64934	0.0000	0.0000	0.0000	0.016931	-0.014876	0.0025173	0	0	0
+# CONV t=405.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=405.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=20250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=405.00 gates min=0.0643 mean=0.3715 edges=6
+# PIN t=405.00 R=-2.27492434 nv=6
+# SLIP t=405.00 e=0 psi=-1.0191 unw=+12.787 nu_win=+0.005890 dwb_win=+0.012665
+# SLIP t=405.00 e=1 psi=+0.5232 unw=+0.523 nu_win=+0.000246 dwb_win=+0.001822
+# SLIP t=405.00 e=2 psi=+0.0068 unw=+0.007 nu_win=+0.000002 dwb_win=-0.000219
+# SLIP t=405.00 e=3 psi=+2.8335 unw=-13.688 nu_win=-0.005492 dwb_win=-0.011567
+# SLIP t=405.00 e=4 psi=-1.5389 unw=-14.106 nu_win=-0.005593 dwb_win=-0.012492
+# SLIP t=405.00 e=5 psi=+0.0210 unw=+12.677 nu_win=+0.005639 dwb_win=+0.011987
+410.000	9740.1154	7.16193011	0	1.93514289	9746.89731522	0.000e+00	57680	3.379	18.882	9.779	0.002	0.0000	0.8443	0.65749	0.8498	0.9935	1.64993	1.64934	0.0000	0.0000	0.0000	0.017697	-0.012676	0.0007024	0	0	0
+# CONV t=410.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=410.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=20500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=410.00 gates min=0.0266 mean=0.3704 edges=6
+# PIN t=410.00 R=-2.31516056 nv=6
+# SLIP t=410.00 e=0 psi=-0.8496 unw=+12.956 nu_win=+0.005394 dwb_win=+0.011640
+# SLIP t=410.00 e=1 psi=+0.5294 unw=+0.530 nu_win=+0.000200 dwb_win=+0.001220
+# SLIP t=410.00 e=2 psi=+0.0126 unw=+0.013 nu_win=+0.000185 dwb_win=+0.000423
+# SLIP t=410.00 e=3 psi=+2.6807 unw=-13.841 nu_win=-0.004865 dwb_win=-0.009985
+# SLIP t=410.00 e=4 psi=-1.6995 unw=-14.266 nu_win=-0.005111 dwb_win=-0.011377
+# SLIP t=410.00 e=5 psi=+0.1891 unw=+12.845 nu_win=+0.005351 dwb_win=+0.011389
+415.000	9740.1154	7.15154901	0	1.97643435	9746.89731522	3.732e-16	57680	3.377	18.891	9.788	0.002	0.0000	0.8443	0.654	0.8498	0.9935	1.64994	1.64933	0.0000	0.0000	0.0000	0.022706	-0.010147	0.0068151	0	0	0
+# CONV t=415.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=415.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=20750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=415.00 gates min=0.0090 mean=0.3572 edges=6
+# PIN t=415.00 R=-2.34607092 nv=6
+# SLIP t=415.00 e=0 psi=-0.6783 unw=+13.127 nu_win=+0.005455 dwb_win=+0.011758
+# SLIP t=415.00 e=1 psi=+0.5368 unw=+0.537 nu_win=+0.000236 dwb_win=+0.002161
+# SLIP t=415.00 e=2 psi=+0.0105 unw=+0.011 nu_win=-0.000069 dwb_win=-0.000819
+# SLIP t=415.00 e=3 psi=+2.5232 unw=-13.998 nu_win=-0.005014 dwb_win=-0.011133
+# SLIP t=415.00 e=4 psi=-1.8651 unw=-14.432 nu_win=-0.005271 dwb_win=-0.012372
+# SLIP t=415.00 e=5 psi=+0.3594 unw=+13.015 nu_win=+0.005421 dwb_win=+0.011656
+420.000	9740.1154	7.18155364	0	1.97891574	9746.89731522	1.866e-16	57680	3.386	18.890	9.759	0.001	0.0000	0.8443	0.65159	0.8498	0.9935	1.64994	1.64933	0.0000	0.0000	0.0000	0.01479	-0.017964	0.01034	0	0	0
+# CONV t=420.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=420.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=21000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=420.00 gates min=0.0024 mean=0.3344 edges=6
+# PIN t=420.00 R=-2.37855694 nv=6
+# SLIP t=420.00 e=0 psi=-0.4975 unw=+13.308 nu_win=+0.005754 dwb_win=+0.012993
+# SLIP t=420.00 e=1 psi=+0.5431 unw=+0.543 nu_win=+0.000200 dwb_win=+0.001226
+# SLIP t=420.00 e=2 psi=+0.0153 unw=+0.015 nu_win=+0.000153 dwb_win=+0.000803
+# SLIP t=420.00 e=3 psi=+2.3615 unw=-14.160 nu_win=-0.005146 dwb_win=-0.010864
+# SLIP t=420.00 e=4 psi=-2.0361 unw=-14.603 nu_win=-0.005442 dwb_win=-0.012619
+# SLIP t=420.00 e=5 psi=+0.5399 unw=+13.196 nu_win=+0.005748 dwb_win=+0.012720
+425.000	9740.1154	7.14936915	0	2.04248347	9746.89731522	1.866e-16	57680	3.361	18.883	9.759	0.001	0.0000	0.8443	0.64936	0.8498	0.9935	1.64994	1.64933	0.0000	0.0000	0.0000	0.023885	-0.023774	0.011181	0	0	0
+# CONV t=425.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=425.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=21250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=425.00 gates min=0.0005 mean=0.3078 edges=6
+# PIN t=425.00 R=-2.40994018 nv=6
+# SLIP t=425.00 e=0 psi=-0.3219 unw=+13.484 nu_win=+0.005588 dwb_win=+0.012427
+# SLIP t=425.00 e=1 psi=+0.5509 unw=+0.551 nu_win=+0.000248 dwb_win=+0.002215
+# SLIP t=425.00 e=2 psi=+0.0131 unw=+0.013 nu_win=-0.000068 dwb_win=-0.001163
+# SLIP t=425.00 e=3 psi=+2.1954 unw=-14.326 nu_win=-0.005286 dwb_win=-0.011913
+# SLIP t=425.00 e=4 psi=-2.2059 unw=-14.773 nu_win=-0.005406 dwb_win=-0.012614
+# SLIP t=425.00 e=5 psi=+0.7132 unw=+13.369 nu_win=+0.005516 dwb_win=+0.012076
+430.000	9740.1154	7.13870367	0	2.05443647	9746.89731522	1.866e-16	57680	3.390	18.892	9.767	0.002	0.0000	0.8443	0.64432	0.8498	0.9935	1.64994	1.64933	0.0000	0.0000	0.0000	0.025998	-0.011687	0.002537	0	0	0
+# CONV t=430.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=430.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=21500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=430.00 gates min=0.0001 mean=0.2767 edges=6
+# PIN t=430.00 R=-2.41122769 nv=6
+# SLIP t=430.00 e=0 psi=-0.1243 unw=+13.681 nu_win=+0.006292 dwb_win=+0.012308
+# SLIP t=430.00 e=1 psi=+0.5571 unw=+0.557 nu_win=+0.000199 dwb_win=+0.001382
+# SLIP t=430.00 e=2 psi=+0.0116 unw=+0.012 nu_win=-0.000048 dwb_win=-0.000090
+# SLIP t=430.00 e=3 psi=+1.9730 unw=-14.548 nu_win=-0.007078 dwb_win=-0.011100
+# SLIP t=430.00 e=4 psi=-2.4273 unw=-14.994 nu_win=-0.007047 dwb_win=-0.011384
+# SLIP t=430.00 e=5 psi=+0.9053 unw=+13.561 nu_win=+0.006114 dwb_win=+0.011300
+435.000	9740.1154	7.19020816	0	2.03990782	9746.89731522	0.000e+00	57680	3.369	18.870	9.771	0.001	0.0000	0.8443	0.63851	0.8498	0.9935	1.64993	1.64933	0.0000	0.0000	0.0000	0.011531	-0.02031	0.0070798	0	0	0
+# CONV t=435.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=435.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=21750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=435.00 gates min=0.0005 mean=0.2484 edges=6
+# PIN t=435.00 R=-2.44820354 nv=6
+# SLIP t=435.00 e=0 psi=+0.0588 unw=+13.865 nu_win=+0.005828 dwb_win=+0.012667
+# SLIP t=435.00 e=1 psi=+0.5656 unw=+0.566 nu_win=+0.000270 dwb_win=+0.002161
+# SLIP t=435.00 e=2 psi=+0.0104 unw=+0.011 nu_win=-0.000038 dwb_win=-0.000710
+# SLIP t=435.00 e=3 psi=+1.8031 unw=-14.718 nu_win=-0.005409 dwb_win=-0.011428
+# SLIP t=435.00 e=4 psi=-2.5999 unw=-15.167 nu_win=-0.005495 dwb_win=-0.012199
+# SLIP t=435.00 e=5 psi=+1.0840 unw=+13.740 nu_win=+0.005687 dwb_win=+0.011988
+440.000	9740.1154	7.16449643	0	2.101479	9746.89731522	1.866e-16	57679	3.386	18.890	9.768	0.002	0.0000	0.8443	0.63497	0.8498	0.9935	1.64993	1.64932	0.0000	0.0000	0.0000	0.027803	-0.010243	0.010467	0	0	0
+# CONV t=440.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=440.000 mode=3 sum_err=0 max|E-iEu|=1.109e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=22000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=440.00 gates min=0.0023 mean=0.2194 edges=6
+# PIN t=440.00 R=-2.48406299 nv=6
+# SLIP t=440.00 e=0 psi=+0.2442 unw=+14.050 nu_win=+0.005899 dwb_win=+0.012704
+# SLIP t=440.00 e=1 psi=+0.5716 unw=+0.572 nu_win=+0.000192 dwb_win=+0.001295
+# SLIP t=440.00 e=2 psi=+0.0170 unw=+0.017 nu_win=+0.000209 dwb_win=+0.001148
+# SLIP t=440.00 e=3 psi=+1.6366 unw=-14.885 nu_win=-0.005299 dwb_win=-0.010555
+# SLIP t=440.00 e=4 psi=-2.7790 unw=-15.346 nu_win=-0.005701 dwb_win=-0.012943
+# SLIP t=440.00 e=5 psi=+1.2678 unw=+13.924 nu_win=+0.005851 dwb_win=+0.012648
+445.000	9740.1154	7.17145671	0	2.12826704	9746.89731522	1.866e-16	57680	3.393	18.883	9.754	0.002	0.0000	0.8443	0.63437	0.8498	0.9935	1.64992	1.64932	0.0000	0.0000	0.0000	0.015297	-0.016097	0.00034417	0	0	0
+# CONV t=445.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=445.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=22250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=445.00 gates min=0.0080 mean=0.1919 edges=6
+# PIN t=445.00 R=-2.51781131 nv=6
+# SLIP t=445.00 e=0 psi=+0.4272 unw=+14.233 nu_win=+0.005825 dwb_win=+0.012950
+# SLIP t=445.00 e=1 psi=+0.5790 unw=+0.579 nu_win=+0.000235 dwb_win=+0.001866
+# SLIP t=445.00 e=2 psi=+0.0278 unw=+0.028 nu_win=+0.000343 dwb_win=+0.000353
+# SLIP t=445.00 e=3 psi=+1.4774 unw=-15.044 nu_win=-0.005068 dwb_win=-0.010757
+# SLIP t=445.00 e=4 psi=-2.9512 unw=-15.518 nu_win=-0.005482 dwb_win=-0.012786
+# SLIP t=445.00 e=5 psi=+1.4500 unw=+14.106 nu_win=+0.005802 dwb_win=+0.012760
+450.000	9740.1154	7.16203965	0	2.16212676	9746.89731522	1.866e-16	57679	3.390	18.875	9.762	0.002	0.0000	0.8443	0.63653	0.8498	0.9935	1.64992	1.64932	0.0000	0.0000	0.0000	0.023676	-0.021043	0.0073386	0	0	0
+# CONV t=450.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=450.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=22500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=450.00 gates min=0.0022 mean=0.1678 edges=6
+# PIN t=450.00 R=-2.54225397 nv=6
+# SLIP t=450.00 e=0 psi=+0.6207 unw=+14.426 nu_win=+0.006161 dwb_win=+0.013618
+# SLIP t=450.00 e=1 psi=+0.5865 unw=+0.587 nu_win=+0.000236 dwb_win=+0.001742
+# SLIP t=450.00 e=2 psi=+0.0236 unw=+0.024 nu_win=-0.000132 dwb_win=-0.000653
+# SLIP t=450.00 e=3 psi=+1.2956 unw=-15.226 nu_win=-0.005787 dwb_win=-0.012907
+# SLIP t=450.00 e=4 psi=-3.1375 unw=-15.704 nu_win=-0.005931 dwb_win=-0.013688
+# SLIP t=450.00 e=5 psi=+1.6422 unw=+14.298 nu_win=+0.006118 dwb_win=+0.013312
+455.000	9740.1154	7.20505457	0	2.15256182	9746.89731522	0.000e+00	57680	3.398	18.871	9.785	0.002	0.0000	0.8443	0.63803	0.8498	0.9935	1.64991	1.64932	0.0000	0.0000	0.0000	0.017086	-0.023578	0.0010107	0	0	0
+# CONV t=455.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=455.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=22750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=455.00 gates min=0.0004 mean=0.1527 edges=6
+# PIN t=455.00 R=-2.57570394 nv=6
+# SLIP t=455.00 e=0 psi=+0.8094 unw=+14.615 nu_win=+0.006005 dwb_win=+0.013544
+# SLIP t=455.00 e=1 psi=+0.5913 unw=+0.591 nu_win=+0.000154 dwb_win=+0.001488
+# SLIP t=455.00 e=2 psi=+0.0236 unw=+0.024 nu_win=-0.000001 dwb_win=-0.000277
+# SLIP t=455.00 e=3 psi=+1.1168 unw=-15.405 nu_win=-0.005691 dwb_win=-0.012389
+# SLIP t=455.00 e=4 psi=+2.9669 unw=-15.883 nu_win=-0.005689 dwb_win=-0.012420
+# SLIP t=455.00 e=5 psi=+1.8267 unw=+14.482 nu_win=+0.005871 dwb_win=+0.012364
+460.000	9740.1154	7.23488399	0	2.11629086	9746.89731522	1.866e-16	57680	3.400	18.896	9.718	0.002	0.0000	0.8443	0.63966	0.8498	0.9935	1.64991	1.64932	0.0000	0.0000	0.0000	0.018387	-0.014178	-0.0041168	0	0	0
+# CONV t=460.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=460.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=23000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=460.00 gates min=0.0002 mean=0.1496 edges=6
+# PIN t=460.00 R=-2.56926241 nv=6
+# SLIP t=460.00 e=0 psi=+0.9960 unw=+14.802 nu_win=+0.005940 dwb_win=+0.011469
+# SLIP t=460.00 e=1 psi=+0.5983 unw=+0.598 nu_win=+0.000222 dwb_win=+0.001968
+# SLIP t=460.00 e=2 psi=+0.0216 unw=+0.022 nu_win=-0.000065 dwb_win=-0.000860
+# SLIP t=460.00 e=3 psi=+0.9030 unw=-15.618 nu_win=-0.006807 dwb_win=-0.010770
+# SLIP t=460.00 e=4 psi=+2.7541 unw=-16.096 nu_win=-0.006776 dwb_win=-0.011168
+# SLIP t=460.00 e=5 psi=+2.0057 unw=+14.661 nu_win=+0.005699 dwb_win=+0.010759
+465.000	9740.1154	7.15721052	0	2.21993923	9746.89731522	1.866e-16	57680	3.410	18.883	9.779	0.002	0.0000	0.8443	0.63888	0.8498	0.9935	1.64990	1.64932	0.0000	0.0000	0.0000	0.016487	-0.0064831	-0.0070407	0	0	0
+# CONV t=465.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=465.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=23250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=465.00 gates min=0.0005 mean=0.1539 edges=6
+# PIN t=465.00 R=-2.59523731 nv=6
+# SLIP t=465.00 e=0 psi=+1.1709 unw=+14.977 nu_win=+0.005567 dwb_win=+0.011996
+# SLIP t=465.00 e=1 psi=+0.6093 unw=+0.609 nu_win=+0.000352 dwb_win=+0.001814
+# SLIP t=465.00 e=2 psi=+0.0201 unw=+0.020 nu_win=-0.000048 dwb_win=-0.000196
+# SLIP t=465.00 e=3 psi=+0.7446 unw=-15.777 nu_win=-0.005042 dwb_win=-0.010471
+# SLIP t=465.00 e=4 psi=+2.5876 unw=-16.262 nu_win=-0.005300 dwb_win=-0.012040
+# SLIP t=465.00 e=5 psi=+2.1802 unw=+14.836 nu_win=+0.005555 dwb_win=+0.011947
+470.000	9740.1154	7.17794713	0	2.23992593	9746.89731522	1.866e-16	57680	3.404	18.880	9.765	0.002	0.0000	0.8443	0.63847	0.8498	0.9935	1.64990	1.64931	0.0000	0.0000	0.0000	0.019484	-0.018406	-0.0032789	0	0	0
+# CONV t=470.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=470.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=23500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=470.00 gates min=0.0001 mean=0.1657 edges=6
+# PIN t=470.00 R=-2.63596061 nv=6
+# SLIP t=470.00 e=0 psi=+1.3513 unw=+15.157 nu_win=+0.005743 dwb_win=+0.012452
+# SLIP t=470.00 e=1 psi=+0.6141 unw=+0.614 nu_win=+0.000153 dwb_win=+0.002010
+# SLIP t=470.00 e=2 psi=+0.0277 unw=+0.028 nu_win=+0.000242 dwb_win=+0.000349
+# SLIP t=470.00 e=3 psi=+0.5827 unw=-15.939 nu_win=-0.005152 dwb_win=-0.010526
+# SLIP t=470.00 e=4 psi=+2.4150 unw=-16.435 nu_win=-0.005491 dwb_win=-0.012695
+# SLIP t=470.00 e=5 psi=+2.3600 unw=+15.016 nu_win=+0.005721 dwb_win=+0.012263
+475.000	9740.1154	7.17639427	0	2.27467535	9746.89731522	1.866e-16	57680	3.404	18.855	9.750	0.002	0.0000	0.8443	0.63727	0.8498	0.9935	1.64989	1.64931	0.0000	0.0000	0.0000	0.019578	-0.011064	-0.010423	0	0	0
+# CONV t=475.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=475.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=23750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=475.00 gates min=0.0000 mean=0.1826 edges=6
+# PIN t=475.00 R=-2.66915718 nv=6
+# SLIP t=475.00 e=0 psi=+1.5420 unw=+15.348 nu_win=+0.006070 dwb_win=+0.013312
+# SLIP t=475.00 e=1 psi=+0.6191 unw=+0.619 nu_win=+0.000158 dwb_win=+0.001284
+# SLIP t=475.00 e=2 psi=+0.0314 unw=+0.032 nu_win=+0.000117 dwb_win=+0.000385
+# SLIP t=475.00 e=3 psi=+0.4104 unw=-16.111 nu_win=-0.005486 dwb_win=-0.011727
+# SLIP t=475.00 e=4 psi=+2.2347 unw=-16.615 nu_win=-0.005741 dwb_win=-0.013008
+# SLIP t=475.00 e=5 psi=+2.5486 unw=+15.204 nu_win=+0.006006 dwb_win=+0.012925
+480.000	9740.1154	7.21463218	0	2.27683566	9746.89731522	1.866e-16	57680	3.394	18.850	9.721	0.002	0.0000	0.8443	0.63595	0.8498	0.9935	1.64989	1.64931	0.0000	0.0000	0.0000	0.020143	-0.017277	-1.9313e-05	0	0	0
+# CONV t=480.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=480.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=24000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=480.00 gates min=0.0000 mean=0.2005 edges=6
+# PIN t=480.00 R=-2.7095554 nv=6
+# SLIP t=480.00 e=0 psi=+1.7439 unw=+15.550 nu_win=+0.006425 dwb_win=+0.014322
+# SLIP t=480.00 e=1 psi=+0.6258 unw=+0.626 nu_win=+0.000213 dwb_win=+0.002109
+# SLIP t=480.00 e=2 psi=+0.0313 unw=+0.032 nu_win=-0.000001 dwb_win=-0.000838
+# SLIP t=480.00 e=3 psi=+0.2237 unw=-16.298 nu_win=-0.005941 dwb_win=-0.013439
+# SLIP t=480.00 e=4 psi=+2.0450 unw=-16.805 nu_win=-0.006037 dwb_win=-0.013676
+# SLIP t=480.00 e=5 psi=+2.7483 unw=+15.404 nu_win=+0.006354 dwb_win=+0.013288
+485.000	9740.1154	7.19536173	0	2.32145962	9746.89731522	1.866e-16	57680	3.408	18.866	9.728	0.002	0.0000	0.8443	0.63054	0.8498	0.9935	1.64988	1.64930	0.0000	0.0000	0.0000	0.026372	-0.025465	0.0028411	0	0	0
+# CONV t=485.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=485.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=24250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=485.00 gates min=0.0001 mean=0.2144 edges=6
+# PIN t=485.00 R=-2.73490891 nv=6
+# SLIP t=485.00 e=0 psi=+1.9504 unw=+15.756 nu_win=+0.006573 dwb_win=+0.014970
+# SLIP t=485.00 e=1 psi=+0.6318 unw=+0.632 nu_win=+0.000189 dwb_win=+0.001636
+# SLIP t=485.00 e=2 psi=+0.0346 unw=+0.035 nu_win=+0.000103 dwb_win=-0.000035
+# SLIP t=485.00 e=3 psi=+0.0281 unw=-16.493 nu_win=-0.006227 dwb_win=-0.013398
+# SLIP t=485.00 e=4 psi=+1.8464 unw=-17.003 nu_win=-0.006321 dwb_win=-0.014333
+# SLIP t=485.00 e=5 psi=+2.9460 unw=+15.602 nu_win=+0.006294 dwb_win=+0.014304
+490.000	9740.1154	7.26056454	0	2.24775906	9746.89731522	1.866e-16	57680	3.412	18.850	9.730	0.003	0.0000	0.8443	0.62588	0.8498	0.9935	1.64987	1.64931	0.0000	0.0000	0.0000	0.019314	-0.01425	-0.0055207	0	0	0
+# CONV t=490.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=490.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=24500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=490.00 gates min=0.0000 mean=0.2233 edges=6
+# PIN t=490.00 R=-2.72641115 nv=6
+# SLIP t=490.00 e=0 psi=+2.1632 unw=+15.969 nu_win=+0.006776 dwb_win=+0.013326
+# SLIP t=490.00 e=1 psi=+0.6383 unw=+0.638 nu_win=+0.000209 dwb_win=+0.001812
+# SLIP t=490.00 e=2 psi=+0.0335 unw=+0.034 nu_win=-0.000033 dwb_win=-0.000881
+# SLIP t=490.00 e=3 psi=-0.2174 unw=-16.739 nu_win=-0.007814 dwb_win=-0.012822
+# SLIP t=490.00 e=4 psi=+1.5971 unw=-17.253 nu_win=-0.007937 dwb_win=-0.013808
+# SLIP t=490.00 e=5 psi=-3.1231 unw=+15.816 nu_win=+0.006815 dwb_win=+0.013380
+495.000	9740.1154	7.24257703	0	2.28604088	9746.89731522	3.732e-16	57679	3.426	18.860	9.737	0.003	0.0000	0.8443	0.62185	0.8498	0.9935	1.64987	1.64930	0.0000	0.0000	0.0000	0.022913	-0.016865	0.014448	0	0	0
+# CONV t=495.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=495.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=24750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=495.00 gates min=0.0000 mean=0.2254 edges=6
+# PIN t=495.00 R=-2.74670547 nv=6
+# SLIP t=495.00 e=0 psi=+2.3582 unw=+16.164 nu_win=+0.006207 dwb_win=+0.013424
+# SLIP t=495.00 e=1 psi=+0.6462 unw=+0.646 nu_win=+0.000250 dwb_win=+0.001630
+# SLIP t=495.00 e=2 psi=+0.0304 unw=+0.031 nu_win=-0.000101 dwb_win=-0.000676
+# SLIP t=495.00 e=3 psi=-0.4001 unw=-16.922 nu_win=-0.005818 dwb_win=-0.012562
+# SLIP t=495.00 e=4 psi=+1.4126 unw=-17.437 nu_win=-0.005874 dwb_win=-0.012899
+# SLIP t=495.00 e=5 psi=-2.9314 unw=+16.007 nu_win=+0.006101 dwb_win=+0.012808
+500.000	9740.1154	7.27544248	0	2.29519426	9746.89731522	3.732e-16	57680	3.415	18.862	9.698	0.002	0.0000	0.8443	0.62106	0.8498	0.9935	1.64986	1.64930	0.0000	0.0000	0.0000	0.022553	-0.017748	-0.0030743	0	0	0
+# CONV t=500.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=500.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=25000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=500.00 gates min=0.0000 mean=0.2281 edges=6
+# PIN t=500.00 R=-2.78872429 nv=6
+# SLIP t=500.00 e=0 psi=+2.5625 unw=+16.368 nu_win=+0.006503 dwb_win=+0.013992
+# SLIP t=500.00 e=1 psi=+0.6516 unw=+0.652 nu_win=+0.000173 dwb_win=+0.001495
+# SLIP t=500.00 e=2 psi=+0.0348 unw=+0.035 nu_win=+0.000142 dwb_win=+0.000521
+# SLIP t=500.00 e=3 psi=-0.5882 unw=-17.110 nu_win=-0.005986 dwb_win=-0.012489
+# SLIP t=500.00 e=4 psi=+1.2139 unw=-17.636 nu_win=-0.006325 dwb_win=-0.014519
+# SLIP t=500.00 e=5 psi=-2.7262 unw=+16.213 nu_win=+0.006533 dwb_win=+0.014006
+505.000	9740.1154	7.25211989	0	2.37381829	9746.89731522	1.866e-16	57680	3.415	18.856	9.722	0.003	0.0000	0.8443	0.6194	0.8498	0.9935	1.64985	1.64930	0.0000	0.0000	0.0000	0.02879	-0.017876	0.0080183	0	0	0
+# CONV t=505.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=505.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=25250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=505.00 gates min=0.0000 mean=0.2309 edges=6
+# PIN t=505.00 R=-2.84402574 nv=6
+# SLIP t=505.00 e=0 psi=+2.7604 unw=+16.566 nu_win=+0.006300 dwb_win=+0.013920
+# SLIP t=505.00 e=1 psi=+0.6587 unw=+0.659 nu_win=+0.000227 dwb_win=+0.001784
+# SLIP t=505.00 e=2 psi=+0.0397 unw=+0.040 nu_win=+0.000157 dwb_win=+0.000788
+# SLIP t=505.00 e=3 psi=-0.7665 unw=-17.288 nu_win=-0.005677 dwb_win=-0.011500
+# SLIP t=505.00 e=4 psi=+1.0274 unw=-17.822 nu_win=-0.005935 dwb_win=-0.012986
+# SLIP t=505.00 e=5 psi=-2.5341 unw=+16.405 nu_win=+0.006115 dwb_win=+0.012833
+510.000	9740.1154	7.25260505	0	2.40349922	9746.89731522	0.000e+00	57681	3.416	18.840	9.701	0.003	0.0000	0.8443	0.62039	0.8498	0.9935	1.64984	1.64929	0.0000	0.0000	0.0000	0.017442	-0.034314	0.0076598	0	0	0
+# CONV t=510.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=510.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=25500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=510.00 gates min=0.0000 mean=0.2341 edges=6
+# PIN t=510.00 R=-2.87419182 nv=6
+# SLIP t=510.00 e=0 psi=+2.9536 unw=+16.759 nu_win=+0.006150 dwb_win=+0.013403
+# SLIP t=510.00 e=1 psi=+0.6650 unw=+0.665 nu_win=+0.000200 dwb_win=+0.001352
+# SLIP t=510.00 e=2 psi=+0.0455 unw=+0.046 nu_win=+0.000185 dwb_win=+0.000456
+# SLIP t=510.00 e=3 psi=-0.9416 unw=-17.463 nu_win=-0.005573 dwb_win=-0.012123
+# SLIP t=510.00 e=4 psi=+0.8436 unw=-18.006 nu_win=-0.005850 dwb_win=-0.013556
+# SLIP t=510.00 e=5 psi=-2.3445 unw=+16.594 nu_win=+0.006035 dwb_win=+0.013028
+515.000	9740.1154	7.26576255	0	2.42003729	9746.89731522	1.866e-16	57681	3.412	18.846	9.708	0.002	0.0000	0.8443	0.62105	0.8498	0.9935	1.64984	1.64929	0.0000	0.0000	0.0000	0.018743	-0.030209	0.007428	0	0	0
+# CONV t=515.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=515.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=25750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=515.00 gates min=0.0001 mean=0.2383 edges=6
+# PIN t=515.00 R=-2.9038874 nv=6
+# SLIP t=515.00 e=0 psi=-3.1336 unw=+16.955 nu_win=+0.006236 dwb_win=+0.013975
+# SLIP t=515.00 e=1 psi=+0.6706 unw=+0.671 nu_win=+0.000177 dwb_win=+0.001870
+# SLIP t=515.00 e=2 psi=+0.0449 unw=+0.045 nu_win=-0.000020 dwb_win=-0.000866
+# SLIP t=515.00 e=3 psi=-1.1247 unw=-17.646 nu_win=-0.005826 dwb_win=-0.013328
+# SLIP t=515.00 e=4 psi=+0.6569 unw=-18.193 nu_win=-0.005945 dwb_win=-0.013995
+# SLIP t=515.00 e=5 psi=-2.1502 unw=+16.789 nu_win=+0.006184 dwb_win=+0.013637
+520.000	9740.1154	7.21277531	0	2.45676701	9746.89731522	0.000e+00	57681	3.425	18.825	9.729	0.002	0.0000	0.8443	0.61938	0.8498	0.9935	1.64984	1.64929	0.0000	0.0000	0.0000	0.026455	-0.021842	-0.0034454	0	0	0
+# CONV t=520.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=520.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=26000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=520.00 gates min=0.0017 mean=0.2458 edges=6
+# PIN t=520.00 R=-2.88762988 nv=6
+# SLIP t=520.00 e=0 psi=-2.9042 unw=+17.185 nu_win=+0.007303 dwb_win=+0.014273
+# SLIP t=520.00 e=1 psi=+0.6767 unw=+0.677 nu_win=+0.000197 dwb_win=+0.001418
+# SLIP t=520.00 e=2 psi=+0.0431 unw=+0.043 nu_win=-0.000057 dwb_win=-0.000297
+# SLIP t=520.00 e=3 psi=-1.3881 unw=-17.910 nu_win=-0.008387 dwb_win=-0.013564
+# SLIP t=520.00 e=4 psi=+0.3896 unw=-18.460 nu_win=-0.008506 dwb_win=-0.014536
+# SLIP t=520.00 e=5 psi=-1.9215 unw=+17.017 nu_win=+0.007281 dwb_win=+0.014125
+525.000	9740.1154	7.24871937	0	2.45515497	9746.89731522	1.866e-16	57681	3.417	18.842	9.699	0.002	0.0000	0.8443	0.61544	0.8498	0.9935	1.64983	1.64929	0.0000	0.0000	0.0000	0.014577	-0.021398	0.0051885	0	0	0
+# CONV t=525.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=525.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=26250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=525.00 gates min=0.0088 mean=0.2556 edges=6
+# PIN t=525.00 R=-2.9219619 nv=6
+# SLIP t=525.00 e=0 psi=-2.6888 unw=+17.400 nu_win=+0.006857 dwb_win=+0.014715
+# SLIP t=525.00 e=1 psi=+0.6843 unw=+0.684 nu_win=+0.000239 dwb_win=+0.002043
+# SLIP t=525.00 e=2 psi=+0.0463 unw=+0.047 nu_win=+0.000103 dwb_win=-0.000144
+# SLIP t=525.00 e=3 psi=-1.5867 unw=-18.108 nu_win=-0.006321 dwb_win=-0.013002
+# SLIP t=525.00 e=4 psi=+0.1827 unw=-18.667 nu_win=-0.006587 dwb_win=-0.014573
+# SLIP t=525.00 e=5 psi=-1.7078 unw=+17.231 nu_win=+0.006801 dwb_win=+0.014388
+530.000	9740.1154	7.25340221	0	2.47719796	9746.89731522	1.866e-16	57681	3.413	18.843	9.741	0.002	0.0000	0.8443	0.61547	0.8498	0.9935	1.64983	1.64929	0.0000	0.0000	0.0000	0.019888	-0.019855	0.014203	0	0	0
+# CONV t=530.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=530.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=26500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=530.00 gates min=0.0359 mean=0.2674 edges=6
+# PIN t=530.00 R=-2.94868772 nv=6
+# SLIP t=530.00 e=0 psi=-2.4640 unw=+17.625 nu_win=+0.007157 dwb_win=+0.015442
+# SLIP t=530.00 e=1 psi=+0.6901 unw=+0.690 nu_win=+0.000187 dwb_win=+0.001426
+# SLIP t=530.00 e=2 psi=+0.0461 unw=+0.046 nu_win=-0.000008 dwb_win=-0.000131
+# SLIP t=530.00 e=3 psi=-1.7976 unw=-18.319 nu_win=-0.006714 dwb_win=-0.014650
+# SLIP t=530.00 e=4 psi=-0.0346 unw=-18.884 nu_win=-0.006916 dwb_win=-0.015876
+# SLIP t=530.00 e=5 psi=-1.4829 unw=+17.456 nu_win=+0.007158 dwb_win=+0.015373
+535.000	9740.1154	7.23116122	0	2.55004592	9746.89731522	0.000e+00	57681	3.417	18.843	9.694	0.002	0.0000	0.8443	0.61283	0.8498	0.9935	1.64982	1.64928	0.0000	0.0000	0.0000	0.022281	-0.021505	0.012481	0	0	0
+# CONV t=535.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=535.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=26750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=535.00 gates min=0.0751 mean=0.2766 edges=6
+# PIN t=535.00 R=-2.9992947 nv=6
+# SLIP t=535.00 e=0 psi=-2.2334 unw=+17.856 nu_win=+0.007339 dwb_win=+0.015942
+# SLIP t=535.00 e=1 psi=+0.6956 unw=+0.696 nu_win=+0.000175 dwb_win=+0.001569
+# SLIP t=535.00 e=2 psi=+0.0538 unw=+0.054 nu_win=+0.000247 dwb_win=+0.000783
+# SLIP t=535.00 e=3 psi=-2.0093 unw=-18.531 nu_win=-0.006737 dwb_win=-0.014027
+# SLIP t=535.00 e=4 psi=-0.2550 unw=-19.105 nu_win=-0.007018 dwb_win=-0.015749
+# SLIP t=535.00 e=5 psi=-1.2540 unw=+17.685 nu_win=+0.007285 dwb_win=+0.015312
+540.000	9740.1154	7.24273932	0	2.58078254	9746.89731522	1.866e-16	57681	3.424	18.812	9.711	0.003	0.0000	0.8443	0.60874	0.8498	0.9935	1.64982	1.64928	0.0000	0.0000	0.0000	0.028782	-0.023572	0.00031494	0	0	0
+# CONV t=540.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=540.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=27000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=540.00 gates min=0.1117 mean=0.2835 edges=6
+# PIN t=540.00 R=-3.04160942 nv=6
+# SLIP t=540.00 e=0 psi=-1.9954 unw=+18.094 nu_win=+0.007575 dwb_win=+0.017007
+# SLIP t=540.00 e=1 psi=+0.7028 unw=+0.703 nu_win=+0.000229 dwb_win=+0.001794
+# SLIP t=540.00 e=2 psi=+0.0577 unw=+0.058 nu_win=+0.000124 dwb_win=+0.000334
+# SLIP t=540.00 e=3 psi=-2.2272 unw=-18.749 nu_win=-0.006936 dwb_win=-0.014917
+# SLIP t=540.00 e=4 psi=-0.4802 unw=-19.330 nu_win=-0.007168 dwb_win=-0.016079
+# SLIP t=540.00 e=5 psi=-1.0231 unw=+17.916 nu_win=+0.007351 dwb_win=+0.016041
+545.000	9740.1154	7.28013934	0	2.56883192	9746.89731522	1.866e-16	57681	3.425	18.811	9.726	0.004	0.0000	0.8443	0.60762	0.8498	0.9935	1.64981	1.64928	0.0000	0.0000	0.0000	0.040207	-0.026452	0.012499	0	0	0
+# CONV t=545.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=545.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=27250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=545.00 gates min=0.2883 mean=0.2939 edges=6
+# PIN t=545.00 R=-3.06705882 nv=6
+# SLIP t=545.00 e=0 psi=-1.7500 unw=+18.339 nu_win=+0.007812 dwb_win=+0.017325
+# SLIP t=545.00 e=1 psi=+0.7079 unw=+0.708 nu_win=+0.000163 dwb_win=+0.001510
+# SLIP t=545.00 e=2 psi=+0.0643 unw=+0.064 nu_win=+0.000208 dwb_win=+0.000376
+# SLIP t=545.00 e=3 psi=-2.4563 unw=-18.978 nu_win=-0.007293 dwb_win=-0.016160
+# SLIP t=545.00 e=4 psi=-0.7202 unw=-19.570 nu_win=-0.007639 dwb_win=-0.017984
+# SLIP t=545.00 e=5 psi=-0.7784 unw=+18.161 nu_win=+0.007789 dwb_win=+0.017263
+550.000	9740.1154	7.24416227	0	2.58792762	9746.89731522	1.866e-16	57681	3.450	18.821	9.717	0.003	0.0000	0.8443	0.60905	0.8498	0.9935	1.64981	1.64928	0.0000	0.0000	0.0000	0.020587	-0.011919	0.013279	0	0	0
+# CONV t=550.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=550.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=27500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=550.00 gates min=0.2080 mean=0.3174 edges=6
+# PIN t=550.00 R=-3.05017744 nv=6
+# SLIP t=550.00 e=0 psi=-1.4928 unw=+18.596 nu_win=+0.008186 dwb_win=+0.016338
+# SLIP t=550.00 e=1 psi=+0.7157 unw=+0.716 nu_win=+0.000249 dwb_win=+0.001904
+# SLIP t=550.00 e=2 psi=+0.0623 unw=+0.063 nu_win=-0.000063 dwb_win=-0.000639
+# SLIP t=550.00 e=3 psi=-2.7538 unw=-19.275 nu_win=-0.009471 dwb_win=-0.015011
+# SLIP t=550.00 e=4 psi=-1.0227 unw=-19.872 nu_win=-0.009627 dwb_win=-0.016258
+# SLIP t=550.00 e=5 psi=-0.5216 unw=+18.417 nu_win=+0.008173 dwb_win=+0.016321
+555.000	9740.1154	7.24289296	0	2.60783707	9746.89731522	1.866e-16	57682	3.445	18.826	9.702	0.002	0.0000	0.8443	0.61257	0.8498	0.9935	1.64980	1.64928	0.0000	0.0000	0.0000	0.023153	-0.017201	0.0099873	0	0	0
+# CONV t=555.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=555.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=27750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=555.00 gates min=0.3440 mean=0.3391 edges=6
+# PIN t=555.00 R=-3.06881759 nv=6
+# SLIP t=555.00 e=0 psi=-1.2820 unw=+18.807 nu_win=+0.006712 dwb_win=+0.013993
+# SLIP t=555.00 e=1 psi=+0.7224 unw=+0.722 nu_win=+0.000212 dwb_win=+0.001325
+# SLIP t=555.00 e=2 psi=+0.0608 unw=+0.061 nu_win=-0.000048 dwb_win=-0.000425
+# SLIP t=555.00 e=3 psi=-2.9538 unw=-19.475 nu_win=-0.006365 dwb_win=-0.013793
+# SLIP t=555.00 e=4 psi=-1.2252 unw=-20.075 nu_win=-0.006446 dwb_win=-0.014263
+# SLIP t=555.00 e=5 psi=-0.3115 unw=+18.627 nu_win=+0.006690 dwb_win=+0.013563
+560.000	9740.1154	7.20840409	0	2.67165911	9746.89731522	1.866e-16	57682	3.450	18.822	9.703	0.003	0.0000	0.8443	0.61477	0.8498	0.9935	1.64980	1.64928	0.0000	0.0000	0.0000	0.024225	-0.0036131	0.0060545	0	0	0
+# CONV t=560.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=560.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=28000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=560.00 gates min=0.2183 mean=0.3553 edges=6
+# PIN t=560.00 R=-3.09815076 nv=6
+# SLIP t=560.00 e=0 psi=-1.0584 unw=+19.031 nu_win=+0.007116 dwb_win=+0.015385
+# SLIP t=560.00 e=1 psi=+0.7300 unw=+0.730 nu_win=+0.000243 dwb_win=+0.002154
+# SLIP t=560.00 e=2 psi=+0.0572 unw=+0.057 nu_win=-0.000116 dwb_win=-0.001282
+# SLIP t=560.00 e=3 psi=+3.1203 unw=-19.684 nu_win=-0.006658 dwb_win=-0.014324
+# SLIP t=560.00 e=4 psi=-1.4374 unw=-20.287 nu_win=-0.006757 dwb_win=-0.014923
+# SLIP t=560.00 e=5 psi=-0.0904 unw=+18.848 nu_win=+0.007036 dwb_win=+0.015112
+565.000	9740.1154	7.2426612	0	2.68820067	9746.89731522	1.866e-16	57682	3.447	18.804	9.732	0.002	0.0000	0.8443	0.61653	0.8498	0.9935	1.64980	1.64927	0.0000	0.0000	0.0000	0.026296	-0.021096	0.016459	0	0	0
+# CONV t=565.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=565.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=28250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=565.00 gates min=0.0859 mean=0.3564 edges=6
+# PIN t=565.00 R=-3.14894943 nv=6
+# SLIP t=565.00 e=0 psi=-0.8299 unw=+19.259 nu_win=+0.007274 dwb_win=+0.015463
+# SLIP t=565.00 e=1 psi=+0.7341 unw=+0.734 nu_win=+0.000131 dwb_win=+0.000921
+# SLIP t=565.00 e=2 psi=+0.0637 unw=+0.064 nu_win=+0.000208 dwb_win=+0.001200
+# SLIP t=565.00 e=3 psi=+2.9089 unw=-19.896 nu_win=-0.006729 dwb_win=-0.013895
+# SLIP t=565.00 e=4 psi=-1.6553 unw=-20.505 nu_win=-0.006934 dwb_win=-0.015204
+# SLIP t=565.00 e=5 psi=+0.1353 unw=+19.074 nu_win=+0.007186 dwb_win=+0.014651
+570.000	9740.1154	7.23433059	0	2.75109519	9746.89731522	1.866e-16	57682	3.427	18.836	9.715	0.003	0.0000	0.8443	0.61412	0.8498	0.9935	1.64980	1.64926	0.0000	0.0000	0.0000	0.029659	-0.022494	0.01964	0	0	0
+# CONV t=570.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=570.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=28500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=570.00 gates min=0.0253 mean=0.3384 edges=6
+# PIN t=570.00 R=-3.20351334 nv=6
+# SLIP t=570.00 e=0 psi=-0.5933 unw=+19.496 nu_win=+0.007531 dwb_win=+0.016379
+# SLIP t=570.00 e=1 psi=+0.7404 unw=+0.740 nu_win=+0.000199 dwb_win=+0.002097
+# SLIP t=570.00 e=2 psi=+0.0723 unw=+0.072 nu_win=+0.000273 dwb_win=+0.000763
+# SLIP t=570.00 e=3 psi=+2.6962 unw=-20.108 nu_win=-0.006770 dwb_win=-0.013702
+# SLIP t=570.00 e=4 psi=-1.8815 unw=-20.731 nu_win=-0.007199 dwb_win=-0.016237
+# SLIP t=570.00 e=5 psi=+0.3681 unw=+19.307 nu_win=+0.007409 dwb_win=+0.016055
+575.000	9740.1154	7.2602673	0	2.74474421	9746.89731522	1.866e-16	57682	3.462	18.830	9.723	0.002	0.0000	0.8443	0.612	0.8498	0.9935	1.64979	1.64926	0.0000	0.0000	0.0000	0.025478	-0.014321	0.016778	0	0	0
+# CONV t=575.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=575.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=28750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=575.00 gates min=0.0057 mean=0.3064 edges=6
+# PIN t=575.00 R=-3.22309906 nv=6
+# SLIP t=575.00 e=0 psi=-0.3600 unw=+19.729 nu_win=+0.007427 dwb_win=+0.016552
+# SLIP t=575.00 e=1 psi=+0.7468 unw=+0.747 nu_win=+0.000206 dwb_win=+0.001375
+# SLIP t=575.00 e=2 psi=+0.0785 unw=+0.079 nu_win=+0.000199 dwb_win=+0.000586
+# SLIP t=575.00 e=3 psi=+2.4803 unw=-20.324 nu_win=-0.006872 dwb_win=-0.014837
+# SLIP t=575.00 e=4 psi=-2.1093 unw=-20.959 nu_win=-0.007253 dwb_win=-0.016741
+# SLIP t=575.00 e=5 psi=+0.6010 unw=+19.540 nu_win=+0.007412 dwb_win=+0.016495
+580.000	9740.1154	7.24336627	0	2.74765152	9746.89731522	1.866e-16	57682	3.457	18.827	9.761	0.003	0.0000	0.8443	0.61186	0.8498	0.9935	1.64978	1.64926	0.0000	0.0000	0.0000	0.013386	-0.0029849	0.010015	0	0	0
+# CONV t=580.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=580.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=29000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=580.00 gates min=0.0007 mean=0.2637 edges=6
+# PIN t=580.00 R=-3.20910535 nv=6
+# SLIP t=580.00 e=0 psi=-0.1083 unw=+19.981 nu_win=+0.008010 dwb_win=+0.015607
+# SLIP t=580.00 e=1 psi=+0.7546 unw=+0.755 nu_win=+0.000248 dwb_win=+0.001986
+# SLIP t=580.00 e=2 psi=+0.0763 unw=+0.077 nu_win=-0.000071 dwb_win=-0.000989
+# SLIP t=580.00 e=3 psi=+2.1918 unw=-20.613 nu_win=-0.009183 dwb_win=-0.014965
+# SLIP t=580.00 e=4 psi=-2.4006 unw=-21.250 nu_win=-0.009272 dwb_win=-0.015692
+# SLIP t=580.00 e=5 psi=+0.8518 unw=+19.791 nu_win=+0.007984 dwb_win=+0.015337
+585.000	9740.1154	7.25510183	0	2.75803009	9746.89731522	1.866e-16	57682	3.469	18.836	9.740	0.003	0.0000	0.8443	0.61212	0.8498	0.9935	1.64978	1.64926	0.0000	0.0000	0.0000	0.021442	-0.011501	0.0088911	0	0	0
+# CONV t=585.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=585.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=29250 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=585.00 gates min=0.0001 mean=0.2244 edges=6
+# PIN t=585.00 R=-3.23121948 nv=6
+# SLIP t=585.00 e=0 psi=+0.1256 unw=+20.214 nu_win=+0.007445 dwb_win=+0.015796
+# SLIP t=585.00 e=1 psi=+0.7617 unw=+0.762 nu_win=+0.000225 dwb_win=+0.001515
+# SLIP t=585.00 e=2 psi=+0.0738 unw=+0.074 nu_win=-0.000081 dwb_win=-0.000635
+# SLIP t=585.00 e=3 psi=+1.9705 unw=-20.834 nu_win=-0.007045 dwb_win=-0.014989
+# SLIP t=585.00 e=4 psi=-2.6248 unw=-21.475 nu_win=-0.007136 dwb_win=-0.015525
+# SLIP t=585.00 e=5 psi=+1.0836 unw=+20.022 nu_win=+0.007378 dwb_win=+0.015452
+590.000	9740.1154	7.22673829	0	2.82098686	9746.89731522	1.866e-16	57682	3.446	18.843	9.731	0.002	0.0000	0.8443	0.61268	0.8498	0.9935	1.64977	1.64926	0.0000	0.0000	0.0000	0.021357	-0.012186	0.018729	0	0	0
+# CONV t=590.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=590.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=29500 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=590.00 gates min=0.0009 mean=0.1842 edges=6
+# PIN t=590.00 R=-3.2658127 nv=6
+# SLIP t=590.00 e=0 psi=+0.3682 unw=+20.457 nu_win=+0.007723 dwb_win=+0.016365
+# SLIP t=590.00 e=1 psi=+0.7686 unw=+0.769 nu_win=+0.000221 dwb_win=+0.001381
+# SLIP t=590.00 e=2 psi=+0.0754 unw=+0.076 nu_win=+0.000052 dwb_win=+0.000169
+# SLIP t=590.00 e=3 psi=+1.7430 unw=-21.062 nu_win=-0.007241 dwb_win=-0.015260
+# SLIP t=590.00 e=4 psi=-2.8568 unw=-21.707 nu_win=-0.007387 dwb_win=-0.016165
+# SLIP t=590.00 e=5 psi=+1.3227 unw=+20.262 nu_win=+0.007612 dwb_win=+0.015720
+595.000	9740.1154	7.27841603	0	2.80900916	9746.89731522	1.866e-16	57682	3.446	18.800	9.757	0.003	0.0000	0.8443	0.61293	0.8498	0.9935	1.64976	1.64925	0.0000	0.0000	0.0000	0.016022	-0.016717	0.0041871	0	0	0
+# CONV t=595.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=595.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=29750 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=595.00 gates min=0.0043 mean=0.1508 edges=6
+# PIN t=595.00 R=-3.30551275 nv=6
+# SLIP t=595.00 e=0 psi=+0.6049 unw=+20.694 nu_win=+0.007535 dwb_win=+0.016387
+# SLIP t=595.00 e=1 psi=+0.7735 unw=+0.774 nu_win=+0.000154 dwb_win=+0.001612
+# SLIP t=595.00 e=2 psi=+0.0777 unw=+0.078 nu_win=+0.000073 dwb_win=-0.000299
+# SLIP t=595.00 e=3 psi=+1.5205 unw=-21.284 nu_win=-0.007082 dwb_win=-0.014935
+# SLIP t=595.00 e=4 psi=-3.0858 unw=-21.936 nu_win=-0.007287 dwb_win=-0.016209
+# SLIP t=595.00 e=5 psi=+1.5601 unw=+20.499 nu_win=+0.007557 dwb_win=+0.016347
+600.000	9740.1154	7.29405895	0	2.83160859	9746.89731522	0.000e+00	57681	3.464	18.826	9.743	0.003	0.0000	0.8443	0.61696	0.8498	0.9935	1.64976	1.64925	0.0000	0.0000	0.0000	0.024457	-0.020838	0.0026103	0	0	0
+# CONV t=600.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=600.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=30000 E0_int=9746897315217393 sum=9746897315217393
+# NETG t=600.00 gates min=0.0006 mean=0.1289 edges=6
+# PIN t=600.00 R=-3.3437551 nv=6
+# SLIP t=600.00 e=0 psi=+0.8371 unw=+20.926 nu_win=+0.007390 dwb_win=+0.016008
+# SLIP t=600.00 e=1 psi=+0.7788 unw=+0.779 nu_win=+0.000169 dwb_win=+0.001396
+# SLIP t=600.00 e=2 psi=+0.0816 unw=+0.082 nu_win=+0.000123 dwb_win=+0.000864
+# SLIP t=600.00 e=3 psi=+1.3048 unw=-21.500 nu_win=-0.006867 dwb_win=-0.014314
+# SLIP t=600.00 e=4 psi=+2.9732 unw=-22.160 nu_win=-0.007137 dwb_win=-0.016051
+# SLIP t=600.00 e=5 psi=+1.7893 unw=+20.728 nu_win=+0.007296 dwb_win=+0.015484
+# RESULT es_shells 0.75:1.0001 2.25:1.0001 3.75:1.0001 5.25:1.0001 6.75:1.0001 8.25:1.0001 9.75:0.9997 11.25:0.9996
+# RESULT LEDGER mode=3 E0_int=9746897315217393 sum_int=9746897315217393 max_sum_err=0 max|E-iEu|=0.000e+00 steps=30000
+# RESULT conservation E0=9746.89731522 Efinal=9746.89731522 rel_drift=0.000e+00
+# RESULT roughness_radiated=0 (dissonant dense deliveries converted to field, conserved)
+# NETGATE F 0 1 pq=2:3 d=1.4687 psi_f=+0.8371 psi_b=-2.0424 gf=0.2359 gb=0.0000
+# NETGATE F 1 2 pq=2:3 d=1.5998 psi_f=+0.7788 psi_b=+3.0353 gf=0.2880 gb=0.0000
+# NETGATE F 2 3 pq=3:2 d=1.5933 psi_f=+0.0816 psi_b=-2.4873 gf=0.9868 gb=0.0000
+# NETGATE F 3 4 pq=3:2 d=1.5845 psi_f=+1.3048 psi_b=+2.6896 gf=0.0253 gb=0.0000
+# NETGATE F 4 5 pq=3:2 d=1.5389 psi_f=+2.9732 psi_b=+1.4474 gf=0.0000 gb=0.0099
+# NETGATE F 5 0 pq=2:3 d=1.5916 psi_f=+1.7893 psi_b=+2.1366 gf=0.0006 gb=0.0000
+# RESULT pin R=-3.3437551 nv=6 (reservoir inside the conservation sum)
+# RESULT slip e=0 pq=2:3 nu_slip=+0.006321 dw_bare=+0.013580 dw_over_2pi=+0.002161 slips=+1.90 locked=0 flips=0 fix_pq=2:3 fix_nu=+0.006321 fix_dwb2pi=+0.002161 fix_slips=+1.90 fix_locked=0 window=[300.0,600.0]
+# RESULT slip e=1 pq=2:3 nu_slip=+0.000211 dw_bare=+0.001702 dw_over_2pi=+0.000271 slips=+0.06 locked=1 flips=0 fix_pq=2:3 fix_nu=+0.000211 fix_dwb2pi=+0.000271 fix_slips=+0.06 fix_locked=1 window=[300.0,600.0]
+# RESULT slip e=2 pq=3:2 nu_slip=+0.000045 dw_bare=-0.000160 dw_over_2pi=-0.000025 slips=+0.01 locked=1 flips=0 fix_pq=3:2 fix_nu=+0.000045 fix_dwb2pi=-0.000025 fix_slips=+0.01 fix_locked=1 window=[300.0,600.0]
+# RESULT slip e=3 pq=3:2 nu_slip=-0.006078 dw_bare=-0.012319 dw_over_2pi=-0.001961 slips=-1.82 locked=0 flips=0 fix_pq=3:2 fix_nu=-0.006078 fix_dwb2pi=-0.001961 fix_slips=-1.82 fix_locked=0 window=[300.0,600.0]
+# RESULT slip e=4 pq=3:2 nu_slip=-0.006265 dw_bare=-0.013479 dw_over_2pi=-0.002145 slips=-1.88 locked=0 flips=0 fix_pq=3:2 fix_nu=-0.006265 fix_dwb2pi=-0.002145 fix_slips=-1.88 fix_locked=0 window=[300.0,600.0]
+# RESULT slip e=5 pq=2:3 nu_slip=+0.006252 dw_bare=+0.013199 dw_over_2pi=+0.002101 slips=+1.88 locked=0 flips=0 fix_pq=2:3 fix_nu=+0.006252 fix_dwb2pi=+0.002101 fix_slips=+1.88 fix_locked=0 window=[300.0,600.0]
+# RESULT curvature_fit defA_per_Em=0.28245 r2=0.0980 (linear defect ~ converted energy)

@@ -459,3 +459,57 @@ confinement or pair-creation. Needs a transient-kick apparatus
 (pin-target step or edge Δω pulse) — small, ratchet-gated, now
 designable against a measured baseline. Files:
 charge/runs/q11_*_v2.log, scratchpad q9_regress2 (exactness).
+
+### 7.10 Q11h (2026-07-31): the harmonic scan — trapped winding IS the
+### charge state; bistability, loop-rate conservation, creep floor
+
+The scan the charge question wanted ("holonomy as a function of the
+interval address, and of size"): four pinned cycles, dual-book
+instrument, all Kirchhoff-closed ≤0.5 slip (full table:
+charge/q11h_score.py; runs q11h_*.log; nets with closure arithmetic
+in headers).
+
+| cycle | harmonic (Tenney) | state found | per-edge fix_nu | flips |
+|---|---|---|---|---|
+| fifth_tri P17 | 3:2 (6) | CIRCULATOR (winding at vertex B) | ∓0.0145 | 867 |
+| fifth_tri2 | 3:2 (6) | LOCKED (all edges, live=3:2 held) | ~2e-4 | 0 |
+| oct_tri | 2:1 (2) | CIRCULATOR (winding at vertex A, through the unison edge) | ∓0.0145 | 0 |
+| fifth_hex (ℤ₆) | 3:2 (6) | CIRCULATOR, two counter-arcs + two quiet edges | ∓0.0063 | 0 |
+
+FINDINGS. (1) **BISTABILITY = the charge state.** The same address
+supports a quiet neutral state and a persistent circulator; the
+control nailed it: re-seeding the P17 cells with kink-free chained
+phases collapses the circulation 5× (±4.33 → ≤1.5 slips, e0 locked,
+chatter 867→107) with pin/loads/geometry identical. Trapped integer
+winding — set by the initial phase texture, conserved thereafter —
+is the state variable. In O3′ terms: the un-closed tail-call count
+the cycle carries. Neutral = 0, charged = n≠0, sign = circulation
+sense (C-symmetric). (2) **The trapped quantum's current divides
+with loop size**: triangle loop-total 0.0435 units/t.u. vs hexagon
+0.0378 at 0.43× per edge — near-conserved total, fluxoid-in-a-ring
+phenomenology; on the hexagon the flow organizes as two counter-arcs
+with two quiet edges (texture, not uniform current). (3) **The
+loop rate is harmonic-independent** (fifth and octave circulators
+both |ν|≈0.0145/edge on triangles) — the winding precession scale is
+a property of the cycle+pin machinery, not of the interval; origin
+unhunted (candidate scales: γ_res_m=0.10 ≈ 2π·0.0145=0.091 rad/t.u.).
+(4) **Frustration sets a creep floor, not the circulation**: the
+closure arithmetic (fifth-triangle defect = −ω_h·perimeter mod 2π
+with ℤ₃ branch freedom ⇒ no zero-defect fifth triangle exists
+in-band; octave triangles and hexagons can close) predicts which
+cycles can fully quiesce: tri2 (closable-ish, 0.77) locks dead;
+rephased P17 (0.94) creeps at ≤1.5 slips/300 with tongue chatter —
+but a zero-defect octave triangle still runs as a full circulator
+when seeded wound. (5) **Tongue fragility is Tenney-driven,
+cleanly**: under identical transport the octave (γ/2) never flips
+its live detector once; the running fifth chatters at 1.4/t.u.;
+LOCKED fifths (tri2) also hold 3:2 with zero flips — the chatter is
+a consequence of transport (flight-load detune), not of the interval
+per se. Combined with M-B4's vacuum-tongue drain spikes (fifth 40×,
+octave 8× at their x-coincidences) the charge picture has: trapped
+ℤ winding (state), quantized persistent current (its observable),
+tongue-fragility + drain channels (its interactions with the
+medium). NEXT: the kick apparatus (pin_kick_*, built, gate 4
+running) injects/extracts single quanta — the export/confinement
+experiment (Q11 payload) and the winding-number instrument
+(per-vertex θ-winding counter) decide fractional confinement.

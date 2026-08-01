@@ -1142,3 +1142,40 @@ combined) if H1 shows the hole matters.
   measurement this closes the loop numerically: M → depth (4.4e-3/Em,
   this entry) → bleed reduction (M-B2 surface) → life (load line).
   Scored from mass_balance/runs/stack_bare.log; no new runs.
+
+* **2026-07-31 (M-B4 — THE BALANCE CURVE ON QUIET GEOMETRY: bleed is
+  mostly DISORDER; the vacuum's harmonic tongues shape the landscape;
+  the desert minimum is 0.041·c₀).** The M-B1 instrument replicated
+  on the annealed S1 substrate (V2s laws + geom anneal keys; pinned
+  pair at its own m=1 rung, d=1.5196, x*=0.3356; same protocol,
+  window [300,600]). THE CURVE (B = −dR/dt, Em/t.u.):
+  x 0.236/0.286/0.336/0.386/**0.416**/0.436/0.486/**0.536**/0.636/
+  0.736/0.796/**0.833** → B 1.85/1.44/0.97/0.74/**40.1**/0.53/0.49/
+  **0.35**/0.40/1.11/3.87/**3.73** (units 1e-4). FOUR RESULTS:
+  (1) **The floor is disorder**: at the rung, V2s bleeds 9.66e-5 vs
+  foam's 8.85e-4 — 9.2× lower at HIGHER load; at the desert minimum
+  3.52e-5 = **0.041·c₀ per voice** — 25× below the foam balance
+  floor, 10× below comp12's recapture (0.40·c₀). Leak = roughness =
+  substrate disorder, now measured on the balance axis itself. The
+  ride-heavy slope continues far past foam's roughness knee (+0.15).
+  (2) **Vacuum-tongue drain channels measured**: at x = 0.4156 ≈
+  x_fifth = (3/2−1)/q = 0.4167 exactly, B spikes 40× (4.01e-3) — the
+  voice pitch hits 3:2 with every vacuum neighbor and the comb opens
+  fifth tongues into the medium; the octave coincidence (x = 0.833)
+  spikes 8× (wide-shallow γ/2 vs narrow-deep γ/6). The in-vocabulary,
+  in-band coincidences are ONLY 1:1 (x=0), 3:2 (0.4167), 2:1 (0.833)
+  ⇒ a TONGUE-FREE DESERT at x ≈ 0.44–0.78 whose floor is the measured
+  minimum (x≈0.54). The leak-vs-harmonic-offset function the charge
+  program predicted (O3′: incomplete harmonics disperse into the
+  medium) is now a measured landscape on the MASS axis.
+  (3) **No zero crossing** — the no-particle statement survives quiet
+  geometry; but the load line at desert bleed extrapolates t ≈
+  cap·(x−x_skirt)/(2·1.76e-5) ≈ 34k t.u. for a desert-riding pair —
+  the C1 design habitat is named: HEAVY DESERT-RIDERS ON V2s
+  (formfind + W1-class candidates re-addressed into x∈[0.5,0.7] on
+  the annealed substrate).
+  (4) The free control (unpinned rung pair): dEm/dt = −3.6e-5 —
+  consistent floor. Provenance: binary = gate-3-validated kernel +
+  inert default-off pin_kick (gate 4 running at write time; kick
+  guarded by dv≠0). Files: mass_balance/nets,runs/mb1s_*,
+  this scorer inline (session log).

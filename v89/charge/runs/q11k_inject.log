@@ -1,0 +1,96 @@
+# cellfab — v89 cell-fabric kernel (no lattice, no prior code)
+# cfg seed=20260727 mode=field init=net
+# cfg L=24 dmin=1 r0=0.85 rjit=0.06
+# cfg C=1 w1=1.65 w2=2.9 q_detune=1.2 gamma_res=0.25 gamma_res_m=0.1 p_gate=8
+# cfg lock_floor=0.005
+# cfg k_dep=1.2 k_dep_m=2 cap=2.5 e_s0=1 es_floor=0.05
+# cfg e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# cfg kappa_lock=1 kappa_align=0.5 kappa_freq=0 kappa_reac=0 sigma_tumble=0.01
+# cfg space: s_k=0.06 s_disp=0.3 es_gx=0
+# cfg dt=0.02 T=600 diag_every=250 snap_every=0
+# cfg center=(-1,-1,-1) amp=1 sigma=2.5 k=(0,0,0) prealign=0 noise_amp=0
+# cfg music: comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004
+# cfg field sector: two-component signed amplitude, unitary hops, field_J=1.8
+# cfg ledger: mode=3 u=1.000e-12 (cellfabi INT_LEDGER)
+# action atom: A0=1.1500 (dbar=1.5053) mode=2 — eps(w)=A0*w/2pi; atoms at mode boundaries, transport continuous
+# edge coloring: 29 colors for 85886 links
+# NETGATE 0 1 pq=3:2 d=1.5977 psi_f=+0.0001 psi_b=-2.4517 gf=1.0000 gb=0.0000
+# NETGATE 1 2 pq=2:3 d=1.5916 psi_f=+0.0004 psi_b=-2.3947 gf=1.0000 gb=0.0000
+# NETGATE 2 0 pq=1:1 d=1.5920 psi_f=+1.3302 psi_b=-2.5294 gf=0.0216 gb=0.0000
+# net: seeded nv=3 ne=3 worst_pick=0.000 gates min=0.0216 mean=0.6739 parasites=0 gpar_max=0.0000 file=/home/d/code/scp/v89/charge/nets/q11h_fifth_tri2.net
+# NETPQ e=0 (0-1) pq=3:2 link=39546
+# NETPQ e=1 (1-2) pq=2:3 link=5394
+# fabric: cells=9741 channels=85886 mean_degree=17.63 box=24 dmin=1
+# LEDGER seed mode=3 u=1.000e-12 E0_int=9743389760869566 NC=9741 NL=85886
+# LEDGER seed mode=3 u=1.000e-12 E0_int=9743389760869566 NC=9741 NL=85886
+# t	E_space	E_dense	E_field	E_transfer	E_total	rel_drift	live_ch	cm_x	cm_y	cm_z	contain	front_r	r_core	defA	r_far	r_ratio	w_core	w_far
+0.000	9740.64154	2.748225	0	0	9743.38976087	0.000e+00	57686	8.235	1.084	9.961	0.000	0.0000	0.8443	0	0.8499	0.9934	1.65000	1.64980	0.0000	0.0000	0.0000	0	0	0	0	0	0
+# CONV t=0.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=0.000 mode=3 sum_err=0 max|E-iEu|=3.478e-13 run_max_diff=0.000e+00 run_max_sum_err=0 steps=0 E0_int=9743389760869566 sum=9743389760869566
+# NETG t=0.00 gates min=0.0216 mean=0.3369 edges=3
+# PIN t=0.00 R=0 nv=3
+5.000	9740.64154	2.75020013	0	0.00862287028	9743.38976087	1.867e-16	57687	8.234	1.084	9.961	0.000	0.0000	0.8443	0.13287	0.8499	0.9934	1.65000	1.64980	0.0000	0.0000	0.0000	0.00064378	0.0011962	0.0025843	0	0	0
+# CONV t=5.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=5.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=250 E0_int=9743389760869566 sum=9743389760869566
+# NETG t=5.00 gates min=0.0218 mean=0.3369 edges=3
+# PIN t=5.00 R=-0.0105980042 nv=3
+# SLIP t=5.00 e=0 psi=+0.0068 unw=+0.007 nu_win=+0.000214 dwb_win=+0.000682
+# SLIP t=5.00 e=1 psi=-2.3914 unw=+0.003 nu_win=+0.000106 dwb_win=-0.000393
+# SLIP t=5.00 e=2 psi=+1.3289 unw=-0.001 nu_win=-0.000041 dwb_win=-0.000537
+10.000	9740.64154	2.76125531	0	0.0247415289	9743.38976087	0.000e+00	57687	8.235	1.086	9.961	0.000	0.0000	0.8443	0.053607	0.8499	0.9934	1.65000	1.64980	0.0000	0.0000	0.0000	0.0018203	0.0011943	0.0029123	0	0	0
+# CONV t=10.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=10.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=500 E0_int=9743389760869566 sum=9743389760869566
+# NETG t=10.00 gates min=0.0224 mean=0.3369 edges=3
+# PIN t=10.00 R=-0.0377718404 nv=3
+# SLIP t=10.00 e=0 psi=+0.0201 unw=+0.020 nu_win=+0.000423 dwb_win=+0.001973
+# SLIP t=10.00 e=1 psi=-2.3910 unw=+0.004 nu_win=+0.000012 dwb_win=+0.000173
+# SLIP t=10.00 e=2 psi=+1.3240 unw=-0.006 nu_win=-0.000157 dwb_win=-0.000900
+15.000	9740.64154	2.76305247	0	0.0526937313	9743.38976087	1.867e-16	57687	8.232	1.086	9.963	0.000	0.0000	0.8443	-0.031746	0.8499	0.9934	1.65000	1.64980	0.0000	0.0000	0.0000	0.0017943	0.0027822	0.0020823	0	0	0
+# CONV t=15.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=15.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=750 E0_int=9743389760869566 sum=9743389760869566
+# NETG t=15.00 gates min=0.0232 mean=0.3369 edges=3
+# PIN t=15.00 R=-0.0675212114 nv=3
+# SLIP t=15.00 e=0 psi=+0.0291 unw=+0.029 nu_win=+0.000286 dwb_win=+0.001068
+# SLIP t=15.00 e=1 psi=-2.3898 unw=+0.005 nu_win=+0.000041 dwb_win=+0.000075
+# SLIP t=15.00 e=2 psi=+1.3188 unw=-0.011 nu_win=-0.000164 dwb_win=-0.000496
+20.000	9740.64154	2.77043971	0	0.0552331936	9743.38976087	1.867e-16	57687	8.236	1.088	9.960	0.000	0.0000	0.8443	-0.1052	0.8499	0.9934	1.65000	1.64979	0.0000	0.0000	0.0000	-0.00038465	0.0025122	0.0046701	0	0	0
+# CONV t=20.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=20.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=1000 E0_int=9743389760869566 sum=9743389760869566
+# NETG t=20.00 gates min=0.0240 mean=0.3369 edges=3
+# PIN t=20.00 R=-0.0774479164 nv=3
+# SLIP t=20.00 e=0 psi=+0.0357 unw=+0.036 nu_win=+0.000210 dwb_win=+0.001299
+# SLIP t=20.00 e=1 psi=-2.3938 unw=+0.001 nu_win=-0.000130 dwb_win=-0.001079
+# SLIP t=20.00 e=2 psi=+1.3135 unw=-0.017 nu_win=-0.000170 dwb_win=-0.001189
+25.000	9740.64154	2.77766131	0	0.0657551153	9743.38976087	0.000e+00	57687	8.232	1.093	9.972	0.000	0.0000	0.8443	-0.16604	0.8499	0.9934	1.65000	1.64979	0.0000	0.0000	0.0000	0.00036063	0.0016896	0.0020345	0	0	0
+# CONV t=25.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=25.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=1250 E0_int=9743389760869566 sum=9743389760869566
+# NETG t=25.00 gates min=0.0245 mean=0.3369 edges=3
+# PIN t=25.00 R=-0.0951914435 nv=3
+# SLIP t=25.00 e=0 psi=+0.0368 unw=+0.037 nu_win=+0.000034 dwb_win=-0.000329
+# SLIP t=25.00 e=1 psi=-2.3990 unw=-0.004 nu_win=-0.000166 dwb_win=-0.001052
+# SLIP t=25.00 e=2 psi=+1.3102 unw=-0.020 nu_win=-0.000105 dwb_win=-0.000361
+30.000	9740.64154	2.76470204	0	0.0867112988	9743.38976087	0.000e+00	57686	8.236	1.089	9.970	0.000	0.0000	0.8443	-0.21569	0.8499	0.9934	1.65000	1.64979	0.0000	0.0000	0.0000	0.0012974	0.0032075	0.0031683	0	0	0
+# CONV t=30.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=30.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=1500 E0_int=9743389760869566 sum=9743389760869566
+# NETG t=30.00 gates min=0.0252 mean=0.3368 edges=3
+# PIN t=30.00 R=-0.103188364 nv=3
+# SLIP t=30.00 e=0 psi=+0.0430 unw=+0.043 nu_win=+0.000198 dwb_win=+0.000903
+# SLIP t=30.00 e=1 psi=-2.4027 unw=-0.008 nu_win=-0.000117 dwb_win=-0.001217
+# SLIP t=30.00 e=2 psi=+1.3051 unw=-0.025 nu_win=-0.000163 dwb_win=-0.001060
+35.000	9740.64154	2.77385725	0	0.0968382759	9743.38976087	1.867e-16	57686	8.238	1.092	9.972	0.000	0.0000	0.8443	-0.25495	0.8499	0.9934	1.65000	1.64979	0.0000	0.0000	0.0000	0.00079816	0.0014599	0.0047535	0	0	0
+# CONV t=35.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=35.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=1750 E0_int=9743389760869566 sum=9743389760869566
+# NETG t=35.00 gates min=0.0260 mean=0.3367 edges=3
+# PIN t=35.00 R=-0.122470556 nv=3
+# SLIP t=35.00 e=0 psi=+0.0482 unw=+0.048 nu_win=+0.000164 dwb_win=+0.000590
+# SLIP t=35.00 e=1 psi=-2.4087 unw=-0.014 nu_win=-0.000191 dwb_win=-0.000894
+# SLIP t=35.00 e=2 psi=+1.3001 unw=-0.030 nu_win=-0.000159 dwb_win=-0.000742
+40.000	9740.64154	2.787325	0	0.115775337	9743.38976087	1.867e-16	57686	8.235	1.095	9.971	0.000	0.0000	0.8443	-0.28828	0.8499	0.9934	1.65000	1.64979	0.0000	0.0000	0.0000	0.0013344	0.00323	0.0015663	0	0	0
+# CONV t=40.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=40.000 mode=3 sum_err=0 max|E-iEu|=1.110e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=2000 E0_int=9743389760869566 sum=9743389760869566
+# NETG t=40.00 gates min=0.0268 mean=0.3364 edges=3
+# PIN t=40.00 R=-0.154875365 nv=3
+# SLIP t=40.00 e=0 psi=+0.0624 unw=+0.062 nu_win=+0.000453 dwb_win=+0.001959
+# SLIP t=40.00 e=1 psi=-2.4027 unw=-0.008 nu_win=+0.000189 dwb_win=+0.000665
+# SLIP t=40.00 e=2 psi=+1.2953 unw=-0.035 nu_win=-0.000151 dwb_win=-0.000647
+45.000	9740.64154	2.78773549	0	0.134246203	9743.38976087	1.867e-16	57686	8.237	1.097	9.972	0.000	0.0000	0.8443	-0.31479	0.8499	0.9934	1.65000	1.64979	0.0000	0.0000	0.0000	0.0027312	0.00638	0.0066283	0	0	0
