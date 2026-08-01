@@ -1,0 +1,11 @@
+# maxfab_lg: NC=9741 NE=85884 NF=205875 (faces/edge=7.19)
+# lambda_max=33.30 dt=0.0200
+# RESULT lg kx=0.26 omega_peak=0.210 Hdrift=-4.59e-04
+# RESULT lg kx=0.52 omega_peak=0.380 Hdrift=4.66e-04
+# RESULT lg kx=0.79 omega_peak=0.565 Hdrift=1.53e-04
+# RESULT lg kx=1.05 omega_peak=0.735 Hdrift=6.37e-05
+# RESULT lg kx=1.31 omega_peak=0.910 Hdrift=3.73e-05
+# RESULT lg kx=1.57 omega_peak=1.090 Hdrift=7.58e-05
+# RESULT lg kx=1.83 omega_peak=1.290 Hdrift=1.30e-04
+# RESULT lg kx=2.09 omega_peak=1.340 Hdrift=6.61e-05
+# CONE fit (k<=1): omega = 0.672*k +0.033, R2=0.9997 -> CONE — link-graph complex viable

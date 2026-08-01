@@ -320,3 +320,36 @@ that require a proton analog.
   (v_g = C at all k) remains the gate instrument, now with a measured
   operator that can meet it. (e) Missing honestly, unchanged: the
   source term (∇·E = ρ) awaits the charge construction (Q-ladder).
+
+* **2026-07-31 (EM5 DESIGN RESOLVED — the link-graph complex IS
+  cone-class once weighted; both production routes measured, the
+  cheap one wins).** Follow-up probe (emf/maxfab_lg.py, ladder
+  method): the kernel's OWN complex — links by the production rule,
+  faces = all linked triples (7.19/edge, the v1 over-complete
+  complex) — with lumped diagonal weights (*1_e = Σ_f A_f/3 / ℓ_e;
+  *2_f = (d̄/κ)/A_f, κ = multiplicity vs cubic reference = 1.8) and
+  the transverse projection: **ω = 0.672·k + 0.033, R² = 0.9997 —
+  the cone bar met on the box ladder.** So v1's flat resonance was
+  the MISSING METRIC, not over-completeness; production EM5 needs no
+  Delaunay. (c_lg = 0.672 vs c_DEC = 0.942: the lumped κ is a first
+  guess; the law's C calibrates the cone speed — linearity is the
+  class property, now held by both routes. Gentle zone-edge droop
+  −9% at k≈2.1, same shape as DEC.) THE EM5 IMPLEMENTATION PLAN
+  (design, no kernel edits yet): (1) at init, enumerate linked
+  triples + A_f, *1_e, *2_f — pure apparatus, deterministic, O(NL·deg);
+  (2) a default-off sector (em5=1): B on faces, the chiral link pair
+  from PRINCIPLE §3's two transverse planes, leapfrog curl pair —
+  g=0/off ⇒ byte-identical kernel (ratchet clean); (3) THE NAMED
+  DESIGN PROBLEM, stated honestly: the prototype is FP-linear with
+  drift ~1e-4, but production runs ledger mode 3 (max_sum_err=0) —
+  EM5's energy books need integer-exact transfers like every other
+  mode; the existing unitary two-plane field sector is the template
+  (its exactness pattern must extend to the face-mediated
+  antisymmetric coupling); (4) gates when scheduled: full battery
+  with em5 off (byte-identity) AND on (conservation + EM1-flat as
+  the gate instrument: v_g = C at all k, both polarizations); then
+  the bridge arms (α(b) lensing table, anti-lens annulus, g2 sign
+  test, clock redshift) become live scored predictions. Variant
+  table first per §5; livefab (S3) remains the doctrinal home where
+  faces arise from construction. Files: emf/maxfab_lg.py,
+  runs/lg_ladder_foam.log.
