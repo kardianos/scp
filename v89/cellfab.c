@@ -133,6 +133,10 @@ typedef struct {
     int block_slit;              /* 0 none, 1 block A, 2 block B */
     double t_expose;             /* shutter: freeze the screen record at this time (0 off) */
     double field_J;              /* repaired field sector: hop coupling scale */
+    int em5;                     /* EM5 sector: E on links, B on linked-triple faces (default off) */
+    double em5_c;                /* EM5 cone speed scale (law C calibrates; complex owns ~0.67 geometric) */
+    int em5_seed_n;              /* EM5 gate instrument: box-ladder mode index (kx = 2*pi*n/L; 0 = no seed) */
+    double em5_seed_amp;         /* EM5 seed amplitude */
     int n_quanta;                /* tier 1: sample N single-quantum claims (0 off) */
     double tag_rate;             /* tier 2: unitary which-path tag rotation at slit A */
     double analyzer_deg;         /* tier 2: screen analyzer basis (deg; <-900 = native H/V) */
@@ -281,6 +285,10 @@ static void cfg_defaults(void)
     P.block_slit = 0;
     P.t_expose = 0.0;
     P.field_J = 0.06;
+    P.em5 = 0;
+    P.em5_c = 1.0;
+    P.em5_seed_n = 0;
+    P.em5_seed_amp = 1.0;
     P.n_quanta = 0;
     P.tag_rate = 0.0;
     P.analyzer_deg = -999.0;
@@ -433,6 +441,10 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "block_slit")) P.block_slit = atoi(v);
     else if (!strcmp(k, "t_expose")) P.t_expose = atof(v);
     else if (!strcmp(k, "field_J")) P.field_J = atof(v);
+    else if (!strcmp(k, "em5")) P.em5 = atoi(v);
+    else if (!strcmp(k, "em5_c")) P.em5_c = atof(v);
+    else if (!strcmp(k, "em5_seed_n")) P.em5_seed_n = atoi(v);
+    else if (!strcmp(k, "em5_seed_amp")) P.em5_seed_amp = atof(v);
     else if (!strcmp(k, "n_quanta")) P.n_quanta = atoi(v);
     else if (!strcmp(k, "tag_rate")) P.tag_rate = atof(v);
     else if (!strcmp(k, "analyzer_deg")) P.analyzer_deg = atof(v);
@@ -532,6 +544,9 @@ static void print_cfg(void)
            P.comb_limit, P.rough_k, P.gamma_rough, P.mob_sym, P.mob_floor);
     printf("# cfg field sector: two-component signed amplitude, unitary hops, field_J=%g\n",
            P.field_J);
+    if (P.em5)
+        printf("# cfg em5: E-links + B-faces leapfrog, c=%g seed_n=%d amp=%g (lg-weights)\n",
+               P.em5_c, P.em5_seed_n, P.em5_seed_amp);
     if (P.kappa_plast > 0)
         printf("# cfg plast: kappa_plast=%g tau_harden=%g (P15 retardation plasticity)\n",
                P.kappa_plast, P.tau_harden);
@@ -1934,6 +1949,344 @@ static void ledger_fp_from_int(int include_field)
     if (include_field && P.ledger_mode >= 3) {
         for (int k = 0; k < 4 * NL; k++) lem[k] = led_to_fp(ilem[k], u);
     }
+}
+
+/* ======================================================================
+ * EM5 sector (default-off; task #5). E on links, B on linked-triple
+ * faces, leapfrog curl pair with the lumped hodge weights validated in
+ * emf/maxfab_lg.py (cone R2=0.9997 on the production complex):
+ *   *1_e = (sum_{f∋e} A_f/3)/len(e),  *2_f = (dbar/kappa)/A_f,
+ *   kappa = (3NF/NE)/4  (multiplicity vs the cubic 4-plaquette ref).
+ * v1 is DECOUPLED from matter (no conversion doors yet): per the EM5
+ * books design (EMF.md 2026-08-01), the sector stays unitary FP like
+ * the field mode; its STAGGERED leapfrog energy (exactly conserved in
+ * exact arithmetic) is lumped per cell and shadow-booked in its OWN
+ * integer account — em5_sum_err reports that account's drift, and the
+ * pool is NOT joined to E0 until doors exist. All state and output are
+ * guarded by P.em5 (byte-identity off). Serial on purpose: determinism
+ * at any thread count for free; the battery runs with em5=0.
+ * ====================================================================== */
+static int em5_NF = 0;
+static int *em5_f0, *em5_f1, *em5_f2;        /* face -> corner cells a<b<c */
+static int *em5_e0, *em5_e1, *em5_e2;        /* face -> links ab, bc, ac (+,+,-) */
+static double *em5_Ef, *em5_Ef_old, *em5_Bf;
+static double *em5_s1, *em5_s2, *em5_inv1;
+static int *em5_estart, *em5_efidx;          /* edge -> incident faces */
+static signed char *em5_efsgn;
+static double *em5_pw_re, *em5_pw_im;        /* probe weights on links */
+static double *em5_rec_re, *em5_rec_im;      /* projection time series */
+static long em5_nrec = 0;
+static double em5_H0 = 0.0, em5_Hlast = 0.0;
+static double *em5_Eem, *em5_rE;             /* per-cell staggered energy + resid */
+static int64_t *em5_iE;
+static int64_t em5_E0i = 0, em5_max_sum_err = 0;
+
+static int em5_adj_find(const int *astart, const int *acell, const int *alink,
+                        int a, int b)
+{
+    int lo = astart[a], hi = astart[a + 1] - 1;
+    while (lo <= hi) {
+        int mid = (lo + hi) / 2;
+        if (acell[mid] == b) return alink[mid];
+        if (acell[mid] < b) lo = mid + 1; else hi = mid - 1;
+    }
+    return -1;
+}
+
+static void em5_lump_energy(void)
+{
+    /* staggered form: H = 1/2 sum_e *1 E^n E^{n+1} + 1/2 sum_f *2 B^2
+     * (B at half-step) — the leapfrog's exact invariant. Half to each
+     * link endpoint, a third to each face corner. */
+    for (int i = 0; i < NC; i++) em5_Eem[i] = 0.0;
+    double H = 0.0;
+    for (int l = 0; l < NL; l++) {
+        double h = 0.5 * em5_s1[l] * em5_Ef[l] * em5_Ef_old[l];
+        em5_Eem[li[l]] += 0.5 * h;
+        em5_Eem[lj[l]] += 0.5 * h;
+        H += h;
+    }
+    for (int f = 0; f < em5_NF; f++) {
+        double h = 0.5 * em5_s2[f] * em5_Bf[f] * em5_Bf[f];
+        double h3 = h / 3.0;
+        em5_Eem[em5_f0[f]] += h3;
+        em5_Eem[em5_f1[f]] += h3;
+        em5_Eem[em5_f2[f]] += h3;
+        H += h;
+    }
+    em5_Hlast = H;
+}
+
+static void em5_init(void)
+{
+    /* sorted adjacency (cell -> neighbor cell, link id) */
+    int *astart = calloc(NC + 2, sizeof(int));
+    for (int l = 0; l < NL; l++) {
+        if (li[l] >= lj[l]) {
+            fprintf(stderr, "em5: link %d not li<lj\n", l);
+            exit(1);
+        }
+        astart[li[l] + 1]++; astart[lj[l] + 1]++;
+    }
+    for (int i = 0; i < NC; i++) astart[i + 1] += astart[i];
+    int *acell = malloc(2 * NL * sizeof(int));
+    int *alink = malloc(2 * NL * sizeof(int));
+    int *fill = malloc((NC + 1) * sizeof(int));
+    memcpy(fill, astart, (NC + 1) * sizeof(int));
+    for (int l = 0; l < NL; l++) {
+        acell[fill[li[l]]] = lj[l]; alink[fill[li[l]]++] = l;
+        acell[fill[lj[l]]] = li[l]; alink[fill[lj[l]]++] = l;
+    }
+    for (int i = 0; i < NC; i++) {   /* insertion sort per cell (deg ~7-18) */
+        for (int p = astart[i] + 1; p < astart[i + 1]; p++) {
+            int c = acell[p], lk = alink[p], q = p - 1;
+            while (q >= astart[i] && acell[q] > c) {
+                acell[q + 1] = acell[q]; alink[q + 1] = alink[q]; q--;
+            }
+            acell[q + 1] = c; alink[q + 1] = lk;
+        }
+    }
+    /* faces: for each link (a<b), common neighbors k>b */
+    int cap = 4 * NL, nf = 0;
+    em5_f0 = malloc(cap * sizeof(int)); em5_f1 = malloc(cap * sizeof(int));
+    em5_f2 = malloc(cap * sizeof(int));
+    em5_e0 = malloc(cap * sizeof(int)); em5_e1 = malloc(cap * sizeof(int));
+    em5_e2 = malloc(cap * sizeof(int));
+    for (int l = 0; l < NL; l++) {
+        int a = li[l], b = lj[l];
+        int pa = astart[a], pb = astart[b];
+        while (pa < astart[a + 1] && pb < astart[b + 1]) {
+            if (acell[pa] < acell[pb]) pa++;
+            else if (acell[pa] > acell[pb]) pb++;
+            else {
+                int k = acell[pa];
+                if (k > b) {
+                    if (nf == cap) {
+                        cap *= 2;
+                        em5_f0 = realloc(em5_f0, cap * sizeof(int));
+                        em5_f1 = realloc(em5_f1, cap * sizeof(int));
+                        em5_f2 = realloc(em5_f2, cap * sizeof(int));
+                        em5_e0 = realloc(em5_e0, cap * sizeof(int));
+                        em5_e1 = realloc(em5_e1, cap * sizeof(int));
+                        em5_e2 = realloc(em5_e2, cap * sizeof(int));
+                    }
+                    em5_f0[nf] = a; em5_f1[nf] = b; em5_f2[nf] = k;
+                    em5_e0[nf] = l;                       /* a-b : +1 */
+                    em5_e1[nf] = alink[pb];               /* b-k : +1 */
+                    em5_e2[nf] = em5_adj_find(astart, acell, alink, a, k); /* a-k : -1 */
+                    nf++;
+                }
+                pa++; pb++;
+            }
+        }
+    }
+    em5_NF = nf;
+    /* weights */
+    em5_s1 = calloc(NL, sizeof(double));
+    em5_s2 = malloc(nf * sizeof(double));
+    em5_inv1 = malloc(NL * sizeof(double));
+    double dbar = 0.0;
+    for (int l = 0; l < NL; l++) dbar += ld[l];
+    dbar /= NL > 0 ? NL : 1;
+    double kappa = (3.0 * nf / (double)NL) / 4.0;
+    for (int f = 0; f < nf; f++) {
+        int a = em5_f0[f], b = em5_f1[f], c = em5_f2[f];
+        double ux = cx[b] - cx[a], uy = cy[b] - cy[a], uz = cz[b] - cz[a];
+        double vx = cx[c] - cx[a], vy = cy[c] - cy[a], vz = cz[c] - cz[a];
+        double nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
+        double A = 0.5 * sqrt(nx * nx + ny * ny + nz * nz);
+        if (A < 1e-9) A = 1e-9;
+        em5_s2[f] = (dbar / kappa) / A;
+        em5_s1[em5_e0[f]] += A / 3.0;
+        em5_s1[em5_e1[f]] += A / 3.0;
+        em5_s1[em5_e2[f]] += A / 3.0;
+    }
+    for (int l = 0; l < NL; l++) {
+        em5_s1[l] = em5_s1[l] / ld[l];
+        if (em5_s1[l] <= 1e-12) em5_s1[l] = 1e-12;   /* faceless-link guard */
+        em5_inv1[l] = 1.0 / em5_s1[l];
+    }
+    /* edge -> incident face transpose */
+    em5_estart = calloc(NL + 2, sizeof(int));
+    for (int f = 0; f < nf; f++) {
+        em5_estart[em5_e0[f] + 1]++;
+        em5_estart[em5_e1[f] + 1]++;
+        em5_estart[em5_e2[f] + 1]++;
+    }
+    for (int l = 0; l < NL; l++) em5_estart[l + 1] += em5_estart[l];
+    em5_efidx = malloc(3 * (size_t)nf * sizeof(int));
+    em5_efsgn = malloc(3 * (size_t)nf * sizeof(signed char));
+    int *efill = malloc((NL + 1) * sizeof(int));
+    memcpy(efill, em5_estart, (NL + 1) * sizeof(int));
+    for (int f = 0; f < nf; f++) {
+        em5_efidx[efill[em5_e0[f]]] = f; em5_efsgn[efill[em5_e0[f]]++] = +1;
+        em5_efidx[efill[em5_e1[f]]] = f; em5_efsgn[efill[em5_e1[f]]++] = +1;
+        em5_efidx[efill[em5_e2[f]]] = f; em5_efsgn[efill[em5_e2[f]]++] = -1;
+    }
+    free(efill); free(fill); free(astart); free(acell); free(alink);
+    em5_Ef = calloc(NL, sizeof(double));
+    em5_Ef_old = calloc(NL, sizeof(double));
+    em5_Bf = calloc(nf, sizeof(double));
+    em5_Eem = calloc(NC, sizeof(double));
+    em5_rE = calloc(NC, sizeof(double));
+    em5_iE = calloc(NC, sizeof(int64_t));
+    printf("# EM5 complex: NF=%d faces/edge=%.2f dbar=%.4f kappa=%.3f\n",
+           em5_NF, 3.0 * em5_NF / NL, dbar, kappa);
+    /* seed: box-ladder transverse mode kx = 2*pi*n/L, cos-tapered
+     * radial envelope, then transverse projection by CG on the weighted
+     * node Laplacian (the maxfab_lg instrument, matrix-free). */
+    if (P.em5_seed_n > 0) {
+        double kx = 2.0 * M_PI * P.em5_seed_n / P.L;
+        double cenx = P.L / 2, ceny = P.L / 2, cenz = P.L / 2;
+        double rint = P.L / 2 - 2.0;
+        double *env = malloc(NL * sizeof(double));
+        em5_pw_re = malloc(NL * sizeof(double));
+        em5_pw_im = malloc(NL * sizeof(double));
+        for (int l = 0; l < NL; l++) {
+            double mx = 0.5 * (cx[li[l]] + cx[lj[l]]);
+            double my = 0.5 * (cy[li[l]] + cy[lj[l]]);
+            double mz = 0.5 * (cz[li[l]] + cz[lj[l]]);
+            double rr = sqrt((mx - cenx) * (mx - cenx) + (my - ceny) * (my - ceny)
+                             + (mz - cenz) * (mz - cenz));
+            double e = (rint - rr) / 2.0;
+            if (e < 0) e = 0; if (e > 1) e = 1;
+            env[l] = 0.5 - 0.5 * lut_cos(M_PI * e);
+            em5_Ef[l] = P.em5_seed_amp * env[l] * lut_cos(kx * mx) * luy[l];
+            em5_pw_re[l] = em5_s1[l] * env[l] * luy[l] * lut_cos(kx * mx);
+            em5_pw_im[l] = em5_s1[l] * env[l] * luy[l] * (-lut_sin(kx * mx));
+        }
+        /* CG: (d0^T *1 d0) phi = d0^T (*1 Ef);  Ef -= d0 phi */
+        double *rhs = calloc(NC, sizeof(double));
+        double *phi = calloc(NC, sizeof(double));
+        double *r = malloc(NC * sizeof(double));
+        double *p = malloc(NC * sizeof(double));
+        double *Ap = malloc(NC * sizeof(double));
+        double *dg = calloc(NC, sizeof(double));
+        for (int l = 0; l < NL; l++) {
+            double w = em5_s1[l] * em5_Ef[l];
+            rhs[lj[l]] += w; rhs[li[l]] -= w;
+            dg[li[l]] += em5_s1[l]; dg[lj[l]] += em5_s1[l];
+        }
+        for (int i = 0; i < NC; i++) if (dg[i] <= 0) dg[i] = 1.0;
+        double rr0 = 0;
+        for (int i = 0; i < NC; i++) { r[i] = rhs[i]; p[i] = r[i] / dg[i]; rr0 += r[i] * p[i]; }
+        double rz = rr0;
+        for (int it = 0; it < 4000 && rz > 1e-20 * (rr0 > 0 ? rr0 : 1); it++) {
+            for (int i = 0; i < NC; i++) Ap[i] = 0.0;
+            for (int l = 0; l < NL; l++) {
+                double w = em5_s1[l] * (p[lj[l]] - p[li[l]]);
+                Ap[lj[l]] += w; Ap[li[l]] -= w;
+            }
+            double pAp = 0;
+            for (int i = 0; i < NC; i++) pAp += p[i] * Ap[i];
+            if (pAp <= 0) break;
+            double alpha = rz / pAp, rz2 = 0;
+            for (int i = 0; i < NC; i++) {
+                phi[i] += alpha * p[i];
+                r[i] -= alpha * Ap[i];
+            }
+            for (int i = 0; i < NC; i++) rz2 += r[i] * (r[i] / dg[i]);
+            double beta = rz2 / rz; rz = rz2;
+            for (int i = 0; i < NC; i++) p[i] = r[i] / dg[i] + beta * p[i];
+        }
+        double div2 = 0;
+        for (int l = 0; l < NL; l++) em5_Ef[l] -= (phi[lj[l]] - phi[li[l]]);
+        for (int i = 0; i < NC; i++) Ap[i] = 0.0;
+        for (int l = 0; l < NL; l++) {
+            double w = em5_s1[l] * em5_Ef[l];
+            Ap[lj[l]] += w; Ap[li[l]] -= w;
+        }
+        for (int i = 0; i < NC; i++) div2 += Ap[i] * Ap[i];
+        printf("# EM5 seed: n=%d kx=%.5f div_resid=%.2e\n",
+               P.em5_seed_n, kx, sqrt(div2));
+        free(rhs); free(phi); free(r); free(p); free(Ap); free(dg); free(env);
+        long nrec_cap = (long)(P.T / P.dt) + 2;
+        em5_rec_re = malloc(nrec_cap * sizeof(double));
+        em5_rec_im = malloc(nrec_cap * sizeof(double));
+    }
+    /* seed the shadow account from the t=0 books (B=0: staggered=plain) */
+    memcpy(em5_Ef_old, em5_Ef, NL * sizeof(double));
+    em5_lump_energy();
+    em5_H0 = em5_Hlast;
+    double u = ledger_u_eff;
+    for (int i = 0; i < NC; i++)
+        em5_iE[i] = led_qdelta(em5_Eem[i] / u, &em5_rE[i]);
+    for (int i = 0; i < NC; i++) em5_E0i += em5_iE[i];
+}
+
+static void em5_step(void)
+{
+    /* leapfrog: B at half-steps, E at whole steps; c^2 on the E update */
+    double dt = P.dt, c2 = P.em5_c * P.em5_c;
+    for (int f = 0; f < em5_NF; f++)
+        em5_Bf[f] -= dt * (em5_Ef[em5_e0[f]] + em5_Ef[em5_e1[f]]
+                           - em5_Ef[em5_e2[f]]);
+    memcpy(em5_Ef_old, em5_Ef, NL * sizeof(double));
+    for (int l = 0; l < NL; l++) {
+        double curl = 0.0;
+        for (int p = em5_estart[l]; p < em5_estart[l + 1]; p++)
+            curl += em5_efsgn[p] * em5_s2[em5_efidx[p]] * em5_Bf[em5_efidx[p]];
+        em5_Ef[l] += dt * c2 * em5_inv1[l] * curl;
+    }
+    if (em5_rec_re) {
+        double re = 0, im = 0;
+        for (int l = 0; l < NL; l++) {
+            re += em5_pw_re[l] * em5_Ef[l];
+            im += em5_pw_im[l] * em5_Ef[l];
+        }
+        em5_rec_re[em5_nrec] = re;
+        em5_rec_im[em5_nrec] = im;
+        em5_nrec++;
+    }
+    /* shadow-book the staggered energy into the sector's own account */
+    em5_lump_energy();
+    double u = ledger_u_eff;
+    int64_t sum = 0;
+    double *snap = em5_Eem;    /* Eem holds fresh values; delta vs iE via resid */
+    for (int i = 0; i < NC; i++) {
+        int64_t want = em5_iE[i];
+        double dE = snap[i] - led_to_fp(want, u) - em5_rE[i] * u;
+        em5_iE[i] += led_qdelta(dE / u, &em5_rE[i]);
+        sum += em5_iE[i];
+    }
+    int64_t err = sum - em5_E0i;
+    if (err < 0) err = -err;
+    if (err > em5_max_sum_err) em5_max_sum_err = err;
+}
+
+static void em5_diag_row(double t)
+{
+    printf("# EM5 t=%.3f Hstag=%.9g rel=%.3e sum_err=%lld rec=%ld\n",
+           t, em5_Hlast,
+           em5_H0 != 0 ? (em5_Hlast - em5_H0) / em5_H0 : 0.0,
+           (long long)em5_max_sum_err, em5_nrec);
+}
+
+static void em5_report(void)
+{
+    printf("# RESULT em5 NF=%d Hdrift=%.3e sum_err=%lld\n",
+           em5_NF, em5_H0 != 0 ? (em5_Hlast - em5_H0) / em5_H0 : 0.0,
+           (long long)em5_max_sum_err);
+    if (!em5_rec_re || em5_nrec < 100) return;
+    /* Hann-windowed DFT of the complex projection; peak = mode frequency */
+    long n = em5_nrec;
+    double best_w = 0, best_a = -1;
+    for (double w = 0.02; w <= 3.5; w += 0.005) {
+        double sr = 0, si = 0;
+        for (long s = 0; s < n; s++) {
+            double hann = 0.5 - 0.5 * lut_cos(2.0 * M_PI * s / (n - 1));
+            double ph = w * s * P.dt;
+            double cre = em5_rec_re[s] * hann, cim = em5_rec_im[s] * hann;
+            double cw = lut_cos(ph), sw = lut_sin(ph);
+            sr += cw * cre - sw * cim;
+            si += sw * cre + cw * cim;
+        }
+        double a = sr * sr + si * si;
+        if (a > best_a) { best_a = a; best_w = w; }
+    }
+    double kx = 2.0 * M_PI * P.em5_seed_n / P.L;
+    printf("# RESULT em5_disp n=%d kx=%.5f omega_peak=%.4f\n",
+           P.em5_seed_n, kx, best_w);
 }
 
 /* Apply net FP change since snapshot into integer accounts (all modes ≥1).
@@ -4147,6 +4500,7 @@ int main(int argc, char **argv)
 
     E0_total = ksum(Es, NC) + ksum(Em, NC) + ksum(Ee, NC) + ksum(lem, 4 * NL);
     if (P.ledger_mode > 0) ledger_seed_from_fp();
+    if (P.em5) em5_init();
 
     printf("# t\tE_space\tE_dense\tE_field\tE_transfer\tE_total\trel_drift\tlive_ch\tcm_x\tcm_y\tcm_z\tcontain\tfront_r\tr_core\tdefA\tr_far\tr_ratio\tw_core\tw_far\n");
     diag_row(0.0);
@@ -4158,6 +4512,7 @@ int main(int argc, char **argv)
         want_th1 = (P.diag_every > 0 && s % P.diag_every == 0)
                 || (P.snap_every > 0 && s % P.snap_every == 0) || s == NS;
         step_field();
+        if (P.em5) em5_step();
         if (P.ledger_mode > 0) ledger_commit_step();
         if (P.pin_net && net_nv > 0) pin_apply(sim_t);
         if (P.slip_diag && net_nv > 0) slip_track(sim_t);
@@ -4171,6 +4526,7 @@ int main(int argc, char **argv)
         }
         if (P.diag_every > 0 && s % P.diag_every == 0) {
             diag_row(s * P.dt);
+            if (P.em5) em5_diag_row(s * P.dt);
             if (P.debug) debug_row(s * P.dt);
             pair_report(s * P.dt, 0);
             if (P.init == 5 && P.n_quanta > 0
@@ -4183,5 +4539,6 @@ int main(int argc, char **argv)
     final_report();
     pair_report(P.T, 1);
     hom_report();
+    if (P.em5) em5_report();
     return 0;
 }
