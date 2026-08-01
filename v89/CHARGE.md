@@ -513,3 +513,78 @@ medium). NEXT: the kick apparatus (pin_kick_*, built, gate 4
 running) injects/extracts single quanta — the export/confinement
 experiment (Q11 payload) and the winding-number instrument
 (per-vertex θ-winding counter) decide fractional confinement.
+
+### 7.10b Kick experiments (2026-07-31): winding conservation
+### demonstrated dynamically; the mixed-interval cycle is PUMPABLE
+
+Three single-vertex kick runs (pin_kick apparatus, gate 4; kick =
+vertex-B pitch excursion calibrated to one comb-quantum scale,
+dv=0.5 Em × 10.33 t.u.): **inject** (locked tri2 + kick) → RE-LOCKS,
+±0.06 slips, nothing trapped; **deinject** (P17 circulator −
+counter-kick) → circulation UNTOUCHED (fix −4.33/+4.36/+0.02,
+identical to the un-kicked run to 3 digits); **frac3** (⅓-scale) →
+re-locks clean. WHY, exactly: the loop winding is Σ_cycle Φ̇_e, and
+for this net's reciprocal interval pattern (3:2 then 2:3 then 1:1) a
+single-vertex excursion telescopes to zero — vertex B enters edge AB
+with weight −p_AB = −3 and edge BC with weight +q_BC = +3. **A local
+excursion can neither create nor destroy trapped winding: charge
+conservation is dynamically protected, the loop-EMF statement of
+this medium** (a local potential fluctuation is not a Faraday loop).
+
+THE PUMP (derived, then built): the telescope BREAKS for coordinated
+two-vertex excursions on mixed-interval cycles. Kick B and C
+simultaneously with Δω_C = (q_BC/p_BC)·Δω_B = 1.5·Δω_B: edge BC's
+comb detune (3Δω_B − 2Δω_C) nulls, AB advances at −3Δω_B, CA at
++1.5Δω_B ⇒ net loop injection −1.5·Δω_B/2π per unit time. A UNISON
+cycle can never be pumped this way (weights telescope for any vertex
+set); the ℤ₃ covering structure (LIT.md novelty #2) is therefore
+DYNAMICAL: interval cycles are chargeable by coordinated pumping,
+sense = charge sign, and the quantum arrives in τ = 2π/(1.5·|Δω_B|)
+= 20.6 t.u. at dv_B=0.5/dv_C=0.333. Apparatus: pin_kick2_* second
+window (gate 5 running). Experiments staged: pump1 (+1 quantum
+sense), pumpR (reverse sense), pump3 (⅓ pulse — the fractional
+confinement question, now properly posed: does a partial pump
+relax, or trap a fractional state?).
+
+### 7.10c Pump results (2026-07-31): the THIRD state — pinned
+### fractional strain; mobile charge is integer, bound charge is not
+
+The RESULT rate-window read "all locked" — the SLIP series showed
+why that was the wrong instrument: the pump WORKED, and what it
+creates is static. Final loop windings (Σ unw around the cycle,
+t=595, all edges lock-quiet from pulse end to T):
+
+| run | pulse | loop winding | predicted (with ∂ω/∂Em nonlinearity) |
+|---|---|---|---|
+| pump1 | +1 design, 20.6 t.u. | **+0.883·2π, STATIC** | +0.89 (coefficient softens as x_B rises) |
+| pumpR | reverse | **−1.184·2π, STATIC** | −1.15 (coefficient stiffens as x_B falls) |
+| pump3 | ⅓ pulse | **+0.236·2π, STATIC** | +0.30 |
+
+The transient is exactly the §7.10b arithmetic (pump1: AB +1.83·2π,
+CA −0.92·2π, BC nulled throughout; freeze at pulse end; zero further
+slips for 380 t.u.). READINGS: (1) **A third state class exists**:
+not neutral, not the running circulator — PINNED STRAIN, a static
+multi-branch lock texture holding CONTINUOUS (non-quantized) loop
+winding; each gate absorbs displacement within its capture range and
+whole branch shifts distribute the rest (the large-inductance-SQUID/
+pinned-fractional-vortex analog; LIT.md #5). It is stable because it
+is transport-free: no flight load, tongues intact, nothing to slip.
+(2) **Fractional charge = bound polarization**: the ⅓ pulse traps
+⅓-scale strain indefinitely — it does NOT relax; but nothing
+fractional MOVES: mobile circulation (P17/oct circulators) has only
+been observed in whole-quantum units with the universal loop rate.
+Current picture: neutral / polarized (pinned, continuous) /
+conducting (running, integer) — the dielectric–conductor distinction
+native to interval cycles. (3) The forward/reverse asymmetry
+(0.88 vs 1.18) is pure pitch-law nonlinearity and matches to 3% —
+the pump is now a CALIBRATED charge-injection instrument once τ is
+corrected by the measured ∂ω/∂Em(x) along the excursion.
+INSTRUMENT NOTE (next increment): a final WINDING report row (unw
+per edge + loop sum) — the data already lives in # SLIP; the
+RESULT-row rate window is blind to static states by construction.
+OPEN (sharp): does pinned strain DEPIN into a running circulator at
+a threshold (LAMH barrier crossing — drive with transport or piston
+noise and watch for ignition); can a pump pulse timed to end
+OUTSIDE capture leave a running integer circulator (charge
+injection into the conducting state); ℤ₃ branch bookkeeping of
+which gates hold which branch (the covering-space census).

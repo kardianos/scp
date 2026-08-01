@@ -1179,3 +1179,24 @@ combined) if H1 shows the hole matters.
   inert default-off pin_kick (gate 4 running at write time; kick
   guarded by dv≠0). Files: mass_balance/nets,runs/mb1s_*,
   this scorer inline (session log).
+
+* **2026-07-31 (M-B4b — the noble-address prediction REFUTED; the
+  desert floor is tongue-skirt balance, not KAM robustness).** The
+  literature correspondence (charge/LIT.md, transfer #3: Greene/
+  Shenker — the locking-resistant extremum of a band is the noble
+  ratio) made a parameter-free prediction: quietest address at
+  ω/Ω = 1/φ ⇒ x = 0.515. Probe (x = 0.494/0.515/0.536 + repeat):
+  B = 4.51/4.00/3.61e-5 — monotone THROUGH the noble point; the
+  minimum stays at x ≈ 0.536 (repeat 3.52e-5, consistency 2.4%),
+  14% below the noble point's bleed. REFUTED: the leak floor is not
+  KAM-torus robustness of the pair's pitch ratio to the vacuum —
+  consistent with the drain being CONVERSION through vocabulary
+  tongues (golden-rule channels, LIT #6/#9), whose Lorentzian skirts
+  (fifth: narrow-deep at 0.4167; octave: wide-shallow at 0.833)
+  overlap in the desert; the minimum sits where the two tails
+  balance. Candidate model to fit when the desert is next scanned:
+  B(x) = A5·L(x−0.4167; γ/6) + A2·L(x−0.833; γ/2) + floor with the
+  measured spike amplitudes — zero new parameters beyond the floor.
+  Ratchet note: a literature transfer adopted as a pre-registration
+  and killed same-day is the mapping working as intended — the
+  correspondences (LIT.md) locate mechanisms, not authorities.
