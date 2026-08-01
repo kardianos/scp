@@ -479,15 +479,16 @@ in headers).
 FINDINGS. (1) **BISTABILITY = the charge state.** The same address
 supports a quiet neutral state and a persistent circulator; the
 control nailed it: re-seeding the P17 cells with kink-free chained
-phases collapses the circulation 5× (±4.33 → ≤1.5 slips, e0 locked,
-chatter 867→107) with pin/loads/geometry identical. Trapped integer
+phases collapses the circulation — live book Σ|slips| 76.4 → 16.0
+(4.8×), declared chart ±4.33/4.36 → ≤1.53 (2.9×), e0 locked, chatter
+867→107 — with pin/loads/geometry identical. Trapped integer
 winding — set by the initial phase texture, conserved thereafter —
 is the state variable. In O3′ terms: the un-closed tail-call count
 the cycle carries. Neutral = 0, charged = n≠0, sign = circulation
 sense (C-symmetric). (2) **The trapped quantum's current divides
-with loop size**: triangle loop-total 0.0435 units/t.u. vs hexagon
-0.0378 at 0.43× per edge — near-conserved total, fluxoid-in-a-ring
-phenomenology; on the hexagon the flow organizes as two counter-arcs
+with loop size**: triangle Σ|ν| 0.0290 units/t.u. vs hexagon 0.0252
+(87% conserved) at 0.43× per running edge — near-conserved total
+current, fluxoid-in-a-ring phenomenology; on the hexagon the flow organizes as two counter-arcs
 with two quiet edges (texture, not uniform current). (3) **The
 loop rate is harmonic-independent** (fifth and octave circulators
 both |ν|≈0.0145/edge on triangles) — the winding precession scale is
@@ -505,8 +506,9 @@ cleanly**: under identical transport the octave (γ/2) never flips
 its live detector once; the running fifth chatters at 1.4/t.u.;
 LOCKED fifths (tri2) also hold 3:2 with zero flips — the chatter is
 a consequence of transport (flight-load detune), not of the interval
-per se. Combined with M-B4's vacuum-tongue drain spikes (fifth 40×,
-octave 8× at their x-coincidences) the charge picture has: trapped
+per se. Combined with M-B4's vacuum-tongue drain spikes (fifth 114×,
+octave 11× over the desert floor at their x-coincidences) the
+charge picture has: trapped
 ℤ winding (state), quantized persistent current (its observable),
 tongue-fragility + drain channels (its interactions with the
 medium). NEXT: the kick apparatus (pin_kick_*, built, gate 4
@@ -614,3 +616,14 @@ rephased-P17 quiets), the deinject invariance, and the pump strain
 ledger — all of which stand. The identical ±0.0145 loop rate across
 P17 and oct now reads as apparatus/geometry-owned (pin protocol),
 strengthening the "rate is not interval physics" verdict.
+
+VERIFICATION (2026-08-01): every number in §7.10–§7.10d re-derived
+from the run logs in a clean pass. Pump loop windings recomputed
+from the # SLIP series: pump1 +0.8825, pumpR −1.1843, pump3
++0.2354, ignite +1.1779 (·2π; tri2 un-pumped baseline −0.043);
+P17 baseline = q11_pinned_v2.log (fix ∓0.01444/+0.01453, flips
+867/865), deinject matches it to 3–4 digits. Provenance: the kick
+and pump apparatus each passed the full battery before use (gates
+4 and 5, 21/21 each, all observables byte-identical to the
+pre-apparatus kernel with the knobs off), and the q9 weak-link
+regression is exact at every kernel state of the arc.

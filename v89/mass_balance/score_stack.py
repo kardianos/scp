@@ -96,3 +96,29 @@ if "bare" in res and "W1" in res:
           f"({100*(res['bare'][0]/res['W1'][0]-1):+.0f}%) — cohesion only")
 print("# NOTE: 'cohesion' = W1 scorer rule (first t with m1<0.3*m0); 'census' = last t with n>0.")
 print("# The W1 449-vs-comp12-4879 anomaly is a COHESION split; census split is only 2972 vs 4879.")
+
+# M-B3b: mass-vs-pocket calibration from the bare arm's own decay sweep.
+# depth = outer-shell mean(Es) - inner-shell min(Es); fit vs M_tot for M>0.5.
+bare = os.path.join(HERE, "runs", "stack_bare.log")
+if os.path.exists(bare):
+    lumps, rads, _ = parse(bare)
+    mtot = {t: m for t, n, _, m, _ in lumps}
+    pts = []
+    first_depth = None
+    for t, sh in rads:
+        inner = min(es for r, es in sh if r < 6)
+        outer = sum(es for r, es in sh if r > 8) / max(1, len([1 for r, _ in sh if r > 8]))
+        if first_depth is None:
+            first_depth = outer - inner
+        if t in mtot and mtot[t] > 0.5:
+            pts.append((mtot[t], outer - inner))
+    n = len(pts)
+    mx = sum(p[0] for p in pts) / n
+    my = sum(p[1] for p in pts) / n
+    sxx = sum((x - mx) ** 2 for x, _ in pts)
+    sxy = sum((x - mx) * (y - my) for x, y in pts)
+    syy = sum((y - my) ** 2 for _, y in pts)
+    a, b = sxy / sxx, my - sxy / sxx * mx
+    print(f"\n# M-B3b (bare arm, n={n}): depth = {a:.3e}*M + {b:.4f}  R2={sxy*sxy/(sxx*syy):.3f}")
+    print(f"# intercept ~ 0 -> pocket exists only while the mass does (g4 no-steady-monopole);")
+    print(f"# establishment: t=0 depth {first_depth:.3f} -> steady {max(d for _, d in pts):.3f} over ~40-100 t.u. (s_k scale)")

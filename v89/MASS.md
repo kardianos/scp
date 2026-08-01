@@ -1159,10 +1159,13 @@ combined) if H1 shows the hole matters.
   substrate disorder, now measured on the balance axis itself. The
   ride-heavy slope continues far past foam's roughness knee (+0.15).
   (2) **Vacuum-tongue drain channels measured**: at x = 0.4156 ≈
-  x_fifth = (3/2−1)/q = 0.4167 exactly, B spikes 40× (4.01e-3) — the
-  voice pitch hits 3:2 with every vacuum neighbor and the comb opens
-  fifth tongues into the medium; the octave coincidence (x = 0.833)
-  spikes 8× (wide-shallow γ/2 vs narrow-deep γ/6). The in-vocabulary,
+  x_fifth = (3/2−1)/q = 0.4167 exactly, B spikes to 4.01e-3 — 114×
+  the desert floor — the voice pitch hits 3:2 with every vacuum
+  neighbor and the comb opens fifth tongues into the medium; the
+  octave coincidence (x = 0.833) spikes to 3.73e-4, 11× the floor
+  (wide-shallow γ/2 vs narrow-deep γ/6; verification pass 2026-08-01
+  fixed the earlier mixed-reference "40×/8×" figures — one named
+  denominator now, the desert floor 3.52e-5). The in-vocabulary,
   in-band coincidences are ONLY 1:1 (x=0), 3:2 (0.4167), 2:1 (0.833)
   ⇒ a TONGUE-FREE DESERT at x ≈ 0.44–0.78 whose floor is the measured
   minimum (x≈0.54). The leak-vs-harmonic-offset function the charge
