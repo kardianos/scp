@@ -43,15 +43,42 @@ def B_pv(x):
     return math.exp(_LB[i] + f * (_LB[i + 1] - _LB[i]))
 
 
-def lump_series(log):
-    """(t, n_frag, M_tot) from # LUMP rows."""
-    out = []
+def lump_series(log, nvoice):
+    """(t, n_frag, M_obj, M_sys). M_obj = median-filtered sum of listed
+    lump masses + E_transfer (the object's own holdings incl. its
+    circulating flight; the M-B4 pin paid for GROSS shedding, so the
+    free analog is the object book, not the box inventory). M_sys =
+    E_dense + E_transfer (box dense inventory; declines only at the
+    sink). Median filter (5) rides over cluster-listing dropouts —
+    on V2s (degree 7.3) rings list as N singles with no haze bridges."""
+    lumps = []
     for line in open(log):
         if line.startswith("# LUMP"):
             t = float(re.search(r"t=([\d.]+)", line).group(1))
             n = int(re.search(r"n=(\d+)", line).group(1))
             ms = [float(m) for m in re.findall(r"m=([\d.e+-]+)", line)]
-            out.append((t, n, sum(ms)))
+            # per-voice load: total listed mass, rescaled for the top-K
+            # listing cap when n exceeds it (near-uniform fragments), over
+            # the seeded voice count. Robust to cluster merges (m6) and to
+            # the cap (m5: n=12 lists 10).
+            tot = sum(ms) * ((n / len(ms)) if ms and n > len(ms) else 1.0)
+            lumps.append((t, n, (tot / nvoice) if ms else 0.0))
+    diag = []
+    for line in open(log):
+        if line.startswith("#") or "\t" not in line:
+            continue
+        p = line.split("\t")
+        try:
+            diag.append((float(p[0]), float(p[2]), float(p[4])))
+        except (ValueError, IndexError):
+            pass
+    out = []
+    for i, (t, n, mpv) in enumerate(lumps):
+        w = [lumps[j][2] for j in range(max(0, i - 2), min(len(lumps), i + 3))]
+        mf = sorted(w)[len(w) // 2]
+        k = min(range(len(diag)), key=lambda j: abs(diag[j][0] - t)) if diag else None
+        msys = diag[k][1] + diag[k][2] if k is not None else float("nan")
+        out.append((t, n, mf, msys))
     return out
 
 
@@ -59,13 +86,13 @@ def windowed_drain(series, nvoice, half=5):
     """[(t_mid, x_mid, drain_pv)] centered slopes over +-half samples."""
     out = []
     for i in range(half, len(series) - half):
-        t0, _, m0 = series[i - half]
-        t1, _, m1 = series[i + half]
+        t0, _, m0, _ = series[i - half]
+        t1, _, m1, _ = series[i + half]
         if t1 <= t0:
             continue
-        drain = -(m1 - m0) / (t1 - t0) / nvoice
-        tm, _, mm = series[i]
-        out.append((tm, mm / (nvoice * CAP), drain))
+        drain = -(m1 - m0) / (t1 - t0)          # series is per-voice already
+        tm, _, mm, _ = series[i]
+        out.append((tm, mm / CAP, drain))
     return out
 
 
@@ -74,17 +101,18 @@ for name, nv, tpred in RUNS:
     log = os.path.join(HERE, "runs", f"w1s_{name}.log")
     if not os.path.exists(log):
         continue
-    s = lump_series(log)
+    s = lump_series(log, nv)
     if not s:
         print(f"{name}: no LUMP rows yet")
         continue
-    census = max((t for t, n, _ in s if n > 0), default=0.0)
+    census = max((t for t, n, _, _ in s if n > 0), default=0.0)
     alive = s[-1][1] > 0
+    sysloss = s[0][3] - s[-1][3]
     wd = windowed_drain(s, nv)
-    # curve-transfer ratio over the quiet segment (x above tongue+margin,
-    # below start; early transient t<200 excluded)
+    # curve-transfer ratio over the quiet segment: away from the tongue
+    # coincidence (either side), above the skirt, early transient excluded
     quiet = [(t, x, d) for t, x, d in wd
-             if t > 200 and x > X_FIFTH + 0.03 and d > 0]
+             if t > 200 and abs(x - X_FIFTH) > 0.03 and x > X_SKIRT + 0.05 and d > 0]
     ratios = [d / B_pv(x) for _, x, d in quiet]
     med = sorted(ratios)[len(ratios) // 2] if ratios else float("nan")
     # tongue transit: max windowed drain inside the coincidence band vs
@@ -92,11 +120,12 @@ for name, nv, tpred in RUNS:
     band = [d for _, x, d in wd if abs(x - X_FIFTH) <= 0.011]
     qmed = sorted(d for _, _, d in quiet)[len(quiet) // 2] if quiet else float("nan")
     spike = (max(band) / qmed) if band and quiet and qmed > 0 else 0.0
-    x_now = s[-1][2] / (nv * CAP) if alive else 0.0
+    x_now = s[-1][2] / CAP if alive else 0.0
     results[name] = dict(census=census, alive=alive, med=med, spike=spike,
                          x_now=x_now, wd=wd, tpred=tpred)
     tail = f"ALIVE@{s[-1][0]:.0f} x={x_now:.3f}" if alive else f"census={census:.0f} ({census/tpred:.2f}*t_pred)"
-    print(f"{name:16s} drain/B_pv median={med:5.2f}  tongue_spike={spike:6.1f}x  {tail}")
+    print(f"{name:16s} drain/B_pv median={med:5.2f}  tongue_spike={spike:6.1f}x  "
+          f"sysloss={sysloss:+.4f}  {tail}")
 
 print()
 if "ring12_m5" in results and "ring12_m6" in results:
