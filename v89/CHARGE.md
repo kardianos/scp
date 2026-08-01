@@ -588,3 +588,29 @@ noise and watch for ignition); can a pump pulse timed to end
 OUTSIDE capture leave a running integer circulator (charge
 injection into the conducting state); ℤ₃ branch bookkeeping of
 which gates hold which branch (the covering-space census).
+
+### 7.10d Ignition null + the octave reappraisal (2026-07-31, honesty
+### pass)
+
+**Ignition null:** ending the pump mid-slip (τ=28.1, loop 1.22·2π,
+AB stranded outside capture) does NOT start a circulator — the
+system re-pins with more strain (+1.178·2π static, zero slips in
+[300,600]). On tri2, every pump endpoint — adiabatic or stranded —
+relaxes to PINNED strain; the running branch is not pump-adjacent
+(LAMH-consistent: its basin is not reachable by quasi-static
+deposition; a genuinely dynamical preparation — moving texture, not
+displaced texture — appears required, which is exactly what the P17
+historical seed was). **Octave reappraisal:** oct_tri's circulator
+SELF-STARTED from a kink-free chained seed — and the band arithmetic
+FORCES the octave's light vertices under the skirt (ω-ratio 2.0 in a
+2.2-wide band ⇒ x_light ≤ 0.03 < x_skirt = 0.0617; no in-band octave
+triangle exists with all vertices above the skirt). Its circulation
+is therefore probably SKIRT-DRIVEN (vacuum-dissolution physics at
+the empty vertices, pin-sustained), not trapped-winding — the
+in-band octave is intrinsically ionization-adjacent, a finding in
+itself. §7.10's oct row is reinterpreted accordingly; the winding
+claims now rest on the fifth-class pair (P17 runs / tri2 locks /
+rephased-P17 quiets), the deinject invariance, and the pump strain
+ledger — all of which stand. The identical ±0.0145 loop rate across
+P17 and oct now reads as apparatus/geometry-owned (pin protocol),
+strengthening the "rate is not interval physics" verdict.
