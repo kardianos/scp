@@ -649,3 +649,57 @@ winding law at all, as expected of skirt-driven flow. The
 "universal ±0.0145" across harmonics was two mechanisms
 coinciding, and the ratio ν/dw_bare is the diagnostic that
 separates them.
+
+### 7.12 Q13 (2026-08-01): three-site assembly of one quantum —
+### integer deposits PIN regardless of texture; the pump generalizes
+
+The third kick window (pin_kick3_*, gated 21/21 byte-identical off)
+enables the three-vertex coordinated pump. Loop algebra from the
+tri2 net (E rows: 3:2 / 2:3 / 1:1): Λ = 2(δ_A − δ_C) — the heavy
+vertex ALWAYS telescopes out; equal-|dv| three-site drive (A −0.3,
+C +0.3, B +0.3) deposits across all three edges. MEASURED: the
+transfer factor is 25% of the naive Λ design (constant in τ —
+pin-ramp loss + the light vertices shunting drive into the
+vacuum-unison tongue as x_A → skirt; an apparatus constant, so one
+calibration run fixes it). Calibrated τ=23: **loop deposit
++0.998·2π — one quantum to 0.2% — and the endpoint is PINNED**
+(all edges re-locked, zero flips; final texture strongly
+non-uniform e0 +23.6 / e1 −3.7 / e2 −13.7 rad, loop exactly +1 —
+arithmetic exact, texture free). VERDICT: with pump1 (+0.883,
+two-site), ignite (+1.178, stranded) and now tri3 (+0.998,
+three-site symmetric), EVERY quasi-static deposition — any
+texture, any site count, integer or fractional — lands in the
+pinned-strain state. Integer assembly from distributed thirds does
+NOT ignite the running branch: the basin separation is
+deposit-texture-independent and genuinely DYNAMICAL. Fractional
+deposits at three sites (+0.263, +0.027 arms) are bound, as
+before. Files: charge/runs/q13_*.{cfg,log}.
+
+### 7.13 Q12 launcher (2026-08-01): the ℤ₃ wall is MOBILE — runs on
+### clean track, pins at defects, evaporates at open ends
+
+The kink launcher (q12_gen.py): a 14-voice fifth chain (alternating
+0.195/0.709, ω ratio 1.5000 exact) with a +2π/3 ℤ₃ branch wall
+seeded mid-chain (real topology on 3:2 edges; any 2π kink on a
+unison chain is gauge). TWO TRACKS, one lesson each:
+(1) v1 (unfiltered walk, edges to 1.91): the wall CHURNS at its
+seeded site for 600 t.u. (+0.017/t.u. extra drift, same flip class
+as background) — pinned at a defective edge; the track also had an
+intrinsic defect edge (1.91 length, ~1000 flips in kink AND ctrl).
+(2) v2 (track bounded to [1.30, 1.70], span 14.3): the kinked
+chain's endpoint is IDENTICAL to control at the 1e-5 level, and
+the wall's exit is written in the books: e12 (the open end) shows
+kink−ctrl = **−2.094 rad = −2π/3 EXACTLY**, first crossing at
+t≈80 — the wall transited ~6 edges and evaporated at the boundary
+(open paths have no topological protection; e11's difference is
+contaminated by intrinsic end chatter present in both runs).
+VERDICT: **mobile dressed textures exist** — walls run on clean
+track (transit ≥0.12 length/t.u. lower bound), pin at defects
+(LAMH consistent, matching the cycle-side pinned strain), and die
+at open boundaries. Combined with §7.12: deposits pin, launched
+textures move — the charge sector's static/dynamic dichotomy is
+now measured from both sides. Q12-proper needs: a longer
+instrumented track (wall velocity + dressing profile), then the
+two-path geometry; boundary management (the wall must reach the
+slit, not an end). Files: charge/q12_gen.py, charge/nets/q12_*,
+charge/runs/q12_*.{cfg,log}.

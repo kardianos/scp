@@ -47,7 +47,8 @@ def walk_chain(n):
             ok = True
             for _ in range(n - 1):
                 cands = [j for j in np.where(LINK[path[-1]])[0]
-                         if interior[j] and j not in path]
+                         if interior[j] and j not in path
+                         and 1.30 <= D[path[-1], j] <= 1.70]
                 if not cands:
                     ok = False
                     break
