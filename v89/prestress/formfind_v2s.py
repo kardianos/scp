@@ -110,7 +110,11 @@ def x_of_omega(w):
     return (W2 / w - 1.0) / Q
 
 
-def emit_ring(fn, picks, dl, m, ctrl=False):
+def emit_ring(fn, picks, dl, m, ctrl=False, wind=0):
+    """wind: extra trapped winding quanta — theta steps carry an extra
+    uniform wind*2pi/nring per edge (total wind*2pi around the cycle,
+    invisible to mod-2pi closure, stored as uniform gate strain; the
+    M-B7 charge-on-mass composite)."""
     nring = len(picks)
     L_ring = sum(dl)
     w = TWO_PI * m / L_ring
@@ -119,7 +123,7 @@ def emit_ring(fn, picks, dl, m, ctrl=False):
     step = (L_ring / nring) if ctrl else None
     for k in range(nring - 1):
         d = step if ctrl else dl[k]
-        th.append((th[-1] - w * d) % TWO_PI)
+        th.append((th[-1] - w * d - wind * TWO_PI / nring) % TWO_PI)
     closure = (th[-1] - w * (step if ctrl else dl[-1]) - th[0]) % TWO_PI
     closure = min(closure, TWO_PI - closure)
     gerr = (np.array(dl) - L_ring / nring) * w if ctrl else np.zeros(nring)
@@ -131,7 +135,8 @@ def emit_ring(fn, picks, dl, m, ctrl=False):
         f.write(f"# edge spread sigma={np.std(dl):.4f} "
                 f"lengths=[{min(dl):.4f},{max(dl):.4f}] "
                 f"closure_defect={closure:.2e} ctrl={int(ctrl)} "
-                f"ctrl_gate_rms={float(np.sqrt((gerr**2).mean())):.4f}\n")
+                f"ctrl_gate_rms={float(np.sqrt((gerr**2).mean())):.4f} "
+                f"wind={wind}\n")
         for k, pi_ in enumerate(picks):
             f.write(f"V {P[pi_,0]:.4f} {P[pi_,1]:.4f} {P[pi_,2]:.4f} "
                     f"{x:.6f} {th[k]:.6f}\n")
@@ -150,6 +155,7 @@ emit_ring("v2s_ring12_m5.net", r12[1], r12[2], 5)
 emit_ring("v2s_ring12_m5_ctrl.net", r12[1], r12[2], 5, ctrl=True)
 emit_ring("v2s_ring12_m6.net", r12[1], r12[2], 6)
 emit_ring("v2s_ring8_m3.net", r8[1], r8[2], 3)
+emit_ring("v2s_ring12_m5_w1.net", r12[1], r12[2], 5, wind=1)
 
 # free1: interior cell nearest box center (each net runs in its own box;
 # centrality keeps the footprint clear of the sink rim on all sides)

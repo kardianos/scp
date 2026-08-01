@@ -1,6 +1,6 @@
 # formfind_v2s — annealed-substrate W1 re-fight candidate
 # nring=8 m=3 L_ring=12.1591 omega=1.550242 x=0.725563 Em/voice=1.8139 mass=14.5113
-# edge spread sigma=0.0001 lengths=[1.5198,1.5200] closure_defect=1.78e-15 ctrl=0 ctrl_gate_rms=0.0000
+# edge spread sigma=0.0001 lengths=[1.5198,1.5200] closure_defect=1.78e-15 ctrl=0 ctrl_gate_rms=0.0000 wind=0
 V 14.7297 19.5583 17.4454 0.725563 0.000000
 V 13.2771 19.3976 17.8626 0.725563 3.927059
 V 13.2810 19.3947 19.3824 0.725563 1.570989

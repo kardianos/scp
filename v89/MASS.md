@@ -1304,3 +1304,34 @@ combined) if H1 shows the hole matters.
   desert minimum — is the current best object in the program.
   Files: prestress/formfind_v2s.py, prestress/candidates/v2s_*.net,
   runs/w1s_*.{cfg,log}, score_w1s.py, plot_w1s.py.
+
+* **2026-08-01 (M-B6a — the haze is a WIND IN TRANSIT; conversion
+  never fires; + M-B7 pre-registration).** Arm (a) of the death-
+  ontology probe, scored from the existing M-B5 logs (no new runs):
+  (1) **E_space exactly constant in every run** (identical to the
+  print floor over t=[0,5000], all five candidates) — dense→space
+  conversion NEVER fired: no rim conversion, no evaporation (the
+  evap=0 law holds on V2s), so the absorbing boundary absorbed
+  nothing in 5000 t.u. (2) The RAD Em(r) profiles show the shed
+  mass as an outward-expanding haze wind: free1's profile rises
+  monotonically to the outermost shell (1e-4 at r≈2 → 1.7e-2 at
+  r≈11 by t=5000), front speed ~2e-3 per t.u. — system loss is
+  DELAYED (transit), not absent; the rim starts collecting shortly
+  after T=5000. (3) The object-book drain (M-B5 bars) is therefore
+  cleanly the SHEDDING rate; whether a closed system equilibrates
+  (haze density → recapture balance) is arm (b): closed-box
+  ring12_m5, T=10000, IN FLIGHT (runs/w1s6_m5_closed.{cfg,log}) —
+  asymptote = first steady-state massive object; linear walk =
+  redistribution without equilibrium.
+  **M-B7 PRE-REGISTRATION (wound ring, before launch):** the
+  composite seed v2s_ring12_m5_w1.net stores ONE trapped quantum as
+  uniform strain (+2π/12 per gate; mod-2π closure exact; all 12
+  gates dimmed to gate(0.524)=0.574 — the seed echo must read mean
+  ≈0.574). Predictions: (a) if leak ∝ through-flux (roughness law),
+  drain ≈ 0.6× the unwound m5 rate (gate dimming throttles
+  exchange); (b) if the strain drives circulation, extra transport
+  = extra drain (>1× m5); (c) the winding itself is topological —
+  it may redistribute (uniform → pinned-kink texture) but the loop
+  total must persist (slip_diag watches it). Either (a) or (b) is a
+  charge-mass coupling measurement; (c) failing would break the
+  §7.10b conservation law on a free object — tripwire.
