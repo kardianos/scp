@@ -627,3 +627,25 @@ and pump apparatus each passed the full battery before use (gates
 4 and 5, 21/21 each, all observables byte-identical to the
 pre-apparatus kernel with the knobs off), and the q9 weak-link
 regression is exact at every kernel state of the arc.
+
+### 7.11 Q-rate (2026-08-01): the loop-rate origin — γ eliminated;
+### the fifth circulator rides a γ-free RSJ working point
+
+The γ_res_m scan on the P17 circulator (0.05/0.10/0.20, runs
+charge/runs/qrate_g*.log vs q11_pinned_v2): fix_nu = 0.01438 /
+0.01444 / 0.01466 — a 4× stiffness lever moves the rate 1.9%.
+**γ_res_m is NOT the origin** (the §7.10 candidate refuted). The
+data hands over the real structure: the bare comb-detune rate
+fix_dwb2pi = 0.0326 is IDENTICAL across all three (0.1%), so
+ν/dw_bare = 0.443 — the RSJ depinning factor (LIT.md transfer #1,
+measured at 0.44 before) is the γ-free invariant: **the fifth
+circulator's rate = (its own bare detune, set by loads+geometry
+through the pitch law) × the universal RSJ working point 0.443.**
+Corollary test (future): reshape the load pattern → ν must track
+the computed bare detune. And the octave check lands the §7.10d
+reinterpretation independently: oct_tri has ν/dw_bare = −3.7
+(wrong magnitude AND sign) — its circulation does not obey the
+winding law at all, as expected of skirt-driven flow. The
+"universal ±0.0145" across harmonics was two mechanisms
+coinciding, and the ratio ν/dw_bare is the diagnostic that
+separates them.

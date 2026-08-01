@@ -1335,3 +1335,45 @@ combined) if H1 shows the hole matters.
   total must persist (slip_diag watches it). Either (a) or (b) is a
   charge-mass coupling measurement; (c) failing would break the
   §7.10b conservation law on a free object — tripwire.
+
+* **2026-08-01 (M-B6b — NO EQUILIBRIUM: the closed box refutes the
+  recapture hypothesis; death = one-way structural dispersal; the
+  boundary is irrelevant at haze densities; + M-B7 SCORED — the
+  wound composite is a slightly BETTER desert rider).**
+  CLOSED BOX (edge_sink=0, ring12_m5, T=10000,
+  runs/w1s6_m5_closed.log): m_pv walks 1.492 (t=200) → 1.190
+  (t=10000), x 0.597 → 0.476, monotone, drain ACCELERATING
+  (1.5e-5 → 3.5e-5 as it descends the landscape toward the fifth
+  tongue — the late excess over B_pv is the tongue's Lorentzian
+  skirt arriving); voices 12 → 9. No asymptote anywhere. And at
+  matched times the closed run tracks the OPEN run to ~1%
+  (x@5000: 0.543 vs 0.550): with total shed ≈ 3.6 Em spread over
+  5039 cells (~7e-4/cell ambient), haze feedback is nil in BOTH
+  directions — nothing recycles (closed), nothing had exited yet
+  (open). VERDICTS: (1) the lump→haze redistribution is
+  thermodynamically one-way at these densities — "conserved dense
+  inventory" ≠ "stable object"; the structure dissolves on the
+  landscape schedule regardless of containment. (2) The M-B3 foam
+  closed-box cohesion dividend (+63%) does NOT transfer to V2s
+  desert riders (their haze is too thin to matter). (3) The
+  no-particle statement comes out STRENGTHENED: passive
+  containment cannot make the machine; the stability route is
+  ACTIVE structured intake (the flux-machine Leg 3 + intake-side
+  coherence, the standing user direction). Census forecast for the
+  closed ring: tongue arrival ~t≈12–13k, then the 100× burn.
+  **M-B7 (wound ring, runs/w1s7_m5_w1.log):** seed echo EXACTLY as
+  pre-registered (all 12 gates at 0.5741/0.5742 vs predicted
+  0.574). Drain 0.66× the pair curve vs unwound 0.72× — the
+  trapped quantum makes the ring an ~8% BETTER rider (prediction
+  (a)'s direction, much smaller than the naive gate-dimming
+  factor: recapture throttles too). Alive at 5000, slower walk
+  (x→0.567 vs 0.550). The slip books show coherent zero-flip
+  activity at the circulator scale (Σν ≈ +0.0125/t.u., ± arcs) —
+  suggestive that the winding LIVES as circulation on the free
+  ring (vs static pinned strain on tri2) — but on a draining net
+  the edge-slip instrument mixes pitch drift into the loop sum;
+  the per-vertex WINDING REPORT ROW (named next increment,
+  §7.10c) is the clean certifier. CHARGE-MASS COUPLING: weak and
+  protective. The composite is now the program's best object:
+  a desert cable ring carrying its charge quantum, outliving the
+  unwound ring at rate level.
