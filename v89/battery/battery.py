@@ -143,6 +143,13 @@ def grab(log, pat, idx=None):
     return g if idx is None else g[idx]
 
 
+# Kept as a module constant so the f-strings below do not need a nested
+# same-type quote: `f"...{fmt(em, "%.3g")}"` is valid only on Python 3.12+
+# (PEP 701) and is a SyntaxError on 3.11 and earlier, which would stop the
+# whole harness from importing.
+PCT3G = "%.3g"
+
+
 def fmt(x, spec="%.2e"):
     """format a possibly-None numeric for result strings (None -> 'NA')."""
     return spec % x if x is not None else "NA"
@@ -228,7 +235,7 @@ def chk_e1(log):
     d, ok = conservation_ok(log)
     nq = len(qatom_points(log))
     em = last_diag_em(log)
-    return ok, f"drift={d:.2e} qatoms={nq} Em_final={fmt(em, "%.3g")}"
+    return ok, f"drift={d:.2e} qatoms={nq} Em_final={fmt(em, PCT3G)}"
 
 
 def chk_qt_lo(log):
@@ -236,7 +243,7 @@ def chk_qt_lo(log):
     nq = len(qatom_points(log))
     em = last_diag_em(log)
     sub = nq == 0 and (em is not None and em < 1e-9)
-    return ok and sub, f"drift={d:.2e} qatoms={nq} Em_final={fmt(em, "%.3g")}"
+    return ok and sub, f"drift={d:.2e} qatoms={nq} Em_final={fmt(em, PCT3G)}"
 
 
 def chk_e2(log):
@@ -406,7 +413,7 @@ def chk_qt_hi(log):
     nq = len(qatom_points(log))
     em = last_diag_em(log)
     return (ok and nq > 0 and em is not None and em > 0.5), \
-        f"drift={d:.2e} qatoms={nq} Em_final={fmt(em, "%.3g")}"
+        f"drift={d:.2e} qatoms={nq} Em_final={fmt(em, PCT3G)}"
 
 
 def chk_p1(log):

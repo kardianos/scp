@@ -28,7 +28,17 @@ python3 battery.py --laws laws_V2z.cfg [--jobs 10] [--only e6_pairs ...] [--skip
 Outputs `runs/<variant>/<experiment>.log` + `summary.tsv`, prints the
 pass/fail table, exits nonzero on any fail.
 
-## The experiments (19 runs + 1 cross-check)
+> **`summary.tsv` is the ratchet baseline and is version-controlled.**
+> The repo-root `.gitignore` excludes `*.tsv`; `runs/.gitignore` negates
+> it for exactly this file. Rule 1 compares against a baseline, and an
+> untracked baseline cannot be checked. Note also that `--only` rewrites
+> `summary.tsv` with just the experiments it ran — on 2026-08-02 the V2g
+> baseline was found truncated to 3 rows by an earlier targeted run, and
+> with no history there was nothing to detect it against. **After any
+> `--only` run inside a standing variant's dir, restore the baseline with
+> a full run**, or use `--tag` to run in a side dir.
+
+## The experiments (20 runs + 1 cross-check)
 
 e1 conservation (all mechanisms live) · e2 field packet ≥0.3C · e3a heavy
 blob seals · e3b light tilted blob translates · e4 curvature linearity ·

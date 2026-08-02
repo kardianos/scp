@@ -1,0 +1,21 @@
+e1_conserve	PASS	drift=-4.93e-16 qatoms=65 Em_final=701
+e2_pulse	PASS	drift=-1.73e-15 v/C=0.6054
+e3a_blob	PASS	drift=-9.17e-16 speed=0.00045
+e3b_blob_tilt	FAIL	drift=-2.79e-15 speed=0.00313 cos=-0.9856
+e4_curve	PASS	drift=4.12e-15 defA/Em=2.26161 r2=0.9523
+e5_bell	PASS	S=2.8263 S_lhv=1.4138
+e6_pairs	PASS	drift=-7.84e-15 in: n=16 gg=0.927 far: n=32 gg=0.002
+e7_tune	FAIL	drift=-3.00e-15 no pairs
+e8_comma	PASS	drift=-7.74e-16 shed_lo|delta0|=2.385 shed_hi|delta0|=2.470 total=145.7
+e9_fifth	FAIL	drift=9.70e-16 locked@t10=0 t_last=0
+d1_slit	PASS	drift=2.98e-15 V=0.461 exposure=55.5163
+t1_tonomura	PASS	drift=2.98e-15 V_click=0.391 clicks=500
+q2_eraser	PASS	drift=4.10e-15 V_A=0.411 V_B=-0.282
+t4_hom	PASS	drift=-9.54e-16 split=0.413 g_b=0.4409 g_f=0.5591
+qt_lo	PASS	drift=-3.97e-15 qatoms=0 Em_final=0
+qt_hi	PASS	drift=1.28e-16 qatoms=407 Em_final=5.28e+03
+p1_beam	PASS	drift=-2.30e-16 v/C=0.401 cos=0.999 ffx=82.8
+g1_footprint	PASS	drift=-9.17e-16 core/far=0.547 sealed_speed=0.00045
+g3_shadow	FAIL	drift=2.29e-16 E_exit=5.03 y_exit=21.56 (launch 22.5, mass at 18)
+g4_throughput	PASS	drift=-1.10e-15 sflux(r8.25) early=+0.175 late=+0.00482 fflux_late=+0 dM/dt=-0.598
+LIN grain=eps(w)	PASS	n=496 w=[1.650,2.900] spread=0.43 max_offgrid=5.54e-12

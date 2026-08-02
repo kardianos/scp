@@ -1,0 +1,6 @@
+e7_tune	PASS	drift=1.87e-16 alive=53/60 frac|delta|<0.15=0.77 gg=0.92 dead_x*max=0.076 skirt1.5=0.093
+e8_comma	PASS	drift=3.87e-16 shed_lo|delta0|=0.087 shed_hi|delta0|=0.132 total=6.6
+e9_fifth	PASS	drift=0.00e+00 locked@t10=8 t_last=60
+e3a_blob	FAIL	drift=3.67e-16 speed=0.00256
+g1_footprint	FAIL	drift=3.67e-16 core/far=0.489 sealed_speed=0.00256
+LIN grain=eps(w)	PASS	SKIP only 4 QATOM points (need 10)

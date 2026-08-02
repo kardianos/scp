@@ -241,6 +241,18 @@ an integer core; the far dressing adds ~q². Max gate torque at p=8 is
 **1.233·ε at ψ = 0.505** (ε = coupling from the measured tongue
 widths, E6 — parameter-free).
 
+> **Scope note (2026-08-02).** Of this paragraph, three things are
+> established and one is not. Established: I(1)=4 and I(2) exactly, I(8)
+> by quadrature; the **integer** core energy |k|·√(2A)·I(p), measured to
+> a known lattice correction (§8.1); and the max-torque constant, now a
+> closed form — cos ψ\* = (p−1)/p, T_max = 1.232578445 at p=8 (§8.1).
+> **Not established: the 1/Q reduction of the core cost for a fractional
+> charge.** It is a structural conjecture. The scan that appeared to
+> confirm it was run on a unison ring, where a 2πk/Q twist is not a
+> soliton, and it is withdrawn (§8.4). Testing it needs a ℤ_Q interval
+> chain. Likewise "the far dressing adds ~q²" is asserted by continuum
+> analogy; no artifact measures any far dressing.
+
 ### 7.3 The electron
 
 The dressed **delocalized** kink: no dense core, no closed loop of its
@@ -706,160 +718,310 @@ charge/runs/q12_*.{cfg,log}.
 
 ---
 
-## 8. The mass–size–charge law (symbolic + numerical, 2026-08-01)
+
+## 8. The mass–size–charge law (symbolic + numerical)
 
 **User direction:** charge formation conditions quantize the size, and the
 size quantizes the mass — "charges will only be able to form in mass under
 specific size conditions"; electrons are unbound field harmonics. This
 section makes that chain explicit (symbolic in `charge_sym.mac`, numerical
-in `charge_fk.c`), parameter-free wherever the gate law fixes the constant.
+in `charge_fk.c`, `charge_fk2.c`).
 
-### 8.1 The kink energy, verified (`charge_sym.mac` PART 1)
+> **CORRECTION NOTICE — 2026-08-02.** The first version of this section
+> (2026-08-01) is retracted in part. Independent re-derivation found four
+> defects in its artifacts; all four are repaired in the current files and
+> each repair is documented at the head of the file it belongs to (D1–D11).
+> Two of them changed conclusions, not just digits:
+>
+> * **§8.4's "the quark pattern, measured" was an artifact and is
+>   WITHDRAWN** — see §8.4 below. Nothing in this document now claims a
+>   measured fractional-charge energy.
+> * **§8.1's agreement with the Bogomolny bound was measured on the
+>   Peierls–Nabarro saddle, not the minimum.** The corrected ratio is
+>   0.972, not 0.994.
+>
+> The monodromy of §7.1 was also being computed with a wrong composition
+> law (the accumulated offset was not multiplied by `p_l`). The headline
+> — charge = the ℤ_Q branch class — survives, but the comma and the branch
+> coefficients printed by the old artifact were wrong on the *physical*
+> fifth-triangle. Repaired in `charge_sym.mac` PART 2.
+
+### 8.1 The kink energy, verified
 
 Charge = k/Q lives as k phase-slip solitons (kinks) on the locked cycle
-(§7.2). The static kink energy is the Frenkel–Kontorova / sine-Gordon
-Bogomolny bound for the **standing gate potential** V(ψ)=1−((1+cosψ)/2)^p:
+(§7.2). The continuum static kink energy is the Frenkel–Kontorova /
+sine-Gordon Bogomolny bound for the **standing gate potential**
+V(ψ)=1−((1+cosψ)/2)^p:
 
 ```
-E_core = sqrt(2A) · I(p) · |k|/Q ,   I(p) = ∫_0^{2π} sqrt(V(ψ,p)) dψ
+E_core = sqrt(2A) · I(p) · |k| ,   I(p) = ∫_0^{2π} sqrt(V(ψ,p)) dψ
 ```
 
-| p | I(p) maxima | I(p) C-sim | note |
+| p | I(p) (quadrature) | measured E_core (A=1) | ratio to the bound |
 |---|---|---|---|
-| 1 | 4.0000 (sine-Gordon exact) | — | free-fermion/octave limit |
-| 8 | **5.405336** | measured E_core/(√(2A)·\|k\|/Q) = 0.994 | **the standing p_gate** |
-| 16 | 5.658564 | ratio 0.971 | narrow-core limit |
+| 1 | 4.000000 (exact, √V = \|sin(ψ/2)\|) | 5.615890 | 0.9928 |
+| 2 | 4.591174 (exact, 2√2+2·asinh 1) | 6.436195 | 0.9913 |
+| 4 | 5.057061 | 7.066302 | 0.9881 |
+| **8** | **5.405336** (the standing p_gate) | **7.432761** | **0.9723** |
+| 16 | 5.658564 | 7.657656 | 0.9569 |
 
-Maxima confirms I(1)=4.0000 and I(8)=5.405336 to the digits CHARGE §7.2
-claimed; the C FK chain reproduces the bound to ~1% across p=1..16 and
-confirms the √A scaling (continuum limit reached at large A; ~6%
-discrete-correction at small A). **The §7.2 kink-energy constant is no
-longer a claim — it is measured both ways.** Max gate torque 1.2326 at
-ψ=0.505 (p=8) likewise confirmed (§7.2 claimed 1.233).
+**The discrete minimum sits BELOW the continuum bound**, by a lattice
+correction that grows with p (the core narrows) and shrinks with A (the
+core widens): at p=8 the ratio runs 0.8702 at A=0.25 → 0.9967 at A=4.
+This is the expected direction and magnitude for a chain whose continuum
+core width √(2A/V″(0)) = 0.71 site is *sub-lattice* at the standing
+parameters.
 
-### 8.2 The mass–size–charge relation (derived)
+The 2026-08-01 table reported 0.994 at p=8 because its relaxation started
+from a single uniform-ramp seed, which on an even-length chain is
+symmetric about a *bond* and therefore converges to the bond-centred
+stationary state — the PN saddle (E = 7.598210, max|grad| ~ 1e-14: a
+genuine stationary point, just not the ground state). `charge_fk.c` now
+relaxes from several seeds and keeps the lowest (D4).
+
+**Max gate torque is now a closed form, not a scan** (`charge_sym.mac`
+PART 1): T′=0 ⇒ **cos ψ\* = (p−1)/p** for general p (the residual
+simplifies to 0 symbolically), giving
+
+```
+T_max(p) = (sqrt(2p−1)/2) · ((2p−1)/(2p))^(p−1)
+```
+
+At the standing p=8: ψ\* = acos(7/8) = 0.50536051, T_max = **1.232578445**.
+So §7.2's critical-detune constant 1.233·ε and the Q9 knee it predicts are
+parameter-free *and* exact.
+
+### 8.2 The mass–size–charge relation
 
 A charge-carrying cycle of N voices, interval cover Q, trapped winding k:
 
 ```
-M(N,Q,k) = N·e_balance(L)  +  (|k|/Q)·sqrt(2A)·I(p_gate)  +  (k/Q)²·E_dress
-           \_____________/   \_____________________________/   \___________/
-            dense balance        charge core (8.1)              far dressing
-            (MASS program)       — parameter-free once A read    (EM5 cone)
-                                 off the tongue widths           — 1/r power law
+M(N,Q,k) = N·e_balance(L)  +  [charge core]  +  (k/Q)²·E_dress
+           \_____________/                       \___________/
+            dense balance                         far dressing
+            (MASS program)                        (EM5 cone)
 ```
 
-Three additive terms from three different machinery sources. The charge
-contribution to mass is the middle term — **quantized in |k|/Q**, parameter-
-free once the gate law (p_gate) and the coupling (A, from E6/E7 measured
-tongue widths) are fixed. This is the structural content of E10 (charge
-contributes to mass): the p–n mass split is two same-topology machines
-differing only in handedness content (k sign / interval fill), whose
-core+dressing energies differ.
+The charge-core term, honestly:
 
-### 8.3 The size condition (the user's thesis, confirmed — `charge_fk.c`)
+* **integer k on a unison cycle: MEASURED.** E_core = |k|·7.432761 at
+  p=8, A=1 — additive to all printed digits at k=1,2,3, because the cores
+  are contact-range (κ = √(p/2A) = 2/site) and do not interact.
+* **fractional k/Q: NOT MEASURED.** §7.2's 1/Q reduction of the core cost
+  is a structural conjecture. It cannot be tested on a unison ring, where
+  a 2πk/Q twist is not a soliton at all (§8.4). Testing it requires a
+  **ℤ_Q interval chain** whose gate variable is the comb phase
+  Φ = q·θ_i − p·θ_j — the same instrument Q11 v2 built in-kernel, applied
+  to a straight chain rather than a cycle.
+* **E_dress: not measured by anything.** Gated on the EM5 cone.
 
-The kink core has a finite width ξ ≈ 3–5 voices (measured directly: the
-phase-jump FWHM on a long chain; continuum ξ=√(2A/V''(0)) with
-V''(0)=p/2, verified symbolically). A charge-|k| state on a periodic cycle
-of N voices is a clean soliton only when **N ≳ |k|·ξ**; below that the core
-is squeezed by its periodic image. Measured (p=8, A=1):
+So one of the three terms is closed, and this section no longer claims
+otherwise.
 
-| \|k\| | N | E_total | max single-site step | reading |
+### 8.3 The size condition (the user's thesis, measured — `charge_fk.c`)
+
+A charge-|k| state on a periodic cycle of N voices is a clean soliton only
+when each core has room. Measured (p=8, A=1), and the result **collapses
+onto N/k**:
+
+| k | N | N/k | E_total | E/(k·E₁) | max step |
+|---|---|---|---|---|---|
+| 1 | 10 | 10.0 | 7.432778 | 1.0000 | 1.4006 |
+| 1 | 6 | 6.0 | 7.452555 | 1.0027 | 1.4102 |
+| 1 | 4 | 4.0 | 7.926439 | 1.0664 | 1.5885 |
+| 1 | 3 | 3.0 | 8.579706 | 1.1543 | 2.0945 ≈ 2π/3 |
+| 2 | 12 | 6.0 | 14.905110 | 1.0027 | 1.4102 |
+| 2 | 8 | 4.0 | 15.852878 | 1.0664 | 1.5885 |
+| 2 | 6 | 3.0 | 17.159411 | 1.1543 | 2.0945 |
+| 3 | 15 | 5.0 | 22.613786 | 1.0141 | 1.4468 |
+| 3 | 9 | 3.0 | 25.739117 | 1.1543 | 2.0945 |
+
+The k=1,2,3 rows at equal N/k agree **to every printed digit** — the cores
+are independent and each needs its own room. Measured floor: N/k ≥ 6 costs
+<0.3%, N/k = 4 costs 6.6%, N/k = 3 costs 15.4% (and there the "core" is a
+single hard 2π/3 jump — the whole cycle is uniform strain).
+
+**Reading.** The winding is forced by the cycle BC and stays integer
+regardless of N — so "charge cannot form" is not "winding→0"; it is "the
+smooth core cannot fit, and the charge becomes a high-energy squeezed
+defect." **Only cycles with N ≳ 6|k| host a clean charged state.**
+
+**A caution about ξ.** Three different numbers have been called the core
+width and they are not interchangeable: the continuum √(2A/V″(0)) = **0.71
+site**; the FWHM of the step profile = **4 sites**; the capacity crossover
+of `charge_pack.c` = **4 sites per charge**; the energy floor above =
+**6 sites per charge**. The kink is deep in the discrete regime, so the
+continuum formula is simply not the size scale here. Do not quote a single
+ξ, and in particular do not carry a unison-chain ξ onto an interval cycle
+of 3–8 voices — that was the unjustified step in the first species table.
+
+The sharp criterion is not the energy excess but the **Peierls–Nabarro
+barrier** — whether the core can move (`charge_fk2.c` N2, §8.4b).
+
+### 8.4 Fractional charge — the 2026-08-01 measurement is WITHDRAWN
+
+The first version reported a scan of E_core against w = k/Q on a unison
+FK ring and concluded that integer charges scale linearly while fractional
+charges are sub-linear (⅓ at 0.60 of the linear share, ⅔ at 0.90),
+reading this as "the quark pattern, measured."
+
+**That was an artifact of the apparatus, and the conclusion is withdrawn.**
+2π/Q is not a period of V, so a twist of 2πk/Q imposed on a *unison* ring
+is not a topological state and there is no soliton to measure. The relaxed
+configuration is an elastic strain sitting on the ring's artificial
+closing bond. `charge_fk.c` section 6 now prints the diagnostic as an
+explicit negative control:
+
+| w = k/Q | E_relax | load on the seam bond | max interior step | non-vacuum sites (of 400) |
 |---|---|---|---|---|
-| 1 | 10 | 7.60 | 1.22 rad | clean soliton |
-| 1 | 6 | 7.45 | 1.41 | core spread |
-| 1 | 4 | 7.88 | 1.85 | squeezed (+3%) |
-| 1 | 3 | 8.58 | 2.09 ≈ 2π/3 | core collapsed to one hard jump (+13%) |
-| 2 | 12 | 14.97 | 1.42 | clean (≈2×7.49) |
-| 2 | 6 | 17.16 | 2.09 | squeezed (+13%) |
-| 3 | 15 | 22.61 | 1.45 | clean (≈3×7.54) |
-| 3 | 9 | 27.00 | 2.90 | squeezed (+19%) |
+| 1 | 7.432761 | 0.0000 | 1.4006 | 5 |
+| **1/3** | **1.510164** | **1.3948** | 0.2895 | **2** |
+| **2/3** | **4.541719** | **1.2362** | 1.2362 | 4 |
 
-**Reading.** The topological winding is forced by the cycle BC and stays
-integer regardless of N — so "charge cannot form" is not "winding→0"; it is
-"the smooth soliton core cannot fit, the charge becomes a high-energy
-squeezed defect." A particle is a *minimum* of the balance+core+dressing
-energy; the squeezed-defect regime is not a minimum of the full books (it
-radiates, or fails to balance). **Therefore only cycles with
-N ≳ |k|·ξ (and the closure-arithmetic conditions of §7.10d) host stable
-charged particles.** That is the size quantization the user named: the
-allowed (N, Q, k) are a discrete set, and §8.2 turns each into a discrete
-mass.
+At w=1 the twist is carried by a localised core and the seam is empty. At
+w=1/3 the entire twist sits on the seam and 398 of 400 sites are at the
+vacuum — there is no core anywhere. The energies scale roughly as w²
+(strain), not as the "0.60 / 0.90 of linear" that was reported.
 
-### 8.4 Integer vs fractional charge (the quark vs lepton split, measured)
+What survives: §7.1's **confinement argument is untouched** (it is an
+algebraic statement about which holonomies a unison medium can transport,
+and it does not depend on this scan) — and it in fact *predicts* this
+null. The pump experiments of §7.10c remain the real evidence that
+fractional deposits are bound: those ran in-kernel on genuine interval
+cycles, not on a unison FK ring.
 
-Same scan, large cycle (N=400), varying winding w=k/Q:
+What is now owed: the fractional core energy, measured on a ℤ_Q interval
+chain. Until then no number for the cost of a third of a charge exists.
 
-| q = k/Q | E_core | linear prediction \|q\|·E_core(q=1) | ratio |
-|---|---|---|---|
-| 1 | 7.598 | 7.598 | 1.00 |
-| 2 | 14.87 | 15.20 | 0.98 |
-| 3 | 22.79 | 22.79 | 1.00 |
-| **1/3** | **1.51** | 2.53 | **0.60** |
-| **2/3** | **4.54** | 5.07 | **0.90** |
+### 8.4b Mobility: the Peierls–Nabarro barrier (`charge_fk2.c` N2)
 
-**Integer charges scale linearly (mobile, conducting — §7.10's running
-circulator); fractional charges are sub-linear (bound, pinned — §7.10c's
-pinned strain).** A 1/3 charge costs 0.60 of the linear extrapolation —
-the bound fraction is energetically favored *inside* the cycle but (§7.1
-confinement) cannot traverse unison vacuum. **This is the quark pattern,
-measured**: thirds exist, are bound, and are cheaper than their integer
-share; only integer composites are free. The split between "integer mobile"
-and "fractional bound" falls out of the FK energetics with no extra
-postulate.
+The PN barrier is the gap between the two symmetric stationary states of
+the translation path: the **minimum** (symmetric about a site, one site
+parked at π) and the **adjacent saddle** (symmetric about a bond, obtained
+by shifting the relaxed minimum half a lattice spacing). At p=8, A=1:
 
-### 8.5 The electron (user direction, §7.3 deepened)
+```
+E_site = 7.432761 (the minimum)   E_bond = 7.598210 (the saddle)
+E_barrier = 1.654491e-01 = 2.2259e-02 of E_min = 2.23% of E_core
+```
 
-The electron is the **dressed delocalized kink with no dense core**: it has
-no closed cycle (no N·e_balance term), so
+both states stationary to max|grad| ~ 2e-14.
+
+**Two things the corrected instrument shows that the old one could not.**
+
+*(a) Which symmetric state is the minimum flips with (p, A).* At p=8, A=1
+the site-symmetric state wins; at p=8, A=0.5 and at every p=1 row the
+bond-symmetric one does. That is structure of the PN landscape, and it is
+why the barrier has to be taken as a |gap| rather than by assuming one
+class always wins. It also gives a free cross-check: the winning class
+agrees with `charge_fk.c`'s independently relaxed E_core at every (p,A)
+the two artifacts share. The old apparatus, pinned at π by construction,
+could not see the flip at all.
+
+*(b) The mobility size floor is sharp, and it is not where the energy
+criterion is.* Scanning N at p=8, A=1:
+
+| N | 400 | 200 | 40 | 20 | 12 | 10 | 8 | 6 | 4 | 3 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| barrier/E_min | 2.2259e-02 | 2.2259e-02 | 2.2259e-02 | 2.2259e-02 | 2.2260e-02 | 2.2264e-02 | 2.2405e-02 | **unresolved** | 6.3825e-03 | **unresolved** |
+
+The barrier holds its large-N value to 4 digits all the way down to N=8,
+then **collapses below the FP floor at N=6** — the two symmetric states
+have become the same state, i.e. there is no longer a distinct kink
+position to pin. At N=4 a small barrier reappears with the minimum
+flipped to the bond class; at N=3 it is gone again (the cycle is uniform
+strain, max step 2π/3).
+
+So in mobility form the floor is **N ≥ 8**, against **N/k ≥ 6** from the
+energy excess of §8.3. The two criteria answer different questions — "is
+the core still a pinnable object" versus "does it still cost the additive
+core energy" — and they are reported separately rather than averaged into
+one ξ. (The 2026-08-01 version reported this scan as "constant 1.27% down
+to N=8, drops to 0.59% at N=4, jumps to 5.5% at N=3". The level was wrong
+by 1.75× throughout, and the N=3 "jump" does not exist: there is no
+resolvable barrier there at all.)
+
+The 2026-08-01 figure (0.094482, 1.27%) was low by a factor 1.75: it swept
+a pinned site's phase over π ± 0.5 rad, but π *is* the minimum and the
+saddle sits at ≈0.79 rad away — the sweep never left the bottom of the
+well (D6). The correction matters beyond the digit: the earlier "the naive
+PN threshold is 2× below the measured depinning, the gap is core
+distortion" needs no such excuse once the barrier is right.
+
+Note the mobility criterion and the §8.3 energy criterion are different
+questions and do not have to agree on a single N.
+
+### 8.5 The electron (§7.3 restated — ontology, not a measurement)
+
+The electron is the **dressed delocalized kink with no dense core**: no
+closed cycle, hence no N·e_balance term, so
 
 ```
 M_electron = E_dress(field gradient)   — the field-gradient scale, naturally light
 ```
 
-Its substance is the slip + the far phase dressing ∮∇χ·dl = 2πk/Q the slip
-forces on the surrounding field — which is O1's texture (Gauss = the
-dressing's index) and O2's handed throughput. **It localizes only at
-conversion events** (clicks) — the measured Tonomura double-slit sector
-(claim rule R3, MCWF-exact click statistics) IS electron phenomenology
-under this ontology: "the electron is not a closed machine, it is the
-dispersed harmonic field generated by a tail call that is never fully
-adhered to" (user, §7) — the unbound field harmonic. The mass hierarchy
-(nucleon ≫ electron) is immediate: a nucleon pays N·e_balance (dense
-closure) + core + dressing; an electron pays only the field-gradient
-dressing.
+Its substance is the slip plus the far phase dressing ∮∇χ·dl = 2πk/Q; it
+localizes only at conversion events, and the measured double-slit sector
+(claim rule R3, MCWF-exact click statistics, Tonomura fringe statistics)
+is electron phenomenology under this ontology. The mass hierarchy
+(nucleon ≫ electron) is immediate.
+
+**This is a reading of the ontology, not a measured result.** No artifact
+in this document measures E_dress, or any far field at all.
 
 ### 8.6 Path to quark / proton / neutron masses
 
-The charge piece of the mass budget (§8.2 middle term) is now **closed and
-parameter-free** (I(p_gate) and ξ from the gate law; A from measured tongue
-widths; the q-scaling measured). The remaining inputs for exact masses:
+The charge piece of the mass budget is **not** closed. What is closed:
 
-1. **e_balance(L)** — the dense balance energy per voice at loop size L.
-   This is the MASS program's quantity (the balance curve; M-R1/P19). The
-   livefab keystone (Step 1 of the review) is what unblocks a stable
-   balance point to read it from.
-2. **The allowed (N, Q, k)** — closure arithmetic (frequency closure
-   Π(p_l/q_l)=1 + geometric closure within the link-window band, §7.10d's
-   "which cycles can close") intersected with the §8.3 size floor
-   N ≳ |k|·ξ. This is a discrete combinatorial search (an extension of
-   `construct_species.c`'s enumerator to interval-carrying cycles); it
-   returns the species list and is the "specific size conditions" made
-   algorithmic.
-3. **E_dress** — the far dressing's 1/r power law, gated on the EM5
-   Maxwell cone (the only foam-unsafe piece, per §7.6).
+* the integer core quantum √(2A)·I(p) (measured, 2.8% lattice correction
+  at the standing parameters);
+* the holonomy arithmetic — which cycles exist and what quantum each
+  carries (`charge/species_enum.py`; see the caveat below);
+* the mobility criterion (§8.4b).
 
-With (1)–(3) in hand, M(N,Q,k) from §8.2 is a closed formula and the
-quark/proton/neutron masses are the values it takes on the closure-allowed
-(N,Q,k). The charge construction's job — deriving *why* the mass is
-quantized and *how* charge enters it — is done.
+The remaining inputs, unchanged in kind but now correctly scoped:
+
+1. **e_balance(L)** — the dense balance energy per voice. The MASS
+   program's quantity; blocked on a stable balance point (livefab).
+2. **The fractional core cost** — the 1/Q scaling, on a ℤ_Q interval
+   chain. Newly owed as of the §8.4 withdrawal.
+3. **The allowed (N,Q,k)** — closure arithmetic intersected with a size
+   floor. The closure half is enumerated; the size half needs (2) first,
+   because the floor for a fractional core is not the floor for an
+   integer one.
+4. **E_dress** — gated on the EM5 cone.
+
+**Species table caveat.** The 2026-08-01 enumeration reported 175 classes
+and a proton/neutron slot count. It enumerated sorted edge *multisets*
+only, so it saw one cyclic ordering of each — but Q depends on the
+ordering (its own docstring says so, and the example it cites was among
+the cases it silently dropped). The corrected ordered enumeration gives
+**17922 classes** over N ≤ 8; at N=4 alone the census goes from
+{Q=1:4, 2:2, 3:5, 4:1} to {Q=1:15, 2:11, 3:9, 4:1, **6:1**}. The
+structural conclusion survives intact and is the one thing that file now
+claims: **every charge quantum is 1/(2^a·3^b)** — the comb carries only
+the primes 2 and 3, so no fifth-of-charge exists at comb_limit=6, and the
+small quantum numbers are the small harmonic numbers. No mass table and
+no slot assignment is emitted any more (D9).
 
 ### 8.7 Artifacts
 
-| file | role |
-|---|---|
-| `charge_sym.mac` | maxima: I(p) verified (I(1)=4, I(8)=5.405336); max torque 1.2326; general N-cycle monodromy → charge=k/Q; V''(0)=p/2; mass-size-charge formula |
-| `charge_fk.c` | standalone FK charge-soliton sim: E_core vs p, vs A, q=k/Q scaling, size condition (squeezed-soliton floor N≳\|k\|·ξ) |
+| file | role | status |
+|---|---|---|
+| `charge_sym.mac` | I(p) with exact I(1), I(2); corrected N-cycle monodromy → charge = k/Q; exact torque locus cos ψ\*=(p−1)/p; V″(0)=p/2; tail rate κ=√(p/2A) | verified 2026-08-02 |
+| `charge_fk.c` | FK charge soliton: E_core vs p and A (multi-seed, minimum kept); size condition vs N/k; integer additivity; the fractional-twist negative control | verified 2026-08-02 |
+| `charge_fk2.c` | two-kink force law (sign = sign q₁q₂, contact range); PN barrier via the symmetric stationary states | verified 2026-08-02 |
+| `charge_pack.c` | packing capacity of one cycle; merged-jump vs relaxed-lattice cost | verified 2026-08-02 |
+| `charge/species_enum.py` | closure + holonomy census (ordered cycles) | verified 2026-08-02 |
 
-Build: `gcc -O2 -o charge_fk charge_fk.c -lm`. Run: `maxima -b charge_sym.mac`, `./charge_fk`.
+Build: `gcc -O2 -o charge_fk charge_fk.c -lm` (same for `charge_fk2`,
+`charge_pack`). Run: `maxima -b charge_sym.mac`, `./charge_fk`,
+`./charge_fk2`, `./charge_pack`, `python3 charge/species_enum.py`.
+Logs in `charge/runs/charge_{fk,fk2,pack}.log`, `charge/runs/species_enum.log`.
+
+**Standing discipline for this section.** Every one of the defects above
+was invisible in prose and visible in the run log — a seed that converged
+to the wrong branch, a sweep that never reached the saddle, an enumerator
+that skipped 99% of its domain. Artifacts here now print their convergence
+witness (max|grad|) and their negative controls. A number in this document
+without a log line behind it is not a result.

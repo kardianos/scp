@@ -1,0 +1,2 @@
+e3a_blob	PASS	drift=5.50e-16 speed=0.00078
+LIN grain=eps(w)	PASS	SKIP only 1 QATOM points (need 10)

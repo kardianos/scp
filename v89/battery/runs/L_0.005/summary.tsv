@@ -1,0 +1,4 @@
+e7_tune	FAIL	drift=1.87e-16 n=120 frac|delta|<0.15=0.72 mean_gg=0.96 (A1 gap)
+e3a_blob	PASS	drift=1.83e-16 speed=0.00196
+e9_fifth	PASS	drift=0.00e+00 locked@t10=10 t_last=60
+LIN grain=eps(w)	PASS	SKIP only 1 QATOM points (need 10)

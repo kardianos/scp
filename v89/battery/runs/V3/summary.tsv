@@ -1,0 +1,17 @@
+e1_conserve	PASS	drift=1.11e-15 qatoms=1 Em_final=19.5
+e2_pulse	PASS	drift=0.00e+00 v/C=0.604
+e3a_blob	PASS	drift=3.67e-16 speed=0.00089
+e3b_blob_tilt	PASS	drift=0.00e+00 speed=0.00533 cos=0.8928
+e4_curve	PASS	drift=-1.07e-15 defA/Em=1.30549 r2=0.9833
+e5_bell	PASS	S=2.8263 S_lhv=1.4138
+e6_pairs	PASS	drift=0.00e+00 in: n=30 gg=0.882 far: n=15 gg=0.002
+e7_tune	PASS	drift=0.00e+00 alive=53/60 frac|delta|<0.15=0.79 gg=0.98 dead_x*max=0.076 skirt1.5=0.093
+e8_comma	FAIL	drift=1.93e-16 shed_lo|delta0|=0.084 shed_hi|delta0|=0.081 total=4.9
+e9_fifth	PASS	drift=0.00e+00 locked@t10=9 t_last=60
+d1_slit	PASS	drift=-3.73e-16 V=0.467 exposure=61.0211
+t1_tonomura	PASS	drift=-3.73e-16 V_click=0.487 clicks=500
+q2_eraser	PASS	drift=-1.86e-16 V_A=0.404 V_B=-0.291
+t4_hom	PASS	drift=1.19e-16 split=0.489 g_b=0.4356 g_f=0.5644
+qt_lo	PASS	drift=-4.58e-16 qatoms=0 Em_final=0
+qt_hi	PASS	drift=1.28e-16 qatoms=243 Em_final=2.47e+03
+LIN grain=eps(w)	PASS	n=248 w=[1.077,2.900] spread=0.63 max_offgrid=3.08e-08

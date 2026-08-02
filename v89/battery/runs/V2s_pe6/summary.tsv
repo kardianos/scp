@@ -1,0 +1,2 @@
+e6_pairs	PASS	drift=-3.20e-15 in: n=60 gg=0.886 far: n=0 gg=0.0
+LIN grain=eps(w)	PASS	SKIP only 0 QATOM points (need 10)

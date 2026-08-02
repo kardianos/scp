@@ -1,0 +1,91 @@
+# charge_fk2 — two-kink force law + Peierls-Nabarro barrier
+# gate potential p, coupling A; ring N.
+
+== N1: two-kink interaction E_int(R) = E(R)-E_self, ring N=400 p=8 A=1.00 ==
+# integer windings only: on a UNISON ring a fractional twist is not a
+# soliton but a seam strain (charge_fk.c section 6), so a fractional
+# pair measures nothing. That experiment belongs on a Z_Q interval chain.
+config   R      E_pair         E_int          trend   
+-- (++) (w1=+1 w2=+1, E_self=14.865521) --
+(++)     4      15.419684      5.541628e-01   
+(++)     6      14.885358      1.983679e-02   falling
+(++)     8      14.866123      6.011999e-04   falling
+(++)     10     14.865539      1.772116e-05   falling
+(++)     12     14.865522      5.216892e-07   falling
+(++)     16     14.865521      4.520793e-10   falling
+(++)     24     14.865521      3.552714e-15   flat
+(++)     32     14.865521      -3.552714e-15  flat
+(++)     48     14.865521      -3.552714e-15  flat
+(++)     64     14.865521      -3.552714e-15  flat
+   E_int falling with R => REPULSIVE; rising with R => ATTRACTIVE.
+
+-- (+-) (w1=+1 w2=-1, E_self=14.865521) --
+(+-)     4      12.412758      -2.452764e+00  
+(+-)     6      14.085791      -7.797302e-01  rising
+(+-)     8      14.864918      -6.028653e-04  rising
+(+-)     10     14.865504      -1.772306e-05  rising
+(+-)     12     14.865521      -5.216912e-07  rising
+(+-)     16     14.865521      -4.520704e-10  rising
+(+-)     24     14.865521      -3.552714e-15  flat
+(+-)     32     14.865521      -1.776357e-15  flat
+(+-)     48     14.865521      -1.776357e-15  flat
+(+-)     64     14.865521      -1.776357e-15  flat
+   E_int falling with R => REPULSIVE; rising with R => ATTRACTIVE.
+
+reading: sign(E_int) = sign(q1*q2), |E_int| monotone down in R, and
+the two signs are antisymmetric wherever both resolve. The RANGE is
+~1 site: kappa = sqrt(p/2A) = 2.00/site (charge_sym.mac PART 4).
+The core-level force is CONTACT interaction. A 1/r^2 law is the EM5
+dressing's job and is not tested here.
+
+== N2: Peierls-Nabarro barrier along the collective coordinate ==
+# E minimised on level sets of sum(th); the level swept through one
+# lattice period (delta sum = 2pi). Continuation along the path.
+p    A      N        E_site        E_bond        min    E_barrier     bar/E_min   max|grad|
+1    0.25   200      2.782646      2.683916      bond   9.873015e-02  3.6786e-02  2.2e-14  
+1    0.50   200      3.945964      3.933282      bond   1.268208e-02  3.2243e-03  2.2e-14  
+1    1.00   200      5.616359      5.615890      bond   4.699198e-04  8.3677e-05  2.2e-14  
+1    2.00   200      7.971742      7.971739      bond   3.125996e-06  3.9213e-07  2.2e-14  
+1    4.00   200      11.293901     11.293901     bond   1.859771e-09  1.6467e-10  2.2e-14  
+8    0.25   200      3.325940      3.581848      site   2.559074e-01  7.6943e-02  2.2e-14  
+8    0.50   200      5.380777      5.050412      bond   3.303655e-01  6.5414e-02  2.2e-14  
+8    1.00   200      7.432761      7.598210      site   1.654491e-01  2.2259e-02  2.2e-14  
+8    2.00   200      10.735882     10.722591     bond   1.329074e-02  1.2395e-03  2.2e-14  
+8    4.00   200      15.239925     15.237640     bond   2.284549e-03  1.4993e-04  2.2e-14  
+16   0.25   200      3.393557      3.612091      site   2.185345e-01  6.4397e-02  2.2e-14  
+16   0.50   200      5.641523      5.161900      bond   4.796235e-01  9.2916e-02  2.2e-14  
+16   1.00   200      7.657656      7.771381      site   1.137243e-01  1.4851e-02  2.2e-14  
+16   2.00   200      11.116505     11.278235     site   1.617298e-01  1.4549e-02  2.2e-14  
+16   4.00   200      15.906132     15.906132     --     < 1e-12       (unresolved) 2.2e-14  
+reading: for A >= 1 the barrier falls steeply with A -- a stiffer chain
+has a wider core and a smoother PN landscape. Below A ~ 1 it is NOT
+monotone, and that is tied to the 'min' column: WHICH symmetric state
+is the minimum flips with (p,A). The flip is physics of the PN
+landscape, not a bug, and it is why the barrier must be taken as a
+|gap| between the two rather than assuming one of them wins.
+At the standing p=8, A=1 the barrier is 2.2% of E_core.
+Cross-check: the 'min' column agrees with charge_fk.c's independently
+relaxed E_core at every (p,A) they share.
+Rows marked '< 1e-12' are below the FP floor: the half-shifted seed
+relaxed back into the minimum, i.e. no barrier is resolvable.
+
+== N2b: PN barrier vs cycle size N (p=8, A=1, k=1) — the size condition ==
+N        E_site        E_bond        min    E_barrier     bar/E_min   max|grad|
+400      7.432761      7.598210      site   1.654491e-01  2.2259e-02  2.2e-14  
+200      7.432761      7.598210      site   1.654491e-01  2.2259e-02  2.2e-14  
+40       7.432761      7.598210      site   1.654491e-01  2.2259e-02  2.2e-14  
+20       7.432761      7.598210      site   1.654491e-01  2.2259e-02  2.2e-14  
+12       7.432761      7.598211      site   1.654501e-01  2.2260e-02  2.2e-14  
+10       7.432778      7.598260      site   1.654815e-01  2.2264e-02  2.2e-14  
+8        7.433362      7.599906      site   1.665438e-01  2.2405e-02  2.2e-14  
+6        7.452555      7.452555      --     < 1e-12       (unresolved) 2.2e-14  
+4        7.926439      7.876169      bond   5.027002e-02  6.3825e-03  2.0e-14  
+3        8.579706      8.579706      --     < 1e-12       (unresolved) 2.2e-14  
+
+reading: barrier ~0 => the kink translates freely (conducting);
+barrier finite => it is pinned and must be depinned (LAMH).
+The size condition in mobility form is where bar/E_min departs from
+its large-N value. Note this is a DIFFERENT criterion from the energy
+excess of charge_fk.c section 4 and it need not give the same N.
+
+# charge_fk2 DONE

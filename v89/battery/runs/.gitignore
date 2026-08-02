@@ -1,0 +1,7 @@
+# The repo-root .gitignore excludes *.tsv (it was written for bulk analysis
+# dumps). summary.tsv is not that: it is the ratchet-rule baseline — the
+# file every future law-table or kernel modification is diffed against
+# (battery/README.md). An untracked baseline is not a baseline; on
+# 2026-08-02 the V2g summary was found truncated to 3 lines by an earlier
+# `--only` run, with no version history to detect it against.
+!summary.tsv

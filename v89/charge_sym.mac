@@ -1,137 +1,164 @@
-/* charge_sym.mac — symbolic charge construction (O3') in maxima.        */
-/* Subordinate to CHARGE.md §7. Verifies the load-bearing §7.2 claims and */
-/* derives the general N-cycle monodromy + mass-size-charge relation.     */
-/* Run: maxima -b charge_sym.mac                                         */
-
-/* ===================================================================== */
-/* PART 1 — the kink core energy I(p) [CHARGE §7.2: E_core = sqrt(2A)*I(p)/Q] */
-/* The standing gate potential V(psi,p) = 1 - ((1+cos psi)/2)^p_gate.    */
-/* Bogomolny first-integral of the FK chain: the static kink (charge)    */
-/* energy is the integral of sqrt(V) across the 2pi twist.               */
-/* ===================================================================== */
+/* charge_sym.mac — symbolic charge construction (O3') in maxima.         */
+/* Subordinate to CHARGE.md §7/§8. Verifies the load-bearing §7.2 claims   */
+/* and derives the general N-cycle monodromy.                             */
+/* Run: maxima -b charge_sym.mac                                          */
+/*                                                                        */
+/* 2026-08-02 REVISION. This file supersedes the 2026-08-01 version and    */
+/* charge_sym2.mac. Three defects of the 2026-08-01 file are repaired      */
+/* here and the repairs are the reason those results are trustworthy now:  */
+/*   (D1) PART 1 presented a branch-broken atan2 antiderivative as an      */
+/*        exact check of I(1); it evaluated to 0, not 4. Replaced by the   */
+/*        half-angle identity, which is exact.                            */
+/*   (D2) PART 2's monodromy composed edge maps as c <- (c+a+2pi n)/q,     */
+/*        dropping the factor p_l on the accumulated offset. Invisible on  */
+/*        the only case printed ({3:1,1:3,1:1}, where p2=p3=1) and WRONG   */
+/*        on the physical fifth-triangle {3:2,2:3,1:1}. Corrected.         */
+/*   (D3) The branch was printed as a PRODUCT n1*n2*n3; it is a SUM.       */
 
 V(psi,p) := 1 - ((1+cos(psi))/2)^p;
 
-/* I(p) = int_0^2pi sqrt(V(psi,p)) dpsi  — the shape factor of the core. */
+/* ===================================================================== */
+/* PART 1 — the kink core energy shape factor I(p)                       */
+/* [CHARGE §7.2: continuum Bogomolny bound E_core = sqrt(2A)*I(p)]       */
+/* ===================================================================== */
+print("=== PART 1: kink core shape factor I(p) ===")$
+
 Inum(p) := quad_qags(sqrt(V(psi,p)), psi, 0, 2*%pi)[1];
+print("I(1)  = ", float(Inum(1)))$
+print("I(2)  = ", float(Inum(2)))$
+print("I(4)  = ", float(Inum(4)))$
+print("I(8)  [the standing p_gate] = ", float(Inum(8)))$
+print("I(16) = ", float(Inum(16)))$
 
-print("=== PART 1: kink core energy I(p) ===")$
-print("I(1)  [sine-Gordon check, claimed 4.0000] = ", float(Inum(1)))$
-print("I(2)                                  = ", float(Inum(2)))$
-print("I(4)                                  = ", float(Inum(4)))$
-print("I(8)  [standing p_gate, claimed 5.405] = ", float(Inum(8)))$
-print("I(16)                                 = ", float(Inum(16)))$
+/* --- exact values (repairs D1) --- */
+/* V(psi,1) = (1-cos psi)/2 = sin(psi/2)^2, so sqrt(V) = |sin(psi/2)|,   */
+/* nonnegative on [0,2pi]:                                               */
+h1 : trigsimp(trigreduce(expand(V(psi,1))));
+print("V(psi,1) - sin(psi/2)^2 = ", ratsimp(h1 - trigreduce(sin(psi/2)^2)),
+      "  (must be 0)")$
+I1exact : integrate(sin(psi/2), psi, 0, 2*%pi);
+print("I(1) EXACT = ", I1exact, "  (sine-Gordon / free-fermion limit)")$
 
-/* The p=1 exact value (sine-Gordon / FK Bogomolny). */
-I1 : integrate(sqrt(1-(1+cos(psi))/2),psi);   /* antiderivative (symbolic) */
-print("p=1 antiderivative: ", I1)$
-print("p=1 exact 0->2pi: ", ev(I1,psi=2*%pi)-ev(I1,psi=0))$
+/* I(2): sqrt(1-cos(psi/2)^4) = sin(psi/2)*sqrt(1+cos(psi/2)^2);          */
+/* u = cos(psi/2) => I(2) = 4*int_0^1 sqrt(1+u^2) du                      */
+I2exact : 4*integrate(sqrt(1+u^2), u, 0, 1);
+print("I(2) EXACT = ", I2exact, " = ", float(I2exact))$
 
-/* Max gate torque (CHARGE §7.2: claimed 1.233*eps at psi=0.505, p=8).   */
-/* torque = -dV/dpsi. Find argmax |dV/dpsi| for p=8.                      */
-dV(psi,p) := diff(V(psi,p),psi);
-print("--- max |torque| for p=8 ---")$
-torque8(psi) := ''(ratsimp(diff(V(psi,8),psi)));
-/* numerically locate the max of |torque| in (0,pi) */
-m  : qags(torque8(psi)^2, psi, 1e-3, %pi-1e-3);
-print("integral of torque^2 (proxy): ", float(m[1]))$
-/* scan for the argmax */
-print("torque at psi=0.505 (p=8): ", float(torque8(0.505)))$
-print("torque at psi=0.5,p=8: ", float(torque8(0.5)))$
+/* No closed form is claimed for I(8); the numeric value 5.405336 is the  */
+/* quad_qags quadrature above and is what the C artifacts compare to.     */
+
+print("")$
+print("--- max gate torque: EXACT locus (was a numeric scan) ---")$
+/* T(psi) = -dV/dpsi = (p/2) sin(psi) b^(p-1), b = (1+cos psi)/2.
+ * T' = (p/4) b^(p-2) (1+c) [ c - (p-1)(1-c) ] with c = cos psi,
+ * so on (0,pi) the extremum is at c = (p-1)/p exactly. */
+T(psi,p) := (p/2)*sin(psi)*((1+cos(psi))/2)^(p-1)$
+Tmax(p)  := (sqrt(2*p-1)/2) * ((2*p-1)/(2*p))^(p-1)$
+chk : ratsimp(subst([cos(psi)=(p-1)/p, sin(psi)^2=1-((p-1)/p)^2],
+        trigsimp(expand(diff(T(psi,p),psi) / ((1+cos(psi))/2)^(p-2)))));
+print("T'(psi*) numerator at cos psi* = (p-1)/p (must be 0): ", chk)$
+print("cos psi* = (p-1)/p ; T_max(p) = sqrt(2p-1)/2 * ((2p-1)/(2p))^(p-1)")$
+print("p=8:  psi* = acos(7/8) = ", float(acos(7/8)),
+      "   T_max = ", float(Tmax(8)))$
+print("p=1:  T_max = ", float(Tmax(1)), " (sine-Gordon check: 1/2)")$
+print("=> CHARGE §7.2's critical-detune constant 1.233*eps is a CLOSED FORM.")$
 
 /* ===================================================================== */
-/* PART 2 — the general N-cycle monodromy: charge = k/Q                  */
-/* (CHARGE §7.1, generalized beyond the third-harmonic triangle.)        */
+/* PART 2 — the general N-cycle monodromy: charge = k/Q  (repairs D2/D3) */
 /*                                                                       */
-/* An interval edge l carries a p_l:q_l lock:  q_l*theta_{l+1} - p_l*theta_l = alpha_l + 2*pi*n_l   */
-/*   -> theta_{l+1} = (p_l*theta_l + alpha_l + 2*pi*n_l)/q_l            */
-/* Composing around a cycle of N edges gives the monodromy M(theta_0)=theta_N. */
-/* Frequency closure: prod(p_l/q_l) = 1  <=>  prod p_l = prod q_l = Q*... */
-/* Under closure the monodromy is theta_N = theta_0 + (continuous comma) + 2*pi*k/Q.  */
-/* CHARGE := k/Q.                                                        */
+/* An interval edge l carries a p_l:q_l lock                             */
+/*     q_l*theta_out - p_l*theta_in = alpha_l + 2*pi*n_l                 */
+/*  => theta_out = (p_l*theta_in + alpha_l + 2*pi*n_l)/q_l               */
+/* so composing around the cycle the ACCUMULATED OFFSET is itself        */
+/* multiplied by p_l at each subsequent edge:                            */
+/*     c <- (p_l*c + alpha_l + 2*pi*n_l)/q_l                             */
+/* Frequency closure prod(p_l) = prod(q_l) makes the theta coefficient 1.*/
 /* ===================================================================== */
-
 print("")$
 print("=== PART 2: N-cycle monodromy -> charge = k/Q ===")$
 
-/* Build the monodromy symbolically for an N-cycle with lists p,q,alpha. */
-/* Each edge map: theta_out = (p*theta_in + alpha + 2*pi*n)/q.           */
-/* Compose linearly in (theta, offset) coordinates: theta -> (P/Q)*theta + c */
-monodromy(pl,ql,al,nl) := block(
-  [P:1, Q:1, c:0, theta:theta0],
-  /* iterate: after l edges, theta = (P/Q)*theta0 + c, with branches summing */
+mono(pl,ql,al,nl) := block([P:1,Q:1,c:0],
   for l:1 thru length(pl) do (
-    P : P*pl[l],
-    Q : Q*ql[l],
-    /* the running offset accumulates the alpha and branch contributions,
-       each divided by the product of q's encountered so far */
-    c : (c + al[l] + 2*%pi*nl[l])/ql[l]
-  ),
-  /* after the full cycle: theta_N = (P/Q)*theta0 + c */
-  [P, Q, c]
-)$
+    c : (pl[l]*c + al[l] + 2*%pi*nl[l])/ql[l],
+    P : P*pl[l], Q : Q*ql[l]),
+  [P,Q,ratsimp(c)])$
 
-/* Triangle {3:1, 1:3, 1:1} — the §7.1 case. Closure: 3*1*1 / (1*3*1) = 1. */
-m_tri : monodromy([3,1,1],[1,3,1],[a1,a2,a3],[n1,n2,n3]);
-print("triangle {3:1,1:3,1:1}: P,Q,c = ", m_tri)$
-print("  P/Q = ", ratsimp(m_tri[1]/m_tri[2]), " (closure => 1)")$
-print("  c   = ", ratsimp(m_tri[3]))$
-print("  monodromy offset mod 2pi = ", ratsimp(trigreduce(m_tri[3])))$
-print("  -> discrete branch 2*pi*n1*n2*n3 / 3 = 2*pi*k/3 ; charge = k/3")$
+declare([a1,a2,a3,a4,n1,n2,n3,n4],integer)$
 
-/* General rule: under closure P=Q, the branch part is 2*pi*k/Q with Q=prod(q_l). */
-print("--- general: Q = prod(q_l); branch = 2*pi*k/Q; charge = k/Q ---")$
+/* (a) regression: the third-harmonic triangle of CHARGE §7.1 */
+mA : mono([3,1,1],[1,3,1],[a1,a2,a3],[n1,n2,n3]);
+print("{3:1,1:3,1:1}: closure prod p / prod q = ", ratsimp(mA[1]/mA[2]))$
+print("  c = ", mA[3])$
+print("  -> comma (a1+a2)/3 + a3 ; branch 2*pi*(n1+n2)/3 + 2*pi*n3 = 2*pi*k/3")$
+print("     (a SUM over edges, not a product -- repairs D3)")$
 
-/* Additivity over composites (E1/E2): two cycles of Q1,Q2 joined -> Q = lcm or prod */
-print("composite charge additivity: k1/Q1 + k2/Q2 = (k1*Q2 + k2*Q1)/(Q1*Q2) -> integer-gcd reduces")$
+/* (b) the PHYSICAL cycle: the fifth-triangle, where Q11/Q12/Q13 live */
+mB : mono([3,2,1],[2,3,1],[a1,a2,a3],[n1,n2,n3]);
+print("{3:2,2:3,1:1}: closure prod p / prod q = ", ratsimp(mB[1]/mB[2]))$
+print("  c = ", mB[3])$
+print("  -> comma (a1+a2)/3 + a3 ; branch 2*pi*k/3, k = n1+n2+3*n3 in Z_3")$
+print("  [the 2026-08-01 code gave a1/6 + pi*n1/3 + ... : comma AND branch wrong]")$
+
+/* (c) a 4-edge mixed cycle {2:1,1:2,3:1,1:3}: closure 6=6 */
+mC : mono([2,1,3,1],[1,2,1,3],[a1,a2,a3,a4],[n1,n2,n3,n4]);
+print("{2:1,1:2,3:1,1:3}: closure = ", ratsimp(mC[1]/mC[2]))$
+print("  c = ", mC[3])$
+print("  -> charge k/6, k = 3(n1+n2) + 2(n3+n4) in Z_6")$
+
+print("GENERAL: under closure, M(theta)-theta = comma + 2*pi*k/Q, where the")$
+print("branch of edge l enters with coefficient prod(p_{>l})/prod(q_{>=l});")$
+print("Q is the index of the subgroup those rationals generate. CHARGE := k/Q.")$
 
 /* ===================================================================== */
-/* PART 3 — confinement (E2): only integer holonomy transports through unison (Q=1) */
-/* A fractional slip k/Q in a unison medium (Q=1) would need to re-derive */
-/* through the gate desert. Symbolically: a unison edge is p=q=1, so any   */
-/* branch n is a full 2pi (integer) — fractions cannot be carried.        */
+/* PART 3 — confinement (E2): only integer holonomy traverses unison     */
 /* ===================================================================== */
 print("")$
 print("=== PART 3: confinement ===")$
-print("unison edge: p=q=1 -> branch step = 2pi*n (integer only).")$
-print("=> fractional k/Q cannot traverse a unison medium; confined to interval-rich cycles.")$
+print("a unison edge has p=q=1, so its branch step is 2*pi*n (integer only).")$
+print("=> fractional k/Q is defined only relative to interval content and")$
+print("   cannot be carried through a unison (Q=1) medium: confined to")$
+print("   interval-rich cycles. E2's free-charge integrality is derived.")$
 
 /* ===================================================================== */
-/* PART 4 — the MASS-SIZE-CHARGE relation (the user's thesis).           */
-/* A charge-carrying cycle of N edges, interval cover Q, trapped winding k: */
-/*   M(N,Q,k) = N*e_balance(L)  +  (k/Q)*E_core(p)  +  (k/Q)^2 * E_dress  */
-/* where:                                                                */
-/*   e_balance(L) = dense balance energy per voice at loop size L         */
-/*   E_core(p)    = sqrt(2A)*I(p)           [PART 1]                     */
-/*   E_dress      ~ q^2 * (far gradient energy)  [needs EM5 cone for 1/r] */
-/*                                                                       */
-/* SIZE CONDITION for charge formation: the kink is stable on the cycle   */
-/* only if its core fits: core width xi ~ sqrt(A/V'') < N (cycle perimeter)*/
-/* and the Peierls-Nabarro barrier exceeds thermal/transport noise.       */
-/* Discrete allowed (N,Q,k): closure + size + balance simultaneously.     */
+/* PART 4 — core width, tail rate, and the mass-size-charge relation     */
 /* ===================================================================== */
 print("")$
-print("=== PART 4: mass-size-charge relation ===")$
-print("M(N,Q,k) = N*e_balance(L) + (k/Q)*sqrt(2A)*I(p) + (k/Q)^2*E_dress")$
-print("size condition: kink core width xi=sqrt(A/V''(0)) must fit the cycle: N*d > k*xi")$
-
-/* V''(0) for the gate potential (curvature at the minimum psi=0). */
+print("=== PART 4: core width, tail rate, mass-size-charge ===")$
 Vdd(p) := ''(ratsimp(subst(psi=0,diff(V(psi,p),psi,2))));
-print("V''(0) general: ", Vdd(p))$
-print("V''(0) at p=8: ", float(ev(Vdd(8))))$
-/* kink core width xi = sqrt(2A / V''(0)) in the continuum limit */
-print("kink width xi(p=8) ~ sqrt(2A/V''(0)) = sqrt(2A/",float(ev(Vdd(8))),")")$
+print("V''(0) general = ", Vdd(p), " ; at p=8: ", float(ev(Vdd(8))))$
+print("core width xi   = sqrt(2A/V''(0)) = sqrt(4A/p)")$
+print("tail decay rate kappa = sqrt(V''(0)/A) = sqrt(p/(2A)) per site;")$
+print("  at the standing p=8, A=1: kappa = ", float(sqrt(8/2)),
+      " => the core-core interaction is CONTACT range (~1 site).")$
+print("  Anything long-range is the EM5 dressing's job, not the core's.")$
+
+print("")$
+print("M(N,Q,k) = N*e_balance(L) + [charge core] + (k/Q)^2 * E_dress")$
+print("  integer k, unison cycle: core = |k| * sqrt(2A)*I(p)  -- MEASURED")$
+print("    (charge_fk.c: linear in |k| to <1%; discrete minimum is 2.8%")$
+print("     below the continuum bound at p=8, A=1)")$
+print("  fractional k/Q: the 1/Q reduction of CHARGE §7.2 is NOT MEASURED.")$
+print("    It cannot be tested on a unison ring -- there a 2*pi*k/Q twist is")$
+print("    not a soliton at all but an elastic strain on the closing bond")$
+print("    (charge_fk.c section 5, negative control). Testing it needs a")$
+print("    Z_Q INTERVAL chain whose gate variable is the comb phase")$
+print("    Phi = q*theta_i - p*theta_j. Queued, not claimed.")$
+print("  E_dress: gated on the EM5 cone; no artifact measures it.")$
+
+print("")$
+print("size condition: a charge-|k| state is a clean soliton on a cycle of")$
+print("N voices only when N >~ |k|*xi; below that the core is squeezed by")$
+print("its periodic image. Sharp form = the Peierls-Nabarro barrier")$
+print("(charge_fk2.c N2), not the energy excess.")$
 
 /* ===================================================================== */
-/* PART 5 — the electron (CHARGE §7.3): the dressed delocalized kink.    */
-/* No dense core (no closed cycle): E_balance = 0, E_core -> 0 (delocalized). */
-/* Mass = E_dress (field-gradient scale) only -> naturally light.         */
-/* Its substance is the slip + the far phase dressing (O1's texture).     */
+/* PART 5 — the electron (CHARGE §7.3): the dressed delocalized kink     */
 /* ===================================================================== */
 print("")$
-print("=== PART 5: electron = unbound field harmonic (dressed delocalized kink) ===")$
-print("M_e = E_dress (no dense core, no closed cycle) -> field-gradient scale, light.")$
-print("localizes only at conversion events (the measured Tonomura click machinery).")$
+print("=== PART 5: electron = unbound field harmonic (ontology, not a measurement) ===")$
+print("no closed cycle => no N*e_balance term; mass = E_dress (field-gradient")$
+print("scale) => naturally light. Localizes only at conversion events.")$
+print("This is a reading of the ontology, NOT a measured result.")$
 
 print("")$
 print("=== charge_sym.mac DONE ===")$

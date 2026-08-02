@@ -1,0 +1,44 @@
+# charge_pack — the packing capacity of one harmonic cycle (p=8,A=1)
+# N=100, E_core(k=1)=7.432761 (max|grad|=2.2e-14)
+
+== winding packing scan: k integer charges on one N=100 cycle ==
+k     N/k     E_relax      E/(k*E1)   maxstep   ncore   E_uniform    regime
+1     100.00  7.4328       1.0000     1.4006    1       80.5593      charged (k resolvable cores)
+2     50.00   14.8655      1.0000     1.4006    2       81.1515      charged (k resolvable cores)
+3     33.33   22.2983      1.0000     1.4006    3       82.1385      charged (k resolvable cores)
+4     25.00   30.3928      1.0223     1.2179    4       83.5202      charged (k resolvable cores)
+5     20.00   37.1638      1.0000     1.4006    5       85.2967      charged (k resolvable cores)
+6     16.67   44.5966      1.0000     1.4006    6       87.4681      charged (k resolvable cores)
+8     12.50   59.4621      1.0000     1.4006    8       92.9950      charged (k resolvable cores)
+10    10.00   74.3278      1.0000     1.4006    10      100.1011     charged (k resolvable cores)
+12    8.33    89.8607      1.0075     1.4009    12      108.7864     charged (k resolvable cores)
+15    6.67    111.6248     1.0012     1.4063    15      124.7752     charged (k resolvable cores)
+18    5.56    134.8159     1.0077     1.4282    18      144.3170     charged (k resolvable cores)
+20    5.00    153.8972     1.0353     1.7494    20      157.6098     charged (k resolvable cores)
+22    4.55    169.2977     1.0353     1.8206    16      175.8997     transitional (cores merging)
+25    4.00    198.1610     1.0664     1.5885    0       198.1747     STRAIN (= the uniform state)
+28    3.57    228.6173     1.0985     2.0206    8       235.1173     transitional (cores merging)
+30    3.33    250.2355     1.1222     2.0557    0       258.0148     no resolvable cores
+35    2.86    310.6738     1.1942     2.9313    0       322.1672     no resolvable cores
+40    2.50    385.0184     1.2950     2.9472    0       394.4803     no resolvable cores
+45    2.22    464.0154     1.3873     3.1306    0       480.0809     no resolvable cores
+50    2.00    543.4802     1.4624     3.1416    0       543.4802     STRAIN (= the uniform state)
+
+capacity k* (first k where the relaxed lattice IS the uniform
+state, to 0.1%): k* = 25, i.e. N/k* = 4.0 sites per charge.
+Compare charge_fk.c's independent floor from the energy excess on
+small cycles: N/k >= 6 costs <0.3%, N/k = 4 costs 6.6%. The two
+agree in kind (a few sites per charge) but NOT in value; the
+capacity is a crossover, not a sharp edge, and no single 'xi'
+reproduces both. Do not quote one number for it.
+
+== merged jump vs relaxed lattice at fixed winding W=8 ==
+(both stationary states of the same ring — a fair comparison)
+merged (all twist on one bond): E=67.7205 maxstep=2.9298 ncore=1
+lattice (relaxed):              E=59.4621 maxstep=1.4006 ncore=8
+reading: kink repulsion (charge_fk2 N1) spreads the winding into an
+even lattice; the merged defect costs 1.14x more. That factor — not
+any comparison against an unrelaxed ramp — is the cost of packing
+the same winding incompatibly.
+
+# charge_pack DONE

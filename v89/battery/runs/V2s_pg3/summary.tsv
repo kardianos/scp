@@ -1,0 +1,2 @@
+g3_shadow	PASS	drift=-2.18e-16 E_exit=2.36 y_exit=24.40 (launch 22.5, mass at 18)
+LIN grain=eps(w)	PASS	SKIP only 0 QATOM points (need 10)

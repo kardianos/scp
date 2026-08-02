@@ -1,0 +1,2 @@
+e7_tune	FAIL	drift=-3.74e-16 n=120 frac|delta|<0.15=0.03 mean_gg=0.46 (A1 gap)
+LIN grain=eps(w)	PASS	SKIP only 1 QATOM points (need 10)

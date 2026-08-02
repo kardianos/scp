@@ -1,0 +1,76 @@
+# charge_fk — FK charge soliton (gate potential p_gate)
+# maxima: I(1)=4, I(8)=5.405336; V''(0)=p/2; xi=sqrt(2A/V''(0));
+# continuum bound E_core = sqrt(2A)*I(p)*|k|
+# all states relaxed from multiple seeds; lowest kept (see D4)
+
+== E_core vs p (A=1.0, N=400, one kink k=1) ==
+p    E_measured   sqrt(2A)I(p) ratio     xi[sites] max|grad| 
+1    5.615890     5.656854     0.9928    3         2.2e-14   
+2    6.436195     6.492901     0.9913    3         2.2e-14   
+4    7.066302     7.151764     0.9881    4         2.2e-14   
+8    7.432761     7.644299     0.9723    4         2.2e-14   
+16   7.657656     8.002418     0.9569    4         2.2e-14   
+reading: the discrete minimum sits BELOW the continuum bound by the
+         lattice correction (2.8% at p=8); the old 0.994 was the saddle.
+
+== E_core vs A (p=8, N=400, k=1) — expect sqrt(A) scaling ==
+A        E_measured   sqrt(2A)*I(8)  ratio     max|grad| 
+0.25     3.325940     3.822150       0.8702    2.2e-14   
+0.50     5.050412     5.405336       0.9343    2.2e-14   
+1.00     7.432761     7.644299       0.9723    2.2e-14   
+2.00     10.722591    10.810672      0.9919    2.2e-14   
+4.00     15.237640    15.288599      0.9967    2.2e-14   
+reading: the continuum bound is approached from below as A grows
+         (the core widens and the lattice correction shrinks).
+
+== SIZE CONDITION: periodic cycle, integer k, p=8, A=1.0 ==
+# NOTE on xi. The continuum core width sqrt(2A/V''(0)) = 0.71 site at
+# the standing p=8, A=1 -- SUB-LATTICE. The kink is deep in the
+# discrete regime, so the continuum width is NOT the size scale, and
+# the '~4 sites' quoted elsewhere is the FWHM of the step profile (a
+# lattice quantity). They are not interchangeable. The size floor
+# below is measured, and it collapses onto N/k.
+k    N      N/k     E_total      E/(k*E1)     maxstep      max|grad| 
+# reference E1 (k=1, N=400 cycle) = 7.432761
+1    3      3.00    8.579706     1.1543       2.0945       1.3e-14   
+1    4      4.00    7.926439     1.0664       1.5885       1.9e-14   
+1    6      6.00    7.452555     1.0027       1.4102       2.0e-14   
+1    10     10.00   7.432778     1.0000       1.4006       2.1e-14   
+2    6      3.00    17.159411    1.1543       2.0945       4.4e-14   
+2    8      4.00    15.852878    1.0664       1.5885       2.2e-14   
+2    12     6.00    14.905110    1.0027       1.4102       4.4e-14   
+3    9      3.00    25.739117    1.1543       2.0945       8.6e-14   
+3    15     5.00    22.613786    1.0141       1.4468       8.5e-14   
+reading: E/(k*E1) depends ONLY on N/k (the k=1,2,3 rows at equal N/k
+         agree to all printed digits) -- the cores are independent and
+         each needs its own room. Measured floor: N/k >= 6 costs <0.3%,
+         N/k = 4 costs 6.6%, N/k = 3 costs 15.4%.
+         The SHARP criterion is the PN barrier (charge_fk2.c N2),
+         not this energy excess.
+
+== INTEGER charge scaling (p=8, A=1.0, N=400 cycle) ==
+k      E_core       |k|*E1       ratio    
+1      7.432761     7.432761     1.0000   
+2      14.865521    14.865521    1.0000   
+3      22.298282    22.298282    1.0000   
+reading: integer charges are additive to <1% — the cores are
+         contact-range (charge_sym.mac PART 4) so they do not
+         interact at N/k = 133 sites apart.
+
+== (6) NEGATIVE CONTROL: fractional twist on a unison ring ==
+2*pi/Q is NOT a period of V, so a 2*pi*k/Q twist on a unison ring
+is not a soliton. The diagnostic below shows what it actually is.
+w=k/Q    E_relax      seam bond    max interior non-vacuum sites
+1.0000   7.432761     0.0000       1.4006       5             
+0.3333   1.510164     1.3948       0.2895       2             
+0.6667   4.541719     1.2362       1.2362       4             
+reading: at w=1 the twist is carried by a localised CORE (seam ~ 0,
+         a large interior step, a handful of non-vacuum sites).
+         At w=1/3 and 2/3 the twist sits on the SEAM BOND and the
+         chain is at the vacuum everywhere else: an elastic strain
+         imposed by the boundary condition, not a fractional charge.
+         => no conclusion about fractional charge can be drawn from
+         a unison ring. Test the 1/Q scaling on a Z_Q INTERVAL chain
+         whose gate variable is the comb phase q*th_i - p*th_j.
+
+# charge_fk DONE

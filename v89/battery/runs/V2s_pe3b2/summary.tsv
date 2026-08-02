@@ -1,0 +1,2 @@
+e3b_blob_tilt	PASS	drift=1.44e-15 speed=0.00805 cos=0.8935
+LIN grain=eps(w)	PASS	SKIP only 0 QATOM points (need 10)

@@ -1,0 +1,3 @@
+e7_tune	FAIL	drift=-3.19e-15 alive=47/60 frac|delta|<0.15=0.70 gg=0.95 dead_x*max=0.088 skirt1.5=0.093
+e3b_blob_tilt	FAIL	drift=3.75e-16 speed=0.00256 cos=0.883
+LIN grain=eps(w)	PASS	SKIP only 1 QATOM points (need 10)
