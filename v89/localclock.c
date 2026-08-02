@@ -1,49 +1,40 @@
-/* localclock.c — v89 — does the global clock have to exist?
+/* localclock.c — v89 — per-cell clocks: READINESS SUITE
  *
  * Standalone. Does not touch cellfab.c. Build:
  *   gcc -O2 -Wall -Wextra -o localclock localclock.c -lm
  *
- * THE QUESTION
+ * WHAT THIS IS
  * ------------
- * Idea (2b) of the 2026-08-02 design thread: amortise the global clock by
- * giving every cell its OWN tick counter — "a byte with a mod" — and
- * letting each advance at its own rate, relativistically. The v89 kernel
- * currently advances every cell together on one dt, which is a permanent
- * index set in time: something that persists and is merely re-valued,
- * which is the construction PRINCIPLE constraint 2 forbids in space. If
- * the argument is good against a spatial background it is good against a
- * temporal one.
+ * Design (2b) of the 2026-08-02 thread: replace the one global dt with a
+ * local time and tick counter per cell. The first pass established the
+ * mechanism and found three things that are now specifications:
  *
- * The idea is well-motivated beyond tidiness: v89 ALREADY has a local
- * rate. The pitch law x = (Em + fl*load)/cap flattens a loaded cell's
- * pitch, and pitch IS rate. So the physics is already local-rate; only
- * the integrator is global. Making the tick local formalises what the
- * pitch law already does, and makes time dilation structural rather than
- * an effect computed on top of a universal clock.
+ *   - bound skew in LOCAL TIME, not tick count: cells take
+ *     different-sized steps, so equal tick counts are not equal time and
+ *     a tick bound distorts the ordering it is meant to protect
+ *     (agreement 1.3e-2 bounded vs 1.1e-4 unbounded);
+ *   - a byte suffices up to skew 127 (K < M/2 exactly), but the wrap
+ *     failure is SILENT — the comparison stops ordering and the bound
+ *     evaporates with no symptom, so it must be asserted;
+ *   - determinism survives only under a TOTAL canonical order; arrival
+ *     order diverges up to 3.7 rad, and breaking ties by scan position
+ *     instead of index leaks back in at 3e-6.
  *
- * WHAT THIS FILE MEASURES
- * -----------------------
- * A ring of coupled phase cells — the minimal stand-in for the dense
- * sector — integrated three ways on identical initial conditions:
+ * This revision applies all three and asks whether the result is fit to
+ * carry the battery. Four questions, in the order that can kill it:
  *
- *   SYNC   every cell advances on one global dt (what cellfab does now)
- *   LOCAL  every cell owns a counter tau_i; it may advance only while it
- *          is no more than K ticks ahead of its neighbours; it reads
- *          whatever its neighbours have PUBLISHED, which may be stale
- *   WRAP   the same, but with the counter stored in a narrow field of
- *          M values, so tau wraps
- *
- * Three questions, each with a number attached:
- *   Q1  does going local change the physics? (compare locked state)
- *   Q2  how much skew K can be tolerated before it does?
- *   Q3  how many bits does the counter need before wrap destroys
- *       causality? (the "is a byte enough" question, answered)
- *
- * and one that decides whether this is adoptable at all:
- *   Q4  is LOCAL still DETERMINISTIC — same answer regardless of the
- *       order cells happen to be visited in? The ratchet depends on
- *       byte-identical reruns; an update rule that loses that is not
- *       adoptable no matter how principled it is.
+ *   R1 CONSERVATION. The phase model tested nothing of the kind. Energy
+ *      moves on channels as paired antisymmetric transfers; does the
+ *      ledger close under async as exactly as under sync? This is the
+ *      One Law and it is not negotiable.
+ *   R2 CONVERGENCE. Does |async - sync| fall with dt? If it plateaus the
+ *      local scheme is a different model, not a different integrator.
+ *   R3 DETERMINISM. Bit-identical under scan reversal AND rotated scan
+ *      origin (stand-ins for "which core got there first").
+ *   R4 LOOKAHEAD. The bound should be PHYSICAL: a neighbour cannot
+ *      influence a cell faster than the rate limit, so that limit is the
+ *      lookahead and no arbitrary K is needed. Plus the payoff — how
+ *      many cells are eligible at once.
  */
 
 #include <math.h>
@@ -52,232 +43,438 @@
 #include <string.h>
 
 #define TWOPI 6.283185307179586
+#define MAXDEG 16
 
 typedef struct {
-    int N;
-    double *th;      /* phase */
-    double *pub;     /* last PUBLISHED phase (what neighbours can see) */
-    double *w;       /* natural pitch = tick rate */
-    long   *tau;     /* local tick counter */
-    double Kc, dt;
-} Ring;
+    int N, deg;
+    int *nb, *nd;
+    double *th, *pub, *w, *E, *t, *h;
+    long *tau;
+    /* CHANNELS are first-class event holders with their own clock. A
+     * transfer fired once per endpoint-advance double-counts: each edge
+     * would move gE*(h_i+h_j) per round instead of gE per unit time, an
+     * O(1) rate error that does NOT vanish as dt->0. Channel ownership
+     * makes the rate correct for any step size. */
+    int ne, *ei, *ej;
+    double *et, *eh;
+    double Kc, gE, dt;
+    long cap_hits;
+} Fab;
 
-static Ring *ring_new(int N, double Kc, double dt, unsigned long long seed)
+static unsigned long long RS;
+static double rnd(void)
+{ RS ^= RS << 13; RS ^= RS >> 7; RS ^= RS << 17;
+  return (double)((RS >> 11) & 0xFFFFFFFFFFFFFULL) / 9007199254740992.0; }
+
+static Fab *fab_new(int N, int deg, double Kc, double gE, double dt)
 {
-    Ring *r = calloc(1, sizeof(Ring));
-    r->N = N; r->Kc = Kc; r->dt = dt;
-    r->th = malloc(N * sizeof(double));
-    r->pub = malloc(N * sizeof(double));
-    r->w = malloc(N * sizeof(double));
-    r->tau = calloc(N, sizeof(long));
-    unsigned long long s = seed ? seed : 1;
+    Fab *f = calloc(1, sizeof(Fab));
+    f->N = N; f->deg = deg; f->Kc = Kc; f->gE = gE; f->dt = dt;
+    f->nb = calloc((size_t)N * MAXDEG, sizeof(int));
+    f->nd = calloc(N, sizeof(int));
+    f->th = calloc(N, sizeof(double));
+    f->pub = calloc(N, sizeof(double));
+    f->w = calloc(N, sizeof(double));
+    f->E = calloc(N, sizeof(double));
+    f->t = calloc(N, sizeof(double));
+    f->h = calloc(N, sizeof(double));
+    f->tau = calloc(N, sizeof(long));
+    f->ei = calloc((size_t)N * MAXDEG, sizeof(int));
+    f->ej = calloc((size_t)N * MAXDEG, sizeof(int));
+    f->et = calloc((size_t)N * MAXDEG, sizeof(double));
+    f->eh = calloc((size_t)N * MAXDEG, sizeof(double));
+    return f;
+}
+static void fab_free(Fab *f)
+{ free(f->nb); free(f->nd); free(f->th); free(f->pub); free(f->w);
+  free(f->E); free(f->t); free(f->h); free(f->tau);
+  free(f->ei); free(f->ej); free(f->et); free(f->eh); free(f); }
+
+static void fab_build(Fab *f, unsigned long long seed)
+{
+    int N = f->N;
+    RS = seed;
     for (int i = 0; i < N; i++) {
-        s ^= s << 13; s ^= s >> 7; s ^= s << 17;
-        double a = (double)((s >> 11) & 0xFFFFFFFFFFFFFULL) / 9007199254740992.0;
-        s ^= s << 13; s ^= s >> 7; s ^= s << 17;
-        double b = (double)((s >> 11) & 0xFFFFFFFFFFFFFULL) / 9007199254740992.0;
-        r->th[i] = TWOPI * a;
-        r->pub[i] = r->th[i];
-        r->w[i] = 1.0 + 0.30 * (b - 0.5);   /* spread of local rates */
+        f->th[i] = TWOPI * rnd();
+        f->pub[i] = f->th[i];
+        f->w[i] = 1.0 + 0.30 * (rnd() - 0.5);
+        f->E[i] = 1.0 + rnd();
+        f->h[i] = f->dt * (0.6 + 0.8 * rnd());   /* the dilation */
     }
-    return r;
-}
-static void ring_free(Ring *r)
-{ free(r->th); free(r->pub); free(r->w); free(r->tau); free(r); }
-
-static void ring_copy_ic(Ring *d, const Ring *s)
-{
-    memcpy(d->th, s->th, s->N * sizeof(double));
-    memcpy(d->pub, s->th, s->N * sizeof(double));
-    memcpy(d->w, s->w, s->N * sizeof(double));
-    memset(d->tau, 0, s->N * sizeof(long));
-}
-
-/* one cell's increment, from PUBLISHED neighbour phases */
-static double dtheta(Ring *r, int i)
-{
-    int N = r->N, a = (i + N - 1) % N, b = (i + 1) % N;
-    return r->w[i] + r->Kc * (sin(r->pub[a] - r->th[i])
-                              + sin(r->pub[b] - r->th[i]));
-}
-
-/* order parameter of the phase differences: 1 = fully locked */
-static double locked_R(Ring *r)
-{
-    double c = 0, s = 0;
-    for (int i = 0; i < r->N; i++) {
-        double d = r->th[(i + 1) % r->N] - r->th[i];
-        c += cos(d); s += sin(d);
+    for (int i = 0; i < N; i++) {               /* ring backbone */
+        int j = (i + 1) % N;
+        f->nb[i * MAXDEG + f->nd[i]++] = j;
+        f->nb[j * MAXDEG + f->nd[j]++] = i;
     }
-    return sqrt(c * c + s * s) / r->N;
-}
-
-/* ---- SYNC: one global dt, read-old/write-new (Jacobi) ---- */
-static void run_sync(Ring *r, double T)
-{
-    int N = r->N;
-    double *nx = malloc(N * sizeof(double));
-    int steps = (int)(T / r->dt + 0.5);
-    for (int t = 0; t < steps; t++) {
-        for (int i = 0; i < N; i++) nx[i] = r->th[i] + r->dt * dtheta(r, i);
-        memcpy(r->th, nx, N * sizeof(double));
-        memcpy(r->pub, nx, N * sizeof(double));
-        for (int i = 0; i < N; i++) r->tau[i]++;
+    for (int e = 0; e < N * (f->deg - 2) / 2; e++) {
+        int i = (int)(rnd() * N), j = (int)(rnd() * N);
+        if (i == j || f->nd[i] >= MAXDEG || f->nd[j] >= MAXDEG) continue;
+        int dup = 0;
+        for (int k = 0; k < f->nd[i]; k++) if (f->nb[i * MAXDEG + k] == j) dup = 1;
+        if (dup) continue;
+        f->nb[i * MAXDEG + f->nd[i]++] = j;
+        f->nb[j * MAXDEG + f->nd[j]++] = i;
     }
-    free(nx);
+    f->ne = 0;
+    for (int i = 0; i < N; i++)
+        for (int k = 0; k < f->nd[i]; k++) {
+            int j = f->nb[i * MAXDEG + k];
+            if (j < i) continue;
+            f->ei[f->ne] = i; f->ej[f->ne] = j;
+            f->eh[f->ne] = 0.5 * (f->h[i] + f->h[j]);
+            f->ne++;
+        }
 }
 
-/* ---- LOCAL: event-driven, per-cell proper time ----
- * Every cell owns a local time t_i and a local step h_i. Cells with
- * different pitch take different steps, so after the same elapsed
- * coordinate time they have done DIFFERENT numbers of ticks — the
- * counters genuinely diverge, which is the whole point and is what the
- * wrap question is actually about.
- *
- * sel = 0 CANONICAL: always advance the cell with the smallest
- *        (t_i, i). The order is a function of STATE, so it does not
- *        matter which core gets there first.
- * sel = 1 ARRIVAL: advance whichever eligible cell the scan reaches
- *        first. This is what you get if you simply let threads run.
- * scan   direction of the scan; under sel=0 it must not matter, under
- *        sel=1 it will.                                                */
-static void run_local(Ring *r, double T, int K, long M, int sel, int scan)
+static void fab_copy_ic(Fab *d, const Fab *s)
 {
-    int N = r->N;
-    double *h = malloc(N * sizeof(double));
-    double *t = calloc(N, sizeof(double));
-    for (int i = 0; i < N; i++) h[i] = r->dt * (0.6 + 0.8 * (r->w[i] - 0.85));
-    long guard = 0, cap = 4000L * N * (long)(T / r->dt + 2);
-    for (;;) {
-        int pick = -1;
-        double bt = 0;
-        for (int q = 0; q < N; q++) {
-            int i = scan ? (N - 1 - q) : q;
-            if (t[i] >= T) continue;
-            int a = (i + N - 1) % N, b = (i + 1) % N;
-            long d1, d2;
-            if (M > 0) {
-                d1 = ((r->tau[i] - r->tau[a]) % M + M) % M; if (d1 > M / 2) d1 -= M;
-                d2 = ((r->tau[i] - r->tau[b]) % M + M) % M; if (d2 > M / 2) d2 -= M;
-            } else {
-                d1 = r->tau[i] - r->tau[a];
-                d2 = r->tau[i] - r->tau[b];
+    int N = s->N;
+    memcpy(d->nb, s->nb, (size_t)N * MAXDEG * sizeof(int));
+    memcpy(d->nd, s->nd, N * sizeof(int));
+    memcpy(d->th, s->th, N * sizeof(double));
+    memcpy(d->pub, s->th, N * sizeof(double));
+    memcpy(d->w, s->w, N * sizeof(double));
+    memcpy(d->E, s->E, N * sizeof(double));
+    memcpy(d->h, s->h, N * sizeof(double));
+    memset(d->t, 0, N * sizeof(double));
+    memset(d->tau, 0, N * sizeof(long));
+    d->ne = s->ne;
+    memcpy(d->ei, s->ei, s->ne * sizeof(int));
+    memcpy(d->ej, s->ej, s->ne * sizeof(int));
+    memcpy(d->eh, s->eh, s->ne * sizeof(double));
+    memset(d->et, 0, s->ne * sizeof(double));
+    d->cap_hits = 0;
+}
+
+static double total_E(Fab *f)
+{ double s = 0; for (int i = 0; i < f->N; i++) s += f->E[i]; return s; }
+
+static double dtheta(Fab *f, int i)
+{
+    double s = 0;
+    for (int k = 0; k < f->nd[i]; k++)
+        s += sin(f->pub[f->nb[i * MAXDEG + k]] - f->th[i]);
+    return f->w[i] + f->Kc * s;
+}
+
+/* Advance ONE cell by its own step. Energy moves as PAIRED ANTISYMMETRIC
+ * TRANSFERS: whatever leaves i arrives at j in the same statement, so
+ * conservation is exact by construction and independent of execution
+ * order. That is the whole reason to structure the update as transfers
+ * rather than as independently recomputed cell states. */
+static void advance(Fab *f, int i)
+{
+    double hi = f->h[i];
+    f->th[i] += hi * dtheta(f, i);
+    f->pub[i] = f->th[i];
+    f->t[i] += hi;
+    f->tau[i]++;
+}
+
+/* the channel's own event: one paired antisymmetric transfer, fired
+ * once per h_e of the CHANNEL's time. Conserves exactly, and the rate
+ * is gE per unit time whatever the endpoints' steps are. */
+static void advance_edge(Fab *f, int e)
+{
+    int i = f->ei[e], j = f->ej[e];
+    double q = f->eh[e] * f->gE * (f->E[i] - f->E[j]);
+    f->E[i] -= q;
+    f->E[j] += q;
+    f->et[e] += f->eh[e];
+}
+
+static void run_sync(Fab *f, double T)
+{
+    int N = f->N;
+    double *nth = malloc(N * sizeof(double));
+    double *dE = malloc(N * sizeof(double));
+    int steps = (int)(T / f->dt + 0.5);
+    for (int s = 0; s < steps; s++) {
+        memset(dE, 0, N * sizeof(double));
+        for (int i = 0; i < N; i++) nth[i] = f->th[i] + f->dt * dtheta(f, i);
+        for (int i = 0; i < N; i++)
+            for (int k = 0; k < f->nd[i]; k++) {
+                int j = f->nb[i * MAXDEG + k];
+                if (j < i) continue;
+                double q = f->dt * f->gE * (f->E[i] - f->E[j]);
+                dE[i] -= q; dE[j] += q;
             }
-            if (d1 > K || d2 > K) continue;      /* too far ahead: wait */
-            if (sel == 1) { pick = i; break; }   /* arrival order */
-            /* the order must be a TOTAL function of state: ties broken
-             * by index, never by who was scanned first. Without the tie
-             * clause this is 'almost canonical' and leaks scan order back
-             * in at ~1e-6 — small, but not byte-identical, and the
-             * ratchet compares bytes. */
-            if (pick < 0 || t[i] < bt || (t[i] == bt && i < pick))
-                { pick = i; bt = t[i]; }
+        for (int i = 0; i < N; i++) { f->th[i] = nth[i]; f->E[i] += dE[i]; }
+        memcpy(f->pub, f->th, N * sizeof(double));
+        for (int i = 0; i < N; i++) f->tau[i]++;
+    }
+    free(nth); free(dE);
+}
+
+/* Unified event loop over CELLS and CHANNELS. An event is eligible when
+ * its own local time stays within LOOKAHEAD of the minimum over the cells
+ * it touches. LOOKAHEAD is physical — how long a neighbour needs to reach
+ * this cell at the rate limit — so there is no arbitrary K.
+ * sel 0 canonical (smallest (t, kind, index)); 1 arrival order.
+ * rot/dir = scan origin and direction: under sel=0 neither may change a
+ * single bit. `skew` returns the largest instantaneous neighbour tick
+ * difference seen — the quantity a mod-M counter would have to hold. */
+static void run_local(Fab *f, double T, double look, long M,
+                      int sel, int rot, int dir, long *skew)
+{
+    int N = f->N, NE = f->ne, NT = N + NE;
+    long cap = 400L * NT * (long)(T / f->dt + 2), guard = 0;
+    if (skew) *skew = 0;
+    for (;;) {
+        int pick = -1;          /* < N : cell;  >= N : channel */
+        double bt = 0;
+        for (int q = 0; q < NT; q++) {
+            int u = dir ? (rot + NT - 1 - q) % NT : (rot + q) % NT;
+            double tu, lim = 1e300;
+            if (u < N) {
+                if (f->t[u] >= T) continue;
+                tu = f->t[u];
+                for (int k = 0; k < f->nd[u]; k++) {
+                    double tj = f->t[f->nb[u * MAXDEG + k]];
+                    if (tj < lim) lim = tj;
+                }
+                if (tu + f->h[u] > lim + look) continue;
+            } else {
+                int e = u - N;
+                if (f->et[e] >= T) continue;
+                tu = f->et[e];
+                double a = f->t[f->ei[e]], b = f->t[f->ej[e]];
+                lim = a < b ? a : b;
+                if (tu + f->eh[e] > lim + look) continue;
+            }
+            if (M > 0 && u < N) {
+                long d = 0;
+                for (int k = 0; k < f->nd[u]; k++) {
+                    long dd = f->tau[u] - f->tau[f->nb[u * MAXDEG + k]];
+                    if (dd < 0) dd = -dd;
+                    if (dd > d) d = dd;
+                }
+                if (d >= M / 2) {
+                    fprintf(stderr, "FATAL: neighbour tick skew %ld >= M/2 "
+                            "(%ld) — the wrapped counter can no longer order "
+                            "ticks\n", d, M / 2);
+                    exit(3);
+                }
+            }
+            if (sel == 1) { pick = u; break; }
+            if (pick < 0 || tu < bt || (tu == bt && u < pick))
+                { pick = u; bt = tu; }
         }
         if (pick < 0) break;
-        r->th[pick] += h[pick] * dtheta(r, pick);
-        r->pub[pick] = r->th[pick];
-        t[pick] += h[pick];
-        r->tau[pick]++;
-        if (++guard > cap) break;
+        if (pick < N) {
+            advance(f, pick);
+            if (skew) {
+                for (int k = 0; k < f->nd[pick]; k++) {
+                    long dd = f->tau[pick] - f->tau[f->nb[pick * MAXDEG + k]];
+                    if (dd < 0) dd = -dd;
+                    if (dd > *skew) *skew = dd;
+                }
+            }
+        } else {
+            advance_edge(f, pick - N);
+        }
+        if (++guard > cap) { f->cap_hits++; break; }
     }
-    free(h); free(t);
 }
 
-static double maxdiff(Ring *a, Ring *b)
+static double mean_eligible(Fab *f, double T, double look)
 {
-    double m = 0;
-    for (int i = 0; i < a->N; i++) {
-        double d = fabs(a->th[i] - b->th[i]);
-        if (d > m) m = d;
+    int N = f->N, NE = f->ne, NT = N + NE;
+    double acc = 0;
+    long n = 0, cap = 400L * NT * (long)(T / f->dt + 2), guard = 0;
+    for (;;) {
+        int cnt = 0, pick = -1;
+        double bt = 0;
+        for (int u = 0; u < NT; u++) {
+            double tu, lim = 1e300;
+            if (u < N) {
+                if (f->t[u] >= T) continue;
+                tu = f->t[u];
+                for (int k = 0; k < f->nd[u]; k++) {
+                    double tj = f->t[f->nb[u * MAXDEG + k]];
+                    if (tj < lim) lim = tj;
+                }
+                if (tu + f->h[u] > lim + look) continue;
+            } else {
+                int e = u - N;
+                if (f->et[e] >= T) continue;
+                tu = f->et[e];
+                double a = f->t[f->ei[e]], b = f->t[f->ej[e]];
+                lim = a < b ? a : b;
+                if (tu + f->eh[e] > lim + look) continue;
+            }
+            cnt++;
+            if (pick < 0 || tu < bt || (tu == bt && u < pick))
+                { pick = u; bt = tu; }
+        }
+        if (pick < 0) break;
+        acc += cnt; n++;
+        if (pick < N) advance(f, pick); else advance_edge(f, pick - N);
+        if (++guard > cap) break;
     }
-    return m;
+    return n ? acc / n : 0;
+}
+
+static double maxdiff_th(Fab *a, Fab *b)
+{ double m = 0; for (int i = 0; i < a->N; i++)
+  { double d = fabs(a->th[i] - b->th[i]); if (d > m) m = d; } return m; }
+static double maxdiff_E(Fab *a, Fab *b)
+{ double m = 0; for (int i = 0; i < a->N; i++)
+  { double d = fabs(a->E[i] - b->E[i]); if (d > m) m = d; } return m; }
+
+static Fab *mk(Fab *ic, double dt)
+{
+    Fab *f = fab_new(ic->N, ic->deg, ic->Kc, ic->gE, dt);
+    fab_copy_ic(f, ic);
+    for (int i = 0; i < f->N; i++) f->h[i] = ic->h[i] * (dt / ic->dt);
+    /* the CHANNEL steps must rescale too. Missing this froze the async
+     * transport at the dt0 discretisation, so its error against a fine
+     * reference sat at exactly 1.200e-4 for every dt — a plateau that
+     * looks precisely like 'different fixed point' and is not. */
+    for (int e = 0; e < f->ne; e++) f->eh[e] = ic->eh[e] * (dt / ic->dt);
+    return f;
 }
 
 int main(void)
 {
-    const int N = 24;
-    const double Kc = 0.6, dt = 0.02, T = 80.0;
+    const int N = 96, DEG = 7;
+    const double Kc = 0.5, gE = 0.30, dt0 = 0.02, T = 40.0;
+    const double LOOK = 0.05;
 
-    printf("# localclock — must the clock be global?\n");
-    printf("# ring N=%d, Kc=%.2f, dt=%.3f, elapsed T=%.1f\n", N, Kc, dt, T);
-    printf("# LOCAL cells own a local time and a local STEP, so their tick\n");
-    printf("# counters genuinely diverge (that is the dilation).\n\n");
+    printf("# localclock — READINESS SUITE\n");
+    printf("# N=%d degree=%d Kc=%.2f gE=%.2f T=%.1f lookahead=%.3f\n",
+           N, DEG, Kc, gE, T, LOOK);
+    printf("# skew bounded in LOCAL TIME; order canonical (t_i,i);\n");
+    printf("# energy moves as paired antisymmetric transfers.\n\n");
 
-    Ring *ic = ring_new(N, Kc, dt, 20260802);
-    Ring *S = ring_new(N, Kc, dt, 1); ring_copy_ic(S, ic);
-    run_sync(S, T);
-    printf("== reference ==\nSYNC  R=%.6f\n\n", locked_R(S));
+    Fab *ic = fab_new(N, DEG, Kc, gE, dt0);
+    fab_build(ic, 20260802);
+    { int s = 0; for (int i = 0; i < N; i++) s += ic->nd[i];
+      printf("graph: mean degree %.2f\n\n", (double)s / N); }
 
-    printf("== Q1/Q2. does the LOCK survive going local? ==\n");
-    printf("   K    R(local)   dR vs SYNC   tick spread (max-min tau)\n");
+    printf("== R1. CONSERVATION — does the ledger close under async? ==\n");
+    printf("                   before          after          drift\n");
     {
-        int Ks[] = {1, 2, 4, 8, 16, 32, 64, 1000000};
-        for (unsigned q = 0; q < sizeof(Ks) / sizeof(Ks[0]); q++) {
-            Ring *L = ring_new(N, Kc, dt, 1); ring_copy_ic(L, ic);
-            run_local(L, T, Ks[q], 0, 0, 0);
-            long mn = L->tau[0], mx = L->tau[0];
+        Fab *S = mk(ic, dt0); double e0 = total_E(S);
+        run_sync(S, T);
+        printf("SYNC           %14.10f  %14.10f  %+.3e\n",
+               e0, total_E(S), total_E(S) - e0);
+        fab_free(S);
+        double looks[] = {0.02, 0.05, 0.2, 1.0};
+        for (unsigned q = 0; q < 4; q++) {
+            Fab *L = mk(ic, dt0); double b0 = total_E(L);
+            run_local(L, T, looks[q], 0, 0, 0, 0, NULL);
+            printf("LOCAL look=%-5.2f %14.10f  %14.10f  %+.3e%s\n",
+                   looks[q], b0, total_E(L), total_E(L) - b0,
+                   L->cap_hits ? "  (CAP HIT)" : "");
+            fab_free(L);
+        }
+    }
+    {   /* is the diffusion actually finished in BOTH schemes? If E is
+         * equilibrated the two must agree to the FP floor; a residual
+         * means one of them did not finish, which is a scheduler bug
+         * and not a discretisation difference. */
+        Fab *S = mk(ic, dt0); run_sync(S, T);
+        Fab *L = mk(ic, dt0); run_local(L, T, LOOK, 0, 0, 0, 0, NULL);
+        double smn = S->E[0], smx = S->E[0], lmn = L->E[0], lmx = L->E[0];
+        long emn = 0, emx = 0;
+        for (int i = 0; i < N; i++) {
+            if (S->E[i] < smn) smn = S->E[i];
+            if (S->E[i] > smx) smx = S->E[i];
+            if (L->E[i] < lmn) lmn = L->E[i];
+            if (L->E[i] > lmx) lmx = L->E[i];
+        }
+        for (int e = 0; e < L->ne; e++) {
+            long k = (long)(L->et[e] / L->eh[e] + 0.5);
+            if (e == 0 || k < emn) emn = k;
+            if (e == 0 || k > emx) emx = k;
+        }
+        printf("\nequilibration check (E should be uniform by T=%.0f):\n", T);
+        printf("  SYNC  E spread = %.3e\n", smx - smn);
+        printf("  LOCAL E spread = %.3e\n", lmx - lmn);
+        printf("  LOCAL channel firings: min %ld max %ld\n", emn, emx);
+        fab_free(S); fab_free(L);
+    }
+
+    printf("\nreading: paired transfers conserve by construction, so this\n");
+    printf("must sit at the FP floor for EVERY lookahead. Anything else\n");
+    printf("means the transfer structure is wrong, not the scheduler.\n\n");
+
+    printf("== R2. CONVERGENCE — is it the SAME physics? ==\n");
+    printf("Comparing async(dt) to sync(dt) conflates two independent O(dt)\n");
+    printf("errors and cannot answer this. Both are measured instead against\n");
+    printf("a common fine-step reference: sync at dt0/64.\n");
+    printf("     dt    sync err     async err   sync ratio  async ratio\n");
+    {
+        Fab *R = mk(ic, dt0 / 64.0); run_sync(R, T);
+        double ps = 0, pa = 0;
+        double dts[] = {0.02, 0.01, 0.005, 0.0025, 0.00125};
+        for (unsigned q = 0; q < 5; q++) {
+            Fab *S = mk(ic, dts[q]); run_sync(S, T);
+            Fab *L = mk(ic, dts[q]); run_local(L, T, LOOK, 0, 0, 0, 0, NULL);
+            double es = maxdiff_E(R, S), ea = maxdiff_E(R, L);
+            if (q) printf("%8.5f  %10.3e  %10.3e  %9.2fx  %10.2fx\n",
+                          dts[q], es, ea, ps / es, pa / ea);
+            else   printf("%8.5f  %10.3e  %10.3e       —            —\n",
+                          dts[q], es, ea);
+            ps = es; pa = ea;
+            fab_free(S); fab_free(L);
+        }
+        fab_free(R);
+    }
+    printf("\nreading: BOTH columns must fall, at comparable order. That is\n");
+    printf("what 'same physics, different integrator' looks like. If the\n");
+    printf("async column plateaus while sync falls, the local scheme has a\n");
+    printf("different fixed point and is not adoptable.\n\n");
+
+    printf("== R3. DETERMINISM — bit-identity under reordering ==\n");
+    printf("  variant                        max|dtheta|   verdict\n");
+    {
+        Fab *A = mk(ic, dt0); run_local(A, T, LOOK, 0, 0, 0, 0, NULL);
+        struct { const char *name; int sel, rot, dir; } v[] = {
+            {"canonical, reversed scan",      0,  0, 1},
+            {"canonical, rotated origin 37",  0, 37, 0},
+            {"canonical, rotated + reversed", 0, 53, 1},
+            {"ARRIVAL order, reversed scan",  1,  0, 1},
+        };
+        for (unsigned q = 0; q < 4; q++) {
+            Fab *B = mk(ic, dt0);
+            run_local(B, T, LOOK, 0, v[q].sel, v[q].rot, v[q].dir, NULL);
+            double d = maxdiff_th(A, B);
+            printf("  %-29s  %11.3e   %s\n", v[q].name, d,
+                   d == 0.0 ? "EXACT" : "differs");
+            fab_free(B);
+        }
+        fab_free(A);
+    }
+    printf("\nreading: every canonical row must read EXACT — that property is\n");
+    printf("what lets the battery compare byte-identical reruns.\n\n");
+
+    printf("== R4. LOOKAHEAD — physical bound, and what it buys ==\n");
+    printf(" lookahead  mean_eligible  neighbour skew  total dilation  bits\n");
+    {
+        double looks[] = {0.02, 0.05, 0.1, 0.2, 0.5, 1.0, 2.0};
+        for (unsigned q = 0; q < 7; q++) {
+            Fab *L = mk(ic, dt0);
+            double me = mean_eligible(L, T, looks[q]);
+            fab_free(L);
+            Fab *L2 = mk(ic, dt0); long sk = 0;
+            run_local(L2, T, looks[q], 0, 0, 0, 0, &sk);
+            long mn = L2->tau[0], mx = L2->tau[0];
             for (int i = 0; i < N; i++) {
-                if (L->tau[i] < mn) mn = L->tau[i];
-                if (L->tau[i] > mx) mx = L->tau[i];
+                if (L2->tau[i] < mn) mn = L2->tau[i];
+                if (L2->tau[i] > mx) mx = L2->tau[i];
             }
-            printf("%4d    %8.6f   %+10.2e   %ld\n",
-                   Ks[q], locked_R(L), locked_R(L) - locked_R(S), mx - mn);
-            ring_free(L);
+            int bits = 1; while ((1L << bits) < 2 * (sk + 1)) bits++;
+            printf("%10.3f  %13.2f  %14ld  %13ld  %8d\n",
+                   looks[q], me, sk, mx - mn, bits);
+            fab_free(L2);
         }
     }
-    printf("\nreading: the lock is the physics. If R survives, a global\n");
-    printf("clock was never carrying it.\n\n");
+    printf("\nreading: mean_eligible is the width available to run in parallel\n");
+    printf("with no global barrier. 'counter bits' is what the K<M/2 rule\n");
+    printf("demands at that lookahead — the answer to 'is a byte enough'.\n");
 
-    printf("== Q3. IS A BYTE ENOUGH? counter width M vs skew bound K ==\n");
-    printf("wrapped comparison can only order ticks while K < M/2.\n");
-    printf("    M     K   K<M/2    R(local)   tick spread\n");
-    {
-        long Ms[] = {8, 8, 16, 16, 64, 256, 256};
-        int  Ks[] = {2, 6,  4, 12, 40,  64, 200};
-        for (unsigned q = 0; q < sizeof(Ms) / sizeof(Ms[0]); q++) {
-            Ring *L = ring_new(N, Kc, dt, 1); ring_copy_ic(L, ic);
-            run_local(L, T, Ks[q], Ms[q], 0, 0);
-            long mn = L->tau[0], mx = L->tau[0];
-            for (int i = 0; i < N; i++) {
-                if (L->tau[i] < mn) mn = L->tau[i];
-                if (L->tau[i] > mx) mx = L->tau[i];
-            }
-            printf("%5ld  %4d   %-6s  %8.6f   %ld\n", Ms[q], Ks[q],
-                   (Ks[q] < Ms[q] / 2) ? "yes" : "NO", locked_R(L), mx - mn);
-            ring_free(L);
-        }
-    }
-    printf("\n");
-
-    printf("== Q4. DETERMINISM — the adoptability test ==\n");
-    printf("Same run, opposite scan direction. CANONICAL advances the cell\n");
-    printf("with the smallest (t_i, i); ARRIVAL advances whichever eligible\n");
-    printf("cell the scan meets first (what threads give you for free).\n");
-    printf("   K    canonical |fwd-rev|   arrival |fwd-rev|\n");
-    {
-        int Ks[] = {1, 2, 4, 8, 16, 64};
-        for (unsigned q = 0; q < sizeof(Ks) / sizeof(Ks[0]); q++) {
-            Ring *A = ring_new(N, Kc, dt, 1); ring_copy_ic(A, ic);
-            Ring *B = ring_new(N, Kc, dt, 1); ring_copy_ic(B, ic);
-            run_local(A, T, Ks[q], 0, 0, 0);
-            run_local(B, T, Ks[q], 0, 0, 1);
-            double dc = maxdiff(A, B);
-            Ring *C = ring_new(N, Kc, dt, 1); ring_copy_ic(C, ic);
-            Ring *D = ring_new(N, Kc, dt, 1); ring_copy_ic(D, ic);
-            run_local(C, T, Ks[q], 0, 1, 0);
-            run_local(D, T, Ks[q], 0, 1, 1);
-            double da = maxdiff(C, D);
-            printf("%4d   %8.2e %-8s  %8.2e %s\n", Ks[q],
-                   dc, dc == 0.0 ? "(exact)" : "(DIFFERS)",
-                   da, da == 0.0 ? "(exact)" : "(DIFFERS)");
-            ring_free(A); ring_free(B); ring_free(C); ring_free(D);
-        }
-    }
-    printf("\nreading: the ratchet compares byte-identical reruns. If\n");
-    printf("CANONICAL is exact and ARRIVAL is not, then local clocks are\n");
-    printf("adoptable but ONLY with an order defined by state, never by\n");
-    printf("which core arrived first.\n");
-
-    ring_free(S); ring_free(ic);
+    fab_free(ic);
     return 0;
 }

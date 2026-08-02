@@ -1,49 +1,63 @@
-# localclock — must the clock be global?
-# ring N=24, Kc=0.60, dt=0.020, elapsed T=80.0
-# LOCAL cells own a local time and a local STEP, so their tick
-# counters genuinely diverge (that is the dilation).
+# localclock — READINESS SUITE
+# N=96 degree=7 Kc=0.50 gE=0.30 T=40.0 lookahead=0.050
+# skew bounded in LOCAL TIME; order canonical (t_i,i);
+# energy moves as paired antisymmetric transfers.
 
-== reference ==
-SYNC  R=0.996150
+graph: mean degree 6.38
 
-== Q1/Q2. does the LOCK survive going local? ==
-   K    R(local)   dR vs SYNC   tick spread (max-min tau)
-   1    0.982793    -1.34e-02   20
-   2    0.982923    -1.32e-02   30
-   4    0.982928    -1.32e-02   46
-   8    0.983192    -1.30e-02   61
-  16    0.983471    -1.27e-02   94
-  32    0.983460    -1.27e-02   171
-  64    0.983554    -1.26e-02   303
-1000000    0.996043    -1.08e-04   1065
+== R1. CONSERVATION — does the ledger close under async? ==
+                   before          after          drift
+SYNC           120.6828228526  120.6828228526  -1.421e-14
+LOCAL look=0.02  120.6828228526  120.6828228526  +1.421e-14
+LOCAL look=0.05  120.6828228526  120.6828228526  +1.421e-14
+LOCAL look=0.20  120.6828228526  120.6828228526  +1.421e-14
+LOCAL look=1.00  120.6828228526  120.6828228526  +1.421e-14
 
-reading: the lock is the physics. If R survives, a global
-clock was never carrying it.
+equilibration check (E should be uniform by T=40):
+  SYNC  E spread = 7.386e-02
+  LOCAL E spread = 7.374e-02
+  LOCAL channel firings: min 2027 max 3224
 
-== Q3. IS A BYTE ENOUGH? counter width M vs skew bound K ==
-wrapped comparison can only order ticks while K < M/2.
-    M     K   K<M/2    R(local)   tick spread
-    8     2   yes     0.982923   30
-    8     6   NO      0.996043   1065
-   16     4   yes     0.982928   46
-   16    12   NO      0.996043   1065
-   64    40   NO      0.996043   1065
-  256    64   yes     0.983554   303
-  256   200   NO      0.996043   1065
+reading: paired transfers conserve by construction, so this
+must sit at the FP floor for EVERY lookahead. Anything else
+means the transfer structure is wrong, not the scheduler.
 
-== Q4. DETERMINISM — the adoptability test ==
-Same run, opposite scan direction. CANONICAL advances the cell
-with the smallest (t_i, i); ARRIVAL advances whichever eligible
-cell the scan meets first (what threads give you for free).
-   K    canonical |fwd-rev|   arrival |fwd-rev|
-   1   0.00e+00 (exact)   1.91e-02 (DIFFERS)
-   2   0.00e+00 (exact)   3.15e-02 (DIFFERS)
-   4   0.00e+00 (exact)   5.61e-02 (DIFFERS)
-   8   0.00e+00 (exact)   1.03e-01 (DIFFERS)
-  16   0.00e+00 (exact)   2.02e-01 (DIFFERS)
-  64   0.00e+00 (exact)   3.70e+00 (DIFFERS)
+== R2. CONVERGENCE — is it the SAME physics? ==
+Comparing async(dt) to sync(dt) conflates two independent O(dt)
+errors and cannot answer this. Both are measured instead against
+a common fine-step reference: sync at dt0/64.
+     dt    sync err     async err   sync ratio  async ratio
+ 0.02000   7.945e-06   1.200e-04       —            —
+ 0.01000   3.910e-06   5.867e-05       2.03x        2.05x
+ 0.00500   1.892e-06   3.024e-05       2.07x        1.94x
+ 0.00250   8.830e-07   1.488e-05       2.14x        2.03x
+ 0.00125   3.784e-07   7.204e-06       2.33x        2.07x
 
-reading: the ratchet compares byte-identical reruns. If
-CANONICAL is exact and ARRIVAL is not, then local clocks are
-adoptable but ONLY with an order defined by state, never by
-which core arrived first.
+reading: BOTH columns must fall, at comparable order. That is
+what 'same physics, different integrator' looks like. If the
+async column plateaus while sync falls, the local scheme has a
+different fixed point and is not adoptable.
+
+== R3. DETERMINISM — bit-identity under reordering ==
+  variant                        max|dtheta|   verdict
+  canonical, reversed scan         0.000e+00   EXACT
+  canonical, rotated origin 37     0.000e+00   EXACT
+  canonical, rotated + reversed    0.000e+00   EXACT
+  ARRIVAL order, reversed scan     1.214e-01   differs
+
+reading: every canonical row must read EXACT — that property is
+what lets the battery compare byte-identical reruns.
+
+== R4. LOOKAHEAD — physical bound, and what it buys ==
+ lookahead  mean_eligible  neighbour skew  total dilation  bits
+     0.020         239.23            1266           1318        12
+     0.050         401.92            1266           1318        12
+     0.100         401.92            1266           1318        12
+     0.200         401.92            1266           1318        12
+     0.500         401.92            1266           1318        12
+     1.000         401.92            1266           1318        12
+     2.000         401.92            1266           1318        12
+
+reading: mean_eligible is the width available to run in parallel
+with no global barrier. 'counter bits' is what the K<M/2 rule
+demands at that lookahead — the answer to 'is a byte enough'.
