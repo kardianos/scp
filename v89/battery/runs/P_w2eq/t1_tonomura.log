@@ -1,0 +1,712 @@
+# cellfab — v89 cell-fabric kernel (no lattice, no prior code)
+# cfg seed=20260727 mode=field init=slit
+# cfg L=30 dmin=1 r0=0.85 rjit=0.06
+# cfg C=1 w1=1.65 w2=1.65 q_detune=1.2 gamma_res=0.25 gamma_res_m=0.1 p_gate=8
+# cfg lock_floor=0.005
+# cfg k_dep=1.2 k_dep_m=2 cap=2.5 e_s0=1 es_floor=0.05
+# cfg e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# cfg kappa_lock=1 kappa_align=0.5 kappa_freq=0 kappa_reac=0 sigma_tumble=0.01
+# cfg space: s_k=0.06 s_disp=0.3 es_gx=0
+# cfg dt=0.02 T=70 diag_every=250 snap_every=0
+# cfg center=(-1,-1,-1) amp=0.25 sigma=2.5 k=(1.1,0,0) prealign=1 noise_amp=0
+# cfg music: comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004
+# cfg field sector: two-component signed amplitude, unitary hops, field_J=1.8
+# cfg ledger: mode=3 u=1.000e-12 (cellfabi INT_LEDGER)
+# cfg slit: wall_x=11.5 th=1.6 sep=9 hw=2 screen_x=23.5 src=[1.5,8.5] absorb=2 detune=8 which_path=0 tap=0.06 sigma_det=6 block=0
+# cfg quantum layer: n_quanta=500 tag_rate=0 analyzer_deg=-999 t_choice=0
+# action atom: A0=1.1500 (dbar=1.5072) mode=2 — eps(w)=A0*w/2pi; atoms at mode boundaries, transport continuous
+# edge coloring: 30 colors for 166635 links
+# slit: wall=541 screen=3242 sink=4649 recorder=0 source_cells=3340 slitA_y=10.50 slitB_y=19.50
+# fabric: cells=18670 channels=166635 mean_degree=17.85 box=30 dmin=1
+# LEDGER seed mode=3 u=1.000e-12 E0_int=19505000000000000 NC=18670 NL=166635
+# LEDGER seed mode=3 u=1.000e-12 E0_int=19505000000000000 NC=18670 NL=166635
+# t	E_space	E_dense	E_field	E_transfer	E_total	rel_drift	live_ch	cm_x	cm_y	cm_z	contain	front_r	r_core	defA	r_far	r_ratio	w_core	w_far
+0.000	18670	0	835	0	19505	0.000e+00	111289	0.000	0.000	0.000	0.000	22.3311	0.8474	0	0.8497	0.9973	1.65000	1.65000	5.0034	14.9964	14.9833	0	0	0	2976.3	-7.6202	-8.1994
+# CONV t=0.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=0.000 mode=3 sum_err=0 max|E-iEu|=2.826e-16 run_max_diff=0.000e+00 run_max_sum_err=0 steps=0 E0_int=19505000000000000 sum=19505000000000000
+5.000	18670	52.9328195	782.06718	0	19505	4.663e-15	111287	0.000	0.000	0.000	0.000	22.3770	0.8475	18.406	0.8497	0.9974	1.65000	1.84163	7.7679	14.9974	14.9993	0	0	0	1389.3	16.11	5.0122
+# CONV t=5.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=5.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.498e-12 run_max_sum_err=0 steps=250 E0_int=19505000000000000 sum=19505000000000000
+10.000	18670	89.7076029	745.292397	0	19505	4.103e-15	111278	0.000	0.000	0.000	0.000	23.1401	0.8477	27.715	0.8497	0.9977	1.65000	1.84163	8.6449	15.0019	14.9416	0	0	0	-167.02	-20.049	-32.164
+# CONV t=10.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=10.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=500 E0_int=19505000000000000 sum=19505000000000000
+15.000	18670	128.41486	706.58514	0	19505	2.798e-15	111289	0.000	0.000	0.000	0.000	22.8890	0.8484	36.148	0.8497	0.9984	1.65000	1.84163	8.2954	14.9475	14.8960	0	0	0	-506.51	-39.181	-58.186
+# CONV t=15.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=15.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=750 E0_int=19505000000000000 sum=19505000000000000
+20.000	18670	180.167772	654.832228	0	19505	2.798e-15	111259	0.000	0.000	0.000	0.000	22.3770	0.8489	48.513	0.8497	0.9991	1.65000	1.84163	8.0679	14.8690	14.9225	0	0	0	-255.51	-28.47	-13.413
+# CONV t=20.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=20.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=1000 E0_int=19505000000000000 sum=19505000000000000
+25.000	18670	266.361896	568.638104	0	19505	1.865e-15	111272	0.000	0.000	0.000	0.000	23.1401	0.8489	56.098	0.8497	0.9990	1.65000	1.84163	8.4870	14.8687	14.9585	0	0	0	37.87	20.036	33.287
+# CONV t=25.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=25.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=1250 E0_int=19505000000000000 sum=19505000000000000
+# CLICK t=28.30 x=23.91 y=16.37 z=19.79
+30.000	18670	346.796405	488.203595	0	19505	5.595e-16	111252	0.000	0.000	0.000	0.000	22.3634	0.8489	58.95	0.8497	0.9990	1.65000	1.84163	9.0078	14.8811	14.9512	0	0	0	112.24	23.853	23.118
+# CONV t=30.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=30.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=1500 E0_int=19505000000000000 sum=19505000000000000
+# CLICK t=30.14 x=23.70 y=17.12 z=12.51
+# CLICK t=30.38 x=23.53 y=12.38 z=5.97
+# CLICK t=31.18 x=23.69 y=22.22 z=20.19
+# CLICK t=31.66 x=23.62 y=13.49 z=8.02
+# CLICK t=32.38 x=23.73 y=14.54 z=21.19
+# CLICK t=32.74 x=23.63 y=16.48 z=14.63
+# CLICK t=32.76 x=23.78 y=13.59 z=17.36
+# CLICK t=33.22 x=23.69 y=7.79 z=20.39
+# CLICK t=33.56 x=23.55 y=12.45 z=17.68
+# CLICK t=33.60 x=24.01 y=14.20 z=19.50
+# CLICK t=34.00 x=23.52 y=15.32 z=22.81
+# CLICK t=34.26 x=23.62 y=13.27 z=9.05
+# CLICK t=34.60 x=23.90 y=16.13 z=21.90
+# CLICK t=34.74 x=23.57 y=4.82 z=15.86
+# CLICK t=34.80 x=23.71 y=15.22 z=16.88
+# CLICK t=34.86 x=23.70 y=17.12 z=12.51
+# CLICK t=35.00 x=23.53 y=17.24 z=10.35
+35.000	18670	404.542672	430.457328	0	19505	2.611e-15	111274	0.000	0.000	0.000	0.000	22.3311	0.8492	54.433	0.8497	0.9994	1.65000	1.84163	9.3014	14.9304	14.8594	0	0	0	81.726	2.3601	0.66501
+# CONV t=35.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=35.000 mode=3 sum_err=0 max|E-iEu|=4.999e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=1750 E0_int=19505000000000000 sum=19505000000000000
+# CLICK t=35.42 x=23.91 y=16.37 z=19.79
+# CLICK t=35.46 x=23.90 y=15.22 z=12.56
+# CLICK t=36.54 x=23.70 y=17.51 z=15.17
+# CLICK t=36.90 x=23.54 y=16.36 z=9.62
+# CLICK t=36.94 x=23.71 y=13.36 z=12.93
+# CLICK t=37.14 x=23.51 y=3.45 z=17.21
+# CLICK t=37.24 x=23.52 y=8.05 z=22.63
+# CLICK t=37.28 x=23.95 y=12.95 z=11.11
+# CLICK t=37.64 x=23.65 y=14.33 z=13.42
+# CLICK t=37.80 x=23.55 y=16.66 z=17.56
+# CLICK t=37.88 x=24.14 y=16.17 z=12.83
+# CLICK t=37.94 x=23.61 y=13.99 z=15.84
+# CLICK t=39.38 x=23.90 y=20.30 z=20.98
+# CLICK t=39.68 x=23.70 y=17.12 z=12.51
+# CLICK t=39.82 x=23.52 y=25.56 z=21.78
+# CLICK t=39.90 x=23.80 y=14.45 z=10.43
+40.000	18670	449.341127	385.658873	0	19505	-5.595e-16	111273	0.000	0.000	0.000	0.000	22.3634	0.8491	50.494	0.8497	0.9994	1.65000	1.84163	9.4505	14.9667	14.8119	0	0	0	30.541	0.66793	0.87539
+# CONV t=40.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=40.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=2000 E0_int=19505000000000000 sum=19505000000000000
+# CLICK t=40.54 x=23.53 y=12.38 z=5.97
+# CLICK t=41.18 x=23.64 y=15.17 z=9.35
+# CLICK t=42.86 x=23.53 y=17.24 z=10.35
+# CLICK t=42.96 x=23.57 y=11.77 z=12.35
+# CLICK t=44.16 x=23.52 y=26.50 z=22.23
+# CLICK t=44.24 x=23.89 y=14.64 z=5.19
+# CLICK t=44.62 x=23.70 y=21.59 z=15.88
+# CLICK t=44.64 x=23.72 y=6.32 z=7.46
+45.000	18670	493.190303	341.809697	0	19505	4.290e-15	111294	0.000	0.000	0.000	0.000	22.3387	0.8488	49.242	0.8497	0.9990	1.65000	1.84163	9.6575	15.0524	14.7994	0	0	0	16.345	6.5194	-13.237
+# CONV t=45.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=45.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=2250 E0_int=19505000000000000 sum=19505000000000000
+# CLICK t=45.02 x=23.68 y=4.10 z=6.50
+# CLICK t=45.22 x=23.60 y=26.21 z=14.92
+# CLICK t=45.48 x=23.53 y=18.17 z=16.70
+# CLICK t=45.50 x=24.12 y=14.16 z=18.33
+# CLICK t=46.06 x=23.65 y=20.51 z=27.03
+# CLICK t=46.46 x=23.54 y=10.40 z=13.96
+# CLICK t=47.82 x=23.87 y=13.26 z=4.21
+50.000	18670	527.168157	307.831843	0	19505	-2.238e-15	111293	0.000	0.000	0.000	0.000	22.3634	0.8483	44.918	0.8497	0.9984	1.65000	1.84163	9.7895	15.0129	14.7748	0	0	0	-7.6883	-14.141	-9.6554
+# CONV t=50.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=50.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=2500 E0_int=19505000000000000 sum=19505000000000000
+# CLICK t=50.52 x=23.57 y=19.39 z=9.81
+# CLICK t=51.40 x=23.55 y=12.45 z=17.68
+# CLICK t=52.52 x=23.71 y=13.36 z=12.93
+# CLICK t=53.02 x=23.67 y=10.84 z=10.74
+# CLICK t=53.12 x=23.88 y=2.54 z=18.84
+# CLICK t=53.16 x=23.63 y=16.48 z=14.63
+# CLICK t=53.38 x=23.61 y=8.26 z=15.01
+# CLICK t=53.50 x=23.58 y=26.17 z=18.42
+# CLICK t=54.08 x=23.51 y=23.10 z=22.47
+# CLICK t=54.70 x=23.51 y=7.79 z=23.68
+# shutter closed at t=55.0
+55.000	18670	555.467004	279.532996	0	19505	-3.730e-16	111319	0.000	0.000	0.000	0.000	22.0301	0.8484	40.91	0.8496	0.9986	1.65000	1.84163	9.8888	14.8964	14.7591	0	0	0	-16.386	-23.705	-8.8086
+# CONV t=55.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=55.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=2750 E0_int=19505000000000000 sum=19505000000000000
+60.000	18670	581.320611	253.679389	0	19505	-2.052e-15	111316	0.000	0.000	0.000	0.000	22.2886	0.8483	36.805	0.8496	0.9985	1.65000	1.84163	9.8516	14.7731	14.7687	0	0	0	-57.131	-25.349	7.4942
+# CONV t=60.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=60.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=3000 E0_int=19505000000000000 sum=19505000000000000
+65.000	18670	606.412984	228.587016	0	19505	2.238e-15	111324	0.000	0.000	0.000	0.000	21.7645	0.8481	33.749	0.8496	0.9982	1.65000	1.84163	9.8223	14.6875	14.8404	0	0	0	-43.979	-13.39	17.46
+# CONV t=65.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=65.000 mode=3 sum_err=0 max|E-iEu|=4.999e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=3250 E0_int=19505000000000000 sum=19505000000000000
+70.000	18670	628.454667	206.545333	0	19505	2.984e-15	111313	0.000	0.000	0.000	0.000	22.0868	0.8479	30.225	0.8496	0.9980	1.65000	1.84163	9.8057	14.6402	14.8206	0	0	0	-36.727	-5.7653	11.82
+# CONV t=70.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=70.000 mode=3 sum_err=0 max|E-iEu|=4.998e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=3500 E0_int=19505000000000000 sum=19505000000000000
+# RESULT es_shells 0.94:1.0018 2.81:1.0025 4.69:1.0007 6.56:0.9981 8.44:0.9996 10.31:1.0006 12.19:1.0028 14.06:1.0088
+# RESULT LEDGER mode=3 E0_int=19505000000000000 sum_int=19505000000000000 max_sum_err=0 max|E-iEu|=1.500e-12 steps=3500
+# RESULT conservation E0=19505 Efinal=19505 rel_drift=2.984e-15
+# RESULT roughness_radiated=0 (dissonant dense deliveries converted to field, conserved)
+# RESULT curvature_fit defA_per_Em=0.03121 r2=0.1864 (linear defect ~ converted energy)
+# SCREEN y_center exposure predicted_cos2 (lambda=5.712)
+# SCREEN 1.88	0.5610	0.805
+# SCREEN 2.62	1.0277	0.881
+# SCREEN 3.38	1.2990	0.945
+# SCREEN 4.12	1.1251	0.988
+# SCREEN 4.88	1.7271	0.999
+# SCREEN 5.62	1.3116	0.969
+# SCREEN 6.38	0.9115	0.889
+# SCREEN 7.12	1.2918	0.756
+# SCREEN 7.88	1.8042	0.577
+# SCREEN 8.62	2.0489	0.372
+# SCREEN 9.38	0.9345	0.178
+# SCREEN 10.12	1.6980	0.040
+# SCREEN 10.88	1.0256	0.002
+# SCREEN 11.62	1.2432	0.090
+# SCREEN 12.38	3.2117	0.296
+# SCREEN 13.12	3.4494	0.568
+# SCREEN 13.88	2.1595	0.824
+# SCREEN 14.62	2.8432	0.979
+# SCREEN 15.38	3.8353	0.979
+# SCREEN 16.12	3.6914	0.824
+# SCREEN 16.88	3.1831	0.568
+# SCREEN 17.62	1.9177	0.296
+# SCREEN 18.38	1.5794	0.090
+# SCREEN 19.12	1.5502	0.002
+# SCREEN 19.88	0.5075	0.040
+# SCREEN 20.62	1.5268	0.178
+# SCREEN 21.38	1.5207	0.372
+# SCREEN 22.12	1.2821	0.577
+# SCREEN 22.88	0.8222	0.756
+# SCREEN 23.62	1.2250	0.889
+# SCREEN 24.38	0.5537	0.969
+# SCREEN 25.12	1.2931	0.999
+# SCREEN 25.88	2.0705	0.988
+# SCREEN 26.62	1.4792	0.945
+# SCREEN 27.38	0.4734	0.881
+# SCREEN 28.12	0.3825	0.805
+# RESULT fringe_visibility_central=0.450 centre_max=3.339 (n=2) first_minima=1.267 (n=6)
+# RESULT fringe_visibility_wide=0.088 bright_mean=1.513 (n=14) dark_mean=1.267 (n=6)
+# RESULT screen_exposure=58.5668 whichpath_record A=0.0000 B=0.0000
+# claim rule: 500 quanta, each claimed whole by the first completed cycle
+# QCLICK q=0 t=30.0 y=16.17 z=12.83
+# QCLICK q=1 t=40.0 y=16.17 z=12.83
+# QCLICK q=2 t=30.0 y=5.73 z=8.56
+# QCLICK q=3 t=50.0 y=12.30 z=14.10
+# QCLICK q=4 t=35.0 y=15.22 z=16.88
+# QCLICK q=5 t=30.0 y=21.59 z=15.88
+# QCLICK q=6 t=35.0 y=14.45 z=10.43
+# QCLICK q=7 t=30.0 y=12.25 z=16.95
+# QCLICK q=8 t=30.0 y=13.27 z=9.05
+# QCLICK q=9 t=30.0 y=14.54 z=21.19
+# QCLICK q=10 t=30.0 y=5.39 z=23.67
+# QCLICK q=11 t=45.0 y=22.67 z=26.50
+# QCLICK q=12 t=50.0 y=24.21 z=18.79
+# QCLICK q=13 t=50.0 y=12.68 z=18.87
+# QCLICK q=14 t=25.0 y=19.42 z=20.13
+# QCLICK q=15 t=55.0 y=10.41 z=22.96
+# QCLICK q=16 t=30.0 y=15.32 z=22.81
+# QCLICK q=17 t=40.0 y=17.12 z=12.51
+# QCLICK q=18 t=35.0 y=4.74 z=9.97
+# QCLICK q=19 t=25.0 y=16.17 z=12.83
+# QCLICK q=20 t=35.0 y=3.84 z=14.87
+# QCLICK q=21 t=35.0 y=10.15 z=12.71
+# QCLICK q=22 t=50.0 y=9.27 z=15.52
+# QCLICK q=23 t=30.0 y=23.45 z=22.01
+# QCLICK q=24 t=30.0 y=15.55 z=6.45
+# QCLICK q=25 t=40.0 y=5.39 z=23.67
+# QCLICK q=26 t=25.0 y=21.59 z=15.88
+# QCLICK q=27 t=30.0 y=25.00 z=16.87
+# QCLICK q=28 t=25.0 y=21.62 z=7.22
+# QCLICK q=29 t=35.0 y=17.74 z=18.22
+# QCLICK q=30 t=35.0 y=15.22 z=12.56
+# QCLICK q=31 t=25.0 y=21.59 z=15.88
+# QCLICK q=32 t=50.0 y=17.87 z=27.04
+# QCLICK q=33 t=35.0 y=26.55 z=13.39
+# QCLICK q=34 t=25.0 y=7.78 z=11.56
+# QCLICK q=35 t=35.0 y=2.54 z=18.84
+# QCLICK q=36 t=45.0 y=16.17 z=12.83
+# QCLICK q=37 t=55.0 y=20.42 z=15.52
+# QCLICK q=38 t=30.0 y=22.22 z=20.19
+# QCLICK q=39 t=35.0 y=17.24 z=10.35
+# QCLICK q=40 t=35.0 y=17.87 z=27.04
+# QCLICK q=41 t=45.0 y=17.24 z=10.35
+# QCLICK q=42 t=30.0 y=10.84 z=10.74
+# QCLICK q=43 t=40.0 y=13.27 z=9.05
+# QCLICK q=44 t=40.0 y=23.92 z=15.21
+# QCLICK q=45 t=40.0 y=21.99 z=27.27
+# QCLICK q=46 t=40.0 y=16.13 z=21.90
+# QCLICK q=47 t=45.0 y=14.64 z=5.19
+# QCLICK q=48 t=40.0 y=16.48 z=14.63
+# QCLICK q=49 t=30.0 y=16.94 z=5.89
+# QCLICK q=50 t=25.0 y=16.63 z=3.19
+# QCLICK q=51 t=30.0 y=13.29 z=2.84
+# QCLICK q=52 t=30.0 y=17.06 z=10.74
+# QCLICK q=53 t=40.0 y=19.39 z=9.81
+# QCLICK q=54 t=35.0 y=6.78 z=11.57
+# QCLICK q=55 t=45.0 y=26.21 z=14.92
+# QCLICK q=56 t=45.0 y=10.87 z=15.34
+# QCLICK q=57 t=55.0 y=14.45 z=7.56
+# QCLICK q=58 t=45.0 y=12.29 z=28.40
+# QCLICK q=59 t=35.0 y=15.42 z=15.29
+# QCLICK q=60 t=55.0 y=23.84 z=20.31
+# QCLICK q=61 t=25.0 y=12.19 z=8.73
+# QCLICK q=62 t=40.0 y=12.45 z=17.68
+# QCLICK q=63 t=30.0 y=12.34 z=2.64
+# QCLICK q=64 t=30.0 y=12.38 z=5.97
+# QCLICK q=65 t=55.0 y=16.94 z=5.89
+# QCLICK q=66 t=25.0 y=4.60 z=18.00
+# QCLICK q=67 t=55.0 y=4.21 z=18.96
+# QCLICK q=68 t=30.0 y=16.13 z=21.90
+# QCLICK q=69 t=55.0 y=27.77 z=18.63
+# QCLICK q=70 t=35.0 y=14.59 z=15.33
+# QCLICK q=71 t=45.0 y=16.48 z=14.63
+# QCLICK q=72 t=35.0 y=16.13 z=21.90
+# QCLICK q=73 t=40.0 y=5.60 z=20.88
+# QCLICK q=74 t=25.0 y=16.13 z=21.90
+# QCLICK q=75 t=35.0 y=18.00 z=6.00
+# QCLICK q=76 t=25.0 y=14.66 z=14.40
+# QCLICK q=77 t=35.0 y=16.67 z=23.72
+# QCLICK q=78 t=45.0 y=14.33 z=13.42
+# QCLICK q=79 t=35.0 y=14.54 z=21.19
+# QCLICK q=80 t=40.0 y=15.22 z=17.89
+# QCLICK q=81 t=45.0 y=23.84 z=20.31
+# QCLICK q=82 t=30.0 y=17.12 z=12.51
+# QCLICK q=83 t=35.0 y=25.05 z=12.21
+# QCLICK q=84 t=35.0 y=14.54 z=21.19
+# QCLICK q=85 t=30.0 y=21.01 z=22.37
+# QCLICK q=86 t=55.0 y=2.11 z=20.49
+# QCLICK q=87 t=40.0 y=22.31 z=11.87
+# QCLICK q=88 t=45.0 y=4.10 z=6.50
+# QCLICK q=89 t=45.0 y=8.32 z=13.10
+# QCLICK q=90 t=50.0 y=10.40 z=13.96
+# QCLICK q=91 t=30.0 y=15.79 z=13.83
+# QCLICK q=92 t=25.0 y=22.22 z=20.19
+# QCLICK q=93 t=20.0 y=8.32 z=13.10
+# QCLICK q=94 t=30.0 y=16.32 z=23.59
+# QCLICK q=95 t=30.0 y=13.59 z=17.36
+# QCLICK q=96 t=30.0 y=18.24 z=9.03
+# QCLICK q=97 t=25.0 y=15.42 z=15.29
+# QCLICK q=98 t=30.0 y=13.49 z=8.02
+# QCLICK q=99 t=30.0 y=9.77 z=18.88
+# QCLICK q=100 t=35.0 y=5.40 z=6.96
+# QCLICK q=101 t=30.0 y=12.45 z=15.30
+# QCLICK q=102 t=35.0 y=11.77 z=12.35
+# QCLICK q=103 t=30.0 y=22.33 z=22.49
+# QCLICK q=104 t=25.0 y=21.52 z=26.28
+# QCLICK q=105 t=40.0 y=16.71 z=22.64
+# QCLICK q=106 t=50.0 y=14.16 z=15.80
+# QCLICK q=107 t=45.0 y=17.72 z=22.55
+# QCLICK q=108 t=40.0 y=17.12 z=12.51
+# QCLICK q=109 t=35.0 y=17.24 z=10.35
+# QCLICK q=110 t=30.0 y=5.60 z=20.88
+# QCLICK q=111 t=40.0 y=19.09 z=12.01
+# QCLICK q=112 t=35.0 y=19.42 z=22.53
+# QCLICK q=113 t=45.0 y=18.10 z=26.13
+# QCLICK q=114 t=25.0 y=13.19 z=21.98
+# QCLICK q=115 t=55.0 y=7.05 z=8.79
+# QCLICK q=116 t=30.0 y=21.01 z=22.37
+# QCLICK q=117 t=35.0 y=16.66 z=17.56
+# QCLICK q=118 t=45.0 y=17.12 z=12.51
+# QCLICK q=119 t=35.0 y=15.32 z=22.81
+# QCLICK q=120 t=25.0 y=5.60 z=20.88
+# QCLICK q=121 t=35.0 y=3.33 z=22.76
+# QCLICK q=122 t=55.0 y=25.05 z=28.48
+# QCLICK q=123 t=30.0 y=6.18 z=17.88
+# QCLICK q=124 t=40.0 y=18.90 z=10.83
+# QCLICK q=125 t=25.0 y=12.38 z=5.97
+# QCLICK q=126 t=35.0 y=15.32 z=22.81
+# QCLICK q=127 t=30.0 y=19.09 z=12.01
+# QCLICK q=128 t=20.0 y=10.41 z=22.96
+# QCLICK q=129 t=40.0 y=14.66 z=14.40
+# QCLICK q=130 t=25.0 y=18.33 z=7.88
+# QCLICK q=131 t=25.0 y=22.76 z=16.92
+# QCLICK q=132 t=30.0 y=12.95 z=11.11
+# QCLICK q=133 t=35.0 y=6.88 z=9.85
+# QCLICK q=134 t=35.0 y=19.39 z=9.81
+# QCLICK q=135 t=30.0 y=5.75 z=11.28
+# QCLICK q=136 t=40.0 y=4.21 z=18.96
+# QCLICK q=137 t=35.0 y=16.36 z=9.62
+# QCLICK q=138 t=45.0 y=15.07 z=23.84
+# QCLICK q=139 t=30.0 y=16.17 z=12.83
+# QCLICK q=140 t=50.0 y=22.22 z=20.19
+# QCLICK q=141 t=35.0 y=25.55 z=13.87
+# QCLICK q=142 t=35.0 y=23.44 z=7.73
+# QCLICK q=143 t=50.0 y=14.20 z=19.50
+# QCLICK q=144 t=40.0 y=17.72 z=22.55
+# QCLICK q=145 t=30.0 y=13.59 z=17.36
+# QCLICK q=146 t=25.0 y=8.26 z=15.01
+# QCLICK q=147 t=45.0 y=18.59 z=13.11
+# QCLICK q=148 t=35.0 y=10.40 z=13.96
+# QCLICK q=149 t=45.0 y=14.33 z=13.42
+# QCLICK q=150 t=30.0 y=5.60 z=20.88
+# QCLICK q=151 t=35.0 y=20.30 z=20.98
+# QCLICK q=152 t=40.0 y=26.55 z=13.39
+# QCLICK q=153 t=45.0 y=19.93 z=24.26
+# QCLICK q=154 t=25.0 y=14.16 z=18.33
+# QCLICK q=155 t=30.0 y=13.07 z=19.96
+# QCLICK q=156 t=35.0 y=19.39 z=9.81
+# QCLICK q=157 t=50.0 y=11.99 z=22.88
+# QCLICK q=158 t=45.0 y=3.43 z=5.46
+# QCLICK q=159 t=50.0 y=25.00 z=16.87
+# QCLICK q=160 t=25.0 y=19.89 z=7.25
+# QCLICK q=161 t=30.0 y=7.79 z=20.39
+# QCLICK q=162 t=40.0 y=17.24 z=10.35
+# QCLICK q=163 t=45.0 y=22.31 z=11.87
+# QCLICK q=164 t=20.0 y=16.45 z=27.19
+# QCLICK q=165 t=30.0 y=19.44 z=26.48
+# QCLICK q=166 t=35.0 y=15.62 z=12.16
+# QCLICK q=167 t=55.0 y=1.62 z=19.34
+# QCLICK q=168 t=25.0 y=8.26 z=15.01
+# QCLICK q=169 t=40.0 y=14.16 z=18.33
+# QCLICK q=170 t=40.0 y=3.64 z=17.85
+# QCLICK q=171 t=25.0 y=4.82 z=15.86
+# QCLICK q=172 t=30.0 y=2.72 z=9.30
+# QCLICK q=173 t=35.0 y=4.82 z=15.86
+# QCLICK q=174 t=40.0 y=15.17 z=9.35
+# QCLICK q=175 t=55.0 y=16.66 z=17.56
+# QCLICK q=176 t=30.0 y=12.45 z=17.68
+# QCLICK q=177 t=35.0 y=8.96 z=2.81
+# QCLICK q=178 t=40.0 y=16.36 z=9.62
+# QCLICK q=179 t=30.0 y=15.52 z=8.45
+# QCLICK q=180 t=45.0 y=17.38 z=13.29
+# QCLICK q=181 t=35.0 y=21.52 z=6.31
+# QCLICK q=182 t=50.0 y=21.01 z=13.66
+# QCLICK q=183 t=30.0 y=14.20 z=19.50
+# QCLICK q=184 t=30.0 y=3.45 z=17.21
+# QCLICK q=185 t=50.0 y=25.05 z=12.21
+# QCLICK q=186 t=25.0 y=12.38 z=5.97
+# QCLICK q=187 t=45.0 y=4.79 z=8.29
+# QCLICK q=188 t=45.0 y=16.37 z=19.79
+# QCLICK q=189 t=50.0 y=10.15 z=12.71
+# QCLICK q=190 t=50.0 y=13.59 z=17.36
+# QCLICK q=191 t=35.0 y=17.24 z=10.35
+# QCLICK q=192 t=25.0 y=14.54 z=21.19
+# QCLICK q=193 t=30.0 y=26.50 z=22.23
+# QCLICK q=194 t=40.0 y=17.38 z=13.29
+# QCLICK q=195 t=25.0 y=16.48 z=14.63
+# QCLICK q=196 t=40.0 y=23.62 z=26.49
+# QCLICK q=197 t=50.0 y=13.99 z=15.84
+# QCLICK q=198 t=45.0 y=2.04 z=26.70
+# QCLICK q=199 t=30.0 y=17.51 z=15.17
+# QCLICK q=200 t=40.0 y=17.24 z=10.35
+# QCLICK q=201 t=45.0 y=15.32 z=22.81
+# QCLICK q=202 t=30.0 y=21.01 z=13.66
+# QCLICK q=203 t=50.0 y=21.33 z=10.76
+# QCLICK q=204 t=50.0 y=5.39 z=23.67
+# QCLICK q=205 t=35.0 y=5.39 z=23.67
+# QCLICK q=206 t=45.0 y=3.84 z=14.87
+# QCLICK q=207 t=40.0 y=22.31 z=11.87
+# QCLICK q=208 t=35.0 y=15.20 z=3.36
+# QCLICK q=209 t=30.0 y=20.63 z=8.98
+# QCLICK q=210 t=30.0 y=23.47 z=17.82
+# QCLICK q=211 t=35.0 y=13.26 z=4.21
+# QCLICK q=212 t=40.0 y=26.95 z=10.14
+# QCLICK q=213 t=45.0 y=13.89 z=2.04
+# QCLICK q=214 t=25.0 y=17.97 z=17.55
+# QCLICK q=215 t=30.0 y=8.21 z=5.87
+# QCLICK q=216 t=55.0 y=6.88 z=9.85
+# QCLICK q=217 t=30.0 y=17.46 z=21.41
+# QCLICK q=218 t=55.0 y=15.58 z=28.03
+# QCLICK q=219 t=25.0 y=18.17 z=16.70
+# QCLICK q=220 t=50.0 y=16.48 z=14.63
+# QCLICK q=221 t=35.0 y=17.54 z=24.45
+# QCLICK q=222 t=45.0 y=2.70 z=23.19
+# QCLICK q=223 t=30.0 y=20.36 z=9.33
+# QCLICK q=224 t=30.0 y=10.87 z=15.34
+# QCLICK q=225 t=30.0 y=12.32 z=7.07
+# QCLICK q=226 t=50.0 y=10.97 z=23.94
+# QCLICK q=227 t=25.0 y=15.17 z=9.35
+# QCLICK q=228 t=50.0 y=12.68 z=18.87
+# QCLICK q=229 t=50.0 y=10.40 z=13.96
+# QCLICK q=230 t=25.0 y=15.32 z=22.81
+# QCLICK q=231 t=50.0 y=21.47 z=4.83
+# QCLICK q=232 t=40.0 y=12.95 z=11.11
+# QCLICK q=233 t=35.0 y=4.36 z=23.35
+# QCLICK q=234 t=40.0 y=16.48 z=14.63
+# QCLICK q=235 t=35.0 y=24.30 z=17.09
+# QCLICK q=236 t=45.0 y=2.67 z=14.47
+# QCLICK q=237 t=25.0 y=21.29 z=5.71
+# QCLICK q=238 t=35.0 y=27.45 z=21.42
+# QCLICK q=239 t=35.0 y=1.99 z=6.80
+# QCLICK q=240 t=50.0 y=7.57 z=6.63
+# QCLICK q=241 t=45.0 y=7.79 z=20.39
+# QCLICK q=242 t=25.0 y=1.99 z=6.80
+# QCLICK q=243 t=20.0 y=8.05 z=22.63
+# QCLICK q=244 t=35.0 y=15.17 z=9.35
+# QCLICK q=245 t=35.0 y=13.36 z=12.93
+# QCLICK q=246 t=35.0 y=17.72 z=22.55
+# QCLICK q=247 t=35.0 y=17.38 z=13.29
+# QCLICK q=248 t=30.0 y=16.01 z=16.55
+# QCLICK q=249 t=40.0 y=16.37 z=19.79
+# QCLICK q=250 t=35.0 y=13.27 z=9.05
+# QCLICK q=251 t=30.0 y=7.79 z=20.39
+# QCLICK q=252 t=40.0 y=18.17 z=16.70
+# QCLICK q=253 t=35.0 y=9.14 z=20.79
+# QCLICK q=254 t=55.0 y=12.68 z=18.87
+# QCLICK q=255 t=45.0 y=6.32 z=7.46
+# QCLICK q=256 t=35.0 y=9.08 z=11.24
+# QCLICK q=257 t=25.0 y=8.05 z=22.63
+# QCLICK q=258 t=55.0 y=4.21 z=18.96
+# QCLICK q=259 t=35.0 y=8.05 z=22.63
+# QCLICK q=260 t=35.0 y=20.30 z=20.98
+# QCLICK q=261 t=30.0 y=19.37 z=19.61
+# QCLICK q=262 t=40.0 y=16.48 z=14.63
+# QCLICK q=263 t=35.0 y=12.62 z=12.06
+# QCLICK q=264 t=35.0 y=13.27 z=9.05
+# QCLICK q=265 t=35.0 y=17.24 z=10.35
+# QCLICK q=266 t=35.0 y=3.69 z=20.52
+# QCLICK q=267 t=30.0 y=17.53 z=19.46
+# QCLICK q=268 t=30.0 y=15.17 z=9.35
+# QCLICK q=269 t=45.0 y=8.60 z=24.36
+# QCLICK q=270 t=45.0 y=6.88 z=9.85
+# QCLICK q=271 t=45.0 y=16.17 z=12.83
+# QCLICK q=272 t=35.0 y=18.33 z=7.88
+# QCLICK q=273 t=45.0 y=17.87 z=27.04
+# QCLICK q=274 t=45.0 y=13.88 z=23.36
+# QCLICK q=275 t=30.0 y=13.36 z=12.93
+# QCLICK q=276 t=50.0 y=13.49 z=8.02
+# QCLICK q=277 t=20.0 y=10.67 z=21.29
+# QCLICK q=278 t=30.0 y=13.05 z=26.52
+# QCLICK q=279 t=25.0 y=16.28 z=25.73
+# QCLICK q=280 t=40.0 y=23.62 z=11.41
+# QCLICK q=281 t=40.0 y=11.77 z=12.35
+# QCLICK q=282 t=40.0 y=23.10 z=22.47
+# QCLICK q=283 t=45.0 y=14.54 z=21.19
+# QCLICK q=284 t=30.0 y=4.74 z=12.02
+# QCLICK q=285 t=35.0 y=16.37 z=19.79
+# QCLICK q=286 t=35.0 y=23.10 z=22.47
+# QCLICK q=287 t=45.0 y=20.51 z=27.03
+# QCLICK q=288 t=50.0 y=10.55 z=27.07
+# QCLICK q=289 t=25.0 y=25.87 z=16.39
+# QCLICK q=290 t=30.0 y=17.51 z=15.17
+# QCLICK q=291 t=30.0 y=23.71 z=18.96
+# QCLICK q=292 t=35.0 y=14.73 z=25.98
+# QCLICK q=293 t=30.0 y=25.00 z=16.87
+# QCLICK q=294 t=35.0 y=13.49 z=8.02
+# QCLICK q=295 t=35.0 y=2.72 z=9.30
+# QCLICK q=296 t=40.0 y=15.22 z=12.56
+# QCLICK q=297 t=55.0 y=27.95 z=17.39
+# QCLICK q=298 t=35.0 y=10.41 z=22.96
+# QCLICK q=299 t=40.0 y=13.36 z=12.93
+# QCLICK q=300 t=55.0 y=21.59 z=15.88
+# QCLICK q=301 t=30.0 y=14.54 z=21.19
+# QCLICK q=302 t=30.0 y=21.62 z=7.22
+# QCLICK q=303 t=25.0 y=9.50 z=22.23
+# QCLICK q=304 t=45.0 y=6.24 z=15.80
+# QCLICK q=305 t=45.0 y=5.37 z=22.01
+# QCLICK q=306 t=55.0 y=10.44 z=6.04
+# QCLICK q=307 t=30.0 y=8.32 z=13.10
+# QCLICK q=308 t=50.0 y=13.27 z=9.05
+# QCLICK q=309 t=50.0 y=25.46 z=12.18
+# QCLICK q=310 t=40.0 y=17.24 z=10.35
+# QCLICK q=311 t=35.0 y=2.72 z=9.30
+# QCLICK q=312 t=50.0 y=11.77 z=12.35
+# QCLICK q=313 t=25.0 y=10.44 z=6.04
+# QCLICK q=314 t=55.0 y=5.51 z=24.87
+# QCLICK q=315 t=35.0 y=25.46 z=12.18
+# QCLICK q=316 t=25.0 y=21.52 z=26.28
+# QCLICK q=317 t=40.0 y=15.22 z=16.88
+# QCLICK q=318 t=25.0 y=8.05 z=22.63
+# QCLICK q=319 t=40.0 y=4.82 z=15.86
+# QCLICK q=320 t=50.0 y=2.51 z=3.89
+# QCLICK q=321 t=55.0 y=27.65 z=16.23
+# QCLICK q=322 t=25.0 y=16.39 z=4.82
+# QCLICK q=323 t=50.0 y=18.59 z=13.11
+# QCLICK q=324 t=35.0 y=13.36 z=12.93
+# QCLICK q=325 t=45.0 y=15.79 z=13.83
+# QCLICK q=326 t=40.0 y=2.67 z=14.47
+# QCLICK q=327 t=35.0 y=15.78 z=16.62
+# QCLICK q=328 t=55.0 y=15.32 z=22.81
+# QCLICK q=329 t=40.0 y=14.33 z=13.42
+# QCLICK q=330 t=30.0 y=16.13 z=21.90
+# QCLICK q=331 t=30.0 y=4.11 z=13.53
+# QCLICK q=332 t=40.0 y=5.51 z=24.87
+# QCLICK q=333 t=45.0 y=18.17 z=16.70
+# QCLICK q=334 t=30.0 y=7.79 z=20.39
+# QCLICK q=335 t=35.0 y=7.79 z=23.68
+# QCLICK q=336 t=35.0 y=16.48 z=14.63
+# QCLICK q=337 t=35.0 y=16.17 z=12.83
+# QCLICK q=338 t=35.0 y=7.48 z=14.54
+# QCLICK q=339 t=30.0 y=7.79 z=20.39
+# QCLICK q=340 t=35.0 y=12.91 z=18.27
+# QCLICK q=341 t=30.0 y=14.67 z=24.98
+# QCLICK q=342 t=55.0 y=11.18 z=22.27
+# QCLICK q=343 t=35.0 y=17.53 z=19.46
+# QCLICK q=344 t=50.0 y=26.21 z=14.92
+# QCLICK q=345 t=30.0 y=25.46 z=12.18
+# QCLICK q=346 t=40.0 y=5.98 z=13.49
+# QCLICK q=347 t=35.0 y=17.53 z=19.46
+# QCLICK q=348 t=25.0 y=21.01 z=22.37
+# QCLICK q=349 t=20.0 y=13.36 z=12.93
+# QCLICK q=350 t=45.0 y=23.62 z=26.49
+# QCLICK q=351 t=55.0 y=13.19 z=21.98
+# QCLICK q=352 t=30.0 y=15.56 z=18.97
+# QCLICK q=353 t=55.0 y=18.59 z=13.11
+# QCLICK q=354 t=40.0 y=14.45 z=10.43
+# QCLICK q=355 t=35.0 y=16.59 z=8.18
+# QCLICK q=356 t=50.0 y=14.54 z=21.19
+# QCLICK q=357 t=35.0 y=16.32 z=23.59
+# QCLICK q=358 t=55.0 y=12.07 z=13.13
+# QCLICK q=359 t=50.0 y=25.46 z=12.18
+# QCLICK q=360 t=30.0 y=16.71 z=22.64
+# QCLICK q=361 t=30.0 y=19.56 z=6.08
+# QCLICK q=362 t=40.0 y=16.48 z=14.63
+# QCLICK q=363 t=35.0 y=17.06 z=10.74
+# QCLICK q=364 t=30.0 y=4.74 z=9.97
+# QCLICK q=365 t=35.0 y=20.30 z=20.98
+# QCLICK q=366 t=40.0 y=16.66 z=17.56
+# QCLICK q=367 t=30.0 y=13.49 z=8.02
+# QCLICK q=368 t=40.0 y=3.43 z=5.46
+# QCLICK q=369 t=25.0 y=22.43 z=6.50
+# QCLICK q=370 t=55.0 y=19.09 z=12.01
+# QCLICK q=371 t=55.0 y=8.05 z=22.63
+# QCLICK q=372 t=30.0 y=25.56 z=21.78
+# QCLICK q=373 t=45.0 y=5.84 z=19.97
+# QCLICK q=374 t=30.0 y=16.37 z=19.79
+# QCLICK q=375 t=55.0 y=24.75 z=20.07
+# QCLICK q=376 t=30.0 y=12.45 z=15.30
+# QCLICK q=377 t=30.0 y=13.59 z=17.36
+# QCLICK q=378 t=20.0 y=7.78 z=16.92
+# QCLICK q=379 t=30.0 y=17.38 z=13.29
+# QCLICK q=380 t=20.0 y=26.21 z=14.92
+# QCLICK q=381 t=35.0 y=15.22 z=12.56
+# QCLICK q=382 t=25.0 y=18.33 z=7.88
+# QCLICK q=383 t=40.0 y=4.74 z=9.97
+# QCLICK q=384 t=30.0 y=12.38 z=5.97
+# QCLICK q=385 t=35.0 y=9.24 z=12.73
+# QCLICK q=386 t=30.0 y=8.95 z=19.18
+# QCLICK q=387 t=40.0 y=20.36 z=9.33
+# QCLICK q=388 t=35.0 y=14.54 z=21.19
+# QCLICK q=389 t=35.0 y=13.49 z=8.02
+# QCLICK q=390 t=35.0 y=4.79 z=8.29
+# QCLICK q=391 t=40.0 y=18.17 z=16.70
+# QCLICK q=392 t=40.0 y=19.09 z=12.01
+# QCLICK q=393 t=55.0 y=15.79 z=13.83
+# QCLICK q=394 t=45.0 y=10.40 z=13.96
+# QCLICK q=395 t=55.0 y=24.78 z=25.56
+# QCLICK q=396 t=30.0 y=16.13 z=21.90
+# QCLICK q=397 t=35.0 y=8.95 z=19.18
+# QCLICK q=398 t=35.0 y=3.45 z=17.21
+# QCLICK q=399 t=25.0 y=7.79 z=23.68
+# QCLICK q=400 t=40.0 y=17.06 z=10.74
+# QCLICK q=401 t=35.0 y=20.25 z=25.43
+# QCLICK q=402 t=45.0 y=15.32 z=22.81
+# QCLICK q=403 t=55.0 y=8.60 z=24.36
+# QCLICK q=404 t=35.0 y=17.53 z=19.46
+# QCLICK q=405 t=55.0 y=7.77 z=2.16
+# QCLICK q=406 t=30.0 y=22.22 z=20.19
+# QCLICK q=407 t=30.0 y=14.64 z=5.19
+# QCLICK q=408 t=35.0 y=8.62 z=22.74
+# QCLICK q=409 t=30.0 y=21.72 z=9.84
+# QCLICK q=410 t=30.0 y=7.79 z=23.68
+# QCLICK q=411 t=25.0 y=23.14 z=14.53
+# QCLICK q=412 t=40.0 y=6.88 z=9.85
+# QCLICK q=413 t=55.0 y=11.29 z=3.94
+# QCLICK q=414 t=20.0 y=13.99 z=15.84
+# QCLICK q=415 t=30.0 y=9.27 z=15.52
+# QCLICK q=416 t=35.0 y=12.91 z=18.27
+# QCLICK q=417 t=40.0 y=12.45 z=15.30
+# QCLICK q=418 t=40.0 y=8.91 z=6.27
+# QCLICK q=419 t=30.0 y=7.79 z=20.39
+# QCLICK q=420 t=20.0 y=17.81 z=3.24
+# QCLICK q=421 t=40.0 y=21.62 z=7.22
+# QCLICK q=422 t=35.0 y=10.98 z=18.87
+# QCLICK q=423 t=45.0 y=5.63 z=3.24
+# QCLICK q=424 t=30.0 y=12.19 z=8.73
+# QCLICK q=425 t=35.0 y=7.78 z=16.92
+# QCLICK q=426 t=50.0 y=23.12 z=16.03
+# QCLICK q=427 t=35.0 y=17.24 z=10.35
+# QCLICK q=428 t=35.0 y=24.66 z=9.96
+# QCLICK q=429 t=30.0 y=7.79 z=23.68
+# QCLICK q=430 t=35.0 y=13.29 z=7.14
+# QCLICK q=431 t=40.0 y=14.33 z=13.42
+# QCLICK q=432 t=55.0 y=26.17 z=18.42
+# QCLICK q=433 t=20.0 y=13.49 z=8.02
+# QCLICK q=434 t=35.0 y=3.43 z=5.46
+# QCLICK q=435 t=30.0 y=15.56 z=18.97
+# QCLICK q=436 t=30.0 y=18.56 z=5.12
+# QCLICK q=437 t=30.0 y=26.89 z=19.17
+# QCLICK q=438 t=55.0 y=25.87 z=16.39
+# QCLICK q=439 t=45.0 y=8.26 z=15.01
+# QCLICK q=440 t=25.0 y=13.27 z=9.05
+# QCLICK q=441 t=35.0 y=7.31 z=13.61
+# QCLICK q=442 t=40.0 y=4.45 z=21.36
+# QCLICK q=443 t=50.0 y=13.07 z=19.96
+# QCLICK q=444 t=35.0 y=16.53 z=15.64
+# QCLICK q=445 t=50.0 y=13.49 z=8.02
+# QCLICK q=446 t=40.0 y=18.10 z=14.15
+# QCLICK q=447 t=30.0 y=16.45 z=27.19
+# QCLICK q=448 t=20.0 y=20.91 z=17.82
+# QCLICK q=449 t=35.0 y=16.59 z=8.18
+# QCLICK q=450 t=40.0 y=15.52 z=8.45
+# QCLICK q=451 t=35.0 y=12.45 z=17.68
+# QCLICK q=452 t=45.0 y=19.18 z=16.94
+# QCLICK q=453 t=35.0 y=19.04 z=23.25
+# QCLICK q=454 t=45.0 y=3.43 z=5.46
+# QCLICK q=455 t=30.0 y=22.22 z=20.19
+# QCLICK q=456 t=40.0 y=2.47 z=7.62
+# QCLICK q=457 t=50.0 y=10.44 z=6.04
+# QCLICK q=458 t=45.0 y=5.73 z=8.56
+# QCLICK q=459 t=55.0 y=14.33 z=13.42
+# QCLICK q=460 t=25.0 y=7.05 z=8.79
+# QCLICK q=461 t=45.0 y=14.18 z=26.86
+# QCLICK q=462 t=50.0 y=4.54 z=19.73
+# QCLICK q=463 t=45.0 y=25.79 z=9.02
+# QCLICK q=464 t=30.0 y=15.04 z=22.14
+# QCLICK q=465 t=30.0 y=8.76 z=26.57
+# QCLICK q=466 t=35.0 y=4.74 z=12.02
+# QCLICK q=467 t=35.0 y=17.12 z=12.51
+# QCLICK q=468 t=25.0 y=8.26 z=15.01
+# QCLICK q=469 t=30.0 y=14.16 z=18.33
+# QCLICK q=470 t=30.0 y=18.17 z=16.70
+# QCLICK q=471 t=35.0 y=3.54 z=15.29
+# QCLICK q=472 t=45.0 y=24.92 z=2.92
+# QCLICK q=473 t=30.0 y=8.05 z=22.63
+# QCLICK q=474 t=40.0 y=7.05 z=8.79
+# QCLICK q=475 t=30.0 y=17.12 z=12.51
+# QCLICK q=476 t=35.0 y=15.07 z=23.84
+# QCLICK q=477 t=35.0 y=26.50 z=22.23
+# QCLICK q=478 t=40.0 y=19.04 z=23.25
+# QCLICK q=479 t=30.0 y=19.39 z=9.81
+# QCLICK q=480 t=35.0 y=20.30 z=20.98
+# QCLICK q=481 t=35.0 y=2.72 z=9.30
+# QCLICK q=482 t=40.0 y=3.33 z=22.76
+# QCLICK q=483 t=55.0 y=25.00 z=16.87
+# QCLICK q=484 t=55.0 y=12.45 z=17.68
+# QCLICK q=485 t=30.0 y=19.42 z=20.13
+# QCLICK q=486 t=25.0 y=16.37 z=19.79
+# QCLICK q=487 t=40.0 y=17.12 z=12.51
+# QCLICK q=488 t=35.0 y=25.46 z=12.18
+# QCLICK q=489 t=25.0 y=21.97 z=17.59
+# QCLICK q=490 t=55.0 y=3.84 z=14.87
+# QCLICK q=491 t=55.0 y=23.47 z=17.82
+# QCLICK q=492 t=30.0 y=16.66 z=17.56
+# QCLICK q=493 t=25.0 y=20.70 z=5.61
+# QCLICK q=494 t=35.0 y=27.45 z=21.42
+# QCLICK q=495 t=30.0 y=13.59 z=17.36
+# QCLICK q=496 t=35.0 y=13.27 z=9.05
+# QCLICK q=497 t=35.0 y=13.25 z=10.15
+# QCLICK q=498 t=25.0 y=5.60 z=20.88
+# QCLICK q=499 t=20.0 y=23.72 z=4.97
+# QHIST y_center clicks predicted_cos2
+# QHIST 1.88	5	0.805
+# QHIST 2.62	10	0.881
+# QHIST 3.38	11	0.945
+# QHIST 4.12	10	0.988
+# QHIST 4.88	12	0.999
+# QHIST 5.62	19	0.969
+# QHIST 6.38	3	0.889
+# QHIST 7.12	10	0.756
+# QHIST 7.88	22	0.577
+# QHIST 8.62	15	0.372
+# QHIST 9.38	6	0.178
+# QHIST 10.12	13	0.040
+# QHIST 10.88	8	0.002
+# QHIST 11.62	5	0.090
+# QHIST 12.38	23	0.296
+# QHIST 13.12	32	0.568
+# QHIST 13.88	16	0.824
+# QHIST 14.62	23	0.979
+# QHIST 15.38	30	0.979
+# QHIST 16.12	39	0.824
+# QHIST 16.88	32	0.568
+# QHIST 17.62	22	0.296
+# QHIST 18.38	15	0.090
+# QHIST 19.12	17	0.002
+# QHIST 19.88	4	0.040
+# QHIST 20.62	11	0.178
+# QHIST 21.38	19	0.372
+# QHIST 22.12	12	0.577
+# QHIST 22.88	6	0.756
+# QHIST 23.62	12	0.889
+# QHIST 24.38	4	0.969
+# QHIST 25.12	14	0.999
+# QHIST 25.88	9	0.988
+# QHIST 26.62	6	0.945
+# QHIST 27.38	3	0.881
+# QHIST 28.12	2	0.805
+# RESULT qclick_visibility_central=0.439 centre=26.5 minima=10.3 (discrete events)

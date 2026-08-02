@@ -119,16 +119,24 @@ re-run on 2026-08-02.
 | `field_J=0` | ~16/21 | e2, d1, p1 all v/C=**0**, t4 | **field coupling** = c for light |
 | `cap=1000` | **14/21** | e3b, **e4**, e7, **e8**, e9, g3, **g4** | **load flattens pitch (capacity side)** — and it is *not* symmetric with `q_detune`: it fails a strict superset. Curvature linearity collapses (r² 0.9933→**0.519**), the comma goes unpaid (shed \|δ₀\| 0.092→**2.38**, total 7.2→130), field flux →**0**, the fifth never locks (8→**0**), and the blob freezes solid (speed 0.00134→6e-05). `cap` is where the pitch landscape itself lives. |
 | `comb_limit=1` | **16/20** | e3a, e9, g1, g4 | **the consonance comb** — collapsing to the unison kills the dense seal (e3a speed 0.00134→0.00211, g1 with it), the fifth (locked 8→**4**, t_last 60→50) and space throughput. Notably it does **not** kill e7 (3/5 seeds) or e8 — the comb's job is the dense sector's seal and the fifth, *not* the tuning curve. |
-| `gamma_res_m=0` | in flight | — | dense rim seal |
-| `w2=1.65` (=w1) | in flight | — | dense/field pitch separation |
+| `gamma_res_m=0` | **15/20** | e6, **e7 (0/5 seeds)**, e8, e9, g4 | **the dense rim seal.** Removing it destroys the *pair* sector wholesale: tuned pairs collapse from 31 to 7 with gg 0.684→**0.126**, e7 fails on **all five** panel foams, and the comma is not paid at all (shed \|δ₀\| exactly **0.000**, total 7.2→**0.0**) — nothing is left to shed it. The seal is what lets two dense objects hold a relationship; without it there is no pair physics to tune. |
+| `w2=1.65` (=w1) | **14/20** | e4, e6, **e7 (0/5)**, e8, e9, qt_hi | **the dense/field pitch separation** — the most destructive probe of the eight. Collapsing the two pitches onto each other leaves **no** tuned pairs (n=0), no curvature fit at all, the fifth locks for one step then dies (t_last 60→**10**), and above-threshold conversion stops entirely (qt_hi qatoms 404→**0**). ħ-linearity survives on only **17** grains against 498. If dense and field ring at the same pitch there is no conversion boundary, and with no boundary there are no atoms. |
 
 **Conservation sat at the FP floor (~1e-15) in every probe, including
 every failing run.** That is the recurring signature: the One Law is
 unconditional; the gates are the conditional physics, and they break in
 the right places when broken.
 
-*(`comb_limit=1` was scored under the seed-panel protocol, hence 16/20
-gated + 1 recorded rather than /21.)*
+**The map is now complete — all eight knobs probed.** Ranked by damage:
+`w2` (14/20) and `cap`/`quant_A0` (14/21) are the most load-bearing, then
+`gamma_res_m` (15/20), `comb_limit` (16/20), `q_detune` (17/21),
+`field_J` (~16/21, but uniquely surgical — it removes light and touches
+nothing dense), and `s_k` (robust over ~30×). No knob is inert, and none
+breaks everything: each takes down the phenomena that depend on it and
+leaves the rest standing. That pattern is the law/tuning discriminator.
+
+*(`comb_limit=1`, `gamma_res_m=0` and `w2=1.65` were scored under the
+seed-panel protocol, hence /20 gated + 1 recorded rather than /21.)*
 
 ## Variant verdict (2026-07-28, after §6.10 S2 retirement)
 

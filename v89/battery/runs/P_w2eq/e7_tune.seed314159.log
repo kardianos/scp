@@ -1,0 +1,47 @@
+# cellfab — v89 cell-fabric kernel (no lattice, no prior code)
+# cfg seed=314159 mode=field init=pairs
+# cfg L=30 dmin=1 r0=0.85 rjit=0.06
+# cfg C=1 w1=1.65 w2=1.65 q_detune=1.2 gamma_res=0.25 gamma_res_m=0.1 p_gate=8
+# cfg lock_floor=0.005
+# cfg k_dep=1.2 k_dep_m=2 cap=2.5 e_s0=1 es_floor=0.05
+# cfg e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# cfg kappa_lock=1 kappa_align=0.5 kappa_freq=0 kappa_reac=0 sigma_tumble=0.01
+# cfg space: s_k=0.06 s_disp=0.3 es_gx=0
+# cfg dt=0.02 T=60 diag_every=500 snap_every=0
+# cfg center=(-1,-1,-1) amp=1 sigma=2.5 k=(0,0,0) prealign=0 noise_amp=0.08
+# cfg music: comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004
+# cfg field sector: two-component signed amplitude, unitary hops, field_J=1.8
+# cfg ledger: mode=3 u=1.000e-12 (cellfabi INT_LEDGER)
+# cfg pairs: n=60 x0=-1 x1=-1 pq=1:1 seedlock=1 d=[1,1.55] gap=5
+# action atom: A0=1.1500 (dbar=1.5069) mode=2 — eps(w)=A0*w/2pi; atoms at mode boundaries, transport continuous
+# edge coloring: 29 colors for 165524 links
+# pairs: seeded 0 of 60 requested, d=[1,1.55], x0=x*(d), example -0.286, phases=locked
+# fabric: cells=18622 channels=165524 mean_degree=17.78 box=30 dmin=1
+# LEDGER seed mode=3 u=1.000e-12 E0_int=19367605051394766 NC=18622 NL=165524
+# LEDGER seed mode=3 u=1.000e-12 E0_int=19367605051394766 NC=18622 NL=165524
+# t	E_space	E_dense	E_field	E_transfer	E_total	rel_drift	live_ch	cm_x	cm_y	cm_z	contain	front_r	r_core	defA	r_far	r_ratio	w_core	w_far
+0.000	18622	0	745.605051	0	19367.6050514	0.000e+00	110747	0.000	0.000	0.000	0.000	25.6465	0.8480	0	0.8500	0.9976	1.65000	1.65000	15.0039	15.0418	14.9968	0	0	0	-7.4208	6.8708	-1.0193
+# CONV t=0.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=0.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=0.000e+00 run_max_sum_err=0 steps=0 E0_int=19367605051394766 sum=19367605051394766
+10.000	18622	0	745.605051	0	19367.6050514	2.818e-15	110738	0.000	0.000	0.000	0.000	25.7077	0.8479	1.9389	0.8500	0.9975	1.65000	1.65000	14.9848	15.0719	14.9572	0	0	0	-28.537	-2.4069	-27.047
+# CONV t=10.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=10.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=500 E0_int=19367605051394766 sum=19367605051394766
+20.000	18622	0	745.605051	0	19367.6050514	1.127e-15	110749	0.000	0.000	0.000	0.000	25.6897	0.8481	2.5098	0.8500	0.9978	1.65000	1.65000	14.9717	15.0343	14.9688	0	0	0	4.4915	3.3116	31.646
+# CONV t=20.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=20.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=1000 E0_int=19367605051394766 sum=19367605051394766
+30.000	18622	0	745.605051	0	19367.6050514	3.005e-15	110779	0.000	0.000	0.000	0.000	25.6465	0.8482	1.9732	0.8500	0.9979	1.65000	1.65000	14.9621	15.0560	14.9715	0	0	0	-9.2148	11.489	0.19019
+# CONV t=30.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=30.000 mode=3 sum_err=0 max|E-iEu|=4.999e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=1500 E0_int=19367605051394766 sum=19367605051394766
+40.000	18622	0	745.605051	0	19367.6050514	1.878e-16	110762	0.000	0.000	0.000	0.000	25.6897	0.8484	-0.96418	0.8500	0.9981	1.65000	1.65000	14.9622	15.0708	14.9315	0	0	0	-7.5649	1.4655	-8.8991
+# CONV t=40.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=40.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=2000 E0_int=19367605051394766 sum=19367605051394766
+50.000	18622	0	745.605051	0	19367.6050514	1.315e-15	110769	0.000	0.000	0.000	0.000	25.7077	0.8484	-0.24456	0.8500	0.9981	1.65000	1.65000	14.9673	15.1038	14.9161	0	0	0	-1.4543	4.4328	-2.7541
+# CONV t=50.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=50.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=2500 E0_int=19367605051394766 sum=19367605051394766
+60.000	18622	0	745.605051	0	19367.6050514	2.442e-15	110751	0.000	0.000	0.000	0.000	25.7077	0.8483	-0.23177	0.8500	0.9980	1.65000	1.65000	14.9397	15.1014	14.9378	0	0	0	18.782	-0.13187	0.20973
+# CONV t=60.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=60.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=3000 E0_int=19367605051394766 sum=19367605051394766
+# RESULT es_shells 0.94:1.0013 2.81:1.0008 4.69:1.0003 6.56:0.9995 8.44:1.0001 10.31:1.0000 12.19:1.0000 14.06:0.9998
+# RESULT LEDGER mode=3 E0_int=19367605051394766 sum_int=19367605051394766 max_sum_err=0 max|E-iEu|=1.500e-12 steps=3000
+# RESULT conservation E0=19367.6050514 Efinal=19367.6050514 rel_drift=2.442e-15
+# RESULT roughness_radiated=0 (dissonant dense deliveries converted to field, conserved)
