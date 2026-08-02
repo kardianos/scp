@@ -56,7 +56,7 @@
 
 typedef struct {
     int N;
-    double L, k, lam, cap;
+    double L, k, lam, cap, alpha;
     double *x, *y, *z, *E, *r, *P, *mu;
 } Box;
 
@@ -69,7 +69,7 @@ static double rnd(void)
 static Box *box_new(int N, double L, double k, double lam)
 {
     Box *b = calloc(1, sizeof(Box));
-    b->N = N; b->L = L; b->k = k; b->lam = lam; b->cap = 1e12;
+    b->N = N; b->L = L; b->k = k; b->lam = lam; b->cap = 1e12; b->alpha = 2.0;
     b->x = calloc(N, sizeof(double)); b->y = calloc(N, sizeof(double));
     b->z = calloc(N, sizeof(double)); b->E = calloc(N, sizeof(double));
     b->r = calloc(N, sizeof(double)); b->P = calloc(N, sizeof(double));
@@ -137,8 +137,9 @@ static double contacts(Box *b, double *zbar, double *Uc)
             double s = b->r[i] + b->r[j];
             if (d >= s || d < 1e-12) continue;
             double del = s - d, kk = kij(b, i, j);
-            b->P[i] += kk * del; b->P[j] += kk * del;
-            U += 0.5 * kk * del * del;
+            double fmag = kk * pow(del, b->alpha - 1.0);
+            b->P[i] += fmag; b->P[j] += fmag;
+            U += (kk / b->alpha) * pow(del, b->alpha);
             nc++;
         }
     if (zbar) *zbar = 2.0 * nc / N;
@@ -166,10 +167,11 @@ static double relax_pos(Box *b, int iters, double step, double *fmax)
                 double s = b->r[i] + b->r[j];
                 if (d >= s || d < 1e-12) continue;
                 double kk = kij(b, i, j);
-                double del = s - d, f = kk * del / d;
+                double del = s - d;
+                double f = kk * pow(del, b->alpha - 1.0) / d;
                 fx[i] += f * dx; fy[i] += f * dy; fz[i] += f * dz;
                 fx[j] -= f * dx; fy[j] -= f * dy; fz[j] -= f * dz;
-                U += 0.5 * kk * del * del;
+                U += (kk / b->alpha) * pow(del, b->alpha);
             }
         for (int i = 0; i < N; i++) {
             b->x[i] += step * fx[i]; b->y[i] += step * fy[i];
@@ -210,7 +212,8 @@ static double flow_energy(Box *b, double dt)
             double d = sqrt(dx * dx + dy * dy + dz * dz);
             double sm = b->r[i] + b->r[j];
             if (d >= sm) continue;
-            double del = sm - d, t = 0.5 * del * del * dkij_dE(b, i, j);
+            double del = sm - d;
+            double t = (pow(del, b->alpha) / b->alpha) * dkij_dE(b, i, j);
             soft[i] += t; soft[j] += t;
         }
     for (int i = 0; i < N; i++)
@@ -509,6 +512,80 @@ int main(void)
             box_free(b);
         }
     }
+    /* ---------------- G6: N17, the contact EXPONENT ---------------- */
+    printf("\n== G6 (N17). THE CONTACT EXPONENT — where the falling branch is ==\n");
+    printf("Analytically, mu falls with E exactly when delta/r > (alpha-1)/2.\n");
+    printf("Harmonic (alpha=2) needs delta/r > 0.5, an order of magnitude past\n");
+    printf("typical jamming overlap — which is why every run dispersed. The\n");
+    printf("criterion depends ONLY on alpha, never on k, which is also why\n");
+    printf("N16's cap softening could not work. alpha->1 is a YIELDING contact\n");
+    printf("(force saturates with overlap): a cell under pressure converts\n");
+    printf("instead of storing more elastic energy.\n");
+    printf("Retention is reported at TWO relaxation times; N16 proved a single\n");
+    printf("number here is worthless.\n");
+    printf("  alpha  (a-1)/2   ret@240   ret@960   max|f|@960   mean delta/r\n");
+    {
+        double al[] = {2.0, 1.7, 1.4, 1.2, 1.1, 1.02};
+        for (unsigned q = 0; q < sizeof(al) / sizeof(al[0]); q++) {
+            double ret[2] = {0, 0}, fmL = 0, dr = 0;
+            int cyc[2] = {240, 960};
+            for (int w = 0; w < 2; w++) {
+                Box *b = box_new(300, 20.0, 1.0, 0.5);
+                box_init(b, 1.0, 20260802);
+                b->alpha = al[q];
+                double cx = 10, cy = 10, cz = 10, R = 4.0;
+                int ncore = 0;
+                for (int i = 0; i < b->N; i++) {
+                    double dx = wrap(b->x[i] - cx, b->L), dy = wrap(b->y[i] - cy, b->L),
+                           dz = wrap(b->z[i] - cz, b->L);
+                    if (dx*dx + dy*dy + dz*dz < R*R) { b->E[i] *= 8.0; ncore++; }
+                }
+                radii(b);
+                double rc0 = 0, rb0 = 0; int nb0 = 0;
+                for (int i = 0; i < b->N; i++) {
+                    double dx = wrap(b->x[i] - cx, b->L), dy = wrap(b->y[i] - cy, b->L),
+                           dz = wrap(b->z[i] - cz, b->L);
+                    if (dx*dx + dy*dy + dz*dz < R*R) rc0 += b->r[i];
+                    else { rb0 += b->r[i]; nb0++; }
+                }
+                rc0 /= ncore; rb0 /= nb0;
+                double mq = 0, fm = 0;
+                equilibrate(b, cyc[w], 0.02, &mq, &fm);
+                double rc = 0, rb = 0; int nb2 = 0;
+                for (int i = 0; i < b->N; i++) {
+                    double dx = wrap(b->x[i] - cx, b->L), dy = wrap(b->y[i] - cy, b->L),
+                           dz = wrap(b->z[i] - cz, b->L);
+                    if (dx*dx + dy*dy + dz*dz < R*R) rc += b->r[i];
+                    else { rb += b->r[i]; nb2++; }
+                }
+                rc /= ncore; rb /= nb2;
+                ret[w] = (rc / rb - 1) / (rc0 / rb0 - 1);
+                if (w == 1) {
+                    fmL = fm;
+                    /* mean overlap ratio, to compare against (alpha-1)/2 */
+                    double acc = 0; long n = 0;
+                    for (int i = 0; i < b->N; i++)
+                        for (int j = i + 1; j < b->N; j++) {
+                            double dx = wrap(b->x[i]-b->x[j], b->L),
+                                   dy = wrap(b->y[i]-b->y[j], b->L),
+                                   dz = wrap(b->z[i]-b->z[j], b->L);
+                            double d2 = sqrt(dx*dx+dy*dy+dz*dz);
+                            double sm = b->r[i] + b->r[j];
+                            if (d2 >= sm) continue;
+                            acc += (sm - d2) / (0.5 * sm); n++;
+                        }
+                    dr = n ? acc / n : 0;
+                }
+                box_free(b);
+            }
+            printf("%7.2f  %7.3f  %9.3f  %9.3f  %11.1e  %13.4f\n",
+                   al[q], (al[q] - 1) / 2, ret[0], ret[1], fmL, dr);
+        }
+    }
+    printf("\nreading: coexistence should switch on where mean delta/r rises\n");
+    printf("above (alpha-1)/2. A core that holds must hold at BOTH relaxation\n");
+    printf("times; ret@240 positive with ret@960 negative is N16 all over again.\n");
+
     printf("\nreading: FLAT retention across a 8x range of relaxation time, with\n");
     printf("max|dE per sweep| falling toward zero, is a genuine coexisting\n");
     printf("phase. Retention that keeps sliding toward -0.25 is the soft-contact\n");
