@@ -83,10 +83,23 @@ def purity_check(laws_path):
 
 
 def build_kernel():
-    cmd = ["gcc", "-O2", "-march=native", "-fopenmp", "-o", BIN, SRC, "-lm"]
-    r = subprocess.run(cmd, capture_output=True, text=True)
-    if r.returncode != 0:
-        sys.exit(f"kernel build failed:\n{r.stderr}")
+    # Serialize concurrent builds (e.g. several battery.py invocations in
+    # parallel) via an flock on a lock file beside the binary. Without this
+    # two builds race on the shared BIN path -> ETXTBSY "Text file busy".
+    import fcntl
+    lockpath = BIN + ".build.lock"
+    with open(lockpath, "w") as lf:
+        fcntl.flock(lf, fcntl.LOCK_EX)
+        # Build to a temp path then atomically rename over BIN: a process
+        # already executing the old binary keeps running unaffected, and any
+        # concurrent exec attempt sees either the old or the new binary,
+        # never a half-written one.
+        tmp = BIN + ".build.tmp"
+        cmd = ["gcc", "-O2", "-march=native", "-fopenmp", "-o", tmp, SRC, "-lm"]
+        r = subprocess.run(cmd, capture_output=True, text=True)
+        if r.returncode != 0:
+            sys.exit(f"kernel build failed:\n{r.stderr}")
+        os.replace(tmp, BIN)
 
 
 RUN_THREADS = "1"   # per-run OpenMP threads; set from --jobs in main
@@ -130,6 +143,11 @@ def grab(log, pat, idx=None):
     return g if idx is None else g[idx]
 
 
+def fmt(x, spec="%.2e"):
+    """format a possibly-None numeric for result strings (None -> 'NA')."""
+    return spec % x if x is not None else "NA"
+
+
 def last_diag_em(log):
     em = None
     for line in log.splitlines():
@@ -169,7 +187,11 @@ def qatom_points(log):
 
 def conservation_ok(log):
     d = grab(log, r"# RESULT conservation .*rel_drift=([-\d.e+]+)", 0)
-    return d, (d is not None and abs(d) < DRIFT_MAX)
+    # Return nan (not None) on missing lines so downstream f-strings that
+    # format d with a spec (:.2e) never crash on incomplete logs.
+    if d is None:
+        return float("nan"), False
+    return d, abs(d) < DRIFT_MAX
 
 
 def diag_table(log):
@@ -206,7 +228,7 @@ def chk_e1(log):
     d, ok = conservation_ok(log)
     nq = len(qatom_points(log))
     em = last_diag_em(log)
-    return ok, f"drift={d:.2e} qatoms={nq} Em_final={em:.3g}"
+    return ok, f"drift={d:.2e} qatoms={nq} Em_final={fmt(em, "%.3g")}"
 
 
 def chk_qt_lo(log):
@@ -214,7 +236,7 @@ def chk_qt_lo(log):
     nq = len(qatom_points(log))
     em = last_diag_em(log)
     sub = nq == 0 and (em is not None and em < 1e-9)
-    return ok and sub, f"drift={d:.2e} qatoms={nq} Em_final={em:.3g}"
+    return ok and sub, f"drift={d:.2e} qatoms={nq} Em_final={fmt(em, "%.3g")}"
 
 
 def chk_e2(log):
@@ -384,7 +406,7 @@ def chk_qt_hi(log):
     nq = len(qatom_points(log))
     em = last_diag_em(log)
     return (ok and nq > 0 and em is not None and em > 0.5), \
-        f"drift={d:.2e} qatoms={nq} Em_final={em:.3g}"
+        f"drift={d:.2e} qatoms={nq} Em_final={fmt(em, "%.3g")}"
 
 
 def chk_p1(log):

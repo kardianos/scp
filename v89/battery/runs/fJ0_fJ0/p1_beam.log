@@ -1,0 +1,88 @@
+# cellfab — v89 cell-fabric kernel (no lattice, no prior code)
+# cfg seed=20260727 mode=field init=pulse
+# cfg L=36 dmin=1 r0=0.85 rjit=0.06
+# cfg C=1 w1=1.65 w2=2.9 q_detune=1.2 gamma_res=0.25 gamma_res_m=0.1 p_gate=8
+# cfg lock_floor=0.005
+# cfg k_dep=1.2 k_dep_m=2 cap=2.5 e_s0=1 es_floor=0.05
+# cfg e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# cfg kappa_lock=1 kappa_align=0.5 kappa_freq=0 kappa_reac=0 sigma_tumble=0.01
+# cfg space: s_k=0.06 s_disp=0.3 es_gx=0
+# cfg dt=0.02 T=20 diag_every=50 snap_every=0
+# cfg center=(6,-1,-1) amp=0.25 sigma=2.5 k=(1.1,0,0) prealign=1 noise_amp=0
+# cfg music: comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004
+# cfg field sector: two-component signed amplitude, unitary hops, field_J=0
+# cfg ledger: mode=3 u=1.000e-12 (cellfabi INT_LEDGER)
+# action atom: A0=1.1500 (dbar=1.5090) mode=2 — eps(w)=A0*w/2pi; atoms at mode boundaries, transport continuous
+# edge coloring: 29 colors for 282117 links
+# fabric: cells=31593 channels=282117 mean_degree=17.86 box=36 dmin=1
+# LEDGER seed mode=3 u=1.000e-12 E0_int=31632212802466930 NC=31593 NL=282117
+# LEDGER seed mode=3 u=1.000e-12 E0_int=31632212802466930 NC=31593 NL=282117
+# t	E_space	E_dense	E_field	E_transfer	E_total	rel_drift	live_ch	cm_x	cm_y	cm_z	contain	front_r	r_core	defA	r_far	r_ratio	w_core	w_far
+0.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188256	0.000	0.000	0.000	0.000	6.1157	0.8454	0	0.8498	0.9948	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=0.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=0.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=0.000e+00 run_max_sum_err=0 steps=0 E0_int=31632212802466930 sum=31632212802466930
+1.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188255	0.000	0.000	0.000	0.000	6.1157	0.8449	0.022879	0.8498	0.9942	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=1.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=1.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=50 E0_int=31632212802466930 sum=31632212802466930
+2.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188255	0.000	0.000	0.000	0.000	6.1157	0.8444	0.047583	0.8498	0.9936	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=2.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=2.000 mode=3 sum_err=0 max|E-iEu|=4.999e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=100 E0_int=31632212802466930 sum=31632212802466930
+3.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188254	0.000	0.000	0.000	0.000	6.1157	0.8439	0.072474	0.8498	0.9930	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=3.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=3.000 mode=3 sum_err=0 max|E-iEu|=4.999e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=150 E0_int=31632212802466930 sum=31632212802466930
+4.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188254	0.000	0.000	0.000	0.000	6.1157	0.8435	0.097968	0.8498	0.9925	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=4.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=4.000 mode=3 sum_err=0 max|E-iEu|=4.999e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=200 E0_int=31632212802466930 sum=31632212802466930
+5.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188255	0.000	0.000	0.000	0.000	6.1157	0.8430	0.12373	0.8498	0.9920	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=5.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=5.000 mode=3 sum_err=0 max|E-iEu|=4.999e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=250 E0_int=31632212802466930 sum=31632212802466930
+6.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188255	0.000	0.000	0.000	0.000	6.1157	0.8426	0.14992	0.8498	0.9915	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=6.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=6.000 mode=3 sum_err=0 max|E-iEu|=4.999e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=300 E0_int=31632212802466930 sum=31632212802466930
+7.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188254	0.000	0.000	0.000	0.000	6.1157	0.8423	0.17559	0.8498	0.9911	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=7.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=7.000 mode=3 sum_err=0 max|E-iEu|=4.999e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=350 E0_int=31632212802466930 sum=31632212802466930
+8.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188254	0.000	0.000	0.000	0.000	6.1157	0.8419	0.20163	0.8498	0.9907	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=8.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=8.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=400 E0_int=31632212802466930 sum=31632212802466930
+9.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188255	0.000	0.000	0.000	0.000	6.1157	0.8416	0.22828	0.8498	0.9903	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=9.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=9.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=450 E0_int=31632212802466930 sum=31632212802466930
+10.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188254	0.000	0.000	0.000	0.000	6.1157	0.8412	0.25448	0.8498	0.9899	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=10.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=10.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=500 E0_int=31632212802466930 sum=31632212802466930
+11.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188255	0.000	0.000	0.000	0.000	6.1157	0.8409	0.27964	0.8498	0.9895	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=11.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=11.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=550 E0_int=31632212802466930 sum=31632212802466930
+12.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188256	0.000	0.000	0.000	0.000	6.1157	0.8406	0.3051	0.8498	0.9892	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=12.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=12.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=600 E0_int=31632212802466930 sum=31632212802466930
+13.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188255	0.000	0.000	0.000	0.000	6.1157	0.8403	0.33021	0.8498	0.9888	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=13.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=13.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=650 E0_int=31632212802466930 sum=31632212802466930
+14.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188257	0.000	0.000	0.000	0.000	6.1157	0.8401	0.35551	0.8498	0.9885	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=14.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=14.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=700 E0_int=31632212802466930 sum=31632212802466930
+15.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188258	0.000	0.000	0.000	0.000	6.1157	0.8398	0.38104	0.8498	0.9882	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=15.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=15.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=750 E0_int=31632212802466930 sum=31632212802466930
+16.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188258	0.000	0.000	0.000	0.000	6.1157	0.8396	0.40666	0.8498	0.9879	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=16.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=16.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=800 E0_int=31632212802466930 sum=31632212802466930
+17.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188259	0.000	0.000	0.000	0.000	6.1157	0.8393	0.43244	0.8498	0.9876	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=17.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=17.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=850 E0_int=31632212802466930 sum=31632212802466930
+18.000	31593	0	39.2128025	0	31632.2128025	0.000e+00	188258	0.000	0.000	0.000	0.000	6.1157	0.8391	0.45805	0.8498	0.9873	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=18.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=18.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=900 E0_int=31632212802466930 sum=31632212802466930
+19.000	31593	0	39.2128025	0	31632.2128025	-1.150e-16	188257	0.000	0.000	0.000	0.000	6.1157	0.8389	0.48231	0.8498	0.9871	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=19.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=19.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=950 E0_int=31632212802466930 sum=31632212802466930
+20.000	31593	0	39.2128025	0	31632.2128025	-1.150e-16	188258	0.000	0.000	0.000	0.000	6.1157	0.8387	0.50582	0.8498	0.9868	1.65000	1.65000	6.0157	17.9752	18.0019	0	0	0	0	0	0
+# CONV t=20.00 cond=0 evap=0 rough=0 back_s=0
+# LEDGER t=20.000 mode=3 sum_err=0 max|E-iEu|=5.000e-13 run_max_diff=1.500e-12 run_max_sum_err=0 steps=1000 E0_int=31632212802466930 sum=31632212802466930
+# RESULT es_shells 1.12:0.9742 3.38:0.9925 5.62:1.0014 7.88:1.0011 10.12:1.0002 12.38:1.0000 14.62:1.0000 16.88:1.0000
+# RESULT LEDGER mode=3 E0_int=31632212802466930 sum_int=31632212802466930 max_sum_err=0 max|E-iEu|=1.500e-12 steps=1000
+# RESULT conservation E0=31632.2128025 Efinal=31632.2128025 rel_drift=-1.150e-16
+# RESULT roughness_radiated=0 (dissonant dense deliveries converted to field, conserved)
+# RESULT front_speed v=0.0000 v_over_C=0.0000 r2=-25.0000 (foam tortuosity keeps v below C)
