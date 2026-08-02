@@ -8,12 +8,12 @@ Packing fraction is swept by box size, which sweeps the mean
 contact number z. Consonance gave 5-13% locked at EVERY degree
 with no trend; a working bound must instead stay sharp as z rises.
     L      z    r_mean    r_sd/r_mean    r_max/r_mean   dE/E      max|f|
-  22.0   3.31    0.9631        0.0448          1.0759  +1.1e-15   8.0e-04
-  20.0   3.66    0.9619        0.0573          1.1054  +2.1e-16   1.4e-03
-  18.0   3.76    0.9606        0.0683          1.1577  +0.0e+00   1.5e-03
-  16.0   3.89    0.9589        0.0811          1.1767  +2.1e-16   1.6e-03
-  14.0   4.47    0.9565        0.0957          1.1997  +0.0e+00   5.5e-03
-  12.0   7.33    0.9493        0.1318          1.2424  +8.4e-16   4.1e-02
+  22.0   3.31    0.9631        0.0448          1.0759  +2.1e-16   8.0e-04
+  20.0   3.66    0.9619        0.0573          1.1054  -2.1e-16   1.4e-03
+  18.0   3.76    0.9606        0.0683          1.1577  -4.2e-16   1.5e-03
+  16.0   3.89    0.9589        0.0811          1.1767  +0.0e+00   1.6e-03
+  14.0   4.47    0.9565        0.0957          1.1997  -6.3e-16   5.5e-03
+  12.0   7.33    0.9493        0.1318          1.2424  +0.0e+00   4.1e-02
 
 reading: r_sd/r_mean is the width of the size distribution. If it
 stays small and does not blow up as z rises, pressure bounds size
@@ -48,3 +48,50 @@ or localise. Any structure surviving here is not the pressure's.
 reading: k=0 must show no bound and full retention (nothing moves
 at all, since mu is identically zero). The bound and any
 localisation must appear only as k rises.
+
+== G4 (N16). DOES cap SATURATION LET A CORE HOLD? ==
+k_ij = k/(1+(E_i+E_j)/2cap): a loaded pair goes soft, which puts a
+NEGATIVE term in mu. cap=1e12 is the unsaturated model and must
+reproduce G2 (retention about -0.25 at boost 8). If saturation
+opens a coexistence region, retention should RISE as cap falls.
+      cap   retained(boost 8)   r_sd/r_mean   r_max/r_mean   dE/E
+    1e+12             -0.248         0.2045          1.9965  +6.5e-16
+      100             -0.248         0.2045          1.9968  +3.2e-16
+       30             -0.248         0.2046          1.9991  +0.0e+00
+       10             -0.249         0.2049          2.0019  +6.5e-16
+        3             -0.251         0.2055          2.0115  +4.9e-16
+        1             -0.256         0.2060          2.0198  +3.2e-16
+      0.3              0.047         0.2055          2.0241  +0.0e+00
+      0.1              0.192         0.2023          2.0167  +8.1e-16
+
+== G5. IS THE HELD CORE REAL, OR JUST SLOW? ==
+Low cap means SOFT contacts, hence slower relaxation, so retention
+could be incomplete dispersal rather than a held state. If the core
+is a true coexisting phase, retention is FLAT in relaxation time.
+If it decays toward the unsaturated -0.25, it was kinetics.
+     cap   cycles   retained   max|f|      max|dE per sweep|
+     0.1      120      0.192    4.2e-02         4.2e-04
+     0.1      240      0.194    2.3e-02         1.9e-04
+     0.1      480     -0.110    8.4e-03         5.4e-05
+     0.1      960     -0.262    2.3e-03         3.0e-05
+     0.3      120      0.047    3.7e-02         2.9e-04
+     0.3      240     -0.260    1.2e-02         1.2e-04
+     0.3      480     -0.260    3.5e-03         3.7e-05
+     0.3      960     -0.260    2.9e-04         2.2e-06
+   1e+12      120     -0.248    3.8e-04         1.4e-05
+   1e+12      240     -0.248    1.4e-06         6.2e-08
+   1e+12      480     -0.248    1.8e-11         7.6e-13
+   1e+12      960     -0.248    6.2e-14         2.1e-16
+
+reading: FLAT retention across a 8x range of relaxation time, with
+max|dE per sweep| falling toward zero, is a genuine coexisting
+phase. Retention that keeps sliding toward -0.25 is the soft-contact
+kinetics of low cap and nothing more.
+
+reading: retention rising above 0 as cap falls = the core HOLDS,
+and a value that saturates rather than growing without limit is a
+bounded object. Watch r_max/r_mean at the same time: if the bound
+blows up while retention rises, saturation bought localisation by
+destroying the bound, which is not a win. dE/E must stay at the
+FP floor throughout — the softening is symmetric, so transfers
+stay paired.
