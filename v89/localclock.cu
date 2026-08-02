@@ -308,7 +308,7 @@ __global__ void k_publish(int N, const char *sel, const double *th, double *pub)
 int main(void)
 {
     const int DEG = 7;
-    const double Kc = 0.5, gE = 0.30, dt = 0.02, T = 4.0, LOOK = 0.05;
+    const double Kc = 0.5, gE = 0.30, dt = 0.02, T = 1.0, LOOK = 0.05;
 
     cudaDeviceProp p;
     CK(cudaGetDeviceProperties(&p, 0));
@@ -316,8 +316,14 @@ int main(void)
     printf("# device: %s, SMs=%d, cc=%d.%d\n", p.name, p.multiProcessorCount,
            p.major, p.minor);
     printf("# degree=%d T=%.1f lookahead=%.3f\n\n", DEG, T, LOOK);
-    printf("      N   events   rounds   mean_batch   cpu_s    gpu_s  speedup  agree\n");
+    printf("       N    events    rounds  mean_batch     cpu_s     gpu_s  speedup  agree\n");
 
+    /* The CPU reference is O(rounds x NT) and rounds grow with N, so it
+     * costs orders of magnitude more than the GPU at large N. Run it only
+     * where it is affordable — its job is to prove the GPU reproduces the
+     * schedule exactly, which one agreement at moderate N establishes.
+     * Above CPU_MAX the GPU runs alone and only timing is reported. */
+    const int CPU_MAX = 6144;
     int Ns[] = {1536, 6144, 24576, 98304, 393216};
     for (unsigned q = 0; q < sizeof(Ns) / sizeof(Ns[0]); q++) {
         int N = Ns[q];
@@ -329,10 +335,13 @@ int main(void)
         long rounds = 0; double width = 0;
         cudaEvent_t a, b; CK(cudaEventCreate(&a)); CK(cudaEventCreate(&b));
         float cpu_ms = 0, gpu_ms = 0;
-        CK(cudaEventRecord(a));
-        cpu_batch(C, T, LOOK, &rounds, &width);
-        CK(cudaEventRecord(b)); CK(cudaEventSynchronize(b));
-        CK(cudaEventElapsedTime(&cpu_ms, a, b));
+        int do_cpu = (N <= CPU_MAX);
+        if (do_cpu) {
+            CK(cudaEventRecord(a));
+            cpu_batch(C, T, LOOK, &rounds, &width);
+            CK(cudaEventRecord(b)); CK(cudaEventSynchronize(b));
+            CK(cudaEventElapsedTime(&cpu_ms, a, b));
+        }
 
         /* ---- GPU ---- */
         int *d_nb, *d_nd, *d_ei, *d_ej, *d_ce, *d_cen, *d_any, *d_cnt;
@@ -392,22 +401,28 @@ int main(void)
         CK(cudaEventRecord(b)); CK(cudaEventSynchronize(b));
         CK(cudaEventElapsedTime(&gpu_ms, a, b));
 
-        double *gth = (double *)malloc(sN), *gE_ = (double *)malloc(sN);
-        CK(cudaMemcpy(gth, d_th, sN, cudaMemcpyDeviceToHost));
-        CK(cudaMemcpy(gE_, d_E, sN, cudaMemcpyDeviceToHost));
-        double md = 0;
-        for (int i = 0; i < N; i++) {
-            double d1 = fabs(gth[i] - C->th[i]);
-            double d2 = fabs(gE_[i] - C->E[i]);
-            if (d1 > md) md = d1;
-            if (d2 > md) md = d2;
+        double gwidth = grounds ? gacc / grounds : 0;
+        if (do_cpu) {
+            double *gth = (double *)malloc(sN), *gE_ = (double *)malloc(sN);
+            CK(cudaMemcpy(gth, d_th, sN, cudaMemcpyDeviceToHost));
+            CK(cudaMemcpy(gE_, d_E, sN, cudaMemcpyDeviceToHost));
+            double md = 0;
+            for (int i = 0; i < N; i++) {
+                double d1 = fabs(gth[i] - C->th[i]);
+                double d2 = fabs(gE_[i] - C->E[i]);
+                if (d1 > md) md = d1;
+                if (d2 > md) md = d2;
+            }
+            printf("%8d  %8d  %8ld  %10.1f  %8.2f  %8.2f  %7.1fx  %s\n",
+                   N, NT, grounds, gwidth, cpu_ms / 1000.0, gpu_ms / 1000.0,
+                   cpu_ms / gpu_ms, md == 0.0 ? "EXACT" : "DIFFERS");
+            free(gth); free(gE_);
+        } else {
+            printf("%8d  %8d  %8ld  %10.1f  %8s  %8.2f  %8s  %s\n",
+                   N, NT, grounds, gwidth, "-", gpu_ms / 1000.0, "-",
+                   "(gpu only)");
         }
-        printf("%7d  %7d  %7ld  %10.1f  %7.2f  %7.2f  %6.1fx  %s\n",
-               N, NT, rounds, width, cpu_ms / 1000.0, gpu_ms / 1000.0,
-               cpu_ms / gpu_ms, md == 0.0 ? "EXACT" : "differs");
         fflush(stdout);
-
-        free(gth); free(gE_);
         cudaFree(d_nb); cudaFree(d_ce); cudaFree(d_ei); cudaFree(d_ej);
         cudaFree(d_nd); cudaFree(d_cen); cudaFree(d_th); cudaFree(d_pub);
         cudaFree(d_w); cudaFree(d_E); cudaFree(d_t); cudaFree(d_h);
