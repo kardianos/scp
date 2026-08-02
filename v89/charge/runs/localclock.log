@@ -1,0 +1,49 @@
+# localclock — must the clock be global?
+# ring N=24, Kc=0.60, dt=0.020, elapsed T=80.0
+# LOCAL cells own a local time and a local STEP, so their tick
+# counters genuinely diverge (that is the dilation).
+
+== reference ==
+SYNC  R=0.996150
+
+== Q1/Q2. does the LOCK survive going local? ==
+   K    R(local)   dR vs SYNC   tick spread (max-min tau)
+   1    0.982793    -1.34e-02   20
+   2    0.982923    -1.32e-02   30
+   4    0.982928    -1.32e-02   46
+   8    0.983192    -1.30e-02   61
+  16    0.983471    -1.27e-02   94
+  32    0.983460    -1.27e-02   171
+  64    0.983554    -1.26e-02   303
+1000000    0.996043    -1.08e-04   1065
+
+reading: the lock is the physics. If R survives, a global
+clock was never carrying it.
+
+== Q3. IS A BYTE ENOUGH? counter width M vs skew bound K ==
+wrapped comparison can only order ticks while K < M/2.
+    M     K   K<M/2    R(local)   tick spread
+    8     2   yes     0.982923   30
+    8     6   NO      0.996043   1065
+   16     4   yes     0.982928   46
+   16    12   NO      0.996043   1065
+   64    40   NO      0.996043   1065
+  256    64   yes     0.983554   303
+  256   200   NO      0.996043   1065
+
+== Q4. DETERMINISM — the adoptability test ==
+Same run, opposite scan direction. CANONICAL advances the cell
+with the smallest (t_i, i); ARRIVAL advances whichever eligible
+cell the scan meets first (what threads give you for free).
+   K    canonical |fwd-rev|   arrival |fwd-rev|
+   1   0.00e+00 (exact)   1.91e-02 (DIFFERS)
+   2   0.00e+00 (exact)   3.15e-02 (DIFFERS)
+   4   0.00e+00 (exact)   5.61e-02 (DIFFERS)
+   8   0.00e+00 (exact)   1.03e-01 (DIFFERS)
+  16   0.00e+00 (exact)   2.02e-01 (DIFFERS)
+  64   0.00e+00 (exact)   3.70e+00 (DIFFERS)
+
+reading: the ratchet compares byte-identical reruns. If
+CANONICAL is exact and ARRIVAL is not, then local clocks are
+adoptable but ONLY with an order defined by state, never by
+which core arrived first.

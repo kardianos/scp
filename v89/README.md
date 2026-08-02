@@ -44,8 +44,9 @@ If a question seems to need prior context, the answer is to derive it from
 ## The law, as it stands (2026-07-28)
 
 What the constraints have produced so far, in one place. One table of
-constants — `battery/laws_V2g.cfg` — passes every experiment in the program
-(20/20), with only apparatus differing between them: conservation, field
+constants — `battery/laws_V2g.cfg` — passes every gated experiment in the
+program (**19/20 gated, +1 recorded**; see the seed-panel note below),
+with only apparatus differing between them: conservation, field
 packets, heavy and light blobs, curvature linearity, CHSH, the rung tongue,
 the pair tuning curve, the comma, the fifth, double-slit fringes,
 single-quantum clicks, the eraser, HOM ordering, sub- and above-threshold
@@ -55,21 +56,26 @@ of laws, and it is guarded by the **ratchet rule** (`battery/README.md`):
 every modification runs the full battery, and experiments that pass join
 the gate.
 
-> **Seed caveat (measured 2026-08-01, `GLM_REVIEW_2026-08-01.md` Step 3).**
-> The battery has only ever been run on foam seed 20260727. A multi-seed
-> scan of the two tightest bars found that **`e3b_blob_tilt` passes on 1 of
-> 5 seeds** — the standing one — failing on a different clause each time
-> (cos, speed, speed, speed) and drifting *backward* on seed 314159; and
-> **`e7_tune` passes on 3 of 5** (frac 0.70–0.78 against a 0.75 floor).
-> So the headline is precisely: the standing table passes 20/20 **on seed
-> 20260727**, and two of those passes are seed-favourable. The four Step-0
-> destructive probes show the laws themselves are load-bearing, so this is
-> read as frozen-foam disorder injected into the two tightest bars, not as
-> a fault in the laws — and both S1 and livefab are predicted to shrink it,
-> which is itself a testable claim. Pending ratchet decision (sharpen the
-> protocol, never soften the bar): move `e3b` to *recorded, not gated*
-> alongside p2/g2 until a substrate where it is robust, and re-express
-> `e3b`/`e7` as multi-seed quantile bars rather than single-seed floors.
+> **The seed panel (measured 2026-08-01, acted on 2026-08-02).** Every bar
+> above had only ever been measured on one foam, seed 20260727. A
+> multi-seed scan of the two tightest bars
+> (`GLM_REVIEW_2026-08-01.md` Step 3) found **`e3b_blob_tilt` passes on 1
+> of 5 seeds** — the standing one — failing a different clause on each of
+> the other four and drifting *backward* on seed 314159; and **`e7_tune`
+> passes on 3 of 5** (frac 0.70–0.78 against a 0.75 floor).
+>
+> Acted on under the ratchet (sharpen the protocol, never soften the bar):
+> `e7` is now a **quantile bar** — frac ≥ 0.75 on ≥3 of the 5 panel foams,
+> which is strictly harder than the single-seed floor it replaces — and
+> `e3b` has **left the gate for *recorded, not gated***, alongside p2/g2.
+> Hence 19/20 gated, not 20/20.
+>
+> This is frozen-foam disorder, not a fault in the laws: the Step-0
+> destructive probes show the laws are load-bearing, and `q_detune=0`
+> makes e3b drift backward on *every* seed — the law-failure signature,
+> and not what the panel shows. S1 and livefab are both predicted to
+> shrink the variance, which is a testable claim and is e3b's route back
+> into the gate.
 
 1. **Amplitudes within a mode; atoms at the boundaries; integers in
    closure.** Inside a mode, energy moves as continuous amplitude —

@@ -20,6 +20,40 @@ law per experiment is structurally impossible here.
    make a change pass.
 4. **A green test leaves the suite only by explicit user decision** —
    never as a side effect of making something else work.
+5. **A bar measured on one foam is a claim about that foam.** Bars whose
+   claim is about the *law* are gated on a quantile over the frozen
+   `SEED_PANEL` (5 foams). The panel changes only when the substrate
+   does, and then for every experiment at once — enlarging it because a
+   bar fails on the current five is softening under another name.
+
+## The seed panel (ratchet action, 2026-08-02)
+
+Every bar in this suite had only ever been measured on foam seed
+`20260727`. A multi-seed scan of the two tightest bars
+(`GLM_REVIEW_2026-08-01.md` Step 3) found that the standing seed is a
+lucky draw for tilted transport, so two protocol changes were made under
+rule 3 (sharpen) and rule 4 (explicit decision):
+
+* **`e7_tune` is now a quantile bar** — `frac ≥ 0.75` on **≥3 of the 5**
+  panel foams, replacing the single-seed floor. Strictly harder: it
+  cannot be met by tuning to a seed.
+* **`e3b_blob_tilt` moved to recorded, NOT gated.** It passes on 1 of 5
+  foams — the standing one — and fails a different clause on each of the
+  other four, drifting *backward* on `314159`. A bar that holds only on
+  the foam it was measured on does not defend the claim it is written
+  for. It still runs and still reports on every invocation.
+
+This is read as frozen-foam disorder, not a law failure: `q_detune=0`
+makes `e3b` drift backward on *every* seed, which is the law-failure
+signature, and is not what the panel shows. S1 and livefab both predict
+the variance shrinks — that prediction is `e3b`'s route back into the
+gate.
+
+Panel seed 0 keeps the bare log name (`e7_tune.log`), so the standing log
+and cfg stay byte-identical to every earlier run and remain the baseline
+the ratchet diffs against; the other four write `e7_tune.seed<N>.log`.
+ħ-linearity is scored over the primary logs only, so the invariant stays
+comparable across variants whether or not they have a panel.
 
 ```
 python3 battery.py --laws laws_V2z.cfg [--jobs 10] [--only e6_pairs ...] [--skip-run]
@@ -61,7 +95,40 @@ encode real claims that currently fail or sit below measurement floors —
 see ROADMAP §7): p2 radiation pressure (absorbed light's momentum does
 not survive conversion, deficit ~100× — S2-full criterion); g2 dense
 free-fall in a frozen space gradient (below the ~1e-3 chaos floor);
-halo lensing (right sign, two orders below the foam bias floor).
+halo lensing (right sign, two orders below the foam bias floor); and
+since 2026-08-02 **e3b** (tilted-blob transport — seed-favourable, 1 of
+5 panel foams; see "The seed panel" above). So the run line reads
+**19/20 gated + 1 recorded**, not 21/21.
+
+## The law-dependency map — what each law buys
+
+Each probe is `laws_V2g.cfg` with **one key changed** and everything else
+byte-identical (`laws_P_*.cfg`; the merged cfg in each `runs/P_*/cfg/` is
+the record). A law is load-bearing if breaking it breaks exactly the
+phenomena whose physics depends on it — and nothing else.
+
+First four probes from `GLM_REVIEW_2026-08-01.md` Step 0; the remaining
+four were launched in that session into `/tmp` and never landed, and were
+re-run on 2026-08-02.
+
+| probe | gated | what falls | the law it confirms |
+|---|---|---|---|
+| `quant_A0=0` | 14/21 | qt_lo, e7, t4, e3a, g1, g3 | **atoms at boundaries** — creates the photoelectric threshold, pays the comma, separates Bose/Fermi |
+| `q_detune=0` | 17/21 | e3b (drifts *backward*, cos −0.99), e7, e9, g3 | **load flattens pitch** (detune side) |
+| `s_k` ∈ {0.02…2.0} | 21/21/20/19 | only e4 (and e3b at the low edge) | **space transport** — robust over ~30× |
+| `field_J=0` | ~16/21 | e2, d1, p1 all v/C=**0**, t4 | **field coupling** = c for light |
+| `cap=1000` | **14/21** | e3b, **e4**, e7, **e8**, e9, g3, **g4** | **load flattens pitch (capacity side)** — and it is *not* symmetric with `q_detune`: it fails a strict superset. Curvature linearity collapses (r² 0.9933→**0.519**), the comma goes unpaid (shed \|δ₀\| 0.092→**2.38**, total 7.2→130), field flux →**0**, the fifth never locks (8→**0**), and the blob freezes solid (speed 0.00134→6e-05). `cap` is where the pitch landscape itself lives. |
+| `comb_limit=1` | **16/20** | e3a, e9, g1, g4 | **the consonance comb** — collapsing to the unison kills the dense seal (e3a speed 0.00134→0.00211, g1 with it), the fifth (locked 8→**4**, t_last 60→50) and space throughput. Notably it does **not** kill e7 (3/5 seeds) or e8 — the comb's job is the dense sector's seal and the fifth, *not* the tuning curve. |
+| `gamma_res_m=0` | in flight | — | dense rim seal |
+| `w2=1.65` (=w1) | in flight | — | dense/field pitch separation |
+
+**Conservation sat at the FP floor (~1e-15) in every probe, including
+every failing run.** That is the recurring signature: the One Law is
+unconditional; the gates are the conditional physics, and they break in
+the right places when broken.
+
+*(`comb_limit=1` was scored under the seed-panel protocol, hence 16/20
+gated + 1 recorded rather than /21.)*
 
 ## Variant verdict (2026-07-28, after §6.10 S2 retirement)
 

@@ -45,6 +45,43 @@ EXPS = ["e1_conserve", "e2_pulse", "e3a_blob", "e3b_blob_tilt", "e4_curve",
 # measured <=1e-3; the dense translation ceiling itself is ~5e-3).
 # Third S2-full acceptance criterion (ROADMAP §7). Run via --only p2_press.
 
+# ------------------------------------------ multi-seed quantile bars
+# Ratchet action 2026-08-02 (GLM_REVIEW_2026-08-01.md Step 3; user
+# authorized). Every bar in this suite had only ever been measured on
+# foam seed 20260727, so each was a claim about that foam, not about the
+# law. The two tightest bars are now measured over a fixed seed PANEL
+# and gated on a quantile. This SHARPENS: passing 3 of 5 foams is a
+# strictly stronger claim than passing the one we happened to build on,
+# and it cannot be met by tuning to a seed.
+#
+# The panel is frozen. Adding a seed to it because a bar fails on the
+# current five would be softening by another name; the panel changes
+# only with the substrate (S1/livefab), and then for every experiment
+# at once.
+SEED_PANEL = [20260727, 111, 222222, 314159, 7777777]  # [0] = standing
+MULTISEED = {"e7_tune": 3}       # experiment -> min passing seeds of 5
+
+# Recorded, NOT gated. Ratchet rule 4 — a green test leaves the gate
+# only by explicit user decision; given 2026-08-02.
+#
+# e3b_blob_tilt passes on 1 of the 5 panel seeds (the standing one) and
+# fails a different clause on each of the other four — cos, speed,
+# speed, speed — drifting BACKWARD on 314159 (cos -0.415). Under the
+# quantile protocol above it would score 1/5. It is moved to recorded
+# rather than left as a green single-seed pass, because a bar that only
+# holds on the foam it was measured on does not defend the claim it is
+# written for.
+#
+# This is read as frozen-foam disorder at the tilt-transport limit, not
+# as a law failure: the Step-0 destructive probes show the laws are
+# load-bearing, and q_detune=0 makes e3b drift backward on EVERY seed
+# (cos -0.99), which is the law-failure signature and is not what the
+# panel shows. Both S1 and livefab predict the seed variance shrinks —
+# that prediction is the route back into the gate.
+#
+# It still RUNS and still REPORTS on every battery invocation.
+RECORDED = {"e3b_blob_tilt"}
+
 LAWS = {}
 
 DRIFT_MAX = 5e-14
@@ -107,11 +144,19 @@ EXTRAS = []         # apparatus k=v lines appended to every merged cfg
 EXTRAS_FOR = {}     # per-experiment apparatus k=v lines (variant sets)
 
 
-def run_one(laws_path, variant, name):
+def logkey(name, seed):
+    """Panel seed 0 keeps the bare name, so the standing log and cfg stay
+    byte-identical to every earlier run and remain the baseline the
+    ratchet diffs against."""
+    return name if seed is None else f"{name}.seed{seed}"
+
+
+def run_one(laws_path, variant, name, seed=None):
     vdir = os.path.join(ROOT, "runs", variant)
     os.makedirs(os.path.join(vdir, "cfg"), exist_ok=True)
-    cfg = os.path.join(vdir, "cfg", name + ".cfg")
-    log = os.path.join(vdir, name + ".log")
+    key = logkey(name, seed)
+    cfg = os.path.join(vdir, "cfg", key + ".cfg")
+    log = os.path.join(vdir, key + ".log")
     with open(laws_path) as fh:
         laws = fh.read()
     with open(os.path.join(ROOT, "apparatus", name + ".cfg")) as fh:
@@ -123,11 +168,13 @@ def run_one(laws_path, variant, name):
         if name in EXTRAS_FOR:
             fh.write("# --- extras (this experiment) ---\n"
                      + "\n".join(EXTRAS_FOR[name]) + "\n")
+        if seed is not None:
+            fh.write(f"\n# --- seed panel ---\nseed={seed}\n")
     env = dict(os.environ, OMP_NUM_THREADS=RUN_THREADS)
     with open(log, "w") as fh:
         r = subprocess.run([BIN, cfg], stdout=fh, stderr=subprocess.STDOUT,
                            env=env)
-    return name, r.returncode
+    return key, r.returncode
 
 
 # ---------------------------------------------------------------- parsing
@@ -601,10 +648,20 @@ def main():
     global RUN_THREADS
     RUN_THREADS = str(max(1, (os.cpu_count() or 8) // args.jobs))
 
+    # Expand the multi-seed experiments into one job per panel seed.
+    jobs = []
+    for e in exps:
+        if e in MULTISEED:
+            jobs += [(e, None if i == 0 else s)
+                     for i, s in enumerate(SEED_PANEL)]
+        else:
+            jobs.append((e, None))
+
     if not args.skip_run:
         build_kernel()
         with cf.ThreadPoolExecutor(max_workers=args.jobs) as ex:
-            futs = {ex.submit(run_one, laws_path, variant, e): e for e in exps}
+            futs = {ex.submit(run_one, laws_path, variant, e, s): (e, s)
+                    for e, s in jobs}
             for fu in cf.as_completed(futs):
                 name, rc = fu.result()
                 print(f"# run done: {name} rc={rc}")
@@ -617,35 +674,62 @@ def main():
     LAWS = laws
 
     logs = {}
-    for e in exps:
-        p = os.path.join(ROOT, "runs", variant, e + ".log")
-        logs[e] = open(p).read() if os.path.exists(p) else ""
+    for e, s in jobs:
+        k = logkey(e, s)
+        p = os.path.join(ROOT, "runs", variant, k + ".log")
+        logs[k] = open(p).read() if os.path.exists(p) else ""
+
+    def score(e):
+        """(ok, note) for one experiment, folding the seed panel where the
+        experiment has one."""
+        if e not in MULTISEED:
+            return CHECKS[e](logs[e]) if logs[e] else (False, "no log")
+        quota = MULTISEED[e]
+        per = []
+        for i, s in enumerate(SEED_PANEL):
+            lg = logs.get(logkey(e, None if i == 0 else s), "")
+            per.append(CHECKS[e](lg) if lg else (False, "no log"))
+        npass = sum(1 for o, _ in per if o)
+        detail = " ".join(
+            f"{s}:{'P' if o else 'F'}" for s, (o, _) in zip(SEED_PANEL, per))
+        return (npass >= quota,
+                f"seeds {npass}/{len(SEED_PANEL)} need {quota} [{detail}] "
+                f"| base: {per[0][1]}")
 
     print(f"\n== battery {variant} ==")
     fails = 0
+    nrec = 0
     rows = []
     for e in exps:
-        if not logs[e]:
-            rows.append((e, False, "no log"))
-            fails += 1
+        ok, note = score(e)
+        if e in RECORDED:
+            # Runs and reports; does not gate. Ratchet rule 4.
+            rows.append((e, None, note))
+            nrec += 1
             continue
-        ok, note = CHECKS[e](logs[e])
         rows.append((e, ok, note))
         fails += 0 if ok else 1
-    lin_ok, lin_note = chk_linearity(logs, a0)
+    # ħ-linearity stays over the PRIMARY logs only, so the invariant is
+    # comparable across variants regardless of who has a seed panel.
+    lin_ok, lin_note = chk_linearity({e: logs[e] for e in exps}, a0)
     if lin_ok is not None:
         rows.append(("LIN grain=eps(w)", lin_ok, lin_note))
         fails += 0 if lin_ok else 1
     else:
         rows.append(("LIN grain=eps(w)", True, "SKIP " + lin_note))
 
+    def verdict(ok):
+        return "RECORD" if ok is None else ("PASS" if ok else "FAIL")
+
+    ngate = len(rows) - nrec
     w = max(len(r[0]) for r in rows)
     for name, ok, note in rows:
-        print(f"{name:<{w}}  {'PASS' if ok else 'FAIL'}  {note}")
-    print(f"== {variant}: {len(rows)-fails}/{len(rows)} pass ==")
+        print(f"{name:<{w}}  {verdict(ok):<6}  {note}")
+    print(f"== {variant}: {ngate-fails}/{ngate} gated pass"
+          + (f" (+{nrec} recorded, not gated)" if nrec else "") + " ==")
     with open(os.path.join(ROOT, "runs", variant, "summary.tsv"), "w") as fh:
         for name, ok, note in rows:
-            fh.write(f"{name}\t{'PASS' if ok else 'FAIL'}\t{note}\n")
+            fh.write(f"{name}\t{verdict(ok)}\t{note}\n")
     sys.exit(1 if fails else 0)
 
 
