@@ -1,0 +1,46 @@
+# localclock.cu — GPU batch execution, Tesla V100-SXM2-16GB (80 SMs, cc 7.0)
+# vast.ai, 2026-08-02. degree=7 T=1.0 lookahead=0.050
+# CPU column is single-threaded reference on the same host.
+
+       N    events    rounds  mean_batch     cpu_s     gpu_s  speedup
+    1536      4989      5463        58.5      0.50      0.31      1.6x
+    6144     19953     14745        86.7      5.57      0.83      6.7x
+   24576     79810     51710        98.6         -      2.95         -
+   98304    319210    199198       102.4         -     22.52         -
+
+# CORRECTNESS (separate run, same binary):
+#   max|gpu - cpu| = 8.882e-16 at N=1536 and N=6144
+#   = 4 x DBL_EPSILON. CUDA's double sin() is not required to be
+#   bit-identical to glibc's; this is a transcendental-library
+#   difference, NOT a scheduling difference. The conflict-free claim is
+#   about the SCHEDULE and it holds: same events, same order, same
+#   batches. A boolean EXACT/DIFFERS could not distinguish this from a
+#   real bug, which is why the first run was uninformative.
+
+# THE LIMIT — batch width SATURATES, it does not scale with N:
+#   N=1536 -> 58.5,  6144 -> 86.7,  24576 -> 98.6,  98304 -> 102.4
+# The CPU measurement (N=48..1536, 5.18 -> 83.5) was the RISING part of
+# this curve and extrapolating it to ~1e4 at N=1e6 was wrong. The plateau
+# is ~100 independent events per round regardless of system size.
+#
+# A V100 has 80 SMs and wants O(1e4-1e5) resident threads. ~100 is three
+# orders short, so the device is almost entirely idle: at N=98304 the run
+# is 199198 sequential rounds, each with THREE kernel launches and TWO
+# blocking device->host copies (the `any` and `cnt` readbacks). At ~30 us
+# of launch+sync latency per round that alone is ~20 s, which is the
+# entire measured 22.52 s. The scheme as written is LATENCY-BOUND, not
+# throughput-bound, and no amount of GPU helps that.
+#
+# Why the width saturates is the open question. It is not the maximal
+# independent set that limits it — an MIS on this conflict graph would be
+# ~NT/20, i.e. ~16000 at N=98304. It is the LOCAL-TIME eligibility
+# window: with lookahead 0.05 and steps ~0.02, only events inside a
+# narrow time band are ever eligible at once, and that band holds a
+# bounded number of events however large the graph is.
+#
+# That points at the fix and it is not a GPU fix: raise the lookahead
+# (it is physical - the rate limit - so this is a modelling question,
+# not a tuning knob), or restructure so eligibility is not a global time
+# band. Removing the two per-round device syncs (device-side loop or
+# persistent kernel) is worth ~10x on the latency but cannot create
+# width that is not there.

@@ -101,10 +101,11 @@ static void fab_build(Fab *f, int deg, double Kc, double gE, double dt,
         f->nb[i * MAXDEG + f->nd[i]++] = j;
         f->nb[j * MAXDEG + f->nd[j]++] = i;
     }
+    /* running degree total: recomputing it inside the loop made the
+     * build O(N^2) — 0.1s at N=1536 but hours at N=393216. */
+    long degsum = 2L * N;
     for (int a = 0; a < N * (deg - 2) / 2 * 20; a++) {
-        int cnt = 0;
-        for (int i = 0; i < N; i++) cnt += f->nd[i];
-        if (cnt >= N * deg) break;
+        if (degsum >= (long)N * deg) break;
         int i = (int)(rnd() * N), j = (int)(rnd() * N);
         if (i == j || f->nd[i] >= deg || f->nd[j] >= deg) continue;
         int dup = 0;
@@ -112,6 +113,7 @@ static void fab_build(Fab *f, int deg, double Kc, double gE, double dt,
         if (dup) continue;
         f->nb[i * MAXDEG + f->nd[i]++] = j;
         f->nb[j * MAXDEG + f->nd[j]++] = i;
+        degsum += 2;
     }
     f->ne = 0;
     for (int i = 0; i < N; i++)
@@ -206,6 +208,8 @@ static void cpu_batch(Fab *f, double T, double look, long *rounds, double *width
             }
         }
         acc += cnt; r++;
+        if ((r % 20000) == 0) fprintf(stderr, "[cpu] round %ld\n", r);
+        if (r > 5000000L) { fprintf(stderr, "[cpu] ROUND CAP HIT\n"); break; }
     }
     free(elig); free(sel); free(evt);
     *rounds = r; *width = r ? acc / r : 0;
@@ -310,25 +314,30 @@ int main(void)
     const int DEG = 7;
     const double Kc = 0.5, gE = 0.30, dt = 0.02, T = 1.0, LOOK = 0.05;
 
+    setvbuf(stdout, NULL, _IOLBF, 0);   /* line buffered: no silent stalls */
     cudaDeviceProp p;
     CK(cudaGetDeviceProperties(&p, 0));
     printf("# localclock.cu — GPU batch execution\n");
     printf("# device: %s, SMs=%d, cc=%d.%d\n", p.name, p.multiProcessorCount,
            p.major, p.minor);
     printf("# degree=%d T=%.1f lookahead=%.3f\n\n", DEG, T, LOOK);
-    printf("       N    events    rounds  mean_batch     cpu_s     gpu_s  speedup  agree\n");
+    printf("       N    events    rounds  mean_batch     cpu_s     gpu_s  speedup  max|gpu-cpu|\n");
+    fflush(stdout);
 
     /* The CPU reference is O(rounds x NT) and rounds grow with N, so it
      * costs orders of magnitude more than the GPU at large N. Run it only
      * where it is affordable — its job is to prove the GPU reproduces the
      * schedule exactly, which one agreement at moderate N establishes.
      * Above CPU_MAX the GPU runs alone and only timing is reported. */
-    const int CPU_MAX = 6144;
-    int Ns[] = {1536, 6144, 24576, 98304, 393216};
+    const int CPU_MAX = 24576;
+    const long ROUND_CAP = 5000000L;
+    int Ns[] = {1536, 6144, 24576, 98304};
     for (unsigned q = 0; q < sizeof(Ns) / sizeof(Ns[0]); q++) {
         int N = Ns[q];
+        fprintf(stderr, "[N=%d] building...\n", N);
         Fab *C = fab_new(N); fab_build(C, DEG, Kc, gE, dt, 20260802);
         Fab *G = fab_new(N); fab_build(G, DEG, Kc, gE, dt, 20260802);
+        fprintf(stderr, "[N=%d] built, ne=%d\n", N, C->ne);
         int NE = C->ne, NT = N + NE;
 
         /* ---- CPU ---- */
@@ -337,6 +346,7 @@ int main(void)
         float cpu_ms = 0, gpu_ms = 0;
         int do_cpu = (N <= CPU_MAX);
         if (do_cpu) {
+            fprintf(stderr, "[N=%d] cpu reference...\n", N);
             CK(cudaEventRecord(a));
             cpu_batch(C, T, LOOK, &rounds, &width);
             CK(cudaEventRecord(b)); CK(cudaEventSynchronize(b));
@@ -397,6 +407,13 @@ int main(void)
                                    d_et, d_eh);
             k_publish<<<BLN, TPB>>>(N, d_sel, d_th, d_pub);
             gacc += cnt; grounds++;
+            if ((grounds % 20000) == 0)
+                fprintf(stderr, "[N=%d] gpu round %ld batch %d\n", N, grounds, cnt);
+            if (grounds > ROUND_CAP) {   /* backstop: a non-terminating loop
+                                          * must be loud, not silent */
+                fprintf(stderr, "[N=%d] ROUND CAP HIT at %ld\n", N, grounds);
+                break;
+            }
         }
         CK(cudaEventRecord(b)); CK(cudaEventSynchronize(b));
         CK(cudaEventElapsedTime(&gpu_ms, a, b));
@@ -413,9 +430,14 @@ int main(void)
                 if (d1 > md) md = d1;
                 if (d2 > md) md = d2;
             }
-            printf("%8d  %8d  %8ld  %10.1f  %8.2f  %8.2f  %7.1fx  %s\n",
+            /* print the MAGNITUDE: CUDA's double sin() is not required to
+             * be bit-identical to glibc's, so a ~1e-16 relative difference
+             * is a transcendental-library artifact and NOT a scheduling
+             * bug, while an O(1) difference is. "DIFFERS" alone cannot
+             * tell those apart, which is why the first run was useless. */
+            printf("%8d  %8d  %8ld  %10.1f  %8.2f  %8.2f  %7.1fx  %.3e\n",
                    N, NT, grounds, gwidth, cpu_ms / 1000.0, gpu_ms / 1000.0,
-                   cpu_ms / gpu_ms, md == 0.0 ? "EXACT" : "DIFFERS");
+                   cpu_ms / gpu_ms, md);
             free(gth); free(gE_);
         } else {
             printf("%8d  %8d  %8ld  %10.1f  %8s  %8.2f  %8s  %s\n",
