@@ -61,3 +61,47 @@ what lets the battery compare byte-identical reruns.
 reading: mean_eligible is the width available to run in parallel
 with no global barrier. 'counter bits' is what the K<M/2 rule
 demands at that lookahead — the answer to 'is a byte enough'.
+
+== R5. PARALLEL WIDTH — can this be batched? ==
+Conflict-free batch: events sharing no cell write disjoint
+memory, so they commute EXACTLY and may run simultaneously.
+Selection is a local minimum over the conflict neighbourhood —
+a pure function of state, so batches do not depend on threads.
+ lookahead   rounds   mean batch   speedup vs serial   matches serial
+     0.050   124486         8.47               8.47x   EXACT
+     0.200   124486         8.47               8.47x   n/a
+     1.000   124486         8.47               8.47x   n/a
+
+reading: mean batch is how many events a GPU could retire per
+round. It is the ceiling on any parallel speedup here, and it
+must come with EXACT agreement against the serial run — a batch
+that is merely close is a different scheme.
+
+== R6. DOES THE WIDTH SCALE WITH N? (decides GPU viability) ==
+A GPU needs thousands of independent work items. A maximal
+independent set in a fixed-degree conflict graph is a constant
+FRACTION of the events, so width should grow linearly with N.
+If it saturates, no GPU can help and the answer is no.
+      N   events   rounds   mean batch   batch/event frac
+     48      182     9054         5.18            0.0285
+     96      402    12695         8.32            0.0207
+    192      827    14408        14.86            0.0180
+    384     1676    16223        26.31            0.0157
+    768     3376    18112        47.39            0.0140
+   1536     6749    20588        83.48            0.0124
+
+reading: a constant batch/event fraction with mean batch rising
+linearly means the width is there at scale and a GPU port is
+worth building. A falling fraction means the conflict graph is
+too dense and the scheme is latency-bound whatever the hardware.
+
+== R7. THREAD-COUNT INVARIANCE (the ratchet requirement) ==
+ threads   bit-identical to 1 thread
+       2   YES
+       4   YES
+       8   YES
+      16   YES
+
+reading: the selection rule is a pure function of state, so this
+must read YES at every thread count. It is the property that lets
+the battery compare byte-identical reruns on any machine.

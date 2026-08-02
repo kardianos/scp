@@ -41,6 +41,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <omp.h>
 
 #define TWOPI 6.283185307179586
 #define MAXDEG 16
@@ -56,6 +57,7 @@ typedef struct {
      * O(1) rate error that does NOT vanish as dt->0. Channel ownership
      * makes the rate correct for any step size. */
     int ne, *ei, *ej;
+    int *ce, *cen;   /* per-cell incident EDGE ids: O(deg) conflict lookup */
     double *et, *eh;
     double Kc, gE, dt;
     long cap_hits;
@@ -83,12 +85,15 @@ static Fab *fab_new(int N, int deg, double Kc, double gE, double dt)
     f->ej = calloc((size_t)N * MAXDEG, sizeof(int));
     f->et = calloc((size_t)N * MAXDEG, sizeof(double));
     f->eh = calloc((size_t)N * MAXDEG, sizeof(double));
+    f->ce = calloc((size_t)N * MAXDEG, sizeof(int));
+    f->cen = calloc(N, sizeof(int));
     return f;
 }
 static void fab_free(Fab *f)
 { free(f->nb); free(f->nd); free(f->th); free(f->pub); free(f->w);
   free(f->E); free(f->t); free(f->h); free(f->tau);
-  free(f->ei); free(f->ej); free(f->et); free(f->eh); free(f); }
+  free(f->ei); free(f->ej); free(f->et); free(f->eh);
+  free(f->ce); free(f->cen); free(f); }
 
 static void fab_build(Fab *f, unsigned long long seed)
 {
@@ -124,6 +129,12 @@ static void fab_build(Fab *f, unsigned long long seed)
             f->eh[f->ne] = 0.5 * (f->h[i] + f->h[j]);
             f->ne++;
         }
+    memset(f->cen, 0, N * sizeof(int));
+    for (int e = 0; e < f->ne; e++) {
+        int a = f->ei[e], b = f->ej[e];
+        if (f->cen[a] < MAXDEG) f->ce[a * MAXDEG + f->cen[a]++] = e;
+        if (f->cen[b] < MAXDEG) f->ce[b * MAXDEG + f->cen[b]++] = e;
+    }
 }
 
 static void fab_copy_ic(Fab *d, const Fab *s)
@@ -142,6 +153,8 @@ static void fab_copy_ic(Fab *d, const Fab *s)
     memcpy(d->ei, s->ei, s->ne * sizeof(int));
     memcpy(d->ej, s->ej, s->ne * sizeof(int));
     memcpy(d->eh, s->eh, s->ne * sizeof(double));
+    memcpy(d->ce, s->ce, (size_t)N * MAXDEG * sizeof(int));
+    memcpy(d->cen, s->cen, N * sizeof(int));
     memset(d->et, 0, s->ne * sizeof(double));
     d->cap_hits = 0;
 }
@@ -315,6 +328,103 @@ static double mean_eligible(Fab *f, double T, double look)
     return n ? acc / n : 0;
 }
 
+/* ---- BATCH-PARALLEL execution ----
+ * The serial loop advances one event at a time, which caps throughput at
+ * one event per step however many cells are eligible. R4 showed nearly
+ * every event is eligible at once, so the width is there — it just needs
+ * a conflict-free selection.
+ *
+ * Two events CONFLICT if they touch a common cell. Events that do not
+ * share a cell commute EXACTLY (not just to rounding: they write
+ * disjoint memory), so a conflict-free batch can be advanced in any
+ * order — including simultaneously — and give bit-identical results.
+ *
+ * Selection rule, deterministic and computable locally: an eligible
+ * event is in the batch iff it has the minimum (t, index) among all
+ * eligible events touching any of its cells. That is a local maximal
+ * independent set, a pure function of state, so it does not depend on
+ * thread count or scheduling. Returns rounds executed; *width = mean
+ * batch size. */
+static long run_batch(Fab *f, double T, double look, double *width,
+                      int nthreads)
+{
+    int N = f->N, NE = f->ne, NT = N + NE;
+    char *elig = malloc(NT), *sel = malloc(NT);
+    double *evt = malloc(NT * sizeof(double));
+    long rounds = 0; double acc = 0;
+    for (;;) {
+        int any = 0;
+        #pragma omp parallel for num_threads(nthreads) schedule(static) reduction(|:any)
+        for (int u = 0; u < NT; u++) {
+            elig[u] = 0; evt[u] = 0;
+            double tu, lim = 1e300;
+            if (u < N) {
+                if (f->t[u] >= T) continue;
+                tu = f->t[u];
+                for (int k = 0; k < f->nd[u]; k++) {
+                    double tj = f->t[f->nb[u * MAXDEG + k]];
+                    if (tj < lim) lim = tj;
+                }
+                if (tu + f->h[u] > lim + look) continue;
+            } else {
+                int e = u - N;
+                if (f->et[e] >= T) continue;
+                tu = f->et[e];
+                double a = f->t[f->ei[e]], b = f->t[f->ej[e]];
+                lim = a < b ? a : b;
+                if (tu + f->eh[e] > lim + look) continue;
+            }
+            elig[u] = 1; evt[u] = tu; any = 1;
+        }
+        if (!any) break;
+        /* local minimum over the conflict neighbourhood */
+        #pragma omp parallel for num_threads(nthreads) schedule(static)
+        for (int u = 0; u < NT; u++) {
+            sel[u] = 0;
+            if (!elig[u]) continue;
+            int win = 1;
+            int cells[2], nc;
+            if (u < N) { cells[0] = u; nc = 1; }
+            else { cells[0] = f->ei[u - N]; cells[1] = f->ej[u - N]; nc = 2; }
+            for (int c = 0; c < nc && win; c++) {
+                int i = cells[c];
+                if (elig[i] && (evt[i] < evt[u] || (evt[i] == evt[u] && i < u)))
+                    win = 0;
+                /* A cell event READS its neighbours' published phase, so
+                 * two ADJACENT cell events race even though they write
+                 * disjoint memory. Excluding only incident edges left
+                 * that race in and it showed up as thread-count
+                 * dependence at 8 and 16 threads. Neighbouring cell
+                 * events are conflicts too. */
+                for (int k = 0; k < f->nd[i] && win; k++) {
+                    int v = f->nb[i * MAXDEG + k];
+                    if (v != u && elig[v] &&
+                        (evt[v] < evt[u] || (evt[v] == evt[u] && v < u))) win = 0;
+                }
+                for (int k = 0; k < f->cen[i] && win; k++) {
+                    int v = N + f->ce[i * MAXDEG + k];
+                    if (v != u && elig[v] &&
+                        (evt[v] < evt[u] || (evt[v] == evt[u] && v < u))) win = 0;
+                }
+            }
+            sel[u] = win;
+        }
+        int cnt = 0;
+        for (int u = 0; u < NT; u++) if (sel[u]) cnt++;
+        if (!cnt) break;
+        /* conflict-free by construction: disjoint memory, so parallel */
+        #pragma omp parallel for num_threads(nthreads) schedule(static)
+        for (int u = 0; u < NT; u++) {
+            if (!sel[u]) continue;
+            if (u < N) advance(f, u); else advance_edge(f, u - N);
+        }
+        acc += cnt; rounds++;
+    }
+    free(elig); free(sel); free(evt);
+    if (width) *width = rounds ? acc / rounds : 0;
+    return rounds;
+}
+
 static double maxdiff_th(Fab *a, Fab *b)
 { double m = 0; for (int i = 0; i < a->N; i++)
   { double d = fabs(a->th[i] - b->th[i]); if (d > m) m = d; } return m; }
@@ -474,6 +584,79 @@ int main(void)
     printf("\nreading: mean_eligible is the width available to run in parallel\n");
     printf("with no global barrier. 'counter bits' is what the K<M/2 rule\n");
     printf("demands at that lookahead — the answer to 'is a byte enough'.\n");
+
+    printf("\n== R5. PARALLEL WIDTH — can this be batched? ==\n");
+    printf("Conflict-free batch: events sharing no cell write disjoint\n");
+    printf("memory, so they commute EXACTLY and may run simultaneously.\n");
+    printf("Selection is a local minimum over the conflict neighbourhood —\n");
+    printf("a pure function of state, so batches do not depend on threads.\n");
+    printf(" lookahead   rounds   mean batch   speedup vs serial   matches serial\n");
+    {
+        Fab *ser = mk(ic, dt0);
+        run_local(ser, T, LOOK, 0, 0, 0, 0, NULL);
+        double looks[] = {0.05, 0.2, 1.0};
+        for (unsigned q = 0; q < 3; q++) {
+            Fab *B = mk(ic, dt0); double wd;
+            long r = run_batch(B, T, looks[q], &wd, 1);
+            long nev = 0;
+            for (int i = 0; i < N; i++) nev += B->tau[i];
+            for (int e = 0; e < B->ne; e++) nev += (long)(B->et[e] / B->eh[e] + 0.5);
+            double d = (looks[q] == LOOK) ? maxdiff_th(ser, B) : -1;
+            printf("%10.3f  %7ld  %11.2f  %17.2fx   %s\n",
+                   looks[q], r, wd, (double)nev / r,
+                   d < 0 ? "n/a" : (d == 0.0 ? "EXACT" : "differs"));
+            fab_free(B);
+        }
+        fab_free(ser);
+    }
+    printf("\nreading: mean batch is how many events a GPU could retire per\n");
+    printf("round. It is the ceiling on any parallel speedup here, and it\n");
+    printf("must come with EXACT agreement against the serial run — a batch\n");
+    printf("that is merely close is a different scheme.\n");
+
+    printf("\n== R6. DOES THE WIDTH SCALE WITH N? (decides GPU viability) ==\n");
+    printf("A GPU needs thousands of independent work items. A maximal\n");
+    printf("independent set in a fixed-degree conflict graph is a constant\n");
+    printf("FRACTION of the events, so width should grow linearly with N.\n");
+    printf("If it saturates, no GPU can help and the answer is no.\n");
+    printf("      N   events   rounds   mean batch   batch/event frac\n");
+    {
+        int Ns[] = {48, 96, 192, 384, 768, 1536};
+        for (unsigned q = 0; q < 6; q++) {
+            Fab *G = fab_new(Ns[q], DEG, Kc, gE, dt0);
+            fab_build(G, 20260802);
+            Fab *B = mk(G, dt0); double wd;
+            long r = run_batch(B, 4.0, LOOK, &wd, 1);
+            int NT = B->N + B->ne;
+            printf("%7d  %7d  %7ld  %11.2f  %16.4f\n",
+                   Ns[q], NT, r, wd, wd / NT);
+            fab_free(B); fab_free(G);
+        }
+    }
+    printf("\nreading: a constant batch/event fraction with mean batch rising\n");
+    printf("linearly means the width is there at scale and a GPU port is\n");
+    printf("worth building. A falling fraction means the conflict graph is\n");
+    printf("too dense and the scheme is latency-bound whatever the hardware.\n");
+
+    printf("\n== R7. THREAD-COUNT INVARIANCE (the ratchet requirement) ==\n");
+    printf(" threads   bit-identical to 1 thread\n");
+    {
+        Fab *ref = mk(ic, dt0); double wd;
+        run_batch(ref, T, LOOK, &wd, 1);
+        int ths[] = {2, 4, 8, 16};
+        for (unsigned q = 0; q < 4; q++) {
+            Fab *B = mk(ic, dt0);
+            run_batch(B, T, LOOK, &wd, ths[q]);
+            printf("%8d   %s\n", ths[q],
+                   maxdiff_th(ref, B) == 0.0 && maxdiff_E(ref, B) == 0.0
+                   ? "YES" : "NO");
+            fab_free(B);
+        }
+        fab_free(ref);
+    }
+    printf("\nreading: the selection rule is a pure function of state, so this\n");
+    printf("must read YES at every thread count. It is the property that lets\n");
+    printf("the battery compare byte-identical reruns on any machine.\n");
 
     fab_free(ic);
     return 0;

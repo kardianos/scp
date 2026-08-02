@@ -840,3 +840,85 @@ that leak:
 g4's gate bars encode the defended claim (the transient DECAYS and
 stays subdominant to the radiative channel): a future law that made
 sealed matter suck space steadily would fail g4 loudly.
+
+---
+
+## 8. Substrate and execution decisions (2026-08-02)
+
+Two design proposals were taken to standalone experiment. Full record:
+`DESIGN_2026-08-02.md`; artifacts `localclock.c`, `harmgrow.c`,
+`harmfrust.c`; logs under `charge/runs/`.
+
+### 8.1 STANDING: local clocks are the execution model for new work
+
+`localclock.c` passes a four-criterion readiness suite on a degree-7
+graph (conservation at 1.2e-16 relative and independent of lookahead;
+first-order convergence to a common fine reference; bit-identical output
+under every canonical reordering; ~full event width eligible at once).
+
+**Any new numerical experiment in v89 uses this execution model.** Four
+conditions, each of which is a measured requirement and not a preference:
+
+1. **Order events by a total function of state** — `(t, kind, index)`.
+   Never by arrival. Arrival order diverges by 1.2e-1 where canonical
+   order is bit-exact, and the ratchet compares byte-identical reruns.
+2. **Bound skew in LOCAL TIME**, never in tick count. Cells take
+   different steps, so equal tick counts are not equal time; a tick bound
+   distorts the ordering it exists to protect (1.3e-2 vs 1.1e-4).
+3. **Channels own their transfers and their own clock.** Firing a
+   transfer once per endpoint-advance double-counts — an O(1) rate error
+   that does not vanish as dt->0. Channel ownership was worth 160x on
+   transport accuracy (1.8e-2 -> 1.1e-4). Structure every update as a
+   paired antisymmetric transfer owned by exactly one holder; then
+   conservation is exact by construction and independent of execution
+   order.
+4. **Never order by the tick counter.** It diverges without bound by
+   construction — that divergence IS the dilation. A mod-M counter is
+   usable as a cyclic index only, and then `K < M/2` must be asserted:
+   the wrap failure is silent (the comparison stops ordering and the
+   bound evaporates with no symptom).
+
+The `cellfab` integration is still owed and needs explicit user
+authorization: an opt-in flag, default off, acceptance = `laws_V2g`
+19/20 gated + 1 recorded AND byte-identical output with the flag off.
+
+Method note worth keeping: the suite's first form compared async(dt) to
+sync(dt), which conflates two independent O(dt) errors and cannot answer
+"is this the same physics". Both must be compared against a common
+fine-step reference. Under the broken form the async column read exactly
+1.200e-4 at every dt — indistinguishable from "different fixed point",
+and actually a missing rescale in the harness. A test that cannot fail
+correctly is worse than no test.
+
+### 8.2 REJECTED FOR NOW: consonance as a morphology bound
+
+The proposal was to let cells grow with the bound supplied by harmony
+("harmonics within, dissonance between") rather than by a constant,
+which would make the bound dimensionless and relational instead of a
+ruler. On a ring it looked excellent: size quantised to the integer
+overtone series 1/1..6/1, held below the size the cell's own energy
+wanted, with a clean negative control.
+
+It does not survive frustration. On random graphs of degree 2-12 with
+every cell given its own preferred size, only 5-13% of contacts sit on a
+rung — at EVERY degree, including the ring — with no trend in degree and
+none in comb span, and the surviving locks use high-Tenney-height rungs
+rather than the clean series. The hoped-for consolation (a consonant
+domain size, i.e. a particle scale from combinatorics) is absent:
+`max_domain` 2-6 with no structure.
+
+The ring result was **one impurity in a uniform medium**, not a property
+of the potential. Two artifacts in a row on the same idea — first a
+random-restart staircase, then a topology staircase — which is itself
+the signal.
+
+Caveat, because it is the obvious re-opening: the rung-seeded search was
+built for the one-impurity case and is a poor initialiser for a
+heterogeneous spin-glass-like landscape, so the locked fraction is a
+LOWER bound on what annealing or belief propagation might find. What is
+not search-limited is the absence of any trend with degree or comb span.
+
+If growth is revisited, the bound should come from **jamming** (S1's
+contact saturation, which already produces a real length) or **capacity**
+(`cap`, which the law-dependency map shows is where the pitch landscape
+lives) — both already in the standing law table. Consonance is not it.
