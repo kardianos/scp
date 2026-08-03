@@ -2,9 +2,25 @@
 
 ---
 
-# CURRENT VERSION: v89 — READ THIS FIRST
+# CURRENT VERSION: v90 — READ THIS FIRST
 
-**Start at `v89/README.md`. Then `v89/PRINCIPLE.md`.**
+**Start at `v90/README.md` (the charter). The carried foundation is v89:
+`v89/README.md`, `v89/PRINCIPLE.md`, `v89/FREECELL.md` — consult v89 freely
+for the law and the evidence; it is the substrate v90 stands on.**
+
+**v90 (opened 2026-08-03)** carries forward from v89 exactly three working
+methods: the **free-cell substrate** (`v90/kernel/freecell.c` — **C is the
+kernel of record**, GPU path preserved; `v90/fab/` is the sanctioned Go-kernel
+*experiment*, A/B-verified against it), **local-clock execution** (FREECELL
+§2's four measured conditions are the implementation spec), and the **battery
+discipline** (`v90/cmd/battery` — **Go replaces python** as the harness
+language). The law is unchanged: laws_V2g constants VERBATIM,
+`v89/battery/laws_V2g.cfg` canonical. Goals in order: re-verify the standing
+experiments on the free substrate (double slit first), larger simulation
+areas, emergent electron shells, the Go volumetric viewer, then numeric
+speedups; stretch (user, 2026-08-03): a Pauli-exclusion demonstration and
+shell visualization, if reachable. The ratchet rule governs v90 exactly as it
+governed v89.
 
 ## Do not consult any version before v89
 

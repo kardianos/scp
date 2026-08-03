@@ -1,0 +1,52 @@
+# run conserve_go    [exp=bath T=40]
+# run conserve_go2   [exp=bath T=40]
+# run blob_c         [exp=blob L=16 T=160]
+# run ring6_c        [exp=ring ring_n=6 bath=0 T=300]
+# run ring5_c        [exp=ring ring_n=5 bath=0 T=300]
+# run pulse_c        [exp=pulse L=24 T=10 amp=0.25 sigma=2.5 kx=1.1 diag_every=50]
+# run pulse_go       [exp=pulse L=24 T=10 amp=0.25 sigma=2.5 kx=1.1 diag_every=50]
+# run udd_c          [exp=tri tri_kind=1 tri_xU=0.28 bath=0 T=300]
+# run conserve_c     [exp=bath T=40]
+# run conserve_c2    [exp=bath T=40]
+# run pair_dn_c      [exp=pair bath=0 T=60 pair_doff=-0.05]
+# run pair_up_c      [exp=pair bath=0 T=60 pair_doff=0.05]
+# run pair_nobond_c  [exp=pair bath=0 T=60 pair_doff=0.05 kappa_bond=0]
+# run pair_up_go     [exp=pair bath=0 T=60 pair_doff=0.05]
+# run uud_c          [exp=tri tri_xU=0.28 bath=0 T=100]
+
+EXPERIMENT | BAR                                           | MEASURED         | BOUND      | VERDICT
+----------------------------------------------------------------------------------------------------
+conserve   | c |drift| <= 1e-13                            | 0                | 1e-13      | PASS
+conserve   | c z_live final                                | 16.89            | [8,30]     | PASS
+conserve   | c churn births                                | 4611             | [100,1e+09] | PASS
+conserve   | c byte-determinism                            | sha256           | equal      | PASS
+conserve   | c law purity (laws_V2g header)                | header           | byte-exact | PASS
+conserve   | go |drift| <= 1e-13                           | 0                | 1e-13      | PASS
+conserve   | go z_live final                               | 16.89            | [8,30]     | PASS
+conserve   | go churn births                               | 4611             | [100,1e+09] | PASS
+conserve   | go byte-determinism                           | sha256           | equal      | PASS
+conserve   | go law purity (laws_V2g header)               | header           | byte-exact | PASS
+conserve   | cross C==Go (after line 1)                    | full log         | byte-equal | PASS
+pair       | both sides converge |d_up-d_dn| <= 5e-5       | 1e-06            | 5e-5       | PASS
+pair       | off_live = pressure/K_b (up)                  | 0.0329           | [0.02,0.05] | PASS
+pair       | off_live (dn)                                 | 0.032899         | [0.02,0.05] | PASS
+pair       | nobond control slides to contact              | 0.131903         | [0.1,1]    | PASS
+pair       | cross |d_go-d_c| <= 1e-4                      | 0                | 1e-4       | PASS
+ring       | ring6 edge_dev_mean <= 0.05                   | 0.034979         | [0,0.05]   | PASS
+ring       | ring6 all 6 edges alive, min gg >= 0.9        | n=6 min=0.975    | >=0.9      | PASS
+ring       | ring5 pi-frustrated: edge_dev_mean >= 0.10    | 0.131892         | [0.1,1]    | PASS
+ring       | ring5 pi defect: >=3 of 5 gates dead          | dead=3 min=0.0000 | >=3 dead   | PASS
+pulse      | v_over_C in the measured band                 | 0.574            | [0.5,0.65] | PASS
+pulse      | |drift| <= 1e-13                              | 0                | 1e-13      | PASS
+pulse      | cross |v_go-v_c| <= 5e-3                      | 0                | 5e-3       | PASS
+blob       | retention >= 0.78 at T=160                    | 0.8052           | >=0.78     | PASS
+blob       | connected: conn = 1                           | 1                | [0.999,1.001] | PASS
+blob       | no spreading: rms <= 3.6                      | 3.1102           | [0,3.6]    | PASS
+blob       | |drift| <= 1e-13                              | 0                | 1e-13      | PASS
+blob       | no densification: z_live <= 30                | 16.83            | [0,30]     | PASS
+fcq        | ladder identity d*_UU == d*_UD at x_D         | 0                | 1e-6       | PASS
+fcq        | UUD closed: 0 dead channels                   | 0                | 0          | PASS
+fcq        | UDD D-D edge beyond contact (seed print)      | seed             | OPEN       | PASS
+fcq        | UDD open chain: exactly 1 dead channel        | 1                | 1          | PASS
+----------------------------------------------------------------------------------------------------
+ALL GREEN (32 bars)
