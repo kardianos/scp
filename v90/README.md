@@ -67,6 +67,17 @@ Build: `cd v90 && make all` (gcc + go ≥ 1.27). No external dependencies.
 
 ## Program
 
+**PRIMARY FOCUS (user directive, 2026-08-03): the composite programme —
+`COMPOSITE.md`.** Many-celled quarks (composites whose collective mode
+carries flavor), validated by many-cell experiments, with **Mass, Charge,
+and EMF as parallel lanes** reading the same runs. First execution done:
+the composite bond works (and carries its energy as flight), the
+macro-parity selection rule quantizes composite geometry (nv ≡ 0 mod 12),
+the U/D molecule/droplet asymmetry is real, and all three lanes converge
+on the flight-load-vs-tongue frontier at three scales. P0–P4 below feed
+this focus (P2 scaling = bigger composites; P3 shells = composite
+response structure).
+
 **P0 — port + verify (the gate for everything else).**
 Faithful Go port of the kernel; A/B against the C reference: t=0 INIT
 identity, short-horizon trajectory agreement at the libm-ulp floor,
