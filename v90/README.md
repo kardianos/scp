@@ -172,12 +172,18 @@ run. State where every model's state lives and check it against constraint
 
 ## Status
 
+**The standing queue and interpretation live in `NEXT.md`** — one page:
+hard results index, what they mean, and the prioritized next steps.
+
 | item | state |
 |---|---|
-| P0 port | **done** — C kernel of record + Go experiment, both built (2026-08-03) |
-| P0 verify | **done** — VERIFY.md: byte-identical bath/blob, physics digits identical everywhere, drift col at 1e-16 floor |
-| P1 battery | **GREEN** — 32 bars, both kernels (runs/BATTERY.log) |
-| P1 double slit tier-0 | **CONFIRMED on the live substrate** — V_r 0.65 (frozen 0.67), loci parameter-free, 3-seed panel; battery `ds` 8 bars green (DS.md) |
-| P2 local-clock scheduler | spec carried; not started |
-| P3 shells | not started |
-| P4 speedups | not started |
+| P0 port + verify | **done** — VERIFY.md: bath/blob byte-identical, physics digits identical everywhere |
+| P1 battery | **GREEN — 40 bars**, both kernels, through 7 apparatus additions (runs/BATTERY.log) |
+| P1 double slit tier 0 | **CONFIRMED on the live substrate** (DS.md; battery `ds` 8 bars) |
+| DS tier 1 | discriminator present (clicks avoid minima); needs ≥200-grain harvest before claiming (DS.md) |
+| FCS + viewer | v3 chunked streams, interleaved ANLZ, lossless codec, live `-follow`, interactive orbit/scrub (FCS.md) |
+| MOTION baseline | measured: bounded wander, plastic-lock collisions, blob merging, driven-object null, opacity=headroom (MOTION.md) |
+| **COMPOSITE (primary focus)** | rounds 1–2 executed: macro-parity rule, T6 U/D asymmetry, bond=flight, compensation 8×, H-stiffness→flux-machine interior, **bath protects**, nucleon residual force (COMPOSITE.md) |
+| P2 local-clock scheduler | spec carried; queued (NEXT.md #7) |
+| P3 shells | first-look done (runs/shell/); driven-response probe queued |
+| P4 speedups | not started (after stability) |
