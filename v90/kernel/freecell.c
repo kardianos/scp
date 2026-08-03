@@ -173,6 +173,9 @@ typedef struct {
      * 0.98*contact (droplet) — the U/D structural asymmetry (T6). */
     int    rings_kind, rings_nv, rings_branch;
     double rings_xU, rings_xD, rings_gapoff;
+    double rings_xcomp;             /* CQ3b: whole-ring load reduction, U-flavor rings */
+    double rings_xcompD;            /* CQ3b: whole-ring load shift, D-flavor rings */
+    double rings_sep;               /* kind 3: nucleon COM separation */
     int    slit_mask;               /* 0 both, 1 A only, 2 B only, 3 no wall */
     char snap_dir[256];
     char snap_file[256];            /* FCS v3 single-stream output */
@@ -222,6 +225,7 @@ static void cfg_defaults(void)
     P.slit_pinw = 3.0;
     P.rings_kind = 1; P.rings_nv = 6; P.rings_branch = 0;
     P.rings_xU = 0.28; P.rings_xD = -1; P.rings_gapoff = 0;
+    P.rings_xcomp = 0; P.rings_xcompD = 0; P.rings_sep = 9.0;
     strcpy(P.snap_dir, "");
     strcpy(P.snap_file, "");
     P.snap_comp = 1;
@@ -327,6 +331,9 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "rings_xU")) P.rings_xU = atof(v);
     else if (!strcmp(k, "rings_xD")) P.rings_xD = atof(v);
     else if (!strcmp(k, "rings_gapoff")) P.rings_gapoff = atof(v);
+    else if (!strcmp(k, "rings_xcomp")) P.rings_xcomp = atof(v);
+    else if (!strcmp(k, "rings_xcompD")) P.rings_xcompD = atof(v);
+    else if (!strcmp(k, "rings_sep")) P.rings_sep = atof(v);
     else if (!strcmp(k, "snap_dir")) { strncpy(P.snap_dir, v, 255); P.snap_dir[255] = 0; }
     else if (!strcmp(k, "snap_file")) { strncpy(P.snap_file, v, 255); P.snap_file[255] = 0; }
     else if (!strcmp(k, "snap_comp")) P.snap_comp = atoi(v);
@@ -1876,11 +1883,12 @@ static double truss_shape0[3];
 static int tri_on = 0, tri_v[2][3];
 /* COMPOSITE inter-ring boundary edges (directed, with charts) */
 static int rint_n = 0;
-static int rint_e[6][2];
-static signed char rint_p[6], rint_q[6];
-static double rint_dstar[6];
-static int rings_nring = 0, rings_v0[3], rings_mode[3]; /* 1=molecule 0=droplet */
-static double rings_w[3];
+static int rint_e[8][2];
+static signed char rint_p[8], rint_q[8];
+static double rint_dstar[8];
+static int rings_nring = 0, rings_v0[6], rings_mode[6]; /* 1=molecule 0=droplet */
+static double rings_w[6];
+static int rings_grp[6];
 static signed char tri_p[2][3], tri_q[2][3];
 static int ntri = 0;
 
@@ -2003,7 +2011,8 @@ int main(int argc, char **argv)
     if (!strcmp(P.exp, "oct")) extra = 6;
     if (!strcmp(P.exp, "tri")) extra = 3;
     if (!strcmp(P.exp, "tri2")) extra = 6;
-    if (!strcmp(P.exp, "rings")) extra = (P.rings_kind == 0 ? 2 : 3) * P.rings_nv;
+    if (!strcmp(P.exp, "rings"))
+        extra = (P.rings_kind == 0 ? 2 : P.rings_kind == 3 ? 6 : 3) * P.rings_nv;
 
     alloc_all(nb + extra);
     for (int i = 0; i < nb; i++) {
@@ -2336,66 +2345,96 @@ int main(int argc, char **argv)
                P.amp, P.sigma, P.kx);
     }
     else if (!strcmp(P.exp, "rings")) {
-        /* COMPOSITE.md CQ0: R rings as many-celled quarks. Boundary
-         * arithmetic = the minimal triangle's ladder (T2); internal
-         * structure per T6 (molecule if the rung fits contact, droplet
-         * otherwise). Coplanar, vertex-facing (even nv). */
+        /* COMPOSITE.md CQ0/CQ3b/CQ9: groups of rings as many-celled
+         * quarks. kind 0 pair, 1 UUD, 2 UDD, 3 = TWO UUD nucleons at
+         * rings_sep. Facing cells loaded at x - rings_xcomp (flight
+         * compensation, CQ3b). Bath: spherical carve per ring. */
         int nv = P.rings_nv;
-        int nring = P.rings_kind == 0 ? 2 : 3;
+        int ngrp = P.rings_kind == 3 ? 2 : 1;
+        int npg = P.rings_kind == 0 ? 2 : 3;
+        int nring = ngrp * npg;
         double xU = P.rings_xU;
         double xD = P.rings_xD < 0 ? (0.5 + 1.8 * xU) / 1.2 : P.rings_xD;
         double wU = P.w2 / (1.0 + P.q_detune * xU);
         double wD = P.w2 / (1.0 + P.q_detune * xD);
         double dUD = 2.0 * TWO_PI / (2.0 * wU + 3.0 * wD);
-        /* per-ring flavor: kind0 UU; kind1 UUD; kind2 UDD */
-        double xs[3], ws[3];
-        xs[0] = xU; xs[1] = (P.rings_kind == 2) ? xD : xU;
-        xs[2] = xD;
-        for (int k = 0; k < nring; k++) ws[k] = P.w2 / (1.0 + P.q_detune * xs[k]);
-        /* radii after load pull (for contact estimates) */
-        double rload[3];
+        double xs[6], ws[6];
+        for (int k = 0; k < nring; k++) {
+            int lk = k % npg;
+            double x = xU;
+            if (P.rings_kind == 2 && lk >= 1) x = xD;
+            if ((P.rings_kind == 1 || P.rings_kind == 3) && lk == 2) x = xD;
+            xs[k] = x;
+            ws[k] = P.w2 / (1.0 + P.q_detune * x);
+        }
+        double rload[6], dint[6], R[6];
+        int mode[6];
         for (int k = 0; k < nring; k++) {
             double pull = P.s_pull * (xs[k] * P.cap / (1.0 + P.s_pull));
-            double es = P.e_s0 - (pull < P.e_s0 - P.es_floor ? pull : P.e_s0 - P.es_floor);
+            double cap2 = P.e_s0 - P.es_floor;
+            double es = P.e_s0 - (pull < cap2 ? pull : cap2);
             rload[k] = P.r0 * cbrt(es / P.e_s0);
-        }
-        /* internal spacing: molecule (rung) or droplet (0.98*contact) */
-        double dint[3]; int mode[3];
-        for (int k = 0; k < nring; k++) {
             double rung = M_PI / ws[k];
             double contact = 2.0 * rload[k];
             if (rung < contact * P.cfac) { dint[k] = rung; mode[k] = 1; }
             else { dint[k] = 0.98 * contact; mode[k] = 0; }
+            R[k] = dint[k] / (2.0 * sin(M_PI / nv));
         }
-        double R[3];
-        for (int k = 0; k < nring; k++) R[k] = dint[k] / (2.0 * sin(M_PI / nv));
-        /* boundary gaps between rings: unison rung for same flavor,
-         * the fifth d*_UD for U-D; D-D left to its own arithmetic */
-        double bgap[3][3];
-        for (int a = 0; a < nring; a++)
-            for (int b2 = 0; b2 < nring; b2++) {
-                if (fabs(ws[a] - ws[b2]) < 1e-12) bgap[a][b2] = M_PI / ws[a];
-                else bgap[a][b2] = dUD;
-                bgap[a][b2] += P.rings_gapoff;
+        /* group-local centers (SSS), then group offsets */
+        double cxr[6], cyr[6];
+        for (int g = 0; g < ngrp; g++) {
+            int b0 = g * npg;
+            double gx = ngrp == 2 ? (g == 0 ? -0.5 : 0.5) * P.rings_sep : 0.0;
+            if (npg == 2) {
+                double bg = M_PI / ws[b0] + P.rings_gapoff;
+                double cdist = R[b0] + R[b0+1] + bg;
+                cxr[b0] = gx - 0.5 * cdist; cyr[b0] = 0;
+                cxr[b0+1] = gx + 0.5 * cdist; cyr[b0+1] = 0;
+            } else {
+                double bg01 = (fabs(ws[b0] - ws[b0+1]) < 1e-12 ? M_PI / ws[b0] : dUD) + P.rings_gapoff;
+                double bg12 = (fabs(ws[b0+1] - ws[b0+2]) < 1e-12 ? M_PI / ws[b0+1] : dUD) + P.rings_gapoff;
+                double bg02 = (fabs(ws[b0] - ws[b0+2]) < 1e-12 ? M_PI / ws[b0] : dUD) + P.rings_gapoff;
+                double c01 = R[b0] + R[b0+1] + bg01;
+                double c12 = R[b0+1] + R[b0+2] + bg12;
+                double c02 = R[b0] + R[b0+2] + bg02;
+                double x0 = 0, y0 = 0, x1 = c01, y1 = 0;
+                double x2 = (c01 * c01 + c02 * c02 - c12 * c12) / (2.0 * c01);
+                double y2s = c02 * c02 - x2 * x2;
+                double y2 = y2s > 0 ? sqrt(y2s) : 0;
+                double mx = (x0 + x1 + x2) / 3.0, my = (y0 + y1 + y2) / 3.0;
+                cxr[b0] = gx + x0 - mx; cyr[b0] = y0 - my;
+                cxr[b0+1] = gx + x1 - mx; cyr[b0+1] = y1 - my;
+                cxr[b0+2] = gx + x2 - mx; cyr[b0+2] = y2 - my;
             }
-        /* centers: pair on x-axis; triangle by SSS */
-        double cxr[3], cyr[3];
-        if (nring == 2) {
-            double cdist = R[0] + R[1] + bgap[0][1];
-            cxr[0] = -0.5 * cdist; cyr[0] = 0;
-            cxr[1] = +0.5 * cdist; cyr[1] = 0;
-        } else {
-            double c01 = R[0] + R[1] + bgap[0][1];
-            double c12 = R[1] + R[2] + bgap[1][2];
-            double c02 = R[0] + R[2] + bgap[0][2];
-            cxr[0] = 0; cyr[0] = 0;
-            cxr[1] = c01; cyr[1] = 0;
-            double x2 = (c01 * c01 + c02 * c02 - c12 * c12) / (2.0 * c01);
-            double y2s = c02 * c02 - x2 * x2;
-            cxr[2] = x2; cyr[2] = y2s > 0 ? sqrt(y2s) : 0;
-            double mx = (cxr[0] + cxr[1] + cxr[2]) / 3.0;
-            double my = (cyr[0] + cyr[1] + cyr[2]) / 3.0;
-            for (int k = 0; k < 3; k++) { cxr[k] -= mx; cyr[k] -= my; }
+        }
+        /* bath: spherical carve per ring */
+        if (P.bath && nb > 0) {
+            int m = 0, rem = 0;
+            for (int i = 0; i < nb; i++) {
+                int keep = 1;
+                for (int k = 0; k < nring && keep; k++) {
+                    double dx = wr(px_[i] - (cx0 + cxr[k]));
+                    double dy = wr(py_[i] - (cy0 + cyr[k]));
+                    double dz = wr(pz_[i] - cz0);
+                    double clear = R[k] + 0.8;
+                    if (dx*dx + dy*dy + dz*dz < clear * clear) keep = 0;
+                }
+                if (keep) {
+                    if (m != i) {
+                        px_[m]=px_[i]; py_[m]=py_[i]; pz_[m]=pz_[i];
+                        cr0[m]=cr0[i]; cr[m]=cr[i];
+                        n1x[m]=n1x[i]; n1y[m]=n1y[i]; n1z[m]=n1z[i];
+                        n2x[m]=n2x[i]; n2y[m]=n2y[i]; n2z[m]=n2z[i];
+                        th2[m]=th2[i]; cbeta[m]=cbeta[i];
+                        Es[m]=Es[i]; Em[m]=Em[i]; Ee[m]=Ee[i];
+                        fa1[m]=fa1[i]; fa2[m]=fa2[i];
+                    }
+                    m++;
+                } else rem++;
+            }
+            printf("# CARVE rings: removed %d bath cells\n", rem);
+            nb = m;
+            NC = nb + extra;
         }
         rings_nring = nring;
         int base_i = nb;
@@ -2404,8 +2443,9 @@ int main(int argc, char **argv)
             rings_v0[k] = base_i + k * nv;
             rings_mode[k] = mode[k];
             rings_w[k] = ws[k];
-            /* orientation: vertex 0 toward the first neighbour */
-            int nbr = (k + 1) % nring;
+            rings_grp[k] = k / npg;
+            int g = k / npg, lk = k % npg;
+            int nbr = g * npg + (lk + 1) % npg;
             double az = atan2(cyr[nbr] - cyr[k], cxr[nbr] - cxr[k]);
             for (int q = 0; q < nv; q++) {
                 int i = rings_v0[k] + q;
@@ -2416,7 +2456,6 @@ int main(int argc, char **argv)
                 pz_[i] = cz0;
                 n1x[i] = 0; n1y[i] = 0; n1z[i] = 1;
                 n2x[i] = 0; n2y[i] = 0; n2z[i] = 1;
-                load_voice(i, xs[k]);
                 tag[i] = 1;
             }
             for (int q = 0; q < nv; q++) {
@@ -2426,71 +2465,88 @@ int main(int argc, char **argv)
                 truss_n++;
             }
         }
-        /* facing boundary vertices: ring k's vertex toward neighbour j =
-         * the vertex whose azimuth is closest to the direction of j */
-        int face[3][3];
+        /* facing vertices (within group) */
+        int face[6][6];
         for (int a = 0; a < nring; a++)
             for (int b2 = 0; b2 < nring; b2++) {
-                if (a == b2) { face[a][b2] = -1; continue; }
+                face[a][b2] = -1;
+                if (a == b2 || rings_grp[a] != rings_grp[b2]) continue;
                 double az = atan2(cyr[b2] - cyr[a], cxr[b2] - cxr[a]);
-                int nbr0 = (a + 1) % nring;
+                int g = rings_grp[a], la = a % npg;
+                int nbr0 = g * npg + (la + 1) % npg;
                 double az0 = atan2(cyr[nbr0] - cyr[a], cxr[nbr0] - cxr[a]);
                 double rel = az - az0;
                 int q = (int)floor(rel / (TWO_PI / nv) + 0.5);
                 q = ((q % nv) + nv) % nv;
                 face[a][b2] = rings_v0[a] + q;
             }
-        /* inter-ring boundary edges with charts */
-        rint_n = 0;
-        for (int a = 0; a < nring; a++) {
-            int b2 = (a + 1) % nring;
-            if (nring == 2 && a == 1) break;
-            int ia = face[a][b2], ib = face[b2][a];
-            rint_e[rint_n][0] = ia; rint_e[rint_n][1] = ib;
-            if (fabs(ws[a] - ws[b2]) < 1e-12) { rint_p[rint_n] = 1; rint_q[rint_n] = 1; rint_dstar[rint_n] = M_PI / ws[a]; }
-            else if (ws[a] > ws[b2]) { rint_p[rint_n] = 3; rint_q[rint_n] = 2; rint_dstar[rint_n] = dUD; }
-            else { rint_p[rint_n] = 2; rint_q[rint_n] = 3; rint_dstar[rint_n] = dUD; }
-            rint_n++;
+        /* loads: per-flavor WHOLE-RING flight compensation (CQ3b v2 —
+         * the facing-only variant measurably broke the fifth arithmetic;
+         * the dynamic xbar excess is ring-wide internal flight, so the
+         * compensation is ring-wide and per flavor) */
+        for (int k = 0; k < nring; k++) {
+            double xl = xs[k];
+            if (fabs(ws[k] - wU) < 1e-12) xl -= P.rings_xcomp;
+            else xl -= P.rings_xcompD;
+            if (xl < 0) xl = 0;
+            for (int q = 0; q < nv; q++)
+                load_voice(rings_v0[k] + q, xl);
         }
-        /* phases: internal chains; inter-ring locks with the Z3 branch on
-         * the first U->D edge */
+        /* inter-ring boundary edges (within groups) */
+        rint_n = 0;
+        for (int g = 0; g < ngrp; g++) {
+            int nedge = npg == 2 ? 1 : 3;
+            for (int e = 0; e < nedge; e++) {
+                int a = g * npg + e;
+                int b2 = g * npg + (e + 1) % npg;
+                int ia = face[a][b2], ib = face[b2][a];
+                rint_e[rint_n][0] = ia; rint_e[rint_n][1] = ib;
+                if (fabs(ws[a] - ws[b2]) < 1e-12) { rint_p[rint_n] = 1; rint_q[rint_n] = 1; rint_dstar[rint_n] = M_PI / ws[a]; }
+                else if (ws[a] > ws[b2]) { rint_p[rint_n] = 3; rint_q[rint_n] = 2; rint_dstar[rint_n] = dUD; }
+                else { rint_p[rint_n] = 2; rint_q[rint_n] = 3; rint_dstar[rint_n] = dUD; }
+                rint_n++;
+            }
+        }
+        /* phases: per-group chains; branch on the first U->D edge */
         if (P.seedlock) {
-            th2[rings_v0[0]] = frand() * TWO_PI;
-            for (int k = 0; k < nring; k++) {
-                if (k > 0) {
-                    /* set this ring's facing vertex from the previous ring */
-                    int e = k - 1;
-                    int ia = rint_e[e][0], ib = rint_e[e][1];
-                    double dx = wr(px_[ib] - px_[ia]), dy = wr(py_[ib] - py_[ia]);
-                    double d = sqrt(dx * dx + dy * dy);
-                    if (rint_p[e] == 1 && rint_q[e] == 1)
-                        th2[ib] = fmod(th2[ia] - ws[k-1] * d / P.C + 8.0 * TWO_PI, TWO_PI);
-                    else if (rint_p[e] == 3)  /* U -> D fifth, branch k */
-                        th2[ib] = fmod((2.0 * (th2[ia] - ws[k-1] * d / P.C)
-                                        + TWO_PI * P.rings_branch) / 3.0
-                                       + 8.0 * TWO_PI, TWO_PI);
-                    else
-                        th2[ib] = fmod((3.0 * (th2[ia] - ws[k-1] * d / P.C)) / 2.0
-                                       + 8.0 * TWO_PI, TWO_PI);
-                }
-                /* chain the ring internally from its set vertex */
-                int start = k == 0 ? rings_v0[0] : rint_e[k-1][1];
-                int sq = start - rings_v0[k];
-                for (int step = 1; step < nv; step++) {
-                    int qa = (sq + step - 1) % nv, qb = (sq + step) % nv;
-                    int ia = rings_v0[k] + qa, ib = rings_v0[k] + qb;
-                    double dx = wr(px_[ib] - px_[ia]), dy = wr(py_[ib] - py_[ia]);
-                    double d = sqrt(dx * dx + dy * dy);
-                    th2[ib] = fmod(th2[ia] - ws[k] * d / P.C + 8.0 * TWO_PI, TWO_PI);
+            for (int g = 0; g < ngrp; g++) {
+                int b0 = g * npg;
+                th2[rings_v0[b0]] = frand() * TWO_PI;
+                int nedge = npg == 2 ? 1 : 3;
+                for (int k = b0; k < b0 + npg; k++) {
+                    if (k > b0) {
+                        int e = g * nedge + (k - b0 - 1);
+                        int ia = rint_e[e][0], ib = rint_e[e][1];
+                        double dx = wr(px_[ib] - px_[ia]), dy = wr(py_[ib] - py_[ia]);
+                        double d = sqrt(dx * dx + dy * dy);
+                        if (rint_p[e] == 1 && rint_q[e] == 1)
+                            th2[ib] = fmod(th2[ia] - ws[k-1] * d / P.C + 8.0 * TWO_PI, TWO_PI);
+                        else if (rint_p[e] == 3)
+                            th2[ib] = fmod((2.0 * (th2[ia] - ws[k-1] * d / P.C)
+                                            + TWO_PI * P.rings_branch) / 3.0
+                                           + 8.0 * TWO_PI, TWO_PI);
+                        else
+                            th2[ib] = fmod((3.0 * (th2[ia] - ws[k-1] * d / P.C)) / 2.0
+                                           + 8.0 * TWO_PI, TWO_PI);
+                    }
+                    int start = k == b0 ? rings_v0[b0]
+                              : rint_e[g * nedge + (k - b0 - 1)][1];
+                    int sq = start - rings_v0[k];
+                    for (int step = 1; step < nv; step++) {
+                        int qa = (sq + step - 1) % nv, qb = (sq + step) % nv;
+                        int ia = rings_v0[k] + qa, ib = rings_v0[k] + qb;
+                        double dx = wr(px_[ib] - px_[ia]), dy = wr(py_[ib] - py_[ia]);
+                        double d = sqrt(dx * dx + dy * dy);
+                        th2[ib] = fmod(th2[ia] - ws[k] * d / P.C + 8.0 * TWO_PI, TWO_PI);
+                    }
                 }
             }
         }
-        printf("# SEED rings: kind=%d nring=%d nv=%d xU=%.4f xD=%.4f wU=%.4f wD=%.4f\n",
-               P.rings_kind, nring, nv, xU, xD, wU, wD);
+        printf("# SEED rings: kind=%d ngrp=%d nv=%d xU=%.4f xD=%.4f wU=%.4f wD=%.4f xcomp=%.4f sep=%.2f\n",
+               P.rings_kind, ngrp, nv, xU, xD, wU, wD, P.rings_xcomp, P.rings_sep);
         for (int k = 0; k < nring; k++)
-            printf("# SEED ring%d: mode=%s x=%.4f w=%.4f d_int=%.4f R=%.4f (rung=%.4f contact=%.4f)\n",
-                   k, mode[k] ? "MOLECULE" : "DROPLET", xs[k], ws[k], dint[k], R[k],
-                   M_PI / ws[k], 2.0 * rload[k]);
+            printf("# SEED ring%d: grp=%d mode=%s x=%.4f w=%.4f d_int=%.4f R=%.4f\n",
+                   k, rings_grp[k], mode[k] ? "MOLECULE" : "DROPLET", xs[k], ws[k], dint[k], R[k]);
         for (int e = 0; e < rint_n; e++)
             printf("# SEED rint%d: %d-%d p:q=%d:%d d*=%.6f\n",
                    e, rint_e[e][0], rint_e[e][1], rint_p[e], rint_q[e], rint_dstar[e]);
@@ -2690,6 +2746,30 @@ int main(int argc, char **argv)
                     if (tag[i2]) { xm += (Em[i2] + flload[i2]) / P.cap; nxm++; }
                 printf(" | edge_dev mean=%.4f max=%.4f gg=%.4f shape_dev=%.4f xbar=%.4f",
                        sm / truss_n, mx, gmean / truss_n, sdev, nxm ? xm / nxm : 0);
+            }
+            if (rings_nring == 6) {
+                int base = rings_v0[0];
+                int ncross = 0; double dmin2 = 1e300;
+                for (int s = 0; s < NSLOT; s++) {
+                    if (sst[s] == S_FREE || sA[s] <= 0) continue;
+                    int i = sli[s], j = slj[s];
+                    if (i < base || j < base) continue;
+                    int gi = rings_grp[(i - base) / P.rings_nv];
+                    int gj = rings_grp[(j - base) / P.rings_nv];
+                    if (gi != gj) { ncross++; if (sd[s] < dmin2) dmin2 = sd[s]; }
+                }
+                double g1x = 0, g1y = 0, g2x = 0, g2y = 0; int n1_ = 0, n2_ = 0;
+                for (int k = 0; k < 6; k++)
+                    for (int q = 0; q < P.rings_nv; q++) {
+                        int i = rings_v0[k] + q;
+                        double xx = cenx + wr(px_[i] - cenx), yy = ceny + wr(py_[i] - ceny);
+                        if (rings_grp[k] == 0) { g1x += xx; g1y += yy; n1_++; }
+                        else { g2x += xx; g2y += yy; n2_++; }
+                    }
+                double sepg = sqrt((g2x/n2_ - g1x/n1_)*(g2x/n2_ - g1x/n1_)
+                                   + (g2y/n2_ - g1y/n1_)*(g2y/n2_ - g1y/n1_));
+                printf(" | NG ncross=%d dmin=%.3f sep=%.4f", ncross,
+                       ncross ? dmin2 : -1.0, sepg);
             }
             if (rint_n > 0) {
                 printf(" | IR");

@@ -1,0 +1,54 @@
+# freecell — v89 free-cell substance test (exp=rings)
+# laws = laws_V2g VERBATIM (defaults): C=1 w1=1.65 w2=2.9 q_detune=1.2
+# gamma_res=0.25 gamma_res_m=0.1 p_gate=8 lock_floor=0.005 k_dep=1.2 k_dep_m=2 cap=2.5
+# e_s0=1 es_floor=0.05 e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
+# comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
+# quant_A0=1.15 quant_mode=2 (A0eff=1.15)
+# GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
+# bath=1 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=16 dt=0.02 T=4 seed=20260802 diag_every=100
+# JAM sweeps=800 max_step=1.402e-04 (tol 1.0e-04, k_end=0.0010) — witness for the settle
+# CARVE rings: removed 100 bath cells
+# SEED rings: kind=1 ngrp=1 nv=6 xU=0.2800 xD=0.8367 wU=2.1707 wD=1.4471 xcomp=0.0000 sep=9.00
+# SEED ring0: grp=0 mode=MOLECULE x=0.2800 w=2.1707 d_int=1.4473 R=1.4473
+# SEED ring1: grp=0 mode=MOLECULE x=0.2800 w=2.1707 d_int=1.4473 R=1.4473
+# SEED ring2: grp=0 mode=DROPLET x=0.8367 w=1.4471 d_int=1.4981 R=1.4981
+# SEED rint0: 2600-2607 p:q=1:1 d*=1.447299
+# SEED rint1: 2606-2613 p:q=3:2 d*=1.447299
+# SEED rint2: 2612-2601 p:q=2:3 d*=1.447299
+# INIT NC=2618 slots=24739 live=19867 phi_nom=1.6516 z_live=15.18 dbar=1.4116 sigma_d=14.80% E0=2636.217391304
+#
+# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+t=    0.00 +0.00e+00 | 1.6516 15.18  19867    0      0      0 | 1.4116 14.80 | 0.00e+00 0.00e+00 |  20.9500 1.0000  1.0147  2.7526 1.000  5.22 | edge_dev mean=0.0000 max=0.0000 gg=0.0000 shape_dev=0.0000 xbar=0.4656 | IR e0:psi=-3.141 gg=0.000 d=1.4474 e1:psi=+0.001 gg=1.000 d=1.4476 e2:psi=-1.105 gg=0.006 d=1.4474
+t=    2.00 -1.72e-16 | 1.6516 15.29  20016    1    974   1081 | 1.4213 14.65 | 7.53e-03 1.52e-02 |  20.8639 0.9959  0.9605  2.3452 1.000 10.22 | edge_dev mean=0.1994 max=0.5354 gg=0.5363 shape_dev=2.0406 xbar=0.4610 | IR e0:psi=+0.338 gg=0.788 d=1.3821 e1:psi=+1.090 gg=0.048 d=1.3844 e2:psi=+2.616 gg=0.000 d=1.7082
+t=    4.00 -1.72e-16 | 1.6516 15.50  20285    0   1580   1692 | 1.4261 14.64 | 3.80e-03 1.25e-02 |  20.7475 0.9903  0.8911  2.2115 1.000 12.50 | edge_dev mean=0.1990 max=0.5371 gg=0.5116 shape_dev=2.5397 xbar=0.4597 | IR e0:psi=+0.628 gg=0.448 d=1.3703 e1:psi=+1.567 gg=0.000 d=1.4036 e2=DEAD
+#
+# RESULT drift_rel -1.725e-16
+# RESULT births 1580 deaths 1692 beta_returns 0 beta_energy 0.000000e+00
+# RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
+# RESULT geometry phi_nom=1.6516 z_live=15.50 dbar=1.4261 sigma_d=0.1464
+# RESULT truss edge_dev_mean=0.199043 edge_dev_max=0.537090 shape=(0.0610,2.7481,3.3005) shape0=(0.0000,4.2143,4.3130)
+# EDGE 0 2600-2601 d=1.37581 dev=-0.07149 gg=0.7524 gpl=0.5822
+# EDGE 1 2601-2602 d=1.38146 dev=-0.06584 gg=0.8540 gpl=0.7400
+# EDGE 2 2602-2603 d=1.42000 dev=-0.02730 gg=0.9700 gpl=0.9533
+# EDGE 3 2603-2604 d=1.39600 dev=-0.05130 gg=0.9889 gpl=0.5286
+# EDGE 4 2604-2605 d=1.11845 dev=-0.32884 gg=0.1154 gpl=0.4290
+# EDGE 5 2605-2600 d=1.43362 dev=-0.01368 gg=0.8254 gpl=0.9923
+# EDGE 6 2606-2607 d=1.29473 dev=-0.15257 gg=0.4118 gpl=0.8821
+# EDGE 7 2607-2608 d=1.30753 dev=-0.13977 gg=0.5524 gpl=0.9652
+# EDGE 8 2608-2609 d=1.35077 dev=-0.09652 gg=0.8675 gpl=0.8410
+# EDGE 9 2609-2610 d=1.40077 dev=-0.04653 gg=0.9350 gpl=0.9893
+# EDGE 10 2610-2611 d=1.49417 dev=+0.04687 gg=0.9436 gpl=0.8289
+# EDGE 11 2611-2606 d=1.42630 dev=-0.02100 gg=0.9916 gpl=0.8974
+# EDGE 12 2612-2613 d=1.16796 dev=-0.33019 gg=0.0000 gpl=0.8606
+# EDGE 13 2613-2614 d=1.20763 dev=-0.29052 gg=0.0000 gpl=0.4396
+# EDGE 14 2614-2615 d=1.11087 dev=-0.38728 gg=0.0000 gpl=0.1121
+# EDGE 15 2615-2616 d=0.96063 dev=-0.53752 gg=0.0000 gpl=0.0146
+# EDGE 16 2616-2617 d=1.01282 dev=-0.48533 gg=0.0000 gpl=0.9946
+# EDGE 17 2617-2612 d=1.00535 dev=-0.49280 gg=0.0000 gpl=0.7779
+# RESULT rint0 2600-2607 p:q=1:1 d=1.370281 dev=-0.077018 psi=+0.6277 gg=0.4483 lem=4.094750e-01
+# RESULT rint1 2606-2613 p:q=3:2 d=1.403602 dev=-0.043697 psi=+1.5669 gg=0.0003 lem=5.071938e-06
+# RESULT rint2 2612-2601 CHANNEL DEAD
+# RESULT ringq0 mode=MOLECULE w=2.1707 gg_int=0.7510 xbar=0.2873 Em=2.36638
+# RESULT ringq1 mode=MOLECULE w=2.1707 gg_int=0.7836 xbar=0.2709 Em=1.62559
+# RESULT ringq2 mode=DROPLET w=1.4471 gg_int=0.0000 xbar=0.8207 Em=11.94950

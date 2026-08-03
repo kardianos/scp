@@ -158,11 +158,55 @@ of composite geometry (even interior hops; nv ≡ 0 mod 12 for 60°
 triangles), and boundary-ladder transfer (the composite bond locks on
 the cell ladder with a pressure offset, carrying its energy as flight).
 
-## Ladder updates
+## Second execution (2026-08-03, same day): CQ3b/CQ7/CQ8/CQ9
 
-* CQ0–CQ2, CQ4–CQ6 executed (above). CQ3 partially (precession measured;
-  stiffness test blocked on flight compensation).
-* **CQ3b (new, next):** flight-compensated composite loads, then re-test
-  H-stiffness (drift rate vs N at nv = 12, 24).
-* **CQ7 sharpened:** N-scaling must use nv ≡ 0 mod 12 (parity rule).
-* CQ8 (bath), CQ9 (two nucleons) unchanged.
+**CQ3b — compensation works; the facing-only variant refuted.**
+Facing-cell-only compensation measurably BROKE the fifth (fifth-facing
+cells carry no standing flight; shifting them un-tunes the arithmetic —
+recorded, apparatus corrected). The dynamic diagnosis via per-ring xbar:
+U-rings run +0.0093 above seed (internal flight prices into pitch —
+flight-loads-pitch, as the law says); the D-droplet runs −0.0009. With
+**per-flavor whole-ring compensation** (U seeds at x−0.0093), the nv=12
+fifth-defect drift falls **8×**: −0.0646 → +0.0078 rad/t.u. (slightly
+over-compensated — the residual is the transient, below).
+
+**CQ7 — H-stiffness NOT confirmed; the real requirement identified.**
+Drift rates: nv=12 −0.065, nv=24 −0.108 raw; compensated: +0.008 vs
+−0.094. Drift GROWS with N, and static compensation fails at nv=24
+because its flight excess is transient (final xbar ≈ nominal — the
+interior decoheres and its flight dies, chirping the pitch on the way
+down). **Measured conclusion: a stationary composite pitch requires
+steady-state internal circulation — the flux-machine interior** (the
+v89 particle thesis, now forced at composite scale by measurement).
+Bulk alone does not average noise away; bulk with dying transport makes
+it worse.
+
+**CQ8 — the bath PROTECTS the composite.** nv=12 UUD embedded in the
+live bath (L=20, carve 392): the UU boundary bond is the best measured
+yet — gg = 0.9902 with the bath *compressing* it onto the rung
+(dev = **−0.026** vs vacuum's +0.11 — confinement compression, same as
+FREECELL §9.4), and ring-interior coherence is 2–5× better than vacuum
+(gg_int 0.42 vs 0.09–0.23): cage pressure keeps internal channels
+transporting. Fifths remain dead (as in vacuum). The composite's home
+is the bath; the fifth's home is the amplitude completion.
+
+**CQ9 — the residual force at nucleon scale.** Two UUD nucleons
+(kind 3): inter-nucleon channels form only below COM sep ≈ 9–10
+(ncross 1–2, dmin ≈ 1.5 = contact), producing a weak push-out
+(7→7.13, 8→8.06, 9→9.02); exactly inert at 11 (ncross 0, sep frozen to
+4 decimals). The rate-level residual interaction is 1–2 contact
+channels' plastic settle — no capture, no fusion, one more instance of
+the universal contact law.
+
+## Ladder state
+
+* Executed: CQ0–CQ9 first passes (CQ3/CQ7 with the stiffness verdict
+  above). Battery after each kernel change: ALL GREEN (40).
+* **Next frontier (all lanes):** the steady-interior composite — an
+  internally circulating (flux-machine) composite whose pitch is
+  stationary by throughput, not by seed. Rate-level candidates: driven
+  boundary conditions are excluded (drives carry scales); the honest
+  route is the S2 amplitude completion where transport IS the current.
+* CQ8 follow-ups: longer bath runs (does protection persist?); bath +
+  compensation combined; the CQ8 stream doubles as a shell-probe
+  (`volview -avg`, runs/composite/cq8_bath.fcs).
