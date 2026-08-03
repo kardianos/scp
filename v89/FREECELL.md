@@ -1,6 +1,9 @@
 # FREECELL — state of the free-cell substrate programme
 
-**Date:** 2026-08-02. **Status:** exploratory; no kernel change made.
+**Date:** 2026-08-02. **Status:** SUBSTANCE HALF SOLVED IN TWO REGIMES —
+see §9 (the campaign run later the same day; instrument `freecell.c`,
+running record `FREECELL_LOG.md`). No kernel change made; `cellfab.c`
+untouched.
 **Governing docs:** `PRINCIPLE.md`, `ROADMAP.md` §8, `DESIGN_2026-08-02.md`
 (the running record this distils), `battery/README.md` (the ratchet rule
 and the law-dependency map), `LIVEFAB.md` (the earlier dynamic-substrate
@@ -35,7 +38,7 @@ different maturity:
 | half | question | status |
 |---|---|---|
 | **execution** | can the substrate be advanced without a global clock, conservatively and deterministically? | **solved** |
-| **substance** | can a free-cell fabric hold a localised object together? | **unsolved** |
+| **substance** | can a free-cell fabric hold a localised object together? | **solved in two regimes — §9** |
 
 ---
 
@@ -279,7 +282,7 @@ The battery is 20 experiments + the ħ-linearity cross-check, currently
 `e3b_blob_tilt` moved to recorded-not-gated on 2026-08-02 under the seed
 panel).
 
-### 4.1 The blocker, stated plainly
+### 4.1 The blocker, stated plainly (RESOLVED — §9.5, §9.2)
 
 **On a frozen foam, a dense blob is held together by the lattice.** Cells
 cannot move, so a dense region stays where it is. On free cells nothing
@@ -364,7 +367,7 @@ Per `LIVEFAB.md` §5, extended by this thread's findings:
 
 ---
 
-## 5. WHAT WOULD HAVE TO BE OVERCOME
+## 5. WHAT WOULD HAVE TO BE OVERCOME (each item resolved or re-scoped — §9)
 
 In dependency order.
 
@@ -449,6 +452,9 @@ them:
 | `shapelock.c` / `charge/runs/shapelock.log` | S1 shape spectrum (exact); S2 shape staircase; S3 control; S4 aspect bound |
 | `harmfrust.c` / `charge/runs/harmfrust.log` | consonance between cells **refuted**, degrees 2–12 |
 | `harmgrow.c` / `charge/runs/harmgrow.log` | ring size staircase — real but **one impurity in a uniform bath** |
+| `freecell.c` / `charge/runs/freecell_*.log` | **the substance campaign (§9)**: bond, parity species, yield, embedded ring, blob at density, dilute fragmentation, Tier-A pulse, e3b panel |
+| `FREECELL_LOG.md` | campaign running record: pre-registered predictions, derivations, per-run numbers, engineering record |
+| `deriv_bond.py` / `charge/runs/deriv_bond_results.log` | exact K_b, capture, δ_eq, honest 2-cell integration, vacuum/crumb inertness, μ-criterion re-check, rigidity counts |
 | `DESIGN_2026-08-02.md` | the full running record, including every withdrawal |
 | `ROADMAP.md` §8 | standing decisions: local clocks are the execution model; consonance rejected |
 | `LIVEFAB.md` | dynamic-substrate design; contact rule; death rule (α); cellfab integration path |
@@ -456,7 +462,7 @@ them:
 
 ---
 
-## 8. ONE-PARAGRAPH SUMMARY FOR A MODEL STEPPING IN
+## 8. ONE-PARAGRAPH SUMMARY FOR A MODEL STEPPING IN (superseded by §9)
 
 The execution half is solved: local clocks pass a four-criterion
 readiness suite (conservation 1.2e-16 relative, first-order convergence,
@@ -472,3 +478,224 @@ ran at φ=0.139 against φ_J≈0.64 and are withdrawn. The first task is to
 run that test properly, with cells that have three axes (hence shear
 resistance) rather than a scalar radius, and with the packing fraction
 printed next to every number.
+
+---
+
+## 9. THE SUBSTANCE CAMPAIGN — 2026-08-02, later the same day
+
+**Instrument:** `freecell.c` (standalone; `cellfab.c` untouched; laws =
+`laws_V2g` verbatim as defaults). **Running record with pre-registered
+predictions:** `FREECELL_LOG.md` (predictions §3 written before the
+first run; percolation fraction and S/N vs σ_d stated before coding, per
+the DESIGN standing rule). **Derivations:** `deriv_bond.py` /
+`charge/runs/deriv_bond_results.log` (sympy + honest two-cell
+integration). **Logs:** `charge/runs/freecell_*.log`. Every number below
+is in a log.
+
+### 9.1 The mechanism was already in the standing law
+
+The kernel's law never reads positions — it reads the link length `d`
+(retardation d/C, conductance dref/d, flight rate C/d), the direction,
+and the live lens area (`cellfab.c:664` "scaffold positions — init +
+diagnostics only"). A free-cell port therefore changes where those come
+from and touches no law constant. Two standing mechanisms become
+geometric cohesion the moment positions are dynamical:
+
+* **The rung bond.** P15 retardation plasticity (`cellfab.c:3068`) is
+  the S2 odd term on the link's geometric conjugate; its lock condition
+  is the measured pair-separation ladder (q·w_i + p·w_j)·d/C = 2πm.
+  Applied to endpoint positions (±û·dd/2) it is a two-sided restoring
+  bond at quantized lengths d*_m, with stiffness derived EXACTLY:
+  K_b = κ·(kd·geo·gpl·res)·Sm·p_gate·S²/(4C²) = 10.998/t.u. at the
+  reference point (x=0.325 pair). ψ_f+ψ_b = −S·d/C is phase-independent,
+  so the lock needs no entrainment. Vacuum is exactly inert (Sm = 0 when
+  either side is silent) and crumb pairs cannot bind (repulsion wins
+  5.5–35× at the crumb rung) — no vacuum crystallisation, derived and
+  observed.
+* **The seal + cage.** Heavy (x≈0.95) blobs have gate-closed interiors
+  (the e3a tail-mismatch seal); geometrically they are held by the
+  jammed bath, which the space sector re-jams into their own depression
+  (LIVEFAB run 2, now law-driven).
+
+### 9.2 The bond, measured (freecell_pair_*.log)
+
+Two voices at x=0.325, seeded ±0.05 off the m=1 rung: both sides
+converge to the same d to six digits (1.538698/1.538697), sitting
++0.028 (phase measure dl=+0.116 rad) off the rung — the derived
+pressure stretch (honest-branch prediction 0.0247; breathing ±0.003).
+Bath confinement compresses the offset to +0.0087 with gates 1.0000
+(freecell_pair_bath.log) — pressure spectroscopy of the bond. Controls:
+kappa_bond=0 slides out to exact contact d=1.6377 = the frozen kernel's
+strangulation death radius (the bond is what rescues strangulation);
+unloaded pair force exactly 0, drift exactly 0.0; detuned pair (0.325 vs
+0.65): no comb rung in reach, nothing happens; dt/2 first-order
+convergent. **Acquisition requires confinement**: with random phases,
+repulsion wins the race before locking (freecell_pair_acquire.log) —
+free pairs bond where the bath crowds them; dense regions catalyse
+object formation.
+
+### 9.3 Species by parity and collimation (freecell_ring*, oct*.log)
+
+* **Coplanar ring6 is a standing object**: stable ≥300 t.u., edge_dev
+  0.035, gates 0.98, x̄ flat, drift 3e-16 (freecell_ring6_cop.log).
+  ring4 likewise. **ring5 and ring3 are dead by parity**: at the m=1
+  rung each edge lock forces Δθ = π across it, so n·π must be ≡ 0 mod
+  2π — odd rings are π-frustrated, never lock, and strangle
+  (freecell_ring5_cop.log; ring3 same). **ring8 is metastable** (breathing
+  escape between t=70 and 270; in-bath it survives as a deformed
+  partially-locked body, freecell_ring8_bath.log). Species rule: small
+  even rings live; odd rings are not species; large simple rings need
+  bracing.
+* **Collimation theorem**: bond strength carries gpl, and a cell has ONE
+  carrying axis (its planes' intersection), so no normal assignment
+  serves a 3D deltahedron — mis-collimated edges lose to repulsion and
+  strangle (radial-normal ring6 died t≈40 at gpl=0.56; octahedron edges
+  at gpl=0.0625 strangled, freecell_oct.log). The law's natural dense
+  objects are CHAINS, RINGS, TUBES — exactly the shapes the prestress
+  campaign kept selecting on the frozen foam.
+* **Triangle/π theorem (analysis)**: every 3-cycle of m=1 links sums to
+  3π ≢ 0 — unison objects must be bipartite, hence triangle-free, hence
+  not generically rigid in 3D (rigidity counting: ring6 floppy 6, cube
+  floppy 6; octahedron/icosahedron isostatic but collimation- and
+  parity-blocked at unison). Hexagon chord bracing is length-consonant
+  (2d* is exactly the m=2 rung) but phase-frustrated. **3D rigid species
+  therefore require mixed-interval triangles** — the fifth-triangle
+  {3:2, 2:3, 1:1} that closes odd cycles (prestress THEORY.md; CHARGE's
+  ℤ₃ cycles). Rigidity ⟺ odd cycles ⟺ interval content: the flavor/charge
+  connection, now motivated from cohesion rather than posited.
+* **Yield**: instantaneous deviatoric strain 2% and 5% recover (bond
+  lengths elastic; the floppy shape mode keeps plastic memory), 8% and
+  12% break to contact — elastic limit between 5% and 8% against the
+  derived capture bound ψ*/(w·d*) ≈ 7.9% (freecell_ring6_yield_*.log).
+  δ_eq scales linearly with bath pressure (k_rep 1→0.3 gives
+  0.035→0.0093).
+
+### 9.4 The embedded object and its death (freecell_ring6_bath*.log)
+
+Ring6 carved into a jammed periodic bath (φ_nom 1.62 printed on every
+row, bath z≈15): crushed at insertion, the bonds RE-LOCK by t≈12
+(edge_dev 0.038, gg 0.977), connectivity 1.000 throughout, z_tag→14.8
+(the F2 optics floor holds through the object), drift exactly 0.0
+through ~2200 channel births+deaths (rule α exercised; β-returns
+counted). **The bleed is the frozen foam's universal c₀**: measured
+4.5–5.0e-4 Em/t.u. per voice vs the E-regression's 4.25e-4 — the
+vacuum-skirt law is substrate-independent; free cells neither cure nor
+worsen it. The free-cell death path differs qualitatively and has THREE PHASES
+(death watch, T=2000, freecell_ring6_bath_death.log):
+
+1. **Locked shrink** (t=50–650): gg ≥ 0.974 (rising to 0.998 mid-life)
+   while x̄ bleeds 0.314→0.198 at c₀ and the edge length tracks d*(x̄)
+   within 0.011 the whole way — the ring shrinks ALONG the rung ladder,
+   in tune.
+2. **Unlock at x̄ ≈ 0.19 ± 0.01** — well ABOVE the skirt (0.0617): the
+   jammed bath stops the ring tracking the ladder inward (the bond
+   cannot displace the cage), detune grows, gg collapses 0.98→0.34 over
+   ~100 t.u. **Usable life is set by cage-tracking failure, not by the
+   skirt** — the naive skirt clock (~1400) overestimates the locked
+   life (~700) by 2× at this bath pressure.
+   The soft-bath discriminator (bath_frac 0.5,
+   freecell_ring6_softdeath.log) answered with a twist: the ring never
+   locks cleanly there (gg rattles 0.32–0.68 — the loose cage lets it
+   breathe, ring8-style) but bleeds **7× slower** (6.8e-5 vs 5.0e-4 per
+   voice — the leak scales with the object's vacuum-contact surface,
+   z_bath 4.7 vs 15), projecting a ~5000 t.u. life. A lock-quality /
+   lifetime trade the frozen foam could not express, and a NEW LEVER on
+   the no-particle bound: reduce the vacuum-contact surface (a skin, or
+   the object's own halo) rather than fight c₀ per contact.
+3. **Husk dissolution** (t>750): the unlocked remnant bleeds on to
+   vacuum (x̄ 0.02 by t=1550) while the cage holds the corpse together
+   (conn 1.000 throughout) — death is loss of harmonic identity, not
+   geometric scattering, at density.
+
+### 9.5 The §5(a) test, actually run at density (freecell_blob_*.log)
+
+e3a-class blob (amp 1.6, x_core≈0.95) on the LIVE substrate at
+φ_nom=1.67, z_live≈16 (both printed beside every row): **holds** —
+connectivity 1.000, COM speed 1.6e-3 (inside the e3a bar 0.002),
+retention 0.848 at t=72 vs the frozen-scaffold control's 0.833 — the
+live substrate retains slightly BETTER than frozen; the lattice was
+never load-bearing for droplets. The g1 footprint analog passes live:
+es core/far = 0.61 ≤ 0.8, with the bath re-jamming partway into the dip
+(frozen control keeps a deeper 0.55 dip — the space response is real).
+Half density (φ_nom 0.84): still holds (conn 1.000). **Dilute
+(φ_nom 0.43): the droplet FRAGMENTS** — conn 0.008, z_tag 0, energy
+parked on disconnected cells (retention 1.000 with no channels; drift
+4e-15). Dispersal on free cells is connectivity loss, not energy
+spreading. The discriminator behaves exactly as pre-registered: droplets
+need the cage; bonded objects do not (the isolated ring holds in empty
+space indefinitely).
+
+### 9.6 Tier-A on the live substrate (freecell_pulse.log)
+
+Field packet (e2 apparatus: amp 0.25, kx=1.1, prealigned) propagates at
+**v/C = 0.574** (frozen foam: 0.605; bar ≥ 0.3) across a substrate in
+which ~7500 channels were born and ~6400 died under the packet, with
+drift exactly 0.0. e1-class conservation sits at the FP floor in every
+run of the campaign, including through birth/death and the β-flush.
+F2: mean degree 15–20 everywhere, no densification (the LIVEFAB run-1
+catastrophe does not recur under contact-rule links — and the bond
+cannot cause it: vacuum inert, derived).
+
+### 9.7 e3b on free cells — the variance claim (freecell_e3b_s*.log)
+
+The standing table's one recorded-not-gated experiment (passes 1/5
+frozen seeds; livefab was "predicted to shrink the variance").
+Free-cell e3b (amp 0.5, standing five-seed panel + kx dispersion sweep,
+freecell_e3b_*.log):
+
+* At the frozen-tuned kx=2.08 the live substrate drives BACKWARD on all
+  five seeds (v_x −0.2…−3.0e-3; cos −0.12…−0.99; the frozen-scaffold
+  control drifts weakly forward +0.65e-3). The dense-translation
+  dispersion is substrate-dependent.
+* kx sweep (standing seed): backward below ~2.7, a coherent forward
+  window at kx 2.9–3.2 (cos +0.95/+0.97, peak v_x +2.45e-3), noisy
+  revival 3.8–4.2. Forward translation EXISTS on the free substrate at
+  retuned tilt, at ~70% of the frozen optimum's speed.
+* Panel at the retuned kx=3.2: +2.45/+2.15/−0.24/−1.42/+0.38e-3 —
+  2/5 forward-coherent. **The variance is NOT shrunk by substrate-
+  freeing at this apparatus** (T=80 fits carry ±1e-3 noise; the
+  freecell bath is dart+quick-jam at σ_d 14–17%, not S1-annealed — an
+  annealed free bath is the untested confound).
+* A cheap two-gate wrap model (net drive ∝ <G(d(kx−w))> − <G(−d(kx+w))>)
+  was checked and does NOT reproduce the measured dispersion on either
+  substrate — the translation mechanism stays with the amplitude
+  completion (where the S2-full acceptance list already puts it:
+  "it passes when translation IS the current"). Recorded; e3b's route
+  back into the gate is NOT substrate-freeing alone.
+
+### 9.8 What §5 looks like now
+
+* **(a) jammed-density test**: run, with φ and z printed beside every
+  number; localisation holds at density in both regimes.
+* **(b) shape**: not needed for shear at the object level — bond-network
+  topology provides it (and its selection rules: parity, collimation,
+  mixed-interval triangles). 3-axis cells remain interesting for the
+  within-cell spectrum (`shapelock.c`), not as the cohesion mechanism.
+* **(c) boundary mechanism**: found, structural, and it is v89's own
+  gated-transport machinery exactly as §5(c) guessed — the P15 misfit
+  force as a bond (molecules), the pitch seal + cage (droplets). No new
+  constant; kappa_bond is kappa_plast on its geometric conjugate.
+* **(d) parallel width**: unchanged (execution half; ROADMAP §8.1
+  standing).
+
+Kernel-integration path (§4.3) is unchanged and still needs explicit
+user authorization; `freecell.c` is the standalone evidence that the
+port is worth making. Known deviations from the kernel, documented in
+the source header: canonical hop order instead of color batches; dying
+channels advance flight (rule α flush) where the kernel holds pinched
+channels; FP64 ledger; per-step kick caps as integrator guards.
+
+### 9.9 Standing limits, honestly
+
+* The balance curve still has no zero crossing — objects bleed at c₀ and
+  die at the skirt; free cells do not fix intake (KIMI review §3: that
+  is the intake-side law, a different open problem).
+* Bath quality: σ_d 14–17% (dart + quick jam) vs S1's 3% — an annealed
+  free bath is the obvious sharpening step.
+* ring8's breathing escape and the crush transient set the stability
+  margins for larger species; braced (mixed-interval) objects are the
+  predicted fix and are untested.
+* One seed for most claims (the e3b panel is the exception); the pair
+  and ring results are parameter-derived and should transfer, but the
+  ratchet's multi-seed discipline applies before any of this enters a
+  gate.

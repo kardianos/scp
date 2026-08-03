@@ -1,0 +1,33 @@
+# freecell — v89 free-cell substance test (exp=blob)
+# laws = laws_V2g VERBATIM (defaults): C=1 w1=1.65 w2=2.9 q_detune=1.2
+# gamma_res=0.25 gamma_res_m=0.1 p_gate=8 lock_floor=0.005 k_dep=1.2 k_dep_m=2 cap=2.5
+# e_s0=1 es_floor=0.05 e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
+# comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
+# quant_A0=1.15 quant_mode=2 (A0eff=1.15)
+# GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
+# bath=1 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=16 dt=0.02 T=160 seed=20260802
+# JAM sweeps=800 max_step=1.402e-04 (tol 1.0e-04, k_end=0.0010) — witness for the settle
+# SEED blob: amp=1.6 sigma=2.2 tagged=436 (add>5% of amp)
+# INIT NC=2700 slots=25788 live=20623 phi_nom=1.6878 z_live=15.28 dbar=1.4085 sigma_d=14.77% E0=2876.898081194
+#
+# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+t=    0.00 +0.00e+00 | 1.6878 15.28  20623    0      0      0 | 1.4085 14.77 | 0.00e+00 0.00e+00 | 181.2189 1.0000  0.0230  3.3724 1.000 14.31 | es_core/far=0.7727
+t=   16.00 +0.00e+00 | 1.6878 16.36  22087   20   2911   2642 | 1.4313 15.05 | 2.62e-03 8.87e-03 | 167.5414 0.9245  0.0691  3.1455 1.000 15.94 | es_core/far=0.5722
+t=   32.00 +0.00e+00 | 1.6878 16.56  22355   21   4204   3910 | 1.4351 15.09 | 2.34e-03 9.84e-03 | 159.3212 0.8792  0.0676  3.0795 1.000 16.05 | es_core/far=0.4847
+# QATOM t=34.06 dir=DF w=1.85051297 e=0.338696030144
+t=   48.00 +0.00e+00 | 1.6878 16.64  22460   21   5250   4888 | 1.4367 15.12 | 2.60e-03 9.57e-03 | 157.6479 0.8699  0.0522  3.1083 1.000 16.11 | es_core/far=0.5707
+t=   64.00 +0.00e+00 | 1.6880 16.71  22557   11   6216   5877 | 1.4382 15.15 | 3.28e-03 1.01e-02 | 155.4737 0.8579  0.0737  3.0974 1.000 16.19 | es_core/far=0.5420
+t=   80.00 +0.00e+00 | 1.6881 16.76  22632   13   7127   6764 | 1.4394 15.18 | 4.67e-03 1.18e-02 | 153.0063 0.8443  0.0794  3.0904 1.000 16.26 | es_core/far=0.5314
+t=   96.00 +0.00e+00 | 1.6882 16.76  22629   13   8136   7770 | 1.4394 15.17 | 1.82e-03 1.74e-02 | 151.3665 0.8353  0.0921  3.0961 1.000 16.21 | es_core/far=0.4669
+t=  112.00 +0.00e+00 | 1.6881 16.77  22640    8   9113   8697 | 1.4396 15.18 | 2.71e-03 9.62e-03 | 150.1129 0.8284  0.0937  3.1096 1.000 16.15 | es_core/far=0.5373
+t=  128.00 +0.00e+00 | 1.6882 16.79  22670    5  10167   9735 | 1.4400 15.18 | 3.60e-03 9.79e-03 | 149.4826 0.8249  0.1081  3.1010 1.000 16.15 | es_core/far=0.5532
+t=  144.00 +0.00e+00 | 1.6884 16.80  22674    8  11274  10826 | 1.4402 15.18 | 4.46e-03 1.34e-02 | 147.1170 0.8118  0.1271  3.1018 1.000 16.11 | es_core/far=0.5027
+t=  160.00 +0.00e+00 | 1.6884 16.83  22719   12  12379  11920 | 1.4408 15.19 | 2.06e-03 9.13e-03 | 145.9261 0.8052  0.1140  3.1102 1.000 16.22 | es_core/far=0.4196
+#
+# RESULT drift_rel 0.000e+00
+# RESULT births 12379 deaths 11920 beta_returns 0 beta_energy 0.000000e+00
+# RESULT conv rough=7.318639 cond=0.000000 evap=0.000000 backs=0.954605
+# RESULT geometry phi_nom=1.6884 z_live=16.83 dbar=1.4408 sigma_d=0.1519
+# RESULT es_shells 0.4205 0.6971 0.8099 0.9090 0.9801 0.9988 1.0033 1.0040
+# RESULT blob Em_tag=145.92610 com=(7.930,8.088,7.982) rms=3.1102 conn=1.0000 z_tag=16.22

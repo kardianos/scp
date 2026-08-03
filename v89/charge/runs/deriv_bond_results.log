@@ -1,0 +1,224 @@
+
+==============================================================================
+T1 -- bond restoring force & stiffness (unison pair, symmetric branch)
+==============================================================================
+[a] kernel identity G'(psi) = -0.5*p*(G/h)*sin(psi): VERIFIED (diff == 0)
+[b] on-branch kernel dVdd = (p*S/(2C)) * h^(2p-1) * sin(S*delta/(2C)),  h = (1+cos(S*delta/(2C)))/2 : VERIFIED
+[c] kernel fixed-phase dVdd|branch == d/d(delta)[1 - G(psi)^2] (total on-branch derivative): EXACTLY EQUAL
+    (equal unison pair only: moving d at fixed phases changes psi_f and psi_b by the
+     same -S/(2C)*dd, i.e. fixed-phase motion tracks the symmetric branch.)
+[d] linearisation: dVdd|branch = S**2*p/(4*C**2) * delta + O(delta^3)
+    ==> K_b = -d(dd/dt)/d(delta)|0 = kappa * (kd*geo*gpl*res) * Sm * p*S^2/(4*C^2)
+    COEFFICIENT CHECK vs the guess p*S^2/(2*C^2): derived/guess = 1/2
+    >>> SURPRISE: the guessed stiffness coefficient is 2x TOO LARGE; exact is p*S^2/(4*C^2). <<<
+[e] sign: dd/dt = -kappa*kd*geo(d)*Sm*(p*S/(2C))*h^(2p-1)*sin(S*delta/(2C));
+    for |delta| < 2*pi*C/S = dstar the sin carries sign(delta), h^(2p-1) > 0, geo >= 0,
+    so sign(dd/dt) = -sign(delta): two-sided restoring over the whole rung basin,
+    PROVIDED geo > 0, i.e. d < ri+rj = contact (lens open). Beyond contact the force is exactly 0.
+
+numbers at x = 0.325 (kappa = 1):
+  w2e      = 2.0863309352518
+  S=2*w2e  = 4.1726618705036   S^2 = 17.4111070855546
+  dstar    = 1.50579785809994  (= pi/w2e, m=1)
+  Em=Sm    = 0.8125    Es = 0.894021739130435    r = 0.818844844089512    contact=2r = 1.63768968817902
+  lens A(dstar) = 0.325626334042112    Aref = 2.26980069221863    geo(dstar) = 0.161962339757528
+  K_b = kappa*kd*geo*Sm*p*S^2/4 = 10.9977802012467  per t.u. per unit length  [1/t.u.]
+  numeric check, -(v(+e)-v(-e))/2e = 10.9977802010905
+  relaxation time 1/K_b = 0.0909274400561891 t.u.;  per-step K_b*dt = 0.219955604024933  (Euler-stable, <2)
+
+walk rate at delta = +/-0.044 (exact on-branch, full geometry):
+  delta = +0.044:  |dd/dt| = 0.307381361171701   (linearised K_b*|delta| = 0.483902328854854)
+  delta = -0.044:  |dd/dt| = 0.634167269862756   (linearised K_b*|delta| = 0.483902328854854)
+  NOTE: strong +/- asymmetry is the lens area A(d): geo(dstar+0.044)/geo(dstar) = 0.656536664233659,  geo(dstar-0.044)/geo(dstar) = 1.35451955295782
+
+capture range, GATE-ONLY (factor h^(2p-1)*|sin psi|, psi = S*delta/(2C)):
+  peak at |psi| = 0.355424085637611  (closed form 2*atan(1/sqrt(4p-1)) = 0.355421201690224)   f_max = 0.216140721546698
+  -> |delta|_peak(gate) = 2*psi/S = 0.170358441046993 ;  10%-of-max at |psi| = 0.965254343200964  -> |delta|_10(gate) = 0.462656392085979
+
+capture range, FULL GEOMETRY (geo(d) included; kappa=1):
+  + side: bond force support ENDS at delta = contact-dstar = 0.131891830079089  (lens area -> 0 at d = 2r; force exactly 0 beyond)
+    max |dd/dt| = 0.33155172912365 at delta = 0.0607582801115332 ;  10% of max at delta = 0.127601059021973
+  - side: max |dd/dt| = 3.0591802142268 at delta = -0.222946344078248 ;  10% of max at delta = -0.514537195613401
+  >>> SURPRISE: capture is strongly ASYMMETRIC. The gate would peak at |delta|=0.17, but the
+      lens vanishes first on the + side (delta=+0.131891830079089), so the outward capture edge is
+      geometric (= contact), not gate-set; the inward basin is deep (max ~3.06 at delta ~ -0.223).
+
+==============================================================================
+T2 -- equilibrium under contact repulsion
+==============================================================================
+overlap at the rung: contact - dstar = 0.131891830079089  (cells DO overlap at the m=1 rung)
+tongue (joint gate G^2 > 0.5): |psi| < 0.414776125768201  -> |delta| < 0.198806487868207  (full width in d = 0.397612975736413)
+  (+ side of the tongue is truncated by the lens edge at + 0.131891830079089 before the gate closes)
+
+mob_geo*k_rep = 1.0:  v_rep(dstar) = 0.131891830079089
+  delta_eq (first order, v_rep/K_b)          = 0.0119925864734175
+  delta_eq (self-consistent linear)          = 0.0109930193641474
+  delta_eq (exact root on branch)            = 0.0120724459501261
+  inside capture range?  yes: 0.0119925864734175 << +max-force delta 0.0607582801115332 << lens edge 0.131891830079089
+  inside tongue (G^2>0.5, |delta|<0.198806487868207)?  yes;  joint gate at delta_eq: G^2 = 0.997498964979637
+mob_geo*k_rep = 0.1:  v_rep(dstar) = 0.0131891830079089
+  delta_eq (first order, v_rep/K_b)          = 0.00119925864734175
+  delta_eq (self-consistent linear)          = 0.00118845235432103
+  delta_eq (exact root on branch)            = 0.00119978571789261
+  inside capture range?  yes: 0.00119925864734175 << +max-force delta 0.0607582801115332 << lens edge 0.131891830079089
+  inside tongue (G^2>0.5, |delta|<0.198806487868207)?  yes;  joint gate at delta_eq: G^2 = 0.99997495928187
+
+bond-survival threshold (equilibrium exists iff bond can match repulsion somewhere):
+  relative-velocity convention (T3, v_rep_rel = 2*mob*k_rep*(contact-d)): mob*k_rep < 3.91252607994601
+  one-sided convention (T2):                                            mob*k_rep < 7.82505215989201
+  (both forces vanish linearly at d=contact; their ratio is finite there and is the sup)
+
+==============================================================================
+T3 -- two-cell honest integration (dt = 0.02, kappa = kappa_lock = 1)
+==============================================================================
+repulsion in T3 is RELATIVE: d_dot_rep = 2*mob*k_rep*(contact-d), mob=k_rep=1
+predictions for delta_eq = d_inf - dstar:
+  first order    2*v_rep0/K_b        = 0.023985172946835
+  self-consistent 2*v_rep0/(K_b+2)   = 0.02029451614614
+  exact root on symmetric branch     = 0.0244338261336385
+  exact root on psi_f=0 branch       = 0.0246855709328164  (entrained runs should land here)
+
+runs WITH repulsion (report d(t)):
+  d0 = dstar+0.05, entrain mix = none:
+    d(5)  = 1.53128240782358   d(10) = 1.53128240782357   d(20) = 1.53128240782357   d(50) = 1.53128240782358
+    delta_final = 0.0254845497236476   t_99 = 0.58 t.u.
+    final wrapped psi_f = 0.0511473423036222  psi_b = -0.157485751222445   G(psi_f) = 0.994780994919378  G(psi_b) = 0.951557779724081   joint = 0.946591594837196
+    bond-term sign violations (dd_bond pushing AWAY from dstar): 0
+  d0 = dstar+0.05, entrain mix = 0.01:
+    d(5)  = 1.53053690326554   d(10) = 1.53048780480684   d(20) = 1.53048346095363   d(50) = 1.53048342903277
+    delta_final = 0.0246855709328309   t_99 = 2.14 t.u.
+    final wrapped psi_f = 1.26476606965298e-12  psi_b = -0.103004540584287   G(psi_f) = 1  G(psi_b) = 0.978994496229093   joint = 0.978994496229093
+    bond-term sign violations (dd_bond pushing AWAY from dstar): 0
+  d0 = dstar+0.05, entrain mix = 0.3:
+    d(5)  = 1.53048342903275   d(10) = 1.53048342903275   d(20) = 1.53048342903275   d(50) = 1.53048342903275
+    delta_final = 0.0246855709328178   t_99 = 0.58 t.u.
+    final wrapped psi_f = 0  psi_b = -0.103004540582994   G(psi_f) = 1  G(psi_b) = 0.978994496229615   joint = 0.978994496229615
+    bond-term sign violations (dd_bond pushing AWAY from dstar): 0
+  d0 = dstar-0.05, entrain mix = none:
+    d(5)  = 1.53128240782357   d(10) = 1.53128240782358   d(20) = 1.53128240782358   d(50) = 1.53128240782357
+    delta_final = 0.0254845497236322   t_99 = 0.46 t.u.
+    final wrapped psi_f = -0.157485751221557  psi_b = 0.0511473423027908   G(psi_f) = 0.951557779724613  G(psi_b) = 0.994780994919547   joint = 0.946591594837886
+    bond-term sign violations (dd_bond pushing AWAY from dstar): 0
+  d0 = dstar-0.05, entrain mix = 0.01:
+    d(5)  = 1.5303635194592   d(10) = 1.53047166367573   d(20) = 1.53048334181466   d(50) = 1.53048342903272
+    delta_final = 0.0246855709327809   t_99 = 0.4 t.u.
+    final wrapped psi_f = -3.24007487506606e-12  psi_b = -0.103004540579583   G(psi_f) = 1  G(psi_b) = 0.978994496230993   joint = 0.978994496230993
+    bond-term sign violations (dd_bond pushing AWAY from dstar): 0
+  d0 = dstar-0.05, entrain mix = 0.3:
+    d(5)  = 1.53048342903275   d(10) = 1.53048342903275   d(20) = 1.53048342903275   d(50) = 1.53048342903275
+    delta_final = 0.0246855709328178   t_99 = 0.44 t.u.
+    final wrapped psi_f = 0  psi_b = -0.103004540582994   G(psi_f) = 1  G(psi_b) = 0.978994496229615   joint = 0.978994496229615
+    bond-term sign violations (dd_bond pushing AWAY from dstar): 0
+
+runs WITHOUT repulsion (pure bond; should converge to dstar exactly):
+  d0 = dstar+0.05, mix = none: |delta_final| = 8.88178419700125e-16, joint gate = 0.957387059744399, sign violations = 0
+  d0 = dstar+0.05, mix = 0.01: |delta_final| = 1.77635683940025e-15, joint gate = 1, sign violations = 0
+  d0 = dstar+0.05, mix = 0.3: |delta_final| = 1.33226762955019e-15, joint gate = 1, sign violations = 0
+  d0 = dstar-0.05, mix = none: |delta_final| = 1.33226762955019e-15, joint gate = 0.957387059745085, sign violations = 0
+  d0 = dstar-0.05, mix = 0.01: |delta_final| = 1.77635683940025e-15, joint gate = 1, sign violations = 0
+  d0 = dstar-0.05, mix = 0.3: |delta_final| = 1.33226762955019e-15, joint gate = 1, sign violations = 0
+
+why no-entrainment locking works: for the equal pair, psi_f + psi_b = -S*d/C IDENTICALLY
+(phase-independent).  To first order the kernel force depends only on that sum, so the
+restoring force toward dstar is branch/split independent; the seed split (psi_f=0) merely
+freezes a gate offset (joint gate < 1) without moving the equilibrium or the stiffness.
+One-sided entrainment (the specified thj pull) converges to the psi_f=0 branch, NOT the
+symmetric branch; a symmetric split needs two-sided entrainment.  All three settings agree
+on d_inf to O(1e-4).
+
+CRITICAL SIGN CHECK: in every run (both seeds, mix = none/0.01/0.3, with and without
+repulsion) the kernel bond term dd = -kappa*base*Sm*dVdd evaluated at CURRENT phases
+pushed d TOWARD dstar at every step (0 violations above threshold): the bond is a
+two-sided restoring force under realistic phase dynamics.
+
+==============================================================================
+T4 -- vacuum inertness + crumb bound
+==============================================================================
+Sm = sqrt(mi_eff*mj_eff), mi_eff = sqrt(mob_i*max(mob_j,fl0)), mj_eff = sqrt(mob_j*max(mob_i,fl0))
+  => Sm^2 = sqrt(mob_i*mob_j) * sqrt(max(mob_i,fl0)*max(mob_j,fl0));  the factor sqrt(mob_i*mob_j)
+     vanishes when EITHER mob is 0, so Sm = 0 EXACTLY for any vacuum partner.  fl0 = 0.01
+  numeric: Sm(0, 0.8125) = 0    Sm(0.8125, 0) = 0
+  crumb pair Em_i = Em_j = eps:  Sm(eps) = sqrt(eps*max(eps,fl0)) ; for eps < fl0 this is
+  sqrt(eps*fl0)  (proportional to sqrt(eps) -- the fl0 floor BOOSTS small crumbs above linear).
+
+eps = 0.001:  x = 0.0004,  w2e = 2.89860866783944,  dstar = 1.08382779933225,  r = 0.849963041871339,  Sm = 0.00316227766016838
+  geo(dstar) = 0.930832691883125;  max|dVdd| over delta = (p*S/2)*f_max = 5.01205895158663
+  v_bond_max (geometry AT the rung, per task) = 0.0354078078687161
+    [bonus: full-geometry max = 0.0464828377012421 at delta = -0.138388165128205]
+  vs repulsion scale at 10% overlap (mob*k_rep*0.17):  ratio = 0.208281222757154
+  overlap AT the crumb rung = contact - dstar = 0.616098284410431 (i.e. 36.2426513895231% of contact):
+    repulsion there (one-sided) = 0.616098284410431, (relative) = 1.23219656882086;  bond/repulsion at the rung = 0.0574710379247351 (one-sided)
+    bond velocity AT 10% overlap (d = 1.52992608374268, delta = 0.446098284410432) = 4.13067445570323e-05  -> ratio to 0.17 = 0.000242980850335484
+eps = 0.01:  x = 0.004,  w2e = 2.88614649681529,  dstar = 1.08850768907828,  r = 0.849630273985543,  Sm = 0.01
+  geo(dstar) = 0.920114238967141;  max|dVdd| over delta = (p*S/2)*f_max = 4.99051029048905
+  v_bond_max (geometry AT the rung, per task) = 0.110204149871784
+    [bonus: full-geometry max = 0.145000500028301 at delta = -0.139091695878063]
+  vs repulsion scale at 10% overlap (mob*k_rep*0.17):  ratio = 0.648259705128143
+  overlap AT the crumb rung = contact - dstar = 0.610752858892802 (i.e. 35.942272632766% of contact):
+    repulsion there (one-sided) = 0.610752858892802, (relative) = 1.2215057177856;  bond/repulsion at the rung = 0.180439842838504 (one-sided)
+    bond velocity AT 10% overlap (d = 1.52926054797109, delta = 0.440752858892802) = 0.000163502706040419  -> ratio to 0.17 = 0.000961780623767171
+
+conclusion: vacuum is EXACTLY inert (Sm=0).  Crumb pairs have max bond velocity 0.21x (eps=1e-3)
+to 0.66x (eps=1e-2) of the 0.17 repulsion scale, BUT their rung sits at 36% overlap where
+repulsion exceeds the bond maximum by an order of magnitude; and once pushed out to ~10%
+overlap the gate factor has collapsed (ratio ~1e-4 to 1e-3).  Crumbs cannot bind; no vacuum
+crystallisation from the P15 term.
+
+==============================================================================
+T5 -- mu-convexity re-check (geopress criterion), sympy
+==============================================================================
+[per-cell] mu_i = dU/dE_i at fixed partner:  mu_i = k*delta^(alpha-1)*r_i/(3*E_i)
+  d(mu_i)/dE_i = (k*r_i/(9*E_i^2)) * delta^(alpha-2) * [ (alpha-1)*r_i - 2*delta ]  -- check: VERIFIED (exact symbolic at alpha=2,3,4; numeric residual < 4.4e-16 at 6 random general-alpha points)
+  => mu falls with E_i  iff  delta/r_i > (alpha-1)/2     [claim CONFIRMED]
+  alpha = 2:  delta/r > 1/2  -- confirmed.
+  (alpha=2 explicit d(mu)/dE_i: k*r_0*(-E_i**(1/3)*r_0 - 2*E_j**(1/3)*r_0 + 2*d*e_0**(1/3))/(9*E_i**(5/3)*e_0**(2/3)) )
+
+[symmetric-growth caveat] if BOTH cells grow with one E (delta = 2*r(E) - d):
+  d^2U/dE^2 = (4k*r^2/(9E^2)) * delta^(alpha-2) * [ (alpha-1) - delta/r ]  -- symbolic check: VERIFIED
+  => along that path the criterion is delta/r > (alpha-1)  (alpha=2 -> delta/r > 1): 2x harsher.
+  The stated geopress criterion is the PER-CELL chemical potential (partner fixed) -- that one
+  is exactly delta/r > (alpha-1)/2.  Constants k, r_0, e_0 drop out in both (scale-free).
+
+numeric finite-difference confirmation (k=1, r0=e0=1, E=1 so r=1):
+  per-cell, alpha=2, delta/r = 0.4:  d(mu)/dE = +2.222198e-02  (rises)
+  per-cell, alpha=2, delta/r = 0.6:  d(mu)/dE = -2.222264e-02  (falls)
+  symmetric, alpha=2, delta/r = 0.9:  d(mu)/dE = +4.444403e-02  (rises)
+  symmetric, alpha=2, delta/r = 1.1:  d(mu)/dE = -4.444528e-02  (falls)
+
+==============================================================================
+T6 -- truss rigidity counting (first-order, central-force)
+==============================================================================
+floppy modes = 3V - 6 - rank(R)   (R = central-force rigidity matrix; 6 rigid-body modes)
+  ring6 (hexagon)          V= 6 E= 6  rank(R)= 6  floppy=3V-6-rank= 6   [sv gap: kept>=1.000e+00, dropped<=0.000e+00]   FLOPPY
+  octahedron               V= 6 E=12  rank(R)=12  floppy=3V-6-rank= 0   [sv gap: kept>=1.000e+00, dropped<=0.000e+00]   SHEAR-RIGID (isostatic)
+  cube                     V= 8 E=12  rank(R)=12  floppy=3V-6-rank= 6   [sv gap: kept>=1.414e+00, dropped<=0.000e+00]   FLOPPY
+  icosahedron              V=12 E=30  rank(R)=30  floppy=3V-6-rank= 0   [sv gap: kept>=7.654e-01, dropped<=0.000e+00]   SHEAR-RIGID (isostatic)
+  ring6 + 3 long diagonals V= 6 E= 9  rank(R)= 8  floppy=3V-6-rank= 4   [sv gap: kept>=1.225e+00, dropped<=1.406e-16]   FLOPPY
+
+shear-rigid seeds: octahedron (floppy 0) and icosahedron (floppy 0) -- both isostatic
+(E = 3V-6 exactly).  ring6 has 6 floppy modes, cube has 6 (shear/flex), ring6+3diag has 4.
+note: ring6+3diag has rank E-1 = 8, i.e. one SELF-STRESS (ring tension balanced by diagonal
+compression through the centre), so adding 3 members removes only 2 floppy modes (6 -> 4),
+not 3: in-plane bracing of a symmetric ring wastes a member on the self-stress.
+
+==============================================================================
+SURPRISES / deviations from the task's stated expectations
+==============================================================================
+1. K_b coefficient is p*S^2/(4*C^2), NOT p*S^2/(2*C^2): the guessed stiffness is 2x too large.
+   K_b(x=0.325) = 10.9977802012467 * kappa per t.u.
+2. The outward capture edge is NOT gate-set: the lens area (and the whole bond force) vanishes
+   exactly at d = contact = 2r.  Bond and repulsion share the same support (overlap only).
+   Full-geometry capture: force max at delta = 0.0607582801115332 (+ side) / -0.222946344078248 (- side); 10% points 0.127601059021973 / -0.514537195613401.  Strongly asymmetric.
+3. T3: NO entrainment is needed to lock -- psi_f + psi_b = -S*d/C is a phase-independent
+   identity, so the first-order restoring force is split-independent.  Pure phase advance
+   converges to the same d_inf as entrained runs; entrainment only re-opens the frozen gate
+   offset.  The specified ONE-SIDED entrainment lands on the psi_f=0 branch, not the
+   symmetric branch (needs two-sided pulls); dynamically irrelevant at first order.
+4. T4: the fl0 floor makes crumb bonding scale as sqrt(eps*fl0) (weaker than any load but
+   BOOSTED above linear-in-eps); still, a crumb pair's rung lies at 36% overlap where
+   repulsion exceeds the bond max 5.5x (eps=1e-2) to 17x (eps=1e-3) one-sided (11-35x
+   relative), so crumbs cannot bind.  Vacuum exactly inert.
+5. T5: criterion delta/r > (alpha-1)/2 CONFIRMED for the per-cell mu (partner fixed);
+   along the symmetric both-cells-grow path it is delta/r > (alpha-1) (factor 2 harsher) --
+   which derivative geopress measures matters.
+6. T6: ring6 floppy=6, cube floppy=6; octahedron and icosahedron floppy=0 (only shear-rigid seeds).

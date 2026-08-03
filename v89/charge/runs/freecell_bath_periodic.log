@@ -1,0 +1,23 @@
+# freecell — v89 free-cell substance test (exp=bath)
+# laws = laws_V2g VERBATIM (defaults): C=1 w1=1.65 w2=2.9 q_detune=1.2
+# gamma_res=0.25 gamma_res_m=0.1 p_gate=8 lock_floor=0.005 k_dep=1.2 k_dep_m=2 cap=2.5
+# e_s0=1 es_floor=0.05 e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
+# comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
+# quant_A0=1.15 quant_mode=2 (A0eff=1.15)
+# GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
+# bath=1 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=10 dt=0.02 T=4 seed=20260802
+# JAM sweeps=800 max_step=1.570e-04 (tol 1.0e-04, k_end=0.0010) — witness for the settle
+# INIT NC=808 slots=9627 live=7588 phi_nom=2.0796 z_live=18.78 dbar=1.3965 sigma_d=17.14% E0=808.000000000
+#
+# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+t=    0.00 +0.00e+00 | 2.0796 18.78   7588    0      0      0 | 1.3965 17.14 | 0.00e+00 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00
+t=    1.00 +0.00e+00 | 2.0796 19.16   7740    0    172    179 | 1.4031 17.13 | 3.19e-03 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00
+t=    2.00 +0.00e+00 | 2.0796 19.42   7847    0    309    316 | 1.4075 17.12 | 2.47e-03 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00
+t=    3.00 +0.00e+00 | 2.0796 19.57   7908    0    437    427 | 1.4099 17.10 | 2.83e-03 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00
+t=    4.00 +0.00e+00 | 2.0796 19.66   7944    0    546    536 | 1.4113 17.09 | 2.53e-03 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00
+#
+# RESULT drift_rel 0.000e+00
+# RESULT births 546 deaths 536 beta_returns 0 beta_energy 0.000000e+00
+# RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
+# RESULT geometry phi_nom=2.0796 z_live=19.66 dbar=1.4113 sigma_d=0.1709

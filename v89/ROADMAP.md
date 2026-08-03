@@ -922,3 +922,32 @@ If growth is revisited, the bound should come from **jamming** (S1's
 contact saturation, which already produces a real length) or **capacity**
 (`cap`, which the law-dependency map shows is where the pitch landscape
 lives) — both already in the standing law table. Consonance is not it.
+
+### 8.3 STANDING: the free-cell substance result (2026-08-02, later)
+
+The substance half of `FREECELL.md` was run to ground the same day —
+instrument `freecell.c` (standalone, kernel untouched, laws_V2g
+verbatim), record `FREECELL_LOG.md`, results `FREECELL.md` §9. In one
+line each:
+
+* Cohesion exists in the standing law with no new constant: the P15
+  misfit term on positions is a two-sided bond at the pair-separation
+  ladder (stiffness derived exactly; vacuum exactly inert; crumbs cannot
+  bind), and the pitch seal + jammed bath hold heavy droplets.
+* Species select structurally: even rings live, odd rings are
+  π-frustrated dead, collimation restricts objects to chains/rings/
+  tubes, and 3D rigidity requires mixed-interval (fifth) triangles —
+  rigidity ⟺ odd cycles ⟺ interval content (the ℤ₃ connection).
+* The §5(a) density test was finally run with φ printed: blobs hold at
+  density (live ≥ frozen), fragment dilute; g1/e1/e2-class checks pass
+  on the live substrate (pulse v/C 0.574; drift at the FP floor through
+  thousands of channel births/deaths under rule α).
+* The vacuum bleed c₀ is substrate-independent; free-cell death is
+  locked shrink along the ladder → cage-tracking unlock (above the
+  skirt) → husk. e3b's frozen-tuned tilt drives BACKWARD on the live
+  substrate (all 5 panel seeds) — the dense-translation dispersion is
+  substrate-dependent; sweep recorded in FREECELL.md §9.7.
+
+The cellfab `live_links` integration remains flagged for explicit user
+authorization (LIVEFAB §5; acceptance unchanged: 19/20 gated + 1
+recorded AND byte-identical with the flag off).
