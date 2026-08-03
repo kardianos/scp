@@ -359,3 +359,11 @@ Verdict: binding = geometry + unison backbone (primary); charge-like
 Z3 = exact 3-fold closure structure, sharp only with the amplitude
 completion — added to the S2-full acceptance list alongside e3b, p2,
 kappa_reac=1.
+
+Addendum (kappa_reac probe): the S2 rate-level reactive term ported
+verbatim (default 0); kappa_reac=1 leaves the fifth pair's strangulation
+and the triangle's precession unchanged (rides the gates; powerless once
+unlocked; geometry slides first). Rate-level free-cell matter is
+UNISON-ONLY; flavored composites require the amplitude completion —
+the sharpest S2-full criterion measured. Logs freecell_fifthpair*.log,
+freecell_tri_kr1*.log.

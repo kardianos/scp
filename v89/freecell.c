@@ -888,6 +888,24 @@ static void step(void)
         double w_ij = base * g_ij * head_j * mi_eff;
         double w_ji = base * g_ji * head_i * mj_eff;
 
+        if (P.kappa_reac > 0) {
+            /* S2 — the choir's correction, DERIVED (cellfab.c:3042
+             * verbatim): the reactive (odd) component of sympathetic
+             * exchange — the interference cross-flow the even-gate rate
+             * compression discards. kappa_reac = 1 is the unitarity
+             * point. Zero in laws_V2g (retired at rate level); carried
+             * here for the S2-full acceptance probe on the fifth. */
+            double ps_ij = wrap_pi(bq * thi - bq * wi * d / P.C - bp * thj);
+            double ps_ji = wrap_pi(bp * thj - bp * wj * d / P.C - bq * thi);
+            double Sm2 = sqrt(mi_eff * mj_eff);
+            double hh = sqrt(head_i * head_j);
+            double reac = P.kappa_reac * 0.5 * base * hh * Sm2;
+            w_ij -= reac * g_ij * lut_sin(ps_ij);
+            w_ji -= reac * g_ji * lut_sin(ps_ji);
+            if (w_ij < 0) w_ij = 0;
+            if (w_ji < 0) w_ji = 0;
+        }
+
         /* THE BOND — P15 (cellfab.c:3068) on the geometric conjugate,
          * buffered Jacobi, applied to POSITIONS in pass D */
         if (P.kappa_bond > 0) {

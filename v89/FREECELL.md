@@ -776,6 +776,30 @@ S2-full/amplitude-completion acceptance criterion** — and the fifth's
 Γ/6 tongue is the quantitative reason confinement-with-flavor needs
 coherent (amplitude-level) exchange, not rate-level trickle.
 
+### 10.4 The kappa_reac probe — the criterion tested, negative
+
+The derived rate-level reactive term (S2's choir's correction,
+cellfab.c:3042, retired in V2z) was ported verbatim and switched on:
+**kappa_reac = 1 changes nothing** — the fifth pair strangles
+identically (d_final 1.608511 vs 1.608522; freecell_fifthpair*.log) and
+the triangle precession continues unchanged (freecell_tri_kr1*.log).
+Structurally forced: the correction rides the gates (∝ g·sin ψ, its
+derived rim-protection property), so once the fifth unlocks it is
+powerless — and the geometric slide to strangulation happens first
+(the fifth PAIR itself fails on free cells at k_rep=0.4 where the
+unison pair held at k_rep=1: bond strength carries res = 1/(pq)·tongue,
+so the E9 interval-lifetime hierarchy becomes an interval STRENGTH
+hierarchy on free cells).
+
+**Sharpened conclusion: rate-level free-cell matter is unison-only.**
+Even rings, unison pairs, droplets — all stand; every mixed-interval
+(flavored) composite fails by tongue-width against flight-load and
+pressure, and not even the derived odd correction rescues it. Flavored
+matter — hence charge-bearing matter, hence the nucleon analogs — is
+the first structure that REQUIRES the amplitude completion, with the
+Γ/6 tongue as the quantitative reason. This is now the strongest and
+most concrete S2-full acceptance criterion on the list.
+
 Species note recorded: UUD closed-equilateral vs UDD open-chain is a
 structural nucleon-analog asymmetry derived purely from the interval
 ladder and contact geometry, at zero new constants.
