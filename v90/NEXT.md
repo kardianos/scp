@@ -7,7 +7,8 @@ Detail lives in the campaign docs; this file is the index and the queue.
 
 | result | where |
 |---|---|
-| Battery **48 bars ALL GREEN** through every kernel change (8 apparatus additions this cycle) | `runs/BATTERY.log`, `cmd/battery` |
+| Battery **56 bars ALL GREEN** through every kernel change (9 apparatus additions this cycle) | `runs/BATTERY.log`, `cmd/battery` |
+| **All-modes COE meter** (`p1_meter`): no-channels null exactly zero; blobs merge with v_COE ~1000× below closing — approach carries no net momentum; dense-only COM was 324× inflated | `MOTION.md` |
 | Go kernel port faithful at the FP floor (bath/blob byte-identical; physics digits identical everywhere) | `VERIFY.md` |
 | **DS tier 0 CONFIRMED on the live substrate** — fringes at parameter-free loci, V 0.652 vs frozen 0.667, 3-seed panel; Huygens wavelets visible in the phase view | `DS.md`, `runs/ds/viz/` |
 | **DS tier 1 CLAIMED (battery `ds1`, 8 bars)** — 362 whole-grain clicks over 24 substrate seeds: fringe-phase score s̄ 0.683±0.017 (null 0.5) vs which-slit controls 0.380±0.036; minima 7.7× dark; every click k·ε, k∈{1,2}. Controls sit BELOW phase-blind (envelope peaks at the minima loci) | `DS.md` |
@@ -54,8 +55,11 @@ ones hold. Composite work should default to embedded apparatus.
 1. ~~**Tier-1 grain harvest**~~ **DONE 2026-08-03** — claimed, 8 bars
    gated (`ds1`), battery 48 GREEN. Tiers 2–3 analogs (eraser, delayed
    choice) are now unblocked (see Also-can-do).
-2. **All-modes center-of-energy meter** (Es+Em+Ee+flight, kernel meter)
-   → honest Δp bars for blob2/collisions. *Cheap, unblocked.*
+2. ~~**All-modes center-of-energy meter**~~ **DONE 2026-08-03** —
+   `p1_meter` flow bookkeeping (5 sites, 4 channels), battery `p1`
+   8 bars (56 total GREEN): no-channels null EXACTLY zero; blob
+   approach carries no net momentum (v_COE ~1000× below closing);
+   dense-only COM was 324× inflated (MOTION.md).
 3. **Composite follow-ups:** CQ8 long-run (does protection persist?);
    bath + compensation combined; the mod-12 parity sweep (nv 12/24/36)
    as a battery-bar candidate. *Cheap, unblocked.*

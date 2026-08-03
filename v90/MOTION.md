@@ -146,3 +146,50 @@ couples to matter only through conversion, and absorption requires
 capacity headroom. Transport of STRUCTURE — the thing a collision
 experiment ultimately wants — is on the amplitude completion, from
 every direction we have measured.
+
+## The all-modes center-of-energy meter (2026-08-03; battery `p1`, 8 bars)
+
+The queued refinement, built. `p1_meter=1` (kernel apparatus key,
+default OFF — every standing log stays byte-identical, verified by the
+full battery). **Momentum is the first moment of conversion**, so the
+meter is flow bookkeeping, not a global COM: every channel-borne
+transfer contributes dE·Δx at its own link (minimal-image — torus-safe,
+no unwrapping), split by channel:
+
+| channel | sites |
+|---|---|
+| `sp` space | pass-S Es flows |
+| `fl` flight | dense deposit (cell→link mid), arrival (mid→cell), rule-α flush (mid→source) — the midpoint convention telescopes to dE·(x_dst−x_src) over any completed transfer |
+| `fd` field | pass-F pair rotations (energy moved is pairwise-conserved) |
+| `gm` geometry | cells carry their energy when pass-D moves them; link flight rides the endpoint mean |
+
+Conversions (cond/evap/rough/backsplash) change mode AT a cell — no
+moment flow, correctly uninstrumented. Cumulative `# P1` per diag
+cadence; `# RESULT p1` totals + rates. The all-modes center-of-energy
+velocity is v_COE = P1_rate / E_total.
+
+**Measured (L=16, T=80, blob2 Round-B geometry; battery-gated):**
+
+| run | v_COE (x,y,z) | closing | \|v_COE_x\|/closing | dense-only vTotalCOM |
+|---|---|---|---|---|
+| null (2 cells beyond contact) | **(0, 0, 0) EXACTLY** | — | — | — |
+| blob2 undriven | (−3.4e-6, +1.8e-5, +4.1e-6) | 3.5e-3 | **1.0e-3** | 1.1e-3 (**324× the honest number**) |
+| blob2 driven kx=3.2 | (+1.7e-5, −2.8e-5, −5.6e-7) | 1.6e-2 | **1.1e-3** | −2.0e-4 |
+
+Three claims, now gated (battery 56 bars GREEN):
+
+1. **No channels = exactly zero moment flow.** Two cells beyond contact:
+   every accumulator byte-zero over 60 t.u. Interaction is channels;
+   nothing else moves energy, period.
+2. **Blob approach is merging, not transport, in the honest ledger.**
+   The all-modes center of energy moves ~1000× slower than the blobs
+   close — the modes exchange moment locally and it cancels. The Δp of
+   "two blobs colliding" is, to 1e-3 of the closing rate, zero.
+3. **The Round-B dense-only COM number was mode-exchange artifact** —
+   overstates the all-modes v_COE by 324× on the undriven control.
+   The honest Δp bar is |v_COE| ≤ 5e-5 (measured ceiling 2.8e-5), and
+   the flight+geometry channels dominate the (cancelling) internal
+   flows; field ≈ 0, space ≈ 0 at blob scale.
+
+Images: `runs/motion/viz/p1_b2_t0_em.png` / `p1_b2_t80_em.png` (the
+mound pair, dense channel). Stream: `runs/streams/p1_b2.fcs`.

@@ -479,7 +479,74 @@ func suite() []experiment {
 			fmt.Sprintf("%.3g", maxf(two.maxDrift, ctl.maxDrift)), "1e-13", true)
 	}})
 
+	// FB9 P1 — the all-modes center-of-energy meter (MOTION.md; p1_meter=1,
+	// default OFF: standing logs stay byte-identical). Momentum is the
+	// first moment of conversion; the meter accumulates dE*dx over every
+	// channel-borne transfer (space, flight deposit/arrival/flush, field
+	// hop, geometry) — torus-safe, per-channel split. Claims: (1) two
+	// cells beyond contact = no channels = EXACTLY zero moment flow;
+	// (2) blob2 approach is merging, not transport: the all-modes COE
+	// velocity |P1_rate|/E0 is ~1000x below the closing speed; (3) the
+	// dense-only COM (Round B's 5.3e-4 confusion) overstates the honest
+	// number >=20x on the undriven control.
+	sp = []runSpec{}
+	if wantC {
+		sp = append(sp,
+			cw("p1_null", "exp=pair", "bath=0", "T=60", "pair_doff=1.0", "p1_meter=1"),
+			cw("p1_b2ctl", "exp=blob2", "L=16", "T=80", "amp=0.5", "sigma=2.2", "blob2_sep=7",
+				"diag_every=200", "p1_meter=1", "snap_every=500", "snap_file=runs/streams/p1_b2.fcs"),
+			cw("p1_b2drv", "exp=blob2", "L=16", "T=80", "amp=0.5", "sigma=2.2", "blob2_sep=7",
+				"blob2_kx=3.2", "diag_every=200", "p1_meter=1"))
+	}
+	exps = append(exps, experiment{"p1", sp, func(r *reporter) {
+		if !wantC {
+			return
+		}
+		nx, ny, nz, ok0 := p1Rate("p1_null")
+		r.add("p1", "no channels = exactly zero moment flow", ok0 && nx == 0 && ny == 0 && nz == 0,
+			fmt.Sprintf("(%g,%g,%g)", nx, ny, nz), "== 0", true)
+		for _, lb := range []string{"p1_b2ctl", "p1_b2drv"} {
+			rx, ry, rz, ok := p1Rate(lb)
+			e0, okE := exf(get(lb), `# INIT .* E0=(\S+)`)
+			cl, okC := exf(get(lb), `# RESULT blob2 .*closing=(-?\S+)`)
+			vmax := maxf(abs(rx), maxf(abs(ry), abs(rz)))
+			vcoe := 0.0
+			if okE && e0 > 0 {
+				vcoe = vmax / e0
+			}
+			r.add("p1", lb+" |v_COE| <= 5e-5 (all axes)", ok && okE && vcoe <= 5e-5,
+				fmt.Sprintf("%.2e", vcoe), "<=5e-5", true)
+			r.add("p1", lb+" COE 100x slower than closing", ok && okE && okC && cl > 0 &&
+				abs(rx)/e0 <= 0.01*cl,
+				fmt.Sprintf("%.1e vs %.1e", abs(rx)/e0, cl), "<=closing/100", true)
+			v, okD := exf(get(lb), `# RESULT drift_rel (\S+)`)
+			r.add("p1", lb+" |drift| <= 1e-13", okD && abs(v) <= 1e-13, fmt.Sprintf("%.3g", v), "1e-13", true)
+		}
+		// the honesty bar: dense-only COM velocity overstates the
+		// all-modes COE velocity on the undriven control
+		rx, _, _, ok := p1Rate("p1_b2ctl")
+		e0, okE := exf(get("p1_b2ctl"), `# INIT .* E0=(\S+)`)
+		vd, okV := exf(get("p1_b2ctl"), `vTotalCOM=(-?\S+)`)
+		r.add("p1", "dense-only COM overstates >=20x (ctl)", ok && okE && okV && e0 > 0 &&
+			abs(vd) >= 20*abs(rx)/e0,
+			fmt.Sprintf("%.1e vs %.1e", abs(vd), abs(rx)/e0), ">=20x", true)
+	}})
+
 	return exps
+}
+
+// p1Rate parses the all-modes first-moment rate vector from # RESULT p1.
+func p1Rate(label string) (x, y, z float64, ok bool) {
+	m := regexp.MustCompile(`# RESULT p1 tot=\([^)]*\) rate=\((\S+?),(\S+?),(\S+?)\)`).
+		FindStringSubmatch(get(label))
+	if m == nil {
+		return 0, 0, 0, false
+	}
+	var e1, e2, e3 error
+	x, e1 = strconv.ParseFloat(m[1], 64)
+	y, e2 = strconv.ParseFloat(m[2], 64)
+	z, e3 = strconv.ParseFloat(m[3], 64)
+	return x, y, z, e1 == nil && e2 == nil && e3 == nil
 }
 
 // ------------------------------------------------------------------

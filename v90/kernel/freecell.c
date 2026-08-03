@@ -183,6 +183,14 @@ typedef struct {
     /* DS tier 1: condensing screen (slit_clicks=1: screen-strip cells
      * become condensation-active; conversions there are CLICKS) */
     int    slit_clicks;
+    /* MOTION: all-modes center-of-energy meter (p1_meter=1) — cumulative
+     * first-moment FLOW per channel (space/flight/field/geometry).
+     * Momentum is the first moment of conversion (v89 center-of-energy
+     * theorem); flow bookkeeping is torus-safe: every term is a local
+     * minimal-image displacement times the energy that crossed it.
+     * Pure ledger — no feedback on the dynamics; default OFF so every
+     * standing log stays byte-identical. */
+    int    p1_meter;
     double rings_xcomp;             /* CQ3b: whole-ring load reduction, U-flavor rings */
     double rings_xcompD;            /* CQ3b: whole-ring load shift, D-flavor rings */
     double rings_sep;               /* kind 3: nucleon COM separation */
@@ -239,6 +247,7 @@ static void cfg_defaults(void)
     P.blob2_sep = 10.0; P.blob2_kx = 0;
     P.slit_obj = 0; P.obj_amp = 1.2; P.obj_sigma = 1.6;
     P.slit_clicks = 0;
+    P.p1_meter = 0;
     strcpy(P.snap_dir, "");
     strcpy(P.snap_file, "");
     P.snap_comp = 1;
@@ -352,6 +361,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "obj_amp")) P.obj_amp = atof(v);
     else if (!strcmp(k, "obj_sigma")) P.obj_sigma = atof(v);
     else if (!strcmp(k, "slit_clicks")) P.slit_clicks = atoi(v);
+    else if (!strcmp(k, "p1_meter")) P.p1_meter = atoi(v);
     else if (!strcmp(k, "rings_sep")) P.rings_sep = atof(v);
     else if (!strcmp(k, "snap_dir")) { strncpy(P.snap_dir, v, 255); P.snap_dir[255] = 0; }
     else if (!strcmp(k, "snap_file")) { strncpy(P.snap_file, v, 255); P.snap_file[255] = 0; }
@@ -563,6 +573,12 @@ static double ds_I[DS_NBIN];
 static double ds_expo = 0;
 static double *ds_cellI = NULL;   /* per-cell time-integrated Ee on the strip */
 static double b2_ax[512], b2_bx[512], b2_tx[512];
+
+/* p1_meter accumulators: cumulative first-moment flow, one 3-vector per
+ * channel. Flight sits at the link midpoint (the convention cancels
+ * over any completed transfer: deposit + arrival telescope to
+ * dE * (x_dst - x_src) minimal-image). */
+static double p1sp[3], p1fl[3], p1fd[3], p1gm[3];
 #define CLICK_MAX 8192
 static double click_t[CLICK_MAX], click_y[CLICK_MAX], click_e[CLICK_MAX];
 static int nclick = 0;
@@ -879,6 +895,18 @@ static void step(void)
             double avail = Es[i] - P.es_floor;
             sscl[i] = (avail <= 0) ? 0.0 : (rq > avail ? avail / rq : 1.0);
         }
+        if (P.p1_meter) {
+            /* P1 site 1: space transport src->dst = sgn(f) * d * u_hat */
+            for (int s = 0; s < NSLOT; s++) {
+                double f = swl[s];
+                if (f == 0) continue;
+                int src = f > 0 ? sli[s] : slj[s];
+                double mag = fabs(f) * sscl[src];
+                if (mag <= 0) continue;
+                double m = (f > 0 ? 1.0 : -1.0) * mag * sd[s];
+                p1sp[0] += m * sux[s]; p1sp[1] += m * suy[s]; p1sp[2] += m * suz[s];
+            }
+        }
         for (int i = 0; i < NC; i++) {
             double de = 0;
             for (int q = cls_[i]; q < cls_[i + 1]; q++) {
@@ -1051,6 +1079,11 @@ static void step(void)
             slem[2*s + dir] += f;
             sflux[s] += f;
             sfluxd[2*s + dir] += f;   /* directed ledger for circulation */
+            if (P.p1_meter && f > 0) {
+                /* P1 site 2: dense deposit src -> link midpoint */
+                double m = (dir == 0 ? 0.5 : -0.5) * f * sd[s];
+                p1fl[0] += m * sux[s]; p1fl[1] += m * suy[s]; p1fl[2] += m * suz[s];
+            }
         }
     }
     for (int i = 0; i < NC; i++) {
@@ -1107,6 +1140,11 @@ static void step(void)
             if (take > 0) {
                 double mobprev = Em[recv];
                 slem[sslot] -= take;
+                if (P.p1_meter) {
+                    /* P1 site 3: flight arrival, link midpoint -> recv */
+                    double m = (dir == 0 ? 0.5 : -0.5) * take * sd[s];
+                    p1fl[0] += m * sux[s]; p1fl[1] += m * suy[s]; p1fl[2] += m * suz[s];
+                }
                 /* C2: dissonance radiates (cellfab.c:3228) */
                 double det = slq[s] * w2e[i] - slp[s] * w2e[j];
                 double R = 2.0 * fabs(det) * P.gamma_rough
@@ -1134,6 +1172,11 @@ static void step(void)
             if (dying && slem[sslot] > 1e-17) {
                 /* rule α flush: the unreceivable residue returns to its
                  * source (the β fallback, applied only to dying slots) */
+                if (P.p1_meter) {
+                    /* P1 site 4: flush, link midpoint -> send (return) */
+                    double m = (dir == 0 ? -0.5 : 0.5) * slem[sslot] * sd[s];
+                    p1fl[0] += m * sux[s]; p1fl[1] += m * suy[s]; p1fl[2] += m * suz[s];
+                }
                 Em[send] += slem[sslot];
                 beta_energy += slem[sslot];
                 beta_returns++;
@@ -1175,6 +1218,24 @@ static void step(void)
             double dm = sqrt(dxx*dxx + dyy*dyy + dzz*dzz);
             if (dm > 0.1) { double sc = 0.1 / dm; dxx *= sc; dyy *= sc; dzz *= sc; }
             fxb[i] = dxx; fyb[i] = dyy; fzb[i] = dzz;
+        }
+        if (P.p1_meter) {
+            /* P1 site 6: geometry — cells carry their energy when they
+             * move; link flight (midpoint) moves with the mean of its
+             * endpoints */
+            for (int i = 0; i < NC; i++) {
+                double ei = Es[i] + Em[i] + Ee[i];
+                p1gm[0] += ei * fxb[i]; p1gm[1] += ei * fyb[i]; p1gm[2] += ei * fzb[i];
+            }
+            for (int s = 0; s < NSLOT; s++) {
+                if (sst[s] == S_FREE) continue;
+                double le = slem[2*s] + slem[2*s+1];
+                if (le <= 0) continue;
+                int i2 = sli[s], j2 = slj[s];
+                p1gm[0] += le * 0.5 * (fxb[i2] + fxb[j2]);
+                p1gm[1] += le * 0.5 * (fyb[i2] + fyb[j2]);
+                p1gm[2] += le * 0.5 * (fzb[i2] + fzb[j2]);
+            }
         }
         for (int i = 0; i < NC; i++) {
             px_[i] = fold(px_[i] + fxb[i]);
@@ -1230,6 +1291,13 @@ static void step(void)
             fa2[i] = cc * a2i - ss * a1j;
             fa1[j] = cc * a1j + ss * a2i;
             fa2[j] = cc * a2j - ss * a1i;
+            if (P.p1_meter) {
+                /* P1 site 5: field hop — energy the rotation moved into j
+                 * (pairwise-conserved), displacement i -> j */
+                double mj = (fa1[j]*fa1[j] + fa2[j]*fa2[j]) - (a1j*a1j + a2j*a2j);
+                double m = mj * sd[s];
+                p1fd[0] += m * sux[s]; p1fd[1] += m * suy[s]; p1fd[2] += m * suz[s];
+            }
         }
     }
     for (int i = 0; i < NC; i++)
@@ -2932,6 +3000,13 @@ int main(int argc, char **argv)
                 }
             }
             printf("\n");
+            if (P.p1_meter) {
+                double tx = p1sp[0] + p1fl[0] + p1fd[0] + p1gm[0];
+                double ty = p1sp[1] + p1fl[1] + p1fd[1] + p1gm[1];
+                double tz = p1sp[2] + p1fl[2] + p1fd[2] + p1gm[2];
+                printf("# P1 t=%.2f tot=(%+.6e,%+.6e,%+.6e) sp=%+.3e fl=%+.3e fd=%+.3e gm=%+.3e (x)\n",
+                       sim_t, tx, ty, tz, p1sp[0], p1fl[0], p1fd[0], p1gm[0]);
+            }
         }
         if (P.snap_every > 0 && P.snap_dir[0] && st % P.snap_every == 0)
             write_fcs(st / P.snap_every);
@@ -2966,6 +3041,18 @@ int main(int argc, char **argv)
                births, deaths, beta_returns, beta_energy);
         printf("# RESULT conv rough=%.6f cond=%.6f evap=%.6f backs=%.6f\n",
                rough_total, cond_total, evap_total, backs_total);
+        if (P.p1_meter) {
+            /* cumulative first-moment flow (energy*length) per channel,
+             * plus the rate: tot/T = the all-modes center-of-energy
+             * velocity times total energy (the honest Delta-p number) */
+            double tx = p1sp[0] + p1fl[0] + p1fd[0] + p1gm[0];
+            double ty = p1sp[1] + p1fl[1] + p1fd[1] + p1gm[1];
+            double tz = p1sp[2] + p1fl[2] + p1fd[2] + p1gm[2];
+            printf("# RESULT p1 tot=(%+.6e,%+.6e,%+.6e) rate=(%+.6e,%+.6e,%+.6e)\n",
+                   tx, ty, tz, tx / P.T, ty / P.T, tz / P.T);
+            printf("# RESULT p1x sp=%+.6e fl=%+.6e fd=%+.6e gm=%+.6e\n",
+                   p1sp[0], p1fl[0], p1fd[0], p1gm[0]);
+        }
         double phi, zl, dbar, sig, mld; int nla, nld;
         geo_stats(&phi, &zl, &nla, &nld, &dbar, &sig, &mld);
         printf("# RESULT geometry phi_nom=%.4f z_live=%.2f dbar=%.4f sigma_d=%.4f\n",
