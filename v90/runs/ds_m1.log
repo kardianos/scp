@@ -6,7 +6,7 @@
 # comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
 # quant_A0=1.15 quant_mode=2 (A0eff=1.15)
 # GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
-# bath=1 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=64 dt=0.02 T=44 seed=20260802
+# bath=1 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=64 dt=0.02 T=44 seed=20260802 diag_every=100
 # JAM sweeps=800 max_step=1.163e-04 (tol 1.0e-04, k_end=0.0010) — witness for the settle
 # CARVE slit wall: removed 97 cells (mask=1 wall_x=22 th=2.4 slits y=27.00/37.00 hw=2.8)
 # PIN wall fixture: 158 cells within +-3 of x=22

@@ -6,7 +6,7 @@
 # comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
 # quant_A0=1.15 quant_mode=2 (A0eff=1.15)
 # GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
-# bath=0 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=16 dt=0.02 T=60 seed=20260802
+# bath=0 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=16 dt=0.02 T=60 seed=20260802 diag_every=100
 # JAM skipped (no bath)
 # SEED pair: i=0 j=1 x=0.3250/0.3250 p:q=1:1 m=1 d*=1.505798 d0=1.455798 (doff -0.0500)
 # SEED pair radii r=0.8188 contact=1.6377  Em/voice=0.8125

@@ -1961,8 +1961,9 @@ int main(int argc, char **argv)
     printf("# quant_A0=%g quant_mode=%d (A0eff=%g)\n", P.quant_A0, P.quant_mode, A0eff);
     printf("# GEOMETRY (apparatus): cfac=%g k_rep=%g mob_geo=%g kappa_bond=%g freeze_geo=%d\n",
            P.cfac, P.k_rep, P.mob_geo, P.kappa_bond, P.freeze_geo);
-    printf("# bath=%d bath_frac=%g jam_sweeps=%d jam_k=%g L=%g dt=%g T=%g seed=%lu\n",
-           P.bath, P.bath_frac, P.jam_sweeps, P.jam_k, P.L, P.dt, P.T, P.seed);
+    printf("# bath=%d bath_frac=%g jam_sweeps=%d jam_k=%g L=%g dt=%g T=%g seed=%lu diag_every=%d\n",
+           P.bath, P.bath_frac, P.jam_sweeps, P.jam_k, P.L, P.dt, P.T, P.seed,
+           P.diag_every);
 
     /* ---------------- build ---------------- */
     double V = P.L * P.L * P.L;

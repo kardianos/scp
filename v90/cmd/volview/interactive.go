@@ -462,8 +462,27 @@ func runInteractive(frames []*frame, followPath string, selfcheck bool) {
 	}
 
 	help := func() {
-		fmt.Println("volview -i: drag orbit | shift+drag pan | wheel zoom | , . step | space play | [ ] speed")
-		fmt.Println("  1..9/C channel (" + strings.Join(vw.channels, " ") + ") | L links | T tag tint | A avg | N norm | +/- size | G gamma | S shot | Q quit")
+		fmt.Println("volview -i — interactive free-cell viewer")
+		fmt.Println("CHANNELS (keys 1..8, C cycles; the number picks WHICH quantity a dot shows):")
+		fmt.Println("  1 es     space-mode store (vacuum ~1 everywhere -> mostly white)")
+		fmt.Println("  2 em     dense-mode store (matter; leaked halos glow dim)")
+		fmt.Println("  3 ee     field-mode energy |psi|^2 (radiation)")
+		fmt.Println("  4 x      load (Em+flight)/cap — pitch detune; U vs D voices differ here")
+		fmt.Println("  5 r      live radius r0*(Es/e_s0)^(1/3)")
+		fmt.Println("  6 phase  field phase arg(psi) — HUE WHEEL (color = angle); dark = no field")
+		fmt.Println("  7 fa1    signed field amplitude Re(psi) — diverging map about mid-gray")
+		fmt.Println("  8 thd    dense clock phase — HUE WHEEL")
+		if len(vw.channels) > len(channelNames) {
+			fmt.Println("  9../C    schema extras: " + strings.Join(vw.channels[len(channelNames):], " "))
+		}
+		fmt.Println("COLORS:")
+		fmt.Println("  heat ramp black->brown->orange->white = channel magnitude, normalized to")
+		fmt.Println("    this frame's 99th percentile (N: per-frame/global norm; G/shift-G: gamma)")
+		fmt.Println("  near-invisible dark = ~zero value on this channel")
+		fmt.Println("  CYAN tint = tagged cells (the seeded object), any channel — toggle T")
+		fmt.Println("  BLUE lines = live channels (links), brightness = gate product gg — toggle L")
+		fmt.Println("CONTROLS: drag orbit | shift+drag pan | wheel zoom | ,/. step | space play | [ ] speed")
+		fmt.Println("  E pin-to-live (follow mode) | A time-average | +/- point size | S screenshot | H help | Q quit")
 	}
 	help()
 

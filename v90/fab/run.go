@@ -187,8 +187,8 @@ func (s *Sim) Run() {
 	fprintf(s.Out, "# quant_A0=%.6g quant_mode=%d (A0eff=%.6g)\n", P.QuantA0, P.QuantMode, s.A0eff)
 	fprintf(s.Out, "# GEOMETRY (apparatus): cfac=%.6g k_rep=%.6g mob_geo=%.6g kappa_bond=%.6g freeze_geo=%d\n",
 		P.Cfac, P.KRep, P.MobGeo, P.KappaBond, P.FreezeGeo)
-	fprintf(s.Out, "# bath=%d bath_frac=%.6g jam_sweeps=%d jam_k=%.6g L=%.6g dt=%.6g T=%.6g seed=%d\n",
-		P.Bath, P.BathFrac, P.JamSweeps, P.JamK, P.L, P.Dt, P.T, P.Seed)
+	fprintf(s.Out, "# bath=%d bath_frac=%.6g jam_sweeps=%d jam_k=%.6g L=%.6g dt=%.6g T=%.6g seed=%d diag_every=%d\n",
+		P.Bath, P.BathFrac, P.JamSweeps, P.JamK, P.L, P.Dt, P.T, P.Seed, P.DiagEvery)
 
 	// ---------------- build ----------------
 	V := P.L * P.L * P.L
