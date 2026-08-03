@@ -29,12 +29,19 @@ import (
 
 type cellRec struct {
 	x, y, z, r, es, em, ee, xl, tag float32
+	fa1, fa2, th2                   float32 // FCS v2
+}
+
+type linkRec struct {
+	i, j           uint32
+	d, a, lem, gg  float32
 }
 
 type frame struct {
 	t     float64
 	L     float64
 	cells []cellRec
+	links []linkRec // FCS v2
 }
 
 func readFCS(path string) (*frame, error) {
@@ -46,8 +53,12 @@ func readFCS(path string) (*frame, error) {
 		return nil, fmt.Errorf("%s: not an FCS1 file", path)
 	}
 	ver := binary.LittleEndian.Uint32(b[4:])
-	if ver != 1 {
+	if ver != 1 && ver != 2 {
 		return nil, fmt.Errorf("%s: FCS version %d unsupported", path, ver)
+	}
+	nf := 9
+	if ver == 2 {
+		nf = 12
 	}
 	n := int(binary.LittleEndian.Uint32(b[8:]))
 	f := &frame{
@@ -55,7 +66,7 @@ func readFCS(path string) (*frame, error) {
 		L: math.Float64frombits(binary.LittleEndian.Uint64(b[20:])),
 	}
 	off := 28
-	need := off + n*9*4
+	need := off + n*nf*4
 	if len(b) < need {
 		return nil, fmt.Errorf("%s: truncated (%d < %d)", path, len(b), need)
 	}
@@ -64,11 +75,41 @@ func readFCS(path string) (*frame, error) {
 		g := func(k int) float32 {
 			return math.Float32frombits(binary.LittleEndian.Uint32(b[off+4*k:]))
 		}
-		f.cells[i] = cellRec{g(0), g(1), g(2), g(3), g(4), g(5), g(6), g(7), g(8)}
-		off += 9 * 4
+		c := cellRec{
+			x: g(0), y: g(1), z: g(2), r: g(3), es: g(4), em: g(5),
+			ee: g(6), xl: g(7), tag: g(8),
+		}
+		if ver == 2 {
+			c.fa1, c.fa2, c.th2 = g(9), g(10), g(11)
+		}
+		f.cells[i] = c
+		off += nf * 4
+	}
+	if ver == 2 && off+4 <= len(b) {
+		nl := int(binary.LittleEndian.Uint32(b[off:]))
+		off += 4
+		if off+nl*24 <= len(b) {
+			f.links = make([]linkRec, nl)
+			for k := 0; k < nl; k++ {
+				f.links[k] = linkRec{
+					i:   binary.LittleEndian.Uint32(b[off:]),
+					j:   binary.LittleEndian.Uint32(b[off+4:]),
+					d:   math.Float32frombits(binary.LittleEndian.Uint32(b[off+8:])),
+					a:   math.Float32frombits(binary.LittleEndian.Uint32(b[off+12:])),
+					lem: math.Float32frombits(binary.LittleEndian.Uint32(b[off+16:])),
+					gg:  math.Float32frombits(binary.LittleEndian.Uint32(b[off+20:])),
+				}
+				off += 24
+			}
+		}
 	}
 	return f, nil
 }
+
+// channelNames in interactive order; cyclic marks phase-like channels.
+var channelNames = []string{"es", "em", "ee", "x", "r", "phase", "fa1", "thd"}
+
+func channelCyclic(view string) bool { return view == "phase" || view == "thd" }
 
 func channel(c *cellRec, view string) float64 {
 	switch view {
@@ -82,6 +123,15 @@ func channel(c *cellRec, view string) float64 {
 		return float64(c.xl)
 	case "r":
 		return float64(c.r)
+	case "phase": // field phase arg(psi), mapped to [0,1); dark if no field
+		if c.fa1*c.fa1+c.fa2*c.fa2 < 1e-12 {
+			return -1 // sentinel: no field, render dark
+		}
+		return (math.Atan2(float64(c.fa2), float64(c.fa1)) + math.Pi) / (2 * math.Pi)
+	case "fa1": // signed plane-1 amplitude, diverging about 0.5
+		return float64(c.fa1)
+	case "thd": // dense clock phase
+		return float64(c.th2) / (2 * math.Pi)
 	}
 	return float64(c.em)
 }
@@ -193,6 +243,8 @@ func main() {
 	out := flag.String("out", "", "output png (single input)")
 	outdir := flag.String("outdir", ".", "output dir (directory input)")
 	avg := flag.Bool("avg", false, "time-average the channel over all frames (per cell index, positions from the last frame) — the shell/response-structure view")
+	interactive := flag.Bool("i", false, "interactive viewer: orbit, time scrub, channel switching, links (needs a display)")
+	selfcheck := flag.Bool("selfcheck", false, "with -i: render a few frames, screenshot, exit (smoke test)")
 	flag.Parse()
 	if flag.NArg() < 1 {
 		fmt.Fprintln(os.Stderr, "usage: volview [flags] file.fcs|dir")
@@ -215,6 +267,10 @@ func main() {
 		sort.Strings(files)
 	} else {
 		files = []string{arg}
+	}
+	if *interactive {
+		runInteractive(files, *selfcheck)
+		return
 	}
 	if *avg && len(files) > 1 {
 		var acc *frame

@@ -51,6 +51,8 @@ digit at printed precision on any run tried.
 * `.fcs` snapshot writer implemented in Go (`snap_every`/`snap_dir` keys —
   vestigial in the v89 C original, now implemented in the v90 C kernel as
   well). Pure output; consumes no RNG; cannot perturb determinism.
+  Format **FCS v2** (`FCS.md`): both kernels write identical records —
+  per-cell state incl. fa1/fa2/th2 plus the live link block.
 * Log line 1 identifies the implementation.
 
 ## Standing rule

@@ -114,6 +114,11 @@ what interference redistributes).
 
 **Gate:** battery experiment `ds`, 8 bars, GREEN (runs/BATTERY.log — 40
 bars total). Field-transit images: `runs/ds/viz/` (volview, view=ee).
+`ds_phase_t25.png` (FCS v2 phase view) shows the **mechanism**, not just
+the screen result: two circular wavefront systems radiating from the slit
+exits — Huygens wavelets at period λ — overlapping toward the screen.
+`interactive_selfcheck.png` = the `volview -i` orbit view of the same
+apparatus (wall slab + slit bridges + link graph).
 
 ## What tier 1+ needs (not run yet)
 

@@ -57,7 +57,8 @@ into C. Measured cost: ~1.3× C wall time on the blob box.
 | `fab/` | the Go kernel experiment — a 1:1 port (passes 0,S,1,G0,2,3,4,5,D,F,6,7; slot ledger; rule-α birth/death). Deviations listed in `VERIFY.md`. |
 | `cmd/fabrun` | Go kernel CLI, same `key=value` config surface and log-line formats as the C instrument (so runs diff textually). |
 | `cmd/battery` | **the battery harness (Go)**: kernel-agnostic — runs `./freecell` (gate) and `./fabrun` (cross-check), parses `# RESULT` lines, evaluates gated bars, writes `runs/*.log`. `./battery` must end `ALL GREEN`. |
-| `cmd/volview` | volumetric viewer for `.fcs` snapshots (basis: `sfa/volview` GL ray marcher — headless splat/composite first, interactive GL later). |
+| `cmd/volview` | volumetric viewer for `.fcs` snapshots (basis: `sfa/volview`). Headless renders (`-view ... -out f.png`, `-avg` time-average) and the **interactive mode `-i`**: orbit rotation, time scrub/play, 8 channels (es em ee x r **phase fa1 thd**), link rendering, tag tint, per-frame/global normalization, screenshots. `volview -i runs/dir/`. |
+| `FCS.md` | the snapshot format spec (v1/v2) and why it is not SFA (the background assumption, spelled out). |
 | `runs/` | committed evidence logs (`BATTERY.log` = latest full-suite verdict). |
 | `VERIFY.md` | the A/B record: C↔Go agreement protocol and measurements; byte-determinism. |
 | `DS.md` | the double-slit-on-free-cells campaign record (P1). |

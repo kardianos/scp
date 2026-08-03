@@ -1517,19 +1517,37 @@ static void write_fcs(int idx)
     snprintf(path, sizeof path, "%s/snap_%05d_t%.3f.fcs", P.snap_dir, idx, sim_t);
     FILE *f = fopen(path, "wb");
     if (!f) { fprintf(stderr, "# WARN snap open %s failed\n", path); return; }
-    uint32_t ver = 1, nc = (uint32_t)NC;
+    uint32_t ver = 2, nc = (uint32_t)NC;
     fwrite("FCS1", 1, 4, f);
     fwrite(&ver, 4, 1, f);
     fwrite(&nc, 4, 1, f);
     fwrite(&sim_t, 8, 1, f);
     fwrite(&P.L, 8, 1, f);
     for (int i = 0; i < NC; i++) {
-        float rec[9];
+        float rec[12];
         rec[0] = (float)px_[i]; rec[1] = (float)py_[i]; rec[2] = (float)pz_[i];
         rec[3] = (float)cr[i]; rec[4] = (float)Es[i]; rec[5] = (float)Em[i];
         rec[6] = (float)Ee[i]; rec[7] = (float)((Em[i] + flload[i]) / P.cap);
         rec[8] = (float)tag[i];
-        fwrite(rec, 4, 9, f);
+        rec[9] = (float)fa1[i]; rec[10] = (float)fa2[i]; rec[11] = (float)th2[i];
+        fwrite(rec, 4, 12, f);
+    }
+    /* link block: every non-free slot (dying slots have A=0, lem>0) */
+    uint32_t nl = 0;
+    for (int s = 0; s < NSLOT; s++) if (sst[s] != S_FREE) nl++;
+    fwrite(&nl, 4, 1, f);
+    for (int s = 0; s < NSLOT; s++) {
+        if (sst[s] == S_FREE) continue;
+        int i = sli[s], j = slj[s];
+        uint32_t ij[2] = { (uint32_t)i, (uint32_t)j };
+        double gf = gate_of(slq[s]*th2[i] - slq[s]*w2e[i]*sd[s]/P.C - slp[s]*th2[j]);
+        double gb = gate_of(slp[s]*th2[j] - slp[s]*w2e[j]*sd[s]/P.C - slq[s]*th2[i]);
+        float lr[4];
+        lr[0] = (float)sd[s]; lr[1] = (float)sA[s];
+        lr[2] = (float)(slem[2*s] + slem[2*s+1]);
+        lr[3] = (float)(gf * gb);
+        fwrite(ij, 4, 2, f);
+        fwrite(lr, 4, 4, f);
     }
     fclose(f);
 }
