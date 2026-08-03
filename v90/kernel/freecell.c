@@ -173,6 +173,16 @@ typedef struct {
      * 0.98*contact (droplet) — the U/D structural asymmetry (T6). */
     int    rings_kind, rings_nv, rings_branch;
     double rings_xU, rings_xD, rings_gapoff;
+    /* MOTION #28: two-blob collision (exp=blob2) */
+    double blob2_sep;               /* COM separation along x */
+    double blob2_kx;                /* opposing tilts +-kx toward each other */
+    /* MOTION #29: embedded object in the slit beam (slit_obj=1: dense
+     * blob at box centre; measure attenuation vs slit_obj=0) */
+    int    slit_obj;
+    double obj_amp, obj_sigma;
+    /* DS tier 1: condensing screen (slit_clicks=1: screen-strip cells
+     * become condensation-active; conversions there are CLICKS) */
+    int    slit_clicks;
     double rings_xcomp;             /* CQ3b: whole-ring load reduction, U-flavor rings */
     double rings_xcompD;            /* CQ3b: whole-ring load shift, D-flavor rings */
     double rings_sep;               /* kind 3: nucleon COM separation */
@@ -226,6 +236,9 @@ static void cfg_defaults(void)
     P.rings_kind = 1; P.rings_nv = 6; P.rings_branch = 0;
     P.rings_xU = 0.28; P.rings_xD = -1; P.rings_gapoff = 0;
     P.rings_xcomp = 0; P.rings_xcompD = 0; P.rings_sep = 9.0;
+    P.blob2_sep = 10.0; P.blob2_kx = 0;
+    P.slit_obj = 0; P.obj_amp = 1.2; P.obj_sigma = 1.6;
+    P.slit_clicks = 0;
     strcpy(P.snap_dir, "");
     strcpy(P.snap_file, "");
     P.snap_comp = 1;
@@ -333,6 +346,12 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "rings_gapoff")) P.rings_gapoff = atof(v);
     else if (!strcmp(k, "rings_xcomp")) P.rings_xcomp = atof(v);
     else if (!strcmp(k, "rings_xcompD")) P.rings_xcompD = atof(v);
+    else if (!strcmp(k, "blob2_sep")) P.blob2_sep = atof(v);
+    else if (!strcmp(k, "blob2_kx")) P.blob2_kx = atof(v);
+    else if (!strcmp(k, "slit_obj")) P.slit_obj = atoi(v);
+    else if (!strcmp(k, "obj_amp")) P.obj_amp = atof(v);
+    else if (!strcmp(k, "obj_sigma")) P.obj_sigma = atof(v);
+    else if (!strcmp(k, "slit_clicks")) P.slit_clicks = atoi(v);
     else if (!strcmp(k, "rings_sep")) P.rings_sep = atof(v);
     else if (!strcmp(k, "snap_dir")) { strncpy(P.snap_dir, v, 255); P.snap_dir[255] = 0; }
     else if (!strcmp(k, "snap_file")) { strncpy(P.snap_file, v, 255); P.snap_file[255] = 0; }
@@ -456,6 +475,7 @@ static double *sprq, *sscl;
 static double *fsum_;
 static unsigned char *tag;
 static unsigned char *pin;   /* apparatus fixture: pass D skips pinned cells */
+static unsigned char *scond; /* condensation-active override (DS tier 1 screen) */
 static double *fxb, *fyb, *fzb;      /* geometric force gather buffers  */
 static double *rngbuf, *nsnap, *th2s;
 
@@ -542,6 +562,10 @@ static int nfsamp = 0;
 static double ds_I[DS_NBIN];
 static double ds_expo = 0;
 static double *ds_cellI = NULL;   /* per-cell time-integrated Ee on the strip */
+static double b2_ax[512], b2_bx[512], b2_tx[512];
+#define CLICK_MAX 8192
+static double click_t[CLICK_MAX], click_y[CLICK_MAX], click_e[CLICK_MAX];
+static int nclick = 0;
 
 /* ------------------------------------------------------------------ */
 /* atoms at mode boundaries — cellfab.c:2739 verbatim                  */
@@ -621,6 +645,7 @@ static void alloc_all(int nc)
     fsum_ = malloc(nc * sizeof(double));
     tag = calloc(nc, 1);
     pin = calloc(nc, 1);
+    scond = calloc(nc, 1);
     fxb = malloc(nc * sizeof(double)); fyb = malloc(nc * sizeof(double)); fzb = malloc(nc * sizeof(double));
     rngbuf = malloc(6 * (size_t)nc * sizeof(double));
     nsnap = malloc(6 * (size_t)nc * sizeof(double));
@@ -1225,14 +1250,21 @@ static void step(void)
         if (cbeta[i] >= TWO_PI) { cbeta[i] -= TWO_PI; beat_fire = 1; }
         else if (cbeta[i] <= -TWO_PI) { cbeta[i] += TWO_PI; beat_fire = 1; }
         if (beat_fire) {
-            if (Ee[i] > P.e_cond) {
-                double d1 = P.f_conv * (Ee[i] - P.e_cond);
+            double econd_i = scond[i] ? 0.0 : P.e_cond;
+            if (Ee[i] > econd_i) {
+                double d1 = P.f_conv * (Ee[i] - econd_i);
                 double eF = A0eff * w1e[i] / TWO_PI;
                 double eD = A0eff * w2e[i] / TWO_PI;
                 d1 = atoms_fire(d1, eF, eD, &qcnvD[i]);
                 d1 = atoms_clamp(d1, 0.98 * Ee[i], eF, eD, &qcnvD[i]);
                 if (d1 > 0) {
                     cond_total += d1;
+                    if (scond[i] && nclick < CLICK_MAX) {
+                        click_t[nclick] = sim_t;
+                        click_y[nclick] = py_[i];
+                        click_e[nclick] = d1;
+                        nclick++;
+                    }
                     qatom_diag(1, atoms_w(w1e[i], w2e[i]), d1);
                     double dsp = P.s_pull * d1;
                     double avail = Es[i] - P.es_floor;
@@ -2199,6 +2231,15 @@ int main(int argc, char **argv)
                 th2[j] = fmod(th2[i] - we * d / P.C + 8.0 * TWO_PI, TWO_PI);
             }
         }
+        if (P.kx != 0 && !strcmp(P.exp, "ring")) {
+            /* MOTION #31: e3b-style tilt ON a bound object (drive
+             * detunes the bonds by design; pre-registered null) */
+            for (int k = 0; k < nvo; k++) {
+                int i = base_i + k;
+                th2[i] = fmod(th2[i] - P.kx * wr(px_[i] - cx0) + 8.0 * TWO_PI, TWO_PI);
+            }
+            printf("# SEED ring tilt: kx=%g applied on top of the chain\n", P.kx);
+        }
         printf("# SEED %s: n=%d x=%.4f d*=%.6f d_edge=%.6f edges=%d\n",
                P.exp, nvo, x, ds, de, truss_n);
     }
@@ -2343,6 +2384,40 @@ int main(int argc, char **argv)
         for (int i = 0; i < NC; i++) normals_transverse(i, 1, 0, 0);
         printf("# SEED pulse: amp=%g sigma=%g kx=%g (prealigned transverse)\n",
                P.amp, P.sigma, P.kx);
+    }
+    else if (!strcmp(P.exp, "blob2")) {
+        /* MOTION #28: two dense blobs with opposing tilts (approach),
+         * per-blob tags for COM/exchange meters; total dense COM =
+         * the Delta-p bookkeeping (centre-of-energy). */
+        double cxA = fold(cx0 - 0.5 * P.blob2_sep), cxB = fold(cx0 + 0.5 * P.blob2_sep);
+        int nA = 0, nB = 0;
+        for (int i = 0; i < NC; i++) {
+            double dxa = wr(px_[i]-cxA), dya = wr(py_[i]-cy0), dza = wr(pz_[i]-cz0);
+            double dxb = wr(px_[i]-cxB), dyb = wr(py_[i]-cy0), dzb = wr(pz_[i]-cz0);
+            double ga = P.amp * exp(-(dxa*dxa+dya*dya+dza*dza)/(2.0*P.sigma*P.sigma));
+            double gb = P.amp * exp(-(dxb*dxb+dyb*dyb+dzb*dzb)/(2.0*P.sigma*P.sigma));
+            double add = ga + gb;
+            if (add < 1e-4) continue;
+            if (Em[i] + add > 0.95 * P.cap) add = 0.95 * P.cap - Em[i];
+            if (add <= 0) continue;
+            Em[i] += add;
+            double pull = P.s_pull * add;
+            double avail = Es[i] - P.es_floor;
+            if (pull > avail) pull = avail > 0 ? avail : 0;
+            Es[i] -= pull;
+            Em[i] += pull;
+            /* tilt toward each other; phase ramp of the DOMINANT blob */
+            if (P.blob2_kx != 0) {
+                if (ga >= gb) th2[i] = fmod(-(P.blob2_kx * dxa) + 8.0*TWO_PI, TWO_PI);
+                else          th2[i] = fmod(+(P.blob2_kx * dxb) + 8.0*TWO_PI, TWO_PI);
+            }
+            if (ga >= gb && ga > 0.05 * P.amp) { tag[i] = 1; nA++; }
+            else if (gb > 0.05 * P.amp) { tag[i] = 2; nB++; }
+        }
+        if (P.blob2_kx != 0)
+            for (int i = 0; i < NC; i++) normals_transverse(i, 1, 0, 0);
+        printf("# SEED blob2: amp=%g sigma=%g sep=%g kx=%g tagged A=%d B=%d\n",
+               P.amp, P.sigma, P.blob2_sep, P.blob2_kx, nA, nB);
     }
     else if (!strcmp(P.exp, "rings")) {
         /* COMPOSITE.md CQ0/CQ3b/CQ9: groups of rings as many-celled
@@ -2608,6 +2683,33 @@ int main(int argc, char **argv)
             Ee[i] = fa1[i]*fa1[i] + fa2[i]*fa2[i];
         }
         for (int i = 0; i < NC; i++) normals_transverse(i, 1, 0, 0);
+        if (P.slit_obj) {
+            /* MOTION #29: dense object in the beam (between wall and
+             * screen or at centre for mask=3): occultation/cross-section */
+            int nobj = 0;
+            for (int i = 0; i < NC; i++) {
+                double dx = wr(px_[i]-cx0), dy = wr(py_[i]-cy0);
+                double add = P.obj_amp * exp(-(dx*dx+dy*dy)/(2.0*P.obj_sigma*P.obj_sigma));
+                if (add < 1e-4) continue;
+                if (Em[i] + add > 0.95 * P.cap) add = 0.95 * P.cap - Em[i];
+                if (add <= 0) continue;
+                Em[i] += add;
+                double pull = P.s_pull * add;
+                double avail = Es[i] - P.es_floor;
+                if (pull > avail) pull = avail > 0 ? avail : 0;
+                Es[i] -= pull;
+                Em[i] += pull;
+                if (add > 0.05 * P.obj_amp) { tag[i] = 1; nobj++; }
+            }
+            printf("# SEED slit_obj: amp=%g sigma=%g tagged=%d (dense occulter at centre)\n",
+                   P.obj_amp, P.obj_sigma, nobj);
+        }
+        if (P.slit_clicks) {
+            int nsc = 0;
+            for (int i = 0; i < NC; i++)
+                if (fabs(wr(px_[i] - P.slit_screenx)) <= 0.75) { scond[i] = 1; nsc++; }
+            printf("# SEED slit_clicks: %d screen cells condensation-active (e_cond=0 there)\n", nsc);
+        }
         double lam = P.kx != 0 ? TWO_PI / P.kx : 0;
         double D = P.slit_screenx - P.slit_wallx;
         printf("# SEED slit: src_x=%g sigma_x=%g sigma_y=%g kx=%g amp=%g -> lam_seed=%.4f\n",
@@ -2706,6 +2808,25 @@ int main(int argc, char **argv)
                 if (nfsamp < 512) {
                     fs_t[nfsamp] = sim_t;
                     fs_r[nfsamp] = comx; fs_y[nfsamp] = comy; fs_z[nfsamp] = comz;
+                    nfsamp++;
+                }
+            }
+            if (!strcmp(P.exp, "blob2")) {
+                double ax = 0, aw = 0, bx2 = 0, bw = 0, tx = 0, tw = 0;
+                for (int i2 = 0; i2 < NC; i2++) {
+                    double w = Em[i2] + flload[i2];
+                    double xx = cenx + wr(px_[i2] - cenx);
+                    if (w > 1e-12) { tx += w * xx; tw += w; }
+                    if (tag[i2] == 1 && w > 1e-12) { ax += w * xx; aw += w; }
+                    if (tag[i2] == 2 && w > 1e-12) { bx2 += w * xx; bw += w; }
+                }
+                double comA = aw > 0 ? ax / aw : 0, comB = bw > 0 ? bx2 / bw : 0;
+                printf(" | A=%.4f B=%.4f sepx=%.4f tot=%.5f EmA=%.3f EmB=%.3f",
+                       comA, comB, comB - comA, tw > 0 ? tx / tw : 0, aw, bw);
+                if (nfsamp < 512) {
+                    fs_t[nfsamp] = sim_t;
+                    b2_ax[nfsamp] = comA; b2_bx[nfsamp] = comB;
+                    b2_tx[nfsamp] = tw > 0 ? tx / tw : 0;
                     nfsamp++;
                 }
             }
@@ -2953,6 +3074,31 @@ int main(int argc, char **argv)
             double v = den != 0 ? (n * sxy - sx * sy) / den : 0;
             printf("# RESULT front_speed v=%.4f v_over_C=%.4f (second-half fit, n=%d)\n",
                    v, v / P.C, n);
+        }
+        if (!strcmp(P.exp, "blob2") && nfsamp >= 6) {
+            int h = nfsamp / 2;
+            /* approach speeds from the FIRST half (before contact) */
+            double sx=0,sxx=0,sya=0,syb=0,syt=0,sxa=0,sxb=0,sxt=0;
+            for (int k2 = 0; k2 < h; k2++) {
+                sx += fs_t[k2]; sxx += fs_t[k2]*fs_t[k2];
+                sya += b2_ax[k2]; sxa += fs_t[k2]*b2_ax[k2];
+                syb += b2_bx[k2]; sxb += fs_t[k2]*b2_bx[k2];
+                syt += b2_tx[k2]; sxt += fs_t[k2]*b2_tx[k2];
+            }
+            double den = h*sxx - sx*sx;
+            double vA = den != 0 ? (h*sxa - sx*sya)/den : 0;
+            double vB = den != 0 ? (h*sxb - sx*syb)/den : 0;
+            double vT = den != 0 ? (h*sxt - sx*syt)/den : 0;
+            printf("# RESULT blob2 vA=%.6f vB=%.6f closing=%.6f vTotalCOM=%.2e sep_final=%.4f\n",
+                   vA, vB, vA - vB, vT, b2_bx[nfsamp-1] - b2_ax[nfsamp-1]);
+        }
+        if (P.slit_clicks) {
+            double esum = 0;
+            for (int k2 = 0; k2 < nclick; k2++) esum += click_e[k2];
+            printf("# RESULT clicks n=%d e_sum=%.4f\n", nclick, esum);
+            for (int k2 = 0; k2 < nclick; k2++)
+                printf("# CLICK t=%.2f y=%.4f e=%.5f\n",
+                       click_t[k2], click_y[k2], click_e[k2]);
         }
         if (!strcmp(P.exp, "blob")) {
             double sh[8]; es_shells(sh);

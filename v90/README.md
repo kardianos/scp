@@ -127,16 +127,21 @@ law is not a knob.
 
 ## Stretch goals (user-requested, 2026-08-03)
 
-* **Pauli exclusion, demonstrated — if the framework can.** v89 tier-4 HOM
-  already measured fermionic exchange signs (boson dip / fermion peak,
-  g_b 0.42 < 0.5 < g_f 0.58, exchange registry). The exclusion claim is
-  stronger: two *identical* excitations refusing one state, distinct from
-  bosonic cap saturation (`cap` refuses everyone equally — that is NOT
-  exclusion). Design question first: what observable separates "excluded
-  because identical-antisymmetric" from "full"? Candidate: two identical
-  voices driven into one cavity vs two distinguishable ones — occupancy
-  statistics must differ with everything else equal. May need the S2
-  amplitude completion; record the design either way.
+* **Pauli exclusion — design recorded (2026-08-03), blocked on S2.**
+  v89 tier-4 HOM measured fermionic exchange signs (g_b 0.42 < 0.5 <
+  g_f 0.58, exchange registry). Exclusion is stronger: identical
+  excitations refusing one state, distinct from cap saturation (which
+  refuses everyone). **The design:** (1) observable = joint occupancy
+  statistics at a Y-junction cavity — P(both grains in one cell) for
+  *identical* vs *distinguishable* (different-pitch) grain pairs, all
+  else equal; Pauli = identical pairs anti-bunch in OCCUPANCY, not just
+  in coincidence. (2) Prerequisite: two-quantum amplitudes with an
+  exchange sign — the S2 completion's coherent channel plus an exchange
+  registry; a classical two-plane ψ cannot exclude (fields add).
+  (3) Rate-level precursor, runnable TODAY: verify cap-saturation
+  refusal is distinguishability-BLIND (same refusal for identical and
+  different-pitch arrivals) — the negative control that later separates
+  exclusion from fullness. Recorded; not yet run.
 * **Shells (incomplete harmonics), visualized.** Time-averaged field
   structure around a bound core, rendered volumetrically: `.fcs` sequences
   → volview time-average mode → radial node structure, if it exists, seen

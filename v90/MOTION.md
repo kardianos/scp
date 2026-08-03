@@ -19,10 +19,10 @@ scattering.
 | # | task | state |
 |---|---|---|
 | 1 | baseline quantification (this file, §below) | **measured 2026-08-03** |
-| 2 | two-blob collision apparatus (`exp=blob2`) + per-blob COM/exchange meters + total center-of-energy Δp bookkeeping | queued |
-| 3 | field–matter cross-section: aimed packet through an embedded object (occultation analog) | queued |
-| 4 | capture/fusion: two rings swept through the bond capture range (even+even parity predicted lockable) | queued |
-| 5 | driven-object transport: e3b tilt on bound objects (pre-registered expectation: null at rate level; blobs translate, objects hold) | queued |
+| 2 | two-blob collision apparatus (`exp=blob2`) + per-blob COM/exchange meters + total center-of-energy Δp bookkeeping | **executed (Round B)** |
+| 3 | field–matter cross-section: aimed packet through an embedded object (occultation analog) | **executed (Round B): opacity is unfilled capacity** |
+| 4 | capture/fusion: two rings swept through the bond capture range | **executed via COMPOSITE CQ1** (boundary lock, no fusion) |
+| 5 | driven-object transport: e3b tilt on bound objects | **executed (Round B): null confirmed** |
 
 ## Pre-registered predictions (before the new runs)
 
@@ -92,3 +92,57 @@ tri2 pair, vacuum, T=300, seed separations {2.2, 2.6, 3.0, 3.2, 3.6, 4.2}:
   frontier (task 5).
 
 Battery after the header-print change: ALL GREEN (40 bars).
+
+## Round B (2026-08-03): the queued tasks executed
+
+**#31 driven-object transport — null confirmed, with a plastic nuance.**
+Ring6 with the e3b tilt (kx=3.2): in vacuum, an EXACT null (com_dev
+0.003 over 200 t.u. — the drive only decoheres bonds). In a bath: a
+one-time plastic displacement (~0.7) during the tilt-induced
+reconfiguration (the ring stays connected, conn = 1.000, but is crushed
+— shape (1.13,1.13) → (0.43,0.66), retention 0.81), then bounded wander
+0.6–0.9 with no trend. **Blobs drift continuously under tilt; bound
+objects do not** — transport of structure remains an amplitude-completion
+question, now measured from both sides.
+
+**#29 field–matter cross-section — "opacity is unfilled capacity."**
+Three stages, one law: (1) conversions off (the optics regime,
+e_cond=99): a dense occulter is TRANSPARENT to the field (exposure
++5%/+3% vs control — the field couples to matter only through
+conversion). (2) Conversions on, object at capacity (amp 1.2 ≈ 0.95cap):
+still transparent — everything it converts it must re-shed (Δcond +0.5).
+(3) Conversions on, object with headroom (amp 0.5): absorption is real
+in the ledger — Δcond = **+4.9** (2.7% of the beam) into the object.
+The screen-integral shadow is swamped by ±3–5% geometry effects at this
+beam/object ratio (σy=14 beam vs σ=1.6 object) — angular-resolved
+apparatus is the follow-up. Deep link: detection is conversion
+(DOUBLESLIT §3), so **opacity is conversion capacity** — saturated
+matter cannot absorb.
+
+**#28 two-blob collision — approach is MERGING, not transport.**
+`exp=blob2` (two e3b-class blobs, sep=7, per-blob tags, per-blob and
+total dense-COM meters), driven (opposing tilts kx=3.2) vs undriven:
+
+* Closing speed ≈ **0.0021–0.0024 in BOTH** — the undriven control
+  closes as fast as the driven pair. Two adjacent blobs approach by
+  *profile merging* (each spreads into the other's territory; the
+  energy-weighted COMs drift together), not by ballistic motion. The
+  tilt adds only ~1e-3 net closing (sep at t=300: 6.235 driven vs
+  6.554 control, from 7.0−2σ overlap start ≈ 6.2 effective).
+* No bounce, no repulsion — dense mounds interpenetrate freely (they
+  are occupancy patterns, not bodies). Full merger extrapolates to
+  ~2500 t.u. at this rate.
+* Δp bookkeeping: total dense COM moves ≤ 7.8e-5/t.u. (driven) —
+  ~30× below the per-blob speeds — but the control shows 5.3e-4:
+  the dense-only COM is an INCOMPLETE center-of-energy (mode exchange
+  with field/space shifts it without momentum meaning). The full
+  all-modes center-of-energy meter is the queued refinement before any
+  Δp bar is set. Conservation at the FP floor in both runs.
+
+**Round B synthesis:** every mover at rate level is a *pattern* process
+— blobs merge and drift as occupancy waves; bound structures do not
+translate at all (one plastic kick, then bounded wander); the field
+couples to matter only through conversion, and absorption requires
+capacity headroom. Transport of STRUCTURE — the thing a collision
+experiment ultimately wants — is on the amplitude completion, from
+every direction we have measured.

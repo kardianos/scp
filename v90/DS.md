@@ -120,10 +120,28 @@ exits — Huygens wavelets at period λ — overlapping toward the screen.
 `interactive_selfcheck.png` = the `volview -i` orbit view of the same
 apparatus (wall slab + slit bridges + link graph).
 
-## What tier 1+ needs (not run yet)
+## Tier 1 — first pass (2026-08-03): clicks avoid the minima
 
-Single-quantum clicks = a *condensing screen* (localized conversion: the
-screen strip's cells given e_cond=0 while the open region keeps the optics
-override) riding the carried atoms machinery; then the eraser/delayed-choice
-analogs. The Go kernel does not implement `exp=slit` yet (C-only apparatus;
+Apparatus: the condensing screen (`slit_clicks=1`): screen-strip cells
+become condensation-active (per-cell e_cond override → 0) while the open
+region keeps the optics regime; a **click** = one quantized conversion
+event there (the carried atoms machinery fires in whole grains). Beam
+amp=2.0, T=60; logs `runs/ds/clicks_two.log`, `clicks_A.log`.
+
+* Two slits: **37 clicks**, and the predicted minima bands are EMPTY —
+  0 clicks in y ∈ [26,30] and [36,40] — while clusters sit on the
+  predicted maxima (5 near y=32, 6 near y=41.8).
+* Single slit (control): **37 clicks**, and the same bands FILL
+  (6 in [28,32], 2 in [36,40]) — no interference structure.
+
+The tier-1 discriminator (clicks rebuild the wave's loci; which-slit
+truncation removes them) is present at first-pass statistics. Honest
+scope: ~37 grains per run is far below v89's 223; tier 1 is NOT yet
+claimed — it needs a multi-seed grain harvest (≥200 clicks) and a
+quantitative loci test before joining the battery.
+
+## What later tiers need
+
+Eraser/delayed-choice analogs after tier 1 is green. The Go kernel does
+not implement `exp=slit`/`exp=rings`/`exp=blob2` yet (C-only apparatus;
 the A/B cross bars cover the shared experiments).
