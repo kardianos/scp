@@ -330,3 +330,32 @@ standing result: passes 1/5 (speed ≥ 0.003 AND cos ≥ 0.8).
   sit far below them.
 * Bath: z_live ≈ 15–20 settling, σ_d ≈ 14–17% (dart+quick-jam; S1-class
   annealing would sharpen — improvement path, not blocking).
+
+## 7. FCQ — the fifth-triangle charge campaign (user directive, same day)
+
+Full statement: FREECELL.md §10. Instrument exp=tri/tri2 (freecell.c);
+logs charge/runs/freecell_tri*.log. One-line record per run:
+
+* tri_uud_k0/x28/soft/x28soft: UUD bound-but-strained; best (x28soft)
+  locks 2 edges with the defect localized on the third; the fifth
+  detunes itself by ~4 tongue-widths via flight-load (tongue Γ/6) and
+  freezes.
+* tri_udd_*: UDD = open D-U-D chain as predicted (D-D channel never
+  born); carries the only steady spontaneous circulation (circ −0.027).
+* tri_stat_k0 (T=600): detuned-frozen state is stationary; flavors
+  x=(0.286,0.286,0.820) constant; drift 9e-16.
+* tri_k1/k2: three exact seed closures (Z3); branch not conserved under
+  the slip.
+* tri2_dk0/dk1: triangles repel to contact loss; Δk-independent to 1e-4
+  — charge is not attraction, measured.
+* tri_bath: bath unison channels bypass the direct fifth; flavor
+  identity dissolves (Em 0.70/0.70/2.09 → 0.67/1.40/0.80).
+* tri_flightcorr: flight-corrected seeds hold flavors and show the
+  transient PRECESSION — antisymmetric fifth-defect drift 0.016
+  rad/t.u. (the incomplete harmonic circulating) — then the frozen
+  attractor.
+
+Verdict: binding = geometry + unison backbone (primary); charge-like
+Z3 = exact 3-fold closure structure, sharp only with the amplitude
+completion — added to the S2-full acceptance list alongside e3b, p2,
+kappa_reac=1.

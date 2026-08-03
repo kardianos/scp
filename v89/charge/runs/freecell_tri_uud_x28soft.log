@@ -1,0 +1,37 @@
+# freecell — v89 free-cell substance test (exp=tri)
+# laws = laws_V2g VERBATIM (defaults): C=1 w1=1.65 w2=2.9 q_detune=1.2
+# gamma_res=0.25 gamma_res_m=0.1 p_gate=8 lock_floor=0.005 k_dep=1.2 k_dep_m=2 cap=2.5
+# e_s0=1 es_floor=0.05 e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
+# comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
+# quant_A0=1.15 quant_mode=2 (A0eff=1.15)
+# GEOMETRY (apparatus): cfac=1.15 k_rep=0.4 mob_geo=1 kappa_bond=1 freeze_geo=0
+# bath=0 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=16 dt=0.02 T=100 seed=20260802
+# JAM skipped (no bath)
+# SEED tri: kind=UUD ntri=1 xU=0.2800 xD=0.8367 wU=2.1707 wD=1.4471 (wD/wU=0.666667)
+# SEED tri: d*_UU=1.447299 d*_UD(m=2)=1.447299 d*_DD=2.170949 branch_k=0 doff=+0.000
+# SEED tri: contacts UU=1.6466 UD=1.5877 DD=1.5287 (DD edge OPEN (no contact))
+# INIT NC=3 slots=3 live=3 phi_nom=0.0016 z_live=2.00 dbar=1.4473 sigma_d=0.00% E0=6.036231884
+#
+# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+t=    0.00 +0.00e+00 | 0.0016  2.00      3    0      0      0 | 1.4473  0.00 | 0.00e+00 0.00e+00 |   3.4917 1.0000  0.3330  0.7664 1.000  2.00 | edge_dev mean=0.0000 max=0.0000 gg=0.3182 shape_dev=0.0000 xbar=0.4656 | T0 psi=(-3.142,+0.000,-0.000) ggm=0.000 circ=+0.0000 xUDD=(0.280,0.280,0.837)
+t=   10.00 +8.83e-16 | 0.0016  0.67      1    0      0      0 | 1.4731  0.00 | 6.33e-05 2.70e-03 |   3.4917 1.0000  0.3567  0.8364 0.667  0.67 | edge_dev mean=0.1013 max=0.1390 gg=0.5787 shape_dev=0.1021 xbar=0.4645 | T0 psi=(-0.032,-1.695,+0.470) ggm=0.001 circ=-0.0022 xUDD=(0.287,0.287,0.820)
+t=   20.00 +1.32e-15 | 0.0016  0.67      1    0      0      0 | 1.4711  0.00 | 5.35e-05 2.75e-03 |   3.4917 1.0000  0.3568  0.8360 0.667  0.67 | edge_dev mean=0.1005 max=0.1388 gg=0.4544 shape_dev=0.1014 xbar=0.4644 | T0 psi=(-0.028,-2.922,+1.699) ggm=0.000 circ=-0.0025 xUDD=(0.286,0.286,0.820)
+t=   30.00 +1.03e-15 | 0.0016  0.67      1    0      0      0 | 1.4695  0.00 | 4.21e-05 2.80e-03 |   3.4917 1.0000  0.3568  0.8355 0.667  0.67 | edge_dev mean=0.0997 max=0.1385 gg=0.3466 shape_dev=0.1005 xbar=0.4642 | T0 psi=(-0.025,+2.136,+2.927) ggm=0.000 circ=-0.0025 xUDD=(0.286,0.286,0.820)
+t=   40.00 +1.03e-15 | 0.0016  0.67      1    0      0      0 | 1.4739  0.00 | 7.37e-04 4.29e-03 |   3.4917 1.0000  0.3568  0.8359 0.667  0.67 | edge_dev mean=0.1011 max=0.1392 gg=0.3321 shape_dev=0.1019 xbar=0.4642 | T0 psi=(-0.034,+0.904,-2.133) ggm=0.000 circ=-0.0025 xUDD=(0.286,0.286,0.820)
+t=   50.00 +8.83e-16 | 0.0016  0.67      1    0      0      0 | 1.4736  0.00 | 6.42e-05 2.69e-03 |   3.4917 1.0000  0.3568  0.8367 0.667  0.67 | edge_dev mean=0.1018 max=0.1395 gg=0.3318 shape_dev=0.1026 xbar=0.4645 | T0 psi=(-0.034,-0.283,-0.946) ggm=0.132 circ=-0.0025 xUDD=(0.287,0.287,0.820)
+t=   60.00 +8.83e-16 | 0.0016  0.67      1    0      0      0 | 1.4718  0.00 | 5.10e-05 2.74e-03 |   3.4917 1.0000  0.3568  0.8362 0.667  0.67 | edge_dev mean=0.1009 max=0.1390 gg=0.3341 shape_dev=0.1017 xbar=0.4644 | T0 psi=(-0.030,-1.500,+0.275) ggm=0.006 circ=-0.0025 xUDD=(0.287,0.287,0.820)
+t=   70.00 +7.36e-16 | 0.0016  0.67      1    0      0      0 | 1.4700  0.00 | 4.12e-05 2.79e-03 |   3.4917 1.0000  0.3568  0.8357 0.667  0.67 | edge_dev mean=0.1000 max=0.1386 gg=0.3767 shape_dev=0.1008 xbar=0.4643 | T0 psi=(-0.026,-2.714,+1.493) ggm=0.000 circ=-0.0025 xUDD=(0.286,0.286,0.820)
+t=   80.00 +7.36e-16 | 0.0016  0.67      1    0      0      0 | 1.4716  0.00 | 3.72e-04 3.59e-03 |   3.4917 1.0000  0.3568  0.8356 0.667  0.67 | edge_dev mean=0.1004 max=0.1388 gg=0.5316 shape_dev=0.1012 xbar=0.4642 | T0 psi=(-0.029,+2.348,+2.711) ggm=0.000 circ=-0.0025 xUDD=(0.286,0.286,0.820)
+t=   90.00 +8.83e-16 | 0.0016  0.67      1    0      0      0 | 1.4739  0.00 | 6.31e-05 2.68e-03 |   3.4917 1.0000  0.3568  0.8368 0.667  0.67 | edge_dev mean=0.1019 max=0.1395 gg=0.5407 shape_dev=0.1028 xbar=0.4646 | T0 psi=(-0.034,+1.162,-2.391) ggm=0.000 circ=-0.0025 xUDD=(0.287,0.287,0.820)
+t=  100.00 +1.03e-15 | 0.0016  0.67      1    0      0      0 | 1.4716  0.00 | 5.51e-05 2.74e-03 |   3.4917 1.0000  0.3568  0.8362 0.667  0.67 | edge_dev mean=0.1008 max=0.1390 gg=0.3831 shape_dev=0.1016 xbar=0.4644 | T0 psi=(-0.029,-0.059,-1.166) ggm=0.055 circ=-0.0025 xUDD=(0.287,0.287,0.820)
+#
+# RESULT drift_rel 1.030e-15
+# RESULT births 0 deaths 0 beta_returns 0 beta_energy 0.000000e+00
+# RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
+# RESULT geometry phi_nom=0.0016 z_live=0.67 dbar=1.4716 sigma_d=0.0000
+# RESULT truss edge_dev_mean=0.100793 edge_dev_max=0.138996 shape=(0.0000,0.3610,0.4388) shape0=(0.0000,0.3491,0.3491)
+# EDGE 0 0-1 d=1.47160 dev=+0.02430 gg=0.9966 gpl=0.9832
+# EDGE 1 1-2 d=1.58625 dev=+0.13895 gg=0.0000 gpl=0.9600
+# EDGE 2 2-0 d=1.58627 dev=+0.13897 gg=0.1528 gpl=0.9629
+# RESULT tri0 psi=(-0.0293,-0.0585,-1.1661) ggm=0.0552 circ=-0.00250 Em=(0.5154,0.5154,2.0505)

@@ -147,6 +147,8 @@ typedef struct {
      * tri_branch = the Z3 phase branch k seeded on the D voice. */
     int    tri_kind, tri_branch;
     double tri_xU, tri_xD, tri_doff;
+    double tri2_sep;                /* COM separation of the second triangle */
+    int    tri2_k2;                 /* Z3 branch of the second triangle */
     double oct_x, oct_doff;
     double shear_eps, shear_t;      /* instantaneous deviatoric strain test */
     char snap_dir[256];
@@ -186,6 +188,7 @@ static void cfg_defaults(void)
     P.pair_pp = 1; P.pair_qq = 1; P.seedlock = 1;
     P.ring_n = 6; P.ring_x = 0.325; P.ring_doff = 0.0;
     P.tri_kind = 0; P.tri_branch = 0; P.tri_xU = 0.20; P.tri_xD = -1; P.tri_doff = 0;
+    P.tri2_sep = 2.6; P.tri2_k2 = 0;
     P.oct_x = 0.325; P.oct_doff = 0.0;
     P.shear_eps = 0; P.shear_t = 0;
     strcpy(P.snap_dir, "");
@@ -266,6 +269,8 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "tri_xU")) P.tri_xU = atof(v);
     else if (!strcmp(k, "tri_xD")) P.tri_xD = atof(v);
     else if (!strcmp(k, "tri_doff")) P.tri_doff = atof(v);
+    else if (!strcmp(k, "tri2_sep")) P.tri2_sep = atof(v);
+    else if (!strcmp(k, "tri2_k2")) P.tri2_k2 = atoi(v);
     else if (!strcmp(k, "ring_x")) P.ring_x = atof(v);
     else if (!strcmp(k, "ring_doff")) P.ring_doff = atof(v);
     else if (!strcmp(k, "oct_x")) P.oct_x = atof(v);
@@ -1862,7 +1867,8 @@ int main(int argc, char **argv)
         int base_i = nb;
         truss_n = 0;
         for (int t = 0; t < ntri; t++) {
-            double ox = t == 0 ? 0.0 : 4.5;          /* second triangle offset */
+            double ox = t == 0 ? 0.0 : P.tri2_sep;
+            int kbr = t == 0 ? P.tri_branch : P.tri2_k2;
             int v0 = base_i + 3 * t;
             for (int kk = 0; kk < 3; kk++) {
                 int i = v0 + kk;
@@ -1894,7 +1900,7 @@ int main(int argc, char **argv)
                     th2[v0] = frand() * TWO_PI;
                     th2[v0+1] = fmod(th2[v0] - wU * de + 8.0 * TWO_PI, TWO_PI);
                     th2[v0+2] = fmod((2.0 * (th2[v0+1] - wU * dUD)
-                                      + TWO_PI * P.tri_branch) / 3.0
+                                      + TWO_PI * kbr) / 3.0
                                      + 8.0 * TWO_PI, TWO_PI);
                 }
                 truss_e[truss_n][0] = v0;     truss_e[truss_n][1] = v0 + 1;
@@ -1919,7 +1925,7 @@ int main(int argc, char **argv)
                 if (P.seedlock) {
                     th2[v0] = frand() * TWO_PI;
                     th2[v0+1] = fmod((2.0 * (th2[v0] - wU * dUD)
-                                      + TWO_PI * P.tri_branch) / 3.0
+                                      + TWO_PI * kbr) / 3.0
                                      + 8.0 * TWO_PI, TWO_PI);
                     th2[v0+2] = fmod(th2[v0+1] - wD * dDD + 8.0 * TWO_PI, TWO_PI);
                 }

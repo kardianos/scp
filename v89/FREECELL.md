@@ -453,6 +453,7 @@ them:
 | `harmfrust.c` / `charge/runs/harmfrust.log` | consonance between cells **refuted**, degrees 2–12 |
 | `harmgrow.c` / `charge/runs/harmgrow.log` | ring size staircase — real but **one impurity in a uniform bath** |
 | `freecell.c` / `charge/runs/freecell_*.log` | **the substance campaign (§9)**: bond, parity species, yield, embedded ring, blob at density, dilute fragmentation, Tier-A pulse, e3b panel |
+| `freecell.c` exp=tri/tri2 / `charge/runs/freecell_tri*.log` | **the FCQ charge campaign (§10)**: UUD/UDD from the interval ladder, Z3 closure, fifth precession, bath flavor-scrambling |
 | `FREECELL_LOG.md` | campaign running record: pre-registered predictions, derivations, per-run numbers, engineering record |
 | `deriv_bond.py` / `charge/runs/deriv_bond_results.log` | exact K_b, capture, δ_eq, honest 2-cell integration, vacuum/crumb inertness, μ-criterion re-check, rigidity counts |
 | `DESIGN_2026-08-02.md` | the full running record, including every withdrawal |
@@ -699,3 +700,82 @@ channels; FP64 ledger; per-step kick caps as integrator guards.
   and ring results are parameter-derived and should transfer, but the
   ratchet's multi-seed discipline applies before any of this enters a
   gate.
+
+---
+
+## 10. FCQ — CHARGE AS THE INCOMPLETE HARMONIC (user directive, 2026-08-02)
+
+**Directive:** investigate multiple circulating charge objects, where
+charge is not attraction but a secondary product of the incomplete
+harmonic that produces quark binding (UUD/UDD). **Instrument:**
+`freecell.c` exp=tri/tri2; logs `charge/runs/freecell_tri*.log`.
+
+### 10.1 The objects, from the law's own arithmetic
+
+The mixed-interval triangle {3:2, 2:3, 1:1} — the odd-cycle closer of
+prestress THEORY.md and the ℤ₃ cycle of CHARGE.md — is realised as
+voices at pitches (w, w, 2w/3), i.e. literally **UUD**: two U at
+x_U, one D at the exact fifth load x_D = (0.5 + 1.8·x_U)/1.2 (e9's own
+pair values at x_U=0.20). The ladder identity S_UD = 2w_U + 3w_D = 4w_U
+makes d*_UD(m=2) = d*_UU(m=1) EXACTLY: **UUD is equilateral by
+construction. UDD is isoceles, and its D–D edge (d* = 1.5·π/w_U)
+exceeds contact range: UDD is an OPEN D–U–D chain** — predicted from
+the seeding arithmetic and confirmed (the D–D channel is never born;
+freecell_tri_udd_*.log). Mass ordering M(UDD) > M(UUD) comes out with
+the right sign. The seeding algebra shows all three ℤ₃ phase branches
+k = 0,1,2 close the triangle EXACTLY (zero comma — the incompleteness
+is not a defect of closure but a 3-fold multi-valuedness of the lift).
+
+### 10.2 What was measured
+
+* **Binding without attraction.** The composite is geometrically
+  confined (all three cells stay bound; shape stable; conn 1) with the
+  unison U–U backbone phase-locked throughout (ψ_UU ≈ −0.03 in every
+  run). Flavors persist in vacuum: x = (0.286, 0.286, 0.820) constant
+  over 600 t.u. (freecell_tri_stat_k0.log). Nothing attracts — two
+  adjacent UUD triangles push apart to contact loss and decouple, with
+  ZERO dependence on relative branch (sep 3.0093 vs 3.0092 for Δk=0 vs
+  1; freecell_tri2_dk*.log): charge is not a force here.
+* **The fifth bonds cannot lock at rate level.** The 3:2 tongue is
+  Γ_m/6 ≈ 0.017 wide in pitch, and flight-load shifts x_D by ~0.017 in
+  the first steps — the fifth detunes itself by ~4 tongue-widths and
+  freezes (gates → 0, transport dead, geometry stuck at the stretched
+  repulsion balance). V2z retired the rate-level pitch bias, so nothing
+  at rate level restores a drifting fifth; the derived amplitude-level
+  restoring (s2/, window ~2Γ_b) is precisely what is missing.
+* **The incomplete harmonic circulates.** Flight-corrected seeds (the
+  prestress flight-load fixed-point trick) hold the flavors and produce
+  a transient PRECESSION: the two fifth defects drift apart in exact
+  antisymmetry at ~0.016 rad/t.u. (ψ₁+ψ₂ conserved, difference winding)
+  — a slip current of the unresolved fifth around the triangle — before
+  settling into the detuned-frozen attractor
+  (freecell_tri_flightcorr.log). The open UDD chain carries the only
+  steady spontaneous circulation found (circ −0.027).
+* **Bath contact scrambles flavor.** In-bath, wide unison channels via
+  bath cells BYPASS the narrow direct fifth: the UUD identity dissolves
+  (Em (0.70,0.70,2.09) → (0.67,1.40,0.80), accumulated circulation
+  −1.05; freecell_tri_bath.log). Flavor selectivity by interval alone
+  does not survive an incoherent unison environment.
+* **The ℤ₃ branch is exact at seed, scrambled by the slip.** k = 0,1,2
+  seed three distinct exact closures; under the fifth's renegotiation
+  the branch is not conserved as a sharp quantum number in this
+  rate-level kernel.
+
+### 10.3 Where this leaves charge
+
+Exactly where the user's framing points: binding is geometric + unison
+(primary); the fifth content is a strained, never-resolved, slowly
+circulating incompleteness (the D voice cannot be in tune with both U
+partners' flight-loaded reality at once through a Γ/6 tongue); and the
+charge-like ℤ₃ label is real structure (three exact closures; the
+in-kernel Q11–Q13 arc already measured pinned fractional strain and the
+mobile ℤ₃ wall at −2π/3 where the foam holds d) that becomes SHARP only
+with the amplitude completion. **Sharp charge therefore joins tilted
+transport (e3b), radiation pressure (p2), and kappa_reac=1 as an
+S2-full/amplitude-completion acceptance criterion** — and the fifth's
+Γ/6 tongue is the quantitative reason confinement-with-flavor needs
+coherent (amplitude-level) exchange, not rate-level trickle.
+
+Species note recorded: UUD closed-equilateral vs UDD open-chain is a
+structural nucleon-analog asymmetry derived purely from the interval
+ladder and contact geometry, at zero new constants.
