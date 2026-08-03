@@ -160,6 +160,13 @@ typedef struct {
     int    tri2_k2;                 /* Z3 branch of the second triangle */
     double oct_x, oct_doff;
     double shear_eps, shear_t;      /* instantaneous deviatoric strain test */
+    /* DS — double slit on the free substrate (v90 P1; DS.md). Wall is
+     * CARVED VACUUM (no cells = no contact = no transport); 2D bath. */
+    double slit_wallx, slit_th, slit_sep, slit_hw;
+    double slit_screenx, slit_srcx, slit_sy;
+    double slit_t0, slit_t1;        /* screen gate window */
+    double slit_pinw;               /* fixture half-width about the wall plane */
+    int    slit_mask;               /* 0 both, 1 A only, 2 B only, 3 no wall */
     char snap_dir[256];
 } Cfg;
 
@@ -200,6 +207,10 @@ static void cfg_defaults(void)
     P.tri2_sep = 2.6; P.tri2_k2 = 0;
     P.oct_x = 0.325; P.oct_doff = 0.0;
     P.shear_eps = 0; P.shear_t = 0;
+    P.slit_wallx = 16.0; P.slit_th = 1.6; P.slit_sep = 9.0; P.slit_hw = 2.0;
+    P.slit_screenx = 28.0; P.slit_srcx = 8.0; P.slit_sy = 10.0;
+    P.slit_t0 = 16.0; P.slit_t1 = 60.0; P.slit_mask = 0;
+    P.slit_pinw = 3.0;
     strcpy(P.snap_dir, "");
 }
 
@@ -286,6 +297,17 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "oct_doff")) P.oct_doff = atof(v);
     else if (!strcmp(k, "shear_eps")) P.shear_eps = atof(v);
     else if (!strcmp(k, "shear_t")) P.shear_t = atof(v);
+    else if (!strcmp(k, "slit_wallx")) P.slit_wallx = atof(v);
+    else if (!strcmp(k, "slit_th")) P.slit_th = atof(v);
+    else if (!strcmp(k, "slit_sep")) P.slit_sep = atof(v);
+    else if (!strcmp(k, "slit_hw")) P.slit_hw = atof(v);
+    else if (!strcmp(k, "slit_screenx")) P.slit_screenx = atof(v);
+    else if (!strcmp(k, "slit_srcx")) P.slit_srcx = atof(v);
+    else if (!strcmp(k, "slit_sy")) P.slit_sy = atof(v);
+    else if (!strcmp(k, "slit_t0")) P.slit_t0 = atof(v);
+    else if (!strcmp(k, "slit_t1")) P.slit_t1 = atof(v);
+    else if (!strcmp(k, "slit_mask")) P.slit_mask = atoi(v);
+    else if (!strcmp(k, "slit_pinw")) P.slit_pinw = atof(v);
     else if (!strcmp(k, "snap_dir")) { strncpy(P.snap_dir, v, 255); P.snap_dir[255] = 0; }
     else fprintf(stderr, "# WARN unknown key %s\n", k);
 }
@@ -405,6 +427,7 @@ static double *req1, *scl1;
 static double *sprq, *sscl;
 static double *fsum_;
 static unsigned char *tag;
+static unsigned char *pin;   /* apparatus fixture: pass D skips pinned cells */
 static double *fxb, *fyb, *fzb;      /* geometric force gather buffers  */
 static double *rngbuf, *nsnap, *th2s;
 
@@ -487,6 +510,10 @@ static double cenx, ceny, cenz;
 static long ncand_last = 0;
 static double fs_t[512], fs_r[512], fs_y[512], fs_z[512];
 static int nfsamp = 0;
+#define DS_NBIN 96
+static double ds_I[DS_NBIN];
+static double ds_expo = 0;
+static double *ds_cellI = NULL;   /* per-cell time-integrated Ee on the strip */
 
 /* ------------------------------------------------------------------ */
 /* atoms at mode boundaries — cellfab.c:2739 verbatim                  */
@@ -565,6 +592,7 @@ static void alloc_all(int nc)
     sprq = malloc(nc * sizeof(double)); sscl = malloc(nc * sizeof(double));
     fsum_ = malloc(nc * sizeof(double));
     tag = calloc(nc, 1);
+    pin = calloc(nc, 1);
     fxb = malloc(nc * sizeof(double)); fyb = malloc(nc * sizeof(double)); fzb = malloc(nc * sizeof(double));
     rngbuf = malloc(6 * (size_t)nc * sizeof(double));
     nsnap = malloc(6 * (size_t)nc * sizeof(double));
@@ -1072,6 +1100,7 @@ static void step(void)
         for (int i = 0; i < NC; i++) { fxb[i] = fyb[i] = fzb[i] = 0; }
         for (int i = 0; i < NC; i++) {
             double dxx = 0, dyy = 0, dzz = 0;
+            if (pin[i]) { fxb[i] = fyb[i] = fzb[i] = 0; continue; }
             for (int q = cls_[i]; q < cls_[i + 1]; q++) {
                 int s = clidx[q];
                 double sgn = (sli[s] == i) ? -1.0 : 1.0;
@@ -1439,6 +1468,72 @@ static int build_bath(double *bx, double *by, double *bz, int nmax)
     return n;
 }
 
+/* 2D dart throw in the z = L/2 plane (DS medium; coplanar dynamics is
+ * exact — every force the kernel applies to coplanar cells is in-plane) */
+static int build_bath2d(double *bx, double *by, double *bz, int nmax)
+{
+    int gn = (int)ceil(P.L / P.dmin); if (gn < 1) gn = 1;
+    int nbins = gn * gn;
+    int *head = malloc(nbins * sizeof(int));
+    int *nxt = malloc(nmax * sizeof(int));
+    for (int b = 0; b < nbins; b++) head[b] = -1;
+    int n = 0, fails = 0;
+    double d2min = P.dmin * P.dmin;
+    while (fails < 30000 && n < nmax) {
+        double x = frand() * P.L, y = frand() * P.L;
+        int bx2 = (int)(x / P.L * gn), by2 = (int)(y / P.L * gn);
+        if (bx2 >= gn) bx2 = gn - 1;
+        if (by2 >= gn) by2 = gn - 1;
+        int ok = 1;
+        for (int ax = bx2 - 1; ax <= bx2 + 1 && ok; ax++)
+            for (int ay = by2 - 1; ay <= by2 + 1 && ok; ay++) {
+                int wx = (ax + gn) % gn, wy2 = (ay + gn) % gn;
+                for (int q = head[wx * gn + wy2]; q >= 0; q = nxt[q]) {
+                    double dx = wr(bx[q] - x), dy = wr(by[q] - y);
+                    if (dx*dx + dy*dy < d2min) { ok = 0; break; }
+                }
+            }
+        if (!ok) { fails++; continue; }
+        bx[n] = x; by[n] = y; bz[n] = 0.5 * P.L;
+        int b = bx2 * gn + by2;
+        nxt[n] = head[b]; head[b] = n;
+        n++; fails = 0;
+    }
+    free(head); free(nxt);
+    if (P.bath_frac < 1.0) {
+        int m = 0;
+        for (int i = 0; i < n; i++)
+            if (frand() < P.bath_frac) { bx[m] = bx[i]; by[m] = by[i]; bz[m] = bz[i]; m++; }
+        n = m;
+    }
+    return n;
+}
+
+/* .fcs snapshot (FCS1, little-endian; same format as the Go kernel and
+ * cmd/volview). Pure output — consumes no RNG. */
+static void write_fcs(int idx)
+{
+    char path[512];
+    snprintf(path, sizeof path, "%s/snap_%05d_t%.3f.fcs", P.snap_dir, idx, sim_t);
+    FILE *f = fopen(path, "wb");
+    if (!f) { fprintf(stderr, "# WARN snap open %s failed\n", path); return; }
+    uint32_t ver = 1, nc = (uint32_t)NC;
+    fwrite("FCS1", 1, 4, f);
+    fwrite(&ver, 4, 1, f);
+    fwrite(&nc, 4, 1, f);
+    fwrite(&sim_t, 8, 1, f);
+    fwrite(&P.L, 8, 1, f);
+    for (int i = 0; i < NC; i++) {
+        float rec[9];
+        rec[0] = (float)px_[i]; rec[1] = (float)py_[i]; rec[2] = (float)pz_[i];
+        rec[3] = (float)cr[i]; rec[4] = (float)Es[i]; rec[5] = (float)Em[i];
+        rec[6] = (float)Ee[i]; rec[7] = (float)((Em[i] + flload[i]) / P.cap);
+        rec[8] = (float)tag[i];
+        fwrite(rec, 4, 9, f);
+    }
+    fclose(f);
+}
+
 static void jam_settle(void)
 {
     /* pure repulsion to jamming (LIVEFAB relax), geometry only.
@@ -1653,7 +1748,9 @@ int main(int argc, char **argv)
     double *by = malloc(nmax * sizeof(double));
     double *bz = malloc(nmax * sizeof(double));
     int nb = 0;
-    if (P.bath) nb = build_bath(bx, by, bz, nmax);
+    if (P.bath) nb = !strcmp(P.exp, "slit")
+        ? build_bath2d(bx, by, bz, nmax)
+        : build_bath(bx, by, bz, nmax);
 
     int extra = 0;
     if (!strcmp(P.exp, "pair") && !P.bath) extra = 2;
@@ -1992,6 +2089,70 @@ int main(int argc, char **argv)
         printf("# SEED pulse: amp=%g sigma=%g kx=%g (prealigned transverse)\n",
                P.amp, P.sigma, P.kx);
     }
+    else if (!strcmp(P.exp, "slit")) {
+        /* DS tier-0 (DS.md): carve the vacuum wall out of the jammed 2D
+         * bath (except the slit bridges), then seed a quasi-plane field
+         * packet. Optics regime declared in DS.md: q_detune=0 e_cond=99
+         * (given on the command line, printed in the header above). */
+        double yA = cy0 - 0.5 * P.slit_sep, yB = cy0 + 0.5 * P.slit_sep;
+        int m = 0;
+        for (int i = 0; i < nb; i++) {
+            int inwall = fabs(wr(px_[i] - P.slit_wallx)) < 0.5 * P.slit_th;
+            int inA = fabs(py_[i] - yA) < P.slit_hw;
+            int inB = fabs(py_[i] - yB) < P.slit_hw;
+            int keep = 1;
+            if (P.slit_mask != 3 && inwall) {
+                keep = 0;
+                if (P.slit_mask == 0 && (inA || inB)) keep = 1;
+                if (P.slit_mask == 1 && inA) keep = 1;
+                if (P.slit_mask == 2 && inB) keep = 1;
+            }
+            if (keep) {
+                if (m != i) {
+                    px_[m]=px_[i]; py_[m]=py_[i]; pz_[m]=pz_[i];
+                    cr0[m]=cr0[i]; cr[m]=cr[i];
+                    n1x[m]=n1x[i]; n1y[m]=n1y[i]; n1z[m]=n1z[i];
+                    n2x[m]=n2x[i]; n2y[m]=n2y[i]; n2z[m]=n2z[i];
+                    th2[m]=th2[i]; cbeta[m]=cbeta[i];
+                    Es[m]=Es[i]; Em[m]=Em[i]; Ee[m]=Ee[i];
+                    fa1[m]=fa1[i]; fa2[m]=fa2[i];
+                }
+                m++;
+            }
+        }
+        printf("# CARVE slit wall: removed %d cells (mask=%d wall_x=%g th=%g slits y=%.2f/%.2f hw=%g)\n",
+               nb - m, P.slit_mask, P.slit_wallx, P.slit_th, yA, yB, P.slit_hw);
+        nb = m; NC = nb;
+        /* THE WALL IS A FIXTURE (v89 DS precedent: the wall was imposed
+         * apparatus — a detuned mute). A carved vacuum gap in the LIVE
+         * foam heals in ~15 t.u. (measured, DS.md: the substrate defends
+         * no shape without energy) — so the face cells are pinned: pass D
+         * skips them; every other sector still runs on them. */
+        int npin = 0;
+        if (P.slit_mask != 3)
+            for (int i = 0; i < NC; i++)
+                if (fabs(wr(px_[i] - P.slit_wallx)) < P.slit_pinw) { pin[i] = 1; npin++; }
+        printf("# PIN wall fixture: %d cells within +-%g of x=%g\n",
+               npin, P.slit_pinw, P.slit_wallx);
+        /* quasi-plane packet: Gaussian sigma_x = P.sigma, sigma_y = slit_sy */
+        for (int i = 0; i < NC; i++) {
+            double dx = wr(px_[i] - P.slit_srcx), dy = wr(py_[i] - cy0);
+            double g = exp(-dx*dx / (2.0 * P.sigma * P.sigma)
+                           - dy*dy / (2.0 * P.slit_sy * P.slit_sy));
+            if (g < 1e-8) continue;
+            double tilt = -(P.kx * dx);
+            fa1[i] += sqrt(P.amp * g) * cos(tilt);
+            fa2[i] += sqrt(P.amp * g) * sin(tilt);
+            Ee[i] = fa1[i]*fa1[i] + fa2[i]*fa2[i];
+        }
+        for (int i = 0; i < NC; i++) normals_transverse(i, 1, 0, 0);
+        double lam = P.kx != 0 ? TWO_PI / P.kx : 0;
+        double D = P.slit_screenx - P.slit_wallx;
+        printf("# SEED slit: src_x=%g sigma_x=%g sigma_y=%g kx=%g amp=%g -> lam_seed=%.4f\n",
+               P.slit_srcx, P.sigma, P.slit_sy, P.kx, P.amp, lam);
+        printf("# SEED slit loci: D=%.2f s=%.2f dy_smallangle=%.3f screen_x=%g gate=[%g,%g]\n",
+               D, P.slit_sep, lam * D / P.slit_sep, P.slit_screenx, P.slit_t0, P.slit_t1);
+    }
     /* exp=bath: nothing to seed */
 
     if (P.noise_amp > 0) {
@@ -2142,8 +2303,25 @@ int main(int argc, char **argv)
             }
             printf("\n");
         }
+        if (P.snap_every > 0 && P.snap_dir[0] && st % P.snap_every == 0)
+            write_fcs(st / P.snap_every);
         if (st == steps) break;
         step();
+        if (!strcmp(P.exp, "slit")) {
+            double tn = (st + 1) * P.dt;
+            if (tn >= P.slit_t0 && tn <= P.slit_t1) {
+                if (!ds_cellI) ds_cellI = calloc(NC, sizeof(double));
+                for (int i = 0; i < NC; i++) {
+                    if (fabs(wr(px_[i] - P.slit_screenx)) > 0.75) continue;
+                    int b = (int)(py_[i] / P.L * DS_NBIN);
+                    if (b < 0) b = 0;
+                    if (b >= DS_NBIN) b = DS_NBIN - 1;
+                    ds_I[b] += Ee[i] * P.dt;
+                    ds_cellI[i] += Ee[i] * P.dt;
+                    ds_expo += Ee[i] * P.dt;
+                }
+            }
+        }
     }
 
     /* ---------------- final report ---------------- */
@@ -2255,6 +2433,20 @@ int main(int argc, char **argv)
                 printf("# RESULT blob_drift speed=%.6f cos_to_kdir=%.4f v=(%.2e,%.2e,%.2e)\n",
                        sp, sp > 0 ? vx / sp : 0, vx, vy, vz);
             }
+        }
+        if (!strcmp(P.exp, "slit")) {
+            printf("# RESULT ds exposure=%.6f gate=[%g,%g] screen_x=%g nbin=%d\n",
+                   ds_expo, P.slit_t0, P.slit_t1, P.slit_screenx, DS_NBIN);
+            for (int b = 0; b < DS_NBIN; b++)
+                printf("# SCREEN y=%.4f I=%.8f\n",
+                       (b + 0.5) * P.L / DS_NBIN, ds_I[b]);
+            /* per-cell record: the analyzer smooths these (foam speckle
+             * is per-cell; the r(y) ratio cancels what smoothing misses) */
+            if (ds_cellI)
+                for (int i = 0; i < NC; i++)
+                    if (ds_cellI[i] > 0)
+                        printf("# SCREENCELL y=%.4f x=%.4f I=%.8f\n",
+                               py_[i], px_[i], ds_cellI[i]);
         }
     }
     return 0;

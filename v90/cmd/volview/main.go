@@ -192,6 +192,7 @@ func main() {
 	gamma := flag.Float64("gamma", 0.7, "transfer gamma")
 	out := flag.String("out", "", "output png (single input)")
 	outdir := flag.String("outdir", ".", "output dir (directory input)")
+	avg := flag.Bool("avg", false, "time-average the channel over all frames (per cell index, positions from the last frame) — the shell/response-structure view")
 	flag.Parse()
 	if flag.NArg() < 1 {
 		fmt.Fprintln(os.Stderr, "usage: volview [flags] file.fcs|dir")
@@ -214,6 +215,56 @@ func main() {
 		sort.Strings(files)
 	} else {
 		files = []string{arg}
+	}
+	if *avg && len(files) > 1 {
+		var acc *frame
+		nf := 0
+		for _, fp := range files {
+			f, err := readFCS(fp)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, err)
+				os.Exit(1)
+			}
+			if acc == nil {
+				acc = f
+			} else if len(f.cells) == len(acc.cells) {
+				for i := range f.cells {
+					f.cells[i].es += acc.cells[i].es
+					f.cells[i].em += acc.cells[i].em
+					f.cells[i].ee += acc.cells[i].ee
+					f.cells[i].xl += acc.cells[i].xl
+				}
+				acc = f // positions/r/tag ride the newest frame
+			} else {
+				fmt.Fprintf(os.Stderr, "skip %s: cell count changed\n", fp)
+				continue
+			}
+			nf++
+		}
+		inv := float32(1.0 / float64(nf))
+		for i := range acc.cells {
+			acc.cells[i].es *= inv
+			acc.cells[i].em *= inv
+			acc.cells[i].ee *= inv
+			acc.cells[i].xl *= inv
+		}
+		img := render(acc, *view, *axis, *px, *gamma)
+		op := *out
+		if op == "" {
+			op = filepath.Join(*outdir, fmt.Sprintf("avg_%dframes_%s.png", nf, *view))
+		}
+		w, err := os.Create(op)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		if err := png.Encode(w, img); err != nil {
+			fmt.Fprintln(os.Stderr, err)
+			os.Exit(1)
+		}
+		w.Close()
+		fmt.Printf("# volview avg of %d frames -> %s\n", nf, op)
+		return
 	}
 	for _, fp := range files {
 		f, err := readFCS(fp)

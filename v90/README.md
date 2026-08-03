@@ -1,7 +1,10 @@
-# v90 — the carried set, in Go
+# v90 — the carried set
 
 v90 carries forward from v89 **exactly three working methods and nothing
-else**, re-hosted in one Go codebase, and then does new physics on them.
+else** — the free-cell substrate, local-clock execution, and the battery
+discipline — with **C as the kernel of record** and **Go replacing python**
+for the harness, viewer, and orchestration (plus a verified Go-kernel
+experiment beside the C one). New physics happens on this carried set.
 Everything else in v89 stays where it is, as the record and the reference.
 The pre-v89 ban is unchanged and permanent.
 
@@ -128,6 +131,20 @@ law is not a knob.
   directly. Pairs with P3 (the shell probe) and needs no new physics to
   *attempt* — a bound core in a live bath and patience.
 
+  **First look (2026-08-03, `runs/shell/`):** the toolchain works
+  end-to-end (`volview -avg`), and the rate-level physics sorts cleanly:
+  a **unison ring6** in a bath radiates *exactly zero* field (det=0 ⇒
+  roughness silent; and sub-atom demands never fire — the atoms machinery
+  keeps consonant matter dark) while leaking dense energy into a visible
+  Em atmosphere (`shell_ring6_avg_em.png`); the **seeded-exact UUD
+  triangle is also silent** (its fifth is exact by construction —
+  consonant); the **blob radiates** (rough 1.93 in 60 t.u. — many random
+  detunings) and shows a smooth time-averaged **field halo**
+  (`shell_blob_avg_ee.png`) — diffuse, no radial nodes at this apparatus.
+  So at rate level the field atmosphere is sourced by *detune*, not by
+  binding; node structure, if it exists, likely needs a driven/response
+  setup (P3) or the amplitude completion.
+
 ## Working rules (carried verbatim)
 
 Derive the criterion before the sweep; print the configuration beside every
@@ -143,7 +160,7 @@ run. State where every model's state lives and check it against constraint
 | P0 port | **done** — C kernel of record + Go experiment, both built (2026-08-03) |
 | P0 verify | **done** — VERIFY.md: byte-identical bath/blob, physics digits identical everywhere, drift col at 1e-16 floor |
 | P1 battery | **GREEN** — 32 bars, both kernels (runs/BATTERY.log) |
-| P1 double slit tier-0 | pending |
+| P1 double slit tier-0 | **CONFIRMED on the live substrate** — V_r 0.65 (frozen 0.67), loci parameter-free, 3-seed panel; battery `ds` 8 bars green (DS.md) |
 | P2 local-clock scheduler | spec carried; not started |
 | P3 shells | not started |
 | P4 speedups | not started |

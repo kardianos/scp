@@ -17,6 +17,7 @@ import (
 	"crypto/sha256"
 	"flag"
 	"fmt"
+	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -354,7 +355,125 @@ func suite() []experiment {
 			fmt.Sprintf("%d", countStr(get("udd_c"), "CHANNEL DEAD")), "1", true)
 	}})
 
+	// FB7 double slit on the free substrate (DS.md, tier 0) — fringes at
+	// parameter-free loci, live vs frozen. Optics regime declared:
+	// q_detune=0 e_cond=99 (v89 optics precedent); wall = carved vacuum
+	// held as a pinned fixture (a free gap heals in ~15 t.u. — measured).
+	// v89 frozen-graph reference: V_norm 0.316. Measured here (panel
+	// seeds 20260802/111/314159): V_r 0.652/0.614/0.448 live, 0.667
+	// frozen; y_peak 32.2-33.1 (pred 32).
+	dsArgs := func(extra ...string) []string {
+		base := []string{"exp=slit", "L=64", "T=44", "sigma=4", "kx=0.9", "amp=1.0",
+			"q_detune=0", "e_cond=99", "slit_wallx=22", "slit_srcx=12",
+			"slit_screenx=36", "slit_sep=10", "slit_hw=2.8", "slit_th=2.4",
+			"slit_sy=14", "slit_t0=20", "slit_t1=36"}
+		return append(base, extra...)
+	}
+	sp = []runSpec{}
+	if wantC {
+		sp = append(sp,
+			cw("ds_m0", dsArgs()...),
+			cw("ds_m1", dsArgs("slit_mask=1")...),
+			cw("ds_m2", dsArgs("slit_mask=2")...),
+			cw("ds_f0", dsArgs("freeze_geo=1")...),
+			cw("ds_f1", dsArgs("freeze_geo=1", "slit_mask=1")...),
+			cw("ds_f2", dsArgs("freeze_geo=1", "slit_mask=2")...))
+	}
+	exps = append(exps, experiment{"ds", sp, func(r *reporter) {
+		if !wantC {
+			return
+		}
+		ypkL, r0L, rmL, rpL, vL, okL := dsAnalyze("ds_m0", "ds_m1", "ds_m2")
+		ypkF, r0F, _, _, vF, okF := dsAnalyze("ds_f0", "ds_f1", "ds_f2")
+		r.add("ds", "live: central max at predicted locus (32±1.9)", okL && abs(ypkL-32.0) <= 1.9,
+			fmt.Sprintf("y=%.2f", ypkL), "32±1.9", true)
+		r.add("ds", "live: additivity broken at max, r >= 1.2", okL && r0L >= 1.2,
+			fmt.Sprintf("%.2f", r0L), ">=1.2", true)
+		r.add("ds", "live: minima at predicted loci, r <= 0.8", okL && rmL <= 0.8 && rpL <= 0.8,
+			fmt.Sprintf("%.2f/%.2f", rmL, rpL), "<=0.8", true)
+		r.add("ds", "live: visibility V_r >= 0.35", okL && vL >= 0.35,
+			fmt.Sprintf("%.3f", vL), ">=0.35", true)
+		r.add("ds", "frozen control shows the same pattern", okF && abs(ypkF-32.0) <= 1.9 && r0F >= 1.2,
+			fmt.Sprintf("y=%.2f r=%.2f", ypkF, r0F), "as live", true)
+		r.add("ds", "substrate-freeing does not own the fringes", okL && okF && vL >= 0.5*vF && abs(ypkL-ypkF) <= 1.5,
+			fmt.Sprintf("V %.2f vs %.2f", vL, vF), "V_l>=V_f/2", true)
+		for _, lb := range []string{"ds_m0", "ds_f0"} {
+			v, ok := exf(get(lb), drift)
+			r.add("ds", lb+" |drift| <= 1e-13", ok && abs(v) <= 1e-13, fmt.Sprintf("%.3g", v), "1e-13", true)
+		}
+	}})
+
 	return exps
+}
+
+var scRe = regexp.MustCompile(`(?m)^# SCREENCELL y=(\S+) x=\S+ I=(\S+)`)
+
+type scPt struct{ y, i float64 }
+
+func scCells(label string) []scPt {
+	var out []scPt
+	for _, m := range scRe.FindAllStringSubmatch(get(label), -1) {
+		y, e1 := strconv.ParseFloat(m[1], 64)
+		i, e2 := strconv.ParseFloat(m[2], 64)
+		if e1 == nil && e2 == nil {
+			out = append(out, scPt{y, i})
+		}
+	}
+	return out
+}
+
+func scSmooth(pts []scPt, y float64) float64 {
+	const s = 1.2
+	num, den := 0.0, 0.0
+	for _, p := range pts {
+		w := math.Exp(-(y - p.y) * (y - p.y) / (2 * s * s))
+		num += w * p.i
+		den += w
+	}
+	if den <= 1e-9 {
+		return 0
+	}
+	return num / den
+}
+
+// dsAnalyze: smoothed I profiles, exact loci from the path-difference
+// scan (yA=27, yB=37, D=14, lam=2pi/0.9), r(y)=I_AB/(I_A+I_B).
+func dsAnalyze(l0, l1, l2 string) (ypk, r0, rm, rp, V float64, ok bool) {
+	AB, A, B := scCells(l0), scCells(l1), scCells(l2)
+	if len(AB) < 10 || len(A) < 10 || len(B) < 10 {
+		return 0, 0, 0, 0, 0, false
+	}
+	const yA, yB, D = 27.0, 37.0, 14.0
+	lam := 2 * math.Pi / 0.9
+	delta := func(y float64) float64 {
+		return math.Sqrt(D*D+(y-yA)*(y-yA)) - math.Sqrt(D*D+(y-yB)*(y-yB))
+	}
+	locus := func(target float64) float64 {
+		best, bv := 16.0, math.Inf(1)
+		for y := 16.0; y <= 48.0; y += 0.02 {
+			if d := math.Abs(delta(y) - target); d < bv {
+				bv, best = d, y
+			}
+		}
+		return best
+	}
+	yMin1, yMax0, yMin2 := locus(-lam/2), locus(0), locus(lam/2)
+	rOf := func(y float64) float64 {
+		iab, ia, ib := scSmooth(AB, y), scSmooth(A, y), scSmooth(B, y)
+		if ia+ib <= 1e-9 {
+			return 0
+		}
+		return iab / (ia + ib)
+	}
+	ypk, bv := 26.0, -1.0
+	for y := 26.0; y <= 38.0; y += 0.1 {
+		if v := scSmooth(AB, y); v > bv {
+			bv, ypk = v, y
+		}
+	}
+	r0, rm, rp = rOf(yMax0), rOf(yMin1), rOf(yMin2)
+	V = (r0 - 0.5*(rm+rp)) / (r0 + 0.5*(rm+rp))
+	return ypk, r0, rm, rp, V, true
 }
 
 func abs(x float64) float64 {

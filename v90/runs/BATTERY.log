@@ -1,18 +1,24 @@
 # run conserve_go    [exp=bath T=40]
-# run conserve_go2   [exp=bath T=40]
-# run blob_c         [exp=blob L=16 T=160]
+# run pair_up_go     [exp=pair bath=0 T=60 pair_doff=0.05]
 # run ring6_c        [exp=ring ring_n=6 bath=0 T=300]
-# run ring5_c        [exp=ring ring_n=5 bath=0 T=300]
 # run pulse_c        [exp=pulse L=24 T=10 amp=0.25 sigma=2.5 kx=1.1 diag_every=50]
+# run pair_nobond_c  [exp=pair bath=0 T=60 pair_doff=0.05 kappa_bond=0]
+# run pair_dn_c      [exp=pair bath=0 T=60 pair_doff=-0.05]
+# run ds_f2          [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=1.0 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 freeze_geo=1 slit_mask=2]
+# run ring5_c        [exp=ring ring_n=5 bath=0 T=300]
 # run pulse_go       [exp=pulse L=24 T=10 amp=0.25 sigma=2.5 kx=1.1 diag_every=50]
+# run blob_c         [exp=blob L=16 T=160]
+# run uud_c          [exp=tri tri_xU=0.28 bath=0 T=100]
 # run udd_c          [exp=tri tri_kind=1 tri_xU=0.28 bath=0 T=300]
+# run ds_m0          [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=1.0 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36]
+# run ds_m1          [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=1.0 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_mask=1]
+# run ds_m2          [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=1.0 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_mask=2]
+# run ds_f0          [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=1.0 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 freeze_geo=1]
+# run ds_f1          [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=1.0 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 freeze_geo=1 slit_mask=1]
+# run conserve_go2   [exp=bath T=40]
 # run conserve_c     [exp=bath T=40]
 # run conserve_c2    [exp=bath T=40]
-# run pair_dn_c      [exp=pair bath=0 T=60 pair_doff=-0.05]
 # run pair_up_c      [exp=pair bath=0 T=60 pair_doff=0.05]
-# run pair_nobond_c  [exp=pair bath=0 T=60 pair_doff=0.05 kappa_bond=0]
-# run pair_up_go     [exp=pair bath=0 T=60 pair_doff=0.05]
-# run uud_c          [exp=tri tri_xU=0.28 bath=0 T=100]
 
 EXPERIMENT | BAR                                           | MEASURED         | BOUND      | VERDICT
 ----------------------------------------------------------------------------------------------------
@@ -48,5 +54,13 @@ fcq        | ladder identity d*_UU == d*_UD at x_D         | 0                | 
 fcq        | UUD closed: 0 dead channels                   | 0                | 0          | PASS
 fcq        | UDD D-D edge beyond contact (seed print)      | seed             | OPEN       | PASS
 fcq        | UDD open chain: exactly 1 dead channel        | 1                | 1          | PASS
+ds         | live: central max at predicted locus (32±1.9) | y=33.10          | 32±1.9     | PASS
+ds         | live: additivity broken at max, r >= 1.2      | 1.67             | >=1.2      | PASS
+ds         | live: minima at predicted loci, r <= 0.8      | 0.37/0.34        | <=0.8      | PASS
+ds         | live: visibility V_r >= 0.35                  | 0.652            | >=0.35     | PASS
+ds         | frozen control shows the same pattern         | y=32.60 r=1.51   | as live    | PASS
+ds         | substrate-freeing does not own the fringes    | V 0.65 vs 0.67   | V_l>=V_f/2 | PASS
+ds         | ds_m0 |drift| <= 1e-13                        | -2.2e-15         | 1e-13      | PASS
+ds         | ds_f0 |drift| <= 1e-13                        | -2.2e-15         | 1e-13      | PASS
 ----------------------------------------------------------------------------------------------------
-ALL GREEN (32 bars)
+ALL GREEN (40 bars)
