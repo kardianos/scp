@@ -3069,6 +3069,10 @@ int main(int argc, char **argv)
                 double dsl = TWO_PI * P.pair_m * P.C / (slq[s] * w2e[i] + slp[s] * w2e[j]);
                 printf("# RESULT pair d_final=%.6f d_star_seed=%.6f d_star_live=%.6f off_live=%+.6f Em_i=%.5f Em_j=%.5f\n",
                        sd[s], ds, dsl, sd[s] - dsl, Em[i], Em[j]);
+                /* directed ledger (PAULI-0 rate control): cumulative
+                 * deposits each way + the standing (never-landed) flight */
+                printf("# RESULT pairflux dep_ij=%.6e dep_ji=%.6e lem_ij=%.6e lem_ji=%.6e\n",
+                       sfluxd[2*s], sfluxd[2*s+1], slem[2*s], slem[2*s+1]);
             } else printf("# RESULT pair CHANNEL DEAD\n");
         }
         if (truss_n > 0) {

@@ -198,15 +198,87 @@ is the bath; the fifth's home is the amplitude completion.
 channels' plastic settle — no capture, no fusion, one more instance of
 the universal contact law.
 
+## Third execution (2026-08-03): the parity sweep and the CQ8 A/B
+
+**The mod-12 sweep REFUTES the macro-parity rule as an extrapolating
+law** (nv = 12/18/24/36, vacuum, T=200, `runs/composite/cqp_*.log`;
+nv=18 additionally at all three ℤ₃ branches). No battery bar — the
+candidate failed its sweep. What the four points measure:
+
+1. **The seed-time cycle residual walks continuously, not by π-parity.**
+   The closing fifth's t=0 defect: −1.105 (nv=6), −2.213 (12), +2.959
+   (18), +1.845 (24), −0.393 (36) — a steady ≈ −1.11 rad per nv-step
+   of 6. The recorded rule conflated the interior CYCLE sum (where a
+   rung hop contributes π) with the boundary EDGE meter, which weighs
+   interior phases by the ℤ₃ ratio (q=3/p=2, mod 2π) — the hop parity
+   is invisible to it. P-CQ2's arithmetic reading dies here.
+2. **nv=18 (odd hops, predicted frustrated) is NOT nv=6.** Its fifths
+   precess and settle near fit (−0.20/−0.97), not pinned at ±2.5–2.9;
+   and its endings are BRANCH-DEPENDENT (k=1 keeps the UU bond at
+   gg 0.986; k=0/2 lose it) — plastic-lock history, not arithmetic.
+3. **nv ≥ 24 loses the composite boundary itself at T=200**: facing
+   edges slide beyond contact, channels die (fifths CHANNEL DEAD, UU
+   dead), interiors decohere — CQ7's transient-chirp mechanism eats
+   the whole object. The committed cq7 runs show the same endings;
+   the sweep just makes it size-systematic.
+4. What survives, sharpened: **nv=6 is uniquely π-pinned** (fifths at
+   max misfit ±2.5–2.9, gg ≡ 0, branch-identical — reproduced), and
+   nv=12 is the largest size whose dead fifths rest near fit with the
+   composite intact at T=200. The 6↔12 contrast is real; the CLAIMED
+   quantization law behind it is not. The small-nv discriminator is
+   an open question parked with the flux-machine frontier (a decaying
+   interior has no stationary arithmetic to be quantized BY).
+
+**CQ8 A/B — in the bath, compensation HURTS.** Same bath apparatus,
+xcomp 0.0093 vs 0 (`cq8_bath.log` vs `cq8_noc.log`, T=120):
+
+| meter | bath + comp | bath, no comp |
+|---|---|---|
+| UU bond gg / ψ | 0.9902 / +0.047 | **0.9980 / −0.017** |
+| bond dev | −0.026 | +0.022 |
+| bond standing flight lem | 5.0e-3 | **5.8e-2 (12×)** |
+| interior gg_int (U,U) | 0.42 / 0.47 | **0.59 / 0.70** |
+| D droplet gg_int | 0.0032 | 0.0116 |
+| fifths | dead | dead |
+
+The vacuum-derived offset (U rings −0.0093, tuned to vacuum standing
+flight) OVER-corrects in the cage: the bath sets its own operating
+point (bath xbar 0.25–0.26 vs vacuum ~0.27), and the mistuned interior
+weakens every lock. **Compensation is a vacuum instrument; the bath
+retunes as it protects.** Static pitch trims do not transfer between
+environments — the flux-machine requirement again, from a fourth
+direction.
+
+**CQ8-long (T=480) — protection does NOT persist: the composite
+DISSOLVES into its protector.** The UU bond stays locked through
+t ≈ 144 (gg 0.991 at the t=144 sample) and is dead by t ≈ 192
+(ψ jumps to +1.8, dev +0.165, lem → 1e-9). The cause is in the
+ledger, not the lock: **the composite's dense load diffuses into the
+bath** — U-ring xbar 0.251 → 0.16/0.18 and Em −36%, D droplet xbar
+0.617 → 0.384 and Em −39% by t=480. As the carriers' load drains,
+their pitch rises and the rung arithmetic moves out from under the
+(plastically frozen) geometry — the bond dies of detune, downstream
+of load leakage. Images: `cq8_long_t20_em.png` (three rings sharp
+against a dark bath) vs `cq8_long_t480_em.png` (the bath glows with
+the leaked load; the composite barely exceeds background);
+`cq8_long_avg_ee.png` (time-averaged field — shell probe, diffuse).
+**The bath protects the locks on the timescale it takes to rob the
+load** (cage compression and load equalization are the same contact
+physics). Static composites have no equilibrium in an open medium —
+the flux-machine interior is forced from a FIFTH direction: only
+steady throughput could hold xbar against the environment.
+
 ## Ladder state
 
-* Executed: CQ0–CQ9 first passes (CQ3/CQ7 with the stiffness verdict
-  above). Battery after each kernel change: ALL GREEN (40).
+* Executed: CQ0–CQ9 first passes; CQ3/CQ7 stiffness verdict; the
+  mod-12 parity sweep (rule refuted, no bar); CQ8 A/B (bath beats
+  bath+comp); CQ8-long (protection transient — dissolution measured).
+  Battery through every kernel change: ALL GREEN (64).
 * **Next frontier (all lanes):** the steady-interior composite — an
   internally circulating (flux-machine) composite whose pitch is
   stationary by throughput, not by seed. Rate-level candidates: driven
   boundary conditions are excluded (drives carry scales); the honest
   route is the S2 amplitude completion where transport IS the current.
-* CQ8 follow-ups: longer bath runs (does protection persist?); bath +
-  compensation combined; the CQ8 stream doubles as a shell-probe
-  (`volview -avg`, runs/composite/cq8_bath.fcs).
+  Five independent measurements now converge on it: H-stiffness
+  transient (CQ7), compensation transience (CQ3b), bath retuning
+  (CQ8 A/B), bath dissolution (CQ8-long), and the v89 particle thesis.

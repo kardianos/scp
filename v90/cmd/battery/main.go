@@ -532,6 +532,58 @@ func suite() []experiment {
 			fmt.Sprintf("%.1e vs %.1e", abs(vd), abs(rx)/e0), ">=20x", true)
 	}})
 
+	// FB10 PAULI-0 — the rate-level negative control for exclusion
+	// (README stretch goal 1, precursor 3): saturation refusal must be
+	// distinguishability-BLIND. Apparatus: frozen two-cell contact
+	// channel (d0=1.40, inside every arm's lens — load shrinks radii:
+	// cr = r0*cbrt(Es), Es = 1 - Em*s_pull/(1+s_pull)); receiver at cap
+	// (x=1.0) or near cap (x=0.96); sender identical-pitch vs
+	// fifth-consonant (w_snd = 1.5*w_rcv via load; arbitrary detunes
+	// don't transport at all — consonance-gated). Measured: at cap,
+	// admission EXACTLY zero for BOTH kinds (head_j=0 multiplies the
+	// want to zero before the consonance gate enters; FP-sticky door);
+	// near cap both kinds trickle in (0.106 vs 4.0e-3 — the 26x is
+	// gate quality, the transport's business, not the door's).
+	// Refusal carries no identity information at rate level.
+	pzArgs := func(x0, x1, doff string) []string {
+		return []string{"exp=pair", "bath=0", "T=60", "freeze_geo=1",
+			"pair_x0=" + x0, "pair_x1=" + x1, "pair_doff=" + doff}
+	}
+	sp = []runSpec{}
+	if wantC {
+		sp = append(sp,
+			cw("pz_sat_id", pzArgs("1.0", "1.0", "-0.983277")...),
+			cw("pz_sat_5th", pzArgs("0.388889", "1.0", "-0.506622")...),
+			cw("pz_near_id", pzArgs("0.96", "0.96", "-0.931278")...),
+			cw("pz_near_5th", pzArgs("0.362225", "0.96", "-0.465025")...))
+	}
+	exps = append(exps, experiment{"pauli0", sp, func(r *reporter) {
+		if !wantC {
+			return
+		}
+		dep := func(lb string) (dij, lij float64, ok bool) {
+			a, o1 := exf(get(lb), `pairflux dep_ij=(\S+) dep_ji=`)
+			b, o2 := exf(get(lb), `lem_ij=(\S+) lem_ji=`)
+			return a, b, o1 && o2
+		}
+		dSI, lSI, ok1 := dep("pz_sat_id")
+		dS5, lS5, ok2 := dep("pz_sat_5th")
+		r.add("pauli0", "at cap: admission exactly 0 (identical)", ok1 && dSI <= 1e-12 && lSI <= 1e-12,
+			fmt.Sprintf("dep=%.1e", dSI), "<=1e-12", true)
+		r.add("pauli0", "at cap: admission exactly 0 (fifth)", ok2 && dS5 <= 1e-12 && lS5 <= 1e-12,
+			fmt.Sprintf("dep=%.1e", dS5), "<=1e-12", true)
+		dNI, _, ok3 := dep("pz_near_id")
+		dN5, _, ok4 := dep("pz_near_5th")
+		r.add("pauli0", "near cap: identical admitted (throttled)", ok3 && dNI >= 0.05,
+			fmt.Sprintf("%.3f", dNI), ">=0.05", true)
+		r.add("pauli0", "near cap: fifth admitted (throttled)", ok4 && dN5 >= 1e-3,
+			fmt.Sprintf("%.2e", dN5), ">=1e-3", true)
+		for _, lb := range []string{"pz_sat_id", "pz_sat_5th", "pz_near_id", "pz_near_5th"} {
+			v, ok := exf(get(lb), `# RESULT drift_rel (\S+)`)
+			r.add("pauli0", lb+" |drift| <= 1e-13", ok && abs(v) <= 1e-13, fmt.Sprintf("%.3g", v), "1e-13", true)
+		}
+	}})
+
 	return exps
 }
 

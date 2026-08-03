@@ -193,3 +193,19 @@ Three claims, now gated (battery 56 bars GREEN):
 
 Images: `runs/motion/viz/p1_b2_t0_em.png` / `p1_b2_t80_em.png` (the
 mound pair, dense channel). Stream: `runs/streams/p1_b2.fcs`.
+
+**Round-B replica at full scale (L=24, T=300, meter on; the dense
+kinematics reproduce the committed Round-B numbers to the printed
+digit — the meter is pure ledger):**
+
+| arm | v_COE (x) | dense vTotalCOM | verdict on the dense-only number |
+|---|---|---|---|
+| undriven | −9.6e-6 | −5.27e-4 | **55× overstated** |
+| driven kx=3.2 | +9.9e-6 | −7.82e-5 | **8× overstated, wrong sign** |
+
+Both arms: \|v_COE_x\| ≈ 4e-3 of the closing speed. The honest
+all-modes momentum of a blob collision is zero at the few-per-mille
+level of the approach rate, at both box scales, driven or not; the
+dense-only COM velocity is mode-exchange artifact in magnitude AND
+sign. Channel split at T=300: flight dominates (\|fl\| ≈ 20), geometry
+second (≈ 6), field ≈ 1 (driven) / 0 (undriven), space ≈ 0.02.

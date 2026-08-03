@@ -918,6 +918,9 @@ func (s *Sim) Run() {
 				dsl := TwoPi * float64(P.PairM) * P.C / (float64(s.slq[sl])*s.w2e[i] + float64(s.slp[sl])*s.w2e[j])
 				fprintf(s.Out, "# RESULT pair d_final=%.6f d_star_seed=%.6f d_star_live=%.6f off_live=%+.6f Em_i=%.5f Em_j=%.5f\n",
 					s.sd[sl], ds, dsl, s.sd[sl]-dsl, s.Em[i], s.Em[j])
+				// directed ledger (PAULI-0 rate control) — C kernel parity
+				fprintf(s.Out, "# RESULT pairflux dep_ij=%.6e dep_ji=%.6e lem_ij=%.6e lem_ji=%.6e\n",
+					s.sfluxd[2*sl], s.sfluxd[2*sl+1], s.slem[2*sl], s.slem[2*sl+1])
 			} else {
 				fprintf(s.Out, "# RESULT pair CHANNEL DEAD\n")
 			}

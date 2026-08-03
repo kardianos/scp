@@ -141,7 +141,19 @@ law is not a knob.
   (3) Rate-level precursor, runnable TODAY: verify cap-saturation
   refusal is distinguishability-BLIND (same refusal for identical and
   different-pitch arrivals) — the negative control that later separates
-  exclusion from fullness. Recorded; not yet run.
+  exclusion from fullness. **RUN AND GATED (2026-08-03, battery
+  `pauli0`, 8 bars):** on a frozen contact channel, a receiver AT cap
+  admits EXACTLY zero from an identical-pitch sender and from a
+  fifth-consonant sender alike (the headroom factor multiplies the
+  transport want to zero before the consonance gate enters — and the
+  door is FP-sticky); NEAR cap (headroom 0.04·cap) both kinds are
+  admitted, throttled (intake 0.106 vs 4.0e-3 — the 26× is consonance
+  gate quality, the transport's business, not the door's). Saturation
+  refusal carries no identity information at rate level. Apparatus
+  lesson: "distinguishable" arrivals must still be CONSONANT (a fifth,
+  w_snd = 1.5·w_rcv via load) — arbitrary detunes do not transport at
+  all; and the contact channel needs an open lens (d < rᵢ+rⱼ), since
+  loads shrink radii (Es = 1 − Em·s_pull/(1+s_pull)).
 * **Shells (incomplete harmonics), visualized.** Time-averaged field
   structure around a bound core, rendered volumetrically: `.fcs` sequences
   → volview time-average mode → radial node structure, if it exists, seen
@@ -178,7 +190,7 @@ hard results index, what they mean, and the prioritized next steps.
 | item | state |
 |---|---|
 | P0 port + verify | **done** — VERIFY.md: bath/blob byte-identical, physics digits identical everywhere |
-| P1 battery | **GREEN — 56 bars**, both kernels, through 9 apparatus additions (runs/BATTERY.log) |
+| P1 battery | **GREEN — 64 bars**, both kernels, through 11 apparatus additions (runs/BATTERY.log) |
 | P1 double slit tier 0 | **CONFIRMED on the live substrate** (DS.md; battery `ds` 8 bars) |
 | DS tier 1 | **CLAIMED** (DS.md; battery `ds1` 8 bars) — 362 whole-grain clicks, fringe-phase-locked s̄ 0.683 vs controls 0.380, minima 7.7× dark, R3 atomicity exact |
 | FCS + viewer | v3 chunked streams, interleaved ANLZ, lossless codec, live `-follow`, interactive orbit/scrub (FCS.md) |

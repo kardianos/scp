@@ -50,3 +50,4 @@ t=   60.00 +3.90e-16 | 0.0011  1.00      1    0      0      0 | 1.5387  0.00 | 7
 # RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
 # RESULT geometry phi_nom=0.0011 z_live=1.00 dbar=1.5387 sigma_d=0.0000
 # RESULT pair d_final=1.538698 d_star_seed=1.505798 d_star_live=1.505798 off_live=+0.032900 Em_i=0.59275 Em_j=0.59409
+# RESULT pairflux dep_ij=8.884900e+00 dep_ji=8.884256e+00 lem_ij=2.190562e-01 lem_ji=2.191034e-01

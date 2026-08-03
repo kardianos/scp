@@ -7,8 +7,10 @@ Detail lives in the campaign docs; this file is the index and the queue.
 
 | result | where |
 |---|---|
-| Battery **56 bars ALL GREEN** through every kernel change (9 apparatus additions this cycle) | `runs/BATTERY.log`, `cmd/battery` |
-| **All-modes COE meter** (`p1_meter`): no-channels null exactly zero; blobs merge with v_COE ~1000× below closing — approach carries no net momentum; dense-only COM was 324× inflated | `MOTION.md` |
+| Battery **64 bars ALL GREEN** through every kernel change (11 apparatus additions this cycle) | `runs/BATTERY.log`, `cmd/battery` |
+| **All-modes COE meter** (`p1_meter`): no-channels null exactly zero; blobs merge with v_COE ~1000× below closing — approach carries no net momentum; dense-only COM was 55–324× inflated (wrong sign on the driven arm) | `MOTION.md` |
+| **PAULI-0 gated**: saturation refusal is distinguishability-blind — at cap, admission exactly 0 for identical AND fifth-consonant senders; near cap both admitted, throttled (26× = gate quality, not door policy) | `README.md` stretch, battery `pauli0` |
+| **CQ8-long: the bath's protection is transient** — the composite DISSOLVES into its protector (load leaks: Em −36–39% by t=480; bond dies of downstream detune at t≈150–190). Flux-machine interior forced from a fifth direction | `COMPOSITE.md` |
 | Go kernel port faithful at the FP floor (bath/blob byte-identical; physics digits identical everywhere) | `VERIFY.md` |
 | **DS tier 0 CONFIRMED on the live substrate** — fringes at parameter-free loci, V 0.652 vs frozen 0.667, 3-seed panel; Huygens wavelets visible in the phase view | `DS.md`, `runs/ds/viz/` |
 | **DS tier 1 CLAIMED (battery `ds1`, 8 bars)** — 362 whole-grain clicks over 24 substrate seeds: fringe-phase score s̄ 0.683±0.017 (null 0.5) vs which-slit controls 0.380±0.036; minima 7.7× dark; every click k·ε, k∈{1,2}. Controls sit BELOW phase-blind (envelope peaks at the minima loci) | `DS.md` |
@@ -16,7 +18,7 @@ Detail lives in the campaign docs; this file is the index and the queue.
 | FCS v3: chunked run streams, interleaved ANLZ instrumentation, lossless codec 1 (0.46–0.55 @174 MB/s), live `-follow` viewing | `FCS.md`, `cmd/volview` |
 | Motion: bound objects do not travel (bounded wander; exact vacuum null under drive); blobs merge (undriven closes as fast as driven); collisions = contact-range plastic locks in [2.88,3.13], exactly inert beyond contact | `MOTION.md` |
 | **Opacity is unfilled capacity** — field couples to matter only via conversion; saturated matter transparent; headroom object absorbs Δcond +4.9 | `MOTION.md` |
-| Composite: **macro-parity selection rule** (interior rung hops contribute π each ⇒ nv ≡ 0 mod 12 for 60° triangles; nv=6 π-frustrated, nv=12 closes ×100) | `COMPOSITE.md` |
+| Composite: ~~macro-parity selection rule~~ **REFUTED by the 4-point sweep** (2026-08-03): the boundary edge meter weighs interior phases by the ℤ₃ ratio — hop parity is invisible to it; seed residual walks continuously; nv=6's π-pinning is real but unique; nv≥24 loses the boundary at T=200 | `COMPOSITE.md` |
 | Composite: **T6 U/D asymmetry** (D-quarks are droplets — rung 2.17 > contact 1.53; U-quarks molecules), confirmed in-run | `COMPOSITE.md` |
 | Composite: bond = standing flight (lem 0.09–0.34, E at FP floor); compensation cuts fifth drift 8×; **H-stiffness refuted as posed** (drift grows with N — transient flight chirps pitch) | `COMPOSITE.md` |
 | **The bath protects composites** (boundary gg 0.9902 compressed onto the rung, interior 2–5× better than vacuum) | `COMPOSITE.md` |
@@ -26,10 +28,12 @@ Detail lives in the campaign docs; this file is the index and the queue.
 
 **Scale-free structural laws** (won't change under any completion): the
 channel-level ladder transfers to composites (boundary arithmetic = the
-minimal triangle's numbers); π-parity constrains geometry at BOTH scales
-(odd rings dead; composite interiors quantized to even hop counts);
-the U/D molecule/droplet asymmetry; opacity = conversion capacity;
-bonds carry their energy as in-flight inventory.
+minimal triangle's numbers); π-parity constrains geometry at CELL scale
+(odd rings dead — gated); the U/D molecule/droplet asymmetry; opacity =
+conversion capacity; bonds carry their energy as in-flight inventory.
+*(The composite-interior "even hop count" quantization was refuted by
+the 2026-08-03 sweep — nv=6's π-pinning is real but does not
+extrapolate; see COMPOSITE.md third execution.)*
 
 **One frontier, measured from every side:** flight-load pitch drift vs
 tongue width kills the fifth at cell scale, composite scale, and inside
@@ -60,12 +64,19 @@ ones hold. Composite work should default to embedded apparatus.
    8 bars (56 total GREEN): no-channels null EXACTLY zero; blob
    approach carries no net momentum (v_COE ~1000× below closing);
    dense-only COM was 324× inflated (MOTION.md).
-3. **Composite follow-ups:** CQ8 long-run (does protection persist?);
-   bath + compensation combined; the mod-12 parity sweep (nv 12/24/36)
-   as a battery-bar candidate. *Cheap, unblocked.*
-4. **Pauli rate-level control:** distinguishability-blind saturation
-   refusal (the negative control that later separates exclusion from
-   fullness). *Cheap, unblocked; full exclusion blocked on S2.*
+3. ~~**Composite follow-ups**~~ **DONE 2026-08-03** (COMPOSITE.md third
+   execution): the mod-12 sweep (nv 12/18/24/36 + branches) REFUTED
+   the macro-parity rule as an extrapolating law — seed residual walks
+   −1.11 rad/step, nv=18 not pinned, nv≥24 loses the boundary; no bar.
+   CQ8 A/B: in the bath, vacuum-tuned compensation HURTS (bond 0.9980
+   vs 0.9902, interiors 0.59/0.70 vs 0.42/0.47) — the bath retunes as
+   it protects. CQ8-long T=480: protection is TRANSIENT — the
+   composite dissolves into the bath (load leaks −36–39%; bond dies
+   of downstream detune t≈150–190).
+4. ~~**Pauli rate-level control**~~ **DONE 2026-08-03** — gated
+   (battery `pauli0`, 8 bars): refusal at cap is exact and
+   pitch-blind; README stretch bullet has the numbers. Full exclusion
+   still blocked on S2.
 5. **Angular cross-section apparatus** (narrow beam or sector meters)
    to turn ledger absorption into a shadow/differential measurement.
    *Moderate.*
