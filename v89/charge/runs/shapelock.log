@@ -25,28 +25,28 @@ selects nothing; if it stays at 1 (the sphere), it forbids shape.
 == S2. DOES SHAPE LOCK UNDER SHEAR? ==
 Pure deviatoric load sigma = t*(2,-1,-1)/3 (volume preserved).
 comb_limit=4, s=0.05, lam=0.10. Rung-seeded exhaustive search.
-     t     a:b ratio    b:c ratio    rung1   rung2    max|grad|
+  t_pref  a:b ratio    b:c ratio    rung1   rung2    max|grad|
   0.00      1.00000      1.00000    1/1     1/1       0.0e+00
-  0.15      1.00006      1.00000    1/1     1/1       8.0e-09
-  0.30      1.00012      1.00000    1/1     1/1       1.6e-08
-  0.45     16.00288      1.00000   16/1     1/1       2.4e-08
-  0.60     16.00384      1.00000   16/1     1/1       3.2e-08
-  0.75     16.00481      1.00000   16/1     1/1       9.0e-09
-  0.90     16.00577      1.00000   16/1     1/1       3.3e-08
-  1.05     16.00673      1.00000   16/1     1/1       1.3e-08
-  1.20     16.00769      1.00000   16/1     1/1       1.4e-08
-  1.35     16.00865      1.00000   16/1     1/1       4.6e-07
-  1.50     16.00961      1.00000   16/1     1/1       1.8e-08
-  1.65     16.01057      1.00000   16/1     1/1       4.0e-08
-  1.80     16.01154      1.00000   16/1     1/1       3.7e-07
-  1.95     16.01250      1.00000   16/1     1/1       6.6e-07
-  2.10     16.01346      1.00000   16/1     1/1       7.1e-07
-  2.25     16.01442      1.00000   16/1     1/1       1.2e-07
-  2.40     16.01538      1.00000   16/1     1/1       2.9e-08
-  2.55     16.01634      1.00000   16/1     1/1       7.1e-08
-  2.70     16.01731      1.00000   16/1     1/1       1.2e-07
-  2.85     16.01827      1.00000   16/1     1/1       1.5e-07
-  3.00     16.01923      1.00000   16/1     1/1       1.6e-07
+  0.15      1.00006      1.00000    1/1     1/1       8.5e-09
+  0.30      1.00012      1.00000    1/1     1/1       1.7e-08
+  0.45      1.00018      1.00000    1/1     1/1       2.5e-08
+  0.60      1.00024      1.00000    1/1     1/1       3.4e-08
+  0.75      1.00030      1.00000    1/1     1/1       2.1e-07
+  0.90      2.00017      1.00000    2/1     1/1       1.2e-08
+  1.05      2.00029      1.00000    2/1     1/1       2.0e-08
+  1.20      2.00041      1.00000    2/1     1/1       2.9e-08
+  1.35      3.00030      1.00000    3/1     1/1       1.1e-07
+  1.50      3.00048      1.00000    3/1     1/1       2.2e-07
+  1.65      3.00066      1.00000    3/1     1/1       5.5e-08
+  1.80      4.00066      1.00000    4/1     1/1       3.3e-07
+  1.95      5.00068      1.00000    5/1     1/1       1.9e-08
+  2.10      5.00098      1.00000    5/1     1/1       1.4e-07
+  2.25      6.00110      1.00000    6/1     1/1       2.6e-08
+  2.40      7.00127      1.00000    7/1     1/1       2.6e-08
+  2.55      8.00151      1.00000    8/1     1/1       2.7e-08
+  2.70     10.00159      1.00000   10/1     1/1       8.7e-08
+  2.85     11.00199      1.00000   11/1     1/1       2.0e-07
+  3.00     13.00226      1.00000   13/1     1/1       2.5e-08
 
 reading: flat runs = the shape is LOCKED to a rung pair and the
 shear is absorbed by the lock; jumps = the lock breaking. This is
@@ -54,16 +54,16 @@ the staircase harmgrow found on a ring, but here there are NO
 neighbours to frustrate it — the closure is internal.
 
 == S3. NEGATIVE CONTROL — comb collapsed to the unison ==
-     t     a:b ratio    b:c ratio
+  t_pref  a:b ratio    b:c ratio
   0.00      1.00000      1.00000
-  0.38      1.00000      1.00000
-  0.75      1.00000      1.00000
-  1.12      1.00000      1.00000
-  1.50      1.00000      1.00000
-  1.88      1.00000      1.00000
-  2.25      1.00000      1.00000
-  2.62      1.00000      1.00000
-  3.00      1.00000      1.00000
+  0.38      1.00015      1.00000
+  0.75      1.00030      1.00000
+  1.12      1.00045      1.00000
+  1.50      1.00060      1.00000
+  1.88      1.00075      1.00000
+  2.25      1.00090      1.00000
+  2.62      1.00105      1.00000
+  3.00      1.00120      1.00000
 
 reading: must be smooth. A staircase here would falsify S2.
 
@@ -71,13 +71,13 @@ reading: must be smooth. A staircase here would falsify S2.
 Sweeping the ceiling at fixed strong shear: the outermost rung
 caps the axis ratio, so the comb span IS the aspect-ratio bound.
  ceiling  nrungs   a:b at t=6   max rung ratio   locked?
-       1       3        2.0048             2.0   NO  (off 3.5e-03)
-       2       7        4.0096             4.0   NO  (off 3.5e-03)
-       3      17        8.0192             8.0   NO  (off 3.5e-03)
-       4      41       16.0385            16.0   NO  (off 3.5e-03)
-       5      93       32.0770            32.0   NO  (off 3.5e-03)
-       6     211       64.1539            64.0   NO  (off 3.5e-03)
-       7     477      128.3079           128.0   NO  (off 3.5e-03)
+       1       3        2.0043             2.0   NO  (off 3.1e-03)
+       2       7        4.0074             4.0   NO  (off 2.7e-03)
+       3      17        8.0126             8.0   NO  (off 2.3e-03)
+       4      41       16.0207            16.0   NO  (off 1.9e-03)
+       5      93       32.0325            32.0   NO  (off 1.5e-03)
+       6     211       64.0472            64.0   NO  (off 1.1e-03)
+       7     477      128.0588           128.0   yes (off 6.6e-04)
 
 reading: a:b saturating at the outermost rung means the comb span
 sets the maximum aspect ratio — a bound on SHAPE made of

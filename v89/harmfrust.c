@@ -47,6 +47,17 @@ static int igcd(int a, int b) { while (b) { int t = a % b; a = b; b = t; } retur
 static void build_rungs(double climb)
 {
     NRUNG = 0;
+    /* climb < 0 means "unison only" — the negative control. The height
+     * test below rejects even 1/1 (0 > -1), which left NRUNG = 0: the
+     * energy became 3e300, the backtracking comparison degenerated to
+     * equality in floating point, and the relaxation exited after one
+     * iteration. The control then read a perfectly flat response and
+     * looked like it had passed. It had not run. */
+    if (climb < 0) {
+        RUNGS[0].p = 1; RUNGS[0].q = 1; RUNGS[0].u = 0.0; RUNGS[0].H = 0.0;
+        NRUNG = 1;
+        return;
+    }
     int lim = (int)(pow(2.0, climb > 0 ? climb : 0.0) + 0.5);
     if (lim < 1) lim = 1;
     for (int p = 1; p <= lim; p++)

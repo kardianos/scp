@@ -62,6 +62,17 @@ static int igcd(int a, int b) { while (b) { int t = a % b; a = b; b = t; } retur
 static void build_rungs(double climb)
 {
     NRUNG = 0;
+    /* climb < 0 means "unison only" — the negative control. The height
+     * test below rejects even 1/1 (0 > -1), leaving NRUNG = 0: energy
+     * became 3e300, the backtracking comparison degenerated to equality
+     * in floating point, relaxation exited after one iteration, and the
+     * control read a flat response that looked like a pass. It had not
+     * run. */
+    if (climb < 0) {
+        RUNGS[0].p = 1; RUNGS[0].q = 1; RUNGS[0].u = 0.0; RUNGS[0].H = 0.0;
+        NRUNG = 1;
+        return;
+    }
     int lim = (int)(pow(2.0, climb > 0 ? climb : 0.0) + 0.5);
     if (lim < 1) lim = 1;
     for (int p = 1; p <= lim; p++)
@@ -119,7 +130,7 @@ static int enumerate_shapes(double climb, int nmax, int *out, int maxout)
 
 /* --------------------------------------------------- the shape cell */
 
-typedef struct { double x, y, z, s, lam; } Cell;
+typedef struct { double x, y, z, s, lam, kE, tx, ty, tz; } Cell;
 
 static void center(Cell *c)
 { double m = (c->x + c->y + c->z) / 3.0; c->x -= m; c->y -= m; c->z -= m; }
@@ -128,38 +139,42 @@ static double u1(Cell *c) { return (c->x - c->y) / M_LN2; }
 static double u2(Cell *c) { return (c->y - c->z) / M_LN2; }
 static double u3(Cell *c) { return (c->z - c->x) / M_LN2; }
 
-static double energy(Cell *c, double sx, double sy, double sz)
+/* QUADRATIC preference about a target shape, NOT a linear pull. A linear
+ * drive is scale-free — unbounded benefit — so it always runs to the
+ * outermost rung and the rung structure selects nothing. Diagnosed and
+ * fixed once in harmgrow.c, then reintroduced here. */
+static double energy(Cell *c)
 {
+    double dx = c->x - c->tx, dy = c->y - c->ty, dz = c->z - c->tz;
     return diss(u1(c), c->s, c->lam, NULL)
          + diss(u2(c), c->s, c->lam, NULL)
          + diss(u3(c), c->s, c->lam, NULL)
-         - (sx * c->x + sy * c->y + sz * c->z);
+         + 0.5 * c->kE * (dx * dx + dy * dy + dz * dz);
 }
 
-static void grad(Cell *c, double sx, double sy, double sz, double g[3])
+static void grad(Cell *c, double g[3])
 {
     double d1 = dgrad(u1(c), c->s, c->lam) / M_LN2;
     double d2 = dgrad(u2(c), c->s, c->lam) / M_LN2;
     double d3 = dgrad(u3(c), c->s, c->lam) / M_LN2;
-    g[0] = d1 - d3 - sx;
-    g[1] = -d1 + d2 - sy;
-    g[2] = -d2 + d3 - sz;
+    g[0] =  d1 - d3 + c->kE * (c->x - c->tx);
+    g[1] = -d1 + d2 + c->kE * (c->y - c->ty);
+    g[2] = -d2 + d3 + c->kE * (c->z - c->tz);
     double m = (g[0] + g[1] + g[2]) / 3.0;   /* project: volume fixed */
     g[0] -= m; g[1] -= m; g[2] -= m;
 }
 
-static double relax(Cell *c, double sx, double sy, double sz,
-                    int iters, double lr, double *gm)
+static double relax(Cell *c, int iters, double lr, double *gm)
 {
-    double U = energy(c, sx, sy, sz), step = lr, g[3];
+    double U = energy(c), step = lr, g[3];
     for (int it = 0; it < iters; it++) {
-        grad(c, sx, sy, sz, g);
+        grad(c, g);
         double bx = c->x, by = c->y, bz = c->z, Un = 0; int ok = 0;
         for (int t = 0; t < 40; t++) {
             c->x = bx - step * g[0]; c->y = by - step * g[1];
             c->z = bz - step * g[2];
             center(c);
-            Un = energy(c, sx, sy, sz);
+            Un = energy(c);
             if (isfinite(Un) && Un <= U) { ok = 1; break; }
             step *= 0.5;
         }
@@ -167,15 +182,15 @@ static double relax(Cell *c, double sx, double sy, double sz,
         if (U - Un < 1e-16 * (1 + fabs(U))) { U = Un; break; }
         U = Un; step *= 1.1; if (step > 1.0) step = 1.0;
     }
-    grad(c, sx, sy, sz, g);
+    grad(c, g);
     *gm = fmax(fabs(g[0]), fmax(fabs(g[1]), fabs(g[2])));
-    return energy(c, sx, sy, sz);
+    return energy(c);
 }
 
 /* Rung-seeded exhaustive search: seed at every (rung, rung) pair for the
  * two free intervals. The charge work and harmgrow both showed random
  * restarts report the basin nearest the start as if it were the answer. */
-static double solve(Cell *c, double sx, double sy, double sz, double *gm)
+static double solve(Cell *c, double *gm)
 {
     double bx = 0, by = 0, bz = 0, Ub = 0, gb = 0; int have = 0;
     for (int k1 = 0; k1 < NRUNG; k1++)
@@ -185,7 +200,7 @@ static double solve(Cell *c, double sx, double sy, double sz, double *gm)
             c->y = c->x - a1;
             c->z = c->y - a2;
             center(c);
-            double g2, U = relax(c, sx, sy, sz, 500, 0.01, &g2);
+            double g2, U = relax(c, 500, 0.01, &g2);
             if (isfinite(U) && (!have || U < Ub)) {
                 Ub = U; gb = g2; have = 1;
                 bx = c->x; by = c->y; bz = c->z;
@@ -230,13 +245,13 @@ int main(void)
     printf("== S2. DOES SHAPE LOCK UNDER SHEAR? ==\n");
     printf("Pure deviatoric load sigma = t*(2,-1,-1)/3 (volume preserved).\n");
     printf("comb_limit=4, s=0.05, lam=0.10. Rung-seeded exhaustive search.\n");
-    printf("     t     a:b ratio    b:c ratio    rung1   rung2    max|grad|\n");
+    printf("  t_pref  a:b ratio    b:c ratio    rung1   rung2    max|grad|\n");
     {
         build_rungs(4.0);
         for (double t = 0; t <= 3.001; t += 0.15) {
-            Cell c = {0, 0, 0, 0.05, 0.10};
+            Cell c = {0, 0, 0, 0.05, 0.10, 1.0, 2*t/3, -t/3, -t/3};
             double gm;
-            solve(&c, 2 * t / 3, -t / 3, -t / 3, &gm);
+            solve(&c, &gm);
             int k1, k2;
             diss(u1(&c), c.s, c.lam, &k1);
             diss(u2(&c), c.s, c.lam, &k2);
@@ -252,13 +267,13 @@ int main(void)
 
     /* ---------------- S3 ---------------- */
     printf("== S3. NEGATIVE CONTROL — comb collapsed to the unison ==\n");
-    printf("     t     a:b ratio    b:c ratio\n");
+    printf("  t_pref  a:b ratio    b:c ratio\n");
     {
         build_rungs(-1.0);
         for (double t = 0; t <= 3.001; t += 0.375) {
-            Cell c = {0, 0, 0, 0.05, 0.10};
+            Cell c = {0, 0, 0, 0.05, 0.10, 1.0, 2*t/3, -t/3, -t/3};
             double gm;
-            solve(&c, 2 * t / 3, -t / 3, -t / 3, &gm);
+            solve(&c, &gm);
             printf("%6.2f  %11.5f  %11.5f\n",
                    t, exp(c.x - c.y), exp(c.y - c.z));
         }
@@ -273,9 +288,9 @@ int main(void)
     {
         for (double cl = 1; cl <= 7.001; cl += 1.0) {
             build_rungs(cl);
-            Cell c = {0, 0, 0, 0.05, 0.10};
+            Cell c = {0, 0, 0, 0.05, 0.10, 1.0, 4.0, -2.0, -2.0};
             double gm;
-            solve(&c, 4.0, -2.0, -2.0, &gm);
+            solve(&c, &gm);
             int k1; double off = 0;
             diss(u1(&c), c.s, c.lam, &k1);
             off = fabs(u1(&c) - RUNGS[k1].u);
