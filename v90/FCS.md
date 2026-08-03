@@ -24,17 +24,64 @@ v89 rejected the background — nothing may persist and be merely
 re-valued — so it explicitly excludes SFA and its instruments. FCS is
 what remains when the grid goes: the cell list *is* the state.
 
-## Layout (little-endian)
+## Versions at a glance
 
-**Header — 28 bytes:**
+* **v1/v2** — one snapshot per file, fixed record layout (legacy;
+  readers keep them working). A run is a directory of files.
+* **v3 (current)** — a **chunked stream**: one file carries a whole run —
+  config provenance, a self-describing column schema, CELL/LINK field
+  frames, and typed **ANLZ instrumentation frames interleaved freely**
+  between (or instead of) field frames. Extending the format means adding
+  a column name or a chunk type; readers skip what they do not know.
+  Both kernels write v3 (`snap_dir` = per-frame v3 files; **`snap_file` =
+  one appended stream**). Appended chunks are flushed per frame, so a
+  truncated file parses up to the last complete chunk.
 
-| offset | type | field |
-|---|---|---|
-| 0 | `[4]byte` | magic `"FCS1"` (file type; the version is the next field) |
-| 4 | `uint32` | version (1 or 2) |
-| 8 | `uint32` | ncells |
-| 12 | `float64` | t (simulation time) |
-| 20 | `float64` | L (periodic box edge) |
+## v3 layout (little-endian)
+
+**File header — 8 bytes:** magic `"FCS1"`, `uint32` version = 3.
+Then chunks until EOF:
+
+| type | field |
+|---|---|
+| `[4]byte` | chunk fourcc |
+| `uint64` | payload length |
+| … | payload |
+
+**Chunk types:**
+
+* `CFG ` — UTF-8 text: the configuration the kernel actually ran
+  (laws + apparatus + seed + exp), written once at stream start. The
+  format carries its own provenance — "print the configuration beside
+  every result" applies to files too.
+* `SCHM` — the column schema, once, before the first frame:
+  `uint32 ncellcols`, then per column `uint8 len + name`; then the same
+  for link float-columns. **Readers map columns by name** — a kernel that
+  appends a new per-cell quantity changes nothing for old readers, and
+  the viewer offers the new column as a channel automatically.
+* `CELL` — a field frame: `float64 t`, `float64 L`, `uint32 ncells`,
+  then ncells × ncellcols × `float32`.
+* `LINK` — the channel graph at the same t (written right after its
+  CELL): `float64 t`, `uint32 nlinks`, then per link `uint32 i`,
+  `uint32 j`, nlinkcols × `float32`.
+* `ANLZ` — an instrumentation frame, either form:
+  * kind 0, **text**: `uint8 0`, UTF-8 payload (e.g. `# RESULT …` lines);
+  * kind 1, **table**: `uint8 1`, `uint8 len + name`, `float64 t`,
+    `uint32 ncols`, per column `uint8 len + name`, `uint32 nrows`,
+    nrows × ncols × `float64`. This is the interleaved-analysis carrier:
+    e.g. the double slit writes its accumulating screen profile
+    `ds_screen(y, I)` at every snapshot time — the fringe build-up is in
+    the stream — plus a per-frame `meters` table (drift, φ, z, births,
+    deaths, …). An analysis-only stream with a few field frames woven in
+    is equally legal: chunk order is unconstrained after SCHM.
+
+**Current cell columns** (v3 schema names): `x y z r es em ee xload tag
+fa1 fa2 th2`. **Link columns:** `d A lem gg`.
+
+## Legacy v1/v2 layout
+
+**Header — 28 bytes:** magic `"FCS1"`, `uint32` version (1 or 2),
+`uint32` ncells, `float64` t, `float64` L.
 
 **Cell records — ncells × (9 floats v1 / 12 floats v2), float32 each:**
 
@@ -75,5 +122,8 @@ A = 0 with lem > 0.
 
 ## Versioning
 
-Readers accept both versions (`cmd/volview` does). Writers write v2.
-Fields are only ever appended; the version field gates the record size.
+Readers accept v1, v2, and v3 (`cmd/volview` does; `volview -info`
+prints a stream's chunk inventory and its ANLZ tables). Writers write
+v3. Within v3, evolution is additive by construction: new cell/link
+columns are announced in SCHM and matched by name; new chunk types are
+skipped by length; nothing re-breaks the version.

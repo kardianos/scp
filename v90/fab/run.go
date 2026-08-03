@@ -668,6 +668,17 @@ func (s *Sim) Run() {
 		s.gyrationEigs(&s.trussShape0)
 	}
 
+	var stream *fcsW
+	if P.SnapFile != "" {
+		var err error
+		stream, err = fcsOpen(P.SnapFile)
+		if err != nil {
+			fprintf(s.Errw, "# WARN snap_file open: %v\n", err)
+		} else {
+			s.fcsBegin(stream)
+		}
+	}
+
 	// ---------------- run ----------------
 	steps := int(P.T/P.Dt + 0.5)
 	sheared := false
@@ -851,6 +862,10 @@ func (s *Sim) Run() {
 			s.writeFCS(snapIdx)
 			snapIdx++
 		}
+		if stream != nil && P.SnapEvery > 0 && st%P.SnapEvery == 0 {
+			s.fcsCellFrame(stream)
+			s.fcsInstrument(stream)
+		}
 		if st == steps {
 			break
 		}
@@ -860,6 +875,19 @@ func (s *Sim) Run() {
 	// ---------------- final report ----------------
 	{
 		Etot := s.totalEnergy()
+		if stream != nil {
+			den := s.E0
+			if den == 0 {
+				den = 1
+			}
+			s.fcsAnlzText(stream, fmt.Sprintf(
+				"RESULT drift_rel %.3e\nRESULT births %d deaths %d beta_returns %d\n"+
+					"RESULT conv rough=%.6f cond=%.6f evap=%.6f backs=%.6f\n",
+				(Etot-s.E0)/den, s.births, s.deaths, s.betaReturns,
+				s.roughTotal, s.condTotal, s.evapTotal, s.backsTotal))
+			stream.close()
+			stream = nil
+		}
 		den := s.E0
 		if den == 0 {
 			den = 1

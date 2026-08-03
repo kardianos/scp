@@ -63,6 +63,7 @@ type Cfg struct {
 	OctX, OctDoff        float64
 	ShearEps, ShearT     float64
 	SnapDir              string
+	SnapFile             string
 }
 
 func Defaults() Cfg {
@@ -151,6 +152,7 @@ func Defaults() Cfg {
 	p.ShearEps = 0
 	p.ShearT = 0
 	p.SnapDir = ""
+	p.SnapFile = ""
 	return p
 }
 
@@ -334,6 +336,8 @@ func (p *Cfg) SetKV(k, v string) {
 		p.ShearT = atof(v)
 	case "snap_dir":
 		p.SnapDir = v
+	case "snap_file":
+		p.SnapFile = v
 	default:
 		fmt.Fprintf(os.Stderr, "# WARN unknown key %s\n", k)
 	}

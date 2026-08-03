@@ -188,9 +188,10 @@ func lookAt(eye, ctr [3]float32) mat4 {
 }
 
 type viewer struct {
-	frames  []*frame
-	avg     *frame
-	chanIdx int
+	frames   []*frame
+	avg      *frame
+	channels []string
+	chanIdx  int
 	frameIdx int
 	playing bool
 	speed   float64 // frames per second
@@ -234,10 +235,10 @@ func (vw *viewer) frameFor() *frame {
 }
 
 func (vw *viewer) channelVals(f *frame) ([]float32, float64) {
-	name := channelNames[vw.chanIdx]
+	name := vw.channels[vw.chanIdx]
 	raw := make([]float64, len(f.cells))
 	for i := range f.cells {
-		raw[i] = channel(&f.cells[i], name)
+		raw[i] = f.chanVal(i, name)
 	}
 	var vmax float64 = 1
 	if channelCyclic(name) {
@@ -261,7 +262,7 @@ func (vw *viewer) channelVals(f *frame) ([]float32, float64) {
 				var all []float64
 				for _, fr := range vw.frames {
 					for i := range fr.cells {
-						all = append(all, channel(&fr.cells[i], name))
+						all = append(all, fr.chanVal(i, name))
 					}
 				}
 				vmax = p99max(all)
@@ -281,60 +282,10 @@ func (vw *viewer) channelVals(f *frame) ([]float32, float64) {
 	return out, vmax
 }
 
-func buildAvg(frames []*frame) *frame {
-	last := frames[len(frames)-1]
-	av := &frame{t: last.t, L: last.L, cells: append([]cellRec(nil), last.cells...), links: last.links}
-	n := 0
-	for _, f := range frames {
-		if len(f.cells) != len(av.cells) {
-			continue
-		}
-		n++
-	}
-	if n == 0 {
-		return av
-	}
-	for i := range av.cells {
-		var es, em, ee, xl, f1, f2 float64
-		for _, f := range frames {
-			if len(f.cells) != len(av.cells) {
-				continue
-			}
-			c := &f.cells[i]
-			es += float64(c.es)
-			em += float64(c.em)
-			ee += float64(c.ee)
-			xl += float64(c.xl)
-			f1 += float64(c.fa1)
-			f2 += float64(c.fa2)
-		}
-		inv := 1.0 / float64(n)
-		av.cells[i].es = float32(es * inv)
-		av.cells[i].em = float32(em * inv)
-		av.cells[i].ee = float32(ee * inv)
-		av.cells[i].xl = float32(xl * inv)
-		av.cells[i].fa1 = float32(f1 * inv)
-		av.cells[i].fa2 = float32(f2 * inv)
-	}
-	return av
-}
-
-func runInteractive(files []string, selfcheck bool) {
-	frames := make([]*frame, 0, len(files))
-	for _, fp := range files {
-		f, err := readFCS(fp)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
-			os.Exit(1)
-		}
-		frames = append(frames, f)
-	}
-	if len(frames) == 0 {
-		fmt.Fprintln(os.Stderr, "no .fcs frames")
-		os.Exit(1)
-	}
+func runInteractive(frames []*frame, selfcheck bool) {
 	vw := &viewer{
-		frames: frames, avg: buildAvg(frames),
+		frames: frames, avg: buildAvgFrame(frames),
+		channels: runChannels(frames[0]),
 		speed: 8, gamma: 0.7, ptScale: 900,
 		yaw: 0.6, pitch: 0.5, dist: float32(frames[0].L) * 1.6,
 		tagTint: true, links: len(frames[0].links) > 0,
@@ -443,7 +394,7 @@ func runInteractive(files []string, selfcheck bool) {
 
 	help := func() {
 		fmt.Println("volview -i: drag orbit | shift+drag pan | wheel zoom | , . step | space play | [ ] speed")
-		fmt.Println("  1..8 channel (es em ee x r phase fa1 thd) | L links | T tag tint | A avg | N norm | +/- size | G gamma | S shot | Q quit")
+		fmt.Println("  1..9/C channel (" + strings.Join(vw.channels, " ") + ") | L links | T tag tint | A avg | N norm | +/- size | G gamma | S shot | Q quit")
 	}
 	help()
 
@@ -522,10 +473,16 @@ func runInteractive(files []string, selfcheck bool) {
 			vw.shot++
 		case glfw.KeyH:
 			help()
+		case glfw.KeyC:
+			vw.chanIdx = (vw.chanIdx + 1) % len(vw.channels)
+			vw.dirty = true
 		default:
-			if k >= glfw.Key1 && k <= glfw.Key8 {
-				vw.chanIdx = int(k - glfw.Key1)
-				vw.dirty = true
+			if k >= glfw.Key1 && k <= glfw.Key9 {
+				idx := int(k - glfw.Key1)
+				if idx < len(vw.channels) {
+					vw.chanIdx = idx
+					vw.dirty = true
+				}
 			}
 		}
 	})
@@ -551,7 +508,7 @@ func runInteractive(files []string, selfcheck bool) {
 				mode = "AVG"
 			}
 			win.SetTitle(fmt.Sprintf("fcs volview — t=%.2f  [%d/%d %s]  ch=%s  norm=%s",
-				f.t, vw.frameIdx+1, len(vw.frames), mode, channelNames[vw.chanIdx],
+				f.t, vw.frameIdx+1, len(vw.frames), mode, vw.channels[vw.chanIdx],
 				map[bool]string{true: "global", false: "frame"}[vw.globalN]))
 		}
 		ww, wh := win.GetFramebufferSize()
@@ -588,8 +545,8 @@ func runInteractive(files []string, selfcheck bool) {
 		gl.UniformMatrix4fv(gl.GetUniformLocation(prog, gl.Str("mvp\x00")), 1, false, &mvp[0])
 		gl.Uniform1f(gl.GetUniformLocation(prog, gl.Str("ptScale\x00")), vw.ptScale)
 		gl.Uniform1f(gl.GetUniformLocation(prog, gl.Str("gamma\x00")), vw.gamma)
-		cyc := int32(0)
-		if channelCyclic(channelNames[vw.chanIdx]) {
+			cyc := int32(0)
+		if channelCyclic(vw.channels[vw.chanIdx]) {
 			cyc = 1
 		}
 		gl.Uniform1i(gl.GetUniformLocation(prog, gl.Str("cyclic\x00")), cyc)

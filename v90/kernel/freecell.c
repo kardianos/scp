@@ -168,6 +168,7 @@ typedef struct {
     double slit_pinw;               /* fixture half-width about the wall plane */
     int    slit_mask;               /* 0 both, 1 A only, 2 B only, 3 no wall */
     char snap_dir[256];
+    char snap_file[256];            /* FCS v3 single-stream output */
 } Cfg;
 
 static Cfg P;
@@ -212,6 +213,7 @@ static void cfg_defaults(void)
     P.slit_t0 = 16.0; P.slit_t1 = 60.0; P.slit_mask = 0;
     P.slit_pinw = 3.0;
     strcpy(P.snap_dir, "");
+    strcpy(P.snap_file, "");
 }
 
 static void set_kv(const char *k, const char *v)
@@ -309,6 +311,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "slit_mask")) P.slit_mask = atoi(v);
     else if (!strcmp(k, "slit_pinw")) P.slit_pinw = atof(v);
     else if (!strcmp(k, "snap_dir")) { strncpy(P.snap_dir, v, 255); P.snap_dir[255] = 0; }
+    else if (!strcmp(k, "snap_file")) { strncpy(P.snap_file, v, 255); P.snap_file[255] = 0; }
     else fprintf(stderr, "# WARN unknown key %s\n", k);
 }
 
@@ -1509,46 +1512,166 @@ static int build_bath2d(double *bx, double *by, double *bz, int nmax)
     return n;
 }
 
-/* .fcs snapshot (FCS1, little-endian; same format as the Go kernel and
- * cmd/volview). Pure output — consumes no RNG. */
-static void write_fcs(int idx)
+static double total_energy(void);
+static void geo_stats(double *phi, double *zl, int *nla, int *nld,
+                      double *dbar, double *sig_d, double *maxldd);
+
+/* ---- FCS v3 chunked stream (FCS.md) — same bytes as the Go kernel.
+ * One CELL+LINK frame pair per snapshot; ANLZ instrumentation frames
+ * interleave freely. Pure output — consumes no RNG. ---- */
+static FILE *fcs_stream = NULL;
+
+static void fcs_wu32(FILE *f, uint32_t v) { fwrite(&v, 4, 1, f); }
+static void fcs_wu64(FILE *f, uint64_t v) { fwrite(&v, 8, 1, f); }
+static void fcs_wf64(FILE *f, double v) { fwrite(&v, 8, 1, f); }
+
+static const char *FCS_CELL_COLS[] =
+    {"x","y","z","r","es","em","ee","xload","tag","fa1","fa2","th2"};
+#define FCS_NCELLCOLS 12
+static const char *FCS_LINK_COLS[] = {"d","A","lem","gg"};
+#define FCS_NLINKCOLS 4
+
+static void fcs_begin(FILE *f)
 {
-    char path[512];
-    snprintf(path, sizeof path, "%s/snap_%05d_t%.3f.fcs", P.snap_dir, idx, sim_t);
-    FILE *f = fopen(path, "wb");
-    if (!f) { fprintf(stderr, "# WARN snap open %s failed\n", path); return; }
-    uint32_t ver = 2, nc = (uint32_t)NC;
     fwrite("FCS1", 1, 4, f);
-    fwrite(&ver, 4, 1, f);
-    fwrite(&nc, 4, 1, f);
-    fwrite(&sim_t, 8, 1, f);
-    fwrite(&P.L, 8, 1, f);
+    fcs_wu32(f, 3);
+    char cfg[2048];
+    int n = snprintf(cfg, sizeof cfg,
+        "exp=%s seed=%lu L=%g dt=%g T=%g\n"
+        "laws_V2g: C=%g w1=%g w2=%g q_detune=%g gamma_res=%g gamma_res_m=%g "
+        "p_gate=%g lock_floor=%g k_dep=%g k_dep_m=%g cap=%g e_s0=%g es_floor=%g "
+        "e_cond=%g f_conv=%g f_evap=%g s_pull=%g kappa_lock=%g kappa_align=%g "
+        "kappa_reac=%g s_k=%g s_disp=%g sigma_tumble=%g comb_limit=%d rough_k=%g "
+        "gamma_rough=%g mob_sym=%d mob_floor=%g field_J=%g quant_A0=%g quant_mode=%d\n"
+        "geometry: cfac=%g k_rep=%g mob_geo=%g kappa_bond=%g freeze_geo=%d "
+        "bath=%d bath_frac=%g\n",
+        P.exp, P.seed, P.L, P.dt, P.T,
+        P.C, P.w1, P.w2, P.q_detune, P.gamma_res, P.gamma_res_m,
+        P.p_gate, P.lock_floor, P.k_dep, P.k_dep_m, P.cap, P.e_s0, P.es_floor,
+        P.e_cond, P.f_conv, P.f_evap, P.s_pull, P.kappa_lock, P.kappa_align,
+        P.kappa_reac, P.s_k, P.s_disp, P.sigma_tumble, P.comb_limit, P.rough_k,
+        P.gamma_rough, P.mob_sym, P.mob_floor, P.field_J, P.quant_A0, P.quant_mode,
+        P.cfac, P.k_rep, P.mob_geo, P.kappa_bond, P.freeze_geo,
+        P.bath, P.bath_frac);
+    fwrite("CFG ", 1, 4, f); fcs_wu64(f, (uint64_t)n); fwrite(cfg, 1, n, f);
+    unsigned char sb[512];
+    int o = 0;
+    uint32_t ncc = FCS_NCELLCOLS;
+    memcpy(sb + o, &ncc, 4); o += 4;
+    for (int k = 0; k < FCS_NCELLCOLS; k++) {
+        size_t l = strlen(FCS_CELL_COLS[k]);
+        sb[o++] = (unsigned char)l;
+        memcpy(sb + o, FCS_CELL_COLS[k], l); o += (int)l;
+    }
+    uint32_t nlc = FCS_NLINKCOLS;
+    memcpy(sb + o, &nlc, 4); o += 4;
+    for (int k = 0; k < FCS_NLINKCOLS; k++) {
+        size_t l = strlen(FCS_LINK_COLS[k]);
+        sb[o++] = (unsigned char)l;
+        memcpy(sb + o, FCS_LINK_COLS[k], l); o += (int)l;
+    }
+    fwrite("SCHM", 1, 4, f); fcs_wu64(f, (uint64_t)o); fwrite(sb, 1, o, f);
+}
+
+static void fcs_cell_frame(FILE *f)
+{
+    uint64_t plen = 8 + 8 + 4 + (uint64_t)NC * FCS_NCELLCOLS * 4;
+    fwrite("CELL", 1, 4, f); fcs_wu64(f, plen);
+    fcs_wf64(f, sim_t); fcs_wf64(f, P.L); fcs_wu32(f, (uint32_t)NC);
     for (int i = 0; i < NC; i++) {
-        float rec[12];
+        float rec[FCS_NCELLCOLS];
         rec[0] = (float)px_[i]; rec[1] = (float)py_[i]; rec[2] = (float)pz_[i];
         rec[3] = (float)cr[i]; rec[4] = (float)Es[i]; rec[5] = (float)Em[i];
         rec[6] = (float)Ee[i]; rec[7] = (float)((Em[i] + flload[i]) / P.cap);
         rec[8] = (float)tag[i];
         rec[9] = (float)fa1[i]; rec[10] = (float)fa2[i]; rec[11] = (float)th2[i];
-        fwrite(rec, 4, 12, f);
+        fwrite(rec, 4, FCS_NCELLCOLS, f);
     }
-    /* link block: every non-free slot (dying slots have A=0, lem>0) */
     uint32_t nl = 0;
     for (int s = 0; s < NSLOT; s++) if (sst[s] != S_FREE) nl++;
-    fwrite(&nl, 4, 1, f);
+    uint64_t llen = 8 + 4 + (uint64_t)nl * (8 + FCS_NLINKCOLS * 4);
+    fwrite("LINK", 1, 4, f); fcs_wu64(f, llen);
+    fcs_wf64(f, sim_t); fcs_wu32(f, nl);
     for (int s = 0; s < NSLOT; s++) {
         if (sst[s] == S_FREE) continue;
         int i = sli[s], j = slj[s];
         uint32_t ij[2] = { (uint32_t)i, (uint32_t)j };
         double gf = gate_of(slq[s]*th2[i] - slq[s]*w2e[i]*sd[s]/P.C - slp[s]*th2[j]);
         double gb = gate_of(slp[s]*th2[j] - slp[s]*w2e[j]*sd[s]/P.C - slq[s]*th2[i]);
-        float lr[4];
+        float lr[FCS_NLINKCOLS];
         lr[0] = (float)sd[s]; lr[1] = (float)sA[s];
         lr[2] = (float)(slem[2*s] + slem[2*s+1]);
         lr[3] = (float)(gf * gb);
         fwrite(ij, 4, 2, f);
-        fwrite(lr, 4, 4, f);
+        fwrite(lr, 4, FCS_NLINKCOLS, f);
     }
+    fflush(f);
+}
+
+static void fcs_anlz_table(FILE *f, const char *name, const char **cols,
+                           int ncols, const double *rows, int nrows)
+{
+    size_t nn = strlen(name);
+    uint64_t plen = 1 + 1 + nn + 8 + 4 + 4 + (uint64_t)nrows * ncols * 8;
+    for (int c = 0; c < ncols; c++) plen += 1 + strlen(cols[c]);
+    fwrite("ANLZ", 1, 4, f); fcs_wu64(f, plen);
+    unsigned char kind = 1, l = (unsigned char)nn;
+    fwrite(&kind, 1, 1, f);
+    fwrite(&l, 1, 1, f); fwrite(name, 1, nn, f);
+    fcs_wf64(f, sim_t);
+    fcs_wu32(f, (uint32_t)ncols);
+    for (int c = 0; c < ncols; c++) {
+        unsigned char cl = (unsigned char)strlen(cols[c]);
+        fwrite(&cl, 1, 1, f); fwrite(cols[c], 1, cl, f);
+    }
+    fcs_wu32(f, (uint32_t)nrows);
+    fwrite(rows, 8, (size_t)nrows * ncols, f);
+    fflush(f);
+}
+
+static void fcs_anlz_text(FILE *f, const char *txt)
+{
+    uint64_t plen = 1 + strlen(txt);
+    fwrite("ANLZ", 1, 4, f); fcs_wu64(f, plen);
+    unsigned char kind = 0;
+    fwrite(&kind, 1, 1, f);
+    fwrite(txt, 1, strlen(txt), f);
+    fflush(f);
+}
+
+/* per-snapshot instrumentation: scalar meters, and for exp=slit the
+ * ACCUMULATING screen profile — the fringe build-up lives in the stream */
+static void fcs_instrument(FILE *f)
+{
+    double Etot = total_energy();
+    double phi, zl, dbar, sig, mld; int nla, nld;
+    geo_stats(&phi, &zl, &nla, &nld, &dbar, &sig, &mld);
+    static const char *MC[] = {"drift","phi","z_live","nla","nld","births","deaths"};
+    double mr[7];
+    mr[0] = (Etot - E0_total) / (E0_total != 0 ? E0_total : 1);
+    mr[1] = phi; mr[2] = zl; mr[3] = (double)nla; mr[4] = (double)nld;
+    mr[5] = (double)births; mr[6] = (double)deaths;
+    fcs_anlz_table(f, "meters", MC, 7, mr, 1);
+    if (!strcmp(P.exp, "slit")) {
+        static const char *SC[] = {"y","I"};
+        double rows[DS_NBIN * 2];
+        for (int b = 0; b < DS_NBIN; b++) {
+            rows[2*b] = (b + 0.5) * P.L / DS_NBIN;
+            rows[2*b+1] = ds_I[b];
+        }
+        fcs_anlz_table(f, "ds_screen", SC, 2, rows, DS_NBIN);
+    }
+}
+
+/* per-frame v3 file under snap_dir (a v3 stream with one frame) */
+static void write_fcs(int idx)
+{
+    char path[512];
+    snprintf(path, sizeof path, "%s/snap_%05d_t%.3f.fcs", P.snap_dir, idx, sim_t);
+    FILE *f = fopen(path, "wb");
+    if (!f) { fprintf(stderr, "# WARN snap open %s failed\n", path); return; }
+    fcs_begin(f);
+    fcs_cell_frame(f);
     fclose(f);
 }
 
@@ -2201,6 +2324,12 @@ int main(int argc, char **argv)
     }
     if (truss_n > 0) gyration_eigs(truss_shape0);
 
+    if (P.snap_file[0]) {
+        fcs_stream = fopen(P.snap_file, "wb");
+        if (!fcs_stream) fprintf(stderr, "# WARN snap_file open failed\n");
+        else fcs_begin(fcs_stream);
+    }
+
     /* ---------------- run ---------------- */
     int steps = (int)(P.T / P.dt + 0.5);
     int sheared = 0;
@@ -2323,6 +2452,10 @@ int main(int argc, char **argv)
         }
         if (P.snap_every > 0 && P.snap_dir[0] && st % P.snap_every == 0)
             write_fcs(st / P.snap_every);
+        if (fcs_stream && P.snap_every > 0 && st % P.snap_every == 0) {
+            fcs_cell_frame(fcs_stream);
+            fcs_instrument(fcs_stream);
+        }
         if (st == steps) break;
         step();
         if (!strcmp(P.exp, "slit")) {
@@ -2451,6 +2584,18 @@ int main(int argc, char **argv)
                 printf("# RESULT blob_drift speed=%.6f cos_to_kdir=%.4f v=(%.2e,%.2e,%.2e)\n",
                        sp, sp > 0 ? vx / sp : 0, vx, vy, vz);
             }
+        }
+        if (fcs_stream) {
+            char fin[512];
+            snprintf(fin, sizeof fin,
+                "RESULT drift_rel %.3e\nRESULT births %ld deaths %ld beta_returns %ld\n"
+                "RESULT conv rough=%.6f cond=%.6f evap=%.6f backs=%.6f\n",
+                (Etot - E0_total) / (E0_total != 0 ? E0_total : 1),
+                births, deaths, beta_returns,
+                rough_total, cond_total, evap_total, backs_total);
+            fcs_anlz_text(fcs_stream, fin);
+            fclose(fcs_stream);
+            fcs_stream = NULL;
         }
         if (!strcmp(P.exp, "slit")) {
             printf("# RESULT ds exposure=%.6f gate=[%g,%g] screen_x=%g nbin=%d\n",
