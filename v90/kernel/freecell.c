@@ -1329,8 +1329,12 @@ static void step(void)
             }
             double vx = mx, vy = my, vz = mz;
             if (fs > 0) {
-                double w = P.kappa_align * dt / fs;
-                vx += w * ax; vy += w * ay; vz += w * az;
+                /* stable form: |ax/fs| <= 2 by construction (flux-weighted
+                 * mean of unit-bounded vectors), but kappa_align*dt/fs
+                 * overflows to inf when the only flux on a cell is
+                 * subnormal dust (fs ~ 1e-311) — divide first */
+                double w = P.kappa_align * dt;
+                vx += w * (ax / fs); vy += w * (ay / fs); vz += w * (az / fs);
             }
             if (sq > 0) {
                 const double *g = rngbuf + 6 * (size_t)i + 3 * c;

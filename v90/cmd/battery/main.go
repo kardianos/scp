@@ -405,7 +405,177 @@ func suite() []experiment {
 		}
 	}})
 
+	// FB8 DS tier 1 — single-quantum clicks rebuild the wave's loci
+	// (DS.md tier-1 harvest). Condensing screen (slit_clicks=1) at the
+	// calibrated amp=4 — the linear-regime ceiling (evap=0; amp>=5 fires
+	// cap evaporation; measured 2026-08-03). Claim rule = R3 atomicity:
+	// a click is a whole conversion grain (k*eps, eps=A0eff*w1/2pi) at a
+	// screen cell. In-gate clicks (t in [20,36], the tier-0 exposure
+	// gate) only — later clicks are box reverb (measured: at amp=2 the
+	// single-slit arm clicks ONLY after t~44, wrap-lit). Quantitative
+	// loci test = the fringe-phase score s = cos^2(pi*delta(y)/lambda):
+	// phase-blind null 0.5; two-slit clicks phase-locked, single-slit
+	// controls phase-blind; minima bands (pred min +-1.5, where ideal
+	// fringe intensity <15% of peak) empty vs filled.
+	ds1Seeds := []string{"20260802", "111", "314159", "271828", "141421", "173205",
+		"577215", "662607", "299792", "137035", "161803", "618033"}
+	ds1Args := func(extra ...string) []string {
+		base := []string{"exp=slit", "L=64", "T=44", "sigma=4", "kx=0.9", "amp=4",
+			"q_detune=0", "e_cond=99", "slit_wallx=22", "slit_srcx=12",
+			"slit_screenx=36", "slit_sep=10", "slit_hw=2.8", "slit_th=2.4",
+			"slit_sy=14", "slit_t0=20", "slit_t1=36", "slit_clicks=1"}
+		return append(base, extra...)
+	}
+	var ds1Two, ds1Ctl []string
+	sp = []runSpec{}
+	if wantC {
+		for i, sd := range ds1Seeds {
+			args := ds1Args("seed=" + sd)
+			if i == 0 {
+				args = append(args, "snap_every=250", "snap_file=runs/streams/ds1_two.fcs")
+			}
+			lb := "ds1_two_s" + sd
+			ds1Two = append(ds1Two, lb)
+			sp = append(sp, cw(lb, args...))
+		}
+		for _, sd := range ds1Seeds[:6] {
+			la, lb2 := "ds1_A_s"+sd, "ds1_B_s"+sd
+			ds1Ctl = append(ds1Ctl, la, lb2)
+			sp = append(sp, cw(la, ds1Args("seed="+sd, "slit_mask=1")...))
+			sp = append(sp, cw(lb2, ds1Args("seed="+sd, "slit_mask=2")...))
+		}
+	}
+	exps = append(exps, experiment{"ds1", sp, func(r *reporter) {
+		if !wantC {
+			return
+		}
+		two := ds1Stats(ds1Two)
+		ctl := ds1Stats(ds1Ctl)
+		r.add("ds1", "grain harvest: n_two >= 200 (in-gate)", two.n >= 200,
+			fmt.Sprintf("%d", two.n), ">=200", true)
+		r.add("ds1", "two-slit clicks phase-locked: sbar >= 0.62", two.n > 0 && two.sbar >= 0.62,
+			fmt.Sprintf("%.4f±%.4f", two.sbar, two.sem), ">=0.62", true)
+		r.add("ds1", "which-slit controls phase-blind: sbar <= 0.50", ctl.n > 0 && ctl.sbar <= 0.50,
+			fmt.Sprintf("%.4f±%.4f n=%d", ctl.sbar, ctl.sem, ctl.n), "<=0.50", true)
+		r.add("ds1", "phase separation sbar_two - sbar_ctl >= 0.18", two.n > 0 && ctl.n > 0 && two.sbar-ctl.sbar >= 0.18,
+			fmt.Sprintf("%.4f", two.sbar-ctl.sbar), ">=0.18", true)
+		fTwo, fCtl := 0.0, 0.0
+		if two.n > 0 {
+			fTwo = float64(two.nmin) / float64(two.n)
+		}
+		if ctl.n > 0 {
+			fCtl = float64(ctl.nmin) / float64(ctl.n)
+		}
+		r.add("ds1", "minima dark: f_min_two <= 0.33*f_min_ctl", ctl.nmin > 0 && fTwo <= 0.33*fCtl,
+			fmt.Sprintf("%.3f vs %.3f", fTwo, fCtl), "ratio<=0.33", true)
+		r.add("ds1", "control minima fill: nmin_ctl >= 16", ctl.nmin >= 16,
+			fmt.Sprintf("%d", ctl.nmin), ">=16", true)
+		r.add("ds1", "R3 atomicity: e = k*eps, k>=1 (all clicks)", two.n > 0 && ctl.n > 0 &&
+			two.atomDev <= 2e-5 && ctl.atomDev <= 2e-5 && two.minK >= 1 && ctl.minK >= 1,
+			fmt.Sprintf("dev=%.1e k=[%d,%d]", maxf(two.atomDev, ctl.atomDev), minint(two.minK, ctl.minK), maxint(two.maxK, ctl.maxK)),
+			"<=2e-5 (print)", true)
+		r.add("ds1", "panel |drift| <= 1e-13 (worst run)", two.okDrift && ctl.okDrift &&
+			maxf(two.maxDrift, ctl.maxDrift) <= 1e-13,
+			fmt.Sprintf("%.3g", maxf(two.maxDrift, ctl.maxDrift)), "1e-13", true)
+	}})
+
 	return exps
+}
+
+// ------------------------------------------------------------------
+// DS tier-1 click analysis
+// ------------------------------------------------------------------
+
+var clickRe = regexp.MustCompile(`(?m)^# CLICK t=(\S+) y=(\S+) e=(\S+)`)
+
+type ds1Agg struct {
+	n, nmin, nmax  int
+	sbar, sem      float64
+	atomDev        float64
+	minK, maxK     int
+	maxDrift       float64
+	okDrift        bool
+}
+
+// ds1Stats aggregates in-gate clicks over panel logs: fringe-phase score
+// s = cos^2(pi*delta(y)/lambda) (delta from the same parameter-free loci
+// as dsAnalyze: yA=27, yB=37, D=14, lambda=2pi/0.9), minima bands = pred
+// minima +-1.5 ([25,28] u [36,39]), central max band [30,34], and the R3
+// atom check against eps = A0eff*w1/2pi (laws_V2g: 1.15*1.65/2pi).
+func ds1Stats(labels []string) ds1Agg {
+	const yA, yB, D = 27.0, 37.0, 14.0
+	lam := 2 * math.Pi / 0.9
+	eps := 1.15 * 1.65 / (2 * math.Pi)
+	a := ds1Agg{minK: 1 << 30, okDrift: true}
+	ssum, s2 := 0.0, 0.0
+	for _, lb := range labels {
+		lg := get(lb)
+		if v, ok := exf(lg, `# RESULT drift_rel (\S+)`); ok {
+			if abs(v) > a.maxDrift {
+				a.maxDrift = abs(v)
+			}
+		} else {
+			a.okDrift = false
+		}
+		for _, m := range clickRe.FindAllStringSubmatch(lg, -1) {
+			t, e1 := strconv.ParseFloat(m[1], 64)
+			y, e2 := strconv.ParseFloat(m[2], 64)
+			e, e3 := strconv.ParseFloat(m[3], 64)
+			if e1 != nil || e2 != nil || e3 != nil || t < 20 || t > 36 {
+				continue
+			}
+			delta := math.Sqrt(D*D+(y-yA)*(y-yA)) - math.Sqrt(D*D+(y-yB)*(y-yB))
+			c := math.Cos(math.Pi * delta / lam)
+			s := c * c
+			a.n++
+			ssum += s
+			s2 += s * s
+			if (y >= 25 && y <= 28) || (y >= 36 && y <= 39) {
+				a.nmin++
+			}
+			if y >= 30 && y <= 34 {
+				a.nmax++
+			}
+			k := int(e/eps + 0.5)
+			if k < a.minK {
+				a.minK = k
+			}
+			if k > a.maxK {
+				a.maxK = k
+			}
+			if dev := abs(e - float64(k)*eps); dev > a.atomDev {
+				a.atomDev = dev
+			}
+		}
+	}
+	if a.n > 0 {
+		a.sbar = ssum / float64(a.n)
+		sd := math.Sqrt(s2/float64(a.n) - a.sbar*a.sbar)
+		a.sem = sd / math.Sqrt(float64(a.n))
+	}
+	if a.minK == 1<<30 {
+		a.minK = 0
+	}
+	return a
+}
+
+func maxf(a, b float64) float64 {
+	if a > b {
+		return a
+	}
+	return b
+}
+func minint(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+func maxint(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
 
 var scRe = regexp.MustCompile(`(?m)^# SCREENCELL y=(\S+) x=\S+ I=(\S+)`)

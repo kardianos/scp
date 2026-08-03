@@ -687,10 +687,13 @@ func (s *Sim) step() {
 			}
 			vx, vy, vz := mx, my, mz
 			if fs > 0 {
-				w := P.KappaAlign * dt / fs
-				vx += w * ax
-				vy += w * ay
-				vz += w * az
+				// stable form: |ax/fs| <= 2 by construction, but
+				// kappa_align*dt/fs overflows to inf on subnormal-dust
+				// flux (kernel/freecell.c pass 7) — divide first
+				w := P.KappaAlign * dt
+				vx += w * (ax / fs)
+				vy += w * (ay / fs)
+				vz += w * (az / fs)
 			}
 			if sq > 0 {
 				g := s.rngbuf[6*i+3*c : 6*i+3*c+3]

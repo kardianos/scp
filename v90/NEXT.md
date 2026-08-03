@@ -7,10 +7,11 @@ Detail lives in the campaign docs; this file is the index and the queue.
 
 | result | where |
 |---|---|
-| Battery **40 bars ALL GREEN** through every kernel change (7 apparatus additions this cycle) | `runs/BATTERY.log`, `cmd/battery` |
+| Battery **48 bars ALL GREEN** through every kernel change (8 apparatus additions this cycle) | `runs/BATTERY.log`, `cmd/battery` |
 | Go kernel port faithful at the FP floor (bath/blob byte-identical; physics digits identical everywhere) | `VERIFY.md` |
 | **DS tier 0 CONFIRMED on the live substrate** — fringes at parameter-free loci, V 0.652 vs frozen 0.667, 3-seed panel; Huygens wavelets visible in the phase view | `DS.md`, `runs/ds/viz/` |
-| **DS tier 1 discriminator present** — two-slit clicks leave predicted minima EMPTY (0 in both bands, n=37); single-slit control fills them. NOT claimed (needs ≥200 grains) | `DS.md` |
+| **DS tier 1 CLAIMED (battery `ds1`, 8 bars)** — 362 whole-grain clicks over 24 substrate seeds: fringe-phase score s̄ 0.683±0.017 (null 0.5) vs which-slit controls 0.380±0.036; minima 7.7× dark; every click k·ε, k∈{1,2}. Controls sit BELOW phase-blind (envelope peaks at the minima loci) | `DS.md` |
+| Instrumented on the way: click threshold Ee ≥ ε/f_conv makes amp a *calibrated window* [3,4] — below it single slits go silent in-gate (first-pass control was reverb-lit); above it cap evap fires and minima fill. Plus a kernel overflow fixed (subnormal-dust flux in pass-7 alignment → stable form, both kernels, battery-gated) | `DS.md` findings 5–7 |
 | FCS v3: chunked run streams, interleaved ANLZ instrumentation, lossless codec 1 (0.46–0.55 @174 MB/s), live `-follow` viewing | `FCS.md`, `cmd/volview` |
 | Motion: bound objects do not travel (bounded wander; exact vacuum null under drive); blobs merge (undriven closes as fast as driven); collisions = contact-range plastic locks in [2.88,3.13], exactly inert beyond contact | `MOTION.md` |
 | **Opacity is unfilled capacity** — field couples to matter only via conversion; saturated matter transparent; headroom object absorbs Δcond +4.9 | `MOTION.md` |
@@ -50,9 +51,9 @@ ones hold. Composite work should default to embedded apparatus.
 
 ## The queue (priority order; effort; blocking)
 
-1. **Tier-1 grain harvest** — multi-seed click runs to ≥200 grains +
-   quantitative loci test → claim tier 1, add the battery bar. *Cheap,
-   unblocked, high payoff.*
+1. ~~**Tier-1 grain harvest**~~ **DONE 2026-08-03** — claimed, 8 bars
+   gated (`ds1`), battery 48 GREEN. Tiers 2–3 analogs (eraser, delayed
+   choice) are now unblocked (see Also-can-do).
 2. **All-modes center-of-energy meter** (Es+Em+Ee+flight, kernel meter)
    → honest Δp bars for blob2/collisions. *Cheap, unblocked.*
 3. **Composite follow-ups:** CQ8 long-run (does protection persist?);

@@ -140,6 +140,94 @@ scope: ~37 grains per run is far below v89's 223; tier 1 is NOT yet
 claimed — it needs a multi-seed grain harvest (≥200 clicks) and a
 quantitative loci test before joining the battery.
 
+## Tier 1 — instrument findings on the way to the harvest (2026-08-03)
+
+5. **The first-pass single-slit control was reverb-lit.** Every one of
+   its 37 clicks arrived at t ≥ 44.5 — after the exposure gate. At
+   amp=2 a single slit never crosses the click threshold
+   (0.25·Ee ≥ ε ⇒ Ee ≥ 1.21) during direct transit; the conservative
+   periodic box then fills with wrapped field until the screen strip
+   clicks on reverb. The first-pass "bands fill" observation stands
+   only at reverb time; the harvest control must click IN-GATE —
+   which sets the beam amplitude.
+6. **The amp window is 3 ≤ amp ≤ 4 (calibrated, seed 20260802).**
+   amp=2: two-slit clicks in-gate, single-slit zero. amp=3: controls
+   click barely (2/5 per mask). amp=4: two-slit 20 in-gate with minima
+   bands still EMPTY, controls 7/12 with bands FILLED — and evap = 0
+   everywhere (optics linear). amp=5/6: cap evaporation fires on the
+   hot central fringe (evap 0.53/1.06) and the two-slit minima begin
+   to fill (threshold catches sub-fringe light): the discriminator
+   erodes exactly where the declared linear regime ends. **amp=4 is
+   the harvest point.**
+7. **Hot beams exposed a kernel overflow (fixed, battery-gated).** At
+   amp ≥ 4 the pass-7 alignment weight `kappa_align·dt/fs` overflows
+   to inf when a cell's only flux is subnormal dust (fs ~ 1e-311),
+   ending in NaN positions (the kernel's FATAL tripwire caught it).
+   The bounded quantity is the flux-weighted mean direction |ax/fs| ≤ 2;
+   the fix computes `kappa_align·dt·(ax/fs)` — same math, stable order,
+   both kernels (C + Go step.go) identically. Full battery re-run:
+   40 bars GREEN; dense-transport logs reseed at the ulp level
+   (pair/ring/blob/uud), all measured values unchanged.
+
+## Tier 1 — the grain harvest (pre-registered before the panel ran)
+
+**Panel:** 12 two-slit seeds (20260802, 111, 314159, 271828, 141421,
+173205, 577215, 662607, 299792, 137035, 161803, 618033) + the first 6
+seeds × both single-slit masks (12 control runs). Tier-0 apparatus
+verbatim except `slit_clicks=1 amp=4`. **In-gate clicks only**
+(t ∈ [20,36], the tier-0 exposure gate — finding 5 makes the gate
+load-bearing at tier 1).
+
+**The quantitative loci test — the fringe-phase score.** Each click at
+y scores s = cos²(π·δ(y)/λ), δ from the parameter-free loci (yA=27,
+yB=37, D=14, λ=2π/0.9). A click distribution blind to fringe phase has
+E[s] = 0.5 exactly; clicks sampling the two-slit intensity are
+phase-locked (s̄ → high). Minima bands = predicted minima ±1.5
+([25,28] ∪ [36,39] — where ideal fringe intensity < 15% of peak);
+central max band [30,34].
+
+**Pre-registered bars (battery experiment `ds1`, 8 bars):**
+n_two ≥ 200; s̄_two ≥ 0.62 (≥ 7σ above the phase-blind null at n=200);
+s̄_ctl ≤ 0.55 (controls ARE phase-blind); s̄_two − s̄_ctl ≥ 0.15;
+minima dark two-slit: f_min_two ≤ 0.5·f_min_ctl; control fill:
+nmin_ctl ≥ 8; R3 atomicity: every click e = k·ε(w₁), k ≥ 1 whole
+(tolerance 2e-5 = the log's %.5f print floor); panel |drift| ≤ 1e-13.
+Calibration expectation (12-seed yield check, two-slit only): n = 270,
+s̄ = 0.683 ± 0.017, f_min = 0.048.
+
+## Tier 1 — CLAIMED (2026-08-03; battery `ds1`, 8 bars GREEN)
+
+First panel run, all eight pre-registered bars pass; floors then
+sharpened to the measurement (ratchet: bars encode claims):
+
+| statistic | measured | sharpened bar |
+|---|---|---|
+| grains, two-slit in-gate (12 seeds) | **270** | ≥ 200 |
+| s̄_two (fringe-phase score; null 0.5) | **0.6827 ± 0.0168** (10.9σ) | ≥ 0.62 |
+| s̄_ctl (12 single-slit runs, n=92) | **0.3803 ± 0.0358** | ≤ 0.50 |
+| separation s̄_two − s̄_ctl | **0.3024** | ≥ 0.18 |
+| minima-band fraction two-slit vs ctl | **0.048 vs 0.370** (7.7×) | ratio ≤ 0.33 |
+| control minima-band clicks | **34** | ≥ 16 |
+| atomicity | every click k·ε, k ∈ {1,2}, dev 3.5e-6 (print) | ≤ 2e-5 |
+| worst panel drift | **7.1e-15** | ≤ 1e-13 |
+
+Two readings beyond the pass: (1) the controls are not merely
+phase-blind — s̄_ctl sits 3.3σ BELOW 0.5, because the single-slit
+envelope peaks behind its slit, exactly where the two-slit minima lie;
+which-slit truncation doesn't just remove the fringe preference, it
+puts the clicks where the fringes forbid them. (2) Grains come in
+whole atoms only: k=1 overwhelmingly, k=2 occasionally, nothing
+fractional — the R3 claim rule (a click = a whole conversion grain)
+holds at n=362 across 24 substrate realizations.
+
+**The tier-1 statement:** on the live free-cell substrate, single
+quantized conversion events at a condensing screen rebuild the wave's
+parameter-free interference loci (fringe-phase-locked, minima dark),
+and which-slit truncation removes the structure — at 362 grains,
+gated. Images: `runs/ds/viz/ds1_t25_phase.png` (Huygens wavelets at
+the harvest amp), `ds1_t25_ee.png`/`ds1_t30_ee.png` (transit),
+`ds1_avg_ee.png` (time-average). Stream: `runs/streams/ds1_two.fcs`.
+
 ## What later tiers need
 
 Eraser/delayed-choice analogs after tier 1 is green. The Go kernel does

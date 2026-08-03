@@ -178,9 +178,9 @@ hard results index, what they mean, and the prioritized next steps.
 | item | state |
 |---|---|
 | P0 port + verify | **done** — VERIFY.md: bath/blob byte-identical, physics digits identical everywhere |
-| P1 battery | **GREEN — 40 bars**, both kernels, through 7 apparatus additions (runs/BATTERY.log) |
+| P1 battery | **GREEN — 48 bars**, both kernels, through 8 apparatus additions (runs/BATTERY.log) |
 | P1 double slit tier 0 | **CONFIRMED on the live substrate** (DS.md; battery `ds` 8 bars) |
-| DS tier 1 | discriminator present (clicks avoid minima); needs ≥200-grain harvest before claiming (DS.md) |
+| DS tier 1 | **CLAIMED** (DS.md; battery `ds1` 8 bars) — 362 whole-grain clicks, fringe-phase-locked s̄ 0.683 vs controls 0.380, minima 7.7× dark, R3 atomicity exact |
 | FCS + viewer | v3 chunked streams, interleaved ANLZ, lossless codec, live `-follow`, interactive orbit/scrub (FCS.md) |
 | MOTION baseline | measured: bounded wander, plastic-lock collisions, blob merging, driven-object null, opacity=headroom (MOTION.md) |
 | **COMPOSITE (primary focus)** | rounds 1–2 executed: macro-parity rule, T6 U/D asymmetry, bond=flight, compensation 8×, H-stiffness→flux-machine interior, **bath protects**, nucleon residual force (COMPOSITE.md) |
