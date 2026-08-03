@@ -5,7 +5,7 @@ CFLAGS  ?= -O2 -Wall -Wextra
 all: freecell go
 
 freecell: kernel/freecell.c
-	$(CC) $(CFLAGS) -o $@ $< -lm
+	$(CC) $(CFLAGS) -o $@ $< -lm -lzstd
 
 go:
 	go build -o fabrun ./cmd/fabrun

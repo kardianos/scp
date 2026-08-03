@@ -215,6 +215,7 @@ type viewer struct {
 	dirty     bool
 	shot      int
 	selfcheck bool
+	pinLive   bool // follow mode: auto-jump to newest frame
 }
 
 func p99max(vals []float64) float64 {
@@ -282,10 +283,78 @@ func (vw *viewer) channelVals(f *frame) ([]float32, float64) {
 	return out, vmax
 }
 
-func runInteractive(frames []*frame, selfcheck bool) {
+// follower tails a growing v3 stream: each poll re-reads the unconsumed
+// tail (at most ~one frame, kernels flush whole chunks) and consumes any
+// complete chunks, handing new frames to the viewer.
+type follower struct {
+	path     string
+	st       *v3reader
+	hdr      bool
+	consumed int64 // bytes consumed after the 8-byte header
+}
+
+func (fw *follower) poll() []*frame {
+	f, err := os.Open(fw.path)
+	if err != nil {
+		return nil
+	}
+	defer f.Close()
+	stat, err := f.Stat()
+	if err != nil {
+		return nil
+	}
+	if !fw.hdr {
+		var h [8]byte
+		if stat.Size() < 8 {
+			return nil
+		}
+		if _, err := f.ReadAt(h[:], 0); err != nil {
+			return nil
+		}
+		if string(h[:4]) != "FCS1" || le32(h[4:]) != 3 {
+			return nil
+		}
+		fw.hdr = true
+	}
+	start := 8 + fw.consumed
+	if stat.Size() <= start {
+		return nil
+	}
+	data := make([]byte, stat.Size()-start)
+	n, err := f.ReadAt(data, start)
+	if err != nil && n <= 0 {
+		return nil
+	}
+	data = data[:n]
+	before := len(fw.st.frames)
+	used, _ := fw.st.consume(data, fw.path)
+	fw.consumed += int64(used)
+	return fw.st.frames[before:]
+}
+
+func runInteractive(frames []*frame, followPath string, selfcheck bool) {
+	var fw *follower
+	if followPath != "" {
+		fw = &follower{path: followPath, st: &v3reader{}}
+		deadline := time.Now().Add(30 * time.Second)
+		for len(fw.st.frames) == 0 {
+			fw.poll()
+			if len(fw.st.frames) > 0 {
+				break
+			}
+			if time.Now().After(deadline) {
+				fmt.Fprintln(os.Stderr, "follow: no frames appeared in 30s")
+				os.Exit(1)
+			}
+			fmt.Println("# follow: waiting for first frame ...")
+			time.Sleep(500 * time.Millisecond)
+		}
+		frames = fw.st.frames
+	}
 	vw := &viewer{
 		frames: frames, avg: buildAvgFrame(frames),
 		channels: runChannels(frames[0]),
+		pinLive:  followPath != "",
 		speed: 8, gamma: 0.7, ptScale: 900,
 		yaw: 0.6, pitch: 0.5, dist: float32(frames[0].L) * 1.6,
 		tagTint: true, links: len(frames[0].links) > 0,
@@ -441,9 +510,15 @@ func runInteractive(frames []*frame, selfcheck bool) {
 			vw.playing = !vw.playing
 		case glfw.KeyComma, glfw.KeyLeft:
 			vw.frameIdx = (vw.frameIdx + len(vw.frames) - 1) % len(vw.frames)
+			vw.pinLive = false
 			vw.dirty = true
 		case glfw.KeyPeriod, glfw.KeyRight:
 			vw.frameIdx = (vw.frameIdx + 1) % len(vw.frames)
+			vw.pinLive = false
+			vw.dirty = true
+		case glfw.KeyE:
+			vw.pinLive = true
+			vw.frameIdx = len(vw.frames) - 1
 			vw.dirty = true
 		case glfw.KeyLeftBracket:
 			vw.speed = math.Max(1, vw.speed/1.5)
@@ -455,6 +530,9 @@ func runInteractive(frames []*frame, selfcheck bool) {
 			vw.tagTint = !vw.tagTint
 		case glfw.KeyA:
 			vw.useAvg = !vw.useAvg
+			if vw.useAvg {
+				vw.avg = buildAvgFrame(vw.frames)
+			}
 			vw.dirty = true
 		case glfw.KeyN:
 			vw.globalN = !vw.globalN
@@ -493,8 +571,20 @@ func runInteractive(frames []*frame, selfcheck bool) {
 	gl.Disable(gl.DEPTH_TEST)
 
 	lastStep := time.Now()
+	lastPoll := time.Now()
 	nframes := 0
 	for !win.ShouldClose() {
+		if fw != nil && time.Since(lastPoll) > 250*time.Millisecond {
+			lastPoll = time.Now()
+			if nf := fw.poll(); len(nf) > 0 {
+				vw.frames = fw.st.frames
+				vw.vmaxGlob = map[int]float64{} // norms stale
+				if vw.pinLive {
+					vw.frameIdx = len(vw.frames) - 1
+				}
+				vw.dirty = true
+			}
+		}
 		if vw.playing && time.Since(lastStep).Seconds() > 1.0/vw.speed {
 			vw.frameIdx = (vw.frameIdx + 1) % len(vw.frames)
 			vw.dirty = true
@@ -581,12 +671,17 @@ func runInteractive(frames []*frame, selfcheck bool) {
 		win.SwapBuffers()
 		glfw.PollEvents()
 		nframes++
-		if vw.selfcheck && nframes == 8 {
+		if vw.selfcheck && fw == nil && nframes == 8 {
 			vw.shot = 1
 		}
-		if vw.selfcheck && nframes >= 10 {
+		if vw.selfcheck && fw == nil && nframes >= 10 {
 			fmt.Println("# selfcheck ok: rendered", nframes, "frames,",
 				len(f.cells), "cells,", len(f.links), "links")
+			break
+		}
+		if vw.selfcheck && fw != nil && (len(vw.frames) >= 3 || nframes > 3000) {
+			fmt.Println("# selfcheck-follow ok: live frames =", len(vw.frames),
+				"rendered", nframes, "gl frames")
 			break
 		}
 	}

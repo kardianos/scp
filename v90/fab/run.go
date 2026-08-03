@@ -671,7 +671,7 @@ func (s *Sim) Run() {
 	var stream *fcsW
 	if P.SnapFile != "" {
 		var err error
-		stream, err = fcsOpen(P.SnapFile)
+		stream, err = fcsOpen(P.SnapFile, P.SnapComp != 0)
 		if err != nil {
 			fprintf(s.Errw, "# WARN snap_file open: %v\n", err)
 		} else {

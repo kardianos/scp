@@ -3,7 +3,8 @@
 `.fcs` is the v90 snapshot format for free-cell state: **a point cloud of
 cells whose geometry is state, plus the live channel graph**. Written by
 both kernels (`kernel/freecell.c` `write_fcs()`, `fab/fcs.go`) when
-`snap_every > 0` and `snap_dir` is set; read by `cmd/volview`. Pure
+`snap_every > 0` and `snap_dir` (per-frame files) or `snap_file` (one
+stream) is set; read by `cmd/volview`. Pure
 output — writers consume no RNG and cannot perturb determinism.
 
 ## Why not SFA
@@ -75,8 +76,36 @@ Then chunks until EOF:
     deaths, …). An analysis-only stream with a few field frames woven in
     is equally legal: chunk order is unconstrained after SCHM.
 
+* `CMPD` — **lossless compression wrapper** (default on; `snap_comp=0`
+  writes raw): payload = inner fourcc, `uint64` raw length, `uint8` codec,
+  compressed bytes. **Codec 1** = columnar transpose (4-byte units per
+  record) + byte shuffle + zstd, chosen by measurement on real streams
+  (double-slit run, 3.05 MB of CELL/LINK payloads):
+
+  | codec | ratio | encode |
+  |---|---|---|
+  | zstd raw | 0.668 | 84 MB/s |
+  | flate-6 | 0.674 | 52 MB/s |
+  | **columnar+shuffle+zstd (codec 1)** | **0.547** (0.464 on quasi-static streams) | **174 MB/s** |
+  | + XOR frame delta | 0.524 | 162 MB/s — rejected: only ~2-4% more for losing random access and per-chunk self-containment |
+
+  Per-chunk self-contained: random access, truncation safety, and live
+  following all survive compression. Verified lossless end-to-end
+  (renders from compressed and raw streams are byte-identical). Note:
+  the C kernel (libzstd) and Go kernel (klauspost) emit different valid
+  zstd bytes — parity across kernels is of the *decoded* chunks.
+
 **Current cell columns** (v3 schema names): `x y z r es em ee xload tag
 fa1 fa2 th2`. **Link columns:** `d A lem gg`.
+
+## Live streaming
+
+Kernels flush whole chunks per frame, so a stream is followable while
+the run is writing it: `volview -i -follow run.fcs` waits for the file,
+attaches on the first frame, and appends frames live (pinned to newest;
+scrubbing back unpins, `E` re-pins). The battery's heavier experiments
+(blob, pulse, ds_m0) write streams to `runs/streams/` as standard output
+(regenerable, gitignored).
 
 ## Legacy v1/v2 layout
 

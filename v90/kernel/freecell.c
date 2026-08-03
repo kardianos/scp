@@ -96,6 +96,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdint.h>
+#include <zstd.h>
 #include "../../v89/int_ledger/trig_lut.inc"
 
 #ifndef M_PI
@@ -169,6 +170,7 @@ typedef struct {
     int    slit_mask;               /* 0 both, 1 A only, 2 B only, 3 no wall */
     char snap_dir[256];
     char snap_file[256];            /* FCS v3 single-stream output */
+    int  snap_comp;                 /* 1 = compress CELL/LINK chunks (CMPD) */
 } Cfg;
 
 static Cfg P;
@@ -214,6 +216,7 @@ static void cfg_defaults(void)
     P.slit_pinw = 3.0;
     strcpy(P.snap_dir, "");
     strcpy(P.snap_file, "");
+    P.snap_comp = 1;
 }
 
 static void set_kv(const char *k, const char *v)
@@ -312,6 +315,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "slit_pinw")) P.slit_pinw = atof(v);
     else if (!strcmp(k, "snap_dir")) { strncpy(P.snap_dir, v, 255); P.snap_dir[255] = 0; }
     else if (!strcmp(k, "snap_file")) { strncpy(P.snap_file, v, 255); P.snap_file[255] = 0; }
+    else if (!strcmp(k, "snap_comp")) P.snap_comp = atoi(v);
     else fprintf(stderr, "# WARN unknown key %s\n", k);
 }
 
@@ -1573,11 +1577,83 @@ static void fcs_begin(FILE *f)
     fwrite("SCHM", 1, 4, f); fcs_wu64(f, (uint64_t)o); fwrite(sb, 1, o, f);
 }
 
+/* codec 1: columnar transpose (4-byte units, per record) + byte shuffle
+ * + zstd. Per-chunk self-contained: random access and truncation safety
+ * are preserved; measured ~0.46-0.55 ratio at ~175 MB/s (FCS.md). */
+static unsigned char *fcs_s1 = NULL, *fcs_s2 = NULL, *fcs_s3 = NULL;
+static size_t fcs_cap = 0;
+
+static void fcs_ensure(size_t n)
+{
+    if (n <= fcs_cap) return;
+    fcs_cap = n + n / 2 + 4096;
+    fcs_s1 = realloc(fcs_s1, fcs_cap);
+    fcs_s2 = realloc(fcs_s2, fcs_cap);
+    fcs_s3 = realloc(fcs_s3, ZSTD_compressBound(fcs_cap));
+}
+
+static void fcs_colT(const unsigned char *p, unsigned char *out, size_t n,
+                     int hdr, int stride)
+{
+    memcpy(out, p, hdr);
+    size_t body = n - hdr;
+    size_t nrec = body / (4 * (size_t)stride);
+    const unsigned char *b = p + hdr;
+    unsigned char *o = out + hdr;
+    for (int c = 0; c < stride; c++)
+        for (size_t i = 0; i < nrec; i++)
+            memcpy(o + (c * nrec + i) * 4, b + (i * stride + c) * 4, 4);
+}
+
+static void fcs_shuffle4(const unsigned char *p, unsigned char *out, size_t n)
+{
+    size_t m = n / 4;
+    for (size_t i = 0; i < m; i++) {
+        out[i] = p[4*i];
+        out[m+i] = p[4*i+1];
+        out[2*m+i] = p[4*i+2];
+        out[3*m+i] = p[4*i+3];
+    }
+    memcpy(out + 4*m, p + 4*m, n - 4*m);
+}
+
+/* write one chunk; CELL/LINK optionally wrapped in CMPD (codec 1) */
+static void fcs_chunk_out(FILE *f, const char cc[4], const unsigned char *p,
+                          size_t n, int hdr, int stride)
+{
+    if (P.snap_comp && stride > 0) {
+        fcs_ensure(n);
+        fcs_colT(p, fcs_s1, n, hdr, stride);
+        fcs_shuffle4(fcs_s1, fcs_s2, n);
+        size_t cn = ZSTD_compress(fcs_s3, ZSTD_compressBound(fcs_cap),
+                                  fcs_s2, n, 1);
+        if (!ZSTD_isError(cn) && cn + 13 < n) {
+            uint64_t plen = 4 + 8 + 1 + cn;
+            fwrite("CMPD", 1, 4, f); fcs_wu64(f, plen);
+            fwrite(cc, 1, 4, f);
+            fcs_wu64(f, (uint64_t)n);
+            unsigned char codec = 1;
+            fwrite(&codec, 1, 1, f);
+            fwrite(fcs_s3, 1, cn, f);
+            fflush(f);
+            return;
+        }
+    }
+    fwrite(cc, 1, 4, f);
+    fcs_wu64(f, (uint64_t)n);
+    fwrite(p, 1, n, f);
+    fflush(f);
+}
+
 static void fcs_cell_frame(FILE *f)
 {
-    uint64_t plen = 8 + 8 + 4 + (uint64_t)NC * FCS_NCELLCOLS * 4;
-    fwrite("CELL", 1, 4, f); fcs_wu64(f, plen);
-    fcs_wf64(f, sim_t); fcs_wf64(f, P.L); fcs_wu32(f, (uint32_t)NC);
+    size_t clen = 8 + 8 + 4 + (size_t)NC * FCS_NCELLCOLS * 4;
+    unsigned char *cp = malloc(clen);
+    size_t o = 0;
+    memcpy(cp + o, &sim_t, 8); o += 8;
+    memcpy(cp + o, &P.L, 8); o += 8;
+    uint32_t nc32 = (uint32_t)NC;
+    memcpy(cp + o, &nc32, 4); o += 4;
     for (int i = 0; i < NC; i++) {
         float rec[FCS_NCELLCOLS];
         rec[0] = (float)px_[i]; rec[1] = (float)py_[i]; rec[2] = (float)pz_[i];
@@ -1585,13 +1661,18 @@ static void fcs_cell_frame(FILE *f)
         rec[6] = (float)Ee[i]; rec[7] = (float)((Em[i] + flload[i]) / P.cap);
         rec[8] = (float)tag[i];
         rec[9] = (float)fa1[i]; rec[10] = (float)fa2[i]; rec[11] = (float)th2[i];
-        fwrite(rec, 4, FCS_NCELLCOLS, f);
+        memcpy(cp + o, rec, 4 * FCS_NCELLCOLS); o += 4 * FCS_NCELLCOLS;
     }
+    fcs_chunk_out(f, "CELL", cp, clen, 20, FCS_NCELLCOLS);
+    free(cp);
+
     uint32_t nl = 0;
     for (int s = 0; s < NSLOT; s++) if (sst[s] != S_FREE) nl++;
-    uint64_t llen = 8 + 4 + (uint64_t)nl * (8 + FCS_NLINKCOLS * 4);
-    fwrite("LINK", 1, 4, f); fcs_wu64(f, llen);
-    fcs_wf64(f, sim_t); fcs_wu32(f, nl);
+    size_t llen = 8 + 4 + (size_t)nl * (8 + FCS_NLINKCOLS * 4);
+    unsigned char *lp = malloc(llen);
+    o = 0;
+    memcpy(lp + o, &sim_t, 8); o += 8;
+    memcpy(lp + o, &nl, 4); o += 4;
     for (int s = 0; s < NSLOT; s++) {
         if (sst[s] == S_FREE) continue;
         int i = sli[s], j = slj[s];
@@ -1602,10 +1683,11 @@ static void fcs_cell_frame(FILE *f)
         lr[0] = (float)sd[s]; lr[1] = (float)sA[s];
         lr[2] = (float)(slem[2*s] + slem[2*s+1]);
         lr[3] = (float)(gf * gb);
-        fwrite(ij, 4, 2, f);
-        fwrite(lr, 4, FCS_NLINKCOLS, f);
+        memcpy(lp + o, ij, 8); o += 8;
+        memcpy(lp + o, lr, 4 * FCS_NLINKCOLS); o += 4 * FCS_NLINKCOLS;
     }
-    fflush(f);
+    fcs_chunk_out(f, "LINK", lp, llen, 12, 2 + FCS_NLINKCOLS);
+    free(lp);
 }
 
 static void fcs_anlz_table(FILE *f, const char *name, const char **cols,

@@ -25,7 +25,38 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/klauspost/compress/zstd"
 )
+
+var fcsZdec, _ = zstd.NewReader(nil)
+
+func fcsUnshuffle4(p []byte) []byte {
+	m := len(p) / 4
+	out := make([]byte, len(p))
+	for i := 0; i < m; i++ {
+		out[4*i] = p[i]
+		out[4*i+1] = p[m+i]
+		out[4*i+2] = p[2*m+i]
+		out[4*i+3] = p[3*m+i]
+	}
+	copy(out[4*m:], p[4*m:])
+	return out
+}
+
+func fcsUncolT(p []byte, hdr, stride int) []byte {
+	out := make([]byte, len(p))
+	copy(out, p[:hdr])
+	body := p[hdr:]
+	n := len(body) / (4 * stride)
+	o := out[hdr:]
+	for c := 0; c < stride; c++ {
+		for i := 0; i < n; i++ {
+			copy(o[(i*stride+c)*4:(i*stride+c)*4+4], body[(c*n+i)*4:])
+		}
+	}
+	return out
+}
 
 type cellRec struct {
 	x, y, z, r, es, em, ee, xl, tag float32
@@ -115,143 +146,182 @@ func parseNames(b []byte, off int) ([]string, int) {
 	return names, off
 }
 
-func parseV3(b []byte, path string) ([]*frame, []anlzTable, string, error) {
-	var frames []*frame
-	var tables []anlzTable
-	var cfg strings.Builder
-	var cellCols, linkCols []string
-	off := 8
+type v3reader struct {
+	cellCols, linkCols []string
+	frames             []*frame
+	tables             []anlzTable
+	cfg                strings.Builder
+}
+
+func (st *v3reader) handle(cc string, p []byte, path string) error {
+	switch cc {
+	case "CMPD": // compressed wrapper: inner cc + rawlen + codec + data
+		if len(p) < 13 {
+			return nil
+		}
+		inner := string(p[0:4])
+		rawLen := int(le64(p[4:]))
+		codec := p[12]
+		d, err := fcsZdec.DecodeAll(p[13:], nil)
+		if err != nil || len(d) != rawLen {
+			return fmt.Errorf("%s: CMPD decode failed", path)
+		}
+		if codec == 1 {
+			hdr, stride := 20, len(st.cellCols)
+			if inner == "LINK" {
+				hdr, stride = 12, 2+len(st.linkCols)
+			}
+			if stride <= 0 {
+				return fmt.Errorf("%s: CMPD before SCHM", path)
+			}
+			d = fcsUncolT(fcsUnshuffle4(d), hdr, stride)
+		}
+		return st.handle(inner, d, path)
+	case "CFG ":
+		st.cfg.Write(p)
+	case "SCHM":
+		var o int
+		st.cellCols, o = parseNames(p, 0)
+		st.linkCols, _ = parseNames(p, o)
+	case "CELL":
+		if st.cellCols == nil {
+			return fmt.Errorf("%s: CELL before SCHM", path)
+		}
+		nc := len(st.cellCols)
+		t, L := lef64(p), lef64(p[8:])
+		n := int(le32(p[16:]))
+		f := &frame{t: t, L: L, cells: make([]cellRec, n)}
+		var extraNames []string
+		for _, name := range st.cellCols {
+			if _, known := baseCellCols[name]; !known {
+				extraNames = append(extraNames, name)
+			}
+		}
+		if len(extraNames) > 0 {
+			f.extra = map[string][]float32{}
+			for _, name := range extraNames {
+				f.extra[name] = make([]float32, n)
+			}
+		}
+		o := 20
+		for i := 0; i < n; i++ {
+			c := &f.cells[i]
+			for k, name := range st.cellCols {
+				v := lef32(p[o+4*k:])
+				switch name {
+				case "x":
+					c.x = v
+				case "y":
+					c.y = v
+				case "z":
+					c.z = v
+				case "r":
+					c.r = v
+				case "es":
+					c.es = v
+				case "em":
+					c.em = v
+				case "ee":
+					c.ee = v
+				case "xload":
+					c.xl = v
+				case "tag":
+					c.tag = v
+				case "fa1":
+					c.fa1 = v
+				case "fa2":
+					c.fa2 = v
+				case "th2":
+					c.th2 = v
+				default:
+					f.extra[name][i] = v
+				}
+			}
+			o += 4 * nc
+		}
+		st.frames = append(st.frames, f)
+	case "LINK":
+		if len(st.frames) == 0 {
+			return nil
+		}
+		f := st.frames[len(st.frames)-1]
+		nl := int(le32(p[8:]))
+		nfc := len(st.linkCols)
+		rec := 8 + 4*nfc
+		o := 12
+		f.links = make([]linkRec, 0, nl)
+		for k := 0; k < nl && o+rec <= len(p); k++ {
+			lr := linkRec{i: le32(p[o:]), j: le32(p[o+4:])}
+			for c, name := range st.linkCols {
+				v := lef32(p[o+8+4*c:])
+				switch name {
+				case "d":
+					lr.d = v
+				case "A":
+					lr.a = v
+				case "lem":
+					lr.lem = v
+				case "gg":
+					lr.gg = v
+				}
+			}
+			f.links = append(f.links, lr)
+			o += rec
+		}
+	case "ANLZ":
+		if len(p) < 1 {
+			return nil
+		}
+		if p[0] == 0 {
+			st.cfg.WriteString("--- ANLZ text ---\n")
+			st.cfg.Write(p[1:])
+		} else {
+			o := 1
+			nl := int(p[o])
+			o++
+			name := string(p[o : o+nl])
+			o += nl
+			t := lef64(p[o:])
+			o += 8
+			cols, o2 := parseNames(p, o)
+			o = o2
+			nrows := int(le32(p[o:]))
+			o += 4
+			rows := make([]float64, nrows*len(cols))
+			for k := range rows {
+				rows[k] = lef64(p[o+8*k:])
+			}
+			st.tables = append(st.tables, anlzTable{name, t, cols, rows})
+		}
+	default:
+		// unknown chunk: skipped by length — the format's extension point
+	}
+	return nil
+}
+
+// consume parses complete chunks from b, returning bytes consumed.
+func (st *v3reader) consume(b []byte, path string) (int, error) {
+	off := 0
 	for off+12 <= len(b) {
 		cc := string(b[off : off+4])
 		plen := int(le64(b[off+4:]))
-		off += 12
-		if off+plen > len(b) {
-			break // truncated final chunk: stop cleanly
+		if off+12+plen > len(b) {
+			break // incomplete chunk: wait for more bytes
 		}
-		p := b[off : off+plen]
-		off += plen
-		switch cc {
-		case "CFG ":
-			cfg.Write(p)
-		case "SCHM":
-			var o int
-			cellCols, o = parseNames(p, 0)
-			linkCols, _ = parseNames(p, o)
-		case "CELL":
-			if cellCols == nil {
-				return nil, nil, "", fmt.Errorf("%s: CELL before SCHM", path)
-			}
-			nc := len(cellCols)
-			t, L := lef64(p), lef64(p[8:])
-			n := int(le32(p[16:]))
-			f := &frame{t: t, L: L, cells: make([]cellRec, n)}
-			var extraNames []string
-			for _, name := range cellCols {
-				if _, known := baseCellCols[name]; !known {
-					extraNames = append(extraNames, name)
-				}
-			}
-			if len(extraNames) > 0 {
-				f.extra = map[string][]float32{}
-				for _, name := range extraNames {
-					f.extra[name] = make([]float32, n)
-				}
-			}
-			o := 20
-			for i := 0; i < n; i++ {
-				c := &f.cells[i]
-				for k, name := range cellCols {
-					v := lef32(p[o+4*k:])
-					switch name {
-					case "x":
-						c.x = v
-					case "y":
-						c.y = v
-					case "z":
-						c.z = v
-					case "r":
-						c.r = v
-					case "es":
-						c.es = v
-					case "em":
-						c.em = v
-					case "ee":
-						c.ee = v
-					case "xload":
-						c.xl = v
-					case "tag":
-						c.tag = v
-					case "fa1":
-						c.fa1 = v
-					case "fa2":
-						c.fa2 = v
-					case "th2":
-						c.th2 = v
-					default:
-						f.extra[name][i] = v
-					}
-				}
-				o += 4 * nc
-			}
-			frames = append(frames, f)
-		case "LINK":
-			if len(frames) == 0 {
-				continue
-			}
-			f := frames[len(frames)-1]
-			nl := int(le32(p[8:]))
-			nfc := len(linkCols)
-			rec := 8 + 4*nfc
-			o := 12
-			f.links = make([]linkRec, 0, nl)
-			for k := 0; k < nl && o+rec <= len(p); k++ {
-				lr := linkRec{i: le32(p[o:]), j: le32(p[o+4:])}
-				for c, name := range linkCols {
-					v := lef32(p[o+8+4*c:])
-					switch name {
-					case "d":
-						lr.d = v
-					case "A":
-						lr.a = v
-					case "lem":
-						lr.lem = v
-					case "gg":
-						lr.gg = v
-					}
-				}
-				f.links = append(f.links, lr)
-				o += rec
-			}
-		case "ANLZ":
-			if len(p) < 1 {
-				continue
-			}
-			if p[0] == 0 { // text
-				cfg.WriteString("--- ANLZ text ---\n")
-				cfg.Write(p[1:])
-			} else { // table
-				o := 1
-				nl := int(p[o])
-				o++
-				name := string(p[o : o+nl])
-				o += nl
-				t := lef64(p[o:])
-				o += 8
-				cols, o2 := parseNames(p, o)
-				o = o2
-				nrows := int(le32(p[o:]))
-				o += 4
-				rows := make([]float64, nrows*len(cols))
-				for k := range rows {
-					rows[k] = lef64(p[o+8*k:])
-				}
-				tables = append(tables, anlzTable{name, t, cols, rows})
-			}
-		default:
-			// unknown chunk: skipped by length — the format's extension point
+		if err := st.handle(cc, b[off+12:off+12+plen], path); err != nil {
+			return off, err
 		}
+		off += 12 + plen
 	}
-	return frames, tables, cfg.String(), nil
+	return off, nil
+}
+
+func parseV3(b []byte, path string) ([]*frame, []anlzTable, string, error) {
+	st := &v3reader{}
+	if _, err := st.consume(b[8:], path); err != nil {
+		return nil, nil, "", err
+	}
+	return st.frames, st.tables, st.cfg.String(), nil
 }
 
 // loadPath reads one .fcs file of any version.
@@ -492,6 +562,7 @@ func main() {
 	avg := flag.Bool("avg", false, "time-average the channel over all frames")
 	interactive := flag.Bool("i", false, "interactive viewer: orbit, time scrub, channels, links (needs a display)")
 	selfcheck := flag.Bool("selfcheck", false, "with -i: render a few frames, screenshot, exit")
+	follow := flag.Bool("follow", false, "with -i: follow a growing v3 stream live (kernel writing snap_file)")
 	info := flag.Bool("info", false, "print stream inventory, CFG provenance, and ANLZ tables")
 	flag.Parse()
 	if flag.NArg() < 1 {
@@ -499,6 +570,11 @@ func main() {
 		os.Exit(2)
 	}
 	arg := flag.Arg(0)
+	if *interactive && *follow {
+		// live mode: the stream may not exist yet — the follower waits
+		runInteractive(nil, arg, *selfcheck)
+		return
+	}
 	st, err := os.Stat(arg)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -565,14 +641,14 @@ func main() {
 		}
 		frames = append(frames, fr...)
 	}
-	if len(frames) == 0 {
+	if len(frames) == 0 && !(*interactive && *follow) {
 		fmt.Fprintln(os.Stderr, "no frames")
 		os.Exit(1)
 	}
 	sort.SliceStable(frames, func(a, b int) bool { return frames[a].t < frames[b].t })
 
 	if *interactive {
-		runInteractive(frames, *selfcheck)
+		runInteractive(frames, "", *selfcheck)
 		return
 	}
 	if *avg && len(frames) > 1 {

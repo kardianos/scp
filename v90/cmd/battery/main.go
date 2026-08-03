@@ -286,7 +286,8 @@ func suite() []experiment {
 	// (v/C=0.5740, n=6) fits t in [5,10] before the front saturates the
 	// box; the coarser default cadence fits the saturating tail instead.
 	if wantC {
-		sp = append(sp, cw("pulse_c", "exp=pulse", "L=24", "T=10", "amp=0.25", "sigma=2.5", "kx=1.1", "diag_every=50"))
+		sp = append(sp, cw("pulse_c", "exp=pulse", "L=24", "T=10", "amp=0.25", "sigma=2.5", "kx=1.1", "diag_every=50",
+			"snap_every=100", "snap_file=runs/streams/pulse_c.fcs"))
 	}
 	if wantGo {
 		sp = append(sp, gw("pulse_go", "exp=pulse", "L=24", "T=10", "amp=0.25", "sigma=2.5", "kx=1.1", "diag_every=50"))
@@ -309,7 +310,8 @@ func suite() []experiment {
 	// substrate. v89 L16 T=160: ret 0.8052, conn 1.000, rms 3.11.
 	sp = []runSpec{}
 	if wantC {
-		sp = append(sp, cw("blob_c", "exp=blob", "L=16", "T=160"))
+		sp = append(sp, cw("blob_c", "exp=blob", "L=16", "T=160",
+			"snap_every=500", "snap_file=runs/streams/blob_c.fcs"))
 	}
 	exps = append(exps, experiment{"blob", sp, func(r *reporter) {
 		if !wantC {
@@ -372,7 +374,7 @@ func suite() []experiment {
 	sp = []runSpec{}
 	if wantC {
 		sp = append(sp,
-			cw("ds_m0", dsArgs()...),
+			cw("ds_m0", dsArgs("snap_every=250", "snap_file=runs/streams/ds_m0.fcs")...),
 			cw("ds_m1", dsArgs("slit_mask=1")...),
 			cw("ds_m2", dsArgs("slit_mask=2")...),
 			cw("ds_f0", dsArgs("freeze_geo=1")...),
@@ -488,6 +490,11 @@ func abs(x float64) float64 {
 func main() {
 	flag.Parse()
 	if err := os.MkdirAll(*runsDir, 0o755); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(2)
+	}
+	// standard streams for the heavier experiments (regenerable, gitignored)
+	if err := os.MkdirAll(filepath.Join(*runsDir, "streams"), 0o755); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(2)
 	}

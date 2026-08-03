@@ -12,14 +12,70 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+
+	"github.com/klauspost/compress/zstd"
 )
+
+// codec 1: columnar transpose (4-byte units per record) + byte shuffle +
+// zstd (per-chunk self-contained; measured ~0.46-0.55 at ~175 MB/s).
+var fcsZenc, _ = zstd.NewWriter(nil, zstd.WithEncoderLevel(zstd.SpeedFastest))
+
+func fcsColT(p []byte, hdr, stride int) []byte {
+	out := make([]byte, len(p))
+	copy(out, p[:hdr])
+	body := p[hdr:]
+	n := len(body) / (4 * stride)
+	o := out[hdr:]
+	for c := 0; c < stride; c++ {
+		for i := 0; i < n; i++ {
+			copy(o[(c*n+i)*4:(c*n+i)*4+4], body[(i*stride+c)*4:])
+		}
+	}
+	return out
+}
+
+func fcsShuffle4(p []byte) []byte {
+	m := len(p) / 4
+	out := make([]byte, len(p))
+	for i := 0; i < m; i++ {
+		out[i] = p[4*i]
+		out[m+i] = p[4*i+1]
+		out[2*m+i] = p[4*i+2]
+		out[3*m+i] = p[4*i+3]
+	}
+	copy(out[4*m:], p[4*m:])
+	return out
+}
 
 var fcsCellCols = []string{"x", "y", "z", "r", "es", "em", "ee", "xload", "tag", "fa1", "fa2", "th2"}
 var fcsLinkCols = []string{"d", "A", "lem", "gg"}
 
 type fcsW struct {
-	f *os.File
-	w *bufio.Writer
+	f    *os.File
+	w    *bufio.Writer
+	comp bool
+}
+
+// write one chunk; CELL/LINK optionally wrapped in CMPD (codec 1)
+func (o *fcsW) chunkOut(cc string, p []byte, hdr, stride int) {
+	if o.comp && stride > 0 {
+		t := fcsShuffle4(fcsColT(p, hdr, stride))
+		c := fcsZenc.EncodeAll(t, nil)
+		if len(c)+13 < len(p) {
+			o.w.WriteString("CMPD")
+			o.u64(uint64(4 + 8 + 1 + len(c)))
+			o.w.WriteString(cc)
+			o.u64(uint64(len(p)))
+			o.w.WriteByte(1)
+			o.w.Write(c)
+			o.w.Flush()
+			return
+		}
+	}
+	o.w.WriteString(cc)
+	o.u64(uint64(len(p)))
+	o.w.Write(p)
+	o.w.Flush()
 }
 
 func (o *fcsW) u32(v uint32) {
@@ -85,35 +141,48 @@ func (s *Sim) fcsBegin(o *fcsW) {
 
 func (s *Sim) fcsCellFrame(o *fcsW) {
 	nc := len(fcsCellCols)
-	plen := uint64(8 + 8 + 4 + s.NC*nc*4)
-	o.w.WriteString("CELL")
-	o.u64(plen)
-	o.f64(s.simT)
-	o.f64(s.P.L)
-	o.u32(uint32(s.NC))
+	cp := make([]byte, 0, 20+s.NC*nc*4)
+	put64 := func(v float64) {
+		var b [8]byte
+		binary.LittleEndian.PutUint64(b[:], math.Float64bits(v))
+		cp = append(cp, b[:]...)
+	}
+	put32 := func(v uint32) {
+		var b [4]byte
+		binary.LittleEndian.PutUint32(b[:], v)
+		cp = append(cp, b[:]...)
+	}
+	putf := func(v float32) { put32(math.Float32bits(v)) }
+	put64(s.simT)
+	put64(s.P.L)
+	put32(uint32(s.NC))
 	for i := 0; i < s.NC; i++ {
 		xload := (s.Em[i] + s.flload[i]) / s.P.Cap
-		vals := [12]float32{
-			float32(s.px[i]), float32(s.py[i]), float32(s.pz[i]),
-			float32(s.cr[i]), float32(s.Es[i]), float32(s.Em[i]),
-			float32(s.Ee[i]), float32(xload), float32(s.tag[i]),
-			float32(s.fa1[i]), float32(s.fa2[i]), float32(s.th2[i]),
-		}
-		for _, v := range vals {
-			o.f32(v)
-		}
+		putf(float32(s.px[i]))
+		putf(float32(s.py[i]))
+		putf(float32(s.pz[i]))
+		putf(float32(s.cr[i]))
+		putf(float32(s.Es[i]))
+		putf(float32(s.Em[i]))
+		putf(float32(s.Ee[i]))
+		putf(float32(xload))
+		putf(float32(s.tag[i]))
+		putf(float32(s.fa1[i]))
+		putf(float32(s.fa2[i]))
+		putf(float32(s.th2[i]))
 	}
+	o.chunkOut("CELL", cp, 20, nc)
+
 	var nl uint32
 	for sl := 0; sl < s.NSLOT; sl++ {
 		if s.sst[sl] != sFree {
 			nl++
 		}
 	}
-	llen := uint64(8 + 4 + int(nl)*(8+len(fcsLinkCols)*4))
-	o.w.WriteString("LINK")
-	o.u64(llen)
-	o.f64(s.simT)
-	o.u32(nl)
+	lp := make([]byte, 0, 12+int(nl)*(8+len(fcsLinkCols)*4))
+	cp = lp // reuse the append helpers on lp via cp alias
+	put64(s.simT)
+	put32(nl)
 	for sl := 0; sl < s.NSLOT; sl++ {
 		if s.sst[sl] == sFree {
 			continue
@@ -121,14 +190,14 @@ func (s *Sim) fcsCellFrame(o *fcsW) {
 		i, j := s.sli[sl], s.slj[sl]
 		gf := s.gateOf(float64(s.slq[sl])*s.th2[i] - float64(s.slq[sl])*s.w2e[i]*s.sd[sl]/s.P.C - float64(s.slp[sl])*s.th2[j])
 		gb := s.gateOf(float64(s.slp[sl])*s.th2[j] - float64(s.slp[sl])*s.w2e[j]*s.sd[sl]/s.P.C - float64(s.slq[sl])*s.th2[i])
-		o.u32(uint32(i))
-		o.u32(uint32(j))
-		o.f32(float32(s.sd[sl]))
-		o.f32(float32(s.sA[sl]))
-		o.f32(float32(s.slem[2*sl] + s.slem[2*sl+1]))
-		o.f32(float32(gf * gb))
+		put32(uint32(i))
+		put32(uint32(j))
+		putf(float32(s.sd[sl]))
+		putf(float32(s.sA[sl]))
+		putf(float32(s.slem[2*sl] + s.slem[2*sl+1]))
+		putf(float32(gf * gb))
 	}
-	o.w.Flush()
+	o.chunkOut("LINK", cp, 12, 2+len(fcsLinkCols))
 }
 
 func (s *Sim) fcsAnlzTable(o *fcsW, name string, cols []string, rows []float64, nrows int) {
@@ -176,12 +245,12 @@ func (s *Sim) fcsInstrument(o *fcsW) {
 	s.fcsAnlzTable(o, "meters", fcsMeterCols, rows, 1)
 }
 
-func fcsOpen(path string) (*fcsW, error) {
+func fcsOpen(path string, comp bool) (*fcsW, error) {
 	f, err := os.Create(path)
 	if err != nil {
 		return nil, err
 	}
-	return &fcsW{f: f, w: bufio.NewWriterSize(f, 1<<20)}, nil
+	return &fcsW{f: f, w: bufio.NewWriterSize(f, 1<<20), comp: comp}, nil
 }
 
 func (o *fcsW) close() {
@@ -196,7 +265,7 @@ func (s *Sim) writeFCS(idx int) {
 		return
 	}
 	path := filepath.Join(s.P.SnapDir, fmt.Sprintf("snap_%05d_t%.3f.fcs", idx, s.simT))
-	o, err := fcsOpen(path)
+	o, err := fcsOpen(path, s.P.SnapComp != 0)
 	if err != nil {
 		fprintf(s.Errw, "# WARN snap create: %v\n", err)
 		return
