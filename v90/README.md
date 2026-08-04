@@ -189,8 +189,8 @@ hard results index, what they mean, and the prioritized next steps.
 
 | item | state |
 |---|---|
-| P0 port + verify | **done** — VERIFY.md: bath/blob byte-identical, physics digits identical everywhere |
-| P1 battery | **GREEN — 79 bars**, both kernels, through 14 apparatus additions (runs/BATTERY.log) |
+| P0 port + verify | **done** — VERIFY.md: bath/blob/blob2 byte-identical, physics digits identical everywhere; queue-#6 ports restore the FULL A/B surface (slit/rings/blob2 + all meters; battery `abx`) |
+| P1 battery | **GREEN — 85 bars**, both kernels, through 14 apparatus additions (runs/BATTERY.log) |
 | P1 double slit tier 0 | **CONFIRMED on the live substrate** (DS.md; battery `ds` 8 bars) |
 | DS tier 1 | **CLAIMED** (DS.md; battery `ds1` 8 bars) — 362 whole-grain clicks, fringe-phase-locked s̄ 0.683 vs controls 0.380, minima 7.7× dark, R3 atomicity exact |
 | FCS + viewer | v3 chunked streams, interleaved ANLZ, lossless codec, live `-follow`, interactive orbit/scrub (FCS.md) |

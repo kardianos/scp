@@ -84,6 +84,70 @@ func (s *Sim) buildBath(bx, by, bz []float64, nmax int) int {
 	return n
 }
 
+// 2D dart throw in the z = L/2 plane (DS medium; coplanar dynamics is
+// exact — every force the kernel applies to coplanar cells is in-plane)
+func (s *Sim) buildBath2d(bx, by, bz []float64, nmax int) int {
+	P := &s.P
+	gn := int(math.Ceil(P.L / P.Dmin))
+	if gn < 1 {
+		gn = 1
+	}
+	nbins := gn * gn
+	head := make([]int, nbins)
+	nxt := make([]int, nmax)
+	for b := 0; b < nbins; b++ {
+		head[b] = -1
+	}
+	n, fails := 0, 0
+	d2min := P.Dmin * P.Dmin
+	for fails < 30000 && n < nmax {
+		x := s.frand() * P.L
+		y := s.frand() * P.L
+		bx2, by2 := int(x/P.L*float64(gn)), int(y/P.L*float64(gn))
+		if bx2 >= gn {
+			bx2 = gn - 1
+		}
+		if by2 >= gn {
+			by2 = gn - 1
+		}
+		ok := true
+		for ax := bx2 - 1; ax <= bx2+1 && ok; ax++ {
+			for ay := by2 - 1; ay <= by2+1 && ok; ay++ {
+				wx, wy2 := (ax+gn)%gn, (ay+gn)%gn
+				for q := head[wx*gn+wy2]; q >= 0; q = nxt[q] {
+					dx := s.wr(bx[q] - x)
+					dy := s.wr(by[q] - y)
+					if dx*dx+dy*dy < d2min {
+						ok = false
+						break
+					}
+				}
+			}
+		}
+		if !ok {
+			fails++
+			continue
+		}
+		bx[n], by[n], bz[n] = x, y, 0.5*P.L
+		b := bx2*gn + by2
+		nxt[n] = head[b]
+		head[b] = n
+		n++
+		fails = 0
+	}
+	if P.BathFrac < 1.0 {
+		m := 0
+		for i := 0; i < n; i++ {
+			if s.frand() < P.BathFrac {
+				bx[m], by[m], bz[m] = bx[i], by[i], bz[i]
+				m++
+			}
+		}
+		n = m
+	}
+	return n
+}
+
 // load a voice to occupancy x: Em = x*cap exactly, space pulled
 func (s *Sim) loadVoice(i int, x float64) {
 	P := &s.P
@@ -198,7 +262,11 @@ func (s *Sim) Run() {
 	bz := make([]float64, nmax)
 	nb := 0
 	if P.Bath != 0 {
-		nb = s.buildBath(bx, by, bz, nmax)
+		if P.Exp == "slit" {
+			nb = s.buildBath2d(bx, by, bz, nmax)
+		} else {
+			nb = s.buildBath(bx, by, bz, nmax)
+		}
 	}
 
 	extra := 0
@@ -213,6 +281,14 @@ func (s *Sim) Run() {
 		extra = 3
 	case P.Exp == "tri2":
 		extra = 6
+	case P.Exp == "rings":
+		g := 3
+		if P.RingsKind == 0 {
+			g = 2
+		} else if P.RingsKind == 3 {
+			g = 6
+		}
+		extra = g * P.RingsNv
 	}
 
 	s.allocAll(nb + extra)
@@ -630,6 +706,478 @@ func (s *Sim) Run() {
 		}
 		fprintf(s.Out, "# SEED pulse: amp=%.6g sigma=%.6g kx=%.6g (prealigned transverse)\n",
 			P.Amp, P.Sigma, P.Kx)
+
+	case "blob2":
+		// MOTION #28: two dense blobs with opposing tilts (approach),
+		// per-blob tags for COM/exchange meters
+		cxA := s.fold(cx0 - 0.5*P.Blob2Sep)
+		cxB := s.fold(cx0 + 0.5*P.Blob2Sep)
+		nA, nB := 0, 0
+		for i := 0; i < s.NC; i++ {
+			dxa := s.wr(s.px[i] - cxA)
+			dya := s.wr(s.py[i] - cy0)
+			dza := s.wr(s.pz[i] - cz0)
+			dxb := s.wr(s.px[i] - cxB)
+			dyb := s.wr(s.py[i] - cy0)
+			dzb := s.wr(s.pz[i] - cz0)
+			ga := P.Amp * math.Exp(-(dxa*dxa+dya*dya+dza*dza)/(2.0*P.Sigma*P.Sigma))
+			gb := P.Amp * math.Exp(-(dxb*dxb+dyb*dyb+dzb*dzb)/(2.0*P.Sigma*P.Sigma))
+			add := ga + gb
+			if add < 1e-4 {
+				continue
+			}
+			if s.Em[i]+add > 0.95*P.Cap {
+				add = 0.95*P.Cap - s.Em[i]
+			}
+			if add <= 0 {
+				continue
+			}
+			s.Em[i] += add
+			pull := P.SPull * add
+			avail := s.Es[i] - P.EsFloor
+			if pull > avail {
+				if avail > 0 {
+					pull = avail
+				} else {
+					pull = 0
+				}
+			}
+			s.Es[i] -= pull
+			s.Em[i] += pull
+			// tilt toward each other; phase ramp of the DOMINANT blob
+			if P.Blob2Kx != 0 {
+				if ga >= gb {
+					s.th2[i] = math.Mod(-(P.Blob2Kx*dxa)+8.0*TwoPi, TwoPi)
+				} else {
+					s.th2[i] = math.Mod(+(P.Blob2Kx*dxb)+8.0*TwoPi, TwoPi)
+				}
+			}
+			if ga >= gb && ga > 0.05*P.Amp {
+				s.tag[i] = 1
+				nA++
+			} else if gb > 0.05*P.Amp {
+				s.tag[i] = 2
+				nB++
+			}
+		}
+		if P.Blob2Kx != 0 {
+			for i := 0; i < s.NC; i++ {
+				s.normalsTransverse(i, 1, 0, 0)
+			}
+		}
+		fprintf(s.Out, "# SEED blob2: amp=%.6g sigma=%.6g sep=%.6g kx=%.6g tagged A=%d B=%d\n",
+			P.Amp, P.Sigma, P.Blob2Sep, P.Blob2Kx, nA, nB)
+
+	case "rings":
+		// COMPOSITE.md CQ0/CQ3b/CQ9: groups of rings as many-celled
+		// quarks. kind 0 pair, 1 UUD, 2 UDD, 3 = TWO UUD nucleons.
+		nv := P.RingsNv
+		ngrp := 1
+		if P.RingsKind == 3 {
+			ngrp = 2
+		}
+		npg := 3
+		if P.RingsKind == 0 {
+			npg = 2
+		}
+		nring := ngrp * npg
+		xU := P.RingsXU
+		xD := P.RingsXD
+		if xD < 0 {
+			xD = (0.5 + 1.8*xU) / 1.2
+		}
+		wU := P.W2 / (1.0 + P.QDetune*xU)
+		wD := P.W2 / (1.0 + P.QDetune*xD)
+		dUD := 2.0 * TwoPi / (2.0*wU + 3.0*wD)
+		var xs, ws [6]float64
+		for k := 0; k < nring; k++ {
+			lk := k % npg
+			x := xU
+			if P.RingsKind == 2 && lk >= 1 {
+				x = xD
+			}
+			if (P.RingsKind == 1 || P.RingsKind == 3) && lk == 2 {
+				x = xD
+			}
+			xs[k] = x
+			ws[k] = P.W2 / (1.0 + P.QDetune*x)
+		}
+		var rload, dint, R [6]float64
+		var mode [6]int
+		for k := 0; k < nring; k++ {
+			pull := P.SPull * (xs[k] * P.Cap / (1.0 + P.SPull))
+			cap2 := P.Es0 - P.EsFloor
+			if pull > cap2 {
+				pull = cap2
+			}
+			es := P.Es0 - pull
+			rload[k] = P.R0 * math.Cbrt(es/P.Es0)
+			rung := math.Pi / ws[k]
+			contact := 2.0 * rload[k]
+			if rung < contact*P.Cfac {
+				dint[k] = rung
+				mode[k] = 1
+			} else {
+				dint[k] = 0.98 * contact
+				mode[k] = 0
+			}
+			R[k] = dint[k] / (2.0 * math.Sin(math.Pi/float64(nv)))
+		}
+		// group-local centers (SSS), then group offsets
+		var cxr, cyr [6]float64
+		for g := 0; g < ngrp; g++ {
+			b0 := g * npg
+			gx := 0.0
+			if ngrp == 2 {
+				if g == 0 {
+					gx = -0.5 * P.RingsSep
+				} else {
+					gx = 0.5 * P.RingsSep
+				}
+			}
+			if npg == 2 {
+				bg := math.Pi/ws[b0] + P.RingsGapoff
+				cdist := R[b0] + R[b0+1] + bg
+				cxr[b0], cyr[b0] = gx-0.5*cdist, 0
+				cxr[b0+1], cyr[b0+1] = gx+0.5*cdist, 0
+			} else {
+				bgOf := func(a, b int) float64 {
+					if math.Abs(ws[a]-ws[b]) < 1e-12 {
+						return math.Pi/ws[a] + P.RingsGapoff
+					}
+					return dUD + P.RingsGapoff
+				}
+				bg01 := bgOf(b0, b0+1)
+				bg12 := bgOf(b0+1, b0+2)
+				bg02 := bgOf(b0, b0+2)
+				c01 := R[b0] + R[b0+1] + bg01
+				c12 := R[b0+1] + R[b0+2] + bg12
+				c02 := R[b0] + R[b0+2] + bg02
+				x0, y0, x1, y1 := 0.0, 0.0, c01, 0.0
+				x2 := (c01*c01 + c02*c02 - c12*c12) / (2.0 * c01)
+				y2s := c02*c02 - x2*x2
+				y2 := 0.0
+				if y2s > 0 {
+					y2 = math.Sqrt(y2s)
+				}
+				mx := (x0 + x1 + x2) / 3.0
+				my := (y0 + y1 + y2) / 3.0
+				cxr[b0], cyr[b0] = gx+x0-mx, y0-my
+				cxr[b0+1], cyr[b0+1] = gx+x1-mx, y1-my
+				cxr[b0+2], cyr[b0+2] = gx+x2-mx, y2-my
+			}
+		}
+		// bath: spherical carve per ring
+		if P.Bath != 0 && nb > 0 {
+			m, rem := 0, 0
+			for i := 0; i < nb; i++ {
+				keep := true
+				for k := 0; k < nring && keep; k++ {
+					dx := s.wr(s.px[i] - (cx0 + cxr[k]))
+					dy := s.wr(s.py[i] - (cy0 + cyr[k]))
+					dz := s.wr(s.pz[i] - cz0)
+					clear := R[k] + 0.8
+					if dx*dx+dy*dy+dz*dz < clear*clear {
+						keep = false
+					}
+				}
+				if keep {
+					if m != i {
+						s.px[m], s.py[m], s.pz[m] = s.px[i], s.py[i], s.pz[i]
+						s.cr0[m], s.cr[m] = s.cr0[i], s.cr[i]
+						s.n1x[m], s.n1y[m], s.n1z[m] = s.n1x[i], s.n1y[i], s.n1z[i]
+						s.n2x[m], s.n2y[m], s.n2z[m] = s.n2x[i], s.n2y[i], s.n2z[i]
+						s.th2[m], s.cbeta[m] = s.th2[i], s.cbeta[i]
+						s.Es[m], s.Em[m], s.Ee[m] = s.Es[i], s.Em[i], s.Ee[i]
+						s.fa1[m], s.fa2[m] = s.fa1[i], s.fa2[i]
+					}
+					m++
+				} else {
+					rem++
+				}
+			}
+			fprintf(s.Out, "# CARVE rings: removed %d bath cells\n", rem)
+			nb = m
+			s.NC = nb + extra
+		}
+		s.ringsNring = nring
+		baseI := nb
+		s.trussN = 0
+		for k := 0; k < nring; k++ {
+			s.ringsV0[k] = baseI + k*nv
+			s.ringsMode[k] = mode[k]
+			s.ringsW[k] = ws[k]
+			s.ringsGrp[k] = k / npg
+			g, lk := k/npg, k%npg
+			nbr := g*npg + (lk+1)%npg
+			az := math.Atan2(cyr[nbr]-cyr[k], cxr[nbr]-cxr[k])
+			for q := 0; q < nv; q++ {
+				i := s.ringsV0[k] + q
+				s.seedCellDefaults(i)
+				a := az + TwoPi*float64(q)/float64(nv)
+				s.px[i] = s.fold(cx0 + cxr[k] + R[k]*math.Cos(a))
+				s.py[i] = s.fold(cy0 + cyr[k] + R[k]*math.Sin(a))
+				s.pz[i] = cz0
+				s.n1x[i], s.n1y[i], s.n1z[i] = 0, 0, 1
+				s.n2x[i], s.n2y[i], s.n2z[i] = 0, 0, 1
+				s.tag[i] = 1
+			}
+			for q := 0; q < nv; q++ {
+				s.trussE[s.trussN][0] = s.ringsV0[k] + q
+				s.trussE[s.trussN][1] = s.ringsV0[k] + (q+1)%nv
+				s.trussDstar[s.trussN] = dint[k]
+				s.trussN++
+			}
+		}
+		// facing vertices (within group)
+		var face [6][6]int
+		for a := 0; a < nring; a++ {
+			for b2 := 0; b2 < nring; b2++ {
+				face[a][b2] = -1
+				if a == b2 || s.ringsGrp[a] != s.ringsGrp[b2] {
+					continue
+				}
+				az := math.Atan2(cyr[b2]-cyr[a], cxr[b2]-cxr[a])
+				g, la := s.ringsGrp[a], a%npg
+				nbr0 := g*npg + (la+1)%npg
+				az0 := math.Atan2(cyr[nbr0]-cyr[a], cxr[nbr0]-cxr[a])
+				rel := az - az0
+				q := int(math.Floor(rel/(TwoPi/float64(nv)) + 0.5))
+				q = ((q % nv) + nv) % nv
+				face[a][b2] = s.ringsV0[a] + q
+			}
+		}
+		// loads: per-flavor WHOLE-RING flight compensation (CQ3b v2)
+		for k := 0; k < nring; k++ {
+			xl := xs[k]
+			if math.Abs(ws[k]-wU) < 1e-12 {
+				xl -= P.RingsXcomp
+			} else {
+				xl -= P.RingsXcompD
+			}
+			if xl < 0 {
+				xl = 0
+			}
+			for q := 0; q < nv; q++ {
+				s.loadVoice(s.ringsV0[k]+q, xl)
+			}
+		}
+		// inter-ring boundary edges (within groups)
+		s.rintN = 0
+		for g := 0; g < ngrp; g++ {
+			nedge := 3
+			if npg == 2 {
+				nedge = 1
+			}
+			for e := 0; e < nedge; e++ {
+				a := g*npg + e
+				b2 := g*npg + (e+1)%npg
+				ia, ib := face[a][b2], face[b2][a]
+				s.rintE[s.rintN][0] = ia
+				s.rintE[s.rintN][1] = ib
+				if math.Abs(ws[a]-ws[b2]) < 1e-12 {
+					s.rintP[s.rintN] = 1
+					s.rintQ[s.rintN] = 1
+					s.rintDstar[s.rintN] = math.Pi / ws[a]
+				} else if ws[a] > ws[b2] {
+					s.rintP[s.rintN] = 3
+					s.rintQ[s.rintN] = 2
+					s.rintDstar[s.rintN] = dUD
+				} else {
+					s.rintP[s.rintN] = 2
+					s.rintQ[s.rintN] = 3
+					s.rintDstar[s.rintN] = dUD
+				}
+				s.rintN++
+			}
+		}
+		// phases: per-group chains; branch on the first U->D edge
+		if P.Seedlock != 0 {
+			for g := 0; g < ngrp; g++ {
+				b0 := g * npg
+				s.th2[s.ringsV0[b0]] = s.frand() * TwoPi
+				nedge := 3
+				if npg == 2 {
+					nedge = 1
+				}
+				for k := b0; k < b0+npg; k++ {
+					if k > b0 {
+						e := g*nedge + (k - b0 - 1)
+						ia, ib := s.rintE[e][0], s.rintE[e][1]
+						dx := s.wr(s.px[ib] - s.px[ia])
+						dy := s.wr(s.py[ib] - s.py[ia])
+						d := math.Sqrt(dx*dx + dy*dy)
+						if s.rintP[e] == 1 && s.rintQ[e] == 1 {
+							s.th2[ib] = math.Mod(s.th2[ia]-ws[k-1]*d/P.C+8.0*TwoPi, TwoPi)
+						} else if s.rintP[e] == 3 {
+							s.th2[ib] = math.Mod((2.0*(s.th2[ia]-ws[k-1]*d/P.C)+
+								TwoPi*float64(P.RingsBranch))/3.0+8.0*TwoPi, TwoPi)
+						} else {
+							s.th2[ib] = math.Mod((3.0*(s.th2[ia]-ws[k-1]*d/P.C))/2.0+
+								8.0*TwoPi, TwoPi)
+						}
+					}
+					start := s.ringsV0[b0]
+					if k != b0 {
+						start = s.rintE[g*nedge+(k-b0-1)][1]
+					}
+					sq := start - s.ringsV0[k]
+					for st := 1; st < nv; st++ {
+						qa, qb := (sq+st-1)%nv, (sq+st)%nv
+						ia, ib := s.ringsV0[k]+qa, s.ringsV0[k]+qb
+						dx := s.wr(s.px[ib] - s.px[ia])
+						dy := s.wr(s.py[ib] - s.py[ia])
+						d := math.Sqrt(dx*dx + dy*dy)
+						s.th2[ib] = math.Mod(s.th2[ia]-ws[k]*d/P.C+8.0*TwoPi, TwoPi)
+					}
+				}
+			}
+		}
+		fprintf(s.Out, "# SEED rings: kind=%d ngrp=%d nv=%d xU=%.4f xD=%.4f wU=%.4f wD=%.4f xcomp=%.4f sep=%.2f\n",
+			P.RingsKind, ngrp, nv, xU, xD, wU, wD, P.RingsXcomp, P.RingsSep)
+		for k := 0; k < nring; k++ {
+			ms := "DROPLET"
+			if mode[k] != 0 {
+				ms = "MOLECULE"
+			}
+			fprintf(s.Out, "# SEED ring%d: grp=%d mode=%s x=%.4f w=%.4f d_int=%.4f R=%.4f\n",
+				k, s.ringsGrp[k], ms, xs[k], ws[k], dint[k], R[k])
+		}
+		for e := 0; e < s.rintN; e++ {
+			fprintf(s.Out, "# SEED rint%d: %d-%d p:q=%d:%d d*=%.6f\n",
+				e, s.rintE[e][0], s.rintE[e][1], s.rintP[e], s.rintQ[e], s.rintDstar[e])
+		}
+
+	case "slit":
+		// DS tier-0 (DS.md): carve the vacuum wall out of the jammed 2D
+		// bath (except the slit bridges), then seed a quasi-plane packet
+		yA := cy0 - 0.5*P.SlitSep
+		yB := cy0 + 0.5*P.SlitSep
+		m := 0
+		for i := 0; i < nb; i++ {
+			inwall := math.Abs(s.wr(s.px[i]-P.SlitWallx)) < 0.5*P.SlitTh
+			inA := math.Abs(s.py[i]-yA) < P.SlitHw
+			inB := math.Abs(s.py[i]-yB) < P.SlitHw
+			keep := true
+			if P.SlitMask != 3 && inwall {
+				keep = false
+				if P.SlitMask == 0 && (inA || inB) {
+					keep = true
+				}
+				if P.SlitMask == 1 && inA {
+					keep = true
+				}
+				if P.SlitMask == 2 && inB {
+					keep = true
+				}
+			}
+			if keep {
+				if m != i {
+					s.px[m], s.py[m], s.pz[m] = s.px[i], s.py[i], s.pz[i]
+					s.cr0[m], s.cr[m] = s.cr0[i], s.cr[i]
+					s.n1x[m], s.n1y[m], s.n1z[m] = s.n1x[i], s.n1y[i], s.n1z[i]
+					s.n2x[m], s.n2y[m], s.n2z[m] = s.n2x[i], s.n2y[i], s.n2z[i]
+					s.th2[m], s.cbeta[m] = s.th2[i], s.cbeta[i]
+					s.Es[m], s.Em[m], s.Ee[m] = s.Es[i], s.Em[i], s.Ee[i]
+					s.fa1[m], s.fa2[m] = s.fa1[i], s.fa2[i]
+				}
+				m++
+			}
+		}
+		fprintf(s.Out, "# CARVE slit wall: removed %d cells (mask=%d wall_x=%.6g th=%.6g slits y=%.2f/%.2f hw=%.6g)\n",
+			nb-m, P.SlitMask, P.SlitWallx, P.SlitTh, yA, yB, P.SlitHw)
+		nb = m
+		s.NC = nb
+		// THE WALL IS A FIXTURE: the face cells are pinned (pass D skips
+		// them); a carved vacuum gap in the LIVE foam heals in ~15 t.u.
+		npin := 0
+		if P.SlitMask != 3 {
+			for i := 0; i < s.NC; i++ {
+				if math.Abs(s.wr(s.px[i]-P.SlitWallx)) < P.SlitPinw {
+					s.pin[i] = 1
+					npin++
+				}
+			}
+		}
+		fprintf(s.Out, "# PIN wall fixture: %d cells within +-%.6g of x=%.6g\n",
+			npin, P.SlitPinw, P.SlitWallx)
+		// quasi-plane packet: Gaussian sigma_x = P.Sigma, sigma_y = slit_sy
+		for i := 0; i < s.NC; i++ {
+			dx := s.wr(s.px[i] - P.SlitSrcx)
+			dy := s.wr(s.py[i] - cy0)
+			g := math.Exp(-dx*dx/(2.0*P.Sigma*P.Sigma) -
+				dy*dy/(2.0*P.SlitSy*P.SlitSy))
+			if g < 1e-8 {
+				continue
+			}
+			tilt := -(P.Kx * dx)
+			s.fa1[i] += math.Sqrt(P.Amp*g) * math.Cos(tilt)
+			s.fa2[i] += math.Sqrt(P.Amp*g) * math.Sin(tilt)
+			s.Ee[i] = s.fa1[i]*s.fa1[i] + s.fa2[i]*s.fa2[i]
+		}
+		for i := 0; i < s.NC; i++ {
+			s.normalsTransverse(i, 1, 0, 0)
+		}
+		if P.SlitObj != 0 {
+			// MOTION #29/XSEC: dense object in the beam; obj_y (<0 = box
+			// centre) sets the impact parameter b = obj_y - cy0
+			nobj := 0
+			oy := cy0
+			if P.ObjY >= 0 {
+				oy = P.ObjY
+			}
+			for i := 0; i < s.NC; i++ {
+				dx := s.wr(s.px[i] - cx0)
+				dy := s.wr(s.py[i] - oy)
+				add := P.ObjAmp * math.Exp(-(dx*dx+dy*dy)/(2.0*P.ObjSigma*P.ObjSigma))
+				if add < 1e-4 {
+					continue
+				}
+				if s.Em[i]+add > 0.95*P.Cap {
+					add = 0.95*P.Cap - s.Em[i]
+				}
+				if add <= 0 {
+					continue
+				}
+				s.Em[i] += add
+				pull := P.SPull * add
+				avail := s.Es[i] - P.EsFloor
+				if pull > avail {
+					if avail > 0 {
+						pull = avail
+					} else {
+						pull = 0
+					}
+				}
+				s.Es[i] -= pull
+				s.Em[i] += pull
+				if add > 0.05*P.ObjAmp {
+					s.tag[i] = 1
+					nobj++
+				}
+			}
+			fprintf(s.Out, "# SEED slit_obj: amp=%.6g sigma=%.6g y=%.2f tagged=%d (dense occulter)\n",
+				P.ObjAmp, P.ObjSigma, oy, nobj)
+		}
+		if P.SlitClicks != 0 {
+			nsc := 0
+			for i := 0; i < s.NC; i++ {
+				if math.Abs(s.wr(s.px[i]-P.SlitScreenx)) <= 0.75 {
+					s.scond[i] = 1
+					nsc++
+				}
+			}
+			fprintf(s.Out, "# SEED slit_clicks: %d screen cells condensation-active (e_cond=0 there)\n", nsc)
+		}
+		lam := 0.0
+		if P.Kx != 0 {
+			lam = TwoPi / P.Kx
+		}
+		D := P.SlitScreenx - P.SlitWallx
+		fprintf(s.Out, "# SEED slit: src_x=%.6g sigma_x=%.6g sigma_y=%.6g kx=%.6g amp=%.6g -> lam_seed=%.4f\n",
+			P.SlitSrcx, P.Sigma, P.SlitSy, P.Kx, P.Amp, lam)
+		fprintf(s.Out, "# SEED slit loci: D=%.2f s=%.2f dy_smallangle=%.3f screen_x=%.6g gate=[%.6g,%.6g]\n",
+			D, P.SlitSep, lam*D/P.SlitSep, P.SlitScreenx, P.SlitT0, P.SlitT1)
 	}
 	// exp=bath: nothing to seed
 
@@ -666,6 +1214,25 @@ func (s *Sim) Run() {
 	}
 	if s.trussN > 0 {
 		s.gyrationEigs(&s.trussShape0)
+	}
+
+	if P.SectMeter != 0 {
+		s.sectCx = cx0
+		if P.SectX >= 0 {
+			s.sectCx = P.SectX
+		}
+		s.sectCy = cy0
+		if P.SectY >= 0 {
+			s.sectCy = P.SectY
+		}
+		if P.SectN > sectMax {
+			P.SectN = sectMax
+		}
+		if P.SectN < 1 {
+			P.SectN = 1
+		}
+		fprintf(s.Out, "# SECT meter: centre=(%.2f,%.2f) r=[%.6g,%.6g) n=%d gate=[%.6g,%.6g]\n",
+			s.sectCx, s.sectCy, P.SectR0, P.SectR1, P.SectN, P.SectT0, P.SectT1)
 	}
 
 	var stream *fcsW
@@ -763,6 +1330,45 @@ func (s *Sim) Run() {
 					s.nfsamp++
 				}
 			}
+			if P.Exp == "blob2" {
+				ax, aw, bx2, bw, tx, tw := 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
+				for i2 := 0; i2 < s.NC; i2++ {
+					w := s.Em[i2] + s.flload[i2]
+					xx := s.cenx + s.wr(s.px[i2]-s.cenx)
+					if w > 1e-12 {
+						tx += w * xx
+						tw += w
+					}
+					if s.tag[i2] == 1 && w > 1e-12 {
+						ax += w * xx
+						aw += w
+					}
+					if s.tag[i2] == 2 && w > 1e-12 {
+						bx2 += w * xx
+						bw += w
+					}
+				}
+				comA, comB := 0.0, 0.0
+				if aw > 0 {
+					comA = ax / aw
+				}
+				if bw > 0 {
+					comB = bx2 / bw
+				}
+				tcom := 0.0
+				if tw > 0 {
+					tcom = tx / tw
+				}
+				fprintf(s.Out, " | A=%.4f B=%.4f sepx=%.4f tot=%.5f EmA=%.3f EmB=%.3f",
+					comA, comB, comB-comA, tcom, aw, bw)
+				if s.nfsamp < 512 {
+					s.fsT[s.nfsamp] = s.simT
+					s.b2ax[s.nfsamp] = comA
+					s.b2bx[s.nfsamp] = comB
+					s.b2tx[s.nfsamp] = tcom
+					s.nfsamp++
+				}
+			}
 			if P.Exp == "pulse" {
 				// field front = max radius over cells with Ee > 5% amp
 				rf := 0.0
@@ -832,6 +1438,27 @@ func (s *Sim) Run() {
 				fprintf(s.Out, " | edge_dev mean=%.4f max=%.4f gg=%.4f shape_dev=%.4f xbar=%.4f",
 					sm/float64(s.trussN), mx, gmean/float64(s.trussN), sdev, xbar)
 			}
+			if s.rintN > 0 {
+				fprintf(s.Out, " | IR")
+				for e := 0; e < s.rintN; e++ {
+					i, j := s.rintE[e][0], s.rintE[e][1]
+					lo, hi := i, j
+					if j < i {
+						lo, hi = j, i
+					}
+					sl := s.hfind(lo, hi)
+					if sl < 0 || s.sst[sl] == sFree {
+						fprintf(s.Out, " e%d=DEAD", e)
+						continue
+					}
+					p := float64(s.rintP[e])
+					q := float64(s.rintQ[e])
+					psi := wrapPi(q*s.th2[i] - q*s.w2e[i]*s.sd[sl]/P.C - p*s.th2[j])
+					gf := s.gateOf(q*s.th2[i] - q*s.w2e[i]*s.sd[sl]/P.C - p*s.th2[j])
+					gb := s.gateOf(p*s.th2[j] - p*s.w2e[j]*s.sd[sl]/P.C - q*s.th2[i])
+					fprintf(s.Out, " e%d:psi=%+.3f gg=%.3f d=%.4f", e, psi, gf*gb, s.sd[sl])
+				}
+			}
 			if s.triOn {
 				for t2 := 0; t2 < s.ntri; t2++ {
 					var psi [3]float64
@@ -857,6 +1484,17 @@ func (s *Sim) Run() {
 				}
 			}
 			fprintf(s.Out, "\n")
+			if P.P1Meter != 0 {
+				tx := s.p1sp[0] + s.p1fl[0] + s.p1fd[0] + s.p1gm[0]
+				ty := s.p1sp[1] + s.p1fl[1] + s.p1fd[1] + s.p1gm[1]
+				tz := s.p1sp[2] + s.p1fl[2] + s.p1fd[2] + s.p1gm[2]
+				fprintf(s.Out, "# P1 t=%.2f tot=(%+.6e,%+.6e,%+.6e) sp=%+.3e fl=%+.3e fd=%+.3e gm=%+.3e (x)\n",
+					s.simT, tx, ty, tz, s.p1sp[0], s.p1fl[0], s.p1fd[0], s.p1gm[0])
+			}
+			if P.SlitObj != 0 {
+				fprintf(s.Out, "# CONVTAG t=%.2f rough=%.6f cond=%.6f evap=%.6f backs=%.6f\n",
+					s.simT, s.ctRough, s.ctCond, s.ctEvap, s.ctBacks)
+			}
 		}
 		if P.SnapEvery > 0 && s.P.SnapDir != "" && st%P.SnapEvery == 0 {
 			s.writeFCS(snapIdx)
@@ -870,6 +1508,52 @@ func (s *Sim) Run() {
 			break
 		}
 		s.step()
+		if P.Exp == "slit" {
+			tn := float64(st+1) * P.Dt
+			if tn >= P.SlitT0 && tn <= P.SlitT1 {
+				if s.dsCellI == nil {
+					s.dsCellI = make([]float64, s.NC)
+				}
+				for i := 0; i < s.NC; i++ {
+					if math.Abs(s.wr(s.px[i]-P.SlitScreenx)) > 0.75 {
+						continue
+					}
+					b := int(s.py[i] / P.L * dsNBin)
+					if b < 0 {
+						b = 0
+					}
+					if b >= dsNBin {
+						b = dsNBin - 1
+					}
+					s.dsI[b] += s.Ee[i] * P.Dt
+					s.dsCellI[i] += s.Ee[i] * P.Dt
+					s.dsExpo += s.Ee[i] * P.Dt
+				}
+			}
+		}
+		if P.SectMeter != 0 {
+			tn := float64(st+1) * P.Dt
+			if tn >= P.SectT0 && tn <= P.SectT1 {
+				NS := P.SectN
+				for i := 0; i < s.NC; i++ {
+					dx := s.wr(s.px[i] - s.sectCx)
+					dy := s.wr(s.py[i] - s.sectCy)
+					r2 := dx*dx + dy*dy
+					if r2 < P.SectR0*P.SectR0 || r2 >= P.SectR1*P.SectR1 {
+						continue
+					}
+					// half-bin rotation: sector k is CENTRED at k*2pi/NS
+					u := (math.Atan2(dy, dx) + math.Pi/float64(NS)) / TwoPi
+					u -= math.Floor(u)
+					k := int(u * float64(NS))
+					if k >= NS {
+						k = NS - 1
+					}
+					s.sectE[k] += s.Ee[i] * P.Dt
+					s.sectN2[k] += P.Dt
+				}
+			}
+		}
 	}
 
 	// ---------------- final report ----------------
@@ -897,6 +1581,21 @@ func (s *Sim) Run() {
 			s.births, s.deaths, s.betaReturns, s.betaEnergy)
 		fprintf(s.Out, "# RESULT conv rough=%.6f cond=%.6f evap=%.6f backs=%.6f\n",
 			s.roughTotal, s.condTotal, s.evapTotal, s.backsTotal)
+		if P.SlitObj != 0 {
+			// net field capture at the occulter = cond - evap - rough + backs
+			fprintf(s.Out, "# RESULT convtag rough=%.6f cond=%.6f evap=%.6f backs=%.6f net=%.6f\n",
+				s.ctRough, s.ctCond, s.ctEvap, s.ctBacks,
+				s.ctCond-s.ctEvap-s.ctRough+s.ctBacks)
+		}
+		if P.P1Meter != 0 {
+			tx := s.p1sp[0] + s.p1fl[0] + s.p1fd[0] + s.p1gm[0]
+			ty := s.p1sp[1] + s.p1fl[1] + s.p1fd[1] + s.p1gm[1]
+			tz := s.p1sp[2] + s.p1fl[2] + s.p1fd[2] + s.p1gm[2]
+			fprintf(s.Out, "# RESULT p1 tot=(%+.6e,%+.6e,%+.6e) rate=(%+.6e,%+.6e,%+.6e)\n",
+				tx, ty, tz, tx/P.T, ty/P.T, tz/P.T)
+			fprintf(s.Out, "# RESULT p1x sp=%+.6e fl=%+.6e fd=%+.6e gm=%+.6e\n",
+				s.p1sp[0], s.p1fl[0], s.p1fd[0], s.p1gm[0])
+		}
 		phi, zl, _, _, dbar, sig, _ := s.geoStatsV()
 		fprintf(s.Out, "# RESULT geometry phi_nom=%.4f z_live=%.2f dbar=%.4f sigma_d=%.4f\n",
 			phi, zl, dbar, sig)
@@ -975,6 +1674,65 @@ func (s *Sim) Run() {
 					axi*axj*dnn*dnn)
 			}
 		}
+		if s.rintN > 0 {
+			for e := 0; e < s.rintN; e++ {
+				i, j := s.rintE[e][0], s.rintE[e][1]
+				lo, hi := i, j
+				if j < i {
+					lo, hi = j, i
+				}
+				sl := s.hfind(lo, hi)
+				if sl < 0 || s.sst[sl] == sFree {
+					fprintf(s.Out, "# RESULT rint%d %d-%d CHANNEL DEAD\n", e, i, j)
+					continue
+				}
+				p := float64(s.rintP[e])
+				q := float64(s.rintQ[e])
+				psi := wrapPi(q*s.th2[i] - q*s.w2e[i]*s.sd[sl]/P.C - p*s.th2[j])
+				gf := s.gateOf(q*s.th2[i] - q*s.w2e[i]*s.sd[sl]/P.C - p*s.th2[j])
+				gb := s.gateOf(p*s.th2[j] - p*s.w2e[j]*s.sd[sl]/P.C - q*s.th2[i])
+				fprintf(s.Out, "# RESULT rint%d %d-%d p:q=%d:%d d=%.6f dev=%+.6f psi=%+.4f gg=%.4f lem=%.6e\n",
+					e, i, j, s.rintP[e], s.rintQ[e], s.sd[sl], s.sd[sl]-s.rintDstar[e],
+					psi, gf*gb, s.slem[2*sl]+s.slem[2*sl+1])
+			}
+			for k := 0; k < s.ringsNring; k++ {
+				ggs, xm, ems := 0.0, 0.0, 0.0
+				ne := 0
+				for e := 0; e < s.trussN; e++ {
+					i := s.trussE[e][0]
+					if i < s.ringsV0[k] || i >= s.ringsV0[k]+P.RingsNv {
+						continue
+					}
+					j := s.trussE[e][1]
+					lo, hi := i, j
+					if j < i {
+						lo, hi = j, i
+					}
+					sl := s.hfind(lo, hi)
+					if sl >= 0 && s.sst[sl] != sFree {
+						gf := s.gateOf(float64(s.slq[sl])*s.th2[i] - float64(s.slq[sl])*s.w2e[i]*s.sd[sl]/P.C - float64(s.slp[sl])*s.th2[j])
+						gb := s.gateOf(float64(s.slp[sl])*s.th2[j] - float64(s.slp[sl])*s.w2e[j]*s.sd[sl]/P.C - float64(s.slq[sl])*s.th2[i])
+						ggs += gf * gb
+						ne++
+					}
+				}
+				for q := 0; q < P.RingsNv; q++ {
+					i := s.ringsV0[k] + q
+					xm += (s.Em[i] + s.flload[i]) / P.Cap
+					ems += s.Em[i]
+				}
+				ggi := 0.0
+				if ne > 0 {
+					ggi = ggs / float64(ne)
+				}
+				ms := "DROPLET"
+				if s.ringsMode[k] != 0 {
+					ms = "MOLECULE"
+				}
+				fprintf(s.Out, "# RESULT ringq%d mode=%s w=%.4f gg_int=%.4f xbar=%.4f Em=%.5f\n",
+					k, ms, s.ringsW[k], ggi, xm/float64(P.RingsNv), ems)
+			}
+		}
 		if s.triOn {
 			for t2 := 0; t2 < s.ntri; t2++ {
 				var psi [3]float64
@@ -1002,6 +1760,43 @@ func (s *Sim) Run() {
 			}
 			fprintf(s.Out, "# RESULT front_speed v=%.4f v_over_C=%.4f (second-half fit, n=%d)\n",
 				v, v/P.C, n)
+		}
+		if P.Exp == "blob2" && s.nfsamp >= 6 {
+			h := s.nfsamp / 2
+			// approach speeds from the FIRST half (before contact)
+			sx, sxx := 0.0, 0.0
+			sya, syb, syt := 0.0, 0.0, 0.0
+			sxa, sxb, sxt := 0.0, 0.0, 0.0
+			for k2 := 0; k2 < h; k2++ {
+				sx += s.fsT[k2]
+				sxx += s.fsT[k2] * s.fsT[k2]
+				sya += s.b2ax[k2]
+				sxa += s.fsT[k2] * s.b2ax[k2]
+				syb += s.b2bx[k2]
+				sxb += s.fsT[k2] * s.b2bx[k2]
+				syt += s.b2tx[k2]
+				sxt += s.fsT[k2] * s.b2tx[k2]
+			}
+			den2 := float64(h)*sxx - sx*sx
+			vA, vB, vT := 0.0, 0.0, 0.0
+			if den2 != 0 {
+				vA = (float64(h)*sxa - sx*sya) / den2
+				vB = (float64(h)*sxb - sx*syb) / den2
+				vT = (float64(h)*sxt - sx*syt) / den2
+			}
+			fprintf(s.Out, "# RESULT blob2 vA=%.6f vB=%.6f closing=%.6f vTotalCOM=%.2e sep_final=%.4f\n",
+				vA, vB, vA-vB, vT, s.b2bx[s.nfsamp-1]-s.b2ax[s.nfsamp-1])
+		}
+		if P.SlitClicks != 0 {
+			esum := 0.0
+			for k2 := 0; k2 < s.nclick; k2++ {
+				esum += s.clickE[k2]
+			}
+			fprintf(s.Out, "# RESULT clicks n=%d e_sum=%.4f\n", s.nclick, esum)
+			for k2 := 0; k2 < s.nclick; k2++ {
+				fprintf(s.Out, "# CLICK t=%.2f y=%.4f e=%.5f\n",
+					s.clickT[k2], s.clickY[k2], s.clickE[k2])
+			}
 		}
 		if P.Exp == "blob" {
 			var sh [8]float64
@@ -1041,6 +1836,39 @@ func (s *Sim) Run() {
 				}
 				fprintf(s.Out, "# RESULT blob_drift speed=%.6f cos_to_kdir=%.4f v=(%.2e,%.2e,%.2e)\n",
 					sp, cosk, vx, vy, vz)
+			}
+		}
+		if P.SectMeter != 0 {
+			stot := 0.0
+			for k := 0; k < P.SectN; k++ {
+				stot += s.sectE[k]
+			}
+			fprintf(s.Out, "# RESULT sect Etot=%.6f n=%d r0=%.6g r1=%.6g centre=(%.2f,%.2f) gate=[%.6g,%.6g]\n",
+				stot, P.SectN, P.SectR0, P.SectR1, s.sectCx, s.sectCy,
+				P.SectT0, P.SectT1)
+			for k := 0; k < P.SectN; k++ {
+				thc := float64(k) * TwoPi / float64(P.SectN)
+				if thc > math.Pi {
+					thc -= TwoPi
+				}
+				fprintf(s.Out, "# SECT k=%d th=%+.4f E=%.8f n=%.2f\n", k, thc, s.sectE[k], s.sectN2[k])
+			}
+		}
+		if P.Exp == "slit" {
+			fprintf(s.Out, "# RESULT ds exposure=%.6f gate=[%.6g,%.6g] screen_x=%.6g nbin=%d\n",
+				s.dsExpo, P.SlitT0, P.SlitT1, P.SlitScreenx, dsNBin)
+			for b := 0; b < dsNBin; b++ {
+				fprintf(s.Out, "# SCREEN y=%.4f I=%.8f\n",
+					(float64(b)+0.5)*P.L/dsNBin, s.dsI[b])
+			}
+			// per-cell record: the analyzer smooths these
+			if s.dsCellI != nil {
+				for i := 0; i < s.NC; i++ {
+					if s.dsCellI[i] > 0 {
+						fprintf(s.Out, "# SCREENCELL y=%.4f x=%.4f I=%.8f\n",
+							s.py[i], s.px[i], s.dsCellI[i])
+					}
+				}
 			}
 		}
 	}

@@ -230,6 +230,8 @@ the harvest amp), `ds1_t25_ee.png`/`ds1_t30_ee.png` (transit),
 
 ## What later tiers need
 
-Eraser/delayed-choice analogs after tier 1 is green. The Go kernel does
-not implement `exp=slit`/`exp=rings`/`exp=blob2` yet (C-only apparatus;
-the A/B cross bars cover the shared experiments).
+Eraser/delayed-choice analogs after tier 1 is green. *(2026-08-04: the
+Go kernel now implements `exp=slit`/`rings`/`blob2` and the full meter
+apparatus — battery `abx` gates the A/B pairs; VERIFY.md has the
+measured record: clicks and screen tables byte-equal up to the
+conservation column.)*

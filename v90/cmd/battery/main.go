@@ -699,7 +699,90 @@ func suite() []experiment {
 			fmt.Sprintf("%.3g", wd), "1e-13", true)
 	}})
 
+	// FB12 ABX — the A/B surface over the queue-#6 ports (VERIFY.md):
+	// exp=slit/rings/blob2 + the sect/convtag/clicks/p1 apparatus now
+	// run in BOTH kernels. Measured (2026-08-04): blob2(+p1_meter) is
+	// BYTE-IDENTICAL C<->Go including the conservation column; slit
+	// tier-0, ds1 clicks, the xsec law-medium arm, and rings are
+	// identical in EVERY printed physics digit (SCREEN tables, CLICK
+	// rows, convtag, SECT tables, rint/ringq) — the only divergence is
+	// the conservation-drift column at the FP floor (libm ulps in the
+	// seeds; the linear optics field and the grain-quantized law both
+	// refuse to amplify them) plus a -0.0000 zero-sign in one gyration
+	// eigenvalue print. Bars: byte-equality after masking exactly that.
+	abxPairs := []struct {
+		name string
+		args []string
+	}{
+		{"abx_b2", []string{"exp=blob2", "L=16", "T=80", "amp=0.5", "sigma=2.2",
+			"blob2_sep=7", "diag_every=200", "p1_meter=1"}},
+		{"abx_ds", dsArgs()},
+		{"abx_ds1", ds1Args("seed=20260802")},
+		{"abx_rings", []string{"exp=rings", "rings_kind=1", "rings_nv=6",
+			"rings_xU=0.28", "bath=0", "T=100"}},
+		{"abx_xs", xsArgs("slit_obj=1", "obj_sigma=2.5", "obj_amp=0.5")},
+	}
+	sp = []runSpec{}
+	if wantC && wantGo {
+		for _, pr := range abxPairs {
+			sp = append(sp, cw(pr.name+"_c", pr.args...), gw(pr.name+"_go", pr.args...))
+		}
+	}
+	exps = append(exps, experiment{"abx", sp, func(r *reporter) {
+		if !wantC || !wantGo {
+			return
+		}
+		body := func(lb string) (string, bool) {
+			parts := strings.SplitN(get(lb), "\n", 2)
+			if len(parts) != 2 {
+				return "", false
+			}
+			return parts[1], true
+		}
+		bc, ok1 := body("abx_b2_c")
+		bg, ok2 := body("abx_b2_go")
+		r.add("abx", "blob2+p1 BYTE-identical (incl. drift)", ok1 && ok2 && bc == bg,
+			"full log", "byte-equal", true)
+		for _, pr := range []struct{ name, bar string }{
+			{"abx_ds", "slit tier-0 identical up to drift col"},
+			{"abx_ds1", "ds1 clicks identical up to drift col"},
+			{"abx_rings", "rings identical up to drift col"},
+			{"abx_xs", "xsec arm identical up to drift col"},
+		} {
+			c, o1 := body(pr.name + "_c")
+			g, o2 := body(pr.name + "_go")
+			r.add("abx", pr.bar, o1 && o2 && maskDrift(c) == maskDrift(g),
+				"masked log", "byte-equal", true)
+		}
+		wd := 0.0
+		okD := true
+		for _, pr := range abxPairs {
+			v, ok := exf(get(pr.name+"_go"), drift)
+			if !ok {
+				okD = false
+			}
+			if abs(v) > wd {
+				wd = abs(v)
+			}
+		}
+		r.add("abx", "Go drift floor: worst |drift| <= 1e-12", okD && wd <= 1e-12,
+			fmt.Sprintf("%.3g", wd), "1e-12", true)
+	}})
+
 	return exps
+}
+
+// maskDrift blanks the two places where the C and Go kernels are ALLOWED
+// to differ: the conservation-drift column (FP-floor libm-ulp dust — the
+// t-row's second field and the RESULT drift_rel line) and the sign of a
+// printed negative zero. Everything else must be byte-equal.
+var driftColRe = regexp.MustCompile(`(?m)^(t=\s*\S+) [+-]\S+`)
+var driftResRe = regexp.MustCompile(`(?m)^# RESULT drift_rel \S+`)
+
+func maskDrift(log string) string {
+	log = driftColRe.ReplaceAllString(log, "$1 DRIFT")
+	log = driftResRe.ReplaceAllString(log, "# RESULT drift_rel DRIFT")
+	return strings.ReplaceAll(log, "-0.0000", "0.0000")
 }
 
 // sectGroups aggregates the SECT table into the declared angular groups:

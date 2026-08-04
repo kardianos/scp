@@ -56,6 +56,30 @@ func (s *Sim) step() {
 				s.sscl[i] = 1.0
 			}
 		}
+		if P.P1Meter != 0 {
+			// P1 site 1: space transport src->dst = sgn(f) * d * u_hat
+			for sl := 0; sl < s.NSLOT; sl++ {
+				f := s.swl[sl]
+				if f == 0 {
+					continue
+				}
+				src := s.sli[sl]
+				if f <= 0 {
+					src = s.slj[sl]
+				}
+				mag := math.Abs(f) * s.sscl[src]
+				if mag <= 0 {
+					continue
+				}
+				m := mag * s.sd[sl]
+				if f <= 0 {
+					m = -m
+				}
+				s.p1sp[0] += m * s.sux[sl]
+				s.p1sp[1] += m * s.suy[sl]
+				s.p1sp[2] += m * s.suz[sl]
+			}
+		}
 		for i := 0; i < s.NC; i++ {
 			de := 0.0
 			for q := s.cls[i]; q < s.cls[i+1]; q++ {
@@ -318,6 +342,16 @@ func (s *Sim) step() {
 			s.slem[2*sl+dir] += f
 			s.sflux[sl] += f
 			s.sfluxd[2*sl+dir] += f // directed ledger for circulation
+			if P.P1Meter != 0 && f > 0 {
+				// P1 site 2: dense deposit src -> link midpoint
+				m := 0.5 * f * s.sd[sl]
+				if dir != 0 {
+					m = -m
+				}
+				s.p1fl[0] += m * s.sux[sl]
+				s.p1fl[1] += m * s.suy[sl]
+				s.p1fl[2] += m * s.suz[sl]
+			}
 		}
 	}
 	for i := 0; i < s.NC; i++ {
@@ -414,6 +448,16 @@ func (s *Sim) step() {
 			if take > 0 {
 				mobprev := s.Em[recv]
 				s.slem[sslot] -= take
+				if P.P1Meter != 0 {
+					// P1 site 3: flight arrival, link midpoint -> recv
+					m := 0.5 * take * s.sd[sl]
+					if dir != 0 {
+						m = -m
+					}
+					s.p1fl[0] += m * s.sux[sl]
+					s.p1fl[1] += m * s.suy[sl]
+					s.p1fl[2] += m * s.suz[sl]
+				}
 				// C2: dissonance radiates (cellfab.c:3228)
 				det := float64(s.slq[sl])*s.w2e[i] - float64(s.slp[sl])*s.w2e[j]
 				R := 2.0 * math.Abs(det) * P.GammaRough /
@@ -432,6 +476,10 @@ func (s *Sim) step() {
 				s.fieldInject(recv, rough-backS)
 				s.Es[recv] += backS
 				s.roughTotal += rough
+				if s.tag[recv] != 0 {
+					s.ctRough += rough
+					s.ctBacks += backS
+				}
 				wsend := s.w2e[send]
 				thsend := s.th2s[send]
 				var ms, mr float64
@@ -446,6 +494,16 @@ func (s *Sim) step() {
 			}
 			if dying && s.slem[sslot] > 1e-17 {
 				// rule α flush: unreceivable residue returns to source
+				if P.P1Meter != 0 {
+					// P1 site 4: flush, link midpoint -> send (return)
+					m := -0.5 * s.slem[sslot] * s.sd[sl]
+					if dir != 0 {
+						m = -m
+					}
+					s.p1fl[0] += m * s.sux[sl]
+					s.p1fl[1] += m * s.suy[sl]
+					s.p1fl[2] += m * s.suz[sl]
+				}
 				s.Em[send] += s.slem[sslot]
 				s.betaEnergy += s.slem[sslot]
 				s.betaReturns++
@@ -471,6 +529,10 @@ func (s *Sim) step() {
 		}
 		for i := 0; i < s.NC; i++ {
 			dxx, dyy, dzz := 0.0, 0.0, 0.0
+			if s.pin[i] != 0 {
+				s.fxb[i], s.fyb[i], s.fzb[i] = 0, 0, 0
+				continue
+			}
 			for q := s.cls[i]; q < s.cls[i+1]; q++ {
 				sl := s.clidx[q]
 				sgn := 1.0
@@ -502,6 +564,29 @@ func (s *Sim) step() {
 				dzz *= sc
 			}
 			s.fxb[i], s.fyb[i], s.fzb[i] = dxx, dyy, dzz
+		}
+		if P.P1Meter != 0 {
+			// P1 site 6: geometry — cells carry their energy when they
+			// move; link flight (midpoint) moves with the endpoint mean
+			for i := 0; i < s.NC; i++ {
+				ei := s.Es[i] + s.Em[i] + s.Ee[i]
+				s.p1gm[0] += ei * s.fxb[i]
+				s.p1gm[1] += ei * s.fyb[i]
+				s.p1gm[2] += ei * s.fzb[i]
+			}
+			for sl := 0; sl < s.NSLOT; sl++ {
+				if s.sst[sl] == sFree {
+					continue
+				}
+				le := s.slem[2*sl] + s.slem[2*sl+1]
+				if le <= 0 {
+					continue
+				}
+				i2, j2 := s.sli[sl], s.slj[sl]
+				s.p1gm[0] += le * 0.5 * (s.fxb[i2] + s.fxb[j2])
+				s.p1gm[1] += le * 0.5 * (s.fyb[i2] + s.fyb[j2])
+				s.p1gm[2] += le * 0.5 * (s.fzb[i2] + s.fzb[j2])
+			}
 		}
 		for i := 0; i < s.NC; i++ {
 			s.px[i] = s.fold(s.px[i] + s.fxb[i])
@@ -563,6 +648,14 @@ func (s *Sim) step() {
 			s.fa2[i] = cc*a2i - ss*a1j
 			s.fa1[j] = cc*a1j + ss*a2i
 			s.fa2[j] = cc*a2j - ss*a1i
+			if P.P1Meter != 0 {
+				// P1 site 5: field hop — energy the rotation moved into j
+				mj := (s.fa1[j]*s.fa1[j] + s.fa2[j]*s.fa2[j]) - (a1j*a1j + a2j*a2j)
+				m := mj * s.sd[sl]
+				s.p1fd[0] += m * s.sux[sl]
+				s.p1fd[1] += m * s.suy[sl]
+				s.p1fd[2] += m * s.suz[sl]
+			}
 		}
 	}
 	for i := 0; i < s.NC; i++ {
@@ -588,14 +681,27 @@ func (s *Sim) step() {
 			beatFire = true
 		}
 		if beatFire {
-			if s.Ee[i] > P.ECond {
-				d1 := P.FConv * (s.Ee[i] - P.ECond)
+			econdI := P.ECond
+			if s.scond[i] != 0 {
+				econdI = 0.0
+			}
+			if s.Ee[i] > econdI {
+				d1 := P.FConv * (s.Ee[i] - econdI)
 				eF := s.A0eff * s.w1e[i] / TwoPi
 				eD := s.A0eff * s.w2e[i] / TwoPi
 				d1 = s.atomsFire(d1, eF, eD, &s.qcnvD[i])
 				d1 = s.atomsClamp(d1, 0.98*s.Ee[i], eF, eD, &s.qcnvD[i])
 				if d1 > 0 {
 					s.condTotal += d1
+					if s.tag[i] != 0 {
+						s.ctCond += d1
+					}
+					if s.scond[i] != 0 && s.nclick < clickMax {
+						s.clickT[s.nclick] = s.simT
+						s.clickY[s.nclick] = s.py[i]
+						s.clickE[s.nclick] = d1
+						s.nclick++
+					}
 					s.qatomDiag(1, s.atomsW(s.w1e[i], s.w2e[i]), d1)
 					dsp := P.SPull * d1
 					avail := s.Es[i] - P.EsFloor
@@ -628,6 +734,10 @@ func (s *Sim) step() {
 					s.qatomDiag(0, s.atomsW(s.w2e[i], s.w1e[i]), d2)
 					bs := d2 * P.SPull / (1.0 + P.SPull)
 					s.backsTotal += bs
+					if s.tag[i] != 0 {
+						s.ctEvap += d2
+						s.ctBacks += bs
+					}
 					s.Em[i] -= d2
 					s.fieldInject(i, d2-bs)
 					s.Es[i] += bs

@@ -7,7 +7,8 @@ Detail lives in the campaign docs; this file is the index and the queue.
 
 | result | where |
 |---|---|
-| Battery **79 bars ALL GREEN** through every kernel change (14 apparatus additions) | `runs/BATTERY.log`, `cmd/battery` |
+| Battery **85 bars ALL GREEN** through every kernel change (14 apparatus additions) | `runs/BATTERY.log`, `cmd/battery` |
+| **Full A/B surface restored (queue #6)**: slit/rings/blob2 + p1/sect/convtag/clicks apparatus in BOTH kernels; battery `abx` 6 bars — blob2+p1 byte-identical INCLUDING drift; slit/ds1/xsec/rings identical in every physics digit (clicks, screen tables, convtag net 7.274023, sect Etot 961.008277), drift column at the FP floor is the only divergence | `VERIFY.md`, battery `abx` |
 | **XSEC gated (15 bars)**: headroom object = clean absorber (net_tag +7.27/+2.97/+5.64 across seeds, rough=evap exactly 0; run-differencing understated 4×); true-saturated flat-top = net EMITTER (−7.20/−7.93/−8.76, evap-borne, side-glow rE 1.54) — **opacity is unfilled capacity, with a sign**; cross-section falls monotonically with impact parameter (7.27>4.21>3.42>2.03; second seed too); inert conversions-off object still shades the core (rE 0.79 — an impedance defect that REFLECTS, not delays: 2× gate probe); absorber core shadow 0.50 at the gated seed; per-seed angular ratios are foam-speckle-dominated — ledger claims are the robust ones; absorption is a CLOCK-RATE effect (heavier headroom object absorbs less) | `MOTION.md` XSEC |
 | **All-modes COE meter** (`p1_meter`): no-channels null exactly zero; blobs merge with v_COE ~1000× below closing — approach carries no net momentum; dense-only COM was 55–324× inflated (wrong sign on the driven arm) | `MOTION.md` |
 | **PAULI-0 gated**: saturation refusal is distinguishability-blind — at cap, admission exactly 0 for identical AND fifth-consonant senders; near cap both admitted, throttled (26× = gate quality, not door policy) | `README.md` stretch, battery `pauli0` |
@@ -96,9 +97,10 @@ scale.
    tag-split conversion ledger; headroom=absorber / flat-top-cap=
    emitter / inert=reflector; monotone impact-parameter profile;
    angular speckle lesson. MOTION.md XSEC has the record.
-6. **Go kernel ports** of `exp=slit`/`rings`/`blob2` → restore the full
-   A/B surface over the new apparatus (now incl. sect/convtag meters).
-   *Mechanical, moderate.*
+6. ~~**Go kernel ports** of `exp=slit`/`rings`/`blob2`~~ **DONE
+   2026-08-04** — full apparatus surface in both kernels (incl.
+   p1/sect/convtag/clicks); battery `abx` 6 bars gates the pairs
+   (suite 85 GREEN). VERIFY.md queue-#6 section has the record.
 7. **P2 local-clock scheduler** (Go prototype first, per FREECELL §2's
    four conditions) → big boxes for big composites (nv=36+, 3D baths).
    *Large; the composite programme will start to need it at CQ7-scale.*

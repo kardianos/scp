@@ -243,6 +243,27 @@ func (s *Sim) fcsInstrument(o *fcsW) {
 	rows := []float64{(Etot - s.E0) / den, phi, zl, float64(nla), float64(nld),
 		float64(s.births), float64(s.deaths)}
 	s.fcsAnlzTable(o, "meters", fcsMeterCols, rows, 1)
+	if s.P.Exp == "slit" {
+		var dsRows [dsNBin * 2]float64
+		for b := 0; b < dsNBin; b++ {
+			dsRows[2*b] = (float64(b) + 0.5) * s.P.L / dsNBin
+			dsRows[2*b+1] = s.dsI[b]
+		}
+		s.fcsAnlzTable(o, "ds_screen", []string{"y", "I"}, dsRows[:], dsNBin)
+	}
+	if s.P.SectMeter != 0 {
+		var xRows [sectMax * 3]float64
+		for k := 0; k < s.P.SectN; k++ {
+			thc := float64(k) * TwoPi / float64(s.P.SectN)
+			if thc > math.Pi {
+				thc -= TwoPi
+			}
+			xRows[3*k] = thc
+			xRows[3*k+1] = s.sectE[k]
+			xRows[3*k+2] = s.sectN2[k]
+		}
+		s.fcsAnlzTable(o, "sector", []string{"th", "E", "n"}, xRows[:], s.P.SectN)
+	}
 }
 
 func fcsOpen(path string, comp bool) (*fcsW, error) {

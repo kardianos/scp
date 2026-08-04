@@ -18,19 +18,19 @@ const TwoPi = 2.0 * math.Pi
 type Cfg struct {
 	Seed uint64
 	// --- laws_V2g (do not change defaults: they ARE the table) ---
-	C, Dmin, R0, Rjit                       float64
-	W1, W2, QDetune                         float64
-	GammaRes, GammaResM, PGate, LockFloor   float64
-	KDep, KDepM, Cap                        float64
-	Es0, EsFloor, ECond                     float64
-	FConv, FEvap, SPull                     float64
+	C, Dmin, R0, Rjit                           float64
+	W1, W2, QDetune                             float64
+	GammaRes, GammaResM, PGate, LockFloor       float64
+	KDep, KDepM, Cap                            float64
+	Es0, EsFloor, ECond                         float64
+	FConv, FEvap, SPull                         float64
 	KappaLock, KappaAlign, KappaFreq, KappaReac float64
-	SK, SDisp, SigmaTumble                  float64
-	CombLimit                               int
-	RoughK, GammaRough                      float64
-	MobSym                                  int
-	MobFloor, FieldJ, QuantA0               float64
-	QuantMode                               int
+	SK, SDisp, SigmaTumble                      float64
+	CombLimit                                   int
+	RoughK, GammaRough                          float64
+	MobSym                                      int
+	MobFloor, FieldJ, QuantA0                   float64
+	QuantMode                                   int
 	// --- freecell geometry sector (apparatus, not law) ---
 	Cfac      float64
 	KRep      float64
@@ -42,29 +42,55 @@ type Cfg struct {
 	FreezeGeo int
 	BathFrac  float64
 	// --- run + apparatus ---
-	L, Dt, T             float64
-	DiagEvery, SnapEvery int
-	Exp                  string
-	NoiseAmp             float64
-	Amp, Sigma           float64
-	Kx                   float64
-	Px, Py, Pz           float64
-	Bath                 int
+	L, Dt, T                 float64
+	DiagEvery, SnapEvery     int
+	Exp                      string
+	NoiseAmp                 float64
+	Amp, Sigma               float64
+	Kx                       float64
+	Px, Py, Pz               float64
+	Bath                     int
 	PairX0, PairX1, PairDoff float64
-	PairM                int
-	PairPP, PairQQ       int
-	Seedlock             int
-	RingN                int
-	RingX, RingDoff      float64
-	TriKind, TriBranch   int
-	TriXU, TriXD, TriDoff float64
-	Tri2Sep              float64
-	Tri2K2               int
-	OctX, OctDoff        float64
-	ShearEps, ShearT     float64
-	SnapDir              string
-	SnapFile             string
-	SnapComp             int
+	PairM                    int
+	PairPP, PairQQ           int
+	Seedlock                 int
+	RingN                    int
+	RingX, RingDoff          float64
+	TriKind, TriBranch       int
+	TriXU, TriXD, TriDoff    float64
+	Tri2Sep                  float64
+	Tri2K2                   int
+	OctX, OctDoff            float64
+	ShearEps, ShearT         float64
+	// DS — double slit on the free substrate (DS.md); wall = carved
+	// vacuum held as a pinned fixture
+	SlitWallx, SlitTh, SlitSep, SlitHw float64
+	SlitScreenx, SlitSrcx, SlitSy      float64
+	SlitT0, SlitT1                     float64
+	SlitPinw                           float64
+	SlitMask                           int
+	// COMPOSITE (COMPOSITE.md): rings as many-celled quarks
+	RingsKind, RingsNv, RingsBranch int
+	RingsXU, RingsXD, RingsGapoff   float64
+	RingsXcomp, RingsXcompD         float64
+	RingsSep                        float64
+	// MOTION #28: two-blob collision
+	Blob2Sep, Blob2Kx float64
+	// MOTION #29/XSEC: embedded occulter in the slit beam
+	SlitObj          int
+	ObjAmp, ObjSigma float64
+	ObjY             float64
+	// DS tier 1: condensing screen (clicks)
+	SlitClicks int
+	// MOTION: all-modes center-of-energy meter
+	P1Meter int
+	// XSEC: annular sector meter
+	SectMeter, SectN             int
+	SectR0, SectR1, SectX, SectY float64
+	SectT0, SectT1               float64
+	SnapDir                      string
+	SnapFile                     string
+	SnapComp                     int
 }
 
 func Defaults() Cfg {
@@ -152,6 +178,42 @@ func Defaults() Cfg {
 	p.OctDoff = 0.0
 	p.ShearEps = 0
 	p.ShearT = 0
+	p.SlitWallx = 16.0
+	p.SlitTh = 1.6
+	p.SlitSep = 9.0
+	p.SlitHw = 2.0
+	p.SlitScreenx = 28.0
+	p.SlitSrcx = 8.0
+	p.SlitSy = 10.0
+	p.SlitT0 = 16.0
+	p.SlitT1 = 60.0
+	p.SlitMask = 0
+	p.SlitPinw = 3.0
+	p.RingsKind = 1
+	p.RingsNv = 6
+	p.RingsBranch = 0
+	p.RingsXU = 0.28
+	p.RingsXD = -1
+	p.RingsGapoff = 0
+	p.RingsXcomp = 0
+	p.RingsXcompD = 0
+	p.RingsSep = 9.0
+	p.Blob2Sep = 10.0
+	p.Blob2Kx = 0
+	p.SlitObj = 0
+	p.ObjAmp = 1.2
+	p.ObjSigma = 1.6
+	p.SlitClicks = 0
+	p.P1Meter = 0
+	p.SectMeter = 0
+	p.SectN = 24
+	p.SectR0 = 7.0
+	p.SectR1 = 11.0
+	p.SectX = -1
+	p.SectY = -1
+	p.SectT0 = 0
+	p.SectT1 = 1e18
+	p.ObjY = -1
 	p.SnapDir = ""
 	p.SnapFile = ""
 	p.SnapComp = 1
@@ -336,6 +398,78 @@ func (p *Cfg) SetKV(k, v string) {
 		p.ShearEps = atof(v)
 	case "shear_t":
 		p.ShearT = atof(v)
+	case "slit_wallx":
+		p.SlitWallx = atof(v)
+	case "slit_th":
+		p.SlitTh = atof(v)
+	case "slit_sep":
+		p.SlitSep = atof(v)
+	case "slit_hw":
+		p.SlitHw = atof(v)
+	case "slit_screenx":
+		p.SlitScreenx = atof(v)
+	case "slit_srcx":
+		p.SlitSrcx = atof(v)
+	case "slit_sy":
+		p.SlitSy = atof(v)
+	case "slit_t0":
+		p.SlitT0 = atof(v)
+	case "slit_t1":
+		p.SlitT1 = atof(v)
+	case "slit_mask":
+		p.SlitMask = atoi(v)
+	case "slit_pinw":
+		p.SlitPinw = atof(v)
+	case "rings_kind":
+		p.RingsKind = atoi(v)
+	case "rings_nv":
+		p.RingsNv = atoi(v)
+	case "rings_branch":
+		p.RingsBranch = atoi(v)
+	case "rings_xU":
+		p.RingsXU = atof(v)
+	case "rings_xD":
+		p.RingsXD = atof(v)
+	case "rings_gapoff":
+		p.RingsGapoff = atof(v)
+	case "rings_xcomp":
+		p.RingsXcomp = atof(v)
+	case "rings_xcompD":
+		p.RingsXcompD = atof(v)
+	case "rings_sep":
+		p.RingsSep = atof(v)
+	case "blob2_sep":
+		p.Blob2Sep = atof(v)
+	case "blob2_kx":
+		p.Blob2Kx = atof(v)
+	case "slit_obj":
+		p.SlitObj = atoi(v)
+	case "obj_amp":
+		p.ObjAmp = atof(v)
+	case "obj_sigma":
+		p.ObjSigma = atof(v)
+	case "slit_clicks":
+		p.SlitClicks = atoi(v)
+	case "p1_meter":
+		p.P1Meter = atoi(v)
+	case "sect_meter":
+		p.SectMeter = atoi(v)
+	case "sect_n":
+		p.SectN = atoi(v)
+	case "sect_r0":
+		p.SectR0 = atof(v)
+	case "sect_r1":
+		p.SectR1 = atof(v)
+	case "sect_x":
+		p.SectX = atof(v)
+	case "sect_y":
+		p.SectY = atof(v)
+	case "sect_t0":
+		p.SectT0 = atof(v)
+	case "sect_t1":
+		p.SectT1 = atof(v)
+	case "obj_y":
+		p.ObjY = atof(v)
 	case "snap_dir":
 		p.SnapDir = v
 	case "snap_file":

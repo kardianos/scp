@@ -30,42 +30,44 @@ type Sim struct {
 
 	NC int
 	// cells
-	px, py, pz             []float64 // POSITIONS — dynamical here
-	cr0, cr                []float64
-	n1x, n1y, n1z          []float64
-	n2x, n2y, n2z          []float64
-	th2, cbeta             []float64
-	w1e, w2e               []float64
-	Es, Em, Ee             []float64
-	fa1, fa2               []float64
-	flload                 []float64
-	qcnvD, qcnvF           []float64
-	roughq                 []float64
-	req1, scl1             []float64
-	sprq, sscl             []float64
-	fsum                   []float64
-	tag                    []uint8
-	fxb, fyb, fzb          []float64 // geometric force gather buffers
-	rngbuf, nsnap, th2s    []float64
+	px, py, pz          []float64 // POSITIONS — dynamical here
+	cr0, cr             []float64
+	n1x, n1y, n1z       []float64
+	n2x, n2y, n2z       []float64
+	th2, cbeta          []float64
+	w1e, w2e            []float64
+	Es, Em, Ee          []float64
+	fa1, fa2            []float64
+	flload              []float64
+	qcnvD, qcnvF        []float64
+	roughq              []float64
+	req1, scl1          []float64
+	sprq, sscl          []float64
+	fsum                []float64
+	tag                 []uint8
+	pin                 []uint8   // wall fixture: pass D skips (slit)
+	scond               []uint8   // condensation-active override (clicks)
+	fxb, fyb, fzb       []float64 // geometric force gather buffers
+	rngbuf, nsnap, th2s []float64
 
 	// channels — persistent slots with identity (birth/death ledger)
-	NLMAX, NSLOT int
-	sli, slj     []int
-	sst          []uint8
-	sd           []float64
-	sux, suy, suz []float64
-	sA           []float64
-	slem, slph   []float64 // [slot][dir]
-	slp, slq     []int8
-	swant        []float64 // [slot][dir]
-	sflux        []float64
-	sldd         []float64
-	swl          []float64
-	sfluxd       []float64 // cumulative DIRECTED dense flux [slot][dir]
-	freelist     []int
-	nfree        int
+	NLMAX, NSLOT                int
+	sli, slj                    []int
+	sst                         []uint8
+	sd                          []float64
+	sux, suy, suz               []float64
+	sA                          []float64
+	slem, slph                  []float64 // [slot][dir]
+	slp, slq                    []int8
+	swant                       []float64 // [slot][dir]
+	sflux                       []float64
+	sldd                        []float64
+	swl                         []float64
+	sfluxd                      []float64 // cumulative DIRECTED dense flux [slot][dir]
+	freelist                    []int
+	nfree                       int
 	births, deaths, betaReturns int64
-	betaEnergy   float64
+	betaEnergy                  float64
 
 	// pair -> slot hash (open addressing, tombstones)
 	hkey  []int64
@@ -84,14 +86,14 @@ type Sim struct {
 
 	// conversion ledgers
 	roughTotal, condTotal, evapTotal, backsTotal float64
-	A0eff  float64
-	qfireN int64
-	simT   float64
-	E0     float64
-	cenx, ceny, cenz float64
-	ncandLast        int64
-	fsT, fsR, fsY, fsZ [512]float64
-	nfsamp int
+	A0eff                                        float64
+	qfireN                                       int64
+	simT                                         float64
+	E0                                           float64
+	cenx, ceny, cenz                             float64
+	ncandLast                                    int64
+	fsT, fsR, fsY, fsZ                           [512]float64
+	nfsamp                                       int
 
 	// derived law constants
 	gm, lockf, Aref, dref float64
@@ -103,8 +105,8 @@ type Sim struct {
 	// pair/truss registry
 	repPairI, repPairJ int
 	trussN             int
-	trussE             [64][2]int
-	trussDstar         [64]float64
+	trussE             [128][2]int
+	trussDstar         [128]float64
 	trussShape0        [3]float64
 	// FCQ triangle registry
 	triOn      bool
@@ -112,9 +114,43 @@ type Sim struct {
 	triP, triQ [2][3]int8
 	ntri       int
 
+	// COMPOSITE inter-ring boundary edges (directed, with charts)
+	rintN      int
+	rintE      [8][2]int
+	rintP      [8]int8
+	rintQ      [8]int8
+	rintDstar  [8]float64
+	ringsNring int
+	ringsV0    [6]int
+	ringsMode  [6]int
+	ringsW     [6]float64
+	ringsGrp   [6]int
+
+	// DS screen (exp=slit): time-integrated Ee per y-bin + per cell
+	dsI     [dsNBin]float64
+	dsExpo  float64
+	dsCellI []float64
+	// DS tier-1 clicks
+	clickT, clickY, clickE [clickMax]float64
+	nclick                 int
+	// blob2 per-blob COM samples
+	b2ax, b2bx, b2tx [512]float64
+	// XSEC sector meter + tag-split conversion ledger
+	sectE, sectN2                    [sectMax]float64
+	sectCx, sectCy                   float64
+	ctRough, ctCond, ctEvap, ctBacks float64
+	// p1_meter accumulators (cumulative first-moment flow per channel)
+	p1sp, p1fl, p1fd, p1gm [3]float64
+
 	// scratch (lazy)
 	comp, stack []int
 }
+
+const (
+	dsNBin   = 96
+	clickMax = 8192
+	sectMax  = 96
+)
 
 // ------------------------------------------------------------------
 // rng + small math (cellfab-identical xorshift64)
@@ -349,6 +385,8 @@ func (s *Sim) allocAll(nc int) {
 	s.sscl = make([]float64, nc)
 	s.fsum = make([]float64, nc)
 	s.tag = make([]uint8, nc)
+	s.pin = make([]uint8, nc)
+	s.scond = make([]uint8, nc)
 	s.fxb = make([]float64, nc)
 	s.fyb = make([]float64, nc)
 	s.fzb = make([]float64, nc)
