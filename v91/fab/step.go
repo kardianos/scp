@@ -665,7 +665,7 @@ func (s *Sim) step() {
 	// pass 6: dense clock + beat-gated conversion (cellfab.c:3448), serial
 	for i := 0; i < s.NC; i++ {
 		if s.roughq[i] > 0 {
-			s.qatomDiag(0, s.atomsW(s.w2e[i], s.w1e[i]), s.roughq[i])
+			s.qatomDiag(0, s.atomsW(s.w2e[i], s.w1e[i]), s.roughq[i], i, s.Em[i])
 			s.roughq[i] = 0
 		}
 	}
@@ -702,7 +702,7 @@ func (s *Sim) step() {
 						s.clickE[s.nclick] = d1
 						s.nclick++
 					}
-					s.qatomDiag(1, s.atomsW(s.w1e[i], s.w2e[i]), d1)
+					s.qatomDiag(1, s.atomsW(s.w1e[i], s.w2e[i]), d1, i, s.Em[i])
 					dsp := P.SPull * d1
 					avail := s.Es[i] - P.EsFloor
 					if avail < 0 {
@@ -731,7 +731,7 @@ func (s *Sim) step() {
 				d2 = s.atomsClamp(d2, s.Em[i], eF2, eD2, &s.qcnvF[i])
 				if d2 > 0 {
 					s.evapTotal += d2
-					s.qatomDiag(0, s.atomsW(s.w2e[i], s.w1e[i]), d2)
+					s.qatomDiag(0, s.atomsW(s.w2e[i], s.w1e[i]), d2, i, s.Em[i])
 					bs := d2 * P.SPull / (1.0 + P.SPull)
 					s.backsTotal += bs
 					if s.tag[i] != 0 {
@@ -758,7 +758,7 @@ func (s *Sim) step() {
 				dr = s.atomsClamp(dr, s.Em[i], eFr, eDr, &s.qcnvF[i])
 				if dr > 0 {
 					s.radTotal += dr
-					s.qatomDiag(0, s.atomsW(s.w2e[i], s.w1e[i]), dr)
+					s.qatomDiag(0, s.atomsW(s.w2e[i], s.w1e[i]), dr, i, s.Em[i])
 					bsr := dr * P.SPull / (1.0 + P.SPull)
 					s.backsTotal += bsr
 					if s.tag[i] != 0 {

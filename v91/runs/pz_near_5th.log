@@ -49,6 +49,7 @@ t=   60.00 +7.29e-16 | 0.0010  1.00      1    0      0      0 | 1.4000  0.00 | 0
 # RESULT drift_rel 7.289e-16
 # RESULT births 0 deaths 0 beta_returns 0 beta_energy 0.000000e+00
 # RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
+# RESULT credit qcnvD=0.000000 qcnvF=0.000025
 # RESULT geometry phi_nom=0.0010 z_live=1.00 dbar=1.4000 sigma_d=0.0000
 # RESULT pair d_final=1.400000 d_star_seed=1.865025 d_star_live=0.776919 off_live=+0.623081 Em_i=0.90154 Em_j=2.40398
 # RESULT pairflux dep_ij=4.023885e-03 dep_ji=4.926953e-09 lem_ij=4.521821e-05 lem_ji=2.951465e-10

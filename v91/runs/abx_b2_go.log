@@ -59,6 +59,7 @@ t=   80.00 +0.00e+00 | 1.6940 16.81  22700   13   7953   7491 | 1.4408 15.13 | 2
 # RESULT drift_rel 0.000e+00
 # RESULT births 7953 deaths 7491 beta_returns 0 beta_energy 0.000000e+00
 # RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
+# RESULT credit qcnvD=0.000000 qcnvF=241.042843
 # RESULT p1 tot=(-7.607723e-01,+4.063454e+00,+9.293440e-01) rate=(-9.509654e-03,+5.079317e-02,+1.161680e-02)
 # RESULT p1x sp=-5.064785e-02 fl=-2.550390e+00 fd=+0.000000e+00 gm=+1.840265e+00
 # RESULT geometry phi_nom=1.6940 z_live=16.81 dbar=1.4408 sigma_d=0.1513

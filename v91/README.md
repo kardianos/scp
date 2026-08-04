@@ -146,3 +146,41 @@ R lands and the user re-authorizes.
 | baseline battery | **see `runs/BATTERY.log` — must read ALL GREEN (93 bars)** |
 | RADIANCE.md campaign doc | not started — the first v91 agent writes it (pre-registration first) |
 | laws_V3r table | does not exist yet — R5 creates it |
+
+## Status after the R campaign (2026-08-04, same day — R0–R5 EXECUTED)
+
+**`RADIANCE.md` is the complete record** (pre-registrations, ~470
+runs, results, the reckoning). Headlines: the interior fixed point
+EXISTS and is gated (x̂* = 0.62 ± 0.02 at the selected point
+k_rad=0.05 p_rad=4 rad_clock=0; quarter-power law in k and p;
+ablation and Go-port verified; conservation ≤ 1.35e-15 throughout);
+the bath GLOWS (nucleated proto-matter, supply-throttled); radiance
+TAXES v90-era hoard-objects (t_half 80–140 vs k0's 260–510) whose
+ruins then track the ambient's fixed point; and **structures cannot
+hold the balance without the coherent channel** — measured from both
+sides (bath pile-pump-out; vacuum-at-x* bond-gate break under
+thermal atom jitter). The flux-machine interior (S2) is thereby
+measured load-bearing for stable mass. **laws_V3r was NOT created**
+— agent recommendation in RADIANCE.md §6: adopt radiance + coherent
+channel TOGETHER when the coupled acceptance surface passes; the
+per-bar reckoning (11/93 movers, all classified) is in §5 awaiting
+user sign-off. The battery at defaults stays ALL GREEN (93) —
+re-verified after the harness gained the `-extra` override flag.
+Next agent: stage 2 (S2 coherent channel), with radiance as its
+test harness, per THEORY.md §2.2 and `carried/S2_CHANNEL.md`.
+
+## Status after the pad + integration campaigns (2026-08-04, same day)
+
+User-directed sequels, all recorded in-tree: **`pad/`** (34 crazy
+ideas, up to 3 believer-rounds each — `pad/RESULTS.md` is the index;
+apparatus added under the ratchet: QATOM stream with cell/Em tags +
+`qatom_every`, `RESULT credit` line, `cmd/fcsdump`, battery `-extra`;
+ALL GREEN 93 re-verified after each change). **`pad/INTEGRATION.md`**:
+the six working pads COMPOSE — an nv=48 low-curvature ring at the
+ambient's fixed point holds Em, bonds, balanced books, and a
+two-sided-selected size (d = 1.62 ± 0.01) for ≥ 5000 t.u. at every
+ambient (≥10–60× the v90 ceilings), while curved controls die and the
+k0 control merely sleeps — acceptance items 2/3/4/7 now MEASURED for
+large straight objects; "structures cannot hold the balance" is
+CONDITIONAL (small/curved matter still needs S2). **`OUTLOOK.md`**:
+ability / limitations / next experiments and theory.

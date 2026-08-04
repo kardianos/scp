@@ -139,6 +139,7 @@ typedef struct {
      * routed like evaporation. k_rad=0 => V2g byte-exactly. --- */
     double k_rad, p_rad;
     int    rad_clock;
+    int    qatom_every;   /* apparatus (print-only): QATOM sampler period */
     /* --- freecell geometry sector (apparatus, not law) --- */
     double cfac;          /* candidate rule d < cfac*(ri+rj)  (LIVEFAB) */
     double k_rep;         /* contact repulsion stiffness */
@@ -251,6 +252,7 @@ static void cfg_defaults(void)
     P.mob_sym = 1; P.mob_floor = 0.004; P.field_J = 1.8;
     P.quant_A0 = 1.15; P.quant_mode = 2;
     P.k_rad = 0; P.p_rad = 4; P.rad_clock = 0;
+    P.qatom_every = 200;
     /* freecell geometry */
     P.cfac = 1.15; P.k_rep = 1.0; P.mob_geo = 1.0; P.kappa_bond = 1.0;
     P.jam_sweeps = 800; P.jam_k = 0.10; P.jam_tol = 1e-4;
@@ -333,6 +335,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "k_rad")) P.k_rad = atof(v);
     else if (!strcmp(k, "p_rad")) P.p_rad = atof(v);
     else if (!strcmp(k, "rad_clock")) P.rad_clock = atoi(v);
+    else if (!strcmp(k, "qatom_every")) P.qatom_every = atoi(v);
     else if (!strcmp(k, "cfac")) P.cfac = atof(v);
     else if (!strcmp(k, "k_rep")) P.k_rep = atof(v);
     else if (!strcmp(k, "mob_geo")) P.mob_geo = atof(v);
@@ -679,12 +682,13 @@ static double atoms_clamp(double mv, double ceil_e, double eps_src, double eps_d
     if ((P.quant_mode == 2 || P.quant_mode == 4) && cred) *cred += mv - keep;
     return keep;
 }
-static void qatom_diag(int fd, double w, double e)
+static void qatom_diag(int fd, double w, double e, int ci, double em)
 {
+    int qe = P.qatom_every > 0 ? P.qatom_every : 1;
     if (A0eff <= 0 || e <= 0) return;
-    if ((qfire_n++ % 200) == 0)
-        printf("# QATOM t=%.2f dir=%s w=%.9g e=%.12g\n",
-               sim_t, fd ? "FD" : "DF", w, e);
+    if ((qfire_n++ % qe) == 0)
+        printf("# QATOM t=%.2f dir=%s w=%.9g e=%.12g i=%d Em=%.4f\n",
+               sim_t, fd ? "FD" : "DF", w, e, ci, em);
 }
 
 static void field_inject(int i, double dE)   /* cellfab.c:2711 verbatim */
@@ -1372,7 +1376,7 @@ static void step(void)
      * serial by design */
     for (int i = 0; i < NC; i++) {
         if (roughq[i] > 0) {
-            qatom_diag(0, atoms_w(w2e[i], w1e[i]), roughq[i]);
+            qatom_diag(0, atoms_w(w2e[i], w1e[i]), roughq[i], i, Em[i]);
             roughq[i] = 0;
         }
     }
@@ -1399,7 +1403,7 @@ static void step(void)
                         click_e[nclick] = d1;
                         nclick++;
                     }
-                    qatom_diag(1, atoms_w(w1e[i], w2e[i]), d1);
+                    qatom_diag(1, atoms_w(w1e[i], w2e[i]), d1, i, Em[i]);
                     double dsp = P.s_pull * d1;
                     double avail = Es[i] - P.es_floor;
                     if (avail < 0) avail = 0;
@@ -1420,7 +1424,7 @@ static void step(void)
                 d2 = atoms_clamp(d2, Em[i], eF2, eD2, &qcnvF[i]);
                 if (d2 > 0) {
                     evap_total += d2;
-                    qatom_diag(0, atoms_w(w2e[i], w1e[i]), d2);
+                    qatom_diag(0, atoms_w(w2e[i], w1e[i]), d2, i, Em[i]);
                     double bs = d2 * P.s_pull / (1.0 + P.s_pull);
                     backs_total += bs;
                     if (tag[i]) { ct_evap += d2; ct_backs += bs; }
@@ -1448,7 +1452,7 @@ static void step(void)
                 dr = atoms_clamp(dr, Em[i], eFr, eDr, &qcnvF[i]);
                 if (dr > 0) {
                     rad_total += dr;
-                    qatom_diag(0, atoms_w(w2e[i], w1e[i]), dr);
+                    qatom_diag(0, atoms_w(w2e[i], w1e[i]), dr, i, Em[i]);
                     double bsr = dr * P.s_pull / (1.0 + P.s_pull);
                     backs_total += bsr;
                     if (tag[i]) { ct_evap += dr; ct_backs += bsr; }
@@ -3211,6 +3215,11 @@ int main(int argc, char **argv)
                births, deaths, beta_returns, beta_energy);
         printf("# RESULT conv rough=%.6f cond=%.6f evap=%.6f backs=%.6f rad=%.6f\n",
                rough_total, cond_total, evap_total, backs_total, rad_total);
+        {   /* pad-31 apparatus: the standing sub-atom credit inventory */
+            double cd = 0, cf = 0;
+            for (int ii = 0; ii < NC; ii++) { cd += qcnvD[ii]; cf += qcnvF[ii]; }
+            printf("# RESULT credit qcnvD=%.6f qcnvF=%.6f\n", cd, cf);
+        }
         if (P.slit_obj || P.convtag)
             /* net field capture at the occulter = cond - evap - rough + backs
              * (evap returns d2-bs to field; rough returns rough-back_s) */

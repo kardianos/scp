@@ -43,6 +43,7 @@ t=   44.00 +3.61e-14 | 0.0261  6.11   8148    0    754    932 | 1.3436 11.34 | 4
 # RESULT drift_rel 3.615e-14
 # RESULT births 754 deaths 932 beta_returns 0 beta_energy 0.000000e+00
 # RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
+# RESULT credit qcnvD=0.000000 qcnvF=0.315517
 # RESULT geometry phi_nom=0.0261 z_live=6.11 dbar=1.3436 sigma_d=0.1134
 # RESULT ds exposure=71.963056 gate=[20,36] screen_x=36 nbin=96
 # SCREEN y=0.3333 I=0.00000000

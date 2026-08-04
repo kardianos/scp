@@ -318,18 +318,22 @@ func (s *Sim) atomsClamp(mv, ceilE, epsSrc, epsDst float64, cred *float64) float
 	return keep
 }
 
-func (s *Sim) qatomDiag(fd int, w, e float64) {
+func (s *Sim) qatomDiag(fd int, w, e float64, ci int, em float64) {
+	qe := s.P.QatomEvery
+	if qe <= 0 {
+		qe = 1
+	}
 	if s.A0eff <= 0 || e <= 0 {
 		return
 	}
 	n := s.qfireN
 	s.qfireN++
-	if n%200 == 0 {
+	if n%int64(qe) == 0 {
 		dir := "DF"
 		if fd != 0 {
 			dir = "FD"
 		}
-		fmt.Fprintf(s.Out, "# QATOM t=%.2f dir=%s w=%.9g e=%.12g\n", s.simT, dir, w, e)
+		fmt.Fprintf(s.Out, "# QATOM t=%.2f dir=%s w=%.9g e=%.12g i=%d Em=%.4f\n", s.simT, dir, w, e, ci, em)
 	}
 }
 

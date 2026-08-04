@@ -1626,6 +1626,14 @@ func (s *Sim) Run() {
 			s.births, s.deaths, s.betaReturns, s.betaEnergy)
 		fprintf(s.Out, "# RESULT conv rough=%.6f cond=%.6f evap=%.6f backs=%.6f rad=%.6f\n",
 			s.roughTotal, s.condTotal, s.evapTotal, s.backsTotal, s.radTotal)
+		{ // pad-31 apparatus: the standing sub-atom credit inventory
+			cd, cf := 0.0, 0.0
+			for ii := 0; ii < s.NC; ii++ {
+				cd += s.qcnvD[ii]
+				cf += s.qcnvF[ii]
+			}
+			fprintf(s.Out, "# RESULT credit qcnvD=%.6f qcnvF=%.6f\n", cd, cf)
+		}
 		if P.SlitObj != 0 || P.Convtag != 0 {
 			// net field capture at the occulter = cond - evap - rough + backs
 			fprintf(s.Out, "# RESULT convtag rough=%.6f cond=%.6f evap=%.6f backs=%.6f net=%.6f\n",

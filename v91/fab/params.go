@@ -35,6 +35,7 @@ type Cfg struct {
 	// A; k_rad=0 => V2g byte-exactly). See kernel pass-6 comment.
 	KRad, PRad float64
 	RadClock   int
+	QatomEvery int // apparatus (print-only): QATOM sampler period
 	// --- freecell geometry sector (apparatus, not law) ---
 	Cfac      float64
 	KRep      float64
@@ -143,6 +144,7 @@ func Defaults() Cfg {
 	p.KRad = 0
 	p.PRad = 4
 	p.RadClock = 0
+	p.QatomEvery = 200
 	// freecell geometry
 	p.Cfac = 1.15
 	p.KRep = 1.0
@@ -331,6 +333,8 @@ func (p *Cfg) SetKV(k, v string) {
 		p.PRad = atof(v)
 	case "rad_clock":
 		p.RadClock = atoi(v)
+	case "qatom_every":
+		p.QatomEvery = atoi(v)
 	case "cfac":
 		p.Cfac = atof(v)
 	case "k_rep":

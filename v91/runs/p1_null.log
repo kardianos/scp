@@ -80,6 +80,7 @@ t=   60.00 +0.00e+00 | 0.0011  0.00      0    0      0      0 | 0.0000  0.00 | 0
 # RESULT drift_rel 0.000e+00
 # RESULT births 0 deaths 0 beta_returns 0 beta_energy 0.000000e+00
 # RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
+# RESULT credit qcnvD=0.000000 qcnvF=0.000000
 # RESULT p1 tot=(+0.000000e+00,+0.000000e+00,+0.000000e+00) rate=(+0.000000e+00,+0.000000e+00,+0.000000e+00)
 # RESULT p1x sp=+0.000000e+00 fl=+0.000000e+00 fd=+0.000000e+00 gm=+0.000000e+00
 # RESULT geometry phi_nom=0.0011 z_live=0.00 dbar=0.0000 sigma_d=0.0000

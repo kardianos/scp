@@ -28,5 +28,6 @@ t=   10.00 +0.00e+00 | 1.6797 16.11  72618    0   7495   6390 | 1.4306 14.86 | 1
 # RESULT drift_rel 0.000e+00
 # RESULT births 7495 deaths 6390 beta_returns 0 beta_energy 0.000000e+00
 # RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
+# RESULT credit qcnvD=9.771228 qcnvF=0.000000
 # RESULT geometry phi_nom=1.6797 z_live=16.11 dbar=1.4306 sigma_d=0.1486
 # RESULT front_speed v=0.5740 v_over_C=0.5740 (second-half fit, n=6)

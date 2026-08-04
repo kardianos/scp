@@ -56,6 +56,7 @@ t=   32.00 -1.84e-15 | 0.0270  6.20   8535    2    821    990 | 1.3450 11.42 | 2
 # RESULT drift_rel -1.837e-15
 # RESULT births 821 deaths 990 beta_returns 2 beta_energy 1.078326e-11
 # RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
+# RESULT credit qcnvD=0.000000 qcnvF=11.245509
 # RESULT convtag rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 net=0.000000
 # RESULT geometry phi_nom=0.0270 z_live=6.20 dbar=1.3450 sigma_d=0.1142
 # RESULT sect Etot=1130.578525 n=24 r0=7 r1=11 centre=(32.00,32.00) gate=[0,30]

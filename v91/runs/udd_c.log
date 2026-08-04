@@ -170,6 +170,7 @@ t=  300.00 +3.36e-14 | 0.0015  1.33      2    0      0      0 | 1.5882  0.02 | 7
 # RESULT drift_rel 3.358e-14
 # RESULT births 0 deaths 0 beta_returns 0 beta_energy 0.000000e+00
 # RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
+# RESULT credit qcnvD=0.000000 qcnvF=0.001606
 # RESULT geometry phi_nom=0.0015 z_live=1.33 dbar=1.5882 sigma_d=0.0002
 # RESULT truss edge_dev_mean=0.129725 edge_dev_max=0.141102 shape=(0.0000,0.2721,0.8652) shape0=(0.0000,0.2036,0.7855)
 # EDGE 0 0-1 d=1.58792 dev=+0.14062 gg=0.0105 gpl=0.9657

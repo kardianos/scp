@@ -69,6 +69,7 @@ var (
 	kernels = flag.String("kernel", "both", "c|go|both")
 	jobs    = flag.Int("j", 8, "parallel kernel runs")
 	runsDir = flag.String("runs", "runs", "log output directory")
+	extra   = flag.String("extra", "", "key=value args appended to every kernel run (R5 reckoning; empty = pure battery, byte-identical behavior)")
 )
 
 var (
@@ -81,7 +82,11 @@ func runOne(sp runSpec) error {
 	if sp.kernel == "go" {
 		bin = *binGo
 	}
-	cmd := exec.Command(bin, sp.args...)
+	args := sp.args
+	if *extra != "" {
+		args = append(append([]string{}, sp.args...), strings.Fields(*extra)...)
+	}
+	cmd := exec.Command(bin, args...)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("%s (%s): %v\n%s", sp.label, bin, err, string(out))
