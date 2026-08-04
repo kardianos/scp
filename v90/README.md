@@ -199,4 +199,6 @@ hard results index, what they mean, and the prioritized next steps.
 | **COMPOSITE (primary focus)** | rounds 1–2 executed: macro-parity rule, T6 U/D asymmetry, bond=flight, compensation 8×, H-stiffness→flux-machine interior, **bath protects**, nucleon residual force (COMPOSITE.md) |
 | P2 local-clock scheduler | **Go prototype done** (fab/localclock.go; battery `p2lc` 8 bars): four conditions on the real substrate, batch==serial exact at 1–8 workers (pending-min rule), quiet-region economy 6.87× at L=64 (P2.md); C production engine open |
 | P3 shells | first-look done (runs/shell/); driven-response probe queued |
-| P4 speedups | not started (after stability) |
+| P4 speedups | not started (after stability); P2 production engine is the first rung (P2.md checklist) |
+| **S2 frontier** | **entry measured + design memo** (S2.md): kr=1 fails — kills the fifth everywhere load-bearing; completion = coherent dense channel, quantified acceptance surface; [LAW]-level, needs sign-off |
+| **REALITY audit** | **done** (REALITY.md): correlation-to-reality retrospective with degrees (EXACT/QUANTITATIVE/STRUCTURAL/ABSENT/ANTI) and the prioritized adjustment list — the refreshed queue in NEXT.md derives from it |

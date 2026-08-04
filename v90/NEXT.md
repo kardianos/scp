@@ -7,7 +7,10 @@ Detail lives in the campaign docs; this file is the index and the queue.
 
 | result | where |
 |---|---|
-| Battery **85 bars ALL GREEN** through every kernel change (14 apparatus additions) | `runs/BATTERY.log`, `cmd/battery` |
+| Battery **93 bars ALL GREEN** through every kernel change (15 apparatus additions) | `runs/BATTERY.log`, `cmd/battery` |
+| **P2 prototype gated (8 bars)**: FREECELL §2's four conditions on the real substrate; batch == serial EXACTLY at 1–8 workers via the PENDING-min rule (sharpens v89); quiet-region economy 2.37→6.87 toward the R=8 dilation bound; production checklist recorded | `P2.md`, battery `p2lc` |
+| **S2 entry measured**: kappa_reac=1 kills the FIFTH everywhere it is load-bearing (FCQ ggm→0, composite boundary gg→0, D-ring mass sink x̄→0.83; e3b −37%, cos 0.95→0.30) while vacuum/optics/field stay exactly untouched — the choir correction is a unison instrument; completion = coherent dense channel; quantified acceptance surface | `S2.md`, `runs/s2/` |
+| **REALITY audit**: full correlation-to-reality retrospective — what matches (DS loci parameter-free, Born-consistent clicks ±0.02, atomicity exact, XSEC triad, bond ladder, parity selection) and what is measured ABSENT/ANTI (stability, transport, one-ħ 19×, spectra, Coulomb, far field, transparent-vacuum+detector coexistence), with prioritized adjustments | `REALITY.md` |
 | **Full A/B surface restored (queue #6)**: slit/rings/blob2 + p1/sect/convtag/clicks apparatus in BOTH kernels; battery `abx` 6 bars — blob2+p1 byte-identical INCLUDING drift; slit/ds1/xsec/rings identical in every physics digit (clicks, screen tables, convtag net 7.274023, sect Etot 961.008277), drift column at the FP floor is the only divergence | `VERIFY.md`, battery `abx` |
 | **XSEC gated (15 bars)**: headroom object = clean absorber (net_tag +7.27/+2.97/+5.64 across seeds, rough=evap exactly 0; run-differencing understated 4×); true-saturated flat-top = net EMITTER (−7.20/−7.93/−8.76, evap-borne, side-glow rE 1.54) — **opacity is unfilled capacity, with a sign**; cross-section falls monotonically with impact parameter (7.27>4.21>3.42>2.03; second seed too); inert conversions-off object still shades the core (rE 0.79 — an impedance defect that REFLECTS, not delays: 2× gate probe); absorber core shadow 0.50 at the gated seed; per-seed angular ratios are foam-speckle-dominated — ledger claims are the robust ones; absorption is a CLOCK-RATE effect (heavier headroom object absorbs less) | `MOTION.md` XSEC |
 | **All-modes COE meter** (`p1_meter`): no-channels null exactly zero; blobs merge with v_COE ~1000× below closing — approach carries no net momentum; dense-only COM was 55–324× inflated (wrong sign on the driven arm) | `MOTION.md` |
@@ -124,12 +127,41 @@ scale.
    Quantified acceptance surface in S2.md §2. The construction itself
    is law-level: v91-scale or explicit user sign-off.
 
+## The queue, refreshed (2026-08-04, post-#8; from REALITY.md §C)
+
+The original queue #1–#8 is executed (each row above). The forward
+queue, in priority order — items marked **[LAW]** change the law table
+and need explicit user sign-off per the v90 charter (v91-scale):
+
+1. **Quantitative correspondence targets, no new law** (REALITY C7):
+   (a) DS visibility-vs-geometry curve V(s/λ, hw) against
+   scalar-diffraction theory; (b) the Born-rule test sharpened to a
+   KS/χ² distance of clicks vs measured wave intensity. Cheapest
+   conversion of STRUCTURAL rows into QUANTITATIVE rows. *Moderate.*
+2. **[LAW] The coherent dense channel** — the S2 completion (S2.md §2:
+   amplitude+phase dense transport with p:q charts, exchange registry,
+   flux-machine interior). Fixes B2/B4/B5 and feeds B1. THE frontier.
+3. **[LAW] Emergent conversion threshold (work function)** (REALITY
+   C2): one table giving a transparent vacuum AND detecting matter —
+   retires the per-experiment optics-regime override (B7).
+4. **P2 production engine** (P2.md checklist: event queues, full-law
+   event decomposition, per-cell RNG streams, local topology), then
+   **scale separation**: λ/dmin ≥ 10, L ≥ 256, measure ω(k) — does a
+   dispersionless window appear? (B8/B9). *Large.*
+5. **[LAW] One-ħ variant** (REALITY C4): the HBAR.md integer-h(v)
+   candidate as a quant-mode variant; acceptance = the 19× action
+   spread collapses without breaking within-channel linearity.
+6. **Flux-machine stable particle** (REALITY C5): balance-curve pair +
+   piston intake with the v90 meters; acceptance = lifetime ≫ 5k with
+   intake=outtake measured; then reopen g4 (1/r far field).
+7. **3D flagship replication** (REALITY C6): DS tiers 0–1 + XSEC triad
+   in 3D once #4 buys the cost down.
+8. DS tiers 2–3 analogs (eraser, delayed choice) on free cells —
+   carried opportunistic item, still unblocked.
+
 ## Also can-do (opportunistic)
 
 * volview: ANLZ-table overlay in `-i` (plot ds_screen build-up live);
   turntable/GIF export for records; click-position overlay on the DS view.
-* Battery: promote composite structural claims (parity rule, T6, bond
-  attractor) to gated bars once the mod-12 sweep lands.
-* DS tiers 2–3 analogs (eraser, delayed choice) after tier 1 is green.
 * Streams: `runs/streams/` is regenerable by `./battery`; large `.fcs`
   archives to `/space/scp/` per the standing data policy.
