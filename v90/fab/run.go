@@ -274,6 +274,27 @@ func (s *Sim) Run() {
 			nb = s.buildBath(bx, by, bz, nmax)
 		}
 	}
+	if P.GradR0 > 0 && P.GradFrac < 1.0 && nb > 0 {
+		// FORGE: thin the dart bath inside r0 of the box centre
+		gc := 0.5 * P.L
+		m, nin := 0, 0
+		for i := 0; i < nb; i++ {
+			dx := s.wr(bx[i] - gc)
+			dy := s.wr(by[i] - gc)
+			dz := s.wr(bz[i] - gc)
+			inside := dx*dx+dy*dy+dz*dz < P.GradR0*P.GradR0
+			if inside {
+				nin++
+			}
+			if !inside || s.frand() < P.GradFrac {
+				bx[m], by[m], bz[m] = bx[i], by[i], bz[i]
+				m++
+			}
+		}
+		fprintf(s.Out, "# GRAD carved: removed %d of %d cells inside r=%.6g (frac=%.6g)\n",
+			nb-m, nin, P.GradR0, P.GradFrac)
+		nb = m
+	}
 
 	extra := 0
 	switch {
@@ -1198,6 +1219,22 @@ func (s *Sim) Run() {
 		fprintf(s.Out, "# SEED noise: amp=%.6g (e1-class churn)\n", P.NoiseAmp)
 	}
 
+	if P.TagR > 0 {
+		// FORGE: region tag WITHOUT matter (convtag region ledger)
+		nt := 0
+		for i := 0; i < s.NC; i++ {
+			dx := s.wr(s.px[i] - cx0)
+			dy := s.wr(s.py[i] - cy0)
+			dz := s.wr(s.pz[i] - cz0)
+			if dx*dx+dy*dy+dz*dz < P.TagR*P.TagR {
+				s.tag[i] = 1
+				nt++
+			}
+		}
+		fprintf(s.Out, "# TAG region: %d cells within r=%.6g of centre (no load added)\n",
+			nt, P.TagR)
+	}
+
 	// initial radii + topology + ledger
 	for i := 0; i < s.NC; i++ {
 		ratio := s.Es[i] / P.Es0
@@ -1497,7 +1534,7 @@ func (s *Sim) Run() {
 				fprintf(s.Out, "# P1 t=%.2f tot=(%+.6e,%+.6e,%+.6e) sp=%+.3e fl=%+.3e fd=%+.3e gm=%+.3e (x)\n",
 					s.simT, tx, ty, tz, s.p1sp[0], s.p1fl[0], s.p1fd[0], s.p1gm[0])
 			}
-			if P.SlitObj != 0 {
+			if P.SlitObj != 0 || P.Convtag != 0 {
 				fprintf(s.Out, "# CONVTAG t=%.2f rough=%.6f cond=%.6f evap=%.6f backs=%.6f\n",
 					s.simT, s.ctRough, s.ctCond, s.ctEvap, s.ctBacks)
 			}
@@ -1587,7 +1624,7 @@ func (s *Sim) Run() {
 			s.births, s.deaths, s.betaReturns, s.betaEnergy)
 		fprintf(s.Out, "# RESULT conv rough=%.6f cond=%.6f evap=%.6f backs=%.6f\n",
 			s.roughTotal, s.condTotal, s.evapTotal, s.backsTotal)
-		if P.SlitObj != 0 {
+		if P.SlitObj != 0 || P.Convtag != 0 {
 			// net field capture at the occulter = cond - evap - rough + backs
 			fprintf(s.Out, "# RESULT convtag rough=%.6f cond=%.6f evap=%.6f backs=%.6f net=%.6f\n",
 				s.ctRough, s.ctCond, s.ctEvap, s.ctBacks,

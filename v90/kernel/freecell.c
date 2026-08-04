@@ -201,6 +201,13 @@ typedef struct {
     int    sect_meter, sect_n;
     double sect_r0, sect_r1, sect_x, sect_y, sect_t0, sect_t1;
     double obj_y;
+    /* FORGE apparatus: convtag=1 forces the tag-split ledger print for
+     * any experiment (slit_obj still implies it); grad_r0/grad_frac
+     * thin the dart bath inside radius r0 of the box centre (a
+     * matter-free foam-density structure); tag_r tags cells within
+     * radius of centre at init WITHOUT loading them (region ledger). */
+    int    convtag;
+    double grad_r0, grad_frac, tag_r;
     double rings_xcomp;             /* CQ3b: whole-ring load reduction, U-flavor rings */
     double rings_xcompD;            /* CQ3b: whole-ring load shift, D-flavor rings */
     double rings_sep;               /* kind 3: nucleon COM separation */
@@ -262,6 +269,7 @@ static void cfg_defaults(void)
     P.sect_r0 = 7.0; P.sect_r1 = 11.0; P.sect_x = -1; P.sect_y = -1;
     P.sect_t0 = 0; P.sect_t1 = 1e18;
     P.obj_y = -1;
+    P.convtag = 0; P.grad_r0 = 0; P.grad_frac = 1.0; P.tag_r = 0;
     strcpy(P.snap_dir, "");
     strcpy(P.snap_file, "");
     P.snap_comp = 1;
@@ -385,6 +393,10 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "sect_t0")) P.sect_t0 = atof(v);
     else if (!strcmp(k, "sect_t1")) P.sect_t1 = atof(v);
     else if (!strcmp(k, "obj_y")) P.obj_y = atof(v);
+    else if (!strcmp(k, "convtag")) P.convtag = atoi(v);
+    else if (!strcmp(k, "grad_r0")) P.grad_r0 = atof(v);
+    else if (!strcmp(k, "grad_frac")) P.grad_frac = atof(v);
+    else if (!strcmp(k, "tag_r")) P.tag_r = atof(v);
     else if (!strcmp(k, "rings_sep")) P.rings_sep = atof(v);
     else if (!strcmp(k, "snap_dir")) { strncpy(P.snap_dir, v, 255); P.snap_dir[255] = 0; }
     else if (!strcmp(k, "snap_file")) { strncpy(P.snap_file, v, 255); P.snap_file[255] = 0; }
@@ -2155,6 +2167,24 @@ int main(int argc, char **argv)
     if (P.bath) nb = !strcmp(P.exp, "slit")
         ? build_bath2d(bx, by, bz, nmax)
         : build_bath(bx, by, bz, nmax);
+    if (P.grad_r0 > 0 && P.grad_frac < 1.0 && nb > 0) {
+        /* FORGE: thin the dart bath inside r0 of the box centre — a
+         * matter-free foam-density structure (dark-lensing apparatus) */
+        double gc = 0.5 * P.L;
+        int m = 0, nin = 0;
+        for (int i = 0; i < nb; i++) {
+            double dx = wr(bx[i]-gc), dy = wr(by[i]-gc), dz = wr(bz[i]-gc);
+            int inside = dx*dx + dy*dy + dz*dz < P.grad_r0 * P.grad_r0;
+            if (inside) nin++;
+            if (!inside || frand() < P.grad_frac) {
+                bx[m] = bx[i]; by[m] = by[i]; bz[m] = bz[i];
+                m++;
+            }
+        }
+        printf("# GRAD carved: removed %d of %d cells inside r=%g (frac=%g)\n",
+               nb - m, nin, P.grad_r0, P.grad_frac);
+        nb = m;
+    }
 
     int extra = 0;
     if (!strcmp(P.exp, "pair") && !P.bath) extra = 2;
@@ -2850,6 +2880,18 @@ int main(int argc, char **argv)
         printf("# SEED noise: amp=%g (e1-class churn)\n", P.noise_amp);
     }
 
+    if (P.tag_r > 0) {
+        /* FORGE: region tag WITHOUT matter — the convtag ledger then
+         * attributes conversions to the region (forging meter) */
+        int nt = 0;
+        for (int i = 0; i < NC; i++) {
+            double dx = wr(px_[i]-cx0), dy = wr(py_[i]-cy0), dz = wr(pz_[i]-cz0);
+            if (dx*dx + dy*dy + dz*dz < P.tag_r * P.tag_r) { tag[i] = 1; nt++; }
+        }
+        printf("# TAG region: %d cells within r=%g of centre (no load added)\n",
+               nt, P.tag_r);
+    }
+
     /* initial radii + topology + ledger */
     for (int i = 0; i < NC; i++) {
         double ratio = Es[i] / P.e_s0;
@@ -3064,7 +3106,7 @@ int main(int argc, char **argv)
                 printf("# P1 t=%.2f tot=(%+.6e,%+.6e,%+.6e) sp=%+.3e fl=%+.3e fd=%+.3e gm=%+.3e (x)\n",
                        sim_t, tx, ty, tz, p1sp[0], p1fl[0], p1fd[0], p1gm[0]);
             }
-            if (P.slit_obj)
+            if (P.slit_obj || P.convtag)
                 printf("# CONVTAG t=%.2f rough=%.6f cond=%.6f evap=%.6f backs=%.6f\n",
                        sim_t, ct_rough, ct_cond, ct_evap, ct_backs);
         }
@@ -3119,7 +3161,7 @@ int main(int argc, char **argv)
                births, deaths, beta_returns, beta_energy);
         printf("# RESULT conv rough=%.6f cond=%.6f evap=%.6f backs=%.6f\n",
                rough_total, cond_total, evap_total, backs_total);
-        if (P.slit_obj)
+        if (P.slit_obj || P.convtag)
             /* net field capture at the occulter = cond - evap - rough + backs
              * (evap returns d2-bs to field; rough returns rough-back_s) */
             printf("# RESULT convtag rough=%.6f cond=%.6f evap=%.6f backs=%.6f net=%.6f\n",

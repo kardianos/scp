@@ -88,9 +88,13 @@ type Cfg struct {
 	SectMeter, SectN             int
 	SectR0, SectR1, SectX, SectY float64
 	SectT0, SectT1               float64
-	SnapDir                      string
-	SnapFile                     string
-	SnapComp                     int
+	// FORGE: forced convtag print; foam-density structure; region tag
+	Convtag          int
+	GradR0, GradFrac float64
+	TagR             float64
+	SnapDir          string
+	SnapFile         string
+	SnapComp         int
 }
 
 func Defaults() Cfg {
@@ -214,6 +218,10 @@ func Defaults() Cfg {
 	p.SectT0 = 0
 	p.SectT1 = 1e18
 	p.ObjY = -1
+	p.Convtag = 0
+	p.GradR0 = 0
+	p.GradFrac = 1.0
+	p.TagR = 0
 	p.SnapDir = ""
 	p.SnapFile = ""
 	p.SnapComp = 1
@@ -470,6 +478,14 @@ func (p *Cfg) SetKV(k, v string) {
 		p.SectT1 = atof(v)
 	case "obj_y":
 		p.ObjY = atof(v)
+	case "convtag":
+		p.Convtag = atoi(v)
+	case "grad_r0":
+		p.GradR0 = atof(v)
+	case "grad_frac":
+		p.GradFrac = atof(v)
+	case "tag_r":
+		p.TagR = atof(v)
 	case "snap_dir":
 		p.SnapDir = v
 	case "snap_file":
