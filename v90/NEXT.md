@@ -130,6 +130,11 @@ scale.
 
 ## The queue, refreshed (2026-08-04, post-#8; from REALITY.md §C)
 
+**v91 IS PREPARED (2026-08-04, user-authorized): `v91/README.md` is the
+entry point.** Forward-queue items 2 and 3 below now have their home
+there (item 2 = the v91 stage-2 coherent channel; the radiance law from
+FORGE is v91 stage 1, implemented inert and battery-verified at open).
+
 The original queue #1–#8 is executed (each row above). The forward
 queue, in priority order — items marked **[LAW]** change the law table
 and need explicit user sign-off per the v90 charter (v91-scale):

@@ -4,6 +4,14 @@
 
 # CURRENT VERSION: v90 — READ THIS FIRST
 
+**v91 IS PREPARED AND AUTHORIZED (user, 2026-08-04) but not yet begun:
+`v91/README.md` is the single entry point for the RADIANCE + coherent-channel
+programme (stable mass from steep emission). The v91 tree is a verified copy
+of the v90 surface with ONE inert law-candidate knob (k_rad=0 = laws_V2g
+byte-exactly; battery 93 bars green at open). An agent starting v91 work
+reads `v91/README.md` and follows its NEXT STEPS; v90 remains the evidence
+substrate below.**
+
 **Start at `v90/README.md` (the charter). The carried foundation is v89:
 `v89/README.md`, `v89/PRINCIPLE.md`, `v89/FREECELL.md` — consult v89 freely
 for the law and the evidence; it is the substrate v90 stands on.**
