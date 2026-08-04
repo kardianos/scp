@@ -213,6 +213,12 @@ func (s *Sim) Run() {
 	}
 	P := &s.P
 
+	if P.Exp == "p2lc" {
+		// P2 local-clock prototype (Go-only; localclock.go)
+		s.RunP2LC()
+		return
+	}
+
 	s.combBuild()
 	s.rng = P.Seed
 	if s.rng == 0 {

@@ -101,9 +101,16 @@ scale.
    2026-08-04** — full apparatus surface in both kernels (incl.
    p1/sect/convtag/clicks); battery `abx` 6 bars gates the pairs
    (suite 85 GREEN). VERIFY.md queue-#6 section has the record.
-7. **P2 local-clock scheduler** (Go prototype first, per FREECELL §2's
-   four conditions) → big boxes for big composites (nv=36+, 3D baths).
-   *Large; the composite programme will start to need it at CQ7-scale.*
+7. ~~**P2 local-clock scheduler** (Go prototype)~~ **PROTOTYPE DONE
+   2026-08-04** — `fab/localclock.go` on the real substrate; battery
+   `p2lc` 8 bars: four conditions verified (R3 exactly 0; batch ==
+   serial exactly 0 at 1–8 workers via the PENDING-min rule — a
+   sharpening of v89's eligible-min, which was only exact under full
+   eligibility); quiet-region economy measured (event ratio 2.37 →
+   6.87 approaching the R=8 dilation bound as the box grows). P2.md
+   has the record + the production-build checklist (event queues,
+   full-law event decomposition, per-cell RNG streams, local topology).
+   The C production engine remains open (P4-adjacent).
 8. **S2 amplitude completion on the free substrate** — THE frontier.
    Acceptance surface as above; `v89/s2/` holds the derivation
    micro-model; kappa_reac=1 full pass remains the entry criterion.

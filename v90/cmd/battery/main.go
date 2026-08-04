@@ -769,6 +769,77 @@ func suite() []experiment {
 			fmt.Sprintf("%.3g", wd), "1e-12", true)
 	}})
 
+	// FB13 P2LC — the queue-#7 local-clock scheduler prototype (Go-only;
+	// fab/localclock.go; FREECELL §2's four conditions on the REAL
+	// substrate — 2D jammed bath, contact-rule channels, law-derived
+	// pitch detunes; reduced execution dynamics as in v89/localclock.c).
+	// Measured: R1 conservation at the FP floor in both engines; R2
+	// first-order convergence (ratio 1.715 under R=8 dilation); R3
+	// bit-identity under scan rotation+reversal EXACTLY 0 with the
+	// (t,index) total order, arrival-order control fails at 1.45; batch
+	// = serial EXACTLY 0 at 1/2/4/8 goroutines — with the PENDING-min
+	// conflict rule (min-over-eligible measured 6.2 off: an earlier but
+	// blocked neighbour must still hold you back — a sharpening of the
+	// v89 rule, which was only exact under full eligibility); tick skew
+	// 219 (condition 4: the counter diverges — order by local time);
+	// quiet-region economy: event ratio 2.37/4.92/6.87 at L=16/32/64
+	// with a fixed active blob, approaching the R=8 dilation bound.
+	sp = []runSpec{}
+	if wantGo {
+		sp = append(sp, gw("p2lc", "exp=p2lc"))
+	}
+	exps = append(exps, experiment{"p2lc", sp, func(r *reporter) {
+		if !wantGo {
+			return
+		}
+		lg := get("p2lc")
+		ds, ok1 := exf(lg, `p2lc_r1 drift_sync=(\S+)`)
+		da, ok2 := exf(lg, `drift_async=(\S+)`)
+		r.add("p2lc", "R1 conservation: both |drift| <= 1e-12", ok1 && ok2 &&
+			abs(ds) <= 1e-12 && abs(da) <= 1e-12,
+			fmt.Sprintf("%.1e/%.1e", ds, da), "<=1e-12", true)
+		rt, ok := exf(lg, `p2lc_r2 err_dt=\S+ err_dt2=\S+ ratio=(\S+)`)
+		r.add("p2lc", "R2 first-order: ratio in [1.5,2.4]", ok && rt >= 1.5 && rt <= 2.4,
+			fmt.Sprintf("%.3f", rt), "[1.5,2.4]", true)
+		ro, o1 := exf(lg, `p2lc_r3 rot=(\S+)`)
+		rv, o2 := exf(lg, `rev=(\S+)`)
+		rr, o3 := exf(lg, `revrot=(\S+)`)
+		av, o4 := exf(lg, `arrival=(\S+)`)
+		r.add("p2lc", "R3 total-order determinism: rot/rev/revrot == 0", o1 && o2 && o3 &&
+			ro == 0 && rv == 0 && rr == 0,
+			fmt.Sprintf("%g/%g/%g", ro, rv, rr), "== 0", true)
+		r.add("p2lc", "R3 control: arrival order corrupts >= 0.1", o4 && av >= 0.1,
+			fmt.Sprintf("%.3f", av), ">=0.1", true)
+		bd, ok := exf(lg, `p2lc_batch maxdiff_vs_serial=(\S+)`)
+		r.add("p2lc", "batch == serial schedule (1..8 workers)", ok && bd == 0,
+			fmt.Sprintf("%g", bd), "== 0", true)
+		sk, ok := exf(lg, `max_tick_skew=(\S+)`)
+		r.add("p2lc", "cond 4: tick skew diverges (>= 100)", ok && sk >= 100,
+			fmt.Sprintf("%.0f", sk), ">=100", true)
+		var ratios []float64
+		for _, m := range regexp.MustCompile(`ev_ratio=(\S+)`).FindAllStringSubmatch(lg, -1) {
+			if v, err := strconv.ParseFloat(m[1], 64); err == nil {
+				ratios = append(ratios, v)
+			}
+		}
+		r.add("p2lc", "quiet-region economy grows with box", len(ratios) == 3 &&
+			ratios[0] < ratios[1] && ratios[1] < ratios[2] && ratios[2] >= 6.0,
+			fmt.Sprintf("%.2f/%.2f/%.2f", ratios[0], ratios[1], ratios[2]), "mono, >=6", true)
+		wd := 0.0
+		okD := true
+		for _, m := range regexp.MustCompile(`p2lc_scale .*drift=(\S+)`).FindAllStringSubmatch(lg, -1) {
+			v, err := strconv.ParseFloat(m[1], 64)
+			if err != nil {
+				okD = false
+			}
+			if abs(v) > wd {
+				wd = abs(v)
+			}
+		}
+		r.add("p2lc", "scaling arms |drift| <= 1e-12", okD && wd <= 1e-12,
+			fmt.Sprintf("%.1e", wd), "<=1e-12", true)
+	}})
+
 	return exps
 }
 

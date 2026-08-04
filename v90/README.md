@@ -197,6 +197,6 @@ hard results index, what they mean, and the prioritized next steps.
 | MOTION baseline | measured: bounded wander, plastic-lock collisions, blob merging, driven-object null (MOTION.md) |
 | **XSEC cross-section** | **gated (15 bars)**: headroom=absorber (+7.27, clean cond), flat-top-cap=EMITTER (−7.2, side-glow), inert load=reflector; monotone impact-parameter profile; absorption is clock-rate, not mass (MOTION.md XSEC) |
 | **COMPOSITE (primary focus)** | rounds 1–2 executed: macro-parity rule, T6 U/D asymmetry, bond=flight, compensation 8×, H-stiffness→flux-machine interior, **bath protects**, nucleon residual force (COMPOSITE.md) |
-| P2 local-clock scheduler | spec carried; queued (NEXT.md #7) |
+| P2 local-clock scheduler | **Go prototype done** (fab/localclock.go; battery `p2lc` 8 bars): four conditions on the real substrate, batch==serial exact at 1–8 workers (pending-min rule), quiet-region economy 6.87× at L=64 (P2.md); C production engine open |
 | P3 shells | first-look done (runs/shell/); driven-response probe queued |
 | P4 speedups | not started (after stability) |
