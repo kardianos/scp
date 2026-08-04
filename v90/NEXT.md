@@ -111,9 +111,18 @@ scale.
    has the record + the production-build checklist (event queues,
    full-law event decomposition, per-cell RNG streams, local topology).
    The C production engine remains open (P4-adjacent).
-8. **S2 amplitude completion on the free substrate** — THE frontier.
-   Acceptance surface as above; `v89/s2/` holds the derivation
-   micro-model; kappa_reac=1 full pass remains the entry criterion.
+8. **S2 amplitude completion** — THE frontier; **entry measured +
+   design memo written 2026-08-04 (`S2.md`)**. kr=1 sweep across every
+   face: vacuum/optics/field untouched exactly; unison structures hold;
+   but **the raw derived term kills the FIFTH everywhere it is
+   load-bearing** (FCQ ggm→0 with D bloated 2.06; composite boundary
+   fifth gg→0 with D-ring x̄→0.83; e3b speed −37% cos 0.95→0.30) and
+   localizes ring5's π defect (parity signature weakened). The choir
+   correction is a unison instrument — the completion must be a
+   COHERENT DENSE CHANNEL (amplitude+phase transport with p:q charts,
+   exchange registry, flux-machine interior), not a rate correction.
+   Quantified acceptance surface in S2.md §2. The construction itself
+   is law-level: v91-scale or explicit user sign-off.
 
 ## Also can-do (opportunistic)
 
