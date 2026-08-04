@@ -191,6 +191,16 @@ typedef struct {
      * Pure ledger — no feedback on the dynamics; default OFF so every
      * standing log stays byte-identical. */
     int    p1_meter;
+    /* XSEC (MOTION.md): angular cross-section apparatus. sect_meter=1
+     * enables an annular per-sector exposure meter (time-integrated
+     * Ee*dt per angular bin), centred on (sect_x,sect_y) (<0 = box
+     * centre), r in [sect_r0,sect_r1), gated [sect_t0,sect_t1]; sector
+     * 0 is centred on +x (downbeam). obj_y (<0 = box centre) moves the
+     * slit_obj occulter in y — the impact parameter. Pure ledger,
+     * default OFF: every standing log stays byte-identical. */
+    int    sect_meter, sect_n;
+    double sect_r0, sect_r1, sect_x, sect_y, sect_t0, sect_t1;
+    double obj_y;
     double rings_xcomp;             /* CQ3b: whole-ring load reduction, U-flavor rings */
     double rings_xcompD;            /* CQ3b: whole-ring load shift, D-flavor rings */
     double rings_sep;               /* kind 3: nucleon COM separation */
@@ -248,6 +258,10 @@ static void cfg_defaults(void)
     P.slit_obj = 0; P.obj_amp = 1.2; P.obj_sigma = 1.6;
     P.slit_clicks = 0;
     P.p1_meter = 0;
+    P.sect_meter = 0; P.sect_n = 24;
+    P.sect_r0 = 7.0; P.sect_r1 = 11.0; P.sect_x = -1; P.sect_y = -1;
+    P.sect_t0 = 0; P.sect_t1 = 1e18;
+    P.obj_y = -1;
     strcpy(P.snap_dir, "");
     strcpy(P.snap_file, "");
     P.snap_comp = 1;
@@ -362,6 +376,15 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "obj_sigma")) P.obj_sigma = atof(v);
     else if (!strcmp(k, "slit_clicks")) P.slit_clicks = atoi(v);
     else if (!strcmp(k, "p1_meter")) P.p1_meter = atoi(v);
+    else if (!strcmp(k, "sect_meter")) P.sect_meter = atoi(v);
+    else if (!strcmp(k, "sect_n")) P.sect_n = atoi(v);
+    else if (!strcmp(k, "sect_r0")) P.sect_r0 = atof(v);
+    else if (!strcmp(k, "sect_r1")) P.sect_r1 = atof(v);
+    else if (!strcmp(k, "sect_x")) P.sect_x = atof(v);
+    else if (!strcmp(k, "sect_y")) P.sect_y = atof(v);
+    else if (!strcmp(k, "sect_t0")) P.sect_t0 = atof(v);
+    else if (!strcmp(k, "sect_t1")) P.sect_t1 = atof(v);
+    else if (!strcmp(k, "obj_y")) P.obj_y = atof(v);
     else if (!strcmp(k, "rings_sep")) P.rings_sep = atof(v);
     else if (!strcmp(k, "snap_dir")) { strncpy(P.snap_dir, v, 255); P.snap_dir[255] = 0; }
     else if (!strcmp(k, "snap_file")) { strncpy(P.snap_file, v, 255); P.snap_file[255] = 0; }
@@ -572,6 +595,15 @@ static int nfsamp = 0;
 static double ds_I[DS_NBIN];
 static double ds_expo = 0;
 static double *ds_cellI = NULL;   /* per-cell time-integrated Ee on the strip */
+/* XSEC sector meter: per-sector time-integrated Ee*dt in the annulus,
+ * plus time-integrated cell occupancy n*dt (exposure deficits must be
+ * separable from foam-population shifts) */
+#define SECT_MAX 96
+static double sectE[SECT_MAX], sectN[SECT_MAX];
+static double sect_cx = 0, sect_cy = 0;   /* resolved centre */
+/* XSEC tag-split conversion ledger: the four global counters again,
+ * accumulated where the event's cell is tagged (the occulter) */
+static double ct_rough = 0, ct_cond = 0, ct_evap = 0, ct_backs = 0;
 static double b2_ax[512], b2_bx[512], b2_tx[512];
 
 /* p1_meter accumulators: cumulative first-moment flow, one 3-vector per
@@ -1161,6 +1193,7 @@ static void step(void)
                 field_inject(recv, rough - back_s);
                 Es[recv] += back_s;
                 rough_total += rough;
+                if (tag[recv]) { ct_rough += rough; ct_backs += back_s; }
                 double wsend = w2e[send];
                 double thsend = th2s[send];
                 double ms = dir == 0 ? slq[s] : slp[s];
@@ -1327,6 +1360,7 @@ static void step(void)
                 d1 = atoms_clamp(d1, 0.98 * Ee[i], eF, eD, &qcnvD[i]);
                 if (d1 > 0) {
                     cond_total += d1;
+                    if (tag[i]) ct_cond += d1;
                     if (scond[i] && nclick < CLICK_MAX) {
                         click_t[nclick] = sim_t;
                         click_y[nclick] = py_[i];
@@ -1357,6 +1391,7 @@ static void step(void)
                     qatom_diag(0, atoms_w(w2e[i], w1e[i]), d2);
                     double bs = d2 * P.s_pull / (1.0 + P.s_pull);
                     backs_total += bs;
+                    if (tag[i]) { ct_evap += d2; ct_backs += bs; }
                     Em[i] -= d2;
                     field_inject(i, d2 - bs);
                     Es[i] += bs;
@@ -1867,6 +1902,18 @@ static void fcs_instrument(FILE *f)
             rows[2*b+1] = ds_I[b];
         }
         fcs_anlz_table(f, "ds_screen", SC, 2, rows, DS_NBIN);
+    }
+    if (P.sect_meter) {
+        static const char *XC[] = {"th","E","n"};
+        double rows[SECT_MAX * 3];
+        for (int k = 0; k < P.sect_n; k++) {
+            double thc = k * TWO_PI / P.sect_n;
+            if (thc > M_PI) thc -= TWO_PI;
+            rows[3*k] = thc;
+            rows[3*k+1] = sectE[k];
+            rows[3*k+2] = sectN[k];
+        }
+        fcs_anlz_table(f, "sector", XC, 3, rows, P.sect_n);
     }
 }
 
@@ -2756,11 +2803,12 @@ int main(int argc, char **argv)
         }
         for (int i = 0; i < NC; i++) normals_transverse(i, 1, 0, 0);
         if (P.slit_obj) {
-            /* MOTION #29: dense object in the beam (between wall and
-             * screen or at centre for mask=3): occultation/cross-section */
+            /* MOTION #29/XSEC: dense object in the beam; obj_y (<0 = box
+             * centre) sets the impact parameter b = obj_y - cy0 */
             int nobj = 0;
+            double oy = P.obj_y < 0 ? cy0 : P.obj_y;
             for (int i = 0; i < NC; i++) {
-                double dx = wr(px_[i]-cx0), dy = wr(py_[i]-cy0);
+                double dx = wr(px_[i]-cx0), dy = wr(py_[i]-oy);
                 double add = P.obj_amp * exp(-(dx*dx+dy*dy)/(2.0*P.obj_sigma*P.obj_sigma));
                 if (add < 1e-4) continue;
                 if (Em[i] + add > 0.95 * P.cap) add = 0.95 * P.cap - Em[i];
@@ -2773,8 +2821,8 @@ int main(int argc, char **argv)
                 Em[i] += pull;
                 if (add > 0.05 * P.obj_amp) { tag[i] = 1; nobj++; }
             }
-            printf("# SEED slit_obj: amp=%g sigma=%g tagged=%d (dense occulter at centre)\n",
-                   P.obj_amp, P.obj_sigma, nobj);
+            printf("# SEED slit_obj: amp=%g sigma=%g y=%.2f tagged=%d (dense occulter)\n",
+                   P.obj_amp, P.obj_sigma, oy, nobj);
         }
         if (P.slit_clicks) {
             int nsc = 0;
@@ -2818,6 +2866,15 @@ int main(int argc, char **argv)
                NC, NSLOT, nla, phi, zl, dbar, 100 * sig, E0_total);
     }
     if (truss_n > 0) gyration_eigs(truss_shape0);
+
+    if (P.sect_meter) {
+        sect_cx = P.sect_x < 0 ? cx0 : P.sect_x;
+        sect_cy = P.sect_y < 0 ? cy0 : P.sect_y;
+        if (P.sect_n > SECT_MAX) P.sect_n = SECT_MAX;
+        if (P.sect_n < 1) P.sect_n = 1;
+        printf("# SECT meter: centre=(%.2f,%.2f) r=[%g,%g) n=%d gate=[%g,%g]\n",
+               sect_cx, sect_cy, P.sect_r0, P.sect_r1, P.sect_n, P.sect_t0, P.sect_t1);
+    }
 
     if (P.snap_file[0]) {
         fcs_stream = fopen(P.snap_file, "wb");
@@ -3007,6 +3064,9 @@ int main(int argc, char **argv)
                 printf("# P1 t=%.2f tot=(%+.6e,%+.6e,%+.6e) sp=%+.3e fl=%+.3e fd=%+.3e gm=%+.3e (x)\n",
                        sim_t, tx, ty, tz, p1sp[0], p1fl[0], p1fd[0], p1gm[0]);
             }
+            if (P.slit_obj)
+                printf("# CONVTAG t=%.2f rough=%.6f cond=%.6f evap=%.6f backs=%.6f\n",
+                       sim_t, ct_rough, ct_cond, ct_evap, ct_backs);
         }
         if (P.snap_every > 0 && P.snap_dir[0] && st % P.snap_every == 0)
             write_fcs(st / P.snap_every);
@@ -3031,6 +3091,24 @@ int main(int argc, char **argv)
                 }
             }
         }
+        if (P.sect_meter) {
+            double tn = (st + 1) * P.dt;
+            if (tn >= P.sect_t0 && tn <= P.sect_t1) {
+                int NS = P.sect_n;
+                for (int i = 0; i < NC; i++) {
+                    double dx = wr(px_[i] - sect_cx), dy = wr(py_[i] - sect_cy);
+                    double r2 = dx*dx + dy*dy;
+                    if (r2 < P.sect_r0 * P.sect_r0 || r2 >= P.sect_r1 * P.sect_r1) continue;
+                    /* half-bin rotation: sector k is CENTRED at k*2pi/NS */
+                    double u = (atan2(dy, dx) + M_PI / NS) / TWO_PI;
+                    u -= floor(u);
+                    int k = (int)(u * NS);
+                    if (k >= NS) k = NS - 1;
+                    sectE[k] += Ee[i] * P.dt;
+                    sectN[k] += P.dt;
+                }
+            }
+        }
     }
 
     /* ---------------- final report ---------------- */
@@ -3041,6 +3119,12 @@ int main(int argc, char **argv)
                births, deaths, beta_returns, beta_energy);
         printf("# RESULT conv rough=%.6f cond=%.6f evap=%.6f backs=%.6f\n",
                rough_total, cond_total, evap_total, backs_total);
+        if (P.slit_obj)
+            /* net field capture at the occulter = cond - evap - rough + backs
+             * (evap returns d2-bs to field; rough returns rough-back_s) */
+            printf("# RESULT convtag rough=%.6f cond=%.6f evap=%.6f backs=%.6f net=%.6f\n",
+                   ct_rough, ct_cond, ct_evap, ct_backs,
+                   ct_cond - ct_evap - ct_rough + ct_backs);
         if (P.p1_meter) {
             /* cumulative first-moment flow (energy*length) per channel,
              * plus the rate: tot/T = the all-modes center-of-energy
@@ -3234,6 +3318,18 @@ int main(int argc, char **argv)
             fcs_anlz_text(fcs_stream, fin);
             fclose(fcs_stream);
             fcs_stream = NULL;
+        }
+        if (P.sect_meter) {
+            double stot = 0;
+            for (int k = 0; k < P.sect_n; k++) stot += sectE[k];
+            printf("# RESULT sect Etot=%.6f n=%d r0=%g r1=%g centre=(%.2f,%.2f) gate=[%g,%g]\n",
+                   stot, P.sect_n, P.sect_r0, P.sect_r1, sect_cx, sect_cy,
+                   P.sect_t0, P.sect_t1);
+            for (int k = 0; k < P.sect_n; k++) {
+                double thc = k * TWO_PI / P.sect_n;
+                if (thc > M_PI) thc -= TWO_PI;
+                printf("# SECT k=%d th=%+.4f E=%.8f n=%.2f\n", k, thc, sectE[k], sectN[k]);
+            }
         }
         if (!strcmp(P.exp, "slit")) {
             printf("# RESULT ds exposure=%.6f gate=[%g,%g] screen_x=%g nbin=%d\n",

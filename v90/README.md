@@ -190,11 +190,12 @@ hard results index, what they mean, and the prioritized next steps.
 | item | state |
 |---|---|
 | P0 port + verify | **done** — VERIFY.md: bath/blob byte-identical, physics digits identical everywhere |
-| P1 battery | **GREEN — 64 bars**, both kernels, through 11 apparatus additions (runs/BATTERY.log) |
+| P1 battery | **GREEN — 79 bars**, both kernels, through 14 apparatus additions (runs/BATTERY.log) |
 | P1 double slit tier 0 | **CONFIRMED on the live substrate** (DS.md; battery `ds` 8 bars) |
 | DS tier 1 | **CLAIMED** (DS.md; battery `ds1` 8 bars) — 362 whole-grain clicks, fringe-phase-locked s̄ 0.683 vs controls 0.380, minima 7.7× dark, R3 atomicity exact |
 | FCS + viewer | v3 chunked streams, interleaved ANLZ, lossless codec, live `-follow`, interactive orbit/scrub (FCS.md) |
-| MOTION baseline | measured: bounded wander, plastic-lock collisions, blob merging, driven-object null, opacity=headroom (MOTION.md) |
+| MOTION baseline | measured: bounded wander, plastic-lock collisions, blob merging, driven-object null (MOTION.md) |
+| **XSEC cross-section** | **gated (15 bars)**: headroom=absorber (+7.27, clean cond), flat-top-cap=EMITTER (−7.2, side-glow), inert load=reflector; monotone impact-parameter profile; absorption is clock-rate, not mass (MOTION.md XSEC) |
 | **COMPOSITE (primary focus)** | rounds 1–2 executed: macro-parity rule, T6 U/D asymmetry, bond=flight, compensation 8×, H-stiffness→flux-machine interior, **bath protects**, nucleon residual force (COMPOSITE.md) |
 | P2 local-clock scheduler | spec carried; queued (NEXT.md #7) |
 | P3 shells | first-look done (runs/shell/); driven-response probe queued |

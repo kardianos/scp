@@ -209,3 +209,159 @@ level of the approach rate, at both box scales, driven or not; the
 dense-only COM velocity is mode-exchange artifact in magnitude AND
 sign. Channel split at T=300: flight dominates (\|fl\| ≈ 20), geometry
 second (≈ 6), field ≈ 1 (driven) / 0 (undriven), space ≈ 0.02.
+
+## XSEC — the angular cross-section apparatus (queue #5; opened 2026-08-04)
+
+**Goal:** turn the #29 ledger result ("opacity is unfilled capacity";
+Δcond = +4.9 was real but the screen-integral shadow drowned in ±3–5%
+geometry effects) into a **shadow/differential measurement**: absorption
+must have a *direction* (a forward deficit behind the absorber) and a
+*profile* (it must fall off with impact parameter).
+
+**Why #29 could not see a shadow (derived before the redesign):** the
+beam was 9× wider than the object (σy=14 vs σ=1.6) AND the object was
+sub-wavelength (2σ = 3.2 < λ = 6.98 — sub-wavelength obstacles cast no
+shadow in any wave theory). The redesign must fix BOTH: a narrow beam
+aimed at the object, and an object larger than the wavelength
+(kx=2.0 → λ=3.14; obj_sigma=2.5 → 2σ=5 > λ).
+
+**The threshold mechanism (derived from the kernel before first run):**
+pitch detune divides BOTH pitches (freecell.c pass 1: w1e = w1/det,
+w2e = w2/det, det = 1+q_detune·x), so the conversion grain
+ε = A0eff·w1e/2π **shrinks with load** — a loaded cell fires grains at
+a lower field threshold than a vacuum cell (Ee ≳ ε/f_conv scaled down
+by det, softened by two-atom credit accumulation across beats). A
+headroom object is therefore a *better absorber than the bath it sits
+in* under laws_V2g verbatim — no regime override needed for the law
+arms. This is the sharpest form of "detection is conversion".
+
+**Apparatus (kernel additions, all default-off/neutral):**
+
+* **Sector meter** (`sect_meter=1`, keys `sect_n/r0/r1/x/y/t0/t1`): an
+  annular exposure meter centred on the object — per-sector
+  time-integrated Ee·dt over cells in r ∈ [r0,r1), gated [t0,t1),
+  sector 0 centred on +x (downbeam). The near-field angular
+  distribution of the beam, before diffraction refills the deficit.
+  `# RESULT sect` + per-bin `# SECT` rows; ANLZ table when streaming.
+* **`obj_y`** — the occulter's y-centre (default box centre): the
+  impact parameter b = obj_y − cy0 becomes a config scan.
+* **Tag-split conversion ledger** (printed when `slit_obj=1`):
+  cumulative rough/cond/evap/backs **at tagged (object) cells** —
+  `# CONVTAG` timeline + `# RESULT convtag`. Net field capture at the
+  object = cond − evap − rough + backs, per-run, no run-differencing.
+* Narrow beam = existing `slit_sy` (no new code).
+
+**Geometry (all arms):** 2D bath L=64, no wall (`slit_mask=3`), beam
+src x=20 σx=4 **σy=3** kx=2.0, object at (32, obj_y) σ=2.5, annulus
+r ∈ [7,11] on the object, screen x=40 (secondary), law table VERBATIM
+(no optics overrides in the law arms), seed 20260802.
+
+**Pre-registered predictions (before first run):**
+
+* **P-XS1 (angular transparency floor, optics arm):** with conversions
+  off (q_detune=0, e_cond=99), object-vs-control sector ratios are
+  unity to within a small geometry floor: |r(θ)−1| ≤ 0.10 in both the
+  forward and backward sector groups — #29's stage-1 transparency,
+  made angular.
+* **P-XS2 (the shadow exists and points forward):** law arms, headroom
+  object (obj_amp=0.5): the downbeam group (|θ| ≤ 45°) shows a deficit
+  r_fwd ≤ 0.90 and below the optics floor, while the upbeam group
+  stays at unity within the floor — absorption has a direction.
+* **P-XS3 (saturation is transparent, angularly):** object seeded at
+  the cap (obj_amp=2.06 → peak Em = 0.95·cap·(1+s_pull)/… exactly at
+  seed recipe): r_fwd within the optics floor of 1 and |net_tag| ≪
+  the headroom arm's — opacity is unfilled capacity, now with a
+  direction attached.
+* **P-XS4 (differential profile):** net_tag(b) falls monotonically
+  with impact parameter b ∈ {0, 2, 4, 8} (beam σy=3: b=8 ≈ 2.7σ is a
+  miss): net(8) ≤ 0.1·net(0).
+* **P-XS5 (ledger↔shadow consistency):** the forward missing exposure
+  and net_tag agree in order of magnitude (ratio recorded; gated only
+  if stable across seeds).
+* **P-XS6:** conservation ≤ 1e-13 every arm; every standing battery
+  log byte-identical with the new apparatus keys at defaults (full
+  suite green before any XSEC run is interpreted).
+
+Calibration (beam amp; gate timing at kx=2 group speed; annulus radii)
+is apparatus tuning and will be recorded as instrument findings; the
+bars gate the frozen design.
+
+### XSEC results (2026-08-04; battery `xsec` 15 bars GREEN; logs `runs/motion/xsec/`)
+
+Beam amp=4 (the ds1-calibrated linear ceiling); 32 runs total: 3-seed
+law pairs, 3-seed optics pairs, 3-seed sat20, b-scan at two seeds with
+matched controls, flat-top saturation, L=96 long-gate mechanism probe.
+
+**The ledger claims (seed-robust; gated):**
+
+* **A headroom object is a clean absorber.** net_tag = +7.274 / +2.968
+  / +5.637 (seeds 20260802/111/314159) — always positive, and always
+  PURE condensation: rough = evap = 0 exactly, every seed, every b.
+* **Run-differencing understates absorption 4×** (the #29 method):
+  global Δcond = +1.81 while the object took 7.27 — the object also
+  SHADES the fog downstream, cancelling most of the global difference.
+  The tag-split ledger was the missing instrument.
+* **A truly saturated object is a net EMITTER.** The Gaussian near-cap
+  seed (obj_amp=2.06) is *not* saturated — its shoulders have headroom
+  and absorb (+6.95). The flat-top disc (obj_amp=20, clamped at
+  0.95·cap, 1.09·cap after pull) inverts the sign: net = **−7.20 /
+  −7.93 / −8.76** across seeds, evaporation-dominated (evap 11.8), and
+  the shedding is beam-era (evap grows 2.1 → 11.8 over t 16 → 32), not
+  seed-settle. **Opacity is unfilled capacity — with a sign: headroom
+  absorbs, saturation emits.**
+* **The differential cross-section profile.** net_tag falls
+  monotonically with impact parameter b ∈ {0,2,4,8}: 7.27 > 4.21 >
+  3.42 > 2.03 (seed 20260802) and 2.97 > 1.89 > 1.19 > 0.30 (seed
+  111). The b=8 (2.7σ_beam) residual is real light: beam divergence at
+  λ=3.14 (σ_eff ≈ 4.3 at the object) plus fog glow.
+* **Absorption is a clock-rate effect, not a mass effect:** obj_amp
+  0.8 absorbs *less* than 0.5 (6.58 vs 7.27) — load divides both
+  pitches, slowing the beat clock: fewer conversion windows per unit
+  time. More matter ≠ more opacity even below cap.
+
+**The angular claims (same-seed differentials; s802 tripwires gated,
+3-seed spread recorded):**
+
+* **The absorber darkens its forward core**: rE(|θ|≤15°) = 0.500 vs
+  control, with back sectors at 0.970 and sector OCCUPANCY at 0.986 —
+  the shadow is light, not foam population (the n column separates
+  them).
+* **An inert object shades too — P-XS1 REFUTED as posed.** With
+  conversions off (net = 0 exactly), the object still takes the core
+  to rE = 0.786: a dense object is an **impedance defect** — load
+  shrinks radii (s_pull), lens areas drop, and the beam partially
+  REFLECTS/deflects. The L=96 double-gate probe rules out delay: the
+  deficit does not refill (core 0.68 at 2× gate). #29's "transparent"
+  was the integral number; angularly the inert object is a partial
+  mirror.
+* **At the gated seed, absorption deepens the core shadow 0.29 below
+  the inert floor** (0.500 vs 0.786). BUT the 3-seed panels show
+  single-seed angular ratios are **foam-speckle-dominated** (hdr core
+  0.50 / 1.23 / 0.75; optics floor 0.79 / 1.14 / 0.75 — λ ≈ 3 light
+  on a dmin=1 foam speckles, and the object's angular effect rides the
+  speckle). The angular bars are therefore same-seed regression
+  tripwires; the seed-robust statements are the ledger's. A many-seed
+  angular harvest (ds1-style) is the upgrade path if an angular CLAIM
+  is ever needed beyond the gated apparatus.
+* **The emitter pours light sideways**: sat20 rE_side = 1.539 (its
+  evaporated take re-radiates isotropically) while its core still
+  shades (0.60, strongest lens). Absorber, inert lens, and emitter
+  have distinct angular + ledger signatures — detection-is-conversion
+  now has an angular face.
+
+P-XS5 (ledger↔shadow consistency) recorded, not gated: screen-integral
+deficit 2.1% vs absorbed 4.4% of beam; forward-annulus missing exposure
+14.4 units vs net_tag 7.27 — same order, no clean transport factor on a
+foam. Conservation ≤ 2.2e-15 across all 32 runs (P-XS6 ✓).
+
+Images: `runs/motion/viz/xsec_hdr_avg_ee.png` (the beam with the
+occulter — teal tags — and its darkened wake), `xsec_ctl_avg_ee.png`
+(the unobstructed beam), `xsec_hdr_avg_em.png` (the condensation trail
+— the fog is a cloud chamber: the beam leaves a matter track).
+Stream: `runs/streams/xs_hdr.fcs` (battery-regenerated).
+
+**Battery:** experiment `xsec`, 8 arms, **15 bars GREEN** (suite 79).
+Kernel apparatus added this campaign (battery-verified byte-neutral at
+defaults, twice): the annular sector meter (`sect_*`, exposure + occupancy
+per sector), `obj_y` (impact parameter), and the tag-split conversion
+ledger (`# CONVTAG` timeline + `# RESULT convtag`).

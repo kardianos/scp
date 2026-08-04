@@ -584,7 +584,182 @@ func suite() []experiment {
 		}
 	}})
 
+	// FB11 XSEC — the angular cross-section apparatus (MOTION.md XSEC;
+	// queue #5). Narrow beam (sy=3, kx=2 -> lam=3.14 < object 2*sigma=5)
+	// aimed through a 2D law-verbatim bath at an embedded occulter; the
+	// annular sector meter [7,11) resolves the interaction angularly and
+	// the tag-split conversion ledger attributes it. Measured (s802, with
+	// 3-seed spreads in MOTION.md): (1) a headroom object is a clean
+	// ABSORBER — net_tag +7.274, rough=evap exactly 0 (all seeds; and
+	// run-differencing understates 4x: the object also shades the fog);
+	// (2) a true-saturated flat-top object (obj_amp=20) is a net EMITTER
+	// — net -7.20/-7.93/-8.76 across seeds, evap-dominated, pouring
+	// light SIDEWAYS (rE_side 1.54): opacity is unfilled capacity, with
+	// a sign; (3) the conversions-off object still shades the forward
+	// core (rE_core 0.786, net exactly 0) — an impedance defect that
+	// REFLECTS/deflects (2x gate at L=96: deficit persists, not delay);
+	// (4) absorption deepens the core shadow below that floor at the
+	// gated seed (0.500 vs 0.786) — but PER-SEED angular ratios are
+	// foam-speckle-dominated (hdr core 0.50/1.23/0.75), so angular bars
+	// are same-seed tripwires while the LEDGER bars are the seed-robust
+	// claims; (5) the absorption cross-section falls monotonically with
+	// impact parameter (7.27 > 4.21 > 3.42 > 2.03 at b=0/2/4/8; also
+	// monotone at seed 111); (6) the shadows are LIGHT, not foam: sector
+	// occupancy stays at unity (rN_core 0.986) — the n column separates
+	// exposure from population.
+	xsBase := []string{"exp=slit", "slit_mask=3", "L=64", "T=32", "sigma=4", "slit_sy=3",
+		"kx=2.0", "amp=4", "slit_srcx=14", "slit_screenx=40", "slit_t0=0", "slit_t1=30",
+		"sect_meter=1", "sect_r0=7", "sect_r1=11", "sect_t0=0", "sect_t1=30", "diag_every=100"}
+	xsArgs := func(extra ...string) []string {
+		return append(append([]string{}, xsBase...), extra...)
+	}
+	sp = []runSpec{}
+	if wantC {
+		sp = append(sp,
+			cw("xs_ctl", xsArgs()...),
+			cw("xs_hdr", xsArgs("slit_obj=1", "obj_sigma=2.5", "obj_amp=0.5",
+				"snap_every=250", "snap_file=runs/streams/xs_hdr.fcs")...),
+			cw("xs_opt_ctl", xsArgs("q_detune=0", "e_cond=99")...),
+			cw("xs_opt_obj", xsArgs("q_detune=0", "e_cond=99", "slit_obj=1", "obj_sigma=2.5", "obj_amp=0.5")...),
+			cw("xs_sat20", xsArgs("slit_obj=1", "obj_sigma=2.5", "obj_amp=20")...),
+			cw("xs_b2", xsArgs("slit_obj=1", "obj_sigma=2.5", "obj_amp=0.5", "obj_y=34", "sect_y=34")...),
+			cw("xs_b4", xsArgs("slit_obj=1", "obj_sigma=2.5", "obj_amp=0.5", "obj_y=36", "sect_y=36")...),
+			cw("xs_b8", xsArgs("slit_obj=1", "obj_sigma=2.5", "obj_amp=0.5", "obj_y=40", "sect_y=40")...))
+	}
+	exps = append(exps, experiment{"xsec", sp, func(r *reporter) {
+		if !wantC {
+			return
+		}
+		hdr, ok1 := sectGroups("xs_hdr")
+		ctl, ok2 := sectGroups("xs_ctl")
+		opt, ok3 := sectGroups("xs_opt_obj")
+		optc, ok4 := sectGroups("xs_opt_ctl")
+		sat, ok5 := sectGroups("xs_sat20")
+		okS := ok1 && ok2 && ok3 && ok4 && ok5
+		rat := func(a, b float64) float64 {
+			if b <= 0 {
+				return 0
+			}
+			return a / b
+		}
+		cvHdr, okH := convTag("xs_hdr")
+		cvOpt, okO := convTag("xs_opt_obj")
+		cvSat, okT := convTag("xs_sat20")
+		// the seed-robust LEDGER claims
+		r.add("xsec", "headroom object absorbs: net_tag in [6.9,7.65]", okH && cvHdr.net >= 6.9 && cvHdr.net <= 7.65,
+			fmt.Sprintf("%.4f", cvHdr.net), "[6.9,7.65]", true)
+		r.add("xsec", "absorption is pure cond: rough=evap=0 exactly", okH && cvHdr.rough <= 1e-6 && cvHdr.evap <= 1e-6,
+			fmt.Sprintf("%.2g/%.2g", cvHdr.rough, cvHdr.evap), "<=1e-6", true)
+		gc, okG := exf(get("xs_opt_obj"), `# RESULT conv rough=\S+ cond=(\S+) evap=`)
+		r.add("xsec", "optics null: net_tag=0 and cond=0 exactly", okO && okG && cvOpt.net == 0 && gc == 0,
+			fmt.Sprintf("%.2g/%.2g", cvOpt.net, gc), "== 0", true)
+		r.add("xsec", "saturated object EMITS: net_tag <= -5", okT && cvSat.net <= -5,
+			fmt.Sprintf("%.4f", cvSat.net), "<=-5", true)
+		r.add("xsec", "saturated shed is evaporation: evap >= 8", okT && cvSat.evap >= 8,
+			fmt.Sprintf("%.4f", cvSat.evap), ">=8", true)
+		// the impact-parameter differential (ledger; same substrate seed)
+		n2, okB2 := convTag("xs_b2")
+		n4, okB4 := convTag("xs_b4")
+		n8, okB8 := convTag("xs_b8")
+		okB := okH && okB2 && okB4 && okB8
+		r.add("xsec", "cross-section falls with b: 7.27>4.21>3.42>2.03", okB &&
+			cvHdr.net > n2.net && n2.net > n4.net && n4.net > n8.net && n8.net > 0,
+			fmt.Sprintf("%.2f/%.2f/%.2f/%.2f", cvHdr.net, n2.net, n4.net, n8.net), "monotone>0", true)
+		r.add("xsec", "b=8 (2.7 sigma) captures <= 0.35 of b=0", okB && n8.net <= 0.35*cvHdr.net,
+			fmt.Sprintf("%.3f", n8.net/cvHdr.net), "<=0.35", true)
+		// the angular claims (same-seed tripwires; speckle spread in MOTION.md)
+		r.add("xsec", "absorber core shadow: rE_core <= 0.60", okS && rat(hdr.cE, ctl.cE) <= 0.60,
+			fmt.Sprintf("%.4f", rat(hdr.cE, ctl.cE)), "<=0.60", true)
+		r.add("xsec", "inert-lens floor: rE_core(opt) in [0.70,0.88]", okS &&
+			rat(opt.cE, optc.cE) >= 0.70 && rat(opt.cE, optc.cE) <= 0.88,
+			fmt.Sprintf("%.4f", rat(opt.cE, optc.cE)), "[0.70,0.88]", true)
+		r.add("xsec", "absorption below the inert floor by >= 0.15", okS &&
+			rat(opt.cE, optc.cE)-rat(hdr.cE, ctl.cE) >= 0.15,
+			fmt.Sprintf("%.4f", rat(opt.cE, optc.cE)-rat(hdr.cE, ctl.cE)), ">=0.15", true)
+		r.add("xsec", "shadow is light not foam: rN_core >= 0.95", okS && rat(hdr.cN, ctl.cN) >= 0.95,
+			fmt.Sprintf("%.4f", rat(hdr.cN, ctl.cN)), ">=0.95", true)
+		r.add("xsec", "upbeam untouched: |rE_back-1| <= 0.05 (hdr)", okS && abs(rat(hdr.bE, ctl.bE)-1) <= 0.05,
+			fmt.Sprintf("%.4f", rat(hdr.bE, ctl.bE)), "±0.05", true)
+		r.add("xsec", "upbeam untouched: |rE_back-1| <= 0.05 (opt)", okS && abs(rat(opt.bE, optc.bE)-1) <= 0.05,
+			fmt.Sprintf("%.4f", rat(opt.bE, optc.bE)), "±0.05", true)
+		r.add("xsec", "emitter pours sideways: rE_side(sat20) >= 1.3", okS && rat(sat.sE, ctl.sE) >= 1.3,
+			fmt.Sprintf("%.4f", rat(sat.sE, ctl.sE)), ">=1.3", true)
+		wd := 0.0
+		okD := true
+		for _, lb := range []string{"xs_ctl", "xs_hdr", "xs_opt_ctl", "xs_opt_obj", "xs_sat20", "xs_b2", "xs_b4", "xs_b8"} {
+			v, ok := exf(get(lb), `# RESULT drift_rel (\S+)`)
+			if !ok {
+				okD = false
+			}
+			if abs(v) > wd {
+				wd = abs(v)
+			}
+		}
+		r.add("xsec", "panel |drift| <= 1e-13 (worst of 8)", okD && wd <= 1e-13,
+			fmt.Sprintf("%.3g", wd), "1e-13", true)
+	}})
+
 	return exps
+}
+
+// sectGroups aggregates the SECT table into the declared angular groups:
+// core |th|<=0.27 (3 bins), fwd |th|<=0.7854 (7), back |th|>=2.3562 (7),
+// side the rest; E = exposure, N = time-integrated occupancy.
+type sectAgg struct{ cE, fE, bE, sE, tE, cN, fN, bN, sN, tN float64 }
+
+var sectRe = regexp.MustCompile(`(?m)^# SECT k=\d+ th=(\S+) E=(\S+) n=(\S+)`)
+
+func sectGroups(label string) (sectAgg, bool) {
+	var a sectAgg
+	ms := sectRe.FindAllStringSubmatch(get(label), -1)
+	if len(ms) == 0 {
+		return a, false
+	}
+	for _, m := range ms {
+		th, e1 := strconv.ParseFloat(m[1], 64)
+		e, e2 := strconv.ParseFloat(m[2], 64)
+		n, e3 := strconv.ParseFloat(m[3], 64)
+		if e1 != nil || e2 != nil || e3 != nil {
+			return a, false
+		}
+		ath := math.Abs(th)
+		if ath <= 0.27 {
+			a.cE += e
+			a.cN += n
+		}
+		if ath <= 0.7854 {
+			a.fE += e
+			a.fN += n
+		} else if ath >= 2.3562 {
+			a.bE += e
+			a.bN += n
+		} else {
+			a.sE += e
+			a.sN += n
+		}
+		a.tE += e
+		a.tN += n
+	}
+	return a, true
+}
+
+type convTagV struct{ rough, cond, evap, backs, net float64 }
+
+func convTag(label string) (convTagV, bool) {
+	m := regexp.MustCompile(`# RESULT convtag rough=(\S+) cond=(\S+) evap=(\S+) backs=(\S+) net=(\S+)`).
+		FindStringSubmatch(get(label))
+	if m == nil {
+		return convTagV{}, false
+	}
+	var v [5]float64
+	for i := 0; i < 5; i++ {
+		f, err := strconv.ParseFloat(m[i+1], 64)
+		if err != nil {
+			return convTagV{}, false
+		}
+		v[i] = f
+	}
+	return convTagV{v[0], v[1], v[2], v[3], v[4]}, true
 }
 
 // p1Rate parses the all-modes first-moment rate vector from # RESULT p1.
@@ -608,12 +783,12 @@ func p1Rate(label string) (x, y, z float64, ok bool) {
 var clickRe = regexp.MustCompile(`(?m)^# CLICK t=(\S+) y=(\S+) e=(\S+)`)
 
 type ds1Agg struct {
-	n, nmin, nmax  int
-	sbar, sem      float64
-	atomDev        float64
-	minK, maxK     int
-	maxDrift       float64
-	okDrift        bool
+	n, nmin, nmax int
+	sbar, sem     float64
+	atomDev       float64
+	minK, maxK    int
+	maxDrift      float64
+	okDrift       bool
 }
 
 // ds1Stats aggregates in-gate clicks over panel logs: fringe-phase score
