@@ -1,11 +1,13 @@
 # v91 THEORY — the law as it stands, and the two modifications under test
 
 Written 2026-08-04 at v91 opening (user-authorized). Three parts:
-§1 the standing law (carried, unchanged, with its evidence); §2 the two
+§1 the standing law (carried, unchanged, with its evidence); §2 the
 v91 law modifications (RADIANCE — implemented, inert by default;
-COHERENT CHANNEL — specified, not yet implemented); §3 the
-back-reference table tying every load-bearing claim to its committed
-evidence. The v90/v89 trees stay frozen as the record.
+COHERENT CHANNEL — candidate B implemented inert and measured as an
+instrument, `CANTUS.md`; the registry lane is the active front,
+`REGISTRY.md`); §3 the back-reference table tying every load-bearing
+claim to its committed evidence. The v90/v89 trees stay frozen as the
+record.
 
 ---
 
@@ -134,7 +136,7 @@ slowing beat — the ablation arm).
    the fifth, FORGE E1) becomes measurable — the first emission-line
    candidate.
 
-### 2.2 COHERENT DENSE CHANNEL — the S2 completion (SPECIFIED, not implemented)
+### 2.2 COHERENT DENSE CHANNEL — the S2 completion (candidate B EXECUTED as instrument; registry lane OPEN)
 
 Carried in full in `carried/S2_CHANNEL.md` (the v90 S2.md: entry
 measurement + design memo). Summary of the specification:
@@ -157,6 +159,38 @@ cos ≥ 0.95 seed-robust; nv=6 boundary fifth gg ≥ 0.9 at T=100 with
 D-ring x̄ ≤ 0.35; UUD ggm ≥ 0.9; a flavored composite RADIATES;
 Y-junction occupancy statistics separate identical from consonant-
 distinct arrivals.
+
+**Measured updates (2026-08-05, the CANTUS campaign — `CANTUS.md` is
+the record):**
+
+* **Candidate B implemented, inert.** The superimposed harmonic-lock
+  field (user-directed): per-BOND gauge memory `sgg` (link-borne),
+  differential Kuramoto lock on the matter clocks, within-mode retune
+  current on holdings-memory deviations (COE-clean, p1 passes live).
+  Keys `k_cant/k_tune/cant_tau/cant_seed/cant_grow`, byte-identical
+  kernels at defaults. The coupled mechanism is real (bath pairs held
+  at 90–94% vs 13% control; each half alone dies) but CANNOT be law
+  in any self-growing form.
+* **The identity requirement (the §2-item-3 upgrade).** The V2g churn
+  bath is a persistent-closure medium: 66% of cells hold time-averaged
+  two-sided gate > 0.5 at zero force. Hence ANY closure-gated
+  self-growth ignites a bath-wide Kuramoto transition (glow −50×
+  cell-borne, −10× link-borne). Closure statistics cannot distinguish
+  bond from churn; only IDENTITY can. **The exchange registry is
+  promoted from "the door to exclusion" to the gate coherence itself
+  hangs on.** Active lane: `REGISTRY.md` (identity-carrying transfers;
+  cantus as carrier; the v1.1i instrument as honest-medium harness).
+* **The chord constraint (geometry, derived).** At the radiance
+  balance x̂* = 0.62 the unison rung (1.889) exceeds contact (1.790):
+  unison matter cannot connect; only p+q ≥ 5 intervals fit. Any
+  channel design must transport amplitude on CHORD charts, and the
+  first stable-matter target is the UUD triad (frozen-gauge bound
+  8.3× with retention recovering — CANTUS §4.5).
+* **Winding bookkeeping.** The differential lock conserves loop
+  winding; rings under strong lock share the defect across all gates
+  (all die together), weak lock localizes it (the ring5/kr=1
+  signature INSIDE coherence). Ring-locking designs need a winding
+  sector (the v73 "spin = winding" motif arriving here).
 
 **Order of work: RADIANCE FIRST.** It is small, decisive, independent,
 and the stable objects it creates are the test-bodies every coherent-

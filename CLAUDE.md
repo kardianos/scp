@@ -2,15 +2,23 @@
 
 ---
 
-# CURRENT VERSION: v90 — READ THIS FIRST
+# CURRENT VERSION: v91 — READ THIS FIRST
 
-**v91 IS PREPARED AND AUTHORIZED (user, 2026-08-04) but not yet begun:
-`v91/README.md` is the single entry point for the RADIANCE + coherent-channel
-programme (stable mass from steep emission). The v91 tree is a verified copy
-of the v90 surface with ONE inert law-candidate knob (k_rad=0 = laws_V2g
-byte-exactly; battery 93 bars green at open). An agent starting v91 work
-reads `v91/README.md` and follows its NEXT STEPS; v90 remains the evidence
-substrate below.**
+**v91 IS THE ACTIVE PROGRAMME (opened 2026-08-04, user-authorized):
+`v91/README.md` is the single entry point — read it top to bottom, including
+its dated status sections, before any v91 work. Executed so far: RADIANCE
+R0–R5 (the interior flux fixed point exists and is gated: x̂* = 0.62 ± 0.02
+at k_rad=0.05 p_rad=4; laws_V3r NOT adopted — the reckoning awaits user
+sign-off), the 34-pad believer campaign + INTEGRATION (first persistent,
+metabolizing, size-selected bonded matter: nv=48 straight ring, ret 0.95 to
+t=50,000), and CANTUS (user-directed superimposed harmonic-lock field,
+candidate B, inert in both kernels; "atoms are not cells" derived as a
+selection rule — only chords fit at the balance; the exchange registry
+measured load-bearing for coherence itself). The active lane (user-opened
+2026-08-05) is the EXCHANGE REGISTRY with the UUD chord as first test body:
+`v91/REGISTRY.md`. All law-candidate knobs default inert (= laws_V2g
+byte-exactly); the battery must read ALL GREEN 93 at defaults; v90 remains
+the evidence substrate below.**
 
 **Start at `v90/README.md` (the charter). The carried foundation is v89:
 `v89/README.md`, `v89/PRINCIPLE.md`, `v89/FREECELL.md` — consult v89 freely

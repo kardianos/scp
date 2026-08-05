@@ -101,3 +101,21 @@ battery green throughout, kr at its derived value.
 **Status: the completion itself is a law-level construction — v91-scale
 work (or explicit sign-off to modify the v90 law).** This memo + the
 entry table is the queue-#8 deliverable that makes it actionable.
+
+## Addendum (2026-08-05, post-CANTUS — the §2 item 3 upgrade, measured)
+
+The CANTUS campaign (`v91/CANTUS.md`) measured the churn bath to be a
+**persistent-closure medium**: 66% of cells hold a time-averaged
+two-sided gate > 0.5 at zero lock force (the null-meter arm).
+Consequence, measured twice (cell-borne v1, link-borne v1.1): any
+coherence law that self-grows on closure statistics ignites a
+bath-wide Kuramoto transition and rewrites the thermodynamics (glow
+suppressed 10–50×). §2 item 3 (the exchange registry) is therefore
+UPGRADED: from "the door to exclusion" to **the gate on which
+coherence self-assembly itself hangs** — the bond-vs-churn
+discriminator must be identity, not phase alignment. Two further
+measured constraints on any completion design: charts must be CHORD
+charts (unison cannot connect at the balance — the derived geometry
+wall, CANTUS §3.2), and ring-locking needs winding-sector bookkeeping
+(the differential lock conserves loop winding). Active lane:
+`v91/REGISTRY.md`.

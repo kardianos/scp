@@ -600,6 +600,15 @@ first test body (it nearly holds already), and (iv) the v1.1i
 instrument as the honest-medium harness. The §4.4 reckoning table
 stands ready if the user instead directs adoption of any part now.
 
+**Lane opened (2026-08-05, user):** "Use the CANTUS experiment as a
+mechanism of discovery. Ensure the discoveries from that are
+documented and other concepts clearly adjusted inline. Do open
+exchange registry lane and do go for a UUD chord." The registry
+campaign doc is `REGISTRY.md`; the inline adjustments landed the same
+day (RADIANCE.md §4.8 dated correction, OUTLOOK.md §2/§4 + position,
+THEORY.md §2.2 measured updates, carried/S2_CHANNEL.md addendum,
+root CLAUDE.md banner).
+
 ### 4.4 H5 — the coupled-candidate reckoning (battery `-extra "k_rad=0.05 p_rad=4 rad_clock=0 k_cant=1 k_tune=0.2"`)
 
 **83/93 green with BOTH candidates live** (`runs/BATTERY_h5x.log`,

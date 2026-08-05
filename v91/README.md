@@ -211,7 +211,12 @@ all knobs inert at defaults; every decision awaits the user per the
 ratchet. Next agent: the exchange registry (S2 §2.3) is now the
 single measured door — design identity-carrying transfers with the
 cantus as carrier apparatus and the v1.1i instrument as the
-honest-medium harness.
+honest-medium harness. **[2026-08-05: the user opened this lane —
+"Use the CANTUS experiment as a mechanism of discovery... Do open
+exchange registry lane and do go for a UUD chord." The campaign doc
+is `REGISTRY.md`; standing concepts were adjusted inline the same
+day (RADIANCE §4.8 correction, OUTLOOK §2/§4, THEORY §2.2,
+carried/S2_CHANNEL.md addendum).]**
 
 ## Status after the pad + integration campaigns (2026-08-04, same day)
 

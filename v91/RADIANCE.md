@@ -496,9 +496,23 @@ that becomes the measured statement.
   phase-lock (p_gate=8). Six disconnected glowing cells remain.
   **Thermal loudness at the fixed point exceeds what a magnitude-
   gated bond can hold — the same S2 conclusion from the other side.**
+
+  **[CORRECTED 2026-08-05 — CANTUS §3.2. The mechanism above is
+  RE-ATTRIBUTED.]** The committed log (`runs/r2/ring6x62_vac_k005.log`)
+  shows `slots=0, live=0` from t=0 to t=20000: this arm was DEAD AT
+  BIRTH — the six cells never connected, so "jitter breaks the gates"
+  was never measured here. The true wall is GEOMETRIC: seeding at
+  x=0.62 draws s_pull·x·cap from Es, the radii deflate, and the
+  unison rung d*(0.62) = 1.889 exceeds the candidate cutoff
+  cfac·2r = 1.790 — unison matter cannot even CONNECT at the fixed
+  point; only p+q ≥ 5 intervals fit inside contact ("the comb admits
+  only CHORDS at the balance"). The S2 conclusion survives in
+  sharpened form: the balance requires CHORD structure, not (only)
+  gate-holding against jitter.
 * **R3 verdict:** no bonded object holds the selected fixed point in
-  this suite (bath: pump-out; vacuum@x*: gate-break), so the size-
-  selection measurement HAS NO MEASURAND yet. The zoo table (§4.6,
+  this suite (bath: pump-out; vacuum@x*: never connected — see the
+  2026-08-05 correction above; the "gate-break" reading is retired),
+  so the size-selection measurement HAS NO MEASURAND yet. The zoo table (§4.6,
   unison rung 1.889 at x̂*=0.62) stands as the standing PREDICTION,
   testable the day an object can sit at the balance — i.e., after
   the coherent channel. The one measured size datum: the surviving

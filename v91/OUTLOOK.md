@@ -55,13 +55,18 @@ believer-rounds generated AND killed hypotheses fast (the 5:3
 ## 2. Limitations — the measured walls
 
 * **The bond sector is the weak floor.** Magnitude-gated bonds churn
-  only below x≈0.37, exist only below x≈0.52, tolerate ~5° of
-  curvature and ~5–10% strain (brittle-plastic, no elastic modes, no
-  QNMs), and act as DRAINS (anti-confinement: bonded matter loses
-  identity fastest). Everything interesting and small — pairs on
-  rungs, UUD flavor structure, the nv<36 zoo — cannot sit at the
-  balance. The D-pile still kills flavored composites (S2 entry
-  unchanged).
+  only below x≈0.37, exist only below x≈0.52 [these two ceilings are
+  now DERIVED, 2026-08-05: load deflates radii while the unison rung
+  grows — CANTUS §3.2; at x̂*=0.62 unison cannot connect at all and
+  only p+q ≥ 5 intervals fit — the comb admits only CHORDS at the
+  balance], tolerate ~5° of curvature and ~5–10% strain
+  (brittle-plastic, no elastic modes, no QNMs), and act as DRAINS
+  (anti-confinement: bonded matter loses identity fastest).
+  Everything interesting and small — pairs on rungs, UUD flavor
+  structure, the nv<36 zoo — cannot sit at the balance AS UNISON
+  matter; the chord zoo is the open lane (the UUD triad reaches 8.3×
+  at the frozen-gauge bound with retention recovering — CANTUS §4.5).
+  The D-pile still kills flavored composites (S2 entry unchanged).
 * **Nothing travels.** Δp ≈ 0 stands; the stable objects are parked.
 * **The vacuum is the wrong kind of medium**: dark vacuum is an
   insulator (no channels, no propagation); an EQUILIBRATED vacuum
@@ -75,8 +80,17 @@ believer-rounds generated AND killed hypotheses fast (the 5:3
   is pending.
 * **Scale and dimension**: flagships 2D; λ/dmin 3–7; P2 unspent.
 * **One ħ**: 5× era-statistical is not 1× law-level.
-* **Lifetime bound is run-length**: no death observed at t=5000; the
+* **Lifetime bound is run-length**: no death observed at t=5000
+  [E-A executed 2026-08-05: ret 0.95 ± 0.02 at t=50,000, no decay
+  trend — the bound is now 50k and still run-length-limited]; the
   true t_half of the integrated object is unmeasured.
+* **Coherence cannot self-assemble without identity** (measured
+  2026-08-05, CANTUS): the churn bath is a persistent-closure medium
+  (66% of cells hold time-averaged gate > 0.5 at zero force), so any
+  closure-gated self-growing coherence ignites a bath-wide Kuramoto
+  transition and rewrites the thermodynamics (glow −91 to −98%). The
+  bond-vs-churn discriminator must be IDENTITY — the exchange
+  registry gates coherence itself, not just exclusion.
 
 ## 3. Next experiments (concrete, apparatus mostly in hand)
 
@@ -115,7 +129,12 @@ believer-rounds generated AND killed hypotheses fast (the 5:3
   matter its stability mechanism (SPECULATION: subradiant dark states
   — the null baseline is measured; a phase-arranged small object whose
   emission amplitudes cancel is stable at ANY size — the zoo below
-  nv=36 lives there if anywhere).
+  nv=36 lives there if anywhere). [Updated 2026-08-05: CANTUS measured
+  the ENTRY REQUIREMENT — any coherence that self-assembles by closure
+  statistics freezes the bath; the S2 channel must be identity-gated
+  (exchange registry) from the start, its charts must be CHORD charts
+  (unison cannot connect at the balance), and ring-locking designs
+  need winding-sector bookkeeping. Active lane: `REGISTRY.md`.]
 * **The two-ledger stabilizer as a design law** (SPECULATION): R-D1's
   holdings/pitch split saved the integrated object. Promote it from
   accident to principle — "taxes read holdings; clocks read
@@ -194,8 +213,13 @@ believer-rounds generated AND killed hypotheses fast (the 5:3
 The substrate now contains a working thermodynamics and its first
 stable, metabolizing, size-selected matter — earned by one added law
 term plus geometry — and every remaining absence points through the
-same door: bonds that carry amplitude and phase. The theory's ability
-ends where magnitude-gated bonds end (curvature, ceilings, drains,
-silence); its next order of capability (small stable matter, motion,
-spectra of species, exclusion) is purchasable only in the S2 currency.
-Radiance was the fixed point; coherence is the matter.
+same door: bonds that carry amplitude, phase, and IDENTITY (the
+2026-08-05 sharpening: closure without identity freezes the world —
+the exchange registry is the gate coherence itself hangs on). The
+theory's ability ends where magnitude-gated bonds end (curvature,
+ceilings — now derived, drains, silence); its next order of
+capability (small stable matter, motion, spectra of species,
+exclusion) is purchasable only in the S2 currency, and the geometry
+has already named the first buyer: the chord — three voices, one
+fifth, mean load at the sweet spot. Radiance was the fixed point;
+coherence is the matter; identity is the door.
