@@ -169,6 +169,50 @@ re-verified after the harness gained the `-extra` override flag.
 Next agent: stage 2 (S2 coherent channel), with radiance as its
 test harness, per THEORY.md §2.2 and `carried/S2_CHANNEL.md`.
 
+## Status after the CANTUS campaign (2026-08-05, user-directed: "atoms are NOT cells")
+
+**`CANTUS.md` is the complete record** (pre-registrations §1–§3,
+three design rounds §3.2–§3.4, results §4). The user-directed
+candidate B — a superimposed field fitted to the cells, holding its
+own gauges, simulating the overall harmonic lock — is IMPLEMENTED in
+both kernels and INERT at defaults (`k_cant=0 k_tune=0` = byte-
+identical to the pre-cantus kernels, verified against the archived
+binary; battery ALL GREEN 93 after every change; C≡Go byte-equal
+with the candidate firing). Final form v1.1i: per-BOND gauge memory
+`sgg` (the chord chart is link-borne), Kuramoto lock on matter
+clocks correcting only the differential closure error, within-mode
+retune current on holdings-memory deviations (COE-metered, p1-clean).
+
+Headlines: **(1)** the wall at the fixed point is GEOMETRIC — the
+unison rung exceeds contact at x̂\* (the R-campaign's x62 vacuum arm
+was dead at birth, slots=0); only p+q ≥ 5 intervals fit — the comb
+admits only CHORDS at the balance. **(2)** The V2g churn bath is a
+persistent-closure medium (66% of cells hold time-averaged gate
+> 0.5 at zero force — the null-meter) ⇒ every self-growing coherence
+rule ignites a bath-wide Kuramoto transition and suppresses the glow
+50× (v1) / 10× (v1.1): **closure statistics cannot distinguish bond
+from churn; only IDENTITY can — the exchange registry is measured
+load-bearing for coherence itself**, not just exclusion. **(3)** The
+coupled lock+tune mechanism holds pairs (90–94% vs 13% control under
+the confound; ret > 1 at frozen-gauge bound in the honest medium)
+and each half alone dies — but in the HONEST medium (v1.1i
+instrument, bath exactly V2g+radiance) self-tracking gauges buy only
+1.4–1.8×, and the frozen-full-strength upper bound splits by
+topology: unison rings stay at 1.4× (winding conservation is the
+measured killer inside the coherence sector) while **the UUD triad
+reaches 8.3× with its retention curve turning back up — the chord
+the geometry demands is the object that nearly holds.**
+**(4)** H5 reckoning: 83/93 with both candidates live; movers = the
+R5 classes + one cantus signature (coherent matter ABSORBS above the
+band — the lock raises the cross-section). **(5)** OUTLOOK E-A:
+the integrated nv=48 object holds ret 0.95±0.02 to **t=50,000**
+(≥100× v90 ceilings, no decay trend). laws_V3 remains NOT adopted;
+all knobs inert at defaults; every decision awaits the user per the
+ratchet. Next agent: the exchange registry (S2 §2.3) is now the
+single measured door — design identity-carrying transfers with the
+cantus as carrier apparatus and the v1.1i instrument as the
+honest-medium harness.
+
 ## Status after the pad + integration campaigns (2026-08-04, same day)
 
 User-directed sequels, all recorded in-tree: **`pad/`** (34 crazy

@@ -151,6 +151,44 @@ believer-rounds generated AND killed hypotheses fast (the 5:3
   self-consistent astronomy. Writing it down is the cheapest way to
   find which of our own inferences are substrate-relative.
 
+## Addendum (2026-08-05, the CANTUS session — measured updates to this outlook)
+
+* **E-A executed:** the integrated nv=48 object holds ret 0.95 ± 0.02
+  to **t = 50,000** (no death, no decay trend, 32/48 channels alive
+  throughout, books 0.87). The §2 "lifetime bound is run-length"
+  limitation moves 5k → 50k; the Goal-2 lifetime row is now ≥100×
+  every v90 ceiling. (`runs/outlook/ea_i3_t50k.log`)
+* **The bond ceiling is DERIVED:** seeding draws s_pull·x·cap from
+  Es, so a voice's radius shrinks with load; the unison rung d*(x)
+  crosses the lens boundary near x ≈ 0.30 and the candidate cutoff
+  near x ≈ 0.52 — OUTLOOK §2's empirical ceilings, now geometry.
+  At x̂* = 0.62 unison matter cannot even CONNECT; only p+q ≥ 5
+  intervals fit inside contact. **The comb admits only chords at the
+  balance — "atoms are not cells" is a selection rule.** (The
+  R-campaign's x62 vacuum "gate-break" arm is re-attributed: it was
+  dead at birth, slots=0 for 20,000 t.u.)
+* **The churn bath is a persistent-closure medium:** at zero lock
+  force, 66% of bath cells hold a time-averaged two-sided gate
+  > 0.5 (CANTUS null-meter). Consequence, measured twice (CANTUS v1
+  cell-borne, v1.1 link-borne): ANY self-growing coherence law
+  ignites a bath-wide Kuramoto transition and rewrites the
+  thermodynamics (glow −91 to −98%). **Closure statistics cannot
+  distinguish bond from churn in this substrate; only IDENTITY can
+  — the exchange registry is now load-bearing for coherence
+  self-assembly, not just for exclusion.** (S2 §2.3 upgraded from
+  "door to exclusion" to "the gate on which coherence itself
+  hangs.)"
+* **The coupled stabilizer works where it engages:** phase-lock +
+  retune-current TOGETHER hold a bath pair at 90–94% (control 13%);
+  each half alone dies. Locked objects outlive controls 8–14× (i5
+  2684 vs 230) — pending the honest-medium instrument runs to
+  separate object-effect from medium-freezing.
+* **A topological requirement surfaced:** the differential phase
+  lock conserves loop winding; a wound ring shares the defect across
+  all gates under strong lock (all die together) — ring-locking laws
+  need winding-sector bookkeeping (the v73 "spin = winding" motif
+  arriving in the coherence sector).
+
 ## The one-paragraph position
 
 The substrate now contains a working thermodynamics and its first

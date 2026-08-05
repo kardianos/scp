@@ -439,6 +439,186 @@ object slots only, at (k_cant, k_tune) = (1, 0.2) and (0.3, 0.2)):
 (§4 is filled ONLY after the corresponding runs complete; nothing
 above this line is edited after the first k_cant>0 run.)
 
+### 4.3 The instrument verdict (v1.1i) and the family upper bound
+
+**v1.1i (honest medium, seeded gauges) — complete:**
+* **P-Hi1 PASS, exactly:** the no-seed bath at (1, 0.2, seed, grow=0)
+  reproduces the k0 economy BYTE-IDENTICALLY (cond 2203.972100, rad
+  2016.222021 — same digits as control): all-zero gauges are a
+  physical no-op; the instrument medium is honest by construction.
+* **P-Hi2 FAIL:** i5-class ring with armed bonds: t_half 408 (sel) /
+  340 (low-tune) vs control 230 — **1.5–1.8×, not 10×**. Terminal
+  husk (ret 0.033) like the control. The seeded gauges DECAY (a →
+  0.001–0.014 by the end): sgg tracks the real gate quality of
+  bonds under honest churn, so the lock weakens exactly when the
+  object needs it most. No self-reinforcement without medium
+  assistance.
+* **P-Hi3 partial:** UUD t_half 240 vs 140 (1.7×), ret_end 0.245 vs
+  0.170, internal gauge HELD (a 0.58); comp6 t_half 120 vs ~87
+  (1.4×), ret_end 0.237 vs 0.153, a 0.61 with tune 490 — the dense
+  multi-voice interiors keep their gauges alive (structure is
+  cantus-friendly) but the boundary still drains.
+* **P-Hi4 FAIL:** pair retention ~25% (sel) / 23% (low) at T=1200 vs
+  the 50% bar (control 13%). d parked 1.61 (sel) — on the honest
+  rung, for what it's worth.
+* **Diagnosis:** v1.1's 8–14× lifetimes were predominantly the
+  frozen medium's gift. In an honest medium the gauge-tracking lock
+  buys 1.4–1.8×.
+
+**The family upper bound (registered BEFORE running, this section):**
+`cant_tau=1e18` freezes sgg at seed — object bonds at amp=1 FOREVER,
+bath at 0, and cxl frozen at the birth chord (the strongest memory
+expressible in this design; no kernel change, pure knob). Arms: i5,
+comp6, UUD, unison pair, chord pair, all at (1, 0.2). Pre-registered
+reading: if even the frozen-full-strength lock+retune cannot reach
+the 10× bars in the honest medium, then the phase-lock+retune
+MECHANISM CLASS is measured insufficient for small stable matter in
+this substrate, and the coherent channel's load-bearing requirement
+narrows to the exchange registry (identity), with the cantus as its
+carrier apparatus. If it DOES reach 10×, the family survives and the
+amplitude bookkeeping (not the mechanism) is what needs the registry.
+
+### 4.2 The v1.1 record (link-borne gauges, self-growing) — the coupled mechanism works; the medium still freezes
+
+All 26 arms complete (logs `runs/cantus/`, v1 record suffixed `_v1`);
+drift ≤ 7e-14 throughout with the candidate firing globally.
+
+* **H1a (bath pair 0.47, T=1200; control drains to Em_sum 0.308/2.35
+  = 13%):** lock+tune arms hold **2.124 (90%) at (0.3, 0.2)** and
+  **2.202 (94%) at (1, 0.2)**, parked at x ≈ 0.43 with gate-alive
+  fraction 0.55 / 0.13. **Each half alone dies:** k_tune=0 arms end
+  at 1–17% (like control or worse); the k_cant=0 k_tune=0.2 arm and
+  the (3, 0.2) arm lose the channel entirely. The stabilizer is the
+  COUPLED pair (phase lock holds the gate; retune current holds the
+  holdings) — at law level, the mirror of radiance+coherence being a
+  coupled pair.
+* **H2 objects at (1, 0.2), t_half vs k005 controls:** i5-class
+  2684 vs 230 (**11.7×**); comp6 1240 vs ~87 (**14×**); UUD none by
+  T=2000, ret 0.548 vs control terminal 0.170 (**>14×**); ring6x62
+  bath 1160 vs 140. Terminal retentions still decay (0.18–0.20 at
+  t=5000 for the rings) — slowed dissolution, not yet stationarity.
+* **The confound that voids the above as stability claims:** every
+  bath arm crystallized the medium again (nlock ~2500–2670, tune
+  13k–175k; H4: cond −67%, rad −91%). The objects outlive their
+  controls partly because the world stopped attacking them. P-H8′
+  FAIL; the selection rule rejects v1.1-as-law at every tested
+  point. The v1.1i instrument (§3.4) exists to break exactly this
+  degeneracy.
+* **H1b/H3 (the fifth faces):** vacuum fifth pairs lose the chart in
+  all arms (supply starvation — pre-diagnosed in §4.1); the bath
+  chord pair DIED with the lock on (channel death; control lingers
+  as a drained husk, d_star_live 2.49). The chord-at-the-balance
+  thesis is NOT yet supported at pair scale; UUD (three voices) is
+  the surviving fifth face (ret 3.2× control).
+* **The winding pathology (squeezed vacuum ring, T=20000):** endpoint
+  gates rank low < sel (sgg 0.44 at k_cant=0.3 vs 0.27 at 1.0; edges
+  gg>0.5: 1/6 vs 0/6) — consistent with the differential lock
+  CONSERVING a loop phase winding and uniformizing it across all six
+  gates (strong lock = all gates share the defect and die together;
+  weak lock = one edge eats it — the ring5/kr=1 signature reproduced
+  INSIDE the coherence machinery). Topological sector bookkeeping is
+  a real design requirement for any ring-locking law. Ring geometry
+  and energy survive regardless (ret 1.06–1.11; vacuum-0.47 does not
+  discriminate).
+* **P-H7 (self-growth):** confirmed and over-confirmed — object
+  bonds arm in ~3τ, but so does the churn (the §3.4 null-meter
+  discovery). Self-growth per se is the failure mode.
+
+### 4.5 The upper bound, measured (frozen gauges, honest medium)
+
+`cant_tau=1e18` arms complete (controls: pair ≈250/13%@1200, i5 230,
+UUD 140, comp6 ~87):
+
+| object | t_half (bound) | vs control | note |
+|---|---|---|---|
+| unison pair 0.47 | 740 | ~3× | held ret>1.1 to t≈300, then drained; parked ON the live rung (d = dsl = 1.20) |
+| **UUD triad** | **1160, ret RECOVERS to 0.587 at T=2000** | **8.3×, near-bar** | the strongest honest-medium object of the programme |
+| i5 ring | 328 | 1.4× | not helped even at full strength |
+| comp6 | 120 | 1.4× | boundary drains regardless |
+| chord pair | 260 (VOID) | — | slot recycling erased the frozen gauges (rebirth resets sgg; cant_grow=0 cannot re-arm) — apparatus caveat |
+
+**The bound reading, per the §4.3 registration:** for unison RINGS and
+composite boundaries the phase-lock+retune mechanism class is
+measured insufficient (1.4× at its own maximum — winding conservation
+plus the leak-path count defeat it). For the FLAVORED TRIAD the class
+reaches 8.3× and the retention curve turns back up — **the object
+that nearly holds is exactly the chord that the §3.2 geometry says
+must exist at the balance.** The registry requirement stands (nothing
+here self-assembles safely), but its first target is now sharp: an
+identity-carrying UUD — three voices, one fifth, mean load at the
+sweet spot — with the cantus as the carrier and the v1.1i instrument
+as the harness.
+
+## 5. CAMPAIGN VERDICT (all arms complete; drift ≤ 5e-13 throughout; DECISIONS ARE THE USER'S)
+
+The campaign, in six measured sentences:
+
+1. **The candidate exists, inert, verified.** The superimposed
+   harmonic-lock field is implemented in both kernels behind
+   `k_cant/k_tune/cant_tau/cant_seed/cant_grow`, byte-identical to
+   the pre-cantus kernels at defaults (verified against the archived
+   binary), C≡Go byte-equal with the candidate firing, battery ALL
+   GREEN 93 at defaults after every kernel change, 83/93 with the
+   coupled candidates live (§4.4).
+2. **"Atoms are not cells" became a theorem of the geometry.** The
+   fixed point admits no unison matter (the rung outlives contact —
+   §3.2, with the R-campaign's x62 story corrected); only chords
+   fit. The UUD triad's mean load sits at the sweet spot the
+   integration found.
+3. **Coherence cannot self-assemble in this substrate without
+   identity.** The churn bath is a persistent-closure medium (66% at
+   zero force — the null-meter); every self-growth rule tried (cell-
+   borne, link-borne) ignites a medium-wide Kuramoto transition and
+   suppresses the glow economy 10–50×. This is the measured
+   promotion of the exchange registry from "the door to exclusion"
+   to **the gate coherence itself hangs on**.
+4. **The coupled mechanism is real and its halves are inseparable.**
+   Lock+tune holds pairs at 90–94% where controls drain to 13%;
+   lock-only and tune-only both die. The retune current is COE-clean
+   (p1 passes live). Coherent matter absorbs ABOVE the sealed-door
+   band (the H5 cantus signature — cross-section rises with
+   coherence, the reality-correct direction).
+5. **In an honest medium the lock buys 1.4–1.8× for rings, 8.3× for
+   the flavored triad at its frozen bound.** Winding conservation is
+   the measured ring-killer inside the coherence sector itself; the
+   chord is the survivor class.
+6. **Nothing was adopted.** All knobs default inert; laws_V3 remains
+   two coupled candidates awaiting an identity mechanism and user
+   sign-off; every log, including the failed design rounds, is the
+   record.
+
+**Recommendation (agent's, for the user to accept or reject):** do
+NOT adopt cantus v1.1 as law (it cannot pass its own P-H8 in any
+tested form). Keep radiance + cantus wired inert as the coupled
+laws_V3 candidates. Open the EXCHANGE REGISTRY design (S2 §2.3) as
+the next lane: identity-carrying transfers, with (i) the cantus
+gauge as the carrier the identity rides, (ii) self-growth REQUIRING
+identity match (the measured missing discriminator — bath churn has
+closure but no shared identity, so the medium stays dark by
+construction rather than by threshold), (iii) the UUD chord as the
+first test body (it nearly holds already), and (iv) the v1.1i
+instrument as the honest-medium harness. The §4.4 reckoning table
+stands ready if the user instead directs adoption of any part now.
+
+### 4.4 H5 — the coupled-candidate reckoning (battery `-extra "k_rad=0.05 p_rad=4 rad_clock=0 k_cant=1 k_tune=0.2"`)
+
+**83/93 green with BOTH candidates live** (`runs/BATTERY_h5x.log`,
+logs `runs/h5x/`). Pure battery at defaults: ALL GREEN 93 (re-verified
+after every kernel change this session). The 10 movers, classified
+against the R5 radiance-alone table:
+
+| class | bars | note |
+|---|---|---|
+| A. flag-day markers | conserve c/go purity (2) | header prints the live keys — mechanical at any adoption |
+| B. sealed-door physics breathing (same as R5) | ring6 edge_dev 0.157 / min gg 0 (2); blob ret 0.40; pauli0 at-cap (2); xsec pure-cond 0.41 (1) | radiance-owned moves, cantus-neutral (R5 values: 0.153 / 0 / 0.45 / 0.31+0.018 / 0.38) |
+| C. cantus-specific | xsec headroom net **7.95 above** [6.9, 7.65] (R5 alone: 6.70 below); b-profile wobble 3.15 vs 3.28 at b2/b3 | **the locked absorber captures MORE — coherence raises the absorption cross-section** (the lock holds the door's gates open); the b-profile inversion is at the known speckle floor |
+
+**No conservation, determinism, optics (ds/ds1), FCQ, p2lc, p1, or
+abx bar moved.** In particular p1 (momentum = first moment) PASSES
+with the retune current firing — the within-mode current is
+COE-clean as designed (C-D3) — and every abx arm stays byte-equal
+C≡Go with both candidates live.
+
 ### 4.1 The v1 record (cell-borne amplitude) — kept as the negative arm
 
 * **H4 v1 (bath, T=480, (1,0.2,50)): the medium crystallizes AND goes
