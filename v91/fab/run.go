@@ -259,6 +259,8 @@ func (s *Sim) Run() {
 		P.KRad, P.PRad, P.RadClock)
 	fprintf(s.Out, "# v91 cantus (coherent-channel candidate B): k_cant=%.6g k_tune=%.6g cant_tau=%.6g cant_seed=%d cant_grow=%d\n",
 		P.KCant, P.KTune, P.CantTau, P.CantSeed, P.CantGrow)
+	fprintf(s.Out, "# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=%.6g reg_gate=%d reg_f0=%.6g\n",
+		P.RegTau, P.RegGate, P.RegF0)
 	fprintf(s.Out, "# GEOMETRY (apparatus): cfac=%.6g k_rep=%.6g mob_geo=%.6g kappa_bond=%.6g freeze_geo=%d\n",
 		P.Cfac, P.KRep, P.MobGeo, P.KappaBond, P.FreezeGeo)
 	fprintf(s.Out, "# bath=%d bath_frac=%.6g jam_sweeps=%d jam_k=%.6g L=%.6g dt=%.6g T=%.6g seed=%d diag_every=%d\n",
@@ -1588,6 +1590,13 @@ func (s *Sim) Run() {
 				fprintf(s.Out, "# CANT t=%.2f a_tag=%.4f a_max=%.4f xl_tag=%.4f nlock=%d tune=%.6f\n",
 					s.simT, atv, am, xtv, nl, s.tuneTotal)
 			}
+			if P.RegTau > 0 {
+				ntp, a25, a50, a75, a90, agr, afl := s.regStats(0)
+				nba, b25, b50, b75, b90, bgr, bfl := s.regStats(1)
+				fprintf(s.Out, "# REG t=%.2f tp n=%d rho=[%.3f %.3f %.3f %.3f] gr=%.5f fl=%.3f | ba n=%d rho=[%.3f %.3f %.3f %.3f] gr=%.5f fl=%.3f\n",
+					s.simT, ntp, a25, a50, a75, a90, agr, afl,
+					nba, b25, b50, b75, b90, bgr, bfl)
+			}
 		}
 		if P.SnapEvery > 0 && s.P.SnapDir != "" && st%P.SnapEvery == 0 {
 			s.writeFCS(snapIdx)
@@ -1706,6 +1715,13 @@ func (s *Sim) Run() {
 			}
 			fprintf(s.Out, "# RESULT cantus a_tag=%.4f a_max=%.4f xl_tag=%.4f nlock=%d tune_total=%.6f\n",
 				atv, am, xtv, nl, s.tuneTotal)
+		}
+		if P.RegTau > 0 {
+			ntp, a25, a50, a75, a90, agr, afl := s.regStats(0)
+			nba, b25, b50, b75, b90, bgr, bfl := s.regStats(1)
+			fprintf(s.Out, "# RESULT reg tp n=%d rho=[%.4f %.4f %.4f %.4f] gr=%.6f fl=%.4f | ba n=%d rho=[%.4f %.4f %.4f %.4f] gr=%.6f fl=%.4f\n",
+				ntp, a25, a50, a75, a90, agr, afl,
+				nba, b25, b50, b75, b90, bgr, bfl)
 		}
 		if P.SlitObj != 0 || P.Convtag != 0 {
 			// net field capture at the occulter = cond - evap - rough + backs

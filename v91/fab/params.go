@@ -41,7 +41,14 @@ type Cfg struct {
 	KCant, KTune, CantTau float64
 	CantSeed              int
 	CantGrow              int
-	QatomEvery            int // apparatus (print-only): QATOM sampler period
+	// v91 EXCHANGE REGISTRY (REGISTRY.md): per-slot ledger of
+	// reciprocal deliveries; reg_tau=0 => byte-identical step.
+	// reg_gate: 0 off; 1 = F-B rho*gross/(gross+f0) (f0=0 => F-A);
+	// 2 = F-D s/(s+f0) with s = 2*min = the reciprocal flow.
+	RegTau     float64
+	RegGate    int
+	RegF0      float64
+	QatomEvery int // apparatus (print-only): QATOM sampler period
 	// --- freecell geometry sector (apparatus, not law) ---
 	Cfac      float64
 	KRep      float64
@@ -155,6 +162,9 @@ func Defaults() Cfg {
 	p.CantTau = 50
 	p.CantSeed = 0
 	p.CantGrow = 1
+	p.RegTau = 0
+	p.RegGate = 0
+	p.RegF0 = 0
 	p.QatomEvery = 200
 	// freecell geometry
 	p.Cfac = 1.15
@@ -354,6 +364,12 @@ func (p *Cfg) SetKV(k, v string) {
 		p.CantSeed = atoi(v)
 	case "cant_grow":
 		p.CantGrow = atoi(v)
+	case "reg_tau":
+		p.RegTau = atof(v)
+	case "reg_gate":
+		p.RegGate = atoi(v)
+	case "reg_f0":
+		p.RegF0 = atof(v)
 	case "qatom_every":
 		p.QatomEvery = atoi(v)
 	case "cfac":

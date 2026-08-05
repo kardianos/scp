@@ -44,6 +44,7 @@ var lawHeader = []string{
 	"# quant_A0=1.15 quant_mode=2 (A0eff=1.15)",
 	"# v91 radiance (laws_V3r candidate A): k_rad=0 p_rad=4 rad_clock=0",
 	"# v91 cantus (coherent-channel candidate B): k_cant=0 k_tune=0 cant_tau=50 cant_seed=0 cant_grow=1",
+	"# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=0 reg_gate=0 reg_f0=0",
 }
 
 // ------------------------------------------------------------------

@@ -447,6 +447,12 @@ func (s *Sim) step() {
 			}
 			if take > 0 {
 				mobprev := s.Em[recv]
+				// v91 registry stamp (REGISTRY.md §1.3): a delivered
+				// parcel between two continuous identities. Deliveries
+				// only — the rule-alpha flush is a RETURN, not stamped.
+				if P.RegTau > 0 {
+					s.rdel[sslot] += take
+				}
 				s.slem[sslot] -= take
 				if P.P1Meter != 0 {
 					// P1 site 3: flight arrival, link midpoint -> recv
@@ -521,6 +527,26 @@ func (s *Sim) step() {
 		}
 	}
 
+	// pass H0: v91 EXCHANGE REGISTRY ledger (REGISTRY.md §1.3 item 2)
+	// — mirror of the C kernel's pass H0, operation for operation.
+	// All non-free slots (incl. pinched), sl ascending; reg_tau=0 =>
+	// does not execute.
+	if P.RegTau > 0 {
+		kreg := 1.0
+		if P.RegTau > dt {
+			kreg = dt / P.RegTau
+		}
+		for sl := 0; sl < s.NSLOT; sl++ {
+			if s.sst[sl] == sFree {
+				continue
+			}
+			s.rfp[sl] += kreg * (s.rdel[2*sl]/dt - s.rfp[sl])
+			s.rfm[sl] += kreg * (s.rdel[2*sl+1]/dt - s.rfm[sl])
+			s.rdel[2*sl] = 0
+			s.rdel[2*sl+1] = 0
+		}
+	}
+
 	// pass H: v91 CANTUS (coherent-channel candidate B, CANTUS.md) —
 	// mirror of the C kernel's pass H, operation for operation. See
 	// kernel/freecell.c for the full rationale comment.
@@ -553,9 +579,34 @@ func (s *Sim) step() {
 				psB := wrapPi(pp*s.th2s[j] - pp*s.w2e[j]*d/P.C - qq*s.th2s[i])
 				gg := s.gateOf(psF) * s.gateOf(psB)
 				// v1.1: the LINK's own gauge memory (holds through
-				// lens blinks — non-eligible steps skip this update)
+				// lens blinks — non-eligible steps skip this update).
+				// reg_gate=1 (REGISTRY.md R-G3): growth target gated
+				// by the registry match (form F-A) — coherence may
+				// only grow on identity-continuous reciprocal exchange.
 				if P.CantGrow != 0 || s.sgg[sl] > 0 {
-					s.sgg[sl] += ktau * (gg - s.sgg[sl])
+					tgt := gg
+					if P.RegGate != 0 {
+						gross := s.rfp[sl] + s.rfm[sl]
+						mn := s.rfp[sl]
+						if s.rfm[sl] < mn {
+							mn = s.rfm[sl]
+						}
+						mult := 0.0
+						if P.RegGate == 1 {
+							// F-B: balance x flow saturation (f0=0 => F-A)
+							if gross > 0 {
+								mult = (2.0 * mn / gross) * (gross / (gross + P.RegF0))
+							}
+						} else {
+							// F-D: reciprocal-flow saturation, s = 2*min
+							s2 := 2.0 * mn
+							if s2 > 0 {
+								mult = s2 / (s2 + P.RegF0)
+							}
+						}
+						tgt *= mult
+					}
+					s.sgg[sl] += ktau * (tgt - s.sgg[sl])
 				}
 				amp := s.sgg[sl]
 				if amp <= 0 {

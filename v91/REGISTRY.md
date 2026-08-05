@@ -198,7 +198,124 @@ winding-sector bookkeeping (registered CANTUS finding, own lane),
 any table adoption (laws_V3 remains the user's decision), any change
 to atoms/door/space/contact machinery (S2 §2 item 5 invariants).
 
+### 3.4 Design round 2 (2026-08-05 — registered AFTER the meter arms M1–M4, BEFORE any law arm)
+
+**P-REG1 verdict: FAIL as registered — and the failure is a
+measurement, not a mishap.** At the warmed ledgers (stationary by
+t≈300): bath ρ median 0.49 (τ=10) and 0.68 (τ=30), both ≫ the
+registered 0.3 ceiling; bond medians clear 0.6 only marginally and
+not uniformly (§4.1 table). Two discoveries force a redesign of the
+match form, not of the thesis:
+
+1. **The churn bath is a persistent-EXCHANGE medium.** 92–93% of
+   live bath slots carry delivered flow within a τ=10–30 memory;
+   slot turnover ~100+ t.u.; and the ρ distribution RISES with the
+   ledger window (median 0.49 → 0.68 from τ=10 → 30): **per-line
+   balance, absent instantaneously (the v90 result), EMERGES
+   statistically at long windows.** The bath is a population of
+   long-lived, low-current proto-bonds — closure (CANTUS) and now
+   balance are both free there. Identity cannot be read from rate
+   SYMMETRY.
+2. **Balance is a unison instrument; the chord's signature is
+   FLOW.** The resting unison pair reads ρ = 0.94–0.97 — but the
+   flavored (chord) bonds read ρ 0.5–0.9 because they carry a
+   standing directed circulation — the flux-machine interior current
+   (CQ7/CQ8's forced conclusion), here OBSERVED PER LINK for the
+   first time. Meanwhile the ALIVE bond's gross delivered flow is
+   15–300× the bath median (pair 0.046/t.u. at ρ 0.94; i5 edges
+   0.008–0.013 at ρ 0.90–0.97; UUD ~0.002 early-life; bath
+   stationary 0.7–1.4e-4). The weak "2–5×" endpoint numbers first
+   harvested were dying-object artifacts — the RESULT-line summary
+   is survivorship-biased for mortal bodies; mid-life series are the
+   honest bond statistics.
+
+**Amended match menu** (implemented behind `reg_gate`, both kernels,
+A/B byte-verified; `reg_f0` is a new printed key, purity-pinned at
+0): **F-B** (`reg_gate=1`): r = ρ·gross/(gross+f0) — balance ×
+flow-saturation; f0=0 reduces F-B to the original F-A exactly.
+**F-D** (`reg_gate=2`): r = s/(s+f0) with s = 2·min(rfp,rfm) =
+ρ·gross — the RECIPROCAL FLOW rate; a one-way conductor scores 0 at
+any magnitude; a balanced trickle scores ~0; a sustained two-way
+current saturates to 1. F-D is the thesis stated in flow units.
+
+**Amended selector (replaces the statistical gap as the gate
+decision):** the registered purpose of P-REG1 was ignition
+protection. Ignition is a PHYSICAL event and the vacuum guard
+P-REG3 measures it directly — a warm but sparse, non-percolating
+tail of gate-passing bath slots is harmless, and only the guard can
+tell. Therefore: **the P-REG3 guard becomes the form/f0 selector.**
+Menu: {F-B, F-D} × f0 ∈ {2e-4, 5e-4} (the geometric midpoint of the
+measured alive-bond vs bath reciprocal-flow scales, and its
+conservative double), all at τ=10 (the least balance-contaminated
+ledger; τ=100 registered expectation: bath ρ median ≥ τ=30's — if
+it comes in LOWER the emergence story is wrong and R-G2 reopens).
+Guard bars unchanged from P-REG3 + one addition: bath `a_max`
+(# CANT) < 0.5 throughout. Among guard-passing combos, a short UUD
+arming probe (T=300, self-arming, no seed) selects the combo with
+the highest internal a_tag at t=200 ("arm the object, not the
+world"); tie → F-D (fewer factors).
+
+**Instrument lessons (this round):** (i) a missing RESULT line means
+UNFINISHED, not dead — verify a run's exit by PID before requeueing;
+I misread six in-flight arms as killed and double-launched second
+writers onto their log paths (two processes truncating/interleaving
+one file = both datasets lost; the six arms were stopped and rerun
+cleanly, single-writer). Corollary verified in passing: `make` over
+the running binary is BENIGN on this platform (ld replaces via
+unlink+rename; the six original arms sailed through a rebuild
+untouched). (ii) RESULT-line summaries are survivorship-biased for
+mortal objects — read mid-life series.
+
 ## 4. Results
 
 (§4 is written only from executed runs; nothing above this line may
 be edited after the first run — corrections land as dated addenda.)
+
+### 4.1 Meter arms M1–M4 (reg_gate=0; logs `runs/registry/m*_t*.log`)
+
+Apparatus verification first: defaults byte-identical to the
+committed pre-registry kernel (strong form: -O0 builds of both
+sources byte-equal INCLUDING every drift value; at -O3 the drift
+diagnostic column alone reassociates at ~1e-16 — compiler artifact,
+recorded); meter physics-silent (P-REG2 PASS: reg_tau=30 vs off, all
+non-registry lines byte-equal); C≡Go byte-equal with the meter and
+with BOTH gate forms firing (class-D drift column and the
+pre-existing truss ±0 print exempt as standing); battery ALL GREEN
+93 at defaults (`runs/BATTERY_reg0.log`).
+
+**The bath (stationary by t≈300, n≈25,700 live slots):**
+
+| τ | ρ q25/q50/q75 | gross med | frac. with flow |
+|---|---|---|---|
+| 10 | 0.095 / **0.49** / 0.84 | 6.6e-5 | 0.925 |
+| 30 | 0.287 / **0.68** / 0.906 (q90 0.977) | 1.4e-4 | 0.925 |
+| 100 | 0.473 / **0.79** / 0.947 (q90 0.987) | 2.7e-4 | 0.925 |
+
+(τ=100 came in ABOVE τ=30 as registered in §3.4 — the balance-
+emergence story stands; τ=10 remains the R-G2 selection. The τ=100
+ledger also reads the long-lived bodies cleanly: pair ρ 0.952 at
+t=600, i5 edges ρ med 0.90 — long windows suit long-lived balanced
+bonds and the bath alike, which is exactly why they discriminate
+nothing.)
+
+**The objects (alive-phase ledgers, τ=10 unless noted):**
+
+| body | bond gross (E/t.u.) | bond ρ | reading |
+|---|---|---|---|
+| unison pair 0.47 | 0.014–0.062 sustained | 0.24–0.94 (τ10, chunky); 0.94 (τ30) | standing exchange 200–900× bath median; balance visible on the τ30 ledger |
+| UUD triad | 1–4e-3 early, decaying | 0.32–0.49 both τ | **standing DIRECTED current — net ≈ 0.75·gross**: the flux-machine circulation observed per link; first UD bond goes SILENT at t≈40–50 (the D-drain), triad ledger dark by t≈100–140 (= control t_half) |
+| i5 ring (unison) | 0.005–0.036 | med 0.6–0.95, q25 dips ~0 | quasi-balanced with one-way episodes |
+
+**Verdicts:** P-REG1 **FAIL as registered** (bath ρ median 0.49–0.68
+≫ 0.3 at every warmed τ; the two discoveries and the amended
+protocol are §3.4). P-REG2 **PASS exactly**. The reciprocal-flow
+scale s = ρ·gross separates alive bonds from the bath MEDIAN by
+15–500× (pair/i5) and 15–60× (UUD), but the bath's warm TAIL
+(ρ q75 0.84 at gross tail) overlaps the weakest UUD bonds — the
+statistical gap is real at the median and leaky at the tail, which
+is exactly the situation the amended guard-as-selector (§3.4) was
+registered for. **Sharpened arming-race warning for P-REG5:** the
+UUD's first bond dies at t≈40–50, before any cant_tau=50 gauge can
+arm (~3τ = 150) — the goal arm's registered secondaries (fast-tau,
+and the seeded-instrument ceiling reference) carry the burden if
+the self-arming primary loses the race.

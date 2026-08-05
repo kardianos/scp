@@ -152,6 +152,18 @@ typedef struct {
     double k_cant, k_tune, cant_tau;
     int    cant_seed;
     int    cant_grow;   /* 1 = self-growth (law candidate); 0 = seeded-only (INSTRUMENT: honest-medium probe, CANTUS.md §3.4) */
+    /* --- v91 EXCHANGE REGISTRY (REGISTRY.md; user-opened 2026-08-05).
+     * Identity-carrying transfers at slot grain: a per-slot ledger of
+     * reciprocal DELIVERIES (the slot is the continuous identity pair
+     * — it dies with either endpoint). reg_tau=0 => no stamps, no
+     * prints, byte-identical step. reg_gate=1 gates the cantus gauge
+     * growth by the registry match r (bond-vs-churn = identity, the
+     * CANTUS-measured requirement). --- */
+    double reg_tau;     /* delivery-ledger memory; 0 = registry OFF   */
+    int    reg_gate;    /* cantus growth target *= r_s. 0 off;
+                         * 1 = F-B  rho * gross/(gross+f0)  (f0=0 => F-A);
+                         * 2 = F-D  s/(s+f0), s = 2*min = reciprocal flow */
+    double reg_f0;      /* the flow half-saturation constant (units E/t) */
     int    qatom_every;   /* apparatus (print-only): QATOM sampler period */
     /* --- freecell geometry sector (apparatus, not law) --- */
     double cfac;          /* candidate rule d < cfac*(ri+rj)  (LIVEFAB) */
@@ -266,6 +278,7 @@ static void cfg_defaults(void)
     P.quant_A0 = 1.15; P.quant_mode = 2;
     P.k_rad = 0; P.p_rad = 4; P.rad_clock = 0;
     P.k_cant = 0; P.k_tune = 0; P.cant_tau = 50; P.cant_seed = 0; P.cant_grow = 1;
+    P.reg_tau = 0; P.reg_gate = 0; P.reg_f0 = 0;
     P.qatom_every = 200;
     /* freecell geometry */
     P.cfac = 1.15; P.k_rep = 1.0; P.mob_geo = 1.0; P.kappa_bond = 1.0;
@@ -354,6 +367,9 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "cant_tau")) P.cant_tau = atof(v);
     else if (!strcmp(k, "cant_seed")) P.cant_seed = atoi(v);
     else if (!strcmp(k, "cant_grow")) P.cant_grow = atoi(v);
+    else if (!strcmp(k, "reg_tau")) P.reg_tau = atof(v);
+    else if (!strcmp(k, "reg_gate")) P.reg_gate = atoi(v);
+    else if (!strcmp(k, "reg_f0")) P.reg_f0 = atof(v);
     else if (!strcmp(k, "qatom_every")) P.qatom_every = atoi(v);
     else if (!strcmp(k, "cfac")) P.cfac = atof(v);
     else if (!strcmp(k, "k_rep")) P.k_rep = atof(v);
@@ -571,6 +587,12 @@ static double *rngbuf, *nsnap, *th2s;
  * amplitude is a pure diagnostic (cant_amp_of = max incident sgg). */
 static double *cxl_, *dthH;
 static double *sgg_;                 /* per-slot cantus amplitude       */
+/* v91 exchange registry (REGISTRY.md §1.1): per-slot ledger of
+ * reciprocal deliveries. rfp_ = low-passed delivered rate i->j,
+ * rfm_ = j->i, rdel_ = per-step delivered scratch [slot][dir].
+ * Born 0 at slot_new, dies with the slot — no background, no energy. */
+static double *rfp_, *rfm_, *rdel_;
+static double *regq1_, *regq2_;      /* diag scratch (quantiles)        */
 
 /* channels — PERSISTENT SLOTS with identity (the birth/death ledger).
  * A slot is FREE, ALIVE (in the candidate set), or DYING (out of the
@@ -779,6 +801,11 @@ static void alloc_all(int nc)
     sldd = calloc(NLMAX, sizeof(double));
     swl = calloc(NLMAX, sizeof(double));
     sgg_ = calloc(NLMAX, sizeof(double));
+    rfp_ = calloc(NLMAX, sizeof(double));
+    rfm_ = calloc(NLMAX, sizeof(double));
+    rdel_ = calloc((size_t)2 * NLMAX, sizeof(double));
+    regq1_ = malloc(NLMAX * sizeof(double));
+    regq2_ = malloc(NLMAX * sizeof(double));
     sfluxd = calloc((size_t)2 * NLMAX, sizeof(double));
     freelist = malloc(NLMAX * sizeof(int));
     nfree = 0;
@@ -835,6 +862,8 @@ static int slot_new(int i, int j)
     slem[2*s] = slem[2*s+1] = 0; slph[2*s] = slph[2*s+1] = 0;
     slp[s] = 1; slq[s] = 1; sA[s] = 0; sldd[s] = 0; swl[s] = 0;
     sgg_[s] = 0;                     /* cantus: a reborn bond starts mute */
+    rfp_[s] = 0; rfm_[s] = 0;        /* registry: a reborn pair has no past */
+    rdel_[2*s] = 0; rdel_[2*s+1] = 0;
     swant[2*s] = swant[2*s+1] = 0; sflux[s] = 0;
     hput(i, j, s);
     if (s >= NSLOT) NSLOT = s + 1;
@@ -1238,6 +1267,11 @@ static void step(void)
             if (take > freec) take = freec > 0 ? freec : 0;
             if (take > 0) {
                 double mobprev = Em[recv];
+                /* v91 registry stamp (REGISTRY.md §1.3): a delivered
+                 * parcel between two continuous identities. Deliveries
+                 * only — the rule-alpha flush below is a RETURN, not an
+                 * exchange, and is not stamped. */
+                if (P.reg_tau > 0) rdel_[sslot] += take;
                 slem[sslot] -= take;
                 if (P.p1_meter) {
                     /* P1 site 3: flight arrival, link midpoint -> recv */
@@ -1308,6 +1342,22 @@ static void step(void)
      * COE-metered. Slots visited once from the lower endpoint in
      * CSR-canonical order (the pass-4/5 convention, A/B-mirrored).
      * k_cant=0 && k_tune=0 => this pass does not execute. */
+
+    /* pass H0: v91 EXCHANGE REGISTRY ledger (REGISTRY.md §1.3 item 2).
+     * Low-pass the per-step delivered parcels into directed rates.
+     * Runs over ALL non-free slots (including pinched sA=0 ones, so
+     * the memory decays through lens blinks instead of freezing);
+     * s ascending — A/B-canonical. reg_tau=0 => does not execute. */
+    if (P.reg_tau > 0) {
+        double kreg = P.reg_tau > dt ? dt / P.reg_tau : 1.0;
+        for (int s = 0; s < NSLOT; s++) {
+            if (sst[s] == S_FREE) continue;
+            rfp_[s] += kreg * (rdel_[2*s]     / dt - rfp_[s]);
+            rfm_[s] += kreg * (rdel_[2*s + 1] / dt - rfm_[s]);
+            rdel_[2*s] = 0; rdel_[2*s + 1] = 0;
+        }
+    }
+
     if (P.k_cant > 0 || P.k_tune > 0) {
         double ktau = P.cant_tau > dt ? dt / P.cant_tau : 1.0;
         for (int i = 0; i < NC; i++) {
@@ -1327,9 +1377,31 @@ static void step(void)
                 double ps_b = wrap_pi(pp*th2s[j] - pp*w2e[j]*d/P.C - qq*th2s[i]);
                 double gg = gate_of(ps_f) * gate_of(ps_b);
                 /* v1.1: the LINK's own gauge memory (holds through
-                 * lens blinks — non-eligible steps skip this update) */
-                if (P.cant_grow || sgg_[s] > 0)
-                    sgg_[s] += ktau * (gg - sgg_[s]);
+                 * lens blinks — non-eligible steps skip this update).
+                 * reg_gate=1 (REGISTRY.md R-G3): the growth TARGET is
+                 * gated by the registry match r = 2*min/(sum) of the
+                 * directed delivery rates (form F-A) — coherence may
+                 * only grow on identity-continuous reciprocal
+                 * exchange; the bath stays dark by construction. */
+                if (P.cant_grow || sgg_[s] > 0) {
+                    double tgt = gg;
+                    if (P.reg_gate) {
+                        double gross = rfp_[s] + rfm_[s];
+                        double mn = rfp_[s] < rfm_[s] ? rfp_[s] : rfm_[s];
+                        double mult = 0.0;
+                        if (P.reg_gate == 1) {
+                            /* F-B: balance x flow saturation (f0=0 => F-A) */
+                            if (gross > 0)
+                                mult = (2.0 * mn / gross) * (gross / (gross + P.reg_f0));
+                        } else {
+                            /* F-D: reciprocal-flow saturation, s = 2*min */
+                            double s2 = 2.0 * mn;
+                            if (s2 > 0) mult = s2 / (s2 + P.reg_f0);
+                        }
+                        tgt *= mult;
+                    }
+                    sgg_[s] += ktau * (tgt - sgg_[s]);
+                }
                 double amp = sgg_[s];
                 if (amp <= 0) continue;
                 if (P.k_cant > 0) {
@@ -1649,6 +1721,49 @@ static double cant_amp_of(int i)
         if (sgg_[s] > a) a = sgg_[s];
     }
     return a;
+}
+
+/* v91 registry diagnostics (REGISTRY.md §1.3 item 5, pure meter).
+ * Match rho = 2*min/(sum) of the directed delivery rates. */
+static double reg_rho(int s)
+{
+    double gross = rfp_[s] + rfm_[s];
+    if (gross <= 0) return 0;
+    double mn = rfp_[s] < rfm_[s] ? rfp_[s] : rfm_[s];
+    return 2.0 * mn / gross;
+}
+static int dcmp_(const void *a, const void *b)
+{
+    double x = *(const double *)a, y = *(const double *)b;
+    return x < y ? -1 : x > y ? 1 : 0;
+}
+/* class 0 = both endpoints tagged (the seeded body's own bonds);
+ * class 1 = neither tagged (the bath). Live slots only. */
+static int reg_stats(int cls, double *q25, double *q50, double *q75,
+                     double *q90, double *grmed, double *flow)
+{
+    int n = 0, nf = 0;
+    for (int s = 0; s < NSLOT; s++) {
+        if (sst[s] != S_ALIVE) continue;
+        int ti = tag[sli[s]] ? 1 : 0, tj = tag[slj[s]] ? 1 : 0;
+        if (cls == 0 ? !(ti && tj) : (ti || tj)) continue;
+        double gross = rfp_[s] + rfm_[s];
+        regq1_[n] = reg_rho(s);
+        regq2_[n] = gross;
+        if (gross > 0) nf++;
+        n++;
+    }
+    *q25 = *q50 = *q75 = *q90 = *grmed = *flow = 0;
+    if (!n) return 0;
+    qsort(regq1_, n, sizeof(double), dcmp_);
+    qsort(regq2_, n, sizeof(double), dcmp_);
+    *q25 = regq1_[(int)(0.25 * (n - 1))];
+    *q50 = regq1_[(int)(0.50 * (n - 1))];
+    *q75 = regq1_[(int)(0.75 * (n - 1))];
+    *q90 = regq1_[(int)(0.90 * (n - 1))];
+    *grmed = regq2_[(int)(0.50 * (n - 1))];
+    *flow = (double)nf / n;
+    return n;
 }
 
 static double total_energy(void)
@@ -2336,6 +2451,8 @@ int main(int argc, char **argv)
            P.k_rad, P.p_rad, P.rad_clock);
     printf("# v91 cantus (coherent-channel candidate B): k_cant=%g k_tune=%g cant_tau=%g cant_seed=%d cant_grow=%d\n",
            P.k_cant, P.k_tune, P.cant_tau, P.cant_seed, P.cant_grow);
+    printf("# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=%g reg_gate=%d reg_f0=%g\n",
+           P.reg_tau, P.reg_gate, P.reg_f0);
     printf("# GEOMETRY (apparatus): cfac=%g k_rep=%g mob_geo=%g kappa_bond=%g freeze_geo=%d\n",
            P.cfac, P.k_rep, P.mob_geo, P.kappa_bond, P.freeze_geo);
     printf("# bath=%d bath_frac=%g jam_sweeps=%d jam_k=%g L=%g dt=%g T=%g seed=%lu diag_every=%d\n",
@@ -3320,6 +3437,14 @@ int main(int argc, char **argv)
                        sim_t, ntg ? at / ntg : 0, am, ntg ? xt / ntg : 0,
                        nl, tune_total);
             }
+            if (P.reg_tau > 0) {
+                double a25, a50, a75, a90, agr, afl, b25, b50, b75, b90, bgr, bfl;
+                int ntp = reg_stats(0, &a25, &a50, &a75, &a90, &agr, &afl);
+                int nba = reg_stats(1, &b25, &b50, &b75, &b90, &bgr, &bfl);
+                printf("# REG t=%.2f tp n=%d rho=[%.3f %.3f %.3f %.3f] gr=%.5f fl=%.3f | ba n=%d rho=[%.3f %.3f %.3f %.3f] gr=%.5f fl=%.3f\n",
+                       sim_t, ntp, a25, a50, a75, a90, agr, afl,
+                       nba, b25, b50, b75, b90, bgr, bfl);
+            }
         }
         if (P.snap_every > 0 && P.snap_dir[0] && st % P.snap_every == 0)
             write_fcs(st / P.snap_every);
@@ -3387,6 +3512,14 @@ int main(int argc, char **argv)
             }
             printf("# RESULT cantus a_tag=%.4f a_max=%.4f xl_tag=%.4f nlock=%d tune_total=%.6f\n",
                    ntg ? at / ntg : 0, am, ntg ? xt / ntg : 0, nl, tune_total);
+        }
+        if (P.reg_tau > 0) {
+            double a25, a50, a75, a90, agr, afl, b25, b50, b75, b90, bgr, bfl;
+            int ntp = reg_stats(0, &a25, &a50, &a75, &a90, &agr, &afl);
+            int nba = reg_stats(1, &b25, &b50, &b75, &b90, &bgr, &bfl);
+            printf("# RESULT reg tp n=%d rho=[%.4f %.4f %.4f %.4f] gr=%.6f fl=%.4f | ba n=%d rho=[%.4f %.4f %.4f %.4f] gr=%.6f fl=%.4f\n",
+                   ntp, a25, a50, a75, a90, agr, afl,
+                   nba, b25, b50, b75, b90, bgr, bfl);
         }
         if (P.slit_obj || P.convtag)
             /* net field capture at the occulter = cond - evap - rough + backs

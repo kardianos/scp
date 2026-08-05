@@ -9,6 +9,7 @@ import (
 	"io"
 	"math"
 	"os"
+	"sort"
 )
 
 const (
@@ -54,6 +55,12 @@ type Sim struct {
 	// the per-cell amplitude is a pure diagnostic (cantAmpOf).
 	cxl, dthH []float64
 	sgg       []float64
+	// v91 exchange registry (REGISTRY.md §1.1): per-slot ledger of
+	// reciprocal deliveries — rfp = low-passed delivered rate i->j,
+	// rfm = j->i, rdel = per-step scratch [slot][dir]; regq1/regq2 =
+	// diag quantile scratch. Born 0 at slotNew, dies with the slot.
+	rfp, rfm, rdel []float64
+	regq1, regq2   []float64
 
 	// channels — persistent slots with identity (birth/death ledger)
 	NLMAX, NSLOT                int
@@ -223,6 +230,60 @@ func (s *Sim) cantAmpOf(i int) float64 {
 		}
 	}
 	return a
+}
+
+// v91 registry diagnostics (REGISTRY.md §1.3 item 5, pure meter).
+// Match rho = 2*min/(sum) of the directed delivery rates.
+func (s *Sim) regRho(sl int) float64 {
+	gross := s.rfp[sl] + s.rfm[sl]
+	if gross <= 0 {
+		return 0
+	}
+	mn := s.rfp[sl]
+	if s.rfm[sl] < mn {
+		mn = s.rfm[sl]
+	}
+	return 2.0 * mn / gross
+}
+
+// regStats: class 0 = both endpoints tagged (the seeded body's own
+// bonds); class 1 = neither tagged (the bath). Live slots only.
+// Mirrors the C reg_stats (same quantile index arithmetic).
+func (s *Sim) regStats(cls int) (n int, q25, q50, q75, q90, grmed, flow float64) {
+	nf := 0
+	for sl := 0; sl < s.NSLOT; sl++ {
+		if s.sst[sl] != sAlive {
+			continue
+		}
+		ti := s.tag[s.sli[sl]] != 0
+		tj := s.tag[s.slj[sl]] != 0
+		if cls == 0 {
+			if !(ti && tj) {
+				continue
+			}
+		} else if ti || tj {
+			continue
+		}
+		gross := s.rfp[sl] + s.rfm[sl]
+		s.regq1[n] = s.regRho(sl)
+		s.regq2[n] = gross
+		if gross > 0 {
+			nf++
+		}
+		n++
+	}
+	if n == 0 {
+		return
+	}
+	sort.Float64s(s.regq1[:n])
+	sort.Float64s(s.regq2[:n])
+	q25 = s.regq1[int(0.25*float64(n-1))]
+	q50 = s.regq1[int(0.50*float64(n-1))]
+	q75 = s.regq1[int(0.75*float64(n-1))]
+	q90 = s.regq1[int(0.90*float64(n-1))]
+	grmed = s.regq2[int(0.50*float64(n-1))]
+	flow = float64(nf) / float64(n)
+	return
 }
 
 func (s *Sim) gateOf(dphi float64) float64 { // cellfab.c:638 verbatim
@@ -442,6 +503,11 @@ func (s *Sim) allocAll(nc int) {
 	s.sldd = make([]float64, s.NLMAX)
 	s.swl = make([]float64, s.NLMAX)
 	s.sgg = make([]float64, s.NLMAX)
+	s.rfp = make([]float64, s.NLMAX)
+	s.rfm = make([]float64, s.NLMAX)
+	s.rdel = make([]float64, 2*s.NLMAX)
+	s.regq1 = make([]float64, s.NLMAX)
+	s.regq2 = make([]float64, s.NLMAX)
 	s.sfluxd = make([]float64, 2*s.NLMAX)
 	s.freelist = make([]int, s.NLMAX)
 	s.nfree = 0
