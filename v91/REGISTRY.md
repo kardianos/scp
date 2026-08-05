@@ -371,6 +371,27 @@ is the third measured ignition of a self-growing coherence rule
 (v1 closure/cell-borne, v1.1 closure/link-borne, registry
 flow/link-borne) — the family verdict is in §3.5 and the lane's §5.
 
+### 4.3 The goal arms (§3.5 honest-instrument frame; logs `runs/registry/uud_*.log`, `pair_*`, `i5_*`; drift ≤ 2e-15 throughout)
+
+| arm | t_half | ret @ t=5000 | gauges at end | reading |
+|---|---|---|---|---|
+| uud_ctl | 140 | 0.199 (ruin tracks ambient) | — | control (= CANTUS 140 exactly) |
+| uud_seed_reg | 152 | 0.207 | a_tag 0.004 (faded) | registry-MAINTAINED: **1.09× — nothing** |
+| uud_seed_plain | 124 | 0.209 | a_tag 0.64 (survivor slot) | plain tracking: 0.89× — nothing |
+| **uud_frozen** | **NONE** (0.5-threshold first-crossing 1068 is a transient dip) | **0.50, oscillating 0.50–0.63 all run** | a_tag 1.0; **2–3 bond slots ALIVE at t=5000**; tune 100 total; tagged books cond 29 ≈ evap 31; xl_tag 0.466 = the FCQ sweet spot | **the asserted-identity chord is quasi-stable: parked, connected, metabolizing at half-retention with NO DEATH to t=5000** |
+| pair_seed_reg / ctl | — | 20.7% vs 13.1% @1200 | a_tag 0.005; nlock 0 | P-REG6′ FAIL (1.6×; gg collapse under churn, not gauge bookkeeping — bath perfectly dark, structural honesty confirmed) |
+| i5_seed_reg / ctl | 368 / 244 | 0.040 / 0.046 | a_tag ~0 | 1.5× — the winding wall unchanged |
+
+**P-REG5′ FAIL for maintenance (152 ≪ 1400) — and the diagnosis is
+the campaign's third discovery: honest maintenance is honest fade.**
+The growth target gg·r tracks the dying object's real gate quality
+down; a gauge maintained from slot statistics can only preserve
+coherence the physics already sustains. Meanwhile the FROZEN arm —
+identity asserted unconditionally, not inferred — supersedes the
+CANTUS T=2000 bound: the UUD chord with real identity does not die
+at all in 5000 t.u. The gap between 152 and NONE is the measured
+value of identity being REAL rather than statistically inferred.
+
 **Verdicts:** P-REG1 **FAIL as registered** (bath ρ median 0.49–0.68
 ≫ 0.3 at every warmed τ; the two discoveries and the amended
 protocol are §3.4). P-REG2 **PASS exactly**. The reciprocal-flow
@@ -384,3 +405,55 @@ UUD's first bond dies at t≈40–50, before any cant_tau=50 gauge can
 arm (~3τ = 150) — the goal arm's registered secondaries (fast-tau,
 and the seeded-instrument ceiling reference) carry the burden if
 the self-arming primary loses the race.
+
+## 5. CAMPAIGN VERDICT (all arms complete; drift ≤ 2e-15; DECISIONS ARE THE USER'S)
+
+1. **The lane exists, inert, verified.** The exchange-registry
+   apparatus (per-slot delivery ledger + two gate forms) is in both
+   kernels behind `reg_tau/reg_gate/reg_f0`, byte-identical at
+   defaults (-O0 byte-equal including drift), physics-silent as a
+   meter, C≡Go byte-equal firing, battery ALL GREEN 93 twice, three
+   design rounds each registered before its runs.
+2. **The bath is a persistent-EXCHANGE medium.** 92% of live slots
+   carry flow; per-line balance EMERGES with the ledger window (ρ
+   median 0.49/0.68/0.79 at τ=10/30/100) — the v90 "detailed-rate
+   balance without per-line balance" gains its scale. Balance is a
+   unison instrument (pair ρ 0.95); chord bonds run a standing
+   directed current (UUD net ≈ 0.75·gross) — the flux-machine
+   circulation observed per link for the first time.
+3. **The lock manufactures its own gate evidence.** Every
+   slot-grain statistical gate ignites the bath (closure ×2 in
+   CANTUS; reciprocal flow ×4 combos here, economy −60/−83%,
+   f0-insensitive): locking equalizes neighbors, which symmetrizes
+   flows, which raises the gate variable. And the same statistics
+   are impotent as maintenance: the honest-instrument chord gains
+   1.09× (152 vs 140) because gg·r follows the dying object down.
+4. **The chord with REAL identity does not die.** At the frozen
+   bound the UUD triad holds ret 0.50–0.63 to t=5000 — bonds alive,
+   books balanced (29 in / 31 out), mean load parked at the 0.466
+   sweet spot — superseding the CANTUS 8.3× bound with NO DEATH.
+   The strongest small-matter state the programme has measured in
+   an honest medium.
+5. **The door, in final measured form: identity must be BORN with
+   the matter and CARRIED by its exchanges — an ontological
+   property, not a statistical inference.** Three independent
+   measurements close every statistical alternative (no gap at slot
+   grain; flammable as law; impotent as maintenance). The concrete
+   next design: parcel-carried birth identity — a gid stamped at
+   the conversion door when a voice's atom fires, carried through
+   flight, registered at arrival; born at nucleation, dying with
+   the cell (no permanent index, no background); sgg growth gated
+   on gid-continuity. Equivalently, in S2 §2 terms: the amplitude's
+   mode label IS the identity. Acceptance target, now measured:
+   match or beat ret 0.5 @ t=5000 on the UUD chord with
+   SELF-carried identity, bath dark, battery green.
+6. **Nothing was adopted.** All knobs default inert; the kernel is
+   unchanged since commit 6549788 (arms were config-only); no new
+   reckoning is owed (the instrument frame is not a law candidate);
+   laws_V3 and every adoption remain the user's.
+
+**Recommendation (agent's, for the user to accept or reject):** open
+the PARCEL-IDENTITY design as the next lane (§5.5's gid mechanism),
+with the frozen-bound UUD as its acceptance target and this
+campaign's meter as its harness. It is the first design in three
+rounds whose gate variable the lock cannot manufacture.

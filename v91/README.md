@@ -218,6 +218,37 @@ is `REGISTRY.md`; standing concepts were adjusted inline the same
 day (RADIANCE §4.8 correction, OUTLOOK §2/§4, THEORY §2.2,
 carried/S2_CHANNEL.md addendum).]**
 
+## Status after the REGISTRY campaign (2026-08-05, user-directed: "do open exchange registry lane and do go for a UUD chord")
+
+**`REGISTRY.md` is the complete record** (pre-registration §0–§3,
+three registered design rounds §3.4/§3.5, results §4, verdict §5).
+The apparatus is IN both kernels, inert at defaults (`reg_tau=0
+reg_gate=0 reg_f0=0` purity-pinned; -O0 byte-equal to the
+pre-registry source including drift; battery ALL GREEN 93 twice;
+C≡Go byte-equal with the meter and both gate forms firing).
+
+Headlines: **(1)** the churn bath is a persistent-EXCHANGE medium —
+per-line balance EMERGES with the ledger window (bath ρ median
+0.49/0.68/0.79 at τ=10/30/100; 92% of slots flowing): the v90
+"detailed-rate balance without per-line balance" gains its scale,
+and balance is a unison instrument (pair ρ 0.95) while chord bonds
+run a standing directed current (UUD net ≈ 0.75·gross — the
+flux-machine circulation observed per link for the first time).
+**(2)** The lock manufactures its own gate evidence: all four
+registry-gated self-growing combos ignite the bath (economy
+−60/−83%, f0-insensitive) — the third measured ignition of the
+statistical-gate family — and the same statistics are impotent as
+maintenance (honest-instrument UUD 152 vs control 140). **(3)** The
+UUD chord with ASSERTED identity does not die: ret 0.50–0.63 to
+t=5000, bonds alive, books balanced, mean load at the 0.466 sweet
+spot — superseding the CANTUS 8.3× bound. **(4)** The door in final
+measured form: **identity must be born with the matter and carried
+by its exchanges — ontological, not statistical** (three independent
+closures). Next lane recommended in §5: parcel-carried birth
+identity (gid at the conversion door, no background), acceptance
+target = the frozen-bound chord. Nothing adopted; decisions are the
+user's.
+
 ## Status after the pad + integration campaigns (2026-08-04, same day)
 
 User-directed sequels, all recorded in-tree: **`pad/`** (34 crazy

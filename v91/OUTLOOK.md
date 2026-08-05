@@ -207,6 +207,19 @@ believer-rounds generated AND killed hypotheses fast (the 5:3
   all gates under strong lock (all die together) — ring-locking laws
   need winding-sector bookkeeping (the v73 "spin = winding" motif
   arriving in the coherence sector).
+* **The REGISTRY campaign (same day, `REGISTRY.md`) closed the
+  statistical-identity family and set the constructive target:**
+  the bath is a persistent-EXCHANGE medium (per-line balance emerges
+  with ledger window — bath ρ median 0.49/0.68/0.79 at τ 10/30/100);
+  the flux-machine current is now observed per link (chord bonds run
+  net ≈ 0.75·gross); every slot-grain statistical gate is flammable
+  (the lock manufactures its own gate evidence — third ignition) and
+  impotent as maintenance (UUD 152 vs 140). The UUD chord with
+  ASSERTED identity holds ret 0.50–0.63 to t=5000, bonds alive,
+  books balanced — no death. **Identity must be ontological: born
+  with the matter, carried by its exchanges** — parcel gids / the
+  amplitude's mode label; acceptance target = the frozen-bound
+  chord.
 
 ## The one-paragraph position
 

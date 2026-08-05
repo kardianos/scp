@@ -178,8 +178,15 @@ the record):**
   cell-borne, −10× link-borne). Closure statistics cannot distinguish
   bond from churn; only IDENTITY can. **The exchange registry is
   promoted from "the door to exclusion" to the gate coherence itself
-  hangs on.** Active lane: `REGISTRY.md` (identity-carrying transfers;
-  cantus as carrier; the v1.1i instrument as honest-medium harness).
+  hangs on.** [EXECUTED 2026-08-05 — `REGISTRY.md`: slot-grain
+  statistical identity is closed from three sides (no gap — per-line
+  balance emerges with ledger window; flammable — the lock
+  manufactures its own gate evidence, third ignition; impotent as
+  maintenance — 152 vs 140). The chord with ASSERTED identity holds
+  ret 0.5–0.63 to t=5000 with no death. **The requirement, final
+  measured form: identity is ontological — born with the matter,
+  carried by its exchanges (parcel gid at the door / the amplitude's
+  mode label), never inferred from rates.**]
 * **The chord constraint (geometry, derived).** At the radiance
   balance x̂* = 0.62 the unison rung (1.889) exceeds contact (1.790):
   unison matter cannot connect; only p+q ≥ 5 intervals fit. Any
