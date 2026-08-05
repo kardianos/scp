@@ -271,6 +271,49 @@ mortal objects — read mid-life series.
 (§4 is written only from executed runs; nothing above this line may
 be edited after the first run — corrections land as dated addenda.)
 
+### 3.5 Design round 3 (2026-08-05 — registered AFTER the §4.2 guard verdict, BEFORE the goal arms)
+
+**The guard rejected the entire §3.4 menu** (all four combos ignite
+the bath — §4.2). The mechanism, read off the logs: **the lock
+manufactures its own gate evidence.** Locking a neighborhood
+equalizes loads and pitches → opens gates → dense wants flow BOTH
+ways between equalized neighbors → reciprocal flow r rises → gauges
+grow → the lock spreads. Closure (CANTUS v1.1) and reciprocal flow
+(this round) are both DYNAMICAL quantities the lock improves; any
+slot-grain statistical gate built from such a quantity is flammable.
+**The self-assembly door therefore needs a gate variable the lock
+cannot manufacture** — identity carried from BIRTH (parcel gids
+stamped at fire, registered at the receiving door): the §0
+escalation branch is now the measured design requirement, recorded
+design-only per §3.3.
+
+**The goal arms restructure to the honest-instrument frame** (the
+CANTUS v1.1i shape — sanctioned in §3.2: seeding is instrument-only),
+which is immune by construction: `cant_grow=0` means NOTHING arms in
+the bath, ever; seeded gauges on the object's own bonds are then
+MAINTAINED by the registry (growth target gg·r on armed slots —
+coherence sustained by identity-continuous exchange, fading when the
+exchange stops). Form F-D, f0 = 2e-4, τ = 10 (the §3.4 tie rule and
+the measured bond scale: alive UUD bonds s ≈ 5e-4–2e-3 ⇒ r ≈
+0.7–0.9; a dying bond's s falls through f0 and its gauge honestly
+fades).
+
+Arms (all T=5000 except pair; k005 ambient; controls same T, same
+binary): **uud_ctl** (no cantus); **uud_seed_reg** (cant_seed=1
+cant_grow=0, k_cant=1 k_tune=0.2 cant_tau=50, reg_gate=2) — THE
+measurement; **uud_seed_plain** (same, reg_gate=0 — the v1.1i
+reference: does registry maintenance beat plain gate-tracking?);
+**uud_frozen** (same, cant_tau=1e18 — the family bound at this T);
+**pair_seed_reg** vs **pair_ctl** (T=1200; the P-REG6 50% bar);
+**i5_seed_reg** vs **i5_ctl** (measurement only — winding wall).
+
+Bars: **P-REG5′** uud_seed_reg t_half ≥ 1400 (10× control 140);
+report against seed_plain (maintenance value), frozen (bound), and
+the CANTUS T=2000 bound 1160. **P-REG6′** pair_seed_reg retention
+≥ 50% at T=1200. Medium honesty needs no bar — it is structural
+(cant_grow=0; the §4.1 P-Hi1 precedent: all-zero gauges are a
+physical no-op, bath byte-identical).
+
 ### 4.1 Meter arms M1–M4 (reg_gate=0; logs `runs/registry/m*_t*.log`)
 
 Apparatus verification first: defaults byte-identical to the
@@ -305,6 +348,28 @@ nothing.)
 | unison pair 0.47 | 0.014–0.062 sustained | 0.24–0.94 (τ10, chunky); 0.94 (τ30) | standing exchange 200–900× bath median; balance visible on the τ30 ledger |
 | UUD triad | 1–4e-3 early, decaying | 0.32–0.49 both τ | **standing DIRECTED current — net ≈ 0.75·gross**: the flux-machine circulation observed per link; first UD bond goes SILENT at t≈40–50 (the D-drain), triad ledger dark by t≈100–140 (= control t_half) |
 | i5 ring (unison) | 0.005–0.036 | med 0.6–0.95, q25 dips ~0 | quasi-balanced with one-way episodes |
+
+### 4.2 The vacuum guard as selector (§3.4 menu) — ALL FOUR COMBOS REJECTED
+
+Bare bath T=480, full stack live (k005 + k_cant=1 k_tune=0.2
+cant_tau=50 cant_grow=1, reg_tau=10), logs `runs/registry/g_*.log`;
+control h4_ctl: cond 2203.97, rad 2016.22:
+
+| combo | cond | rad | nlock | a_max | tune_total |
+|---|---|---|---|---|---|
+| F-B f0=2e-4 | 862 (−61%) | 351 (−83%) | 2637 | 0.992 | 9615 |
+| F-B f0=5e-4 | 874 (−60%) | 366 (−82%) | 2618 | 0.988 | 9096 |
+| F-D f0=2e-4 | 831 (−62%) | 313 (−84%) | 2636 | 0.993 | 10553 |
+| F-D f0=5e-4 | 862 (−61%) | 347 (−83%) | 2635 | 0.991 | 9910 |
+
+Every bar failed (economy −60/−83% vs the ±10% band; tune 9–10.5k vs
+≤1000; nlock at the v1-crystallization level ~2640; a_max 0.99 vs
+< 0.5). The f0 doubling moved nothing — the warm tail is not a
+static population the threshold can cut; the lock RAISES bath flows
+to bond scale as it spreads (the §3.5 flammability mechanism). This
+is the third measured ignition of a self-growing coherence rule
+(v1 closure/cell-borne, v1.1 closure/link-borne, registry
+flow/link-borne) — the family verdict is in §3.5 and the lane's §5.
 
 **Verdicts:** P-REG1 **FAIL as registered** (bath ρ median 0.49–0.68
 ≫ 0.3 at every warmed τ; the two discoveries and the amended

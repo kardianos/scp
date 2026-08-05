@@ -1,0 +1,29 @@
+# freecell — v89 free-cell substance test (exp=ring)
+# laws = laws_V2g VERBATIM (defaults): C=1 w1=1.65 w2=2.9 q_detune=1.2
+# gamma_res=0.25 gamma_res_m=0.1 p_gate=8 lock_floor=0.005 k_dep=1.2 k_dep_m=2 cap=2.5
+# e_s0=1 es_floor=0.05 e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
+# comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
+# quant_A0=1.15 quant_mode=2 (A0eff=1.15)
+# v91 radiance (laws_V3r candidate A): k_rad=0.05 p_rad=4 rad_clock=0
+# v91 cantus (coherent-channel candidate B): k_cant=0 k_tune=0 cant_tau=50 cant_seed=0 cant_grow=1
+# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=0 reg_gate=0 reg_f0=0
+# GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
+# bath=1 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=16 dt=0.02 T=5000 seed=20260802 diag_every=200
+# JAM sweeps=800 max_step=1.402e-04 (tol 1.0e-04, k_end=0.0010) — witness for the settle
+# CARVE removed 67 bath cells (clear=2.89)
+# SEED ring: n=6 x=0.4700 d*=1.694293 d_edge=1.694293 edges=6
+# SEED noise: amp=0.15 (e1-class churn)
+# INIT NC=2639 slots=25100 live=20160 phi_nom=1.6658 z_live=15.28 dbar=1.4113 sigma_d=14.80% E0=2841.496582331
+#
+# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+t=    0.00 +0.00e+00 | 1.6658 15.28  20160    0      0      0 | 1.4113 14.80 | 0.00e+00 0.00e+00 |   7.0500 1.0000  0.0000  1.6943 0.167  1.33 | edge_dev mean=0.0000 max=0.0000 gg=0.0000 shape_dev=0.0000 xbar=0.4700
+# CONVTAG t=0.00 rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
+t=    4.00 -1.60e-16 | 1.6658 15.65  20654    3   1514   1585 | 1.4260 14.74 | 4.54e-03 8.49e-03 |   7.0455 0.9994  0.0751  1.3241 1.000 12.17 | edge_dev mean=0.1657 max=0.2000 gg=0.6805 shape_dev=1.1711 xbar=0.4690
+# CONVTAG t=4.00 rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
+t=    8.00 -3.20e-16 | 1.6657 15.87  20936    4   2246   2319 | 1.4309 14.77 | 1.91e-03 4.02e-03 |   7.0361 0.9980  0.0862  1.3156 1.000 13.50 | edge_dev mean=0.1782 max=0.1966 gg=0.6380 shape_dev=1.2252 xbar=0.4714
+# CONVTAG t=8.00 rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
+t=   12.00 -3.20e-16 | 1.6658 16.05  21174    3   2829   2845 | 1.4344 14.79 | 1.12e-03 4.28e-03 |   7.0270 0.9967  0.0993  1.2992 1.000 13.67 | edge_dev mean=0.1830 max=0.2089 gg=0.6136 shape_dev=1.2723 xbar=0.4683
+# CONVTAG t=12.00 rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
+t=   16.00 -3.20e-16 | 1.6658 16.14  21298   18   3273   3251 | 1.4364 14.81 | 1.62e-03 3.98e-03 |   7.0193 0.9956  0.1129  1.2836 1.000 13.50 | edge_dev mean=0.1947 max=0.2215 gg=0.5585 shape_dev=1.3054 xbar=0.4678
+# CONVTAG t=16.00 rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
