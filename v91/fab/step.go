@@ -521,6 +521,110 @@ func (s *Sim) step() {
 		}
 	}
 
+	// pass H: v91 CANTUS (coherent-channel candidate B, CANTUS.md) —
+	// mirror of the C kernel's pass H, operation for operation. See
+	// kernel/freecell.c for the full rationale comment.
+	if P.KCant > 0 || P.KTune > 0 {
+		ktau := 1.0
+		if P.CantTau > dt {
+			ktau = dt / P.CantTau
+		}
+		for i := 0; i < s.NC; i++ {
+			s.th2s[i] = s.th2[i]
+			s.supH[i] = 0
+			s.dthH[i] = 0
+		}
+		for i := 0; i < s.NC; i++ {
+			for q2 := s.cls[i]; q2 < s.cls[i+1]; q2++ {
+				sl := s.clidx[q2]
+				if s.sli[sl] != i {
+					continue // visit once, from i
+				}
+				if s.sst[sl] == sFree || s.sA[sl] <= 0 {
+					continue
+				}
+				j := s.slj[sl]
+				if s.Em[i] <= 1e-15 || s.Em[j] <= 1e-15 {
+					continue
+				}
+				pp := float64(s.slp[sl])
+				qq := float64(s.slq[sl])
+				d := s.sd[sl]
+				psF := wrapPi(qq*s.th2s[i] - qq*s.w2e[i]*d/P.C - pp*s.th2s[j])
+				psB := wrapPi(pp*s.th2s[j] - pp*s.w2e[j]*d/P.C - qq*s.th2s[i])
+				gg := s.gateOf(psF) * s.gateOf(psB)
+				if gg > s.supH[i] {
+					s.supH[i] = gg
+				}
+				if gg > s.supH[j] {
+					s.supH[j] = gg
+				}
+				amp := math.Sqrt(s.ca[i] * s.ca[j])
+				if amp <= 0 {
+					continue
+				}
+				if P.KCant > 0 {
+					e := 0.5 * wrapPi(psF-psB)
+					wl := P.KCant * dt * amp
+					n2q := pp*pp + qq*qq
+					s.dthH[i] -= wl * (qq / n2q) * e
+					s.dthH[j] += wl * (pp / n2q) * e
+				}
+				if P.KTune > 0 {
+					ui := s.Em[i]/P.Cap - s.cxl[i]
+					uj := s.Em[j]/P.Cap - s.cxl[j]
+					J := P.KTune * dt * amp * P.Cap * (ui - uj)
+					src, dst := i, j
+					if J <= 0 {
+						src, dst = j, i
+					}
+					mag := math.Abs(J)
+					av := 0.98 * s.Em[src]
+					if mag > av {
+						mag = av
+					}
+					freec := P.Cap - (s.Em[dst] + s.Ee[dst])
+					if freec < 0 {
+						freec = 0
+					}
+					if mag > freec {
+						mag = freec
+					}
+					if mag > 0 {
+						s.Em[src] -= mag
+						s.Em[dst] += mag
+						s.tuneTotal += mag
+						if P.P1Meter != 0 {
+							// P1 site H: within-mode current src->dst over
+							// the full link (deposit+arrival telescoped)
+							m := mag * d
+							if src != i {
+								m = -m
+							}
+							s.p1fl[0] += m * s.sux[sl]
+							s.p1fl[1] += m * s.suy[sl]
+							s.p1fl[2] += m * s.suz[sl]
+						}
+					}
+				}
+			}
+		}
+		for i := 0; i < s.NC; i++ {
+			if s.dthH[i] != 0 {
+				s.th2[i] += s.dthH[i]
+			}
+			s.cxl[i] += ktau * (s.Em[i]/P.Cap - s.cxl[i])
+			a := s.ca[i] + ktau*(s.supH[i]-s.ca[i])
+			if a < 0 {
+				a = 0
+			}
+			if a > 1 {
+				a = 1
+			}
+			s.ca[i] = a
+		}
+	}
+
 	// pass D: MOTION — the free-cell core. Bond displacements (Jacobi
 	// buffered, ±u_hat/2) + contact repulsion, overdamped.
 	if P.FreezeGeo == 0 {

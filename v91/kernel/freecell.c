@@ -139,6 +139,18 @@ typedef struct {
      * routed like evaporation. k_rad=0 => V2g byte-exactly. --- */
     double k_rad, p_rad;
     int    rad_clock;
+    /* --- v91 LAW CANDIDATE B (CANTUS, coherent channel): the
+     * superimposed harmonic-lock field (CANTUS.md; user-directed
+     * 2026-08-04, "atoms are NOT cells"). Per-cell order parameter
+     * ca (lives on the cells' own bonds, no background, no energy)
+     * + holdings memory cxl. Pass H: (a) Kuramoto lock on the matter
+     * CLOCKS th2 correcting the differential ladder-closure error
+     * (never the wants — the anti-kappa_reac decision C-D1); (b)
+     * within-mode retuning current on holdings driven by the
+     * memory-deviation difference (pairwise-conserving; flavor-
+     * preserving). k_cant=0 && k_tune=0 => byte-identical step. --- */
+    double k_cant, k_tune, cant_tau;
+    int    cant_seed;
     int    qatom_every;   /* apparatus (print-only): QATOM sampler period */
     /* --- freecell geometry sector (apparatus, not law) --- */
     double cfac;          /* candidate rule d < cfac*(ri+rj)  (LIVEFAB) */
@@ -252,6 +264,7 @@ static void cfg_defaults(void)
     P.mob_sym = 1; P.mob_floor = 0.004; P.field_J = 1.8;
     P.quant_A0 = 1.15; P.quant_mode = 2;
     P.k_rad = 0; P.p_rad = 4; P.rad_clock = 0;
+    P.k_cant = 0; P.k_tune = 0; P.cant_tau = 50; P.cant_seed = 0;
     P.qatom_every = 200;
     /* freecell geometry */
     P.cfac = 1.15; P.k_rep = 1.0; P.mob_geo = 1.0; P.kappa_bond = 1.0;
@@ -335,6 +348,10 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "k_rad")) P.k_rad = atof(v);
     else if (!strcmp(k, "p_rad")) P.p_rad = atof(v);
     else if (!strcmp(k, "rad_clock")) P.rad_clock = atoi(v);
+    else if (!strcmp(k, "k_cant")) P.k_cant = atof(v);
+    else if (!strcmp(k, "k_tune")) P.k_tune = atof(v);
+    else if (!strcmp(k, "cant_tau")) P.cant_tau = atof(v);
+    else if (!strcmp(k, "cant_seed")) P.cant_seed = atoi(v);
     else if (!strcmp(k, "qatom_every")) P.qatom_every = atoi(v);
     else if (!strcmp(k, "cfac")) P.cfac = atof(v);
     else if (!strcmp(k, "k_rep")) P.k_rep = atof(v);
@@ -545,6 +562,8 @@ static unsigned char *pin;   /* apparatus fixture: pass D skips pinned cells */
 static unsigned char *scond; /* condensation-active override (DS tier 1 screen) */
 static double *fxb, *fyb, *fzb;      /* geometric force gather buffers  */
 static double *rngbuf, *nsnap, *th2s;
+/* v91 cantus state + pass-H buffers (allocated always; zero when off) */
+static double *ca_, *cxl_, *supH, *dthH;
 
 /* channels — PERSISTENT SLOTS with identity (the birth/death ledger).
  * A slot is FREE, ALIVE (in the candidate set), or DYING (out of the
@@ -618,6 +637,7 @@ static double bin_sz = 0;
 /* conversion ledgers */
 static double rough_total = 0, cond_total = 0, evap_total = 0, backs_total = 0;
 static double rad_total = 0;   /* v91 graded sub-cap radiance */
+static double tune_total = 0;  /* v91 cantus within-mode retune |J| ledger */
 static double A0eff = 0;
 static long qfire_n = 0;
 static double sim_t = 0;
@@ -734,6 +754,8 @@ static void alloc_all(int nc)
     rngbuf = malloc(6 * (size_t)nc * sizeof(double));
     nsnap = malloc(6 * (size_t)nc * sizeof(double));
     th2s = malloc(nc * sizeof(double));
+    ca_ = calloc(nc, sizeof(double)); cxl_ = calloc(nc, sizeof(double));
+    supH = calloc(nc, sizeof(double)); dthH = calloc(nc, sizeof(double));
     cls_ = malloc((nc + 1) * sizeof(int));
     clidx = malloc((size_t)2 * NLMAX * sizeof(int));
 
@@ -1254,6 +1276,89 @@ static void step(void)
             if (slem[sslot] <= 1e-17) { slem[sslot] = 0; slph[sslot] = 0; }
             else if (take <= 0) slph[sslot] = 0;
             else slph[sslot] -= 1.0;
+        }
+    }
+
+    /* pass H: v91 CANTUS (coherent-channel candidate B, CANTUS.md).
+     * The superimposed harmonic-lock field: ca = per-cell order
+     * parameter (low-passed best two-sided gate quality — grows only
+     * where locked exchange PERSISTS, dies with the bonds; no
+     * background, no energy); cxl = holdings memory (each voice's
+     * remembered part in the chord — R-D1-aligned: what radiance
+     * reads). (a) the lock corrects the DIFFERENTIAL ladder-closure
+     * error on the matter clocks th2 (the common error is pure
+     * geometry — the bond walk's job; the phase sum contains no
+     * phase). (b) the within-mode retune current moves holdings
+     * along links on the memory-DEVIATION difference (fast piles
+     * flatten; slow chord structure/flavor untouched), pairwise-
+     * conserving, unquantized (within a mode — the standing law),
+     * COE-metered. Slots visited once from the lower endpoint in
+     * CSR-canonical order (the pass-4/5 convention, A/B-mirrored).
+     * k_cant=0 && k_tune=0 => this pass does not execute. */
+    if (P.k_cant > 0 || P.k_tune > 0) {
+        double ktau = P.cant_tau > dt ? dt / P.cant_tau : 1.0;
+        for (int i = 0; i < NC; i++) {
+            th2s[i] = th2[i];
+            supH[i] = 0; dthH[i] = 0;
+        }
+        for (int i = 0; i < NC; i++) {
+            for (int q2 = cls_[i]; q2 < cls_[i + 1]; q2++) {
+                int s = clidx[q2];
+                if (sli[s] != i) continue;       /* visit once, from i */
+                if (sst[s] == S_FREE || sA[s] <= 0) continue;
+                int j = slj[s];
+                if (Em[i] <= 1e-15 || Em[j] <= 1e-15) continue;
+                double pp = slp[s], qq = slq[s];
+                double d = sd[s];
+                double ps_f = wrap_pi(qq*th2s[i] - qq*w2e[i]*d/P.C - pp*th2s[j]);
+                double ps_b = wrap_pi(pp*th2s[j] - pp*w2e[j]*d/P.C - qq*th2s[i]);
+                double gg = gate_of(ps_f) * gate_of(ps_b);
+                if (gg > supH[i]) supH[i] = gg;
+                if (gg > supH[j]) supH[j] = gg;
+                double amp = sqrt(ca_[i] * ca_[j]);
+                if (amp <= 0) continue;
+                if (P.k_cant > 0) {
+                    double e = 0.5 * wrap_pi(ps_f - ps_b);
+                    double wl = P.k_cant * dt * amp;
+                    double n2q = pp * pp + qq * qq;
+                    dthH[i] -= wl * (qq / n2q) * e;
+                    dthH[j] += wl * (pp / n2q) * e;
+                }
+                if (P.k_tune > 0) {
+                    double ui = Em[i] / P.cap - cxl_[i];
+                    double uj = Em[j] / P.cap - cxl_[j];
+                    double J = P.k_tune * dt * amp * P.cap * (ui - uj);
+                    int src = J > 0 ? i : j, dst = J > 0 ? j : i;
+                    double mag = fabs(J);
+                    double av = 0.98 * Em[src];
+                    if (mag > av) mag = av;
+                    double freec = P.cap - (Em[dst] + Ee[dst]);
+                    if (freec < 0) freec = 0;
+                    if (mag > freec) mag = freec;
+                    if (mag > 0) {
+                        Em[src] -= mag;
+                        Em[dst] += mag;
+                        tune_total += mag;
+                        if (P.p1_meter) {
+                            /* P1 site H: within-mode current src->dst
+                             * over the full link (deposit+arrival
+                             * telescoped) */
+                            double m = (src == i ? 1.0 : -1.0) * mag * d;
+                            p1fl[0] += m * sux[s];
+                            p1fl[1] += m * suy[s];
+                            p1fl[2] += m * suz[s];
+                        }
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < NC; i++) {
+            if (dthH[i] != 0) th2[i] += dthH[i];
+            cxl_[i] += ktau * (Em[i] / P.cap - cxl_[i]);
+            double a = ca_[i] + ktau * (supH[i] - ca_[i]);
+            if (a < 0) a = 0;
+            if (a > 1) a = 1;
+            ca_[i] = a;
         }
     }
 
@@ -2205,6 +2310,8 @@ int main(int argc, char **argv)
     printf("# quant_A0=%g quant_mode=%d (A0eff=%g)\n", P.quant_A0, P.quant_mode, A0eff);
     printf("# v91 radiance (laws_V3r candidate A): k_rad=%g p_rad=%g rad_clock=%d\n",
            P.k_rad, P.p_rad, P.rad_clock);
+    printf("# v91 cantus (coherent-channel candidate B): k_cant=%g k_tune=%g cant_tau=%g cant_seed=%d\n",
+           P.k_cant, P.k_tune, P.cant_tau, P.cant_seed);
     printf("# GEOMETRY (apparatus): cfac=%g k_rep=%g mob_geo=%g kappa_bond=%g freeze_geo=%d\n",
            P.cfac, P.k_rep, P.mob_geo, P.kappa_bond, P.freeze_geo);
     printf("# bath=%d bath_frac=%g jam_sweeps=%d jam_k=%g L=%g dt=%g T=%g seed=%lu diag_every=%d\n",
@@ -2946,6 +3053,17 @@ int main(int argc, char **argv)
                nt, P.tag_r);
     }
 
+    /* v91 cantus init: holdings memory starts AT the seeded part
+     * (no startup retune transient); cant_seed=1 arms tagged object
+     * voices at full amplitude (apparatus; default = self-growth) */
+    for (int i = 0; i < NC; i++) cxl_[i] = Em[i] / P.cap;
+    if (P.cant_seed) {
+        int nseed = 0;
+        for (int i = 0; i < NC; i++)
+            if (tag[i]) { ca_[i] = 1.0; nseed++; }
+        printf("# SEED cantus: ca=1 on %d tagged voices\n", nseed);
+    }
+
     /* initial radii + topology + ledger */
     for (int i = 0; i < NC; i++) {
         double ratio = Es[i] / P.e_s0;
@@ -3163,6 +3281,17 @@ int main(int argc, char **argv)
             if (P.slit_obj || P.convtag)
                 printf("# CONVTAG t=%.2f rough=%.6f cond=%.6f evap=%.6f backs=%.6f\n",
                        sim_t, ct_rough, ct_cond, ct_evap, ct_backs);
+            if (P.k_cant > 0 || P.k_tune > 0) {
+                double at = 0, am = 0, xt = 0; int ntg = 0, nl = 0;
+                for (int i2 = 0; i2 < NC; i2++) {
+                    if (ca_[i2] > am) am = ca_[i2];
+                    if (ca_[i2] > 0.5) nl++;
+                    if (tag[i2]) { at += ca_[i2]; xt += cxl_[i2]; ntg++; }
+                }
+                printf("# CANT t=%.2f a_tag=%.4f a_max=%.4f xl_tag=%.4f nlock=%d tune=%.6f\n",
+                       sim_t, ntg ? at / ntg : 0, am, ntg ? xt / ntg : 0,
+                       nl, tune_total);
+            }
         }
         if (P.snap_every > 0 && P.snap_dir[0] && st % P.snap_every == 0)
             write_fcs(st / P.snap_every);
@@ -3219,6 +3348,16 @@ int main(int argc, char **argv)
             double cd = 0, cf = 0;
             for (int ii = 0; ii < NC; ii++) { cd += qcnvD[ii]; cf += qcnvF[ii]; }
             printf("# RESULT credit qcnvD=%.6f qcnvF=%.6f\n", cd, cf);
+        }
+        if (P.k_cant > 0 || P.k_tune > 0) {
+            double at = 0, am = 0, xt = 0; int ntg = 0, nl = 0;
+            for (int ii = 0; ii < NC; ii++) {
+                if (ca_[ii] > am) am = ca_[ii];
+                if (ca_[ii] > 0.5) nl++;
+                if (tag[ii]) { at += ca_[ii]; xt += cxl_[ii]; ntg++; }
+            }
+            printf("# RESULT cantus a_tag=%.4f a_max=%.4f xl_tag=%.4f nlock=%d tune_total=%.6f\n",
+                   ntg ? at / ntg : 0, am, ntg ? xt / ntg : 0, nl, tune_total);
         }
         if (P.slit_obj || P.convtag)
             /* net field capture at the occulter = cond - evap - rough + backs

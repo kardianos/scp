@@ -257,6 +257,8 @@ func (s *Sim) Run() {
 	fprintf(s.Out, "# quant_A0=%.6g quant_mode=%d (A0eff=%.6g)\n", P.QuantA0, P.QuantMode, s.A0eff)
 	fprintf(s.Out, "# v91 radiance (laws_V3r candidate A): k_rad=%.6g p_rad=%.6g rad_clock=%d\n",
 		P.KRad, P.PRad, P.RadClock)
+	fprintf(s.Out, "# v91 cantus (coherent-channel candidate B): k_cant=%.6g k_tune=%.6g cant_tau=%.6g cant_seed=%d\n",
+		P.KCant, P.KTune, P.CantTau, P.CantSeed)
 	fprintf(s.Out, "# GEOMETRY (apparatus): cfac=%.6g k_rep=%.6g mob_geo=%.6g kappa_bond=%.6g freeze_geo=%d\n",
 		P.Cfac, P.KRep, P.MobGeo, P.KappaBond, P.FreezeGeo)
 	fprintf(s.Out, "# bath=%d bath_frac=%.6g jam_sweeps=%d jam_k=%.6g L=%.6g dt=%.6g T=%.6g seed=%d diag_every=%d\n",
@@ -1237,6 +1239,22 @@ func (s *Sim) Run() {
 			nt, P.TagR)
 	}
 
+	// v91 cantus init: holdings memory starts AT the seeded part;
+	// cant_seed=1 arms tagged object voices at full amplitude
+	for i := 0; i < s.NC; i++ {
+		s.cxl[i] = s.Em[i] / P.Cap
+	}
+	if P.CantSeed != 0 {
+		nseed := 0
+		for i := 0; i < s.NC; i++ {
+			if s.tag[i] != 0 {
+				s.ca[i] = 1.0
+				nseed++
+			}
+		}
+		fprintf(s.Out, "# SEED cantus: ca=1 on %d tagged voices\n", nseed)
+	}
+
 	// initial radii + topology + ledger
 	for i := 0; i < s.NC; i++ {
 		ratio := s.Es[i] / P.Es0
@@ -1540,6 +1558,30 @@ func (s *Sim) Run() {
 				fprintf(s.Out, "# CONVTAG t=%.2f rough=%.6f cond=%.6f evap=%.6f backs=%.6f\n",
 					s.simT, s.ctRough, s.ctCond, s.ctEvap, s.ctBacks)
 			}
+			if P.KCant > 0 || P.KTune > 0 {
+				at, am, xt := 0.0, 0.0, 0.0
+				ntg, nl := 0, 0
+				for i2 := 0; i2 < s.NC; i2++ {
+					if s.ca[i2] > am {
+						am = s.ca[i2]
+					}
+					if s.ca[i2] > 0.5 {
+						nl++
+					}
+					if s.tag[i2] != 0 {
+						at += s.ca[i2]
+						xt += s.cxl[i2]
+						ntg++
+					}
+				}
+				atv, xtv := 0.0, 0.0
+				if ntg > 0 {
+					atv = at / float64(ntg)
+					xtv = xt / float64(ntg)
+				}
+				fprintf(s.Out, "# CANT t=%.2f a_tag=%.4f a_max=%.4f xl_tag=%.4f nlock=%d tune=%.6f\n",
+					s.simT, atv, am, xtv, nl, s.tuneTotal)
+			}
 		}
 		if P.SnapEvery > 0 && s.P.SnapDir != "" && st%P.SnapEvery == 0 {
 			s.writeFCS(snapIdx)
@@ -1633,6 +1675,30 @@ func (s *Sim) Run() {
 				cf += s.qcnvF[ii]
 			}
 			fprintf(s.Out, "# RESULT credit qcnvD=%.6f qcnvF=%.6f\n", cd, cf)
+		}
+		if P.KCant > 0 || P.KTune > 0 {
+			at, am, xt := 0.0, 0.0, 0.0
+			ntg, nl := 0, 0
+			for ii := 0; ii < s.NC; ii++ {
+				if s.ca[ii] > am {
+					am = s.ca[ii]
+				}
+				if s.ca[ii] > 0.5 {
+					nl++
+				}
+				if s.tag[ii] != 0 {
+					at += s.ca[ii]
+					xt += s.cxl[ii]
+					ntg++
+				}
+			}
+			atv, xtv := 0.0, 0.0
+			if ntg > 0 {
+				atv = at / float64(ntg)
+				xtv = xt / float64(ntg)
+			}
+			fprintf(s.Out, "# RESULT cantus a_tag=%.4f a_max=%.4f xl_tag=%.4f nlock=%d tune_total=%.6f\n",
+				atv, am, xtv, nl, s.tuneTotal)
 		}
 		if P.SlitObj != 0 || P.Convtag != 0 {
 			// net field capture at the occulter = cond - evap - rough + backs

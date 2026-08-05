@@ -49,6 +49,8 @@ type Sim struct {
 	scond               []uint8   // condensation-active override (clicks)
 	fxb, fyb, fzb       []float64 // geometric force gather buffers
 	rngbuf, nsnap, th2s []float64
+	// v91 cantus state + pass-H buffers (allocated always; zero when off)
+	ca, cxl, supH, dthH []float64
 
 	// channels — persistent slots with identity (birth/death ledger)
 	NLMAX, NSLOT                int
@@ -87,6 +89,7 @@ type Sim struct {
 	// conversion ledgers
 	roughTotal, condTotal, evapTotal, backsTotal float64
 	radTotal                                     float64 // v91 graded sub-cap radiance
+	tuneTotal                                    float64 // v91 cantus within-mode retune |J| ledger
 	A0eff                                        float64
 	qfireN                                       int64
 	simT                                         float64
@@ -398,6 +401,10 @@ func (s *Sim) allocAll(nc int) {
 	s.rngbuf = make([]float64, 6*nc)
 	s.nsnap = make([]float64, 6*nc)
 	s.th2s = make([]float64, nc)
+	s.ca = make([]float64, nc)
+	s.cxl = make([]float64, nc)
+	s.supH = make([]float64, nc)
+	s.dthH = make([]float64, nc)
 	s.cls = make([]int, nc+1)
 	s.clidx = make([]int, 2*s.NLMAX)
 

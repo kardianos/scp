@@ -268,6 +268,70 @@ measured curves, not by this expectation.
 
 Logs land in `runs/cantus/`, named `h<arm>_<config>.log`.
 
+### 3.2 Addendum (2026-08-04, post-wiring-probe, pre-campaign — dated; nothing above rewritten)
+
+The H0 wiring probes (pair vacuum x=0.62 and x=0.325, k_cant=1
+k_tune=0.2) and a re-read of the committed R-campaign log they pointed
+at expose a measured fact that re-aims the campaign:
+
+**The R-campaign's ring6@0.62 VACUUM arm was dead at birth.**
+`runs/r2/ring6x62_vac_k005.log` shows `slots=0, live=0` from t=0 to
+t=20000 — the six voices were NEVER connected. Mechanism, now derived:
+seeding a voice at x draws s_pull·x·cap from its own space store, so a
+vacuum-seeded voice has Es = e_s0 − s_pull·x·cap and radius
+r = r0·Es^{1/3}. At x=0.62: Es=0.7675, r≈0.778, candidate cutoff
+cfac·2r ≈ 1.790 < d*(0.62)=1.889. **The unison rung at the fixed
+point exceeds the candidate cutoff: unison matter at x̂\* cannot even
+CONNECT, let alone bond.** RADIANCE §4.8's "thermal atom-kick jitter
+breaks the gates" was the wrong mechanism attribution for that arm
+(nothing existed to break); OUTLOOK's empirical bond ceilings
+("exist only below x≈0.52") are this inequality, softened by Es
+breathing in live environments. Thresholds at vacuum-seed Es: lens
+contact 2r(x) crosses d*(x) near x≈0.30; the candidate cutoff
+cfac·2r(x) crosses near x≈0.52.
+
+**The chord consequence (new, pre-registered):** interval rungs
+shrink as p+q grows — d* = 2πmC/((p+q)·w) at matched pitch scale. At
+x̂\*=0.62 the unison m=1 rung (1.889) does not fit contact, but the
+FIFTH m=2 line (≈1.51 at chart loads) and every deeper consonance DO.
+**The comb admits only multi-pitch matter at the balance — atoms at
+x̂\* are forced to be chords, not unison choirs** ("atoms are not
+cells", now as a selection rule). Note the FCQ UUD chart at
+tri_xU=0.28 has mean load (0.28+0.28+0.837)/3 = 0.466 ≈ the
+INTEGRATION sweet spot, and a fifth pair at (0.35, 0.94) has mean
+0.645 ≈ x̂\* — the standing flavored objects already sit near the
+balance in the mean. The flux-machine picture sharpens: light voices
+absorb (headroom), the held fifth conducts, the heavy voice radiates
+(x⁴) — a two-temperature metabolizing atom.
+
+**Wiring-probe results (recorded):** (i) pair@0.62 vacuum: no
+eligible channel ever (support 0, ca decays exp(−t/τ) exactly, tune
+0) — the contact rule is respected; the lock cannot and does not
+reach out. (ii) pair@0.325 vacuum + noise + k005, cant_seed=0: ca
+self-grows 0→0.98 (P-H7 behaviour confirmed at probe level), tune
+fires (0.94 units over T=400), drift 1.0e-13, and the FIRST-SIGNAL
+numbers move the pre-registered way: holdings symmetric 0.940/0.941
+(control 0.810/0.972) and rung offset +0.026 vs control +0.096
+(3.7× tighter). Not yet a claim — single seed, probe length.
+
+**Amended arms (replacing the §3.1 rows where they conflict):**
+
+| arm | protocol (all + k005 radiance) | control |
+|---|---|---|
+| H1a | pair OF the bath (bath=1) x=0.47, noisy ambient, T=1200, k_cant ∈ {0, 0.3, 1, 3} × k_tune ∈ {0, 0.2} | k_cant=0 arm, same seed |
+| H1b | fifth pair vacuum+noise: pair_pp=3 pair_qq=2, x_U=0.28, x_D=0.8367 (chart), m=2, T=1200, grid as H1a | k_cant=0 arm |
+| H2a | ring6 x=0.47 VACUUM noise_amp=0.5 T=20000, selected point + k_cant=0 control (no committed control exists at 0.47 vacuum) | in-arm |
+| H2b | ring6x62 bath (as committed protocol) at selected — SECONDARY (skin-lock observation; unison interior cannot connect) | committed log |
+| H2c/d/e | unchanged (comp6, UUD, i5 — the PRIMARY life/death bars) | committed logs |
+| H3 | the chord at the balance: fifth pair (3:2, m=2) at (x_U, x_D) = (0.35, 0.94), bath, T=5000, selected point + k_cant=0 control — pre-registered: with cantus the chart holds (pitch ratio stays 3:2±2%, both voices alive, windowed in≈out); without, D drains/detunes | in-arm |
+
+P-H3 is restated onto H2a (x=0.47 vacuum): ≥5/6 ring channels alive
+(gg>0.5) at T=20000 at the selected point. Its control may also
+survive (the 0.325 vacuum k005 ring did) — if both live, the K1 bar
+moves entirely to the bath arms (H2c/d/e), where death is measured.
+P-H4's flux-machine ledger bar moves to H2e (i5) and H2c (comp6).
+P-H6 and all other predictions stand as written.
+
 ---
 
 ## 4. Results
