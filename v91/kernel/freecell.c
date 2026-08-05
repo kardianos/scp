@@ -562,8 +562,13 @@ static unsigned char *pin;   /* apparatus fixture: pass D skips pinned cells */
 static unsigned char *scond; /* condensation-active override (DS tier 1 screen) */
 static double *fxb, *fyb, *fzb;      /* geometric force gather buffers  */
 static double *rngbuf, *nsnap, *th2s;
-/* v91 cantus state + pass-H buffers (allocated always; zero when off) */
-static double *ca_, *cxl_, *supH, *dthH;
+/* v91 cantus state + pass-H buffers (allocated always; zero when off).
+ * v1.1 (CANTUS.md §3.3): the order parameter is LINK-BORNE — sgg_[s]
+ * is the slot's own gauge memory (low-passed two-sided gate quality;
+ * holds through lens blinks; dies with the slot). The per-cell
+ * amplitude is a pure diagnostic (cant_amp_of = max incident sgg). */
+static double *cxl_, *dthH;
+static double *sgg_;                 /* per-slot cantus amplitude       */
 
 /* channels — PERSISTENT SLOTS with identity (the birth/death ledger).
  * A slot is FREE, ALIVE (in the candidate set), or DYING (out of the
@@ -754,8 +759,8 @@ static void alloc_all(int nc)
     rngbuf = malloc(6 * (size_t)nc * sizeof(double));
     nsnap = malloc(6 * (size_t)nc * sizeof(double));
     th2s = malloc(nc * sizeof(double));
-    ca_ = calloc(nc, sizeof(double)); cxl_ = calloc(nc, sizeof(double));
-    supH = calloc(nc, sizeof(double)); dthH = calloc(nc, sizeof(double));
+    cxl_ = calloc(nc, sizeof(double));
+    dthH = calloc(nc, sizeof(double));
     cls_ = malloc((nc + 1) * sizeof(int));
     clidx = malloc((size_t)2 * NLMAX * sizeof(int));
 
@@ -771,6 +776,7 @@ static void alloc_all(int nc)
     sflux = calloc(NLMAX, sizeof(double));
     sldd = calloc(NLMAX, sizeof(double));
     swl = calloc(NLMAX, sizeof(double));
+    sgg_ = calloc(NLMAX, sizeof(double));
     sfluxd = calloc((size_t)2 * NLMAX, sizeof(double));
     freelist = malloc(NLMAX * sizeof(int));
     nfree = 0;
@@ -826,6 +832,7 @@ static int slot_new(int i, int j)
     sli[s] = i; slj[s] = j; sst[s] = S_ALIVE;
     slem[2*s] = slem[2*s+1] = 0; slph[2*s] = slph[2*s+1] = 0;
     slp[s] = 1; slq[s] = 1; sA[s] = 0; sldd[s] = 0; swl[s] = 0;
+    sgg_[s] = 0;                     /* cantus: a reborn bond starts mute */
     swant[2*s] = swant[2*s+1] = 0; sflux[s] = 0;
     hput(i, j, s);
     if (s >= NSLOT) NSLOT = s + 1;
@@ -1299,7 +1306,7 @@ static void step(void)
         double ktau = P.cant_tau > dt ? dt / P.cant_tau : 1.0;
         for (int i = 0; i < NC; i++) {
             th2s[i] = th2[i];
-            supH[i] = 0; dthH[i] = 0;
+            dthH[i] = 0;
         }
         for (int i = 0; i < NC; i++) {
             for (int q2 = cls_[i]; q2 < cls_[i + 1]; q2++) {
@@ -1313,9 +1320,10 @@ static void step(void)
                 double ps_f = wrap_pi(qq*th2s[i] - qq*w2e[i]*d/P.C - pp*th2s[j]);
                 double ps_b = wrap_pi(pp*th2s[j] - pp*w2e[j]*d/P.C - qq*th2s[i]);
                 double gg = gate_of(ps_f) * gate_of(ps_b);
-                if (gg > supH[i]) supH[i] = gg;
-                if (gg > supH[j]) supH[j] = gg;
-                double amp = sqrt(ca_[i] * ca_[j]);
+                /* v1.1: the LINK's own gauge memory (holds through
+                 * lens blinks — non-eligible steps skip this update) */
+                sgg_[s] += ktau * (gg - sgg_[s]);
+                double amp = sgg_[s];
                 if (amp <= 0) continue;
                 if (P.k_cant > 0) {
                     double e = 0.5 * wrap_pi(ps_f - ps_b);
@@ -1355,10 +1363,6 @@ static void step(void)
         for (int i = 0; i < NC; i++) {
             if (dthH[i] != 0) th2[i] += dthH[i];
             cxl_[i] += ktau * (Em[i] / P.cap - cxl_[i]);
-            double a = ca_[i] + ktau * (supH[i] - ca_[i]);
-            if (a < 0) a = 0;
-            if (a > 1) a = 1;
-            ca_[i] = a;
         }
     }
 
@@ -1626,6 +1630,19 @@ static void step(void)
 /* ------------------------------------------------------------------ */
 /* totals + diagnostics                                                */
 /* ------------------------------------------------------------------ */
+
+/* v91 cantus v1.1 diagnostic: a cell's amplitude = max incident
+ * live-slot gauge memory (pure meter; the physical field is sgg_) */
+static double cant_amp_of(int i)
+{
+    double a = 0;
+    for (int q = cls_[i]; q < cls_[i + 1]; q++) {
+        int s = clidx[q];
+        if (sst[s] == S_FREE) continue;
+        if (sgg_[s] > a) a = sgg_[s];
+    }
+    return a;
+}
 
 static double total_energy(void)
 {
@@ -3054,15 +3071,8 @@ int main(int argc, char **argv)
     }
 
     /* v91 cantus init: holdings memory starts AT the seeded part
-     * (no startup retune transient); cant_seed=1 arms tagged object
-     * voices at full amplitude (apparatus; default = self-growth) */
+     * (no startup retune transient) */
     for (int i = 0; i < NC; i++) cxl_[i] = Em[i] / P.cap;
-    if (P.cant_seed) {
-        int nseed = 0;
-        for (int i = 0; i < NC; i++)
-            if (tag[i]) { ca_[i] = 1.0; nseed++; }
-        printf("# SEED cantus: ca=1 on %d tagged voices\n", nseed);
-    }
 
     /* initial radii + topology + ledger */
     for (int i = 0; i < NC; i++) {
@@ -3070,6 +3080,16 @@ int main(int argc, char **argv)
         cr[i] = cr0[i] * cbrt(ratio > 0 ? ratio : 0);
     }
     topo_refresh();
+    /* v91 cantus v1.1: cant_seed=1 arms the BONDS between tagged
+     * voices at full gauge memory (apparatus; default = self-growth) */
+    if (P.cant_seed) {
+        int nseed = 0;
+        for (int s = 0; s < NSLOT; s++) {
+            if (sst[s] == S_FREE) continue;
+            if (tag[sli[s]] && tag[slj[s]]) { sgg_[s] = 1.0; nseed++; }
+        }
+        printf("# SEED cantus: sgg=1 on %d tagged-pair slots\n", nseed);
+    }
     for (int i = 0; i < NC; i++) { fxb[i] = fyb[i] = fzb[i] = 0; }
     E0_total = total_energy();
     births = deaths = beta_returns = 0; beta_energy = 0;
@@ -3284,9 +3304,10 @@ int main(int argc, char **argv)
             if (P.k_cant > 0 || P.k_tune > 0) {
                 double at = 0, am = 0, xt = 0; int ntg = 0, nl = 0;
                 for (int i2 = 0; i2 < NC; i2++) {
-                    if (ca_[i2] > am) am = ca_[i2];
-                    if (ca_[i2] > 0.5) nl++;
-                    if (tag[i2]) { at += ca_[i2]; xt += cxl_[i2]; ntg++; }
+                    double av = cant_amp_of(i2);
+                    if (av > am) am = av;
+                    if (av > 0.5) nl++;
+                    if (tag[i2]) { at += av; xt += cxl_[i2]; ntg++; }
                 }
                 printf("# CANT t=%.2f a_tag=%.4f a_max=%.4f xl_tag=%.4f nlock=%d tune=%.6f\n",
                        sim_t, ntg ? at / ntg : 0, am, ntg ? xt / ntg : 0,
@@ -3352,9 +3373,10 @@ int main(int argc, char **argv)
         if (P.k_cant > 0 || P.k_tune > 0) {
             double at = 0, am = 0, xt = 0; int ntg = 0, nl = 0;
             for (int ii = 0; ii < NC; ii++) {
-                if (ca_[ii] > am) am = ca_[ii];
-                if (ca_[ii] > 0.5) nl++;
-                if (tag[ii]) { at += ca_[ii]; xt += cxl_[ii]; ntg++; }
+                double av = cant_amp_of(ii);
+                if (av > am) am = av;
+                if (av > 0.5) nl++;
+                if (tag[ii]) { at += av; xt += cxl_[ii]; ntg++; }
             }
             printf("# RESULT cantus a_tag=%.4f a_max=%.4f xl_tag=%.4f nlock=%d tune_total=%.6f\n",
                    ntg ? at / ntg : 0, am, ntg ? xt / ntg : 0, nl, tune_total);

@@ -1244,16 +1244,6 @@ func (s *Sim) Run() {
 	for i := 0; i < s.NC; i++ {
 		s.cxl[i] = s.Em[i] / P.Cap
 	}
-	if P.CantSeed != 0 {
-		nseed := 0
-		for i := 0; i < s.NC; i++ {
-			if s.tag[i] != 0 {
-				s.ca[i] = 1.0
-				nseed++
-			}
-		}
-		fprintf(s.Out, "# SEED cantus: ca=1 on %d tagged voices\n", nseed)
-	}
 
 	// initial radii + topology + ledger
 	for i := 0; i < s.NC; i++ {
@@ -1264,6 +1254,21 @@ func (s *Sim) Run() {
 		s.cr[i] = s.cr0[i] * math.Cbrt(ratio)
 	}
 	s.topoRefresh()
+	// v91 cantus v1.1: cant_seed=1 arms the BONDS between tagged
+	// voices at full gauge memory (apparatus; default = self-growth)
+	if P.CantSeed != 0 {
+		nseed := 0
+		for sl := 0; sl < s.NSLOT; sl++ {
+			if s.sst[sl] == sFree {
+				continue
+			}
+			if s.tag[s.sli[sl]] != 0 && s.tag[s.slj[sl]] != 0 {
+				s.sgg[sl] = 1.0
+				nseed++
+			}
+		}
+		fprintf(s.Out, "# SEED cantus: sgg=1 on %d tagged-pair slots\n", nseed)
+	}
 	for i := 0; i < s.NC; i++ {
 		s.fxb[i], s.fyb[i], s.fzb[i] = 0, 0, 0
 	}
@@ -1562,14 +1567,15 @@ func (s *Sim) Run() {
 				at, am, xt := 0.0, 0.0, 0.0
 				ntg, nl := 0, 0
 				for i2 := 0; i2 < s.NC; i2++ {
-					if s.ca[i2] > am {
-						am = s.ca[i2]
+					av := s.cantAmpOf(i2)
+					if av > am {
+						am = av
 					}
-					if s.ca[i2] > 0.5 {
+					if av > 0.5 {
 						nl++
 					}
 					if s.tag[i2] != 0 {
-						at += s.ca[i2]
+						at += av
 						xt += s.cxl[i2]
 						ntg++
 					}
@@ -1680,14 +1686,15 @@ func (s *Sim) Run() {
 			at, am, xt := 0.0, 0.0, 0.0
 			ntg, nl := 0, 0
 			for ii := 0; ii < s.NC; ii++ {
-				if s.ca[ii] > am {
-					am = s.ca[ii]
+				av := s.cantAmpOf(ii)
+				if av > am {
+					am = av
 				}
-				if s.ca[ii] > 0.5 {
+				if av > 0.5 {
 					nl++
 				}
 				if s.tag[ii] != 0 {
-					at += s.ca[ii]
+					at += av
 					xt += s.cxl[ii]
 					ntg++
 				}

@@ -332,6 +332,55 @@ moves entirely to the bath arms (H2c/d/e), where death is measured.
 P-H4's flux-machine ledger bar moves to H2e (i5) and H2c (comp6).
 P-H6 and all other predictions stand as written.
 
+### 3.3 Addendum (2026-08-04, mid-campaign — v1 measured, v1.1 registered BEFORE its runs)
+
+**v1 verdicts (cell-borne amplitude, support = max instantaneous gg):**
+
+* **P-H8 FAILS at (1, 0.2, 50) — the bath crystallizes.** In every v1
+  bath arm, nlock climbed to ~2450–2650 of ~2700 cells by t≈250 with
+  tune_total ~25–32k: a medium-wide Kuramoto transition. Mechanism:
+  support = max-over-links of INSTANTANEOUS gg lets roaming transient
+  closures (P(gg>0.5) ~ 1% per link-draw × ~15 links × τ integration)
+  pump every cell's ca; the lock then raises closure globally —
+  positive feedback, and the medium freezes. The v1 objects "survive"
+  their controls (i5 ret 0.996 at t=276 vs control t_half 230), but
+  by rewriting the world — exactly what P-H8 exists to catch. v1 at
+  the expected point is REJECTED by the pre-registered selection rule.
+* **Lens-blink starvation (vacuum 0.47):** channels breathe across
+  the lens boundary; at A=0 no gate exists, support reads 0, and ca
+  decays even on a locked-from-birth ring (cant_seed=1: a 1.0 → 0.53
+  by t=80). The one edge that stayed open in h2a_sel ended at
+  **gg = 0.723 ≈ the predicted common-mode ceiling 0.766** — the
+  differential lock performs exactly as designed WHERE a channel
+  persists; the cell-borne amplitude just cannot ride the blinks.
+
+**v1.1 (registered now, before any v1.1 run): the gauges live on the
+LINKS.** The order parameter moves from cells to bonds — per-slot
+low-passed two-sided gate quality:
+
+    eligible link (sA>0, both Em>1e-15):  sgg_s += (dt/cant_tau)·(gg − sgg_s)
+    lock + tune amplitude for that link:  amp = sgg_s   (replaces sqrt(ca_i·ca_j))
+    alive-but-closed slot (lens blink):   sgg_s HOLDS (no decay)
+    slot death (rule α frees it):         memory gone; rebirth starts at 0
+    cant_seed=1:                          sgg=1 on slots between tagged voices at init
+
+This is the user's phrase made literal: the superimposed field is
+fitted to the cells and **holds its own gauges** — one gauge per bond,
+the chord chart link-borne. Cell-level ca becomes a pure diagnostic
+(max incident sgg). Why it repairs both v1 failures: a roaming
+transient never builds any SINGLE link's average (bath-link E[gg] ≈
+0.04 at uniform ψ ⇒ lock gain 22× below a true bond's ~0.9), and a
+blinking bond REMEMBERS through the blink instead of starving.
+
+**Re-registered predictions for v1.1 (before its first run):**
+* **P-H8′:** bath arms at (1, 0.2, 50): nlock < 5% of NC; global
+  cond/rad within ±15% of the k_cant=0 baseline; tune_total ≤ a few
+  units per 480 t.u. (vs v1's ~30k per 280).
+* **P-H3′ (squeezed vacuum ring):** v1.1 h2a_sel holds ALL SIX edges
+  near the common-mode ceiling (gg ≈ 0.6–0.8) at T=20000; the
+  k_cant=0 control stays at gg ≈ 0 (differential error free-runs).
+* All other P-H bars unchanged, now scored on v1.1 arms.
+
 ---
 
 ## 4. Results

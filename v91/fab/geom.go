@@ -124,6 +124,7 @@ func (s *Sim) slotNew(i, j int) int {
 	s.sA[sl] = 0
 	s.sldd[sl] = 0
 	s.swl[sl] = 0
+	s.sgg[sl] = 0 // cantus: a reborn bond starts mute
 	s.swant[2*sl] = 0
 	s.swant[2*sl+1] = 0
 	s.sflux[sl] = 0

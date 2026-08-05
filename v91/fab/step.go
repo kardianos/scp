@@ -531,7 +531,6 @@ func (s *Sim) step() {
 		}
 		for i := 0; i < s.NC; i++ {
 			s.th2s[i] = s.th2[i]
-			s.supH[i] = 0
 			s.dthH[i] = 0
 		}
 		for i := 0; i < s.NC; i++ {
@@ -553,13 +552,10 @@ func (s *Sim) step() {
 				psF := wrapPi(qq*s.th2s[i] - qq*s.w2e[i]*d/P.C - pp*s.th2s[j])
 				psB := wrapPi(pp*s.th2s[j] - pp*s.w2e[j]*d/P.C - qq*s.th2s[i])
 				gg := s.gateOf(psF) * s.gateOf(psB)
-				if gg > s.supH[i] {
-					s.supH[i] = gg
-				}
-				if gg > s.supH[j] {
-					s.supH[j] = gg
-				}
-				amp := math.Sqrt(s.ca[i] * s.ca[j])
+				// v1.1: the LINK's own gauge memory (holds through
+				// lens blinks — non-eligible steps skip this update)
+				s.sgg[sl] += ktau * (gg - s.sgg[sl])
+				amp := s.sgg[sl]
 				if amp <= 0 {
 					continue
 				}
@@ -614,14 +610,6 @@ func (s *Sim) step() {
 				s.th2[i] += s.dthH[i]
 			}
 			s.cxl[i] += ktau * (s.Em[i]/P.Cap - s.cxl[i])
-			a := s.ca[i] + ktau*(s.supH[i]-s.ca[i])
-			if a < 0 {
-				a = 0
-			}
-			if a > 1 {
-				a = 1
-			}
-			s.ca[i] = a
 		}
 	}
 

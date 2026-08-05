@@ -49,8 +49,11 @@ type Sim struct {
 	scond               []uint8   // condensation-active override (clicks)
 	fxb, fyb, fzb       []float64 // geometric force gather buffers
 	rngbuf, nsnap, th2s []float64
-	// v91 cantus state + pass-H buffers (allocated always; zero when off)
-	ca, cxl, supH, dthH []float64
+	// v91 cantus state + pass-H buffers (allocated always; zero when
+	// off). v1.1: the order parameter is LINK-BORNE (sgg, per slot);
+	// the per-cell amplitude is a pure diagnostic (cantAmpOf).
+	cxl, dthH []float64
+	sgg       []float64
 
 	// channels — persistent slots with identity (birth/death ledger)
 	NLMAX, NSLOT                int
@@ -204,6 +207,22 @@ func (s *Sim) fold(x float64) float64 {
 		x += s.P.L
 	}
 	return x
+}
+
+// v91 cantus v1.1 diagnostic: a cell's amplitude = max incident
+// live-slot gauge memory (pure meter; the physical field is sgg)
+func (s *Sim) cantAmpOf(i int) float64 {
+	a := 0.0
+	for q := s.cls[i]; q < s.cls[i+1]; q++ {
+		sl := s.clidx[q]
+		if s.sst[sl] == sFree {
+			continue
+		}
+		if s.sgg[sl] > a {
+			a = s.sgg[sl]
+		}
+	}
+	return a
 }
 
 func (s *Sim) gateOf(dphi float64) float64 { // cellfab.c:638 verbatim
@@ -401,9 +420,7 @@ func (s *Sim) allocAll(nc int) {
 	s.rngbuf = make([]float64, 6*nc)
 	s.nsnap = make([]float64, 6*nc)
 	s.th2s = make([]float64, nc)
-	s.ca = make([]float64, nc)
 	s.cxl = make([]float64, nc)
-	s.supH = make([]float64, nc)
 	s.dthH = make([]float64, nc)
 	s.cls = make([]int, nc+1)
 	s.clidx = make([]int, 2*s.NLMAX)
@@ -424,6 +441,7 @@ func (s *Sim) allocAll(nc int) {
 	s.sflux = make([]float64, s.NLMAX)
 	s.sldd = make([]float64, s.NLMAX)
 	s.swl = make([]float64, s.NLMAX)
+	s.sgg = make([]float64, s.NLMAX)
 	s.sfluxd = make([]float64, 2*s.NLMAX)
 	s.freelist = make([]int, s.NLMAX)
 	s.nfree = 0
