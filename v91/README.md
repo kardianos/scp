@@ -249,6 +249,37 @@ identity (gid at the conversion door, no background), acceptance
 target = the frozen-bound chord. Nothing adopted; decisions are the
 user's.
 
+## Status after the ASTRO campaign (2026-08-05, user-directed: "make it so" on the far-field + spectroscopy probes)
+
+**`ASTRO.md` is the complete record** (pre-registration §0–§3 with
+dated shakedown corrections, results §4, verdict §5). A MEASUREMENT
+campaign: config-only arms on the standing binary, no kernel or law
+change; battery re-verified at defaults after (`runs/BATTERY_astro.log`).
+
+Headlines: **(1)** pad 11 (g4 reopened) is CLOSED with the mechanism:
+around every stable body the medium's transport potential
+π = Es + s_disp·(Em+Ee) is FLAT at ±1×10⁻⁵–2×10⁻⁴ (blob, chord,
+floors) because **a stable object's space cycle closes at its own
+conversion door** — footprints are contact-local (< 1 cell
+screening), the corpse control carries none, and the only resolvable
+medium disturbance anywhere is the radiative dM/dt transient of a
+DYING object (r^−0.18 — luminosity leaves no space far field). B6
+stays ABSENT with a measured prerequisite: a far field needs books
+that run THROUGH the medium while the object lives (the S2/identity
+currency again). **(2)** B4 moves — the first species spectra: the
+UUD chord's parameter-free emission doublet (mean residual 2×10⁻⁴,
+seed-robust, load-tracking), a D line 30–60× over a spectrally-dark
+bath (species detectable by light alone), the anti-Stokes gap at the
+law constant to 0.3%, metabolism visible as eat-at-U/shine-at-D, and
+a redward death spectrogram on the dying control. **(3)** New
+measured limitation: the nv=48 flagship's stability is
+VACUUM-CONDITIONAL — first-ever real-medium embedding folds it at
+settle and starves it (ret 0.038 @ t=1500) while the frozen chord
+lives its full 5000 embedded: embedded stability exists only below
+the fold scale. NOTHING ADOPTED; the §5 recommendation (unchanged:
+the parcel-identity lane, now also far-field-motivated) awaits the
+user.
+
 ## Status after the pad + integration campaigns (2026-08-04, same day)
 
 User-directed sequels, all recorded in-tree: **`pad/`** (34 crazy

@@ -10,9 +10,9 @@
 # RESULT p2lc_batch maxdiff_vs_serial=0.000e+00 workers=1,2,4,8 width=10.9 rounds=6610
 # P2LC scaling: fixed blob (amp=1.6 sigma=2.2), growing quiet bath
 # JAM sweeps=143 max_step=7.520e-05 (tol 1.0e-04, k_end=0.0028) — witness for the settle
-# RESULT p2lc_scale L=16 N=177 ne=617 active=65 ev_sync=198500 ev_async=83908 ev_ratio=2.37 ms_sync=3.5 ms_async=337.3 drift=-2.7e-16
+# RESULT p2lc_scale L=16 N=177 ne=617 active=65 ev_sync=198500 ev_async=83908 ev_ratio=2.37 ms_sync=3.3 ms_async=343.3 drift=-2.7e-16
 # JAM sweeps=114 max_step=7.829e-05 (tol 1.0e-04, k_end=0.0010) — witness for the settle
-# RESULT p2lc_scale L=32 N=700 ne=2407 active=65 ev_sync=776750 ev_async=157969 ev_ratio=4.92 ms_sync=18.4 ms_async=730.3 drift=3.1e-16
+# RESULT p2lc_scale L=32 N=700 ne=2407 active=65 ev_sync=776750 ev_async=157969 ev_ratio=4.92 ms_sync=15.1 ms_async=730.0 drift=3.1e-16
 # JAM sweeps=90 max_step=9.998e-05 (tol 1.0e-04, k_end=0.0010) — witness for the settle
-# RESULT p2lc_scale L=64 N=2739 ne=9202 active=61 ev_sync=2985250 ev_async=434651 ev_ratio=6.87 ms_sync=96.2 ms_async=1715.4 drift=-9.8e-16
+# RESULT p2lc_scale L=64 N=2739 ne=9202 active=61 ev_sync=2985250 ev_async=434651 ev_ratio=6.87 ms_sync=91.3 ms_async=1648.4 drift=-9.8e-16
 # RESULT p2lc done

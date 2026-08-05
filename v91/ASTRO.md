@@ -1,0 +1,436 @@
+# ASTRO — the far field and the first species spectra (pre-registered)
+
+Opened 2026-08-05, user-directed ("Okay, make it so. Proceed." — on the
+recommendation: re-open g4 at the newly stable bodies + species
+spectroscopy of the chord). This campaign is a MEASUREMENT campaign:
+no law candidate, no kernel change, config-only arms on the standing
+apparatus. It continues pad `11-g4-reopened.md` (R1: 2-cell null at the
+±0.002 floor; R2 blob left pending with `runs/pad/w2_blob.fcs` already
+on disk) and targets two rows of `carried/REALITY_AUDIT.md`:
+
+* **B6 — no far field (ABSENT).** g4 closed honestly in v89: a leaking
+  blob's space flux is all mass-rate bookkeeping; the far field "awaits
+  a stable particle's internal space cycle." That prerequisite now
+  exists: the nv=48 ring (ret 0.95 @ t=50,000, books 0.87–0.96 at
+  100–200× sealed-door metabolism) and the frozen-identity UUD chord
+  (ret 0.50 @ t=5000, books 29/31, standing per-link current
+  net ≈ 0.75·gross, REGISTRY §4). The confound of the old null (huge
+  net dM/dt) is gone: these bodies run throughput at net ≈ 0.
+* **B4 — no spectra of species (ABSENT), partially moved.** The pads
+  measured the CAVITY line (peak w=1.90, anti-Wien, two-family
+  anti-Stokes); INTEGRATION measured a bonded object's emission line.
+  What has never been measured: a species FINGERPRINT — an object
+  whose spectrum has more than one line because the object has more
+  than one voice class. The UUD chord is that object by construction
+  (two pitch classes, wD/wU = 2/3 exactly at seed).
+
+State declaration (no background): all state lives in the cells and
+slots of the running kernel; the FCS stream and QATOM prints are pure
+output (consume no RNG, alter nothing — verified property of the
+apparatus, FCS.md). Analysis is offline over `fcsdump` output.
+
+## 1. Bodies and meters — the mass ladder
+
+The one design axis the pad-11 round 1 result forces: footprint vs
+MASS. The 2-cell pair (tag Em ≈ 3.1) showed no radial Es structure
+above the ±0.002 meter floor. So the campaign runs a ladder:
+
+| body | tag Em (measured) | medium | stream |
+|---|---|---|---|
+| UUD chord, frozen instrument | ~3.5 → 1.7 | bath L=16, amp 0.5 | new run (A-F1) |
+| nv=48 ring, EMBEDDED | ~54 at seed | bath L=36, amp 0.15 | new run (A-F2) |
+| blob (bondless condensate) | ~180–190 | bath L=16, amp 0.5 | EXISTS (`runs/pad/w2_blob.fcs`, T=2000) |
+| 2-cell pair (anchor, done) | 3.1 | bath L=16 | pad-11 R1: NULL at ±0.002 |
+| no object (floor) | 0 | bath L=16 / L=36 | `runs/pad/m1_glow_k005.fcs` + new L=36 arm |
+
+Meters, all existing: FCS cell frames (`t i x y z r es em ee xload
+tag`) → radial profiles Es(r), Em(r) about the tag centroid (angular
+average is the seed-noise reducer; time average over frames is the
+churn reducer); the CONVTAG books (object-attributed cond/evap/rough/
+backs); `# QATOM t dir w e i Em` events (dir=DF: dense→field
+emission — rough/evap/radiance atoms at the source's dense pitch;
+dir=FD: field→dense condensation at the field pitch) with per-event
+source cell id — object cells are the last ids (tri: NC−3..NC−1,
+verified against the FCS tag column).
+
+Note on what F-arms can and cannot see: the FCS link record carries no
+`swl`, so the direct per-slot space current is not dumped. The F-arm
+measurands are therefore the PROFILE (the g1-analog footprint and its
+tail shape) and its STEADINESS, not the pointwise flux; continuity
+(shell dEs/dt vs object books) is the cross-check where a profile
+resolves.
+
+## 2. Closed-form expectations (written before any new run)
+
+* **Pressure balance.** Pass S equalizes π = Es + s_disp·(Em+Ee)
+  across live slots (s_k=0.06, s_disp=0.3). A standing mass is a
+  standing π-excess; if equalization were complete and unscreened, the
+  surrounding medium would hold an Es DEPRESSION whose integral tracks
+  s_disp·(Em+Ee)_object. [Instrument correction, 2026-08-05, from the
+  sanctioned shakedown BEFORE any physics run: the bath-class medium
+  is THREE-dimensional (2700 cells in 16³, dbar 1.41; the tri object
+  sits in the z=8 mid-plane) — the earlier 2D wording was wrong.] In
+  a 3D medium the steady unscreened monopole tail is 1/r — reality's
+  own far-field form: ΔEs(r) = a + c/r in the far zone. A
+  churn-screened footprint is instead short-ranged: ΔEs(r) ~
+  exp(−r/λ_s) with λ_s of order dbar. The discriminator between
+  "footprint" (g1-analog, near field) and "far field" (B6) is the
+  tail SHAPE, not the depth. Shells: spherical about the tag centroid
+  (compact bodies); cylindrical about the ring axis for the nv=48
+  near zone.
+* **Sign ambiguity registered honestly:** the glow's space-return
+  (pad 10: +0.8% uniform Es lift at k005) is a GLOBAL offset, and the
+  object is also a local GLOW ANOMALY (its books run hotter than
+  bath). The near-object sign could be negative (pressure push-out) or
+  positive (local cond starvation of space refilled from around). The
+  bars below score magnitude and shape; the sign is a finding either
+  way.
+* **Emission lines are pitch atoms.** Every DF event's atom pitch is
+  the firing cell's dense pitch w2e = w2/(1 + q_detune·x_cell). The
+  chord's two voice classes therefore predict a DOUBLET with zero fit
+  parameters, per time window, from the diag's own xUDD column:
+  w_U(t) = 2.9/(1+1.2·x_U(t)), w_D(t) = 2.9/(1+1.2·x_D(t)). At seed:
+  2.171 / 1.447 (ratio 3:2, the fifth). At the frozen chord's t=5000
+  state (x = 0.06/0.05/0.58): ≈ 2.70 / 1.71. The bath's own emission
+  band sits at ≈1.90 (pad 06) — the U line rides ABOVE it, the D line
+  BELOW it, both drifting with load: the line is a load meter.
+* **The absorption family** (FD events) sits at field-pitch atoms
+  w1e = w1/(1+q_detune·x); emit/absorb pitch ratio AT THE SAME CELL is
+  w2/w1 = 1.7576 exactly (det cancels) — the anti-Stokes gap is a law
+  INVARIANT and doubles as an instrument check.
+
+## 3. Arms, predictions, bars (registered BEFORE first run)
+
+Configs print in every log header; seed 20260802 primary; the frozen
+chord F1 arm gets one replicate seed (314159). All arms
+k_rad=0.05 p_rad=4 rad_clock=0 (the selected radiance point — the
+medium that maintains the bodies); registry/cantus knobs only where
+the body needs its instrument frame (the frozen chord), exactly the
+REGISTRY goal-arm configs. Logs + streams → `runs/astro/`.
+
+* **A-F0 (no run — analysis of existing streams).** Blob Es(r,t) from
+  `w2_blob.fcs` (+ `w2_blob2.fcs` as the two-body variant), floor from
+  `m1_glow_k005.fcs`/`m1_glow_k0.fcs`. This is pad-11 R2, finally.
+* **A-F1 (chord).** The REGISTRY frozen arm + streams:
+  `exp=tri tri_xU=0.28 bath=1 noise_amp=0.5 convtag=1 T=5000 k_cant=1
+  k_tune=0.2 cant_grow=0 cant_seed=1 cant_tau=1e18 reg_tau=10
+  qatom_every=1 snap_every=500` (10 t.u. cadence — shakedown-sized,
+  500 frames); ctl twin (no cantus/registry keys)
+  identical otherwise. The ctl chord dies by t≈150 — its stream is the
+  CORPSE arm (spectrum and footprint of a dying species).
+* **A-F2 (embedded nv=48 — first contact with a medium).** `exp=ring
+  ring_n=48 ring_x=0.47 bath=1 noise_amp=0.15 convtag=1 L=36 T=1500
+  qatom_every=200 snap_every=500`. The carve rule leaves bath OUTSIDE
+  clear=14.15 in an L=36 box (far zone r ≈ 14.2→17). This arm is
+  double-duty: (a) the mid-ladder far-field body; (b) the first test
+  of the flagship object against a real cell medium (INTEGRATION only
+  ever ran it with all bath carved; its "ambient" was the noise
+  drive). FLOOR twin: same box, `exp=bath`, no object, T=800.
+  [Shakedown sizing, before physics: 3D at L=36 is ~30,700 cells and
+  ~6.6 µs/cell-step single-threaded — T=1500/800 replaces the 2D-era
+  T=3000 guess; the settled-window frames are what the bars read.]
+* **A-L0 (bath spectrum baseline).** `exp=bath bath=1 noise_amp=0.5
+  qatom_every=1 T=2000` at k005, L=16 — the medium's own two-family
+  spectrum at full statistics. (Chord spectra come from A-F1's own
+  QATOM streams; no separate runs.)
+* **Shakedown protocol:** T≤100 smoke runs are permitted to verify
+  snap/QATOM mechanics and wall-time ONLY; no bar may be read from a
+  smoke run.
+* **Log convention (one log path, one writer, two grades):** the
+  committed `runs/astro/*.log` are QATOM-stripped (diag + RESULT
+  rows); the full event-grade originals stay on disk as
+  `*.log.raw` (gitignored, like the `.fcs` streams) — the derived
+  event tables `spec_*.txt` and profiles `prof_*.txt` are committed
+  and reproduce from the raws via `spec.awk`/`prof.awk` verbatim.
+
+**Pre-registered predictions.**
+
+1. Chord footprint: BELOW the floor (same mass class as the pad-11
+   pair null) — registered as an expected null anchoring the ladder.
+2. Ring and blob footprints: resolve above 3× floor, depth monotone
+   in tag Em.
+3. Tail shape where resolved: screened-exponential (λ_s ~ 1–2 dbar)
+   is the honest default guess; a measured ln-r tail is the upset
+   that moves B6 — either outcome is scored, neither is assumed.
+4. The chord doublet: YES at the closed-form positions (±2%, the
+   pad-23 same-beat systematic allowed), U above / D below the bath
+   band, positions tracking xUDD per window.
+5. Embedded nv=48: survives contact (ret ≥ 0.5 at T=3000) — 60%
+   confidence; bath-crush death is the informative alternative
+   (would make the flagship's stability vacuum-conditional, a
+   sharpened OUTLOOK §2 limitation).
+
+**Bars (magnitudes, not booleans).**
+
+* **P-A1 (ladder):** report ΔEs(contact..r) depth per body vs tag Em;
+  "resolved" = |ΔEs| > 0.006 (3× the ±0.002 pad-11 floor) sustained
+  over ≥ 20 time-averaged frames and surviving the angular average.
+* **P-A2 (shape):** where resolved, fit the far zone both ways
+  (a + c/r vs A·exp(−r/λ_s), 3D forms per the §2 correction); report
+  c (or λ_s) with residuals; claim "monopole tail" ONLY if the 1/r
+  fit wins on residuals AND c's sign matches the measured object
+  books. This is the B6 bar.
+* **P-A3 (steadiness):** the resolved profile at matched windows
+  early/late at net-dM/dt ≈ 0 — steady means late depth within 30% of
+  early depth while books stay balanced (the "not bookkeeping" test).
+* **P-A4 (attribution):** depth tracks throughput (books gross) or
+  net (books in−out)? Report both correlations across the ladder —
+  this is the Bondi-duality question pad 11 asked.
+* **P-L1 (doublet):** chord-cell DF pitch histogram shows two
+  resolved lines at the closed-form positions (±2% per window);
+  resolved = each line's peak ≥ 5× the bath continuum in the same
+  pitch bin, from ≥ 30 object events per window.
+* **P-L2 (anti-Stokes invariant):** per cell class, (DF pitch)/(FD
+  pitch) = 1.7576 ± 1% — the instrument-check bar.
+* **P-L3 (species distinguishability):** line separation vs measured
+  linewidth: |w_U − w_bath|, |w_D − w_bath| > 2σ_line — the "you can
+  tell WHAT is shining" bar, the B4 mover.
+* **P-L4 (death spectrogram):** the ctl chord's lines drift along
+  w2e(x(t)) as it dies — report tracking residual; the line as a
+  load/flight meter on a dying species.
+
+**Reality-audit mapping (registered):** P-A2 pass at a stable body ⇒
+B6 moves ABSENT → measured (first far-field candidate; g2/lensing
+re-runs become motivated). P-A2 fail everywhere ⇒ B6 stays ABSENT
+with a SHARPER statement: even a stable metabolizing mass with
+standing internal current does not source a far field — the space
+sector needs the coherent/identity construction too (S2-currency,
+same door as everything else). P-L1+P-L3 pass ⇒ B4 gains its first
+species row (STRUCTURAL → the first quantitative species statement:
+line positions parameter-free). P-L1 fail ⇒ the emission machinery is
+bath-collective, not species-borne — a new measured limitation.
+
+## 4. RESULTS
+
+### 4.1 A-F0 — the blob (pad-11 R2, closed from the standing stream)
+
+Analysis: `runs/astro/prof.awk` over `runs/pad/w2_blob.fcs`
+(151 frames, window t ∈ [500, 2000], tag-centroid shells, medium
+cells only) vs the object-free floor `runs/pad/m1_glow_k005.fcs`.
+Numbers: `runs/astro/prof_blob.txt`, `prof_floor16.txt`.
+
+* **The medium around the 110-Em blob is in COMPLETE pressure
+  equilibrium.** π(r) = Es + 0.3·(Em+Ee) is flat at 1.0563 ± 0.0002
+  across the whole resolvable zone (r 4.75 → 8.75; the blob's tagged
+  cells occupy r < ~4.5). The visible Es structure (0.966–0.972,
+  anti-tracking Em at the s_disp factor) is pressure balance, not a
+  footprint. The floor bath is equally flat at its own level
+  (π = 1.0430 ± 0.0002). Meter resolution ±0.0002 — 10× sharper than
+  pad-11 R1's ±0.002 Es floor, because π is the transport potential
+  (pass S moves space on π differences ONLY): a flat π is a direct
+  null on sustained space transport, not just on density structure.
+* **Continuity bound.** |∇π| < ~1e-4/unit caps the per-slot sustained
+  current at s_k·dt·O(1)·1e-4 ≈ 4e-6/t.u.; summed over the ~10³
+  slots crossing a mid-zone shell: ≲ 5e-3 units/t.u. of
+  medium-carried space current. The blob's conversion door cycles
+  cond 2873 / evap 3336 / backs 436 over 2000 t.u. (≈ 3 units/t.u.
+  gross, net −36 = 1.2% of gross), and the whole box's Es is steady
+  to −2.6e-5/t.u. in the window. **The object's space cycle closes at
+  its own door (backsplash refills what cond pulls, pad-10's 0.3%
+  book balance), so the medium is never asked to carry a net current
+  — the Bondi in/out duality cancels pointwise at the conversion
+  door, not as separated accretion/wind zones through the medium.**
+* Scored: P-A1 blob — NO radial footprint above the 3×-floor bar in
+  its own far zone (a −0.005 GLOBAL Es offset vs the object-free
+  floor is inventory, not profile); P-A2 — no tail of either shape to
+  fit; P-A3/P-A4 — moot at null. Pad-11 R2 verdict, now measured:
+  the old "no steady monopole" survives at 10× sharper resolution,
+  and the MECHANISM is identified (door-closed cycles). The far
+  field, if this substrate ever has one, must come from an object
+  whose books do NOT close at the door — no such object exists yet.
+
+### 4.2 A-F1 — the chord's footprint (primary + replicate + corpse)
+
+Runs: `runs/astro/uud_frozen{,_s314159,_ctl}.log/.fcs`, T=5000,
+451 analysis frames each, window [500, 5000]. The seed-20260802
+frozen arm reproduces the REGISTRY run's t=5000 diag row EXACTLY with
+the QATOM/FCS meters on — the ASTRO apparatus is physics-silent
+(determinism cross-check, free). Replicate ret 0.61 (registered band
+0.50–0.63), with 20× the primary's standing circulation (circ +10.2
+vs +0.52) — the chord's internal current is seed-variable; its
+stability is not.
+
+* **The living chord's footprint is CONTACT-LOCAL.** First-medium-bin
+  Es depression: −0.059 ± 0.006 (primary, r≈0.75, ~9σ) / −0.0097 ±
+  0.0008 (replicate, r≈1.25, 12σ) vs each run's own bulk. By the
+  next half-cell bin the medium is bulk-flat: the g1-analog
+  footprint EXISTS at chord mass (pad-11 R1's pair could not see it)
+  and its screening length is BELOW ONE CELL SPACING.
+* **No far field.** π(r) flat from r=1.25 to 8.75 in every arm;
+  far-zone aggregate π scatter ±2×10⁻⁵ (the sharpest transport null
+  the programme has produced). No 1/r and no exponential component
+  above it — there is nothing to fit.
+* **The corpse control separates mass from structure:** the dead
+  chord (ctl, ret 0.20, husk) shows NO contact dip above 3.5σ — the
+  footprint tracks LIVING Em (pressure balance against held
+  holdings), not the object's history.
+* Books: frozen cond 29.2 / evap 31.1 / net +2.1 over 5000 t.u. —
+  balanced at door-gross ~0.012/t.u.; the medium-current bound from
+  flat π (~5×10⁻³/t.u., §4.1 method) is NOT even exercised: the
+  chord's door turnover is itself of that order. Scored: P-A1 chord
+  = contact bin only (registered prediction 1 confirmed for the far
+  zone, sharpened by the resolved contact dip); P-A2 = no tail;
+  P-A3 = the contact dip is steady (present in both window halves);
+  P-A4 = across blob/chord: footprint depth tracks LIVING Em at
+  contact; NOTHING tracks throughput — the medium carries no
+  current at any mass on the ladder measured so far.
+
+### 4.2b Registered BEFORE the A-F2 read (2026-08-05, ring still running)
+
+The two measured ladder points imply a mechanism: the footprint is
+contact-local pressure balance against HELD Em (chord D cell Em 1.45
+→ dip −0.059; blob surface cells Em ≈ bath 0.18 → no dip). The ring's
+cells hold Em ≈ 1.1–1.2 at the sweet spot. Prediction for A-F2,
+written before any ring frame is read: contact-bin Es dip −0.03 to
+−0.06 along the hoop (torus-ρ first bin), far zone π-flat at the
+meter floor, no tail. If instead a tail resolves at the ring (48
+doors sharing one medium shell) the door-closure picture is wrong at
+extended objects — that is what the arm decides.
+
+### 4.3 A-L — the first species spectra (P-L1..P-L4)
+
+Analysis: `runs/astro/spec.awk` (per-event zero-parameter
+prediction w = base/(1+1.2·x_cell(t)), base 2.9 emission / 1.65
+absorption, x from the run's own diag xUDD); numbers in
+`runs/astro/spec_*.txt`.
+
+* **P-L1 PASS (the doublet is real, parameter-free, seed-robust).**
+  Object emission (DF) residuals vs the closed form: primary
+  n=80, mean −1.75×10⁻⁴, rms 0.017; replicate n=72, mean +1.3×10⁻³,
+  rms 0.024. Per-cell, per-window line positions match to 0.15–0.5%
+  and DRIFT WITH LOAD exactly as predicted (D line 1.658→1.684
+  measured vs 1.660→1.687 predicted across the run; replicate
+  1.664→1.706 vs 1.661→1.704). Event-count caveat, recorded not
+  softened: the D line carries 29–32 events/window (≥30 bar met);
+  the U lines carry 1–10/window (below the registered 30 — the U
+  voices sit nearly empty and are nearly dark; position information
+  is consistent but statistics-poor).
+* **The bath is spectrally dark at the D line — the astronomer's
+  condition.** The object-free bath's emission band peaks at
+  w ≈ 2.35 (measured here; pad-06's 1.90 was a walled-cavity value,
+  not an open-glow value — context corrected by measurement). In the
+  1.66–1.70 bins the bath emits 1–3 events TOTAL (of 22,339) over a
+  whole run; the chord puts 59 there. **A UUD chord in a glowing
+  bath is detectable by its D emission line alone, no cell
+  attribution needed** (line/continuum ≈ 30–60×). The U line sits ON
+  the bath band (camouflaged); the D line is the species marker.
+  P-L3 PASS for D (separation ≈ 0.66 from band peak ≈ 15 linewidths);
+  U-line separation from the band is < 1 bandwidth — FAIL for U,
+  recorded.
+* **P-L2 PASS (anti-Stokes invariant ≈ 0.3%, bar ±1%):** both
+  families match their matched-x predictions (emission ~0.2%,
+  absorption FD means: U cells 1.52–1.54 ↔ x 0.065–0.09, D cell
+  0.9715 ↔ x = 0.582, each within 0.3% of 1.65/(1+1.2x)); the
+  emit/absorb pitch ratio at matched load is the law constant
+  2.9/1.65 = 1.7576 to that precision.
+* **The flux machine has a spectral signature (unregistered
+  finding).** The U voices are net ABSORBERS (FD 34/31 events vs DF
+  6–10) at the near-empty field pitch 1.52–1.54; the D voice is the
+  net EMITTER (DF 59 vs FD 44). Cross-attributed with the convtag
+  books (cond 29 in ≈ U-side absorption, evap 31 out ≈ D-side
+  emission) and the REGISTRY per-link standing current: **the
+  chord eats at U, circulates U→D through the bonds, and shines at
+  D — metabolism is visible as a two-line spectrum with an
+  absorption line above the emission line's load.**
+* **P-L4 (death spectrogram):** the dying ctl chord's tracking
+  degrades 3× (rms 0.045 vs 0.017 living; mean −0.006, emitted
+  atoms redder than the load prediction) — the fade outruns the
+  clock's retune; the line residual is a death meter.
+
+### 4.4 A-F2 — the embedded nv=48: the medium kills the flagship
+
+Run: `runs/astro/ring48_L36.log/.fcs` (T=1500, NC=22421, carve
+leaves bath outside clear=14.15); floor `bath36` (T=800, π = 1.01414
+± 1.1×10⁻⁵ flat — the sharpest floor of the campaign).
+
+* **Registered prediction 5's ALTERNATIVE is what happened.** The
+  medium folded the ring AT SETTLE: gyration shape (83.9, 83.9) →
+  (12.6, 14.1) already by t=200 while bond lengths stayed near-rung
+  (edge_dev mean 0.61) — a dropped necklace, not snapped links. The
+  fold destroys the load-bearing straightness (the ~170° angle gate),
+  bonds die (gg 0.15 @ t=200 → 0.02), and the object then STARVES:
+  books cond 15.4 in / evap 58.9 out / net −36.1 over 1500 t.u. —
+  intake collapsed in the sub-nucleation medium while evaporation
+  continued. ret 0.038 at t=1500. **The E-A/INTEGRATION stability
+  (ret 0.95 @ 50k) is hereby measured as CONDITIONAL on the
+  carved-vacuum + noise-drive configuration: "at every ambient" was
+  never "in a medium."** (New OUTLOOK §2 limitation.)
+* **§4.2b's contact-dip prediction: UNTESTABLE AS REGISTERED** — its
+  premise (a living hoop holding Em against the medium) never
+  existed; the fold scrambles the contact geometry. Not scored as
+  pass or fail; the dip-tracks-living-Em mechanism stands on the
+  chord/blob/corpse triple of §4.1–4.2.
+* **The death era shows the only resolved medium disturbance of the
+  campaign — and it is NOT a space monopole.** Against the run's own
+  late-era level, the early window [100,400] carries a box-wide π
+  excess +0.0066 (contact) → +0.0024 (r=16), best power-law
+  r^(−0.18) — nowhere near a 1/r monopole, and flat again (±1×10⁻⁴)
+  by the corpse era. Composition: box-wide Em roughly doubles
+  (0.02 → 0.04/cell) — the bleed leaves through the FIELD channel as
+  radiation, crosses the box, and recondenses everywhere; the
+  released Es of the drained cells shows at contact as an EXCESS,
+  not a dip. **A dying object has luminosity, and luminosity leaves
+  no space far field** — the transient is dM/dt bookkeeping in
+  profile form, the v89 g4 verdict caught in the act.
+* **P-A4 closes across the ladder:** the medium shows a gradient
+  ONLY where the books do not close (dying ring, net 4× outflow);
+  where they close (living chord net ≈ 0, blob net 1.2% of gross)
+  the medium is π-flat to its floor. Depth-tracks-throughput is
+  REFUTED; depth tracks NET, and net ≈ 0 is what stable matter IS
+  here.
+
+## 5. VERDICT (agent's readings; decisions are the user's)
+
+1. **B6 (far field) stays ABSENT — with the sharpest and most
+   mechanistic statement the programme has produced.** Around every
+   stable body the medium's transport potential is flat at the meter
+   floor (chord far zone ±2×10⁻⁵; blob ±2×10⁻⁴; floors ±1×10⁻⁵),
+   because a stable object's space cycle closes at its own
+   conversion door (backsplash refills cond's pull to 0.3%; the
+   Bondi in/out duality cancels pointwise, not through the medium).
+   The only medium disturbance ever resolved is the transient
+   radiative bookkeeping of a DYING object (r^−0.18, field-channel,
+   gone with the corpse). Consequence, stated for the record: in
+   this law the far field cannot come from stable matter as it now
+   exists — it requires an object whose books run THROUGH the
+   medium while it lives, i.e. medium-carried persistent currents —
+   the same S2-coherent/identity construction every other absence
+   already points at. g2/lensing re-runs stay unmotivated until
+   then.
+2. **B4 (spectra of species) MOVES.** The campaign delivers the
+   programme's first species spectroscopy: a parameter-free doublet
+   whose positions track load to 0.02% (mean) / 1.7% (per-event
+   rms), seed-robust; an emission line standing 30–60× above a
+   spectrally-dark bath (the astronomer's condition — species
+   identifiable at range by light alone); the anti-Stokes gap at
+   the law constant to 0.3%; metabolism visible as
+   eat-at-U/shine-at-D; a death spectrogram (3× tracking loss,
+   redward). Proposed audit re-grade: B4 ABSENT → STRUCTURAL with
+   the first QUANTITATIVE species row (positions parameter-free; no
+   real-atom numeric correspondence claimed). Honest edges: U lines
+   statistics-poor (1–10 events/window) and camouflaged on the bath
+   band; only the D line is astronomer-detectable.
+3. **A NEW measured limitation joins OUTLOOK §2: flagship stability
+   is vacuum-conditional.** Real-medium contact kills the nv=48 by
+   crush-then-starve (fold at settle → angle-gate death →
+   evaporative drain in a cold medium). Small chords survive
+   embedded (the frozen UUD lives its full 5000 in the same medium
+   class that killed the ring in 600) — at this law, EMBEDDED
+   stability exists only below the fold scale. Untested and cheap
+   if wanted: a WARM medium (amp 0.5 glow) embedding arm.
+4. **Nothing was adopted.** No kernel, law, or table change anywhere
+   in the campaign (config-only arms on the standing binary; the
+   seed-20260802 frozen arm byte-reproduces the REGISTRY diag row
+   with the meters on). Battery re-verified at defaults after the
+   campaign: see `runs/BATTERY_astro.log` (must read ALL GREEN 93).
+5. **Recommendation (for the user to accept or reject):** the next
+   lane is unchanged by this campaign — parcel-carried ontological
+   identity (REGISTRY §5.5) — and is now motivated from one more
+   side: medium-carried books are the measured prerequisite for a
+   far field (this campaign), identity is the measured prerequisite
+   for medium-carried coherent structure (REGISTRY), and the
+   spectroscopy built here is the instrument that will fingerprint
+   whatever that lane builds, the day it lives. Cheap parallel
+   probes if wanted: warm-medium embedding; a D-heavy chord for
+   U-line statistics; the C7 no-law audit upgrades (DS visibility
+   curve, Born KS) remain open from the R-campaign queue.

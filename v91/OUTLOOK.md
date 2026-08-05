@@ -77,13 +77,28 @@ believer-rounds generated AND killed hypotheses fast (the 5:3
   ¾, no a_V binding term — three independent pointers at missing
   volume physics.
 * **No far field yet**: 2-cell floor ±0.002; the blob-mass g4 rerun
-  is pending.
+  is pending. [ASTRO executed 2026-08-05 (`ASTRO.md`): the ladder
+  blob/chord/ring is measured through the transport potential
+  π = Es + s_disp·(Em+Ee) at ±1×10⁻⁵–2×10⁻⁴ — the medium is π-FLAT
+  around every stable body because the space cycle closes at the
+  object's own door (backsplash refills cond to 0.3%); footprints
+  are contact-local (< 1 cell); only a DYING object disturbs the
+  medium (box-wide radiative transient, r^−0.18 — luminosity leaves
+  no space far field). The far field now has a measured
+  prerequisite: books that run THROUGH the medium while the object
+  lives — the S2/identity construction.]
 * **Scale and dimension**: flagships 2D; λ/dmin 3–7; P2 unspent.
 * **One ħ**: 5× era-statistical is not 1× law-level.
 * **Lifetime bound is run-length**: no death observed at t=5000
   [E-A executed 2026-08-05: ret 0.95 ± 0.02 at t=50,000, no decay
   trend — the bound is now 50k and still run-length-limited]; the
-  true t_half of the integrated object is unmeasured.
+  true t_half of the integrated object is unmeasured. [ASTRO, same
+  day: the 50k stability is VACUUM-CONDITIONAL — first real-medium
+  embedding (L=36 cold bath) kills the nv=48 by crush-then-starve
+  (folded at settle, angle gates die, evap 4× cond; ret 0.038 at
+  t=1500), while the frozen UUD chord lives its full 5000 embedded
+  in the same medium class: embedded stability currently exists
+  only below the fold scale.]
 * **Coherence cannot self-assemble without identity** (measured
   2026-08-05, CANTUS): the churn bath is a persistent-closure medium
   (66% of cells hold time-averaged gate > 0.5 at zero force), so any
@@ -220,6 +235,30 @@ believer-rounds generated AND killed hypotheses fast (the 5:3
   with the matter, carried by its exchanges** — parcel gids / the
   amplitude's mode label; acceptance target = the frozen-bound
   chord.
+
+## Addendum (2026-08-05, the ASTRO session — the far field and the first species spectra)
+
+* **E-E executed in its far-field half, and pad 11 closed.** The g4
+  question is answered mechanistically: stable matter sources no far
+  field BECAUSE its space books close at its own conversion door;
+  the medium is never asked to carry a current (π-flat at
+  ±1×10⁻⁵–2×10⁻⁴ across the blob/chord ladder; footprints
+  contact-local; corpse control clean). The one resolved medium
+  disturbance is the radiative dM/dt transient of a dying object
+  (r^−0.18, field-channel, gone with the corpse). B6's next step is
+  not a better meter — it is matter with medium-carried books.
+* **B4 moves: first species spectroscopy** (`ASTRO.md` §4.3). The
+  UUD chord's emission doublet is parameter-free (w = w2/(1+q_detune
+  ·x) per voice, mean residual 2×10⁻⁴), seed-robust, load-tracking;
+  the D line stands 30–60× over a spectrally-dark bath — species
+  identifiable by light alone; anti-Stokes gap = w2/w1 to 0.3%;
+  metabolism is spectrally visible (eat at U, shine at D); dying
+  matter has a redward death spectrogram. The spectrometer
+  (`runs/astro/spec.awk` + QATOM at qatom_every=1) is now standing
+  apparatus for whatever the identity lane builds.
+* **A limitation sharpened: embedded stability has a fold scale.**
+  See §2 lifetime bracket — the flagship's stability does not
+  survive first contact with a real medium; small chords' does.
 
 ## The one-paragraph position
 
