@@ -151,6 +151,7 @@ typedef struct {
      * preserving). k_cant=0 && k_tune=0 => byte-identical step. --- */
     double k_cant, k_tune, cant_tau;
     int    cant_seed;
+    int    cant_grow;   /* 1 = self-growth (law candidate); 0 = seeded-only (INSTRUMENT: honest-medium probe, CANTUS.md §3.4) */
     int    qatom_every;   /* apparatus (print-only): QATOM sampler period */
     /* --- freecell geometry sector (apparatus, not law) --- */
     double cfac;          /* candidate rule d < cfac*(ri+rj)  (LIVEFAB) */
@@ -264,7 +265,7 @@ static void cfg_defaults(void)
     P.mob_sym = 1; P.mob_floor = 0.004; P.field_J = 1.8;
     P.quant_A0 = 1.15; P.quant_mode = 2;
     P.k_rad = 0; P.p_rad = 4; P.rad_clock = 0;
-    P.k_cant = 0; P.k_tune = 0; P.cant_tau = 50; P.cant_seed = 0;
+    P.k_cant = 0; P.k_tune = 0; P.cant_tau = 50; P.cant_seed = 0; P.cant_grow = 1;
     P.qatom_every = 200;
     /* freecell geometry */
     P.cfac = 1.15; P.k_rep = 1.0; P.mob_geo = 1.0; P.kappa_bond = 1.0;
@@ -352,6 +353,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "k_tune")) P.k_tune = atof(v);
     else if (!strcmp(k, "cant_tau")) P.cant_tau = atof(v);
     else if (!strcmp(k, "cant_seed")) P.cant_seed = atoi(v);
+    else if (!strcmp(k, "cant_grow")) P.cant_grow = atoi(v);
     else if (!strcmp(k, "qatom_every")) P.qatom_every = atoi(v);
     else if (!strcmp(k, "cfac")) P.cfac = atof(v);
     else if (!strcmp(k, "k_rep")) P.k_rep = atof(v);
@@ -1287,12 +1289,16 @@ static void step(void)
     }
 
     /* pass H: v91 CANTUS (coherent-channel candidate B, CANTUS.md).
-     * The superimposed harmonic-lock field: ca = per-cell order
-     * parameter (low-passed best two-sided gate quality — grows only
-     * where locked exchange PERSISTS, dies with the bonds; no
-     * background, no energy); cxl = holdings memory (each voice's
-     * remembered part in the chord — R-D1-aligned: what radiance
-     * reads). (a) the lock corrects the DIFFERENTIAL ladder-closure
+     * The superimposed harmonic-lock field, v1.1 (CANTUS.md §3.3):
+     * sgg_[s] = the LINK-BORNE order parameter (low-passed two-sided
+     * gate quality — one gauge per bond; grows only where locked
+     * exchange PERSISTS on that bond, holds through lens blinks,
+     * dies with the slot; no background, no energy); cxl = holdings
+     * memory (each voice's remembered part in the chord — R-D1-
+     * aligned: what radiance reads). v1's cell-borne amplitude
+     * (max-support) ignited a bath-wide Kuramoto transition —
+     * measured, rejected, recorded in CANTUS.md §4.1.
+     * (a) the lock corrects the DIFFERENTIAL ladder-closure
      * error on the matter clocks th2 (the common error is pure
      * geometry — the bond walk's job; the phase sum contains no
      * phase). (b) the within-mode retune current moves holdings
@@ -1322,7 +1328,8 @@ static void step(void)
                 double gg = gate_of(ps_f) * gate_of(ps_b);
                 /* v1.1: the LINK's own gauge memory (holds through
                  * lens blinks — non-eligible steps skip this update) */
-                sgg_[s] += ktau * (gg - sgg_[s]);
+                if (P.cant_grow || sgg_[s] > 0)
+                    sgg_[s] += ktau * (gg - sgg_[s]);
                 double amp = sgg_[s];
                 if (amp <= 0) continue;
                 if (P.k_cant > 0) {
@@ -2327,8 +2334,8 @@ int main(int argc, char **argv)
     printf("# quant_A0=%g quant_mode=%d (A0eff=%g)\n", P.quant_A0, P.quant_mode, A0eff);
     printf("# v91 radiance (laws_V3r candidate A): k_rad=%g p_rad=%g rad_clock=%d\n",
            P.k_rad, P.p_rad, P.rad_clock);
-    printf("# v91 cantus (coherent-channel candidate B): k_cant=%g k_tune=%g cant_tau=%g cant_seed=%d\n",
-           P.k_cant, P.k_tune, P.cant_tau, P.cant_seed);
+    printf("# v91 cantus (coherent-channel candidate B): k_cant=%g k_tune=%g cant_tau=%g cant_seed=%d cant_grow=%d\n",
+           P.k_cant, P.k_tune, P.cant_tau, P.cant_seed, P.cant_grow);
     printf("# GEOMETRY (apparatus): cfac=%g k_rep=%g mob_geo=%g kappa_bond=%g freeze_geo=%d\n",
            P.cfac, P.k_rep, P.mob_geo, P.kappa_bond, P.freeze_geo);
     printf("# bath=%d bath_frac=%g jam_sweeps=%d jam_k=%g L=%g dt=%g T=%g seed=%lu diag_every=%d\n",

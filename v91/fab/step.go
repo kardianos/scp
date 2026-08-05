@@ -554,7 +554,9 @@ func (s *Sim) step() {
 				gg := s.gateOf(psF) * s.gateOf(psB)
 				// v1.1: the LINK's own gauge memory (holds through
 				// lens blinks — non-eligible steps skip this update)
-				s.sgg[sl] += ktau * (gg - s.sgg[sl])
+				if P.CantGrow != 0 || s.sgg[sl] > 0 {
+					s.sgg[sl] += ktau * (gg - s.sgg[sl])
+				}
 				amp := s.sgg[sl]
 				if amp <= 0 {
 					continue

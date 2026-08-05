@@ -257,8 +257,8 @@ func (s *Sim) Run() {
 	fprintf(s.Out, "# quant_A0=%.6g quant_mode=%d (A0eff=%.6g)\n", P.QuantA0, P.QuantMode, s.A0eff)
 	fprintf(s.Out, "# v91 radiance (laws_V3r candidate A): k_rad=%.6g p_rad=%.6g rad_clock=%d\n",
 		P.KRad, P.PRad, P.RadClock)
-	fprintf(s.Out, "# v91 cantus (coherent-channel candidate B): k_cant=%.6g k_tune=%.6g cant_tau=%.6g cant_seed=%d\n",
-		P.KCant, P.KTune, P.CantTau, P.CantSeed)
+	fprintf(s.Out, "# v91 cantus (coherent-channel candidate B): k_cant=%.6g k_tune=%.6g cant_tau=%.6g cant_seed=%d cant_grow=%d\n",
+		P.KCant, P.KTune, P.CantTau, P.CantSeed, P.CantGrow)
 	fprintf(s.Out, "# GEOMETRY (apparatus): cfac=%.6g k_rep=%.6g mob_geo=%.6g kappa_bond=%.6g freeze_geo=%d\n",
 		P.Cfac, P.KRep, P.MobGeo, P.KappaBond, P.FreezeGeo)
 	fprintf(s.Out, "# bath=%d bath_frac=%.6g jam_sweeps=%d jam_k=%.6g L=%.6g dt=%.6g T=%.6g seed=%d diag_every=%d\n",

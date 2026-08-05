@@ -383,7 +383,94 @@ blinking bond REMEMBERS through the blink instead of starving.
 
 ---
 
+### 3.4 Addendum (2026-08-05, post-v1.1-harvest — the instrument mode, registered BEFORE its runs)
+
+**v1.1 verdicts (link-borne gauges, self-growing):** P-H8′ FAILS
+again — the bath economy is suppressed (cond −67%, rad −91%, tune
+13.6k) even though per-link gauges cured the v1 roaming artifact.
+**The null-meter run (k_cant=1e-12: meters live, force nil) explains
+why, and it is a substrate discovery: nlock = 1773/2700 under PLAIN
+V2g+radiance — the churn bath is a persistent-closure medium (66% of
+cells hold a time-averaged two-sided gate > 0.5; economy within 2%
+of control).** There is no statistical gap between bond-closure and
+churn-closure for ANY self-growth rule to exploit: closure quality,
+persistence, and link identity are all shared by the vacuum foam.
+The discriminator bonds have and churn lacks is IDENTITY — the
+exchange registry (S2_CHANNEL.md §2.3) — not statistics. Until that
+exists, coherence self-assembly ignites the medium, period.
+
+**Meanwhile the coupled mechanism is measured load-bearing at pair
+scale** (H1a, live noisy bath, T=1200): lock+tune at (0.3–1, 0.2)
+retains 90–94% of pair holdings (Em_sum 2.12–2.20 / 2.35) where the
+control drains to 13%; EACH HALF ALONE DIES (lock-only: 1–17%
+retention; tune-only: channel death). UUD: ret 0.548 vs control
+0.170 at T=2000. But all v1.1 bath arms carry the crystallized-
+medium confound.
+
+**The instrument mode (v1.1i), registered now:** new key `cant_grow`
+(default 1 = v1.1 unchanged, byte-inert at defaults): `cant_grow=0`
+freezes sgg growth to slots already armed — with `cant_seed=1`, the
+OBJECT's bonds carry the superimposed field and the bath stays
+EXACTLY V2g+radiance (all-zero sgg links are no-ops). This is an
+APPARATUS mode, not a law candidate (seeded coherence is a
+background; inadmissible as law — recorded), built to answer the
+one question the confound blocks: **does a coherently-locked object
+survive in an HONEST medium?** Pre-registered (v1.1i arms, seeds on
+object slots only, at (k_cant, k_tune) = (1, 0.2) and (0.3, 0.2)):
+
+* **P-Hi1:** the bath stays dark-honest: economy within seed-noise
+  of k0 (cond/rad ±5%), tune_total = object-only (≤ ~10 per 1000
+  t.u.), nlock ≤ the object's own cells.
+* **P-Hi2 (THE question):** i5-class ring (h2e protocol) with armed
+  bonds: t_half ≥ 2300 (10× the 230 ceiling) — or it dies on
+  schedule and coherent locking is measured insufficient for small
+  matter even in principle (either answer resolves the S2 stake).
+* **P-Hi3:** UUD with armed bonds: ggm/x_D chart-hold ≥ 2× control
+  lifetime; comp6: boundary-fifth survival vs the 85–90 ceiling.
+* **P-Hi4:** the H1a pair at (0.3, 0.2), seeded: retention ≥ 50%
+  at T=1200 (vs 13% control) WITHOUT the frozen-pocket assist.
+* **P-Hi5:** conservation at the FP floor; battery at defaults
+  untouched (cant_grow=1 default).
+
+---
+
 ## 4. Results
 
 (§4 is filled ONLY after the corresponding runs complete; nothing
 above this line is edited after the first k_cant>0 run.)
+
+### 4.1 The v1 record (cell-borne amplitude) — kept as the negative arm
+
+* **H4 v1 (bath, T=480, (1,0.2,50)): the medium crystallizes AND goes
+  dark.** nlock 2683/2700, tune_total 68519; the glow economy is
+  suppressed ~50×: cond 2204 → 625, rad 2016 → 39, rough 1.15 → 0,
+  backsplash 263 → 5 (control vs locked; drift −1.2e-15). A
+  medium-wide phase lock is an insulator-by-coherence: nothing
+  detunes, so nothing radiates. P-H8 fails catastrophically — and
+  the v1 objects' "survival" (i5 ret 0.996 at t=276 vs control
+  t_half 230) is thereby diagnosed as world-freezing, not stability.
+  Recorded as the strongest measured warning: **a coherence law that
+  can ignite the vacuum rewrites thermodynamics globally.** The
+  Kuramoto transition of the whole bath is real physics of the v1
+  coupling — the candidate must live BELOW that transition for
+  matter and only matter to lock.
+* **H1b v1 (fifth pair, VACUUM, all arms incl. k_cant=0): the chart
+  is lost to the drain, not to the lock.** D (x=0.8367) burns at the
+  radiance rate ~0.012/t.u. with no supply; by t≈150 both voices
+  have converged to mid-loads (xl 0.53–0.58) and the comb re-charts
+  the link to unison (d_star_live 3.5–3.7 = the 1:1 m=2 line).
+  The v1 lock never armed in time (ca ramps over ~3τ = 150 t.u. —
+  exactly the drain time). One mechanism signal: with k_tune on, the
+  retune current pushed holdings INTO the draining D (Em 0.87/1.88
+  vs control 1.56/1.47) — the flux-machine direction, fighting the
+  drain even with the lock dead. A vacuum fifth is supply-starved
+  at k005 regardless; the fifth faces move to the bath arms.
+* **H2a v1 (squeezed vacuum ring 0.47): support starves on lens
+  blinks; the one persistently-open edge locks at the ceiling.**
+  Final edge gates ~0 in ctl and low arms; h2a_sel's single
+  surviving open edge ended gg = 0.723 vs the predicted common-mode
+  ceiling 0.766 (§3.3). Ring geometry and energy persist in ALL
+  arms (ret 1.0–1.08 at T=20000, edge_dev ~0.06) — vacuum at 0.47
+  does not kill; it just silences. cant_seed=1 (v1, cell-armed)
+  decays through the blinks: a 1.0 → 0.53 by t=80 — the cell-borne
+  amplitude cannot ride a breathing lens.

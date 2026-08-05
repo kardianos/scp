@@ -40,6 +40,7 @@ type Cfg struct {
 	// step is byte-identical. See kernel pass-H comment.
 	KCant, KTune, CantTau float64
 	CantSeed              int
+	CantGrow              int
 	QatomEvery            int // apparatus (print-only): QATOM sampler period
 	// --- freecell geometry sector (apparatus, not law) ---
 	Cfac      float64
@@ -153,6 +154,7 @@ func Defaults() Cfg {
 	p.KTune = 0
 	p.CantTau = 50
 	p.CantSeed = 0
+	p.CantGrow = 1
 	p.QatomEvery = 200
 	// freecell geometry
 	p.Cfac = 1.15
@@ -350,6 +352,8 @@ func (p *Cfg) SetKV(k, v string) {
 		p.CantTau = atof(v)
 	case "cant_seed":
 		p.CantSeed = atoi(v)
+	case "cant_grow":
+		p.CantGrow = atoi(v)
 	case "qatom_every":
 		p.QatomEvery = atoi(v)
 	case "cfac":
