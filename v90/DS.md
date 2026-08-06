@@ -235,3 +235,36 @@ Go kernel now implements `exp=slit`/`rings`/`blob2` and the full meter
 apparatus — battery `abx` gates the A/B pairs; VERIFY.md has the
 measured record: clicks and screen tables byte-equal up to the
 conservation column.)*
+
+## C7 audit upgrade (dated 2026-08-06, v91 session; analysis of the standing tier-1 panel)
+
+**Born KS at envelope grain — a wing-truncation effect flagged, the
+phase-grain claim intact.** Pooled two-slit clicks (n=331 across the
+12 `ds1_two_s*` seeds) against the same runs' integrated SCREEN
+intensity: KS D = 0.093 (naive criticals 0.075 at 5%, 0.090 at 1%).
+The signed deviation localizes ENTIRELY in the thin outer wings —
+the wave carries ~12% of its intensity below y≈18 where only ~3% of
+clicks land (deficit −0.06 to −0.09 across y 14–22), with agreement
+at the fringe core (|d| ≤ 0.03 near center). Mechanism suggested by
+the R3 rule itself: clicks fire in whole atoms, and thin-wing
+intensity may fail to accumulate a whole grain inside the gate —
+**whole-grain truncation of dim wings**, an A3-interacts-with-A2
+effect, not a phase-grain Born failure (the fringe-phase score
+0.6827 ± 0.0168 = wave 0.683 stands untouched; no gated bar is
+violated — A2's ±0.02 claim was and remains the phase statistic).
+Caveats recorded: clicks are block-correlated within substrate
+realizations (24 blocks; naive KS criticals overstate significance),
+and the reference CDF shares the runs. Settling it needs a dedicated
+high-n panel with an independent wave reference and a wing-band
+count bar — queued as the natural tier-1b.
+
+**Visibility curve — data taken, scoring deferred to the house
+estimator.** A sep {6,8,10,12} × amp {2,3,4,5} sweep ran
+(`v91/runs/quench/vis_*.log`); raw min/max visibility is meaningless
+on the foam (alternate screen bins are structurally empty — the comb
+artifact), and the house V_r is defined against single-slit
+additivity baselines (battery `dsAnalyze`), which needs the
+mask-1/mask-2 companion runs per point. The curve therefore needs
+the triplet protocol (3 runs per point at per-sep predicted loci) —
+specified here, not yet run; the sweep logs stand as the both-slit
+halves.

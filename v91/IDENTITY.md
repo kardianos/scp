@@ -504,3 +504,18 @@ What it measurably DOES — a new state class, reported precisely:
    verbatim; the battery gates; every arm registered before it ran;
    the two §2 closed-form errors (ignition arithmetic; the deadlock)
    are corrected by measurement in place, not rewritten.
+
+**Addendum 4.6 (dated 2026-08-06, analysis-only from
+`mi3_chord_warm.log.raw`) — the spectrum is identity-blind: the
+closure from the light side.** Per-episode line residuals for the U
+cells (events grouped by the QATOM gid field): different episodes of
+the SAME cell sit on the same law line — cell 2700 birth episode
+gid 1 (n=6, mean +0.011) vs reborn gid 8029 (n=7, +0.006); cell
+2701 birth gid 2 (n=9, +0.005) vs late rebirth gid 21759 (n=5,
++0.004) — indistinguishable within errors. And sharper than asked:
+door events fired while the voice is identity-DEAD (gid 0 — empty
+matter being refilled below par_hi) are the TIGHTEST of all (rms
+0.0002–0.0025). Light tells you WHAT (species ratios) and HOW
+LOADED (locus), never WHO — identity is carried by the matter and
+readable only at the door ledger, exactly the ontological thesis,
+now closed from the spectroscopy side too.

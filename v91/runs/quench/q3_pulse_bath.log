@@ -1,0 +1,124 @@
+# freecell — v89 free-cell substance test (exp=pulse)
+# laws = laws_V2g VERBATIM (defaults): C=1 w1=1.65 w2=2.9 q_detune=1.2
+# gamma_res=0.25 gamma_res_m=0.1 p_gate=8 lock_floor=0.005 k_dep=1.2 k_dep_m=2 cap=2.5
+# e_s0=1 es_floor=0.05 e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
+# comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
+# quant_A0=1.15 quant_mode=2 (A0eff=1.15)
+# v91 radiance (laws_V3r candidate A): k_rad=0.05 p_rad=4 rad_clock=0
+# v91 cantus (coherent-channel candidate B): k_cant=0 k_tune=0 cant_tau=50 cant_seed=0 cant_grow=1
+# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=0 reg_gate=0 reg_f0=0
+# v91 identity (parcel-identity lane, IDENTITY.md): par_tau=10 par_gate=0 par_form=0 par_lo=0.002 par_hi=0.02 par_mature=400
+# GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
+# bath=1 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=24 dt=0.02 T=1500 seed=20260802 diag_every=200
+# JAM sweeps=800 max_step=1.454e-04 (tol 1.0e-04, k_end=0.0010) — witness for the settle
+# SEED pulse: amp=3 sigma=3 kx=1.1 (prealigned transverse)
+# SEED noise: amp=0.5 (e1-class churn)
+# INIT NC=9013 slots=85110 live=68634 phi_nom=1.6797 z_live=15.23 dbar=1.4106 sigma_d=14.57% E0=12093.289009932
+#
+# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+t=    0.00 +0.00e+00 | 1.6797 15.23  68634    0      0      0 | 1.4106 14.57 | 0.00e+00 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=19.953
+# PAR t=0.00 gids n=0 mint=0 ret=0 age=[0 0 0] | sdeath tp n=0 [0.0 0.0 0.0] ba n=0 [0.0 0.0 0.0] | stamps n=0 tp=0 age50=0 max=0 | idfrac=0.0000
+t=    4.00 -6.02e-16 | 1.6796 15.73  70871    0   4705   4169 | 1.4222 14.76 | 2.88e-03 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=20.203
+# PAR t=4.00 gids n=0 mint=0 ret=0 age=[0 0 0] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [0.8 1.6 3.4] | stamps n=0 tp=0 age50=0 max=0 | idfrac=0.0000
+# QATOM t=5.02 dir=FD w=1.65 e=0.301996504517 i=1801 Em=0.0000 gid=0
+# QATOM t=7.66 dir=FD w=1.64997096 e=0.301991189329 i=4686 Em=0.0000 gid=0
+t=    8.00 -1.20e-15 | 1.6776 15.93  71791    0   8138   7245 | 1.4271 14.85 | 2.13e-03 1.16e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=20.228
+# PAR t=8.00 gids n=215 mint=215 ret=0 age=[1 2 2] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [2.9 4.1 7.1] | stamps n=72 tp=0 age50=0 max=2 | idfrac=0.9651
+# QATOM t=10.18 dir=FD w=1.65 e=0.301996504517 i=7754 Em=0.0000 gid=0
+# QATOM t=11.58 dir=FD w=1.64972445 e=0.301946071392 i=3215 Em=0.0002 gid=0
+t=   12.00 -1.20e-15 | 1.6739 16.02  72214   11  10960   9968 | 1.4294 14.89 | 2.63e-03 1.26e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=20.267
+# PAR t=12.00 gids n=606 mint=606 ret=0 age=[1 3 5] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [3.1 7.0 10.7] | stamps n=1064 tp=0 age50=2 max=6 | idfrac=0.9303
+# QATOM t=12.84 dir=FD w=1.64999793 e=0.301996125236 i=8334 Em=0.0000 gid=0
+# QATOM t=14.02 dir=FD w=1.45126121 e=0.26562170388 i=2582 Em=0.2209 gid=222
+# QATOM t=15.20 dir=FD w=1.42627009 e=0.261047625652 i=756 Em=0.3244 gid=317
+t=   16.00 -1.20e-15 | 1.6678 16.05  72307   47  13504  12533 | 1.4300 14.90 | 1.27e-02 2.99e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=20.069
+# PAR t=16.00 gids n=1205 mint=1205 ret=0 age=[2 4 7] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [2.9 9.7 14.4] | stamps n=2862 tp=0 age50=3 max=10 | idfrac=0.9218
+# QATOM t=16.18 dir=FD w=1.64978594 e=0.301957324646 i=7968 Em=0.0000 gid=0
+# QATOM t=17.02 dir=FD w=1.45480747 e=0.266270769455 i=6825 Em=0.2655 gid=518
+# QATOM t=17.88 dir=FD w=1.33813887 e=0.489834254315 i=8690 Em=0.4584 gid=22
+# QATOM t=18.72 dir=FD w=1.64944882 e=0.301895622984 i=8781 Em=0.0009 gid=0
+# QATOM t=19.58 dir=FD w=1.64997615 e=0.301992138878 i=6811 Em=0.0000 gid=0
+t=   20.00 -1.20e-15 | 1.6599 16.04  72305  106  15755  15033 | 1.4299 14.89 | 4.73e-03 1.29e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=20.054
+# PAR t=20.00 gids n=1988 mint=1991 ret=3 age=[3 5 9] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [3.0 10.5 18.2] | stamps n=5376 tp=0 age50=4 max=14 | idfrac=0.9186
+# QATOM t=20.46 dir=FD w=1.64880675 e=0.301778106883 i=2885 Em=0.0010 gid=0
+# QATOM t=21.34 dir=FD w=1.64997083 e=0.301991166428 i=1274 Em=0.0000 gid=0
+# QATOM t=22.24 dir=FD w=1.43642086 e=0.262905502146 i=6095 Em=0.3068 gid=1300
+# QATOM t=23.18 dir=FD w=1.64932913 e=0.301873715551 i=7496 Em=0.0003 gid=0
+# QATOM t=23.98 dir=FD w=1.64822995 e=0.301672535116 i=3574 Em=0.0000 gid=0
+t=   24.00 -1.20e-15 | 1.6524 16.00  72088  111  17868  17360 | 1.4288 14.86 | 6.57e-03 1.84e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=19.568
+# PAR t=24.00 gids n=2735 mint=2738 ret=3 age=[4 7 11] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [2.9 10.1 21.8] | stamps n=8454 tp=0 age50=6 max=18 | idfrac=0.9173
+# QATOM t=24.82 dir=DF w=2.24349438 e=0.410622702927 i=4556 Em=0.5688 gid=4
+# QATOM t=25.64 dir=FD w=1.64568459 e=0.301206663269 i=5030 Em=0.0043 gid=0
+# QATOM t=26.50 dir=FD w=1.64375007 e=0.300852590753 i=6158 Em=0.0025 gid=0
+# QATOM t=27.34 dir=FD w=1.64864248 e=0.301748039277 i=4159 Em=0.0015 gid=0
+t=   28.00 -1.20e-15 | 1.6448 15.96  71919  134  19802  19540 | 1.4277 14.82 | 1.22e-02 3.15e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=19.921
+# PAR t=28.00 gids n=3459 mint=3465 ret=6 age=[5 9 14] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [2.8 9.9 25.6] | stamps n=12319 tp=0 age50=7 max=22 | idfrac=0.9199
+# QATOM t=28.26 dir=FD w=1.64657592 e=0.301369801688 i=5071 Em=0.0035 gid=0
+# QATOM t=29.20 dir=FD w=1.38627853 e=0.253728043254 i=2902 Em=0.3732 gid=1468
+# QATOM t=30.14 dir=FD w=1.64827551 e=0.301680873988 i=2682 Em=0.0005 gid=0
+# QATOM t=31.04 dir=FD w=1.64443314 e=0.30097761288 i=222 Em=0.0064 gid=0
+t=   32.00 -1.20e-15 | 1.6381 15.92  71749  141  21588  21677 | 1.4267 14.78 | 1.48e-02 3.30e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=19.882
+# PAR t=32.00 gids n=4088 mint=4095 ret=7 age=[6 12 17] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [2.9 11.3 29.7] | stamps n=16292 tp=0 age50=8 max=26 | idfrac=0.9235
+# QATOM t=32.04 dir=FD w=1.63885251 e=0.299956200054 i=3555 Em=0.0125 gid=0
+# QATOM t=33.08 dir=FD w=1.49433324 e=0.273505099664 i=4286 Em=0.1809 gid=2288
+# QATOM t=34.16 dir=FD w=1.64900481 e=0.301814357159 i=3616 Em=0.0007 gid=0
+# QATOM t=35.22 dir=FD w=1.52322876 e=0.278793795295 i=7806 Em=0.1656 gid=1342
+t=   36.00 -1.20e-15 | 1.6326 15.87  71527  132  23251  23637 | 1.4255 14.74 | 5.46e-03 1.88e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=19.834
+# PAR t=36.00 gids n=4620 mint=4632 ret=12 age=[8 14 20] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [2.9 11.9 33.4] | stamps n=20262 tp=0 age50=10 max=30 | idfrac=0.9281
+# QATOM t=36.30 dir=FD w=1.64477443 e=0.30104007829 i=5789 Em=0.0000 gid=0
+# QATOM t=37.60 dir=FD w=1.64393532 e=0.300886497421 i=1021 Em=0.0044 gid=0
+# QATOM t=38.90 dir=FD w=1.14502794 e=0.209572384309 i=7156 Em=0.9099 gid=1805
+t=   40.00 -1.20e-15 | 1.6286 15.85  71417  129  24927  25436 | 1.4246 14.71 | 8.80e-03 2.04e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=20.275
+# PAR t=40.00 gids n=5071 mint=5088 ret=17 age=[10 17 24] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [2.8 12.4 36.9] | stamps n=23946 tp=0 age50=12 max=34 | idfrac=0.9319
+# QATOM t=40.10 dir=FD w=1.63904319 e=0.299991099262 i=7533 Em=0.0121 gid=0
+# QATOM t=41.48 dir=FD w=1.37416938 e=0.251511727714 i=8795 Em=0.3753 gid=430
+# QATOM t=42.82 dir=FD w=1.63451665 e=0.299162614658 i=5877 Em=0.0184 gid=0
+t=   44.00 -1.20e-15 | 1.6256 15.83  71327  121  26565  27317 | 1.4240 14.68 | 7.38e-03 1.65e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=20.124
+# PAR t=44.00 gids n=5446 mint=5475 ret=29 age=[12 20 27] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [2.5 12.0 41.0] | stamps n=27517 tp=0 age50=14 max=38 | idfrac=0.9352
+# QATOM t=44.30 dir=FD w=1.42197028 e=0.26026063851 i=2364 Em=0.3260 gid=4214
+# QATOM t=45.74 dir=FD w=1.64243074 e=0.300611117254 i=121 Em=0.0077 gid=0
+# QATOM t=47.24 dir=FD w=1.35549849 e=0.248094428148 i=2342 Em=0.4506 gid=4557
+t=   48.00 -1.20e-15 | 1.6232 15.79  71158  135  28266  29119 | 1.4232 14.66 | 1.41e-02 2.84e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=19.785
+# PAR t=48.00 gids n=5766 mint=5813 ret=47 age=[14 23 31] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [2.0 10.9 44.5] | stamps n=30757 tp=0 age50=16 max=42 | idfrac=0.9381
+# QATOM t=48.74 dir=DF w=2.20008628 e=0.402677797326 i=5529 Em=0.5173 gid=154
+# QATOM t=50.22 dir=FD w=1.16542925 e=0.213306400763 i=29 Em=0.8281 gid=412
+t=   52.00 -1.20e-15 | 1.6215 15.78  71133  153  29972  30994 | 1.4228 14.64 | 9.83e-03 2.95e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=20.256
+# PAR t=52.00 gids n=6077 mint=6146 ret=69 age=[16 26 34] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [1.8 10.0 48.6] | stamps n=34074 tp=0 age50=19 max=46 | idfrac=0.9409
+# QATOM t=52.12 dir=FD w=1.37043661 e=0.250828524063 i=5704 Em=0.3437 gid=58
+# QATOM t=53.78 dir=FD w=1.62109469 e=0.296706018164 i=426 Em=0.0173 gid=5638
+# QATOM t=55.34 dir=DF w=2.22085286 e=0.406478667177 i=989 Em=0.7819 gid=1824
+t=   56.00 -1.20e-15 | 1.6208 15.77  71053  152  31766  32934 | 1.4222 14.62 | 7.09e-03 1.92e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=20.257
+# PAR t=56.00 gids n=6383 mint=6482 ret=99 age=[18 29 38] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [1.4 9.5 52.3] | stamps n=37220 tp=0 age50=21 max=50 | idfrac=0.9436
+# QATOM t=56.96 dir=FD w=1.6448924 e=0.301061670355 i=1252 Em=0.0062 gid=0
+# QATOM t=58.48 dir=DF w=2.2390969 e=0.409817840582 i=8861 Em=0.5426 gid=2162
+t=   60.00 -1.20e-15 | 1.6200 15.76  71035  124  33537  34832 | 1.4220 14.60 | 1.02e-02 2.29e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=20.226
+# PAR t=60.00 gids n=6646 mint=6784 ret=138 age=[20 33 41] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [1.0 9.1 56.1] | stamps n=40500 tp=0 age50=23 max=54 | idfrac=0.9463
+# QATOM t=60.06 dir=FD w=1.46168892 e=0.267530268616 i=6173 Em=0.1980 gid=5021
+# QATOM t=61.52 dir=FD w=1.58007353 e=0.289197989481 i=4744 Em=0.0863 gid=1256
+# QATOM t=62.90 dir=FD w=1.63976035 e=0.300122360811 i=6390 Em=0.0124 gid=0
+t=   64.00 -1.20e-15 | 1.6199 15.76  71014  118  35382  36685 | 1.4217 14.58 | 7.12e-03 1.64e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=19.343
+# PAR t=64.00 gids n=6926 mint=7104 ret=178 age=[22 35 45] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [0.9 8.0 59.6] | stamps n=43921 tp=0 age50=24 max=58 | idfrac=0.9489
+# QATOM t=64.48 dir=FD w=1.5072032 e=0.275860664986 i=1532 Em=0.1950 gid=5751
+# QATOM t=66.00 dir=FD w=1.62359107 e=0.297162925693 i=6308 Em=0.0319 gid=6832
+# QATOM t=67.60 dir=FD w=1.63488392 e=0.29922983589 i=1723 Em=0.0051 gid=5078
+t=   68.00 -1.20e-15 | 1.6201 15.75  70993  115  37279  38542 | 1.4215 14.58 | 7.99e-03 2.30e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=20.249
+# PAR t=68.00 gids n=7192 mint=7414 ret=222 age=[23 38 49] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [0.8 6.7 63.6] | stamps n=47361 tp=0 age50=26 max=62 | idfrac=0.9513
+# QATOM t=69.00 dir=FD w=1.42653602 e=0.26109629787 i=414 Em=0.2121 gid=418
+# QATOM t=70.14 dir=DF w=2.11560565 e=0.387215460934 i=5030 Em=0.7676 gid=3051
+# QATOM t=71.42 dir=FD w=1.61592661 e=0.295760113383 i=4691 Em=0.0219 gid=6470
+t=   72.00 -1.20e-15 | 1.6201 15.74  70945  139  39187  40541 | 1.4213 14.57 | 7.74e-03 2.09e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=19.759
+# PAR t=72.00 gids n=7401 mint=7682 ret=281 age=[25 42 52] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [0.7 6.6 67.8] | stamps n=50269 tp=0 age50=28 max=66 | idfrac=0.9538
+# QATOM t=72.80 dir=DF w=2.31540654 e=0.423784654835 i=3291 Em=0.4305 gid=12
+# QATOM t=74.10 dir=FD w=1.15799672 e=0.211946038152 i=5917 Em=0.8832 gid=93
+# QATOM t=75.44 dir=FD w=1.56966041 e=0.287292095665 i=1016 Em=0.0379 gid=4692
+t=   76.00 -1.20e-15 | 1.6206 15.75  70979  107  41117  42516 | 1.4213 14.56 | 6.58e-03 1.73e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=19.798
+# PAR t=76.00 gids n=7593 mint=7938 ret=345 age=[26 45 56] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [0.7 6.4 71.4] | stamps n=52862 tp=0 age50=30 max=70 | idfrac=0.9562
+# QATOM t=76.62 dir=FD w=1.35417687 e=0.247852534075 i=1206 Em=0.4545 gid=1343
+# QATOM t=77.90 dir=DF w=1.78153423 e=0.326070975491 i=4979 Em=1.3071 gid=3423
+# QATOM t=79.06 dir=FD w=1.41979399 e=0.259862317155 i=1373 Em=0.2221 gid=1059
+t=   80.00 -1.20e-15 | 1.6213 15.76  71028   94  43133  44535 | 1.4215 14.56 | 1.09e-02 2.52e-02 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=19.483
+# PAR t=80.00 gids n=7760 mint=8170 ret=410 age=[28 48 60] | sdeath tp n=0 [0.0 0.0 0.0] ba n=4096 [0.6 5.4 74.7] | stamps n=55320 tp=0 age50=32 max=74 | idfrac=0.9586
+# QATOM t=80.18 dir=FD w=1.23523938 e=0.226083620769 i=2615 Em=0.6905 gid=4112
+# QATOM t=81.34 dir=DF w=2.53936431 e=0.464775239651 i=7026 Em=0.4971 gid=6175
+# QATOM t=82.30 dir=FD w=1.49361293 e=0.273373263225 i=3568 Em=0.2130 gid=2369
