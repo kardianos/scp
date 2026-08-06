@@ -1,0 +1,115 @@
+# freecell — v89 free-cell substance test (exp=ring)
+# laws = laws_V2g VERBATIM (defaults): C=1 w1=1.65 w2=2.9 q_detune=1.2
+# gamma_res=0.25 gamma_res_m=0.1 p_gate=8 lock_floor=0.005 k_dep=1.2 k_dep_m=2 cap=2.5
+# e_s0=1 es_floor=0.05 e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
+# comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
+# quant_A0=1.15 quant_mode=2 (A0eff=1.15)
+# v91 radiance (laws_V3r candidate A): k_rad=0.05 p_rad=4 rad_clock=0
+# v91 cantus (coherent-channel candidate B): k_cant=1 k_tune=0.2 cant_tau=1e+18 cant_seed=1 cant_grow=0
+# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=10 reg_gate=0 reg_f0=0
+# GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
+# bath=1 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=36 dt=0.02 T=30 seed=20260802 diag_every=200
+# JAM sweeps=800 max_step=1.928e-04 (tol 1.0e-04, k_end=0.0010) — witness for the settle
+# CARVE removed 7625 bath cells (clear=14.15)
+# SEED ring: n=48 x=0.4700 d*=1.694293 d_edge=1.694293 edges=48
+# SEED noise: amp=0.15 (e1-class churn)
+# SEED cantus: sgg=1 on 48 tagged-pair slots
+# INIT NC=22421 slots=203164 live=162699 phi_nom=1.2394 z_live=14.51 dbar=1.4090 sigma_d=14.41% E0=24153.021047097
+#
+# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+t=    0.00 +0.00e+00 | 1.2394 14.51 162699    0      0      0 | 1.4090 14.41 | 0.00e+00 0.00e+00 |  56.4000 1.0000  0.0000 12.9527 0.021  0.67 | edge_dev mean=0.0000 max=0.0000 gg=0.0000 shape_dev=0.0000 xbar=0.4700
+# CONVTAG t=0.00 rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
+# CANT t=0.00 a_tag=1.0000 a_max=1.0000 xl_tag=0.4700 nlock=48 tune=0.000000
+# REG t=0.00 tp n=48 rho=[0.000 0.000 0.000 0.000] gr=0.00000 fl=0.000 | ba n=203023 rho=[0.000 0.000 0.000 0.000] gr=0.00000 fl=0.000
+t=    4.00 -1.51e-16 | 1.2394 13.94 156256   15  10464  22417 | 1.4356 13.61 | 1.08e-02 8.20e-03 |  56.3906 0.9998  0.0824 11.8869 0.146  4.88 | edge_dev mean=0.1109 max=0.2492 gg=0.8084 shape_dev=26.4902 xbar=0.4696
+# CONVTAG t=4.00 rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
+# CANT t=4.00 a_tag=1.0000 a_max=1.0000 xl_tag=0.4700 nlock=48 tune=0.215646
+# REG t=4.00 tp n=46 rho=[0.000 0.919 0.981 0.994] gr=0.00205 fl=0.543 | ba n=190930 rho=[0.000 0.000 0.000 0.000] gr=0.00000 fl=0.003
+t=    8.00 -4.52e-16 | 1.2394 13.64 152860  133  17158  35868 | 1.4458 13.02 | 7.98e-03 7.67e-03 |  56.3795 0.9996  0.0653 11.0016 0.375  5.71 | edge_dev mean=0.1306 max=0.2270 gg=0.7723 shape_dev=46.8675 xbar=0.4695
+# CONVTAG t=8.00 rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
+# CANT t=8.00 a_tag=1.0000 a_max=1.0000 xl_tag=0.4700 nlock=48 tune=0.739775
+# REG t=8.00 tp n=47 rho=[0.942 0.979 0.989 0.994] gr=0.01552 fl=0.894 | ba n=184030 rho=[0.000 0.000 0.000 0.000] gr=0.00000 fl=0.061
+t=   12.00 -4.52e-16 | 1.2394 13.40 150169  315  22481  45992 | 1.4517 12.51 | 6.76e-03 8.27e-03 |  56.3710 0.9995  0.0853 10.2944 0.583  5.90 | edge_dev mean=0.1513 max=0.3107 gg=0.7006 shape_dev=62.2730 xbar=0.4706
+# CONVTAG t=12.00 rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
+# CANT t=12.00 a_tag=1.0000 a_max=1.0000 xl_tag=0.4700 nlock=48 tune=1.283848
+# REG t=12.00 tp n=46 rho=[0.975 0.984 0.992 0.994] gr=0.02562 fl=1.000 | ba n=179033 rho=[0.000 0.000 0.000 0.000] gr=0.00000 fl=0.209
+t=   16.00 -6.02e-16 | 1.2395 13.21 148046  493  27292  54652 | 1.4558 12.06 | 5.57e-03 8.91e-03 |  56.3617 0.9993  0.1263  9.6605 0.479  6.19 | edge_dev mean=0.1652 max=0.4902 gg=0.6615 shape_dev=74.7235 xbar=0.4694
+# CONVTAG t=16.00 rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
+# CANT t=16.00 a_tag=1.0000 a_max=1.0000 xl_tag=0.4700 nlock=48 tune=1.770514
+# REG t=16.00 tp n=44 rho=[0.976 0.987 0.995 0.998] gr=0.03207 fl=0.977 | ba n=174995 rho=[0.000 0.000 0.000 0.017] gr=0.00000 fl=0.403
+t=   20.00 -6.02e-16 | 1.2394 13.07 146537  647  31654  62030 | 1.4590 11.67 | 6.09e-03 7.65e-03 |  56.3531 0.9992  0.1599  9.1097 0.271  6.27 | edge_dev mean=0.1797 max=0.6777 gg=0.6418 shape_dev=85.2153 xbar=0.4700
+# CONVTAG t=20.00 rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
+# CANT t=20.00 a_tag=1.0000 a_max=1.0000 xl_tag=0.4700 nlock=48 tune=2.141763
+# REG t=20.00 tp n=47 rho=[0.974 0.984 0.992 0.998] gr=0.03501 fl=0.936 | ba n=171799 rho=[0.000 0.000 0.000 0.136] gr=0.00000 fl=0.620
+# QATOM t=20.44 dir=FD w=1.64999971 e=0.301996452322 i=1800 Em=0.0000
+t=   24.00 -7.53e-16 | 1.2394 12.97 145345  744  35541  68567 | 1.4614 11.30 | 5.37e-03 7.31e-03 |  56.3446 0.9990  0.1929  8.6140 0.458  6.73 | edge_dev mean=0.1842 max=0.7867 gg=0.6188 shape_dev=93.8889 xbar=0.4693
+# CONVTAG t=24.00 rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
+# CANT t=24.00 a_tag=1.0000 a_max=1.0000 xl_tag=0.4700 nlock=48 tune=2.431955
+# REG t=24.00 tp n=48 rho=[0.964 0.982 0.992 0.996] gr=0.02763 fl=0.979 | ba n=169043 rho=[0.000 0.000 0.009 0.304] gr=0.00000 fl=0.843
+t=   28.00 -7.53e-16 | 1.2395 12.88 144370  896  39300  74411 | 1.4633 10.97 | 5.17e-03 6.76e-03 |  56.3328 0.9988  0.2202  8.1695 0.292  6.71 | edge_dev mean=0.2074 max=0.9710 gg=0.6011 shape_dev=101.4098 xbar=0.4693
+# CONVTAG t=28.00 rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
+# CANT t=28.00 a_tag=0.9792 a_max=1.0000 xl_tag=0.4700 nlock=47 tune=2.730999
+# REG t=28.00 tp n=49 rho=[0.963 0.981 0.993 0.996] gr=0.02893 fl=0.959 | ba n=166797 rho=[0.000 0.000 0.018 0.367] gr=0.00000 fl=0.910
+t=   30.00 -7.53e-16 | 1.2394 12.85 144014  890  41046  77169 | 1.4642 10.83 | 5.57e-03 6.85e-03 |  56.3281 0.9987  0.2305  7.9532 0.208  6.94 | edge_dev mean=0.2224 max=0.9946 gg=0.5742 shape_dev=104.9182 xbar=0.4692
+# CONVTAG t=30.00 rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000
+# CANT t=30.00 a_tag=0.9792 a_max=1.0000 xl_tag=0.4700 nlock=47 tune=2.853790
+# REG t=30.00 tp n=49 rho=[0.957 0.981 0.992 0.996] gr=0.02474 fl=0.959 | ba n=165794 rho=[0.000 0.000 0.019 0.366] gr=0.00000 fl=0.917
+#
+# RESULT drift_rel -7.531e-16
+# RESULT births 41046 deaths 77169 beta_returns 0 beta_energy 0.000000e+00
+# RESULT conv rough=0.000000 cond=3.321958 evap=0.000000 backs=0.000000 rad=0.000000
+# RESULT credit qcnvD=2084.791265 qcnvF=1.648797
+# RESULT cantus a_tag=0.9792 a_max=1.0000 xl_tag=0.4700 nlock=47 tune_total=2.853790
+# RESULT reg tp n=49 rho=[0.9575 0.9813 0.9915 0.9959] gr=0.024735 fl=0.9592 | ba n=165794 rho=[0.0000 0.0000 0.0185 0.3659] gr=0.000000 fl=0.9169
+# RESULT convtag rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 net=0.000000
+# RESULT geometry phi_nom=1.2394 z_live=12.85 dbar=1.4642 sigma_d=0.1083
+# RESULT truss edge_dev_mean=0.222398 edge_dev_max=0.994603 shape=(0.1991,30.6432,32.4100) shape0=(0.0000,83.8861,83.8861)
+# EDGE 0 22373-22374 d=1.33220 dev=-0.36210 gg=0.1529 gpl=0.0487
+# EDGE 1 22374-22375 d=1.58549 dev=-0.10880 gg=0.8400 gpl=0.1443
+# EDGE 2 22375-22376 d=1.48616 dev=-0.20813 gg=0.5345 gpl=0.7916
+# EDGE 3 22376-22377 d=1.54152 dev=-0.15277 gg=0.7093 gpl=0.8836
+# EDGE 4 22377-22378 d=1.52991 dev=-0.16439 gg=0.6860 gpl=0.8500
+# EDGE 5 22378-22379 CHANNEL DEAD
+# EDGE 6 22379-22380 d=1.52511 dev=-0.16919 gg=0.6837 gpl=0.6155
+# EDGE 7 22380-22381 CHANNEL DEAD
+# EDGE 8 22381-22382 d=1.48865 dev=-0.20565 gg=0.5626 gpl=0.7462
+# EDGE 9 22382-22383 d=1.50043 dev=-0.19386 gg=0.5962 gpl=0.2990
+# EDGE 10 22383-22384 d=1.52773 dev=-0.16657 gg=0.6727 gpl=0.8859
+# EDGE 11 22384-22385 d=1.45574 dev=-0.23855 gg=0.4578 gpl=0.1622
+# EDGE 12 22385-22386 d=1.62519 dev=-0.06911 gg=0.9352 gpl=0.0296
+# EDGE 13 22386-22387 d=1.64676 dev=-0.04753 gg=0.9676 gpl=0.9538
+# EDGE 14 22387-22388 d=1.52456 dev=-0.16973 gg=0.6759 gpl=0.8981
+# EDGE 15 22388-22389 CHANNEL DEAD
+# EDGE 16 22389-22390 d=1.52552 dev=-0.16877 gg=0.6887 gpl=0.7072
+# EDGE 17 22390-22391 d=1.58622 dev=-0.10807 gg=0.8486 gpl=0.7491
+# EDGE 18 22391-22392 d=1.50872 dev=-0.18557 gg=0.6012 gpl=0.7157
+# EDGE 19 22392-22393 d=1.50985 dev=-0.18444 gg=0.6125 gpl=0.9238
+# EDGE 20 22393-22394 CHANNEL DEAD
+# EDGE 21 22394-22395 CHANNEL DEAD
+# EDGE 22 22395-22396 d=1.63889 dev=-0.05540 gg=0.9639 gpl=0.5554
+# EDGE 23 22396-22397 d=1.51071 dev=-0.18358 gg=0.6218 gpl=0.1117
+# EDGE 24 22397-22398 d=1.54139 dev=-0.15290 gg=0.7187 gpl=0.7492
+# EDGE 25 22398-22399 d=1.50345 dev=-0.19084 gg=0.6101 gpl=0.2250
+# EDGE 26 22399-22400 d=1.57579 dev=-0.11851 gg=0.8240 gpl=0.1627
+# EDGE 27 22400-22401 d=1.50761 dev=-0.18669 gg=0.6021 gpl=0.4926
+# EDGE 28 22401-22402 d=1.48869 dev=-0.20561 gg=0.4978 gpl=0.6778
+# EDGE 29 22402-22403 d=1.51267 dev=-0.18162 gg=0.6264 gpl=0.9248
+# EDGE 30 22403-22404 d=1.75125 dev=+0.05696 gg=0.9016 gpl=0.2848
+# EDGE 31 22404-22405 d=1.51541 dev=-0.17888 gg=0.6358 gpl=0.9695
+# EDGE 32 22405-22406 d=1.51860 dev=-0.17569 gg=0.6278 gpl=0.6434
+# EDGE 33 22406-22407 d=1.46762 dev=-0.22667 gg=0.4927 gpl=0.0240
+# EDGE 34 22407-22408 d=1.54437 dev=-0.14992 gg=0.7409 gpl=0.5655
+# EDGE 35 22408-22409 d=1.50701 dev=-0.18728 gg=0.6181 gpl=0.7868
+# EDGE 36 22409-22410 d=1.55704 dev=-0.13725 gg=0.7884 gpl=0.0221
+# EDGE 37 22410-22411 d=1.52968 dev=-0.16461 gg=0.7110 gpl=0.4644
+# EDGE 38 22411-22412 d=1.52239 dev=-0.17190 gg=0.6794 gpl=0.3791
+# EDGE 39 22412-22413 d=1.51646 dev=-0.17783 gg=0.6522 gpl=0.9813
+# EDGE 40 22413-22414 d=1.51727 dev=-0.17702 gg=0.6435 gpl=0.9445
+# EDGE 41 22414-22415 d=1.52936 dev=-0.16493 gg=0.6807 gpl=0.9362
+# EDGE 42 22415-22416 d=1.50282 dev=-0.19147 gg=0.6007 gpl=0.6185
+# EDGE 43 22416-22417 CHANNEL DEAD
+# EDGE 44 22417-22418 d=1.51758 dev=-0.17672 gg=0.6353 gpl=0.9781
+# EDGE 45 22418-22419 d=1.53679 dev=-0.15751 gg=0.6999 gpl=0.4967
+# EDGE 46 22419-22420 CHANNEL DEAD
+# EDGE 47 22420-22373 d=1.54477 dev=-0.14952 gg=0.7624 gpl=0.9005

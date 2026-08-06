@@ -657,6 +657,22 @@ broke, informatively:
     brighter" bar FAILS; what the measurement says instead is that a
     species' brightness is set by its metabolism (intake), not its
     emitter count.
+    **[CORRECTION, dated 2026-08-06 (COMBINE §5.2 uniform
+    recompute):** the UUD baseline "0.0230" above is NOT
+    reproducible — the uniform metric (D-cell DF events/t.u.,
+    window [1000,2000], per-run i0) measures the UUD singles at
+    **0.0110** (seed 20260802) and **0.0150** (s314159), UDD at
+    0.0170 (reproduced), U-absorption UUD 0.0150/0.0170 vs UDD
+    0.0090. Corrected statement: UDD is 1.1–1.5× BRIGHTER than a
+    single UUD in absolute, but **sub-linear per emitter**
+    (0.55–0.77× per D voice) because its intake structure is
+    halved — the intake-limitation thesis survives at per-emitter
+    grain; the "dimmer in absolute" clause is RETRACTED. The
+    species line-ratio discrimination below survives with updated
+    numbers: UUD absorption:emission 1.13–1.36 vs UDD 0.53 =
+    2.1–2.6× apart. Independent confirmation of the corrected
+    baseline: two coexisting UUD chords emit pooled 0.0220 = 2.00×
+    the 0.0110 single (COMBINE CO-T2F).]**
   - **The healthy-D locus is universal, not a species tag.** UDD's
     healthy D voice emits at w = 1.6774 ± 0.0071; UUD's at 1.6710 ±
     0.0052 — indistinguishable (Δ = 0.006 ± 0.009), because both D
@@ -767,11 +783,14 @@ edges from §4.3, as they landed:
 - **Species row: STRENGTHENED and corrected (P-D4).** The second
   species lives (UDD, open chain exactly as the kernel's seed
   comment predicted, ret 0.37@5000) — but species identification
-  works by **line pattern/ratios** (absorption:emission 2.3× apart
-  between species), NOT by shifted loci: the healthy-D locus is a
+  works by **line pattern/ratios** (absorption:emission 2.1–2.6×
+  apart between species, numbers per the dated 6.5.4 correction),
+  NOT by shifted loci: the healthy-D locus is a
   universal balance attractor (UUD 1.6710±0.0052, UDD 1.6774±0.0071,
-  Δ = 0.006±0.009). Brightness is intake-limited, not
-  emitter-limited (UDD dimmer with twice the emitters). If the
+  Δ = 0.006±0.009). Brightness is intake-limited at per-emitter
+  grain — sub-linear per emitter when intake halves; the "dimmer in
+  absolute" clause was a baseline error, RETRACTED in the dated
+  6.5.4 correction (UDD is 1.1–1.5× brighter absolute). If the
   re-grade is accepted, the row should read: species by ratios and
   pattern on a universal line locus — which is how real spectroscopy
   reads abundances.

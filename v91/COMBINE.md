@@ -185,4 +185,228 @@ is a RESULT (written in §5 with its pair identified), not a nuisance.
 
 ## 5. RESULTS (one subsection per experiment, written at harvest)
 
-(registered empty; filled in run order)
+**5.1 CO-AL (chord − lock − tuner) — the positive control kills the
+ORGANISM as expected, and the ablation cleanly attributes F2 to the
+law, not the apparatus.** (harvested 2026-08-06, first arm home)
+
+Death of the organized object, quantified: first channel death at
+**t=36** (the unlocked triangle cannot hold a gate from the start);
+the D voice — the metabolic engine — drains 0.837→0.017 by t≈300;
+ret crosses the 0.15 death bar at t=560; at close 2/3 edges are
+CHANNEL DEAD, ggm=0, x_D=0.001. The registered death bar (ret<0.15
+by 1500) PASSES (crossed at 560). What remains is not nothing: in a
+WARM medium the corpse is a bath-coupled ember whose ret fluctuates
+0.09–0.26 (close 0.193) as tagged matter re-exchanges with the bath
+— organization dies, stuff keeps trading. (Bath activity unchanged:
+bath DF rate 11.4/t.u. vs frozen-arm 11.0 — the apparatus knobs
+never touched the medium.)
+
+**Effect-survival scoring:** F1 dead (as required for the control);
+**F2 SURVIVES the lock's removal** — the parameter-free doublet law
+holds on the dying remnant at resid rms **1.6% (DF, n=14) / 0.9%
+(FD, n=20)**, indistinguishable from the frozen reference (1.7%/
+1.4%). The law rides each cell's own load wherever a conversion
+fires; the lock's real contribution is keeping the OBJECT alive
+(gates, D-loading, directed flux) — not making the spectrum lawful.
+(ASTRO's dying control showed DF rms 4.5% — that broader figure
+accumulates over its full 5000 t.u. death tail; in AL's 1500 t.u.
+window the law is tight. Event rate is the other casualty: 14 DF in
+1300 t.u. vs the frozen arm's 80 in the same window — unlocked
+matter is ~6× dimmer with no standing direction.) F5 dead with the
+organism (no directed pattern to score).
+
+**5.2 CO-T2F (two frozen UUD chords, isolated coexistence) — every
+effect survives company; one registered bar failed and the failure
+traced to a WRONG BASELINE in the standing record, not to physics.**
+(harvested 2026-08-06)
+
+State at 5000: joint ret = **0.4529** (bar [0.35,0.65] ✓), both D
+voices strong (x_D 0.557 / 0.575), all six lock slots held
+(nlock=6, a_tag=1.0). Degradation at the single-chord ensemble's own
+rate: T0's U pair drains to ~0 by close and T1 leans (conn 0.500) —
+2 degraded triangle-instances across the two t2 arms' 4, matching
+the 2/4 topology fragility the SINGLE chord shows across seeds
+(ASTRO 6.5.6). No interference claim is supportable from stability.
+
+Effect-survival scoring, per registered bar:
+  - **(d) F5 door flux-machine: PASS both chords.** Sign patterns
+    (+0.00116,+0.00094,−0.00251) and (+0.00119,+0.00139,−0.00251);
+    turnovers 189 / 162 t.u. (band [100,300]). Two flux machines run
+    their standing directed currents side by side.
+  - **(b) F2 doublet law: PASS with the known degradation caveat.**
+    FD rms 1.5%/1.9% both chords; DF rms T0 2.7% ✓, T1 5.3% ✗ —
+    decomposed: T1 early [1000,2500) rms **0.52%** (n=15), late
+    **6.1%** with redward mean −0.012 (n=47) = ASTRO 6.5.5's
+    partial-death broadening as T1's U voices lean out late. The law
+    is tight wherever topology is intact — in company as alone.
+  - **(c) F8 balance line: universality PASS, and sharpened.**
+    Between the two coexisting chords |Δlocus| = 0.0011 (full
+    window) / 0.014±0.019 (healthy window) — indistinguishable. But
+    BOTH loci sit 0.01–0.02 above the isolated-single references,
+    moving TOGETHER: the healthy-D locus is a shared OPERATING POINT
+    set by the box/medium state (the law's w(x_D) at the common
+    x_D), not a universal constant — cohabitants share it; the
+    law-referenced residual is the true invariant (≈0 everywhere).
+  - **(e) F6 brightness: PREDICTION CONFIRMED — against a CORRECTED
+    baseline.** Pooled D-line rate [1000,2000] = **0.0220** ev/t.u.
+    = **2.00×** the seed-matched isolated single (0.0110); each
+    chord emits inside the single-chord band (0.0130 / 0.0090 vs
+    singles 0.0110–0.0150). Two full metabolisms DO double the
+    light. The registered numeric band (0.036–0.052) is void — it
+    was anchored on ASTRO 6.5.4's "UUD 0.0230", which a uniform
+    recompute cannot reproduce (see the correction recorded in
+    ASTRO 6.5.4, dated 2026-08-06: UUD singles measure 0.0110 /
+    0.0150 D-line, so UDD's 0.0170 was never "dimmer than UUD" —
+    sub-linear per emitter, yes; dimmer in absolute, no). This arm's
+    "failed replication" is the campaign's first isolated
+    interferer: an erroneous standing number, caught exactly as the
+    protocol intends.
+  - **(f) mutual force: bar FAIL as registered; the protected CLAIM
+    survives.** True separation (from snapshots — the kernel's
+    diag `sep=` meter is wrap-broken when a triangle straddles the
+    boundary and read 2.67 for a true 8.00; display-only, kernel
+    untouched; fcs-based true-sep is now the standing method): one
+    one-time settle-era contraction 8.00→7.07 by t≈500 (axial),
+    then 4500 t.u. of bounded fluctuation 6.5–7.1 with slope
+    **−6.8e-5 ± 4.2e-5 /t.u. (1.6σ, consistent with zero)** — no
+    persistent attraction between two stable bodies at range ~7,
+    as the π-flat far-field result demands. The |sep−8|<0.5 bar
+    failed only because it did not budget the settle displacement.
+  - **(g) F3 π between the pair: PASS at this window's resolution.**
+    Between-zone profile (midpoint fixed center, [4000,5000], 101
+    frames): π deviations ≤ ±5e-4 ≈ 1 sem bin-to-bin, level 1.0418
+    = the global bath π; no resolvable structure between the
+    bodies.
+  - **ILAG (new meter): no EXTRA cross-object door coupling.**
+    Cross-triangle FD-after-DF medians 30/35 t.u. vs ~45–48
+    memoryless nulls = 1.4× — the SAME factor as the within-object
+    lag structure (ASTRO 6.5.1's 1.4–2×); a common bath rhythm
+    explains both; nothing pairwise resolved at range 7.
+
+**5.3 CO-AR (chord − radiance) — the sharpest attribution of the
+campaign: STABILITY belongs to the lock, METABOLISM and LIGHT belong
+to radiance.** (harvested 2026-08-06)
+
+**F1 PASS exactly as predicted**: ret@1500 = 0.4399 ∈ [0.36,0.66],
+ret@5000 = **0.4366** ∈ [0.35,0.65], conn = 1.000, nlock=3,
+a_tag=1.0 at close. The chord does not need the radiance field to
+live.
+
+Everything else went DARK — and that is the attribution, not a
+failure of the chord:
+  - **The conversion door is radiance-driven, ~200×.** Bath door
+    events collapse from ~115,000 (radiance on, warm) to **504**
+    over the same window; the object's own door fires **2 events in
+    4000 t.u.** (vs ~190). Global conversion ledger: cond 688 with
+    rad=0.000, vs cond 21,243 + rad 23,914 radiance-on.
+  - **The object's books stop: tagged cond 0.67, evap 0.000
+    (exactly), net +0.35** — against the standing balanced books
+    (29.2 ~ 31.1). Without radiance the frozen chord is an
+    economically STATIC hold — bonds and matter kept, no standing
+    exchange current. F5 (the flux-machine sign pattern) is not
+    violated; its currency is absent. **The metabolizing-matter
+    picture (eat-at-U/shine-at-D, turnover 167–179 t.u.) is a
+    radiance-era phenomenon at the door grain.**
+  - **F2/F6/F8 unscoreable — the ablation removed the observable.**
+    n=1 events per line class (residuals unquotable at n=1). No
+    lines without the drive; the "loci shift?" question is moot. F9
+    confirmed removed: the bath's 2.35 glow band is gone (residual
+    sparse bath DF at 2.17–2.27), bath xbar 0.32→0.20.
+  - **Operating mode: starved-lean even in a WARM bath** (U voices
+    0.016/0.025, D 0.569) — U-side feeding is itself
+    radiance-borne. Cross-arm unification: cool-with-radiance (D-E2:
+    ~700 bath events) ≈ warm-without-radiance (504) — door traffic
+    behaves as ONE currency ≈ noise_amp × radiance drive, and the
+    frozen chord holds its band across the full ~200× traffic
+    range measured.
+
+No ablation cascade is needed: the single-knob difference IS the
+isolated interferer. Design note for the identity lane (ASTRO §7a,
+REGISTRY §5.5): a door-carried parcel gid presumes door traffic,
+which this arm measures as radiance-conditional — at V2g defaults
+the door is near-silent, so the lane's identity currency must
+either ride the radiance-driven door or be carried below the atom
+grain.
+
+**5.4 CO-T2N (two frozen UUD chords, in contact) — contact
+coexistence for shape; COMPETITIVE STARVATION for the books: the
+first D-voice collapse of the frozen-chord programme, with
+mirror-asymmetric ledgers.** (harvested 2026-08-06; replicate
+launched per §4 protocol)
+
+Registered classification lands on **(c) contact coexistence** for
+geometry — sep oscillates 2.39–2.82 around ~2.55 for 5000 t.u., no
+fusion into a six-voice molecule, no runaway — with an outcome the
+classification didn't name for the books: **T1 dies of starvation
+at close** (xUDD 0.005/0.007/**0.101** at 5000 — every prior frozen
+degradation kept D ≥ 0.5; this is the programme's first D
+collapse), terminal in the last ~500 t.u. (0.48@4500 → 0.10@5000;
+one lock slot lost at t=4376; T0 healthy-lean 0.066/0.084/0.587;
+joint ret 0.3049).
+
+The door ledger [1000,5000] identifies the mechanism:
+  - **Mirror-asymmetric books:** T0 net **+0.00023**/t.u. (+0.92
+    over the window) vs T1 net **−0.00049**/t.u. (−1.96 ≈ its whole
+    D store). The isolated single runs +0.0004.
+  - **The loser is cut off from food, not robbed at the door:**
+    T1's apex U voice received **1 feeding event in 4000 t.u.**
+    (T0's U voices: 31–33); T1's D kept emitting at the full
+    load-driven rate (0.0132/t.u., the highest of all six voices)
+    until the store emptied — D emission is load-blind to intake,
+    so the starving chord SHINES ITSELF TO DEATH.
+  - **No door-to-door coupling even at contact:** ILAG 31.5/41.2
+    t.u. vs ~46 nulls = the same 1.4× common-mode factor as the
+    far pair and the within-object structure — the competition is
+    in the shared feeding field, not in event-correlated exchange.
+  - **F2 holds through the death:** T0 DF rms 2.1%, T1 DF rms 3.7%
+    (n=60, mean −0.007 mild-redward) — parameter-free to the end.
+  - **F8 as operating point, again:** the three healthy coexisting
+    chords across both t2 arms sit on ONE box locus — 1.6877,
+    1.6888, 1.6879 (±0.001) — while the starving T1's locus walks
+    blueward (1.7815±0.0276), the drained-voice signature tracking
+    its falling x_D. The spectrogram reads the competition in real
+    time: winner on the balance line, loser walking blueward.
+
+Interference verdict, stated with its statistics: contact-range
+coexistence degrades ONE partner's books into net drain while the
+other holds net gain — consistent with competition for the shared
+contact-zone deliverable flux (the intake-limited-luminosity
+economy at two-body grain). n=1; the seed-314159 replicate
+(t2near_s314159, launched at harvest per the §4 protocol) is the
+discriminator between "unlucky ensemble instance" and "contact
+starves a partner"; its result lands in §5.6.
+
+**5.5 CO-AT (chord − tuner, frozen lock kept) — the tuner is NOT a
+removable part: frozen gauges without their tuner are barely better
+than no lock at all.** (harvested 2026-08-06)
+
+Registered question: does a FROZEN lock still need its tuner at
+hold-time? Answer — yes, absolutely:
+  - **Organization dies on the no-lock schedule:** first edge
+    CHANNEL DEAD at **t=48** (the no-lock control AL: t=36); x_D
+    crashes below 0.3 by **t=72**. The gauges then die WITH their
+    bonds — nlock 3→2 by t=300, **0 by t=720**, a_max=0.0
+    thereafter (a gauge lives on its pair slot; edge death takes
+    the gauge with it — "frozen" protects against tau-decay, not
+    against substrate loss). tune=0.000000 verifies the tuner
+    really was off.
+  - **Stability out of band:** ret 0.2211@1500, 0.1647@5000 (bar
+    [0.36,0.66]/[0.35,0.65]), conn 0.333 — a slower slide than AL
+    (some bond persists longer) but the same destination: the
+    lean-ember mode, not a living chord.
+  - **F5 erased:** the U+,U+,D− sign pattern never establishes
+    (measured nets −0.00045/+0.00025/−0.00051; the D voice
+    window-averages x=0.083 — drained from t≈72). No standing
+    directed current without the tuner.
+  - **F2 wears the death signature:** DF rms 6.6% with mean −0.026
+    redward over the long decline (the 6.5.5 broadening); FD stays
+    tight at 2.4%.
+
+Attribution: what CANTUS measured for growing pairs — coupled
+lock+tune holds, each half alone dies — now holds at the FROZEN
+chord limit. The tuner maintains the phase alignment the gates
+need; the frozen gauge field alone neither locks nor holds. The
+standing "frozen chord" recipe is therefore irreducibly
+lock+tuner+medium-drive (and §5.3: its metabolism additionally
+needs radiance). Nothing to cascade: single-knob, cleanly
+attributed.
