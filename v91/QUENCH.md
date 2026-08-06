@@ -133,6 +133,45 @@ grain.** (harvested 2026-08-06)
   as originally defined; (iii) no lock apparatus anywhere (k_cant=0
   — whatever persists, persists by contact + recondensation alone).
 
+**4.2 Q5 (the decisive extension: amp 8, T=5000; log
+`runs/quench/q5_beam8_t5000.log`) — GENESIS BY DYNAMICS HAS ITS
+FIRST POSITIVE.** (harvested 2026-08-06)
+
+* **Bar (i) PASS, decisively:** population 2,517 (plateau, t=500) →
+  **2,113 at t=5000 = 84%** — a slow ~16% leak over 4,500 t.u.
+  (implied ensemble half-life ≈ 20,000 t.u., two orders beyond the
+  radiance null's 80–140). The cloud is persistent, not slowly
+  diluting.
+* **Bar (ii) at pair grain: NUCLEATION PROVEN.** A stamped pair is
+  co-continuous from beam passage to run end — **stamp age 4,926
+  t.u.** Against the measured bath stamp hazard (memoryless, mean
+  261 t.u.): P(churn) = e^(−4926/261) ≈ 7×10⁻⁹. That is a BOUND
+  PAIR by any statistical standard — created by a transient beam
+  and contact/recondensation alone, **no lock apparatus in the box**
+  (k_cant=0, bar iii ✓). The ≥3-cluster criterion is NOT scorable
+  from the quartile-grain diag — instrument gap recorded; a
+  per-cell gid dump (print-only apparatus, battery cycle) is the
+  registered follow-up if the user wants the cluster census.
+* Steady state at close: ages q25/50/75 = 59/208/881 (long tail —
+  ~6% of episodes estimated ≥1600 under the fitted tail, not
+  directly countable at this diag grain); 5,532 standing stamped
+  pairs; idfrac 0.984; mints ≈ retires (70,524 / 68,411 cumulative).
+* Reading, stated carefully: the three prior lanes measured that
+  GATES cannot create. The quench — creation by dynamics — makes
+  (a) a persistent identity-bearing ensemble and (b) at least one
+  statistically-certain bound pair, in the law regime, from nothing
+  but a passing beam. What it has NOT made: a chord (no lock
+  apparatus was present to hold one; the CANTUS unison wall stands
+  untested by this arm because nothing here reached the m=2
+  geometry). The registered next question if pursued: a quench WITH
+  the honest lock+tuner apparatus present-but-unseeded
+  (cant_grow=0, cant_seed=0 — gauges CANNOT arm, so no ignition
+  confound) cannot test chord formation; chord formation from
+  quench debris requires the self-growing gate, which ignites —
+  the quench and the gate problem MEET here, and the design-only
+  escalation (step joint-maturity) or the field-side lane are the
+  registered ways through.
+
 ## 5. Verdict
 
 (after all arms; decisions are the user's)
