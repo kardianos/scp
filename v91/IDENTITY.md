@@ -303,6 +303,204 @@ design-only first).
   limited, so I-G2b must select par_mature against the measured
   stamp-age distribution, not slot ages alone.
 
-## 5. Verdict
+**4.1 M-I1 + M-I2 (warm bath demographics; stationary by t≈600;
+log `runs/identity/mi1_bath_warm.log`).** Live episodes 2555–2585 of
+2703 cells (95%); churn balanced at 4.85 mints ≈ 4.83 retires per
+t.u. → per-cell episode hazard 0.00188/t.u., mean episode life ≈
+530 t.u.; live-age census q25/50/75 = 170/440/941. No episode
+flutter — I-G4 does not fire. Slot deaths: median ≈ 2 t.u., q90 ≈
+100–140 (the churny fringe; the standing core is long-lived).
+Identity-carried delivery fraction 0.9936 (I-D1 near-exact).
+**The decisive measurement — bath STAMP ages are memoryless with
+hazard = 2 × episode hazard:** predicted median 261·ln 2 = 184 vs
+measured 181 (and ~21,600 standing stamps). Consequence, computed
+BEFORE any law arm: P(stamp age > par_mature) = exp(−M/261) → at
+the registered M=400, **~22% of bath stamps (~4,700 slots) are
+mature at any instant**; at the menu's top M=800, ~4.6% (~1,000).
+The §2.1 closed-form claim ("the maturity clock closes ignition
+structurally") is REFUTED by measurement: a warm bath whose
+episodes live 530 t.u. manufactures stamp age simply by persisting.
+The registered honest-failure clause (I-G2b) is armed; the design
+round (§4.3) must reason from the measured hazard, not the slot-age
+rule.
 
-(after all arms; decisions are the user's)
+**4.2 M-I3 + M-I4 (the triad at identity grain; logs
+`runs/identity/mi3_chord_warm.log`, `mi4_chord_cool.log`).**
+
+* **The first complete "same matter" statement — and it localizes
+  in the D voice.** Warm: the D engine holds **gid 3 from seed to
+  t=5000** (age 5000; ret 0.4975 byte-matches the ASTRO reference —
+  the meter touched nothing). Cool: same — gid 3, age 5000, in the
+  ring-killing medium. The registered M-I3 bar (triad gids alive at
+  5000) is MET by the D voice and FAILED by the U voices, and the
+  failure is the discovery:
+* **U matter is replaceable fuel.** Warm U voices end as gids
+  21472/21759 (ages 780/722) — each U episode died and was reborn
+  ~6 times over the run as its load dipped below par_lo during deep
+  lean excursions (the t2far/t2near x→0.000–0.001 dips, now read at
+  identity grain). Cool: one U identity-dead at close (x = 0.004 —
+  inside the hysteresis dead band, exactly as designed), one a
+  35-t.u. rebirth. **The flux machine is ONE persistent identity
+  plus consumable matter at the intake positions.** The M-I4 bar
+  ("U gids survive lean") FAILS as registered — honestly: matter
+  that empties IS dead under the lane's own ontology; par_lo stays
+  0.002 (no threshold fishing to make empty matter carry identity).
+* Bond-grain: tagged-pair slot deaths over 5000 = 4 (edge blinks,
+  ages 0.1–11.5); 2 of 3 bond stamps current at close (U rebirths
+  clear stamps; re-stamp follows re-mint within ~par_tau); stamp
+  max-age 4101 (a bond stamp carried >4000 t.u.). idfrac
+  0.9959 warm / 0.9364 cool — I-D1 bar (≥0.9) PASS everywhere.
+
+**4.3 DESIGN ROUND (registered 2026-08-06, after the meter arms,
+BEFORE any law arm — selections argued from measured numbers).**
+
+* **I-G1 = I-A** (binary continuity). Bond pdp/pdm are robust and
+  the flow-shaped form adds a constant with no measured need.
+* **I-G2 = par_tau 10.** Re-stamp latency after a U rebirth ≈
+  par_tau; smallest menu value = fastest honest recovery, and the
+  REGISTRY prior (τ=10 selected) carries.
+* **I-G2b — the maturity clock SPLITS by arm class (the measured
+  stamp hazard forces it):**
+  - **L-I1 (maintenance; cant_grow=0, gauges seeded, nothing else
+    ever grows): par_mature=0 — no ramp.** The clock's
+    anti-ignition job does not exist in this arm (bath gauges are
+    never seeded and cannot grow), and any ramp would convert every
+    U-rebirth stamp reset into a kill window. The gate is bare
+    identity continuity: the thing REGISTRY measured the lock
+    cannot manufacture.
+  - **L-I2 / L-I3 (self-growing): par_mature=800 (menu top), with
+    the REVISED prediction on record:** the measured bath stamp
+    hazard (memoryless, mean 261 t.u.) leaves ~4.6% of ~21.6k bath
+    stamps mature at any instant (~1,000 slots) — **ignition is
+    now EXPECTED**, not excluded; §2.1's structural claim is
+    already refuted by the meter, and the arm tests the revised
+    arithmetic. The design-only escalation if L-I2 ignites as
+    revised-predicted: joint maturity on min(stamp age, both
+    endpoint episode ages) at ~2400 t.u. (bath joint fraction
+    ~1e-4) — outside the registered menu, therefore NOT run this
+    campaign; recorded for the user.
+* **L-I1 expectation, quantified from the meter:** during a U dead
+  window the bond's gate target is 0 and the seeded gauge decays as
+  e^(−Δ/50); the U dead windows are the lean-floor excursions (rare
+  — ~6 per U per 5000 t.u.; duration set by refill from the D's
+  shine). If dead windows run ≳50 t.u. the gauge dips below hold
+  and the bond faces the unlocked death clock (~36–48 t.u.) — the
+  arm measures exactly whether identity-gated maintenance rides
+  through its own honest gaps. Acceptance unchanged (§3.3):
+  ret@1500 ∈ [0.36,0.66], ret@5000 ≥ 0.35, bath dark, battery
+  green.
+
+**4.4 L-I2 + L-I3 (self-growing arms; logs
+`runs/identity/li2_flam.log`, `li3_selfasm.log`).**
+
+* **L-I2 — THE FOURTH IGNITION, measured as revised-predicted.**
+  nlock = **2595** at t=1500 (bar ≤ 3), a_max 0.996, tune_total
+  32,086 — the warm bath crystallizes under the identity gate at
+  par_mature=800 exactly as §4.1's stamp-hazard arithmetic said it
+  would (~1,000 mature stamps to seed the cascade). Two causes, now
+  separated: (i) mature bath stamps are ABUNDANT (the 261-t.u.
+  memoryless hazard), and (ii) **the maturity RAMP leaks
+  pre-maturity force** (r_id = age/M gives partial growth targets
+  everywhere from t=0). The identity-continuity VARIABLE remains
+  unmanufacturable — what ignited is the ramp's leak plus the
+  bath's own longevity. Registered bar FAILS as revised-predicted;
+  §2.1's original structural claim stands refuted twice (meter,
+  then law arm).
+* **L-I3 — the deadlock prediction is FALSIFIED, and the
+  falsification is CONFOUNDED.** The unseeded chord self-armed
+  (a_tag 0.97, two edges alive) and lived to 1500 (ret 0.3740,
+  conn 1.0) — but inside a box that had itself ignited (nlock
+  2598). The mechanism is the same ramp leak: pre-maturity partial
+  force bridged the t≈36–48 unlocked death window, for the chord
+  AND for the bath. A self-armed chord in a crystallized medium is
+  not self-assembly by the programme's honest-medium standard
+  (CANTUS/REGISTRY). Recorded as: ramped maturity = a self-assembly
+  bridge and an ignition leak — the SAME mechanism, inseparable at
+  this design point.
+* **Design-only escalation, recorded for the user (not run —
+  outside the registered menu):** a STEP maturity (no force below
+  M) on the JOINT clock min(stamp age, both endpoint episode ages)
+  at M ≈ 2400 would close the leak (bath joint fraction ~1e-4) —
+  and with the leak closed, self-assembly re-deadlocks (no bridge).
+  The coherent reading of all four self-growing rounds across three
+  lanes: **identity preserves; it does not create.** Genesis of
+  coherence needs a different door (S2 §2 / the field-side mode
+  label), not a cleverer gate.
+
+**4.5 L-I1 (identity-gated maintenance — the acceptance arms; logs
+`runs/identity/li1_maint.log`, `li1_maint_s314159.log`).**
+
+**Acceptance FAILS as registered, both seeds, both windows:**
+ret@1500 = 0.2364 / 0.2656 (bar [0.36,0.66]); ret@5000 = 0.2739 /
+0.1831 (bar ≥ 0.35). Self-carried identity at honest decay
+(cant_tau=50, no frozen assertion) does NOT match the frozen bound
+(0.4975 / 0.4114).
+
+What it measurably DOES — a new state class, reported precisely:
+  - **Alive at t=5000, without assertion, in both seeds**: bonds
+    locked at close (nlock=2, a_tag 0.65/0.73), conn 0.667/1.0,
+    matter oscillating 0.09–0.47 through deep dips WITH RECOVERIES
+    (0.099@1000 → 0.397@2000; 0.093@4500 → 0.183@5000). The
+    references: flow-gated maintenance faded to death-grade (152 vs
+    140); no lock dies by t=560. **Identity-gating is the first
+    maintenance that keeps the chord alive to 5000 with honest
+    decay.** The bath stayed dark by construction (nlock = the
+    object's own slots only).
+  - **The shortfall's mechanism, at identity grain:** every fuel
+    (U) episode death opens a stamp gap; each gap is a gauge-decay
+    window (target 0 for the dead span + re-stamp latency ≈
+    par_tau); the chord survives its gaps but bleeds retention
+    through them — maintenance inherits the fuel's mortality. Seed
+    20260802's engine held **gid 3 for the full 5000** (same
+    matter, maintained, unfrozen — the statement the lane was built
+    to make); seed 314159's rough state killed even the engine's
+    episode (D gid dead at close, age 0) — under honest
+    maintenance, nothing is guaranteed the engine's persistence
+    either.
+
+## 5. Verdict (all arms complete; drift ≤ 2e-15; DECISIONS ARE THE USER'S)
+
+1. **The lane exists, exact, inert, verified.** Episode gids +
+   parcel labels + identity stamps in both kernels behind
+   par_tau/par_gate/par_form/par_lo/par_hi/par_mature; defaults
+   byte-identical to the pre-lane kernel (−O0, drift included);
+   meter physics-silent at byte grain in both kernels; battery ALL
+   GREEN 93 with the purity line pinned. The C↔Go pair's
+   pre-existing FP divergence envelope is now measured and recorded
+   (P-ID1 amended, cause demonstrated on HEAD binaries).
+2. **Identity is cheap and near-exact to carry.** The last-depositor
+   parcel label is 99.4–99.6% exact at steady state; the whole
+   apparatus is bookkeeping riding on deliveries.
+3. **The first "same matter" statements — and matter has a class
+   structure.** The chord's D engine keeps one gid for its whole
+   life (warm, cool, and under honest maintenance in one of two
+   seeds); its U intake positions are REPLACEABLE FUEL (episodes
+   die and refill ~6×/5000 t.u.). The warm bath is 95% live
+   episodes with mean life 530 t.u. — a medium of short-lived
+   identities.
+4. **Identity-continuity is unmanufacturable — and still not a
+   self-assembly gate.** The binary continuity variable cannot be
+   forged by the lock (gids are birth events). But the maturity
+   RAMP leaks pre-maturity force: fourth ignition (nlock 2595, as
+   revised-predicted from the measured 261-t.u. stamp hazard), and
+   the same leak bridges L-I3's deadlock (confounded
+   self-assembly in a crystallized box). Step-maturity on the joint
+   episode+stamp clock (~2400) would close the leak and re-deadlock
+   self-assembly — design-only, recorded. **Across four
+   self-growing rounds in three lanes: identity preserves; it does
+   not create.**
+5. **The acceptance target is NOT met — and the miss is
+   informative.** Identity-gated maintenance holds LIFE to 5000
+   without assertion (first ever) at roughly half the frozen
+   retention, failing the registered bars because maintenance
+   inherits fuel mortality. The frozen bound remains
+   assertion-dependent. What the whole arc now says: config
+   assertion holds shape; ontological identity preserves engines
+   and enables assertion-free survival; NEITHER reaches the frozen
+   bound honestly, and nothing creates. The remaining registered
+   door is field-side identity — the S2 amplitude mode label —
+   where the parcel is the wave and the identity gap cannot open.
+6. **Nothing was adopted.** All knobs default inert; laws_V2g
+   verbatim; the battery gates; every arm registered before it ran;
+   the two §2 closed-form errors (ignition arithmetic; the deadlock)
+   are corrected by measurement in place, not rewritten.

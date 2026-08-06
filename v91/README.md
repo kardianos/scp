@@ -249,18 +249,34 @@ identity (gid at the conversion door, no background), acceptance
 target = the frozen-bound chord. Nothing adopted; decisions are the
 user's.
 
-## IDENTITY lane (2026-08-06, user-directed: "first regrade B4, then open parcel-carried ontological-identity lane")
+## Status after the IDENTITY campaign (2026-08-06, user-directed: "first regrade B4, then open parcel-carried ontological-identity lane")
 
 Both decisions executed in order: **B4 re-graded** ABSENT → STRUCTURAL
-(v90/REALITY.md §B4, dated row). **The identity lane is OPEN** —
-**`IDENTITY.md`** is the registration and record (thesis from REGISTRY
-§5.5; episode-gid + parcel-label + stamp design with the maturity
-clock; closed-form fourth-ignition derivation and the
-maintenance-vs-self-assembly deadlock registered BEFORE any run;
-meter-first protocol M-I1–4, then a design round, then law arms
-L-I1–3 with the measured acceptance target: match the frozen bound
-ret 0.5 @ 5000 by SELF-carried identity, bath dark, battery green).
-Kernel work user-authorized; all knobs default inert.
+(v90/REALITY.md §B4, dated row), then the lane EXECUTED end-to-end —
+**`IDENTITY.md` is the complete record** (registration before any
+kernel edit; apparatus landed both kernels, inert, verified P-ID0/2
+byte-grade + battery ALL GREEN 93 with the purity line pinned; P-ID1
+amended by measurement — the C↔Go pair's pre-existing 1-ulp FP
+divergence demonstrated on HEAD binaries; meter arms; design round;
+law arms). Headlines: **(1)** the programme's first "same matter"
+statements — the chord's D engine keeps ONE gid its whole life
+(warm, cool, and maintained-unfrozen in one seed) while the U intake
+positions are REPLACEABLE FUEL (episodes die/refill ~6×/5000); the
+warm bath is 95% live episodes, mean life 530 t.u. **(2)** The
+identity-carried parcel label is 99.4–99.6% exact — identity is
+cheap. **(3)** The maturity-ramp gate is the FOURTH IGNITION (nlock
+2595, revised-predicted from the measured 261-t.u. bath stamp
+hazard before the run); the same ramp leak bridges the self-assembly
+deadlock only inside a crystallized box — across four self-growing
+rounds in three lanes, **identity preserves; it does not create.**
+**(4)** The acceptance target is NOT met: identity-gated honest
+maintenance holds the chord ALIVE to t=5000 without assertion (the
+first assertion-free survival; flow-gating faded, no-lock dies at
+560) but at ret 0.27/0.18 vs the frozen 0.50/0.41 — maintenance
+inherits fuel mortality. The frozen bound stays
+assertion-dependent; the remaining registered door is FIELD-side
+identity (the S2 amplitude mode label). NOTHING ADOPTED; knobs
+default inert; decisions the user's.
 
 ## Status after the COMBINE campaign (2026-08-06, user-directed: "do combined experiments to see which effects survive in the presence of others")
 
