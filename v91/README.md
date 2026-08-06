@@ -249,6 +249,14 @@ identity (gid at the conversion door, no background), acceptance
 target = the frozen-bound chord. Nothing adopted; decisions are the
 user's.
 
+## COMBINE lane (2026-08-06, user-directed: "do combined experiments to see which effects survive in the presence of others")
+
+**`COMBINE.md`** is the campaign doc — registered (effect inventory
+with quantitative signatures, arms, bars, ablation-on-failure
+protocol) BEFORE any arm ran; results land in its §5 one experiment
+at a time, quantified at harvest. Config-only on the standing binary;
+nothing adopted.
+
 ## Status after the ASTRO campaign (2026-08-05, user-directed: "make it so" on the far-field + spectroscopy probes)
 
 **`ASTRO.md` is the complete record** (pre-registration §0–§3 with
