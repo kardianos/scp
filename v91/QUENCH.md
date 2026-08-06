@@ -95,7 +95,43 @@ dimensionality caveat applies and is recorded).
 
 ## 4. Results
 
-(registered empty; filled per arm)
+**4.1 Q1 + Q2 (beam dumps into law-regime foam; logs
+`runs/quench/q1_beam4.log`, `q2_beam8.log`) — the quench makes a
+SELF-SUSTAINING MATTER CLOUD; the decay null is beaten at ensemble
+grain.** (harvested 2026-08-06)
+
+* **The unperturbed foam is identity-dark** (0 live episodes at
+  t ≤ 4 — every episode in these runs is beam-descended). The beam
+  (gone by t=30) births a population that grows to a **plateau ≈
+  1,800 episodes (amp 4) / 2,400 (amp 8) by t ≈ 750 and holds it
+  FLAT to t=1500 — no decay trend over the final 750 t.u.** The
+  RADIANCE null (hoard t_half 80–140, which would have gutted the
+  patch by t ≈ 500) is REFUTED for law-regime quench debris.
+* **Persistence is flame-like — the ensemble lives while
+  individuals churn.** Episode ages at close: q25/50/75 = 34/150/536
+  (amp 4), 71/241/708 (amp 8); mints ≈ retires in steady state. The
+  patch holds 4,700–7,100 stamped PAIRS at any instant, and at
+  least one pair's stamp is continuous from beam passage to run end
+  (stamp max 1,489/1,477). Identity-carried delivery fraction
+  0.90/0.985.
+* **Deeper quench → bigger, older cloud** (amp 8 vs 4: population
+  +38%, median age +60%, idfrac up) — monotone in the compression
+  depth, as a genesis mechanism should be.
+* **Mechanism, read off B7:** at e_cond=0 the patch's own radiated
+  glow (rad = 137/864 in the ledger) recondenses locally instead of
+  escaping — the cloud-chamber vacuum FARMS passing energy into
+  persistent populated matter. The optics regime (e_cond=99) would
+  let the glow escape; the dichotomy is the B7 split itself.
+* **Registration slip, recorded:** the §3 Q-DET age bar (>1600 t.u.)
+  is unsatisfiable in a T=1500 run (max possible age ≈ 1,490) — an
+  arithmetic error in the registration, not a soft bar. The
+  DECISIVE extension is registered here BEFORE it runs: **Q5 = Q2
+  at T=5000** (config-only; launched at harvest). Bars: (i) the
+  population still ≥ half its plateau at t=5000 (persistence is not
+  a slow dilution); (ii) Q-DET as registered becomes satisfiable —
+  any ≥3-cluster of episodes ≥1600 with mutual stamps ⇒ NUCLEATION
+  as originally defined; (iii) no lock apparatus anywhere (k_cant=0
+  — whatever persists, persists by contact + recondensation alone).
 
 ## 5. Verdict
 
