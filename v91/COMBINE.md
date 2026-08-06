@@ -506,3 +506,48 @@ starvation; E1's edge-census inversion). New instrument findings:
 kernel diag `sep=` wrap-broken for straddling objects (fcs true-sep
 is the standing method); door-net drain is a warning light, intake
 disconnection is the kill.
+
+## 7. Addendum campaigns (dated 2026-08-06, user-directed task list)
+
+Honesty note on registration order: the §7.1 and §7.3 runs were
+LAUNCHED before this text landed (their designs are the standing
+§5.4/§5.6 criteria and the §6.5.5 U-row bar, single-knob arms both;
+no new bars were written after seeing data). §7.2's arms are
+registered here BEFORE their first run, apparatus verified and
+battery-gated first.
+
+### 7.1 Starvation-risk ensemble (single-knob seed replicates)
+
+t2near at seeds 271828 and 141421 (n 2 → 4 contact pairs). Bar:
+none — a rate measurement. Report: partner-death count at t=5000
+per the §5.4 criteria (any voice-set with all x < 0.15 sustained at
+close), the door-net and intake-connection ledgers per §5.4/§5.6.
+
+### 7.2 MIXED-SPECIES PAIR (apparatus: `tri2_kind`, registered before runs)
+
+The COMBINE §2 not-config-reachable item, now reachable: `tri2_kind`
+(default −1 = follow `tri_kind`; byte-inert verified; battery gated)
+sets the SECOND triangle's kind. Arms (standing frozen recipe, seed
+20260802, T=5000, full meters + par_tau=10):
+  - **MS-F (far, tri2_sep=8):** UUD + UDD isolated coexistence.
+    Registered bars: both species alive at 5000 (per-species matter
+    criterion); each species' D line at its own multiplicity
+    (pooled D-DF rates ≈ 0.011 + 0.017 within seed spread); the
+    line-ratio species discrimination HOLDS in one box (UUD
+    absorption:emission ≫ UDD's, band 2.1–2.6× from the corrected
+    baseline); loci shared (both healthy-D loci within ±0.02).
+  - **MS-N (near, default sep 2.6):** contact. Registered open
+    (classification as §3's T2N): fusion / disruption /
+    coexistence; PLUS the new question — is competitive starvation
+    species-BIASED? (UDD has half the intake structure — predicted
+    LOSER if starvation occurs; on record.)
+
+### 7.3 Heavy-chord U statistics (registered before run)
+
+tri_xU = 0.40 (single knob vs the frozen reference): a
+heavier-loaded U pair emits more (DF rate rises with load). Bars:
+U-DF n ≥ 30 in [1000,5000] (vs the statistics-poor ~10–20 at
+xU=0.28); the parameter-free law holds on the enlarged U-emission
+sample (resid |mean| ≤ 0.02, rms ≤ 5% — the §6.5.5-conditional
+U-row bar, now with statistics); chord survival reported (a heavier
+chord may not hold — that is itself a selection datum).

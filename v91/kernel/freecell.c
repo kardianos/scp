@@ -216,6 +216,8 @@ typedef struct {
     double tri_xU, tri_xD, tri_doff;
     double tri2_sep;                /* COM separation of the second triangle */
     int    tri2_k2;                 /* Z3 branch of the second triangle */
+    int    tri2_kind;               /* second triangle's kind; -1 = follow tri_kind
+                                     * (mixed-species pair: 0=UUD,1=UDD)  */
     double oct_x, oct_doff;
     double shear_eps, shear_t;      /* instantaneous deviatoric strain test */
     /* DS — double slit on the free substrate (v90 P1; DS.md). Wall is
@@ -314,7 +316,7 @@ static void cfg_defaults(void)
     P.pair_pp = 1; P.pair_qq = 1; P.seedlock = 1;
     P.ring_n = 6; P.ring_x = 0.325; P.ring_doff = 0.0;
     P.tri_kind = 0; P.tri_branch = 0; P.tri_xU = 0.20; P.tri_xD = -1; P.tri_doff = 0;
-    P.tri2_sep = 2.6; P.tri2_k2 = 0;
+    P.tri2_sep = 2.6; P.tri2_k2 = 0; P.tri2_kind = -1;
     P.oct_x = 0.325; P.oct_doff = 0.0;
     P.shear_eps = 0; P.shear_t = 0;
     P.slit_wallx = 16.0; P.slit_th = 1.6; P.slit_sep = 9.0; P.slit_hw = 2.0;
@@ -433,6 +435,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "tri_doff")) P.tri_doff = atof(v);
     else if (!strcmp(k, "tri2_sep")) P.tri2_sep = atof(v);
     else if (!strcmp(k, "tri2_k2")) P.tri2_k2 = atoi(v);
+    else if (!strcmp(k, "tri2_kind")) P.tri2_kind = atoi(v);
     else if (!strcmp(k, "ring_x")) P.ring_x = atof(v);
     else if (!strcmp(k, "ring_doff")) P.ring_doff = atof(v);
     else if (!strcmp(k, "oct_x")) P.oct_x = atof(v);
@@ -2951,6 +2954,8 @@ int main(int argc, char **argv)
         for (int t = 0; t < ntri; t++) {
             double ox = t == 0 ? 0.0 : P.tri2_sep;
             int kbr = t == 0 ? P.tri_branch : P.tri2_k2;
+            int kind_t = (t == 1 && P.tri2_kind >= 0) ? P.tri2_kind
+                                                      : P.tri_kind;
             int v0 = base_i + 3 * t;
             for (int kk = 0; kk < 3; kk++) {
                 int i = v0 + kk;
@@ -2960,7 +2965,7 @@ int main(int argc, char **argv)
                 tag[i] = 1;
                 tri_v[t][kk] = i;
             }
-            if (P.tri_kind == 0) {
+            if (kind_t == 0) {
                 /* UUD equilateral, edge dUU (= dUD to FP): vertices at
                  * 90/210/330 degrees, circumradius d/sqrt(3) */
                 double de = dUU + P.tri_doff, R = de / sqrt(3.0);
@@ -3019,6 +3024,9 @@ int main(int argc, char **argv)
                 truss_dstar[truss_n++] = dUD;
             }
         }
+        if (ntri == 2 && P.tri2_kind >= 0)
+            printf("# SEED tri: MIXED pair T0=%s T1=%s\n",
+                   P.tri_kind ? "UDD" : "UUD", P.tri2_kind ? "UDD" : "UUD");
         printf("# SEED tri: kind=%s ntri=%d xU=%.4f xD=%.4f wU=%.4f wD=%.4f (wD/wU=%.6f)\n",
                P.tri_kind ? "UDD" : "UUD", ntri, xU, xD, wU, wD, wD / wU);
         printf("# SEED tri: d*_UU=%.6f d*_UD(m=2)=%.6f d*_DD=%.6f branch_k=%d doff=%+.3f\n",

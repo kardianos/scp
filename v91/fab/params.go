@@ -87,6 +87,7 @@ type Cfg struct {
 	TriXU, TriXD, TriDoff    float64
 	Tri2Sep                  float64
 	Tri2K2                   int
+	Tri2Kind                 int // second triangle's kind; -1 = follow TriKind
 	OctX, OctDoff            float64
 	ShearEps, ShearT         float64
 	// DS — double slit on the free substrate (DS.md); wall = carved
@@ -223,6 +224,7 @@ func Defaults() Cfg {
 	p.TriDoff = 0
 	p.Tri2Sep = 2.6
 	p.Tri2K2 = 0
+	p.Tri2Kind = -1
 	p.OctX = 0.325
 	p.OctDoff = 0.0
 	p.ShearEps = 0
@@ -475,6 +477,8 @@ func (p *Cfg) SetKV(k, v string) {
 		p.Tri2Sep = atof(v)
 	case "tri2_k2":
 		p.Tri2K2 = atoi(v)
+	case "tri2_kind":
+		p.Tri2Kind = atoi(v)
 	case "ring_x":
 		p.RingX = atof(v)
 	case "ring_doff":

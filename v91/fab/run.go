@@ -624,9 +624,13 @@ func (s *Sim) Run() {
 		for t := 0; t < s.ntri; t++ {
 			ox := 0.0
 			kbr := P.TriBranch
+			kindT := P.TriKind
 			if t != 0 {
 				ox = P.Tri2Sep
 				kbr = P.Tri2K2
+				if P.Tri2Kind >= 0 {
+					kindT = P.Tri2Kind
+				}
 			}
 			v0 := baseI + 3*t
 			for kk := 0; kk < 3; kk++ {
@@ -637,7 +641,7 @@ func (s *Sim) Run() {
 				s.tag[i] = 1
 				s.triV[t][kk] = i
 			}
-			if P.TriKind == 0 {
+			if kindT == 0 {
 				// UUD equilateral, edge dUU (= dUD to FP)
 				de := dUU + P.TriDoff
 				R := de / math.Sqrt(3.0)
