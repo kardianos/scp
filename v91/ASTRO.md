@@ -797,3 +797,11 @@ edges from §4.3, as they landed:
 
 Nothing in §6 was adopted; every arm was config-only on the standing
 binary, and the §6.2 registration was committed before the first run.
+
+**[DECIDED 2026-08-06 — user: "first regrade B4, then open
+parcel-carried ontological-identity lane." Both executed in that
+order: (b) v90/REALITY.md §B4 re-graded ABSENT → STRUCTURAL as
+proposed above (the dated row carries the corrected brightness
+numbers and the radiance-conditionality edge from COMBINE CO-AR);
+(a) the identity lane is OPEN — `v91/IDENTITY.md` is the lane's
+registration and record.]**

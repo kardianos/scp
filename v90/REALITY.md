@@ -147,13 +147,38 @@ the only forward crack, and it is drive-dependent and seed-fragile.
 See A3. Within-channel exact; across processes the action atom spreads
 19×. Reality: one constant to 1e-10.
 
-### B4. No electromagnetic spectrum, no radiating structure — ABSENT
-Consonant matter is EXACTLY dark (detune-0 roughness silent; sub-atom
-demands never fire); composite EMF is gated on fifth transport, which
-currently dies (S2 entry: the fifth collapses under the derived
-correction). There are no emission lines, no atomic spectra, no
-photon-from-bound-state. The mechanism slot exists (rough radiates on
-detune) but nothing stable drives it.
+### B4. Spectra of species — STRUCTURAL (re-graded 2026-08-06, user decision; was ABSENT)
+**Re-grade executed on the v91 ASTRO/COMBINE evidence** (ASTRO.md §4.3,
+§6.5.4-as-corrected, §6.5.5; COMBINE.md §5.2–§5.3). What is now
+measured: bound species EMIT AND ABSORB AT LINES — a parameter-free
+doublet per voice, w = (2.9 | 1.65)/(1 + 1.2·x_cell), per-event
+residual mean 2e-4, rms 1.7% (warm) / 0.34% (cool), seed-robust,
+load-tracking; a species is detectable at range by light alone (D line
+30–60× over a spectrally-dark bath); the anti-Stokes gap sits at the
+law constant w2/w1 to 0.3%; metabolism is spectrally visible
+(eat-at-U / shine-at-D); death has a spectrogram (redward broadening
+on partial death; a draining voice's line walks blueward). Species
+identification runs on the LINE-RATIO PATTERN, not on shifted loci:
+the healthy-D locus is a shared medium operating point (UUD
+1.6710±0.0052, UDD 1.6774±0.0071; coexisting chords ±0.001), while
+absorption:emission ratios differ 2.1–2.6× between species —
+abundance-style spectroscopy. Brightness numbers per the dated
+correction: UUD singles 0.0110/0.0150 D-line ev/t.u., UDD 0.0170
+(sub-linear per emitter — intake-limited), two coexisting chords
+0.0220 = 2.00× (additive by metabolism).
+Why STRUCTURAL and not QUANTITATIVE: no correspondence is claimed to
+any real atomic constant — the numbers are the model's own law read
+back parameter-free. Standing edges, kept honest: the emitter is the
+conversion door of bound matter under the RADIANCE candidate drive
+(k_rad=0.05; at laws_V2g defaults the door is near-silent — COMBINE
+CO-AR measured all luminosity as radiance-era, ~200× door collapse
+without it); U lines are statistics-poor off intact topology and
+camouflaged on the bath band; these are door-event spectra, not a
+free-propagating EM wave spectrum (B7's regime split stands).
+*(The pre-re-grade text recorded: consonant matter exactly dark at
+detune 0; composite EMF gated on fifth transport; the mechanism slot
+existed but nothing stable drove it — the frozen chord under radiance
+is the stable driver it lacked.)*
 
 ### B5. No charge, no Coulomb, no exclusion — ABSENT
 FCQ (charge as the incomplete harmonic) is a structural candidate
