@@ -172,6 +172,57 @@ FIRST POSITIVE.** (harvested 2026-08-06)
   escalation (step joint-maturity) or the field-side lane are the
   registered ways through.
 
-## 5. Verdict
+**4.3 Q3 + Q4 (the 3D arms) — two honest nulls with one bonus.**
+(harvested 2026-08-06)
 
-(after all arms; decisions are the user's)
+* **Q3 (pulse through the live warm bath): unresolvable at global
+  grain, exactly as §2.3 pre-warned.** The global census sits AT the
+  bath baseline from t=300 (≈8,770 live ≈ the M-I1 95% fraction;
+  ages q50 405 vs the bath's 440; idfrac 0.997). Any wake signal
+  needs spatial gid attribution — the same per-cell gid dump
+  registered in §4.2 as the instrument follow-up.
+* **Q4 (driven blob collision): the collision NEVER HAPPENS — B2
+  reconfirmed.** sep 8.00 → 8.37 over 1500 t.u., closing −0.0005,
+  vTotalCOM 5.7e-5: the phase-tilt drive cannot translate dense
+  matter (merging-is-not-transport, measured again). The dense-grain
+  collision quench is UNREACHABLE at this law — not failed,
+  impossible to arrange. Bonus: each isolated blob grows a
+  persistent identity HALO (population rising to 4,847 at close,
+  the §4.1 cloud phenomenon at dense seeds, in 3D vacuum).
+
+## 5. Verdict (all arms harvested; decisions are the user's)
+
+1. **The user's protocol WORKS, and it is the programme's first
+   measured act of creation.** Fast field compression + release (a
+   transient beam in the law-regime foam) births a SELF-SUSTAINING
+   matter cloud (plateau ~1,800–2,500 episodes; 84% retained at
+   t=5000; implied ensemble half-life ~20,000 t.u. — two orders
+   beyond the radiance hoard-decay null) containing at least one
+   statistically-certain BOUND PAIR (stamp co-continuity 4,926
+   t.u.; P(churn) ≈ 7e-9) — with no lock, no tuner, no gate
+   anywhere. Where four gate rounds created nothing, dynamics
+   created. Monotone in compression depth.
+2. **Mechanism: B7 read forward.** At e_cond=0 the debris
+   recondenses its own glow — the cloud-chamber vacuum farms
+   passing energy into persistent populated matter. The optics
+   regime would let the glow escape; the work-function lane (task
+   #22) will decide whether one honest table can hold both
+   behaviors.
+3. **Limits, measured:** no chords (nothing in the box could hold
+   m=2 geometry; chord-from-debris re-encounters the self-growing
+   gate's ignition problem — the registered ways through are the
+   step joint-maturity design or the field-side lane); the 3D
+   dense-grain collision is unreachable (B2); bath-embedded wakes
+   are unresolvable without the per-cell gid dump (print-only
+   apparatus, battery cycle — registered).
+4. **The scheduled-anneal knob:** the user's condition ("authorize
+   only if config-only shows a pulse") is now MET by the Q-DET
+   pair-grain positive. Noted as authorized-by-condition and
+   DEFERRED: the beam form already realizes compress-and-release
+   cleanly for the standing questions; the anneal form (whole-box
+   schedule) is the stronger instrument and waits for the user's
+   next word rather than being spent unilaterally.
+5. **Nothing was adopted.** All arms config-only on the standing
+   binary; battery green throughout; the one registration
+   arithmetic slip (the >1600 bar at T=1500) is recorded in place
+   and corrected by the registered Q5 extension, not rewritten.
