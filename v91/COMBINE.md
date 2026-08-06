@@ -551,3 +551,28 @@ xU=0.28); the parameter-free law holds on the enlarged U-emission
 sample (resid |mean| ≤ 0.02, rms ≤ 5% — the §6.5.5-conditional
 U-row bar, now with statistics); chord survival reported (a heavier
 chord may not hold — that is itself a selection datum).
+
+### 7.4 RESULTS (harvested 2026-08-06)
+
+**§7.1 ensemble — contact starvation is the RULE.** Four contact
+pairs at t=5000: seed 20260802 T1 dead (§5.4); 314159 both alive
+(§5.6); 271828 **T1 dead** (D 0.011) with T0 degraded (D 0.193),
+ret 0.158; 141421 **T1 dead** (all voices ≤ 0.02) with T0
+alive-lean (D 0.467), ret 0.185. Tally: **at least one partner
+dies in 3 of 4 pairs** — §5.6's "real but probabilistic (1 of 2)"
+sharpens to: starvation is the rule, full coexistence the
+exception. Unexplained regularity, recorded: in all three deaths
+the loser is T1 — the OFFSET triangle (a seed-geometry bias
+candidate; T0 sits at box center).
+
+**§7.3 heavy chord — the knob does not buy statistics; the law
+passes on what exists.** The xU=0.40 chord LIVES (ret 0.3963@5000,
+conn 0.667; the D engine again holds gid 3 for the full run —
+IDENTITY's engine/fuel split replicating at a heavier seed). U-DF
+n = **15** in [1000,5000] — the n ≥ 30 bar FAILS: the chord relaxes
+to its own lean operating point regardless of seed load, so U
+emission stays rare by physics, not by seeding. Law quality on the
+intact chord: U-DF mean −0.006, rms **2.97%** (≤5% ✓ — the
+§6.5.5-conditional row confirmed on a clean single-object sample).
+The U-statistics edge needs ensemble POOLING across seeds, not
+heavier seeds — recorded for any future spectroscopy panel.
