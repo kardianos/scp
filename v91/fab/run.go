@@ -261,6 +261,15 @@ func (s *Sim) Run() {
 		P.KCant, P.KTune, P.CantTau, P.CantSeed, P.CantGrow)
 	fprintf(s.Out, "# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=%.6g reg_gate=%d reg_f0=%.6g\n",
 		P.RegTau, P.RegGate, P.RegF0)
+	fprintf(s.Out, "# v91 identity (parcel-identity lane, IDENTITY.md): par_tau=%.6g par_gate=%d par_form=%d par_lo=%.6g par_hi=%.6g par_mature=%.6g\n",
+		P.ParTau, P.ParGate, P.ParForm, P.ParLo, P.ParHi, P.ParMature)
+	if P.ParGate != 0 && P.ParTau <= 0 {
+		fprintf(s.Out, "# CONFIG ERROR: par_gate=1 with par_tau=0 — r_id == 0, gauge dark everywhere\n")
+	}
+	if P.ParGate != 0 && P.RegGate != 0 {
+		fprintf(s.Out, "# CONFIG ERROR: par_gate and reg_gate both set — refusing to run law arms with two gates\n")
+		os.Exit(1)
+	}
 	fprintf(s.Out, "# GEOMETRY (apparatus): cfac=%.6g k_rep=%.6g mob_geo=%.6g kappa_bond=%.6g freeze_geo=%d\n",
 		P.Cfac, P.KRep, P.MobGeo, P.KappaBond, P.FreezeGeo)
 	fprintf(s.Out, "# bath=%d bath_frac=%.6g jam_sweeps=%d jam_k=%.6g L=%.6g dt=%.6g T=%.6g seed=%d diag_every=%d\n",
@@ -1597,6 +1606,39 @@ func (s *Sim) Run() {
 					s.simT, ntp, a25, a50, a75, a90, agr, afl,
 					nba, b25, b50, b75, b90, bgr, bfl)
 			}
+			if P.ParTau > 0 {
+				ngid := 0
+				for i2 := 0; i2 < s.NC; i2++ {
+					if s.cgid[i2] != 0 {
+						ngid++
+					}
+				}
+				_, ea25, ea50, ea75 := s.parEpAges()
+				ndt, d25t, d50t, d90t := s.parDeathAges(0)
+				ndb, d25b, d50b, d90b := s.parDeathAges(1)
+				nst, nstp, sa50, samx := s.parStampAges()
+				idf := 0.0
+				if s.parDelTot > 0 {
+					idf = s.parDelID / s.parDelTot
+				}
+				fprintf(s.Out, "# PAR t=%.2f gids n=%d mint=%d ret=%d age=[%.0f %.0f %.0f] | sdeath tp n=%d [%.1f %.1f %.1f] ba n=%d [%.1f %.1f %.1f] | stamps n=%d tp=%d age50=%.0f max=%.0f | idfrac=%.4f\n",
+					s.simT, ngid, s.parMints, s.parRetires, ea25, ea50, ea75,
+					ndt, d25t, d50t, d90t, ndb, d25b, d50b, d90b,
+					nst, nstp, sa50, samx, idf)
+				if s.triOn {
+					for t2 := 0; t2 < s.ntri; t2++ {
+						ages := [3]float64{}
+						for k := 0; k < 3; k++ {
+							if s.cgid[s.triV[t2][k]] != 0 {
+								ages[k] = s.simT - s.cbirth[s.triV[t2][k]]
+							}
+						}
+						fprintf(s.Out, "# PAR tri T%d gid=(%d,%d,%d) age=(%.0f,%.0f,%.0f)\n",
+							t2, s.cgid[s.triV[t2][0]], s.cgid[s.triV[t2][1]],
+							s.cgid[s.triV[t2][2]], ages[0], ages[1], ages[2])
+					}
+				}
+			}
 		}
 		if P.SnapEvery > 0 && s.P.SnapDir != "" && st%P.SnapEvery == 0 {
 			s.writeFCS(snapIdx)
@@ -1722,6 +1764,20 @@ func (s *Sim) Run() {
 			fprintf(s.Out, "# RESULT reg tp n=%d rho=[%.4f %.4f %.4f %.4f] gr=%.6f fl=%.4f | ba n=%d rho=[%.4f %.4f %.4f %.4f] gr=%.6f fl=%.4f\n",
 				ntp, a25, a50, a75, a90, agr, afl,
 				nba, b25, b50, b75, b90, bgr, bfl)
+		}
+		if P.ParTau > 0 {
+			ngid := 0
+			for i2 := 0; i2 < s.NC; i2++ {
+				if s.cgid[i2] != 0 {
+					ngid++
+				}
+			}
+			idf := 0.0
+			if s.parDelTot > 0 {
+				idf = s.parDelID / s.parDelTot
+			}
+			fprintf(s.Out, "# RESULT par mints=%d retires=%d live=%d del_id=%.6f del_tot=%.6f idfrac=%.4f\n",
+				s.parMints, s.parRetires, ngid, s.parDelID, s.parDelTot, idf)
 		}
 		if P.SlitObj != 0 || P.Convtag != 0 {
 			// net field capture at the occulter = cond - evap - rough + backs

@@ -48,6 +48,15 @@ type Cfg struct {
 	RegTau     float64
 	RegGate    int
 	RegF0      float64
+	// v91 IDENTITY lane (IDENTITY.md): parcel-carried ontological
+	// identity — episode gids on cells, parcel labels + maturity-
+	// clocked bond stamps on slots. par_tau=0 => byte-identical step.
+	ParTau    float64
+	ParGate   int
+	ParForm   int
+	ParLo     float64
+	ParHi     float64
+	ParMature float64
 	QatomEvery int // apparatus (print-only): QATOM sampler period
 	// --- freecell geometry sector (apparatus, not law) ---
 	Cfac      float64
@@ -165,6 +174,12 @@ func Defaults() Cfg {
 	p.RegTau = 0
 	p.RegGate = 0
 	p.RegF0 = 0
+	p.ParTau = 0
+	p.ParGate = 0
+	p.ParForm = 0
+	p.ParLo = 0.002
+	p.ParHi = 0.02
+	p.ParMature = 400
 	p.QatomEvery = 200
 	// freecell geometry
 	p.Cfac = 1.15
@@ -370,6 +385,18 @@ func (p *Cfg) SetKV(k, v string) {
 		p.RegGate = atoi(v)
 	case "reg_f0":
 		p.RegF0 = atof(v)
+	case "par_tau":
+		p.ParTau = atof(v)
+	case "par_gate":
+		p.ParGate = atoi(v)
+	case "par_form":
+		p.ParForm = atoi(v)
+	case "par_lo":
+		p.ParLo = atof(v)
+	case "par_hi":
+		p.ParHi = atof(v)
+	case "par_mature":
+		p.ParMature = atof(v)
 	case "qatom_every":
 		p.QatomEvery = atoi(v)
 	case "cfac":

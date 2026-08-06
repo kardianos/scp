@@ -129,6 +129,16 @@ func (s *Sim) slotNew(i, j int) int {
 	s.rfm[sl] = 0
 	s.rdel[2*sl] = 0
 	s.rdel[2*sl+1] = 0
+	s.sborn[sl] = s.simT // identity lane: fresh slot, no past
+	s.slgid[2*sl] = 0
+	s.slgid[2*sl+1] = 0
+	s.pstampa[sl] = 0
+	s.pstampb[sl] = 0
+	s.pstampt[sl] = 0
+	s.pdp[sl] = 0
+	s.pdm[sl] = 0
+	s.pdel[2*sl] = 0
+	s.pdel[2*sl+1] = 0
 	s.swant[2*sl] = 0
 	s.swant[2*sl+1] = 0
 	s.sflux[sl] = 0
@@ -229,6 +239,22 @@ func (s *Sim) topoRefresh() {
 	// rule α: a DYING slot with no in-flight energy is freed
 	for sl := 0; sl < s.NSLOT; sl++ {
 		if s.sst[sl] == sDying && s.slem[2*sl] == 0 && s.slem[2*sl+1] == 0 {
+			if s.P.ParTau > 0 {
+				// identity lane meter: slot age at death, by class
+				// (M-I2 feeds the par_mature selection I-G2b)
+				pc := -1
+				ti := s.tag[s.sli[sl]] != 0
+				tj := s.tag[s.slj[sl]] != 0
+				if ti && tj {
+					pc = 0
+				} else if !ti && !tj {
+					pc = 1
+				}
+				if pc >= 0 {
+					s.parAged[pc][s.parAgedN[pc]%parRing] = s.simT - s.sborn[sl]
+					s.parAgedN[pc]++
+				}
+			}
 			s.hdel(s.sli[sl], s.slj[sl])
 			s.sst[sl] = sFree
 			s.freelist[s.nfree] = sl

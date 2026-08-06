@@ -45,6 +45,7 @@ var lawHeader = []string{
 	"# v91 radiance (laws_V3r candidate A): k_rad=0 p_rad=4 rad_clock=0",
 	"# v91 cantus (coherent-channel candidate B): k_cant=0 k_tune=0 cant_tau=50 cant_seed=0 cant_grow=1",
 	"# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=0 reg_gate=0 reg_f0=0",
+	"# v91 identity (parcel-identity lane, IDENTITY.md): par_tau=0 par_gate=0 par_form=0 par_lo=0.002 par_hi=0.02 par_mature=400",
 }
 
 // ------------------------------------------------------------------

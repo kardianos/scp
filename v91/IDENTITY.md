@@ -262,7 +262,46 @@ design-only first).
 
 ## 4. Results
 
-(registered empty; filled per arm at harvest, in run order)
+**4.0 Verification (2026-08-06; apparatus landed both kernels).**
+
+* **P-ID0 PASS.** At defaults the new binary's full output is
+  byte-identical to the committed pre-lane kernel on both reference
+  configs (chord recipe T=200; bath L=16 T=100), −O0 both, drift
+  column included — only the new header line differs. Battery **ALL
+  GREEN (93 bars)** with the identity purity line pinned
+  (`runs/BATTERY_identity.log`).
+* **P-ID2 PASS, both kernels.** C at T=1500 and Go at T=200: with
+  `par_tau=10` the physics stream is byte-identical to `par_tau=0`
+  once the meter's own lines (`# PAR`, `# RESULT par`, the QATOM
+  `gid=` field) are stripped. Trajectory-grain proof besides the
+  byte proof: per kernel, event and channel-birth counts are
+  bit-identical with the meter on vs off (C: 4426 QATOMs / 24646
+  births both ways; Go: 4398 / 24557 both ways). The meter moves
+  nothing.
+* **P-ID1 — amended by measurement, cause demonstrated.** The
+  registered "C and Go diag rows byte-equal" is NOT achievable on
+  the warm-chord config at T=200 for ANY apparatus: the unmodified
+  HEAD pair already diverges there (C 4426 vs Go 4398 QATOM events;
+  births 24646 vs 24557; drift column differs from t=4 — a 1-ulp
+  C/Go arithmetic difference that the chaotic medium amplifies into
+  trajectory divergence within ~60–200 t.u.). Demonstrated directly
+  on the pre-lane binaries; the lane's C↔Go deltas are IDENTICAL to
+  the pre-lane deltas. What holds and is verified: the apparatus
+  fields (gid stream, PAR lines) are byte-equal across kernels on
+  the agreeing window, and each kernel is byte-silent within itself
+  (P-ID2). Recorded as the pair's standing FP-divergence envelope —
+  the bar's original formulation was impossible, not failed.
+* Meter first-light facts (shakedown T=200, warm chord recipe): the
+  triad mints gids **1, 2, 3** at birth and holds them; bath live
+  fraction 93%, mint/retire ≈ 16/3.5 per t.u. at warm-up; slot
+  deaths run at median 2–3 t.u. with q90 ≈ 150 (the §2.1 mean ≈ 300
+  was tail-dominated — churn is fiercer than the mean); ~20k slots
+  stamp easily (as expected); identity-carried delivery fraction
+  0.961 at T=200 rising to **0.993** by T=1500 — the I-D1
+  last-depositor label is near-exact at steady state. Note for the
+  design round: bath STAMP survival is endpoint-episode-churn
+  limited, so I-G2b must select par_mature against the measured
+  stamp-age distribution, not slot ages alone.
 
 ## 5. Verdict
 

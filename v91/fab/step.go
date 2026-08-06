@@ -340,6 +340,11 @@ func (s *Sim) step() {
 				s.slph[2*sl+dir] = 0
 			}
 			s.slem[2*sl+dir] += f
+			// identity lane (IDENTITY.md §1.3.2): the departing parcel
+			// carries the depositor's episode gid (I-D1 last-depositor)
+			if P.ParTau > 0 {
+				s.slgid[2*sl+dir] = s.cgid[src]
+			}
 			s.sflux[sl] += f
 			s.sfluxd[2*sl+dir] += f // directed ledger for circulation
 			if P.P1Meter != 0 && f > 0 {
@@ -453,6 +458,16 @@ func (s *Sim) step() {
 				if P.RegTau > 0 {
 					s.rdel[sslot] += take
 				}
+				// identity lane (IDENTITY.md §1.3.3): identity-carried
+				// delivery — counts only when the parcel's label is the
+				// source endpoint's LIVING episode. Deliveries only.
+				if P.ParTau > 0 {
+					s.parDelTot += take
+					if s.slgid[sslot] != 0 && s.slgid[sslot] == s.cgid[send] {
+						s.pdel[sslot] += take
+						s.parDelID += take
+					}
+				}
 				s.slem[sslot] -= take
 				if P.P1Meter != 0 {
 					// P1 site 3: flight arrival, link midpoint -> recv
@@ -547,6 +562,53 @@ func (s *Sim) step() {
 		}
 	}
 
+	// pass H0b: v91 IDENTITY lane (IDENTITY.md §1.3 items 1+4) —
+	// mirror of the C kernel's pass H0b, operation for operation:
+	// episode gids by hysteresis on x=(Em+flload)/cap, then the
+	// identity-carried ledgers and bond stamps. par_tau=0 => skip.
+	if P.ParTau > 0 {
+		for i := 0; i < s.NC; i++ {
+			xep := (s.Em[i] + s.flload[i]) / P.Cap
+			if s.cgid[i] == 0 {
+				if xep >= P.ParHi {
+					s.cgid[i] = s.gidNext
+					s.gidNext++
+					s.cbirth[i] = s.simT
+					s.parMints++
+				}
+			} else if xep < P.ParLo {
+				s.cgid[i] = 0
+				s.parRetires++
+			}
+		}
+		kpar := 1.0
+		if P.ParTau > dt {
+			kpar = dt / P.ParTau
+		}
+		for sl := 0; sl < s.NSLOT; sl++ {
+			if s.sst[sl] == sFree {
+				continue
+			}
+			s.pdp[sl] += kpar * (s.pdel[2*sl]/dt - s.pdp[sl])
+			s.pdm[sl] += kpar * (s.pdel[2*sl+1]/dt - s.pdm[sl])
+			s.pdel[2*sl] = 0
+			s.pdel[2*sl+1] = 0
+			ga := s.cgid[s.sli[sl]]
+			gb := s.cgid[s.slj[sl]]
+			if s.pstampa[sl] == 0 {
+				if ga != 0 && gb != 0 && s.pdp[sl] > 0 && s.pdm[sl] > 0 {
+					s.pstampa[sl] = ga
+					s.pstampb[sl] = gb
+					s.pstampt[sl] = s.simT
+				}
+			} else if ga != s.pstampa[sl] || gb != s.pstampb[sl] {
+				s.pstampa[sl] = 0
+				s.pstampb[sl] = 0
+				s.pstampt[sl] = 0
+			}
+		}
+	}
+
 	// pass H: v91 CANTUS (coherent-channel candidate B, CANTUS.md) —
 	// mirror of the C kernel's pass H, operation for operation. See
 	// kernel/freecell.c for the full rationale comment.
@@ -605,6 +667,35 @@ func (s *Sim) step() {
 							}
 						}
 						tgt *= mult
+					}
+					if P.ParGate != 0 {
+						// IDENTITY.md §1.3.5-6: maturity-clocked
+						// identity continuity — stamp AGE is the
+						// gate variable the lock cannot manufacture.
+						rid := 0.0
+						if s.pstampa[sl] != 0 &&
+							s.cgid[i] == s.pstampa[sl] &&
+							s.cgid[j] == s.pstampb[sl] &&
+							s.pdp[sl] > 0 && s.pdm[sl] > 0 {
+							page := s.simT - s.pstampt[sl]
+							mat := 1.0
+							if P.ParMature > 0 && page < P.ParMature {
+								mat = page / P.ParMature
+							}
+							if P.ParForm == 1 {
+								gr2 := s.pdp[sl] + s.pdm[sl]
+								mn2 := s.pdp[sl]
+								if s.pdm[sl] < mn2 {
+									mn2 = s.pdm[sl]
+								}
+								if gr2 > 0 {
+									rid = mat * 2.0 * mn2 / gr2
+								}
+							} else {
+								rid = mat
+							}
+						}
+						tgt *= rid
 					}
 					s.sgg[sl] += ktau * (tgt - s.sgg[sl])
 				}

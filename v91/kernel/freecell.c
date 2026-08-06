@@ -164,6 +164,22 @@ typedef struct {
                          * 1 = F-B  rho * gross/(gross+f0)  (f0=0 => F-A);
                          * 2 = F-D  s/(s+f0), s = 2*min = reciprocal flow */
     double reg_f0;      /* the flow half-saturation constant (units E/t) */
+    /* --- v91 IDENTITY lane (IDENTITY.md; user-opened 2026-08-06).
+     * Parcel-carried ONTOLOGICAL identity: an episode gid born with
+     * the matter (x crosses par_hi), carried by its dense-flight
+     * parcels (depositor label on the slot in-flight), registered at
+     * arrival, dying with the matter (x below par_lo). par_tau=0 =>
+     * no gid state, no stamps, no prints, byte-identical step.
+     * par_gate=1 gates the cantus gauge growth target by the
+     * maturity-clocked identity continuity r_id — stamp AGE is the
+     * gate variable the lock cannot manufacture (it has no force
+     * before arming). --- */
+    double par_tau;     /* identity-ledger memory; 0 = lane OFF       */
+    int    par_gate;    /* cantus growth target *= r_id; 0 off        */
+    int    par_form;    /* 0 = I-A binary; 1 = I-B flow-shaped        */
+    double par_lo;      /* episode retire threshold on x (hysteresis) */
+    double par_hi;      /* episode mint threshold on x                */
+    double par_mature;  /* stamp maturity time (anti-ignition clock)  */
     int    qatom_every;   /* apparatus (print-only): QATOM sampler period */
     /* --- freecell geometry sector (apparatus, not law) --- */
     double cfac;          /* candidate rule d < cfac*(ri+rj)  (LIVEFAB) */
@@ -279,6 +295,8 @@ static void cfg_defaults(void)
     P.k_rad = 0; P.p_rad = 4; P.rad_clock = 0;
     P.k_cant = 0; P.k_tune = 0; P.cant_tau = 50; P.cant_seed = 0; P.cant_grow = 1;
     P.reg_tau = 0; P.reg_gate = 0; P.reg_f0 = 0;
+    P.par_tau = 0; P.par_gate = 0; P.par_form = 0;
+    P.par_lo = 0.002; P.par_hi = 0.02; P.par_mature = 400;
     P.qatom_every = 200;
     /* freecell geometry */
     P.cfac = 1.15; P.k_rep = 1.0; P.mob_geo = 1.0; P.kappa_bond = 1.0;
@@ -370,6 +388,12 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "reg_tau")) P.reg_tau = atof(v);
     else if (!strcmp(k, "reg_gate")) P.reg_gate = atoi(v);
     else if (!strcmp(k, "reg_f0")) P.reg_f0 = atof(v);
+    else if (!strcmp(k, "par_tau")) P.par_tau = atof(v);
+    else if (!strcmp(k, "par_gate")) P.par_gate = atoi(v);
+    else if (!strcmp(k, "par_form")) P.par_form = atoi(v);
+    else if (!strcmp(k, "par_lo")) P.par_lo = atof(v);
+    else if (!strcmp(k, "par_hi")) P.par_hi = atof(v);
+    else if (!strcmp(k, "par_mature")) P.par_mature = atof(v);
     else if (!strcmp(k, "qatom_every")) P.qatom_every = atoi(v);
     else if (!strcmp(k, "cfac")) P.cfac = atof(v);
     else if (!strcmp(k, "k_rep")) P.k_rep = atof(v);
@@ -592,6 +616,26 @@ static double *sgg_;                 /* per-slot cantus amplitude       */
  * rfm_ = j->i, rdel_ = per-step delivered scratch [slot][dir].
  * Born 0 at slot_new, dies with the slot — no background, no energy. */
 static double *rfp_, *rfm_, *rdel_;
+
+/* v91 IDENTITY lane state (IDENTITY.md §1.1): episode gids on the
+ * cells, parcel labels + bond identity stamps + identity-carried
+ * delivery ledgers on the slots. Born at mint/slot_new, dies with the
+ * episode/slot — no background, no energy moved, nothing anywhere is
+ * indexed BY gid (gid_next is a label spring, not an index). */
+static long long *cgid_;               /* [cell] episode gid, 0=none  */
+static double *cbirth_;                /* [cell] episode birth time   */
+static long long gid_next = 1;
+static long long *slgid_;              /* [slot][dir] parcel label    */
+static double *sborn_;                 /* [slot] slot birth time      */
+static long long *pstampa_, *pstampb_; /* [slot] bond identity stamp  */
+static double *pstampt_;               /* [slot] stamp time           */
+static double *pdp_, *pdm_, *pdel_;    /* id-carried delivered rates  */
+static double par_del_tot = 0, par_del_id = 0;
+static long long par_mints = 0, par_retires = 0;
+static double *par_tmp;                /* diag scratch (quartiles)    */
+#define PAR_RING 4096
+static double par_aged[2][PAR_RING];   /* slot age at death: 0=tag-pair, 1=bath */
+static long long par_agedn[2];
 static double *regq1_, *regq2_;      /* diag scratch (quantiles)        */
 
 /* channels — PERSISTENT SLOTS with identity (the birth/death ledger).
@@ -735,9 +779,14 @@ static void qatom_diag(int fd, double w, double e, int ci, double em)
 {
     int qe = P.qatom_every > 0 ? P.qatom_every : 1;
     if (A0eff <= 0 || e <= 0) return;
-    if ((qfire_n++ % qe) == 0)
-        printf("# QATOM t=%.2f dir=%s w=%.9g e=%.12g i=%d Em=%.4f\n",
-               sim_t, fd ? "FD" : "DF", w, e, ci, em);
+    if ((qfire_n++ % qe) == 0) {
+        if (P.par_tau > 0)
+            printf("# QATOM t=%.2f dir=%s w=%.9g e=%.12g i=%d Em=%.4f gid=%lld\n",
+                   sim_t, fd ? "FD" : "DF", w, e, ci, em, cgid_[ci]);
+        else
+            printf("# QATOM t=%.2f dir=%s w=%.9g e=%.12g i=%d Em=%.4f\n",
+                   sim_t, fd ? "FD" : "DF", w, e, ci, em);
+    }
 }
 
 static void field_inject(int i, double dE)   /* cellfab.c:2711 verbatim */
@@ -804,6 +853,17 @@ static void alloc_all(int nc)
     rfp_ = calloc(NLMAX, sizeof(double));
     rfm_ = calloc(NLMAX, sizeof(double));
     rdel_ = calloc((size_t)2 * NLMAX, sizeof(double));
+    cgid_ = calloc(nc, sizeof(long long));
+    cbirth_ = calloc(nc, sizeof(double));
+    slgid_ = calloc((size_t)2 * NLMAX, sizeof(long long));
+    sborn_ = calloc(NLMAX, sizeof(double));
+    pstampa_ = calloc(NLMAX, sizeof(long long));
+    pstampb_ = calloc(NLMAX, sizeof(long long));
+    pstampt_ = calloc(NLMAX, sizeof(double));
+    pdp_ = calloc(NLMAX, sizeof(double));
+    pdm_ = calloc(NLMAX, sizeof(double));
+    pdel_ = calloc((size_t)2 * NLMAX, sizeof(double));
+    par_tmp = malloc(nc > NLMAX ? nc * sizeof(double) : NLMAX * sizeof(double));
     regq1_ = malloc(NLMAX * sizeof(double));
     regq2_ = malloc(NLMAX * sizeof(double));
     sfluxd = calloc((size_t)2 * NLMAX, sizeof(double));
@@ -864,6 +924,10 @@ static int slot_new(int i, int j)
     sgg_[s] = 0;                     /* cantus: a reborn bond starts mute */
     rfp_[s] = 0; rfm_[s] = 0;        /* registry: a reborn pair has no past */
     rdel_[2*s] = 0; rdel_[2*s+1] = 0;
+    sborn_[s] = sim_t;               /* identity lane: fresh slot, no past */
+    slgid_[2*s] = 0; slgid_[2*s+1] = 0;
+    pstampa_[s] = 0; pstampb_[s] = 0; pstampt_[s] = 0;
+    pdp_[s] = 0; pdm_[s] = 0; pdel_[2*s] = 0; pdel_[2*s+1] = 0;
     swant[2*s] = swant[2*s+1] = 0; sflux[s] = 0;
     hput(i, j, s);
     if (s >= NSLOT) NSLOT = s + 1;
@@ -921,6 +985,16 @@ static void topo_refresh(void)
     /* rule α: a DYING slot with no in-flight energy is freed */
     for (int s = 0; s < NSLOT; s++) {
         if (sst[s] == S_DYING && slem[2*s] == 0 && slem[2*s+1] == 0) {
+            if (P.par_tau > 0) {
+                /* identity lane meter: slot age at death, by class
+                 * (M-I2 feeds the par_mature selection I-G2b) */
+                int pc = tag[sli[s]] && tag[slj[s]] ? 0
+                       : (!tag[sli[s]] && !tag[slj[s]] ? 1 : -1);
+                if (pc >= 0) {
+                    par_aged[pc][par_agedn[pc] % PAR_RING] = sim_t - sborn_[s];
+                    par_agedn[pc]++;
+                }
+            }
             hdel(sli[s], slj[s]);
             sst[s] = S_FREE;
             freelist[nfree++] = s;
@@ -1205,6 +1279,10 @@ static void step(void)
             swant[2*s + dir] = f;
             if (slem[2*s + dir] <= 0) slph[2*s + dir] = 0;
             slem[2*s + dir] += f;
+            /* identity lane (IDENTITY.md §1.3.2): the departing parcel
+             * carries the depositor's episode gid (I-D1 last-depositor
+             * label; M-I4 measures the approximation honestly). */
+            if (P.par_tau > 0) slgid_[2*s + dir] = cgid_[src];
             sflux[s] += f;
             sfluxd[2*s + dir] += f;   /* directed ledger for circulation */
             if (P.p1_meter && f > 0) {
@@ -1272,6 +1350,18 @@ static void step(void)
                  * only — the rule-alpha flush below is a RETURN, not an
                  * exchange, and is not stamped. */
                 if (P.reg_tau > 0) rdel_[sslot] += take;
+                /* identity lane (IDENTITY.md §1.3.3): identity-carried
+                 * delivery — counts only when the parcel's label is
+                 * the source endpoint's LIVING episode (stale flight
+                 * from a dead episode is foreign). Deliveries only;
+                 * the rule-α flush below is a return, not stamped. */
+                if (P.par_tau > 0) {
+                    par_del_tot += take;
+                    if (slgid_[sslot] != 0 && slgid_[sslot] == cgid_[send]) {
+                        pdel_[sslot] += take;
+                        par_del_id += take;
+                    }
+                }
                 slem[sslot] -= take;
                 if (P.p1_meter) {
                     /* P1 site 3: flight arrival, link midpoint -> recv */
@@ -1358,6 +1448,48 @@ static void step(void)
         }
     }
 
+    /* pass H0b: v91 IDENTITY lane (IDENTITY.md §1.3 items 1+4).
+     * First the cells: episode gids minted/retired by the hysteresis
+     * pair on x = (Em+flload)/cap (flload = the start-of-step
+     * snapshot — the same currency the diag reads). Then the slots:
+     * low-pass the identity-carried deliveries, arm/clear the bond
+     * identity stamps. Serial (local-clock kernel), s ascending —
+     * A/B-canonical. par_tau=0 => does not execute. */
+    if (P.par_tau > 0) {
+        for (int i = 0; i < NC; i++) {
+            double xep = (Em[i] + flload[i]) / P.cap;
+            if (cgid_[i] == 0) {
+                if (xep >= P.par_hi) {
+                    cgid_[i] = gid_next++;
+                    cbirth_[i] = sim_t;
+                    par_mints++;
+                }
+            } else if (xep < P.par_lo) {
+                cgid_[i] = 0;
+                par_retires++;
+            }
+        }
+        double kpar = P.par_tau > dt ? dt / P.par_tau : 1.0;
+        for (int s = 0; s < NSLOT; s++) {
+            if (sst[s] == S_FREE) continue;
+            pdp_[s] += kpar * (pdel_[2*s]     / dt - pdp_[s]);
+            pdm_[s] += kpar * (pdel_[2*s + 1] / dt - pdm_[s]);
+            pdel_[2*s] = 0; pdel_[2*s + 1] = 0;
+            long long ga = cgid_[sli[s]], gb = cgid_[slj[s]];
+            if (pstampa_[s] == 0) {
+                /* arm: first mutual identity-carried exchange between
+                 * two living episodes stamps WHO is bonded */
+                if (ga != 0 && gb != 0 && pdp_[s] > 0 && pdm_[s] > 0) {
+                    pstampa_[s] = ga; pstampb_[s] = gb; pstampt_[s] = sim_t;
+                }
+            } else if (ga != pstampa_[s] || gb != pstampb_[s]) {
+                /* either identity died or changed: the bond's history
+                 * ends; a new pair must re-stamp and re-mature */
+                pstampa_[s] = 0; pstampb_[s] = 0; pstampt_[s] = 0;
+            }
+        }
+    }
+
     if (P.k_cant > 0 || P.k_tune > 0) {
         double ktau = P.cant_tau > dt ? dt / P.cant_tau : 1.0;
         for (int i = 0; i < NC; i++) {
@@ -1399,6 +1531,29 @@ static void step(void)
                             if (s2 > 0) mult = s2 / (s2 + P.reg_f0);
                         }
                         tgt *= mult;
+                    }
+                    if (P.par_gate) {
+                        /* IDENTITY.md §1.3.5–6: growth only on
+                         * maturity-clocked identity continuity. The
+                         * gauge has no force before arming, so
+                         * nothing it does can extend a bath slot's
+                         * life to par_mature — stamp AGE is the gate
+                         * variable the lock cannot manufacture. */
+                        double rid = 0.0;
+                        if (pstampa_[s] != 0
+                            && cgid_[i] == pstampa_[s]
+                            && cgid_[j] == pstampb_[s]
+                            && pdp_[s] > 0 && pdm_[s] > 0) {
+                            double page = sim_t - pstampt_[s];
+                            double mat = (P.par_mature > 0 && page < P.par_mature)
+                                         ? page / P.par_mature : 1.0;
+                            if (P.par_form == 1) {
+                                double gr2 = pdp_[s] + pdm_[s];
+                                double mn2 = pdp_[s] < pdm_[s] ? pdp_[s] : pdm_[s];
+                                rid = gr2 > 0 ? mat * 2.0 * mn2 / gr2 : 0.0;
+                            } else rid = mat;
+                        }
+                        tgt *= rid;
                     }
                     sgg_[s] += ktau * (tgt - sgg_[s]);
                 }
@@ -1763,6 +1918,54 @@ static int reg_stats(int cls, double *q25, double *q50, double *q75,
     *q90 = regq1_[(int)(0.90 * (n - 1))];
     *grmed = regq2_[(int)(0.50 * (n - 1))];
     *flow = (double)nf / n;
+    return n;
+}
+
+/* v91 identity lane diag helpers (IDENTITY.md §1.3.7) */
+static double par_q(double *a, int n, double f)
+{ return n ? a[(int)(f * (n - 1))] : 0; }
+
+static int par_ep_ages(double *q25, double *q50, double *q75)
+{   /* ages of the LIVE episodes */
+    int n = 0;
+    for (int i = 0; i < NC; i++)
+        if (cgid_[i] != 0) par_tmp[n++] = sim_t - cbirth_[i];
+    *q25 = *q50 = *q75 = 0;
+    if (!n) return 0;
+    qsort(par_tmp, n, sizeof(double), dcmp_);
+    *q25 = par_q(par_tmp, n, 0.25);
+    *q50 = par_q(par_tmp, n, 0.50);
+    *q75 = par_q(par_tmp, n, 0.75);
+    return n;
+}
+
+static int par_death_ages(int cls, double *q25, double *q50, double *q90)
+{   /* recent slot ages at death (ring window), by endpoint class */
+    long long tot = par_agedn[cls];
+    int n = tot > PAR_RING ? PAR_RING : (int)tot;
+    for (int k = 0; k < n; k++) par_tmp[k] = par_aged[cls][k];
+    *q25 = *q50 = *q90 = 0;
+    if (!n) return 0;
+    qsort(par_tmp, n, sizeof(double), dcmp_);
+    *q25 = par_q(par_tmp, n, 0.25);
+    *q50 = par_q(par_tmp, n, 0.50);
+    *q90 = par_q(par_tmp, n, 0.90);
+    return n;
+}
+
+static int par_stamp_ages(double *q50, double *mx, int *ntagpair)
+{   /* ages of the LIVE bond identity stamps */
+    int n = 0; *ntagpair = 0;
+    for (int s = 0; s < NSLOT; s++) {
+        if (sst[s] != S_ALIVE || pstampa_[s] == 0) continue;
+        par_tmp[n++] = sim_t - pstampt_[s];
+        if (tag[sli[s]] && tag[slj[s]]) (*ntagpair)++;
+    }
+    *q50 = *mx = 0;
+    if (!n) return 0;
+    qsort(par_tmp, n, sizeof(double), dcmp_);
+    *q50 = par_q(par_tmp, n, 0.50);
+    *mx = par_tmp[n - 1];
     return n;
 }
 
@@ -2453,6 +2656,14 @@ int main(int argc, char **argv)
            P.k_cant, P.k_tune, P.cant_tau, P.cant_seed, P.cant_grow);
     printf("# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=%g reg_gate=%d reg_f0=%g\n",
            P.reg_tau, P.reg_gate, P.reg_f0);
+    printf("# v91 identity (parcel-identity lane, IDENTITY.md): par_tau=%g par_gate=%d par_form=%d par_lo=%g par_hi=%g par_mature=%g\n",
+           P.par_tau, P.par_gate, P.par_form, P.par_lo, P.par_hi, P.par_mature);
+    if (P.par_gate && P.par_tau <= 0)
+        printf("# CONFIG ERROR: par_gate=1 with par_tau=0 — r_id == 0, gauge dark everywhere\n");
+    if (P.par_gate && P.reg_gate) {
+        printf("# CONFIG ERROR: par_gate and reg_gate both set — refusing to run law arms with two gates\n");
+        exit(1);
+    }
     printf("# GEOMETRY (apparatus): cfac=%g k_rep=%g mob_geo=%g kappa_bond=%g freeze_geo=%d\n",
            P.cfac, P.k_rep, P.mob_geo, P.kappa_bond, P.freeze_geo);
     printf("# bath=%d bath_frac=%g jam_sweeps=%d jam_k=%g L=%g dt=%g T=%g seed=%lu diag_every=%d\n",
@@ -3445,6 +3656,29 @@ int main(int argc, char **argv)
                        sim_t, ntp, a25, a50, a75, a90, agr, afl,
                        nba, b25, b50, b75, b90, bgr, bfl);
             }
+            if (P.par_tau > 0) {
+                double ea25, ea50, ea75, d25t, d50t, d90t, d25b, d50b, d90b;
+                double sa50, samx;
+                int nst, nstp, ngid = 0;
+                for (int i2 = 0; i2 < NC; i2++) if (cgid_[i2] != 0) ngid++;
+                par_ep_ages(&ea25, &ea50, &ea75);
+                int ndt = par_death_ages(0, &d25t, &d50t, &d90t);
+                int ndb = par_death_ages(1, &d25b, &d50b, &d90b);
+                nst = par_stamp_ages(&sa50, &samx, &nstp);
+                printf("# PAR t=%.2f gids n=%d mint=%lld ret=%lld age=[%.0f %.0f %.0f] | sdeath tp n=%d [%.1f %.1f %.1f] ba n=%d [%.1f %.1f %.1f] | stamps n=%d tp=%d age50=%.0f max=%.0f | idfrac=%.4f\n",
+                       sim_t, ngid, par_mints, par_retires, ea25, ea50, ea75,
+                       ndt, d25t, d50t, d90t, ndb, d25b, d50b, d90b,
+                       nst, nstp, sa50, samx,
+                       par_del_tot > 0 ? par_del_id / par_del_tot : 0);
+                if (tri_on)
+                    for (int t2 = 0; t2 < ntri; t2++)
+                        printf("# PAR tri T%d gid=(%lld,%lld,%lld) age=(%.0f,%.0f,%.0f)\n",
+                               t2, cgid_[tri_v[t2][0]], cgid_[tri_v[t2][1]],
+                               cgid_[tri_v[t2][2]],
+                               cgid_[tri_v[t2][0]] ? sim_t - cbirth_[tri_v[t2][0]] : 0,
+                               cgid_[tri_v[t2][1]] ? sim_t - cbirth_[tri_v[t2][1]] : 0,
+                               cgid_[tri_v[t2][2]] ? sim_t - cbirth_[tri_v[t2][2]] : 0);
+            }
         }
         if (P.snap_every > 0 && P.snap_dir[0] && st % P.snap_every == 0)
             write_fcs(st / P.snap_every);
@@ -3520,6 +3754,13 @@ int main(int argc, char **argv)
             printf("# RESULT reg tp n=%d rho=[%.4f %.4f %.4f %.4f] gr=%.6f fl=%.4f | ba n=%d rho=[%.4f %.4f %.4f %.4f] gr=%.6f fl=%.4f\n",
                    ntp, a25, a50, a75, a90, agr, afl,
                    nba, b25, b50, b75, b90, bgr, bfl);
+        }
+        if (P.par_tau > 0) {
+            int ngid = 0;
+            for (int i2 = 0; i2 < NC; i2++) if (cgid_[i2] != 0) ngid++;
+            printf("# RESULT par mints=%lld retires=%lld live=%d del_id=%.6f del_tot=%.6f idfrac=%.4f\n",
+                   par_mints, par_retires, ngid, par_del_id, par_del_tot,
+                   par_del_tot > 0 ? par_del_id / par_del_tot : 0);
         }
         if (P.slit_obj || P.convtag)
             /* net field capture at the occulter = cond - evap - rough + backs

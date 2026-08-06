@@ -18,6 +18,9 @@ const (
 	sDying = 2
 )
 
+// v91 IDENTITY lane: slot-age-at-death ring size (IDENTITY.md §1.3.7)
+const parRing = 4096
+
 const hEmpty = int64(-1)
 const hTomb = int64(-2)
 
@@ -61,6 +64,26 @@ type Sim struct {
 	// diag quantile scratch. Born 0 at slotNew, dies with the slot.
 	rfp, rfm, rdel []float64
 	regq1, regq2   []float64
+	// (parRing defined below the Sim struct)
+	// v91 IDENTITY lane (IDENTITY.md §1.1): episode gids on cells,
+	// parcel labels + bond identity stamps + identity-carried
+	// delivery ledgers on slots. Born at mint/slotNew, dies with the
+	// episode/slot — no background; nothing is indexed BY gid.
+	cgid             []int64
+	cbirth           []float64
+	gidNext          int64
+	slgid            []int64 // [slot][dir] parcel label
+	sborn            []float64
+	pstampa, pstampb []int64
+	pstampt          []float64
+	pdp, pdm, pdel   []float64
+	parDelTot        float64
+	parDelID         float64
+	parMints         int64
+	parRetires       int64
+	parAged          [2][parRing]float64
+	parAgedN         [2]int64
+	parTmp           []float64
 
 	// channels — persistent slots with identity (birth/death ledger)
 	NLMAX, NSLOT                int
@@ -286,6 +309,68 @@ func (s *Sim) regStats(cls int) (n int, q25, q50, q75, q90, grmed, flow float64)
 	return
 }
 
+// v91 identity lane diag helpers (IDENTITY.md §1.3.7)
+func parQ(a []float64, f float64) float64 {
+	if len(a) == 0 {
+		return 0
+	}
+	return a[int(f*float64(len(a)-1))]
+}
+
+func (s *Sim) parEpAges() (n int, q25, q50, q75 float64) {
+	for i := 0; i < s.NC; i++ {
+		if s.cgid[i] != 0 {
+			s.parTmp[n] = s.simT - s.cbirth[i]
+			n++
+		}
+	}
+	if n == 0 {
+		return
+	}
+	sort.Float64s(s.parTmp[:n])
+	q25 = parQ(s.parTmp[:n], 0.25)
+	q50 = parQ(s.parTmp[:n], 0.50)
+	q75 = parQ(s.parTmp[:n], 0.75)
+	return
+}
+
+func (s *Sim) parDeathAges(cls int) (n int, q25, q50, q90 float64) {
+	tot := s.parAgedN[cls]
+	n = int(tot)
+	if tot > parRing {
+		n = parRing
+	}
+	copy(s.parTmp[:n], s.parAged[cls][:n])
+	if n == 0 {
+		return
+	}
+	sort.Float64s(s.parTmp[:n])
+	q25 = parQ(s.parTmp[:n], 0.25)
+	q50 = parQ(s.parTmp[:n], 0.50)
+	q90 = parQ(s.parTmp[:n], 0.90)
+	return
+}
+
+func (s *Sim) parStampAges() (n, ntagpair int, q50, mx float64) {
+	for sl := 0; sl < s.NSLOT; sl++ {
+		if s.sst[sl] != sAlive || s.pstampa[sl] == 0 {
+			continue
+		}
+		s.parTmp[n] = s.simT - s.pstampt[sl]
+		n++
+		if s.tag[s.sli[sl]] != 0 && s.tag[s.slj[sl]] != 0 {
+			ntagpair++
+		}
+	}
+	if n == 0 {
+		return
+	}
+	sort.Float64s(s.parTmp[:n])
+	q50 = parQ(s.parTmp[:n], 0.50)
+	mx = s.parTmp[n-1]
+	return
+}
+
 func (s *Sim) gateOf(dphi float64) float64 { // cellfab.c:638 verbatim
 	g := 0.5 * (1.0 + lutCos(dphi))
 	ip := int(s.P.PGate)
@@ -416,7 +501,11 @@ func (s *Sim) qatomDiag(fd int, w, e float64, ci int, em float64) {
 		if fd != 0 {
 			dir = "FD"
 		}
-		fmt.Fprintf(s.Out, "# QATOM t=%.2f dir=%s w=%.9g e=%.12g i=%d Em=%.4f\n", s.simT, dir, w, e, ci, em)
+		if s.P.ParTau > 0 {
+			fmt.Fprintf(s.Out, "# QATOM t=%.2f dir=%s w=%.9g e=%.12g i=%d Em=%.4f gid=%d\n", s.simT, dir, w, e, ci, em, s.cgid[ci])
+		} else {
+			fmt.Fprintf(s.Out, "# QATOM t=%.2f dir=%s w=%.9g e=%.12g i=%d Em=%.4f\n", s.simT, dir, w, e, ci, em)
+		}
 	}
 }
 
@@ -508,6 +597,22 @@ func (s *Sim) allocAll(nc int) {
 	s.rdel = make([]float64, 2*s.NLMAX)
 	s.regq1 = make([]float64, s.NLMAX)
 	s.regq2 = make([]float64, s.NLMAX)
+	s.cgid = make([]int64, nc)
+	s.cbirth = make([]float64, nc)
+	s.gidNext = 1
+	s.slgid = make([]int64, 2*s.NLMAX)
+	s.sborn = make([]float64, s.NLMAX)
+	s.pstampa = make([]int64, s.NLMAX)
+	s.pstampb = make([]int64, s.NLMAX)
+	s.pstampt = make([]float64, s.NLMAX)
+	s.pdp = make([]float64, s.NLMAX)
+	s.pdm = make([]float64, s.NLMAX)
+	s.pdel = make([]float64, 2*s.NLMAX)
+	if nc > s.NLMAX {
+		s.parTmp = make([]float64, nc)
+	} else {
+		s.parTmp = make([]float64, s.NLMAX)
+	}
 	s.sfluxd = make([]float64, 2*s.NLMAX)
 	s.freelist = make([]int, s.NLMAX)
 	s.nfree = 0
