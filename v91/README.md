@@ -249,6 +249,19 @@ identity (gid at the conversion door, no background), acceptance
 target = the frozen-bound chord. Nothing adopted; decisions are the
 user's.
 
+## IDENTITY lane (2026-08-06, user-directed: "first regrade B4, then open parcel-carried ontological-identity lane")
+
+Both decisions executed in order: **B4 re-graded** ABSENT → STRUCTURAL
+(v90/REALITY.md §B4, dated row). **The identity lane is OPEN** —
+**`IDENTITY.md`** is the registration and record (thesis from REGISTRY
+§5.5; episode-gid + parcel-label + stamp design with the maturity
+clock; closed-form fourth-ignition derivation and the
+maintenance-vs-self-assembly deadlock registered BEFORE any run;
+meter-first protocol M-I1–4, then a design round, then law arms
+L-I1–3 with the measured acceptance target: match the frozen bound
+ret 0.5 @ 5000 by SELF-carried identity, bath dark, battery green).
+Kernel work user-authorized; all knobs default inert.
+
 ## Status after the COMBINE campaign (2026-08-06, user-directed: "do combined experiments to see which effects survive in the presence of others")
 
 **`COMBINE.md` is the complete record** (registration §1–§4 committed
