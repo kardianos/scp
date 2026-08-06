@@ -78,7 +78,35 @@ decision datum the user will need.
 
 ## 4. Results
 
-(registered empty)
+**4.1 W-M1 (the floor gap; analysis-only from standing snapshots;
+2026-08-06).** Quiet slit foam far from any beam: **Em ≡ 0.0000
+exactly** (n=1,888, max 0.0000 — the foam carries field, never dense
+holdings). Warm bath (a matter medium): Em q10/q50/q90 =
+0.010/0.107/0.311. Quench-cloud debris at t=5000: q10/q50 =
+0.059/0.121, only 24.6% ≥ 0.2. **The gap exists at the EXISTENCE
+grain, not a depth grain:** foam ≡ 0 vs everything-that-is-matter
+> 0, with matter a continuum above zero.
+
+**4.2 Design round (from W-M1, before any kernel edit):**
+* **wf_floor = 0.01 selected** (a PRESENCE threshold: below the warm
+  bath's q10, above exact zero) — all standing matter converts
+  freely; empty foam demands wf_far. The depth-variant floor (0.2)
+  is REJECTED by measurement: it would strangle the bath's low tail
+  and ~75% of the quench cloud — floor fishing above the existence
+  grain has no measured support.
+* **Registered pre-run predictions:** W-L1 transparency PASSES (the
+  DS foam is exactly empty); W-L2 clicks fire only at a seeded
+  dense screen; **W-L3: the quench cloud is never BORN under wf**
+  (its genesis condensed into Em=0 cells — a strict work function
+  forbids exactly that, which is real physics: beams through true
+  vacuum do not condense). Therefore:
+* **W-L3b registered — creation = quench + nucleation site.** The
+  beam-dump arm with wf_on=1 plus ONE seeded dense grain in the
+  beam path: does the cloud grow from the grain? Real cloud-chamber
+  physics (supersaturation nucleating on dust). If yes, the table
+  holds B7 transparency AND a creation mechanism — the tension of
+  §0 resolves as "creation requires seeds"; if no, the user's
+  trade (B7 vs genesis) stands as measured.
 
 ## 5. Verdict
 
