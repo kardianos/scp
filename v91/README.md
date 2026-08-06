@@ -249,13 +249,46 @@ identity (gid at the conversion door, no background), acceptance
 target = the frozen-bound chord. Nothing adopted; decisions are the
 user's.
 
-## COMBINE lane (2026-08-06, user-directed: "do combined experiments to see which effects survive in the presence of others")
+## Status after the COMBINE campaign (2026-08-06, user-directed: "do combined experiments to see which effects survive in the presence of others")
 
-**`COMBINE.md`** is the campaign doc — registered (effect inventory
-with quantitative signatures, arms, bars, ablation-on-failure
-protocol) BEFORE any arm ran; results land in its §5 one experiment
-at a time, quantified at harvest. Config-only on the standing binary;
-nothing adopted.
+**`COMBINE.md` is the complete record** (registration §1–§4 committed
+before any arm ran; per-experiment results §5.1–§5.7 written at each
+harvest; synthesis §6). Config-only on the standing binary; battery
+re-verified after (`runs/BATTERY_combine.log`); nothing adopted.
+
+Headlines — the attribution map (§6): **(1)** chord stability is
+carried by the coupled lock+TUNER (both required: no-lock dies t=36,
+frozen-lock-without-tuner t=48 — gauges die with their bonds) and by
+nothing else — it survives radiance removal, the cool medium, and
+coexistence. **(2)** The doublet law belongs to laws_V2g itself — it
+survives lock removal at frozen-grade tightness (1.6%), coexistence,
+and even the starving loser (3.7%); the per-event residual is the
+spectroscopy's invariant. **(3)** METABOLISM AND LIGHT are
+radiance-era phenomena: without the radiance drive the door
+collapses ~200×, the chord's tagged books stop at evap = 0.000
+exactly, and the object holds as an economically static statue —
+stability≠metabolism, cleanly split. **(4)** Two-body physics
+measured for the first time: isolated coexistence preserves every
+effect with pooled luminosity EXACTLY 2.00× (per-object conserved),
+zero mutual force at range 7 (sep slope −6.8e-5±4.2e-5/t.u. ≈ 0, as
+π-flat demands), a SHARED box balance locus (three chords ±0.001 —
+an operating point, not a constant); contact coexistence adds
+**competitive starvation** — probabilistic (1 of 2 contact pairs),
+killed by feeding-connection loss (1 vs 18–33 intake events), read
+live by the spectrometer (loser's line walks blueward), with no
+door-to-door coupling (ILAG stays at the 1.4× bath common-mode).
+**(5)** CO-RL closes the no-kernel-work path: the lock on the
+embedded nv48 is the registered NULL (1.67×, fold and starvation
+schedule untouched) while 26/48 gauges hold rock-stable through the
+whole death — assertion preserves SKELETONS, not living contents;
+the nv6 winding wall does not generalize (fold regime ≠ winding
+regime). **(6)** One interference found and it was a RECORD error:
+ASTRO 6.5.4's UUD brightness baseline 0.0230 unreproducible →
+dated correction (UDD is 1.1–1.5× brighter absolute, sub-linear per
+emitter; ratios 2.1–2.6× stand); zero apparatus-on-apparatus
+interference anywhere. Instrument notes: kernel diag `sep=` is
+wrap-broken for straddling objects (display-only; fcs true-sep = the
+standing method); door-net drain warns, intake disconnection kills.
 
 ## Status after the ASTRO campaign (2026-08-05, user-directed: "make it so" on the far-field + spectroscopy probes)
 

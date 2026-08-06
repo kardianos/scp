@@ -410,3 +410,99 @@ standing "frozen chord" recipe is therefore irreducibly
 lock+tuner+medium-drive (and §5.3: its metabolism additionally
 needs radiance). Nothing to cascade: single-knob, cleanly
 attributed.
+
+**5.6 CO-T2N replicate (seed 314159) — the discriminator lands on
+"unlucky instance": BOTH contact partners live the full 5000.**
+(harvested 2026-08-06)
+
+Joint ret@5000 = **0.5268** (the best two-chord retention measured,
+above the isolated pair's 0.4529), conn = 1.000, all six lock slots
+held, sep pinned at 2.606, both chords healthy-lean (x_D 0.604 /
+0.577; U voices 0.05–0.10). Both flux machines sign-correct
+(T0 +0.00118/+0.00171/−0.00221; T1 +0.00079/+0.00059/−0.00217).
+ILAG 46/39 t.u. vs ~55–62 nulls = the same 1.2–1.6× common-mode
+band. Contact-pair verdict across the two seeds, stated honestly:
+contact coexistence is fully survivable (this seed) and carries a
+real but probabilistic starvation risk (s20260802's partner death —
+1 of 2 contact pairs, 0 of 2 isolated pairs, and the only D-voice
+collapse anywhere in the frozen ensemble). The mechanism variable
+is the FEEDING CONNECTION, not the door-net sign: this seed's T1
+runs door-net −0.00079/t.u. yet holds (apex intake 18 events),
+while the dead T1's apex had been cut to 1 feeding event in 4000
+t.u. Door-net drain is a warning light; intake disconnection is the
+kill.
+
+**5.7 CO-RL (frozen-lock apparatus × embedded nv48) — the
+registered NULL branch: assertion preserves STRUCTURE and is
+irrelevant to the STARVATION; the winding wall does not generalize
+to the fold regime.** (harvested 2026-08-06)
+
+Scored against the single-knob reference A-F2 (cool, no lock):
+  - Fold: untouched by the lock — rms 12.95→5.38 by t=200
+    (reference 5.32), 5.14@400 (bar ≤6 ✓), 5.29 at close.
+  - Retention: ret@1500 = **0.0627** = 1.67× the reference 0.0376 —
+    inside the registered null band [0.019, 0.075], at its upper
+    edge; starvation onset IDENTICAL (t_{ret<0.25} = 456 vs 460);
+    books evap/cond 4.41 vs 3.83 (no improvement).
+  - The structure/contents split, sharpest yet: **26 of 48 gauges
+    survive the fold and hold rock-stable from t≈400 to the end**
+    (nlock 48→26 by 400, then flat; a_max=1.0; 28 edges alive at
+    close, 26 of them locked) while the matter drains through the
+    held structure on the no-lock schedule. Asserted bond identity
+    keeps the SKELETON; it cannot keep the CONTENTS — the flows
+    that carry the contents carry no identity (REGISTRY §5), and
+    the lock has no handle on them.
+  - **F10 does NOT generalize:** the nv6 winding wall (frozen 364 <
+    ctl 600 — assertion kills wound rings) does not appear at
+    embedded nv48 (456 ≈ 460): the embedded ring fails by
+    fold-and-starve, not by winding, and assertion is simply
+    irrelevant to that mode. The winding pathology needs the
+    winding.
+
+Decision impact (ASTRO §7a): the no-kernel-work path — "save the
+flagship with the lock apparatus" — is now measured CLOSED (1.67×,
+null band). The identity-lane case is unchanged-to-strengthened:
+config-level assertion preserves skeletons, not living contents, at
+every scale tested.
+
+---
+
+## 6. SYNTHESIS — which effects survive in whose presence (the campaign's answer)
+
+The attribution map, measured by combination and ablation
+(campaign verdict; decisions the user's):
+
+| effect | carrier (measured) | survives |
+|---|---|---|
+| F1 chord stability | the coupled lock+tuner — BOTH (AL: dead t=36; AT: dead t=48; frozen gauges die with their bonds) | radiance removal (AR 0.4366@5000); cool medium (D-E2); coexistence far AND contact (7 of 8 coexisting chords lived) |
+| F2 doublet law | **laws_V2g itself** — no apparatus carries it | lock removal (1.6%); coexistence (≤5% wherever topology intact); even the starving loser (3.7%). The per-event residual is THE invariant of the spectroscopy |
+| F3 π-flat / no far force | the law (stable books close at the door) | two-body: between-zone flat ≤5e-4; sep slope −6.8e-5±4.2e-5 ≈ 0 at range 7 over 4500 t.u. |
+| F5 flux-machine current | **radiance (the drive) + lock+tuner (the pattern)** — AR: books stop at evap=0.000 exactly; AT: pattern never forms | coexistence (all four radiance-on locked chords sign-correct per seed) |
+| F6 luminosity | radiance; magnitude set by intake (metabolism), not emitter count | two objects = 2.00× pooled (per-object conserved); per-emitter sub-linear within one object (UDD) |
+| F8 balance line | the medium's operating point — box-conditional, shared by cohabitants (three chords ±0.001), NOT a constant | coexistence; degradation moves it in the KNOWN directions (drained-D blueward, dying-DF redward) |
+| F9 bath glow | radiance by construction | removed with it (2.35 band gone, xbar 0.32→0.20) |
+| F10 winding wall | nv6 wound-ring-specific | does NOT generalize to embedded nv48 (fold regime; lock null 1.67×) |
+
+**Interferences found: one record error, zero apparatus
+interferences, one real physical interaction.** (1) The only
+effect that "failed to replicate" for apparatus reasons traced to a
+WRONG BASELINE in the standing record (ASTRO 6.5.4's 0.0230 —
+corrected, dated). (2) No experiment addition disturbs another's
+effect: the lock+tuner, radiance, and both meters carry cleanly
+separable physics — every ablation attributed its differences to
+the removed knob's own carried phenomena. (3) The one genuine
+cross-EXPERIMENT interaction is physical and new: **competitive
+starvation at contact** — probabilistic (1 of 2 contact pairs, 0 of
+2 isolated pairs), mediated by feeding-connection loss (1 vs 18–33
+intake events), read in real time by the spectrometer (loser's line
+walks blueward), with no door-to-door event coupling (ILAG stays at
+the 1.4× common-mode everywhere).
+
+New effects only combination could show: two-body force-free
+coexistence at the π-flat floor; luminosity additivity (2.00×);
+the shared box locus; competitive starvation; the
+structure/contents split (26 locked bonds held through a full
+starvation; E1's edge-census inversion). New instrument findings:
+kernel diag `sep=` wrap-broken for straddling objects (fcs true-sep
+is the standing method); door-net drain is a warning light, intake
+disconnection is the kill.
