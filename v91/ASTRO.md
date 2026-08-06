@@ -434,3 +434,147 @@ leaves bath outside clear=14.15); floor `bath36` (T=800, π = 1.01414
    probes if wanted: warm-medium embedding; a D-heavy chord for
    U-line statistics; the C7 no-law audit upgrades (DS visibility
    curve, Born KS) remain open from the R-campaign queue.
+
+---
+
+## 6. DECIDE — the decision arms (registered 2026-08-06, BEFORE any §6 run)
+
+User directive (2026-08-06): *"Do initial runs to clarify the
+decision. Need more data to decide."* The decisions on the table are
+§5's: **(a)** the next-lane choice (parcel-carried ontological
+identity, REGISTRY §5.5) and **(b)** the B4 audit re-grade. The arms
+below are config-only measurements on the standing binary
+(`v91/freecell`, 2026-08-05, battery-green; kernel and laws
+untouched). The identity lane itself is **not** opened here — it
+needs kernel work and explicit user authorization. Everything in
+§6.1–§6.4 was written and committed before the first §6 run.
+
+### 6.1 The confound these arms remove
+
+The two decision-bearing stability results sit at opposite corners of
+a 2×2 in (scale, medium temperature), with apparatus varying too:
+
+| body | apparatus | medium | box | result |
+|---|---|---|---|---|
+| chord nv=3 | frozen cant+tune, reg meter | amp 0.5 (warm) | L=16 | LIVES — ret 0.5101@1500, 0.4975@5000 |
+| ring nv=48 | none (V2g+radiance) | amp 0.15 (cool) | L=36 | FOLDS at settle (rms 12.95→5.32 by t=200), starves — ret 0.0376@1500, evap/cond 3.83 |
+
+"Vacuum-conditional" (§5.3) attributes the ring's death to embedding
+*as such* — but medium temperature, scale, and apparatus are all
+confounded between the two corners. The lane decision needs to know
+**which knob kills**: if the cool medium kills everything (even
+chords), the frozen-bound reference itself is warm-conditional and
+the lane's acceptance target needs a medium spec; if warmth saves the
+ring, the limitation softens to cool-conditional and embedded large
+matter is viable at this law; if neither — fold and starve persist
+warm, chord lives cool — the limitation is scale/identity-shaped and
+the lane's urgency is confirmed. §6's E-arms fill the two missing
+matrix cells with single-knob differentials, plus one scale rung
+(frozen nv=6). The S-arms clear B4's two registered edges (U-line
+statistics; a second species). D-A1 measures the identity lane's
+design envelope from standing raws — no new run.
+
+### 6.2 Arms (exact commands, standing binary, from `v91/`)
+
+```
+# D-E1  ring48 WARM — §4.4 command, ONLY noise_amp 0.15→0.5
+./freecell exp=ring ring_n=48 ring_x=0.47 bath=1 noise_amp=0.5 convtag=1 L=36 T=1500 diag_every=200 seed=20260802 k_rad=0.05 p_rad=4 rad_clock=0 qatom_every=200 snap_every=500 snap_file=runs/astro/de1_ring48_warm.fcs > runs/astro/de1_ring48_warm.log 2>&1
+
+# D-E2  chord COOL — the frozen reference command, ONLY noise_amp 0.5→0.15
+#       (box stays L=16: the chord's footprint is contact-local (§4.2),
+#        so box size is not a medium knob; L=36 would cost ~5h for nothing)
+./freecell exp=tri tri_xU=0.28 bath=1 noise_amp=0.15 convtag=1 T=5000 diag_every=200 seed=20260802 k_rad=0.05 p_rad=4 rad_clock=0 k_cant=1 k_tune=0.2 cant_grow=0 cant_seed=1 cant_tau=1e18 reg_tau=10 qatom_every=1 snap_every=500 snap_file=runs/astro/de2_uud_cool.fcs > runs/astro/de2_uud_cool.log 2>&1
+
+# D-E3  frozen nv=6 — REGISTRY i5 geometry, apparatus switched
+#       maintained→frozen (cant_tau 50→1e18, reg_gate 2→0, reg_f0 2e-4→0;
+#        = the exact frozen-chord apparatus on the i5 ring)
+./freecell exp=ring ring_n=6 ring_x=0.47 noise_amp=0.15 bath=1 convtag=1 T=5000 diag_every=200 seed=20260802 k_rad=0.05 p_rad=4 rad_clock=0 k_cant=1 k_tune=0.2 cant_grow=0 cant_seed=1 cant_tau=1e18 reg_tau=10 snap_every=500 snap_file=runs/astro/de3_ring6_frozen.fcs > runs/astro/de3_ring6_frozen.log 2>&1
+
+# D-S1  UDD chord — second species, config-reachable via tri_kind=1
+#       (smoke T=100 first to verify diag/QATOM formats for kind=1, then:)
+./freecell exp=tri tri_kind=1 tri_xU=0.28 bath=1 noise_amp=0.5 convtag=1 T=5000 diag_every=200 seed=20260802 k_rad=0.05 p_rad=4 rad_clock=0 k_cant=1 k_tune=0.2 cant_grow=0 cant_seed=1 cant_tau=1e18 reg_tau=10 qatom_every=1 snap_every=500 snap_file=runs/astro/de4_udd_frozen.fcs > runs/astro/de4_udd_frozen.log 2>&1
+
+# D-S2  two more seeds of the UUD frozen reference (U-line statistics)
+#       seed=271828 → de5_uud_s271828.{log,fcs}; seed=141421 → de5_uud_s141421.{log,fcs}
+```
+
+UDD cell roles (from the seed code, read before registering): i0 = U
+apex, i0+1 and i0+2 = D base; the diag `xUDD` tuple is positional
+(per-cell (Em+flload)/cap in cell order), so `spec.awk`'s per-event
+law needs no change. The kernel's own seed comment carries a
+registered geometry prediction for UDD: the D–D edge d\* = π/w_D
+exceeds contact ⇒ **predicted open chain, not triangle**.
+
+### 6.3 Registered predictions, bars, discriminators
+
+**P-D1 (E1, warm ring).** Prediction: the fold is mechanical
+(contact/settle), not nutritional — it persists warm: rms ≤ 6 by
+t=400 (cool: 5.32@200). Feeding improves the books: evap/cond@1500
+< 3.83 and ret@1500 > 0.038. Discriminators for the decision:
+  - **No fold** (rms ≥ 10 at t=400) and ret@1500 ≥ 0.3 → the
+    limitation was COOL-specific → OUTLOOK "vacuum-conditional"
+    softens to "cool-conditional"; embedded large matter is viable
+    at this law; identity-lane urgency drops a notch.
+  - **Fold, but fed persistence** (ret@1500 ≥ 0.3 as a folded body)
+    → EXISTENCE is embeddable, SHAPE is not → the lane's target
+    sharpens to shape-holding identity.
+  - **Fold and starve** (ret@1500 < 0.15) → the limitation is
+    general (not nutritional) → identity-lane urgency confirmed.
+  - 0.15 ≤ ret < 0.3 → gray; report as measured, no claim.
+
+**P-D2 (E2, cool chord).** Prediction: the frozen bound is not
+warm-conditional — the chord survives the ring's medium class:
+ret@1500 ∈ [0.36, 0.66] (±0.15 of the warm 0.5101), ret@5000 ∈
+[0.35, 0.65], conn = 1.0 (all three voices bonded) at 5000. Bonus
+spectral registration: its doublet must track its OWN xUDD
+parameter-free at the new (cooler) operating point — per-event resid
+rms ≤ 5%. If instead the chord dies cool → §4.4's scale attribution
+weakens (cool medium suspect for everything), the frozen-bound
+reference is warm-conditional, and the lane's acceptance target must
+carry a medium spec.
+
+**P-D3 (E3, frozen nv=6).** Prediction: the winding wall is not an
+identity problem — freezing does not rescue the 6-ring:
+t_{ret<0.25} < 1200 (i5 references: ctl 600, maintained 436).
+If instead ret@5000 ≥ 0.25 with the chain connected → asserted
+identity DOES scale past the chord → the lane's acceptance target
+moves up from "chord bound" to "nv6 bound" before it opens.
+
+**P-D4 (S1, UDD).** Geometry: open chain (kernel-comment prediction
+on record) — read edge/conn at settle. Spectra: the same per-event
+law with NO new constants (resid rms ≤ 5% on ≥ 30 events); line
+roles INVERT with multiplicity — UDD = 1 absorber (U) + 2 emitters
+(D), so the D line stands ~2× the UUD chord's D line per object and
+the U line is weaker still; species distinguishable by light alone
+(loci track each species' own xUDD; multiplicity ratio flips). If
+UDD won't hold embedded at 5000, that is itself the finding
+(species selection — which chords live — recorded, spectra taken on
+whatever window it survives).
+
+**P-D5 (S2, pooled U-line statistics).** Pooling 4 seeds (20260802,
+314159 standing + 271828, 141421 new) over the settled window:
+≥ 30 U-cell DF events pooled, pooled U-line resid |mean| ≤ 0.02 and
+rms ≤ 5%. Passing clears §4.3's registered U-row statistics edge →
+the B4 re-grade is unblocked on that edge (the camouflage edge — U
+loci sit on the bath band — is physics, not statistics, and stays).
+
+**D-A1 (analysis-only, standing raws; descriptive, no bar).** From
+`uud_frozen.log.raw` (+ REGISTRY's published per-link ledger): the
+identity lane's design envelope, measured before the lane exists —
+per-voice door event rate (events/t.u.), gross and net door energy
+rates, turnover time τ_turn = Em_voice/(gross door rate) = the
+lifetime a parcel gid must survive at the door to be load-bearing,
+and the same-cell DF→FD lag distribution (does the door re-eat its
+own emissions, on what timescale — the §4.1 door-closure mechanism
+seen per-event).
+
+### 6.4 Registered as NOT run, and why
+
+- **Chord-patterned nv=6/12 rings** (the direct scale ladder): not
+  config-reachable — `exp=ring` is unison-only; per-cell tune
+  patterns on rings are kernel work = the lane itself.
+- **Warm-L36 chord** (4th matrix cell at the ring's exact box):
+  inferable from E1+E2 unless they contradict; the chord's footprint
+  is contact-local (§4.2) so box size is not a medium knob; ~5h/run.
+- **C7 audit upgrades** (DS visibility curve, Born KS): not
+  decision-critical; stays on the R-queue.
