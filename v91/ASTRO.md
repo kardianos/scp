@@ -578,3 +578,203 @@ seen per-event).
   is contact-local (§4.2) so box size is not a medium knob; ~5h/run.
 - **C7 audit upgrades** (DS visibility curve, Born KS): not
   decision-critical; stays on the R-queue.
+
+### 6.5 RESULTS (2026-08-06; run in the order registered)
+
+Smoke first: `de4_udd_smoke` (T=100) verified the kind=1 formats —
+UDD seeds with wD/wU = 2/3 exactly, the D–D contact check prints
+`DD edge OPEN (no contact)` at seed, the diag xUDD tuple is
+positional, QATOM fires. NC=2703 at seed 20260802 → i0=2700.
+
+**6.5.1 D-A1 — the door envelope (standing raws; the lane's design
+parameters, measured before the lane exists).** Both frozen-chord
+raws, settled window [1000, 5000], per voice (v0,v1 = U; v2 = D):
+
+| voice | rate DF/FD (ev/t.u.) | net (energy/t.u.) | Emfl | τ_turn |
+|---|---|---|---|---|
+| U (seed 20260802) | 0.0020 / 0.0073 | +0.00124 | 0.146 | 46 |
+| U′ | 0.0010 / 0.0057 | +0.00118 | 0.145 | 69 |
+| D | 0.0118 / 0.0085 | −0.00196 | 1.463 | 278 |
+| U (s314159) | 0.0010 / 0.0037 | +0.00065 | 0.142 | 93 |
+| U′ | 0.0005 / 0.0080 | +0.00204 | 0.145 | 58 |
+| D | 0.0123 / 0.0090 | −0.00219 | 1.398 | 259 |
+
+Seed-robust structure: **U voices are net door-absorbers, the D
+voice a net door-emitter** (the flux machine seen per-event at the
+door, matching §4.3's eat-at-U/shine-at-D), and the whole-object
+turnover time is Σ Emfl / Σ gross = **167–179 t.u.** Lag structure
+(same-voice DF→FD vs a memoryless null at the measured rates): the D
+door re-eats its own shine at median 29–43 t.u. against a ~59 t.u.
+null (~1.4–2× faster than chance), and U absorptions trail the most
+recent emission by another object voice at median 34–50 t.u. against
+a ~59–85 null (~1.4–1.7×) — mild but consistent across both seeds
+and all voices. And a fact worth a line: the chord's door runs at
+**bath-cell loudness** (per-voice event rates 0.003–0.020/t.u. vs
+bath 0.0095–0.0104/t.u./cell) — what distinguishes living matter at
+the door is the standing *direction* of its flow, not its rate.
+Envelope for the lane: a door-carried gid is load-bearing if it
+survives ~30–500 t.u. (lag quartiles) at a traffic of ~0.04
+tags/t.u. per chord — computationally trivial to carry.
+
+**6.5.2 P-D2 (E2, cool chord) — PASS. The frozen bound is not
+warm-conditional.** ret@1500 = 0.4258 (bar [0.36, 0.66]), ret@5000
+= **0.4114** (bar [0.35, 0.65]), conn = 1.000 with all edges alive
+at 5000. The chord survives the ring-killing medium class at ~83% of
+its warm retention. The cool medium does redistribute the object:
+the U voices run near-empty (final Em 0.0097/0.0084 vs warm ~0.15)
+while the D voice holds 1.40 — a starved-lean operating mode, still
+bonded, still metabolizing. Bonus spectral registration PASS: the
+doublet tracks the cool operating point parameter-free at resid rms
+0.34% (DF, n=32) / 0.58% (FD, n=31) — *sharper* than the warm arm.
+
+**6.5.3 P-D3 (E3, frozen nv=6) — as predicted. Freezing does not
+rescue the winding wall.** t_{ret<0.25} = **364** (bar < 1200;
+references: ctl 600, maintained 436). The full ranking is the
+finding: **ctl 600 > maintained 436 > frozen 364** — on a wound
+unison ring the lock apparatus doesn't just fail to help, each
+escalation of identity assertion dies *earlier*. The winding wall is
+geometric, not an identity deficit. Ember state at 5000: ret 0.0326
+with the chain still connected (conn 1.0) — same ember class as
+i5_ctl (ret 0.0464).
+
+**6.5.4 P-D4 (S1, UDD) — the second species lives; the multiplicity
+prediction is REFUTED and the refutation is the discovery.**
+Geometry: open chain as predicted by the kernel's own seed comment —
+the D–D edge is born beyond contact (`DD edge OPEN`), channel-dead
+from t=0.4; the object runs as a bent U–D–D chain. Survival: alive
+at 5000, ret 0.3675, with the U apex EMPTY from t≈2000 (x→0.000)
+while its bond persists and one D voice drains late — matter
+persists, full topology doesn't. Spectra: parameter-free PASS — the
+D emission line carries n=61 at resid rms 1.5%, mean −0.003 (≥30
+events, ≤5% bar); role structure inverts with the species (U is
+almost pure absorber: 31 FD vs 7 DF). Two registered expectations
+broke, informatively:
+  - **Luminosity is intake-limited, not emitter-limited.** Windowed
+    [1000,2000] with both D voices healthy, UDD's D line emits
+    0.0170 ev/t.u. against the UUD reference's 0.0230 — *dimmer with
+    twice the emitters*, because it has half the intake structure
+    (U-absorption 0.0077 vs 0.0130 ev/t.u.). The registered "~2×
+    brighter" bar FAILS; what the measurement says instead is that a
+    species' brightness is set by its metabolism (intake), not its
+    emitter count.
+  - **The healthy-D locus is universal, not a species tag.** UDD's
+    healthy D voice emits at w = 1.6774 ± 0.0071; UUD's at 1.6710 ±
+    0.0052 — indistinguishable (Δ = 0.006 ± 0.009), because both D
+    voices sit at the same balance attractor. Species identification
+    by light alone therefore runs on the **line pattern** — the
+    absorption:emission rate ratio differs ~2.3× between species
+    (UUD 0.0130/0.0230 vs UDD 0.0077/0.0170 in the same windows) —
+    the way real spectroscopy reads abundances from line ratios, not
+    from shifted transition frequencies. (The drained D voice's
+    locus slides blueward as it empties — w 2.263 ± 0.088 — the
+    line *tracks* the voice's load; loci are operating points, not
+    species constants.)
+
+**6.5.5 P-D5 (pooled U emission) — n and mean PASS, rms FAILS as
+registered, and the decomposition identifies the physics.** Pooled
+over 4 seeds: n = 55 (bar ≥ 30 ✓), resid mean = −0.0035 (bar |mean|
+≤ 0.02 ✓), resid rms = **0.063 vs the 0.05 bar ✗**. Per-seed: the
+one seed whose triangle stayed fully intact to 5000 (20260802) has a
+clean U line — rms 0.018, n=21 ✓ — while all three seeds with
+degraded topology broaden with redward tails (rms 0.037 / 0.054 /
+0.103, outliers to −0.40): §4.3's death-spectrogram signature
+operating on *partial* deaths. The U absorption line, by contrast,
+is tight in all four seeds (rms 0.010–0.022, pooled n≈198). Stated
+conditionally, no bar softening: U emission from intact chords
+conforms to the law at ~2%; topology degradation is spectrally
+visible in the U line long before the object dies.
+
+**6.5.6 Seed-robustness of the frozen bound, reframed.** Four seeds
+at t=5000: ret 0.4975 (conn 1.0, full triangle), 0.6177 (conn 1.0,
+full triangle), 0.5430 (conn 0.667, edges opened, all voices
+energized), 0.2268 (conn 0.667, one U voice dead). **Matter alive
+4/4; full chord topology 2/4.** REGISTRY's "NO DEATH" claim holds
+for matter and should be read as scoped: the asserted-identity chord
+keeps its *stuff* alive at 5000 in every seed; it keeps its *shape*
+in half of them. The topology failures are spectrally visible as
+they happen (6.5.5).
+
+**6.5.7 P-D1 (E1, warm ring) — all three registered sub-bars PASS;
+the discriminator lands on "fold and starve"; and the late window
+adds a measured refinement.** Single knob vs §4.4's A-F2: noise_amp
+0.15→0.5. Scored as registered:
+  - **Fold is mechanical, not thermal:** rms = 5.52 @ t=400 (bar ≤ 6;
+    cool 5.16) — the warm medium folds the ring identically, on the
+    same schedule (warm crosses ret<0.25 at t=376, cool at t=460).
+  - **Feeding improves the books:** evap/cond@1500 = 165.72/113.20 =
+    **1.46** (bar < 3.83) — the warm medium runs both ledger sides
+    ~3–7× the cool arm's (cond 113 vs 15, evap 166 vs 59) and closes
+    the deficit from 3.83 toward parity.
+  - **Feeding improves retention:** ret@1500 = **0.1069** (bar >
+    0.038; 2.8× the cool arm), conn 0.438 at close.
+  - **Discriminator: ret@1500 = 0.107 < 0.15 → fold and starve → the
+    limitation is general (not nutritional) → identity-lane urgency
+    confirmed.** Scored exactly as registered.
+The refinement the trajectory adds (measured, not registered): the
+two arms are indistinguishable to t≈1000 (ret 0.119 warm vs 0.115
+cool), then SEPARATE — cool drains monotonically to 0.035 while warm
+**plateaus** at ret ≈ 0.12–0.15 for the whole last third (1000→1400:
+0.119, 0.140, 0.135, 0.146, 0.123; close 0.107). A warm medium
+arrests the terminal drain at a folded remnant of ~¼ the matter — a
+FED EMBER steady state — but neither prevents the fold nor recovers
+the object. Nutrition sets the remnant's asymptote; it does not
+touch the fold or the ~75–89% loss. (Bond census inverts the matter
+story: warm holds 25/48 edges alive vs cool 33/48 — the warm medium
+churns bonds while retaining more matter; edge count and matter
+retention are separate meters.)
+
+---
+
+## 7. DECISION BRIEF (all §6 evidence mapped to §5's two pending decisions; the decisions are the user's)
+
+**(a) Next lane = parcel-carried ontological identity (REGISTRY
+§5.5)?** What §6 measured, for and against:
+
+- **FOR — the config-level assertion path is now exhausted by
+  measurement.** The three stability arms close the 2×2 confound:
+  the frozen chord survives BOTH medium classes (P-D2: cool ret
+  0.4114@5000, the only object class that lives embedded anywhere);
+  the nv=48 folds and starves in BOTH medium classes (P-D1: warm
+  ret@1500 0.107 < 0.15, fold on the same schedule); and MORE
+  assertion actively hurts wound topologies (P-D3: frozen 364 <
+  maintained 436 < ctl 600). Medium temperature is not the knob;
+  scale/topology is. Identity assertion at the config level helps
+  exactly one object class (chords) and cannot be escalated — the
+  next carrier has to be built into the matter, which is the lane.
+- **FOR — the lane's design envelope is measured and cheap (D-A1):**
+  a door-carried gid is load-bearing if it survives ~30–500 t.u. at
+  ~0.04 tags/t.u. per chord; the door's directed sign pattern
+  (U+,U+,D−) is the identity-bearing observable, running at
+  bath-loudness — identity by direction, not by rate, exactly the
+  REGISTRY §5 thesis at the event grain.
+- **SCOPE the acceptance target — matter vs shape (6.5.6):** the
+  frozen bound keeps matter alive 4/4 seeds but full topology only
+  2/4. The lane's acceptance bars should be split: matter+books
+  (the chord meets them everywhere) vs shape (fragile even frozen).
+- **NEW — a nutritional floor exists but is not a path (6.5.7):**
+  warm feeding buys a fed-ember remnant (~0.11–0.15 plateau), not an
+  object. Any future "keep large matter alive by feeding" proposal
+  is bounded by this measurement.
+
+**(b) B4 audit re-grade ABSENT → STRUCTURAL?** The two registered
+edges from §4.3, as they landed:
+
+- **Statistics edge: cleared conditionally (P-D5).** Pooled U
+  emission n=55 ≥ 30 ✓, mean −0.0035 ✓; rms 6.3% misses the 5% bar
+  pooled but passes on intact topology (1.8%, seed 20260802) — the
+  excess is measured physics (partial-death redward broadening), not
+  instrument noise. U absorption is tight in all seeds (n≈198).
+- **Species row: STRENGTHENED and corrected (P-D4).** The second
+  species lives (UDD, open chain exactly as the kernel's seed
+  comment predicted, ret 0.37@5000) — but species identification
+  works by **line pattern/ratios** (absorption:emission 2.3× apart
+  between species), NOT by shifted loci: the healthy-D locus is a
+  universal balance attractor (UUD 1.6710±0.0052, UDD 1.6774±0.0071,
+  Δ = 0.006±0.009). Brightness is intake-limited, not
+  emitter-limited (UDD dimmer with twice the emitters). If the
+  re-grade is accepted, the row should read: species by ratios and
+  pattern on a universal line locus — which is how real spectroscopy
+  reads abundances.
+
+Nothing in §6 was adopted; every arm was config-only on the standing
+binary, and the §6.2 registration was committed before the first run.
