@@ -186,6 +186,12 @@ typedef struct {
      * reads exactly as today (byte-inert). wf_on=1: form W-A,
      * econd_i = Em[i] >= wf_floor ? 0 : wf_far — a PRESENCE
      * threshold (W-M1: foam Em == 0 exactly; matter > 0). --- */
+    /* --- QUENCH-2 apparatus (QUENCH.md §6; seed-time only) ---
+     * conf_r > 0 carves a circular pinned-fixture shell (cavity) of
+     * radius conf_r about box centre with a leak gap; spin_m adds an
+     * azimuthal phase winding to the seeded packet. Both inert at 0. */
+    double conf_r, conf_gap, conf_th, conf_pinw;
+    int    spin_m;
     int    wf_on;       /* 0 = lane OFF (byte-inert)                  */
     double wf_floor;    /* presence floor (W-M1-selected 0.01)        */
     double wf_far;      /* empty-space demand (optics-grade 99)       */
@@ -316,6 +322,8 @@ static void cfg_defaults(void)
     P.par_tau = 0; P.par_gate = 0; P.par_form = 0;
     P.par_lo = 0.002; P.par_hi = 0.02; P.par_mature = 400;
     P.wf_on = 0; P.wf_floor = 0.01; P.wf_far = 99;
+    P.conf_r = 0; P.conf_gap = 0.3; P.conf_th = 1.6; P.conf_pinw = 3.0;
+    P.spin_m = 0;
     P.amp_tau = 0;
     P.qatom_every = 200;
     /* freecell geometry */
@@ -418,6 +426,11 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "wf_floor")) P.wf_floor = atof(v);
     else if (!strcmp(k, "wf_far")) P.wf_far = atof(v);
     else if (!strcmp(k, "amp_tau")) P.amp_tau = atof(v);
+    else if (!strcmp(k, "conf_r")) P.conf_r = atof(v);
+    else if (!strcmp(k, "conf_gap")) P.conf_gap = atof(v);
+    else if (!strcmp(k, "conf_th")) P.conf_th = atof(v);
+    else if (!strcmp(k, "conf_pinw")) P.conf_pinw = atof(v);
+    else if (!strcmp(k, "spin_m")) P.spin_m = atoi(v);
     else if (!strcmp(k, "qatom_every")) P.qatom_every = atoi(v);
     else if (!strcmp(k, "cfac")) P.cfac = atof(v);
     else if (!strcmp(k, "k_rep")) P.k_rep = atof(v);
@@ -2788,6 +2801,8 @@ int main(int argc, char **argv)
            P.wf_on, P.wf_floor, P.wf_far);
     printf("# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=%g\n",
            P.amp_tau);
+    printf("# QUENCH-2 apparatus: conf_r=%g conf_gap=%g conf_th=%g conf_pinw=%g spin_m=%d\n",
+           P.conf_r, P.conf_gap, P.conf_th, P.conf_pinw, P.spin_m);
     if (P.par_gate && P.par_tau <= 0)
         printf("# CONFIG ERROR: par_gate=1 with par_tau=0 — r_id == 0, gauge dark everywhere\n");
     if (P.par_gate && P.reg_gate) {
@@ -3174,6 +3189,7 @@ int main(int argc, char **argv)
             double g = exp(-(dx*dx + dy*dy + dz*dz) / (2.0 * P.sigma * P.sigma));
             if (g < 1e-8) continue;
             double tilt = -(P.kx * dx);
+            if (P.spin_m) tilt += P.spin_m * atan2(dy, dx);
             fa1[i] += sqrt(P.amp * g) * cos(tilt);
             fa2[i] += sqrt(P.amp * g) * sin(tilt);
             Ee[i] = fa1[i]*fa1[i] + fa2[i]*fa2[i];
@@ -3441,6 +3457,14 @@ int main(int argc, char **argv)
                 if (P.slit_mask == 1 && inA) keep = 1;
                 if (P.slit_mask == 2 && inB) keep = 1;
             }
+            if (P.conf_r > 0) {
+                /* QUENCH-2 cavity: carve the shell annulus except the
+                 * leak gap (half-angle conf_gap about +x) */
+                double rdx = wr(px_[i] - cx0), rdy = wr(py_[i] - cy0);
+                double rr = sqrt(rdx*rdx + rdy*rdy);
+                if (fabs(rr - P.conf_r) < 0.5 * P.conf_th
+                    && fabs(atan2(rdy, rdx)) > P.conf_gap) keep = 0;
+            }
             if (keep) {
                 if (m != i) {
                     px_[m]=px_[i]; py_[m]=py_[i]; pz_[m]=pz_[i];
@@ -3468,6 +3492,17 @@ int main(int argc, char **argv)
                 if (fabs(wr(px_[i] - P.slit_wallx)) < P.slit_pinw) { pin[i] = 1; npin++; }
         printf("# PIN wall fixture: %d cells within +-%g of x=%g\n",
                npin, P.slit_pinw, P.slit_wallx);
+        if (P.conf_r > 0) {
+            int ncp = 0;
+            for (int i = 0; i < NC; i++) {
+                double rdx = wr(px_[i] - cx0), rdy = wr(py_[i] - cy0);
+                double rr = sqrt(rdx*rdx + rdy*rdy);
+                if (fabs(rr - P.conf_r) < P.conf_pinw
+                    && fabs(atan2(rdy, rdx)) > P.conf_gap) { pin[i] = 1; ncp++; }
+            }
+            printf("# PIN conf cavity: %d cells, r=%g th=%g gap=%g\n",
+                   ncp, P.conf_r, P.conf_th, P.conf_gap);
+        }
         /* quasi-plane packet: Gaussian sigma_x = P.sigma, sigma_y = slit_sy */
         for (int i = 0; i < NC; i++) {
             double dx = wr(px_[i] - P.slit_srcx), dy = wr(py_[i] - cy0);
@@ -3475,6 +3510,7 @@ int main(int argc, char **argv)
                            - dy*dy / (2.0 * P.slit_sy * P.slit_sy));
             if (g < 1e-8) continue;
             double tilt = -(P.kx * dx);
+            if (P.spin_m) tilt += P.spin_m * atan2(dy, dx);
             fa1[i] += sqrt(P.amp * g) * cos(tilt);
             fa2[i] += sqrt(P.amp * g) * sin(tilt);
             Ee[i] = fa1[i]*fa1[i] + fa2[i]*fa2[i];

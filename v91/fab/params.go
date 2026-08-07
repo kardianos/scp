@@ -65,6 +65,9 @@ type Cfg struct {
 	// v91 AMPLITUDE lane Phase M (AMPLITUDE.md): shadow amplitude
 	// meter; amp_tau=0 => byte-inert.
 	AmpTau float64
+	// QUENCH-2 apparatus (QUENCH.md §6; seed-time only)
+	ConfR, ConfGap, ConfTh, ConfPinw float64
+	SpinM                            int
 	QatomEvery int // apparatus (print-only): QATOM sampler period
 	// --- freecell geometry sector (apparatus, not law) ---
 	Cfac      float64
@@ -193,6 +196,11 @@ func Defaults() Cfg {
 	p.WfFloor = 0.01
 	p.WfFar = 99
 	p.AmpTau = 0
+	p.ConfR = 0
+	p.ConfGap = 0.3
+	p.ConfTh = 1.6
+	p.ConfPinw = 3.0
+	p.SpinM = 0
 	p.QatomEvery = 200
 	// freecell geometry
 	p.Cfac = 1.15
@@ -419,6 +427,16 @@ func (p *Cfg) SetKV(k, v string) {
 		p.WfFar = atof(v)
 	case "amp_tau":
 		p.AmpTau = atof(v)
+	case "conf_r":
+		p.ConfR = atof(v)
+	case "conf_gap":
+		p.ConfGap = atof(v)
+	case "conf_th":
+		p.ConfTh = atof(v)
+	case "conf_pinw":
+		p.ConfPinw = atof(v)
+	case "spin_m":
+		p.SpinM = atoi(v)
 	case "qatom_every":
 		p.QatomEvery = atoi(v)
 	case "cfac":

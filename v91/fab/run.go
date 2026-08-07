@@ -267,6 +267,8 @@ func (s *Sim) Run() {
 		P.WfOn, P.WfFloor, P.WfFar)
 	fprintf(s.Out, "# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=%.6g\n",
 		P.AmpTau)
+	fprintf(s.Out, "# QUENCH-2 apparatus: conf_r=%.6g conf_gap=%.6g conf_th=%.6g conf_pinw=%.6g spin_m=%d\n",
+		P.ConfR, P.ConfGap, P.ConfTh, P.ConfPinw, P.SpinM)
 	if P.ParGate != 0 && P.ParTau <= 0 {
 		fprintf(s.Out, "# CONFIG ERROR: par_gate=1 with par_tau=0 — r_id == 0, gauge dark everywhere\n")
 	}
@@ -747,6 +749,9 @@ func (s *Sim) Run() {
 				continue
 			}
 			tilt := -(P.Kx * dx)
+			if P.SpinM != 0 {
+				tilt += float64(P.SpinM) * math.Atan2(dy, dx)
+			}
 			s.fa1[i] += math.Sqrt(P.Amp*g) * math.Cos(tilt)
 			s.fa2[i] += math.Sqrt(P.Amp*g) * math.Sin(tilt)
 			s.Ee[i] = s.fa1[i]*s.fa1[i] + s.fa2[i]*s.fa2[i]
@@ -1119,6 +1124,15 @@ func (s *Sim) Run() {
 				}
 				if P.SlitMask == 2 && inB {
 					keep = true
+				}
+			}
+			if P.ConfR > 0 {
+				rdx := s.wr(s.px[i] - cx0)
+				rdy := s.wr(s.py[i] - cy0)
+				rr := math.Sqrt(rdx*rdx + rdy*rdy)
+				if math.Abs(rr-P.ConfR) < 0.5*P.ConfTh &&
+					math.Abs(math.Atan2(rdy, rdx)) > P.ConfGap {
+					keep = false
 				}
 			}
 			if keep {
