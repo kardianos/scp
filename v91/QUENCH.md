@@ -286,6 +286,35 @@ foam, snap_every for fcs + volview plates. Bars: the Q5 detector
 drift ≤ 2e-15 with confinement on (the apparatus must not leak
 energy). Results land in §6.1.
 
-### 6.1 Results
+### 6.1 Results (five protocol arms harvested 2026-08-06; Q2-I pending)
 
-(registered empty)
+**THE CLOUD IS AN ENERGY-DETERMINED ATTRACTOR — it forgets the
+protocol.** At matched seed budget (amp·σx·σy = 96-class), all five
+arms land on the same state: live populations 2,291–2,411 at
+t=1500, standing stamps 6,404–7,064, max stamp ages 1,432–1,483
+(every arm keeps a pair continuous from beam passage), idfrac
+0.97–0.985.
+  - **Rate: NULL.** Fast-deep (σ=2, amp=16) vs slow-shallow (σ=8,
+    amp=4): 2,395 vs 2,411 — indistinguishable. Compression rate
+    does not matter at matched energy; even Q1-vs-Q2's earlier
+    "depth" effect re-reads as pure energy scaling (their amp·σ·sy
+    budgets were 48 vs 96).
+  - **Spin: INVISIBLE at every current meter.** m=2 winding: E0
+    bit-identical to the m=0 reference (phases carry no energy) and
+    the debris census identical (2,395). Either condensation erases
+    the winding (the door reads magnitude, not phase) or the meters
+    are blind to it — the AMPLITUDE shadow (amp_tau) is exactly the
+    phase-resolving instrument; the one-run follow-up (q2s +
+    amp_tau=10) is registered.
+  - **Confinement: NULL at matched energy.** The cavity arm's −3%
+    population is fully explained by its −2.6% energy (the carved
+    shell's bath cells); the real effect is KINETIC — assembly lags
+    (2,049 @ t=500 vs 2,464 free) then converges to the same
+    asymptote; idfrac dips to 0.970 (parcels die in flight more
+    often inside the cavity).
+The thermodynamic reading, stated carefully: quench debris
+equilibrates to an energy-set attractor — the cloud has an
+equation of state, and how you compress is forgotten by t≈500.
+Plates: em-channel animation rendered (volview, 100 frames;
+`runs/quench/plates/` local — large binaries stay out of git; an
+exhibit page can carry them on request).
