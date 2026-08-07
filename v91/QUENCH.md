@@ -318,3 +318,15 @@ equation of state, and how you compress is forgotten by t≈500.
 Plates: em-channel animation rendered (volview, 100 frames;
 `runs/quench/plates/` local — large binaries stay out of git; an
 exhibit page can carry them on request).
+
+**Q2-I (implosion focusing — the fix arm; harvested 2026-08-06):
+SAME ATTRACTOR.** The lawful whole-box compress-release (imp_k=2
+converging wave, matched budget E0 = 3125, drift −2.18e-15 — the
+largest of the family but FP-floor class) lands at population
+2,322, stamps 6,754, a beam-passage pair held (max 1,469), idfrac
+0.985 — inside the five-arm band. **Six protocols — linear
+fast/slow, cavity hold/free, spin, implosion — one state.** The
+equation-of-state claim now spans every compression geometry the
+apparatus can produce; the only variable the cloud remembers is
+its energy budget. Implosion animation rendered to the local
+plates set.
