@@ -5,11 +5,11 @@
 # kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
 # comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
 # quant_A0=1.15 quant_mode=2 (A0eff=1.15)
-# v91 radiance (laws_V3r candidate A): k_rad=0 p_rad=4 rad_clock=0
+# v91 radiance (laws_V3r candidate A): k_rad=0.05 p_rad=4 rad_clock=0
 # v91 cantus (coherent-channel candidate B): k_cant=0 k_tune=0 cant_tau=50 cant_seed=0 cant_grow=1
 # v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=0 reg_gate=0 reg_f0=0
 # v91 identity (parcel-identity lane, IDENTITY.md): par_tau=0 par_gate=0 par_form=0 par_lo=0.002 par_hi=0.02 par_mature=400
-# v91 workfn (emergent-threshold lane, WORKFN.md): wf_on=0 wf_floor=0.01 wf_far=99
+# v91 workfn (emergent-threshold lane, WORKFN.md): wf_on=1 wf_floor=0.01 wf_far=99
 # v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=0
 # QUENCH-2 apparatus: conf_r=0 conf_gap=0.3 conf_th=1.6 conf_pinw=3 spin_m=0 imp_k=0 qp_phase=0
 # HORIZON apparatus (HORIZON.md): bh_r=0 bh_k=1 bh_sep=0
@@ -169,18 +169,19 @@ t=  288.00 +1.10e-14 | 0.0028  2.00      5    0      0      0 | 1.6377  0.01 | 6
 t=  290.00 +1.15e-14 | 0.0028  2.00      5    0      0      0 | 1.6377  0.01 | 6.53e-16 7.06e-18 |   4.0625 1.0000  0.1344  1.3866 1.000  2.00 | edge_dev mean=0.1319 max=0.1321 gg=0.0006 shape_dev=0.3000 xbar=0.3250
 t=  292.00 +1.15e-14 | 0.0028  2.00      5    0      0      0 | 1.6377  0.01 | 6.46e-16 4.74e-17 |   4.0625 1.0000  0.1344  1.3866 1.000  2.00 | edge_dev mean=0.1319 max=0.1321 gg=0.0047 shape_dev=0.3000 xbar=0.3250
 t=  294.00 +1.17e-14 | 0.0028  2.00      5    0      0      0 | 1.6377  0.01 | 6.27e-16 2.03e-16 |   4.0625 1.0000  0.1344  1.3866 1.000  2.00 | edge_dev mean=0.1319 max=0.1321 gg=0.0232 shape_dev=0.3000 xbar=0.3250
-t=  296.00 +1.21e-14 | 0.0028  2.00      5    0      0      0 | 1.6377  0.01 | 6.27e-16 5.82e-16 |   4.0625 1.0000  0.1344  1.3866 1.000  2.00 | edge_dev mean=0.1319 max=0.1321 gg=0.0744 shape_dev=0.3000 xbar=0.3250
-t=  298.00 +1.17e-14 | 0.0028  2.00      5    0      0      0 | 1.6377  0.01 | 6.78e-16 1.16e-15 |   4.0625 1.0000  0.1344  1.3866 1.000  2.00 | edge_dev mean=0.1319 max=0.1321 gg=0.1610 shape_dev=0.3000 xbar=0.3250
-t=  300.00 +1.15e-14 | 0.0028  2.00      5    0      0      0 | 1.6377  0.01 | 8.09e-16 1.61e-15 |   4.0625 1.0000  0.1344  1.3866 1.000  2.00 | edge_dev mean=0.1319 max=0.1321 gg=0.2398 shape_dev=0.3000 xbar=0.3250
+# QATOM t=295.56 dir=DF w=1.95948811 e=0.358641550607 i=3 Em=1.0000
+t=  296.00 +1.23e-14 | 0.0028  2.00      5    0      0      0 | 1.6400  0.24 | 1.67e-04 2.74e-05 |   3.7039 0.9117  0.0122  1.3951 1.000  2.00 | edge_dev mean=0.1343 max=0.1393 gg=0.0749 shape_dev=0.3058 xbar=0.2963
+t=  298.00 +1.23e-14 | 0.0028  1.60      4    0      0      0 | 1.6437  0.49 | 1.38e-05 1.13e-04 |   3.7039 0.9117  0.0110  1.3971 1.000  1.60 | edge_dev mean=0.1367 max=0.1460 gg=0.1632 shape_dev=0.3114 xbar=0.2963
+t=  300.00 +1.25e-14 | 0.0028  0.80      2    0      0      0 | 1.6215  0.35 | 3.42e-04 1.55e-03 |   3.7039 0.9117  0.0084  1.3935 0.400  0.80 | edge_dev mean=0.1327 max=0.1492 gg=0.2616 shape_dev=0.3019 xbar=0.2962
 #
-# RESULT drift_rel 1.145e-14
+# RESULT drift_rel 1.249e-14
 # RESULT births 0 deaths 0 beta_returns 0 beta_energy 0.000000e+00
-# RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
-# RESULT credit qcnvD=0.000000 qcnvF=0.672957
-# RESULT geometry phi_nom=0.0028 z_live=2.00 dbar=1.6377 sigma_d=0.0001
-# RESULT truss edge_dev_mean=0.131892 edge_dev_max=0.132150 shape=(0.0000,0.9700,0.9708) shape0=(0.0000,0.8204,0.8204)
-# EDGE 0 0-1 d=1.63743 dev=+0.13164 gg=0.0000 gpl=0.9730
-# EDGE 1 1-2 d=1.63756 dev=+0.13176 gg=0.6108 gpl=0.9716
-# EDGE 2 2-3 d=1.63795 dev=+0.13215 gg=0.0000 gpl=0.9145
-# EDGE 3 3-4 d=1.63795 dev=+0.13215 gg=0.0001 gpl=0.9557
-# EDGE 4 4-0 d=1.63756 dev=+0.13177 gg=0.5882 gpl=0.9716
+# RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.046779 rad=0.358642
+# RESULT credit qcnvD=0.054548 qcnvF=0.760675
+# RESULT geometry phi_nom=0.0028 z_live=0.80 dbar=1.6215 sigma_d=0.0035
+# RESULT truss edge_dev_mean=0.132692 edge_dev_max=0.149188 shape=(0.0000,0.9663,0.9764) shape0=(0.0000,0.8204,0.8204)
+# EDGE 0 0-1 d=1.64193 dev=+0.13613 gg=0.0000 gpl=0.9729
+# EDGE 1 1-2 d=1.61592 dev=+0.11013 gg=0.6855 gpl=0.9712
+# EDGE 2 2-3 d=1.65488 dev=+0.14908 gg=0.0000 gpl=0.9147
+# EDGE 3 3-4 d=1.65325 dev=+0.14745 gg=0.0000 gpl=0.9555
+# EDGE 4 4-0 d=1.62716 dev=+0.12136 gg=0.6227 gpl=0.9719

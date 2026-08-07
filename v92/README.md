@@ -156,6 +156,6 @@ interaction, registered shape, awaits a lawful well to couple to).
 |---|---|
 | charter (this file) + RECKONING.md | **written, committed** |
 | tree carry / build / baseline battery | **DONE (STEP ZERO, commit 0b06506) — carried from v91, imports → scp/v92, make all clean, BATTERY ALL GREEN 93 incl. abx C≡Go byte-identity** |
-| combined reckoning | **decision taken (Option A, hardened); per-bar mover audit IN PROGRESS (W-L2 prerequisite running)** |
-| Phase L design round (L-0) | not started (after act one) |
-| any v92 kernel work or runs | STEP ZERO only (mechanical carry); no knob/design work |
+| combined reckoning | **ADOPTED — Option A (RADIANCE + WORKFN), hardened + per-bar mover audit complete (commit pending): W-L2 prerequisite PASS; 12 movers all re-gauged by user decision; `laws_V3a.cfg` is the table; battery now runs V3a by default, ALL GREEN 87; `-nolaw` reproduces V2g (93, purity red = law-deviation witness)** |
+| Phase L design round (L-0) | not started (next, after act one) |
+| v92 kernel | UNCHANGED — inert compiled defaults preserved; the LAW is enforced by the battery harness (V3a injection) + `laws_V3a.cfg` |
