@@ -829,6 +829,23 @@ P2 note, honest: the P2 batching economy is a Go-kernel benchmark
 experiment (`exp=p2lc`), not a general run mode — wiring it into the
 general step loop is future engineering, recorded, not done here.
 
-### 8.1 Results
+### 8.1 Results (early fold read 2026-08-06; retention tails pending run completion)
 
-(registered empty)
+**Both discriminators land on the same side: THE FOLD IS NOT A BOX
+ARTIFACT.** The registered "no fold = rms > 10" wording was
+nv48-calibrated; the honest cross-size metric is the collapse
+RATIO (seed rms / folded rms ≈ 2.4 for the reference):
+  - **SZ-1 (nv24 @ L=36, double clearance margin):** seed rms 6.49
+    → 2.84 by t=100 — a **2.29× collapse**, the same proportional
+    fold — and starving on schedule (ret 0.391@200, 0.356@300,
+    faster than nv48's cool trajectory). The embedding limitation
+    is size-independent.
+  - **SZ-2 (nv48 @ L=48, 10 units of bath beyond the carve
+    clearance instead of 1.2):** 12.95 → 4.99 by t=80 — folds at
+    least as fast as at L=36. The box was never the cause.
+The §4.4/§6 geometric suspicion is CLEARED: embedded rings fold by
+contact-with-medium physics at every size and box tested; the
+standing verdicts (vacuum-conditional embedding; the limitation is
+general; identity-lane direction) HOLD unchanged. Retention-tail
+bars (ret@1500) complete when the runs finish; the fold verdict —
+the decision-carrying half — is final as measured above.
