@@ -1,0 +1,18 @@
+# freecell-go — v90 P2 local-clock prototype (exp=p2lc)
+# P2LC reduced dynamics: dth=w_detune + Kc*sum sin(pub_j-th); paired antisymmetric E transfers
+# P2LC params: Kc=0.2 gE=0.05 dt=0.02 T=5 dilation R=8 look=0.2 blob amp=1.6 sigma=2.2 seed=20260802
+# JAM sweeps=800 max_step=1.677e-04 (tol 1.0e-04, k_end=0.0028) — witness for the settle
+# P2LC substrate L=16: N=170 ne=549 deg_max=8 active=58 quiet=112
+# RESULT p2lc_r1 drift_sync=-5.631e-16 drift_async=-1.408e-16 (E0=201.900615, events=71776)
+# RESULT p2lc_r2 err_dt=1.358018 err_dt2=0.792056 ratio=1.715 (first order: ~2)
+# RESULT p2lc_r3 rot=0.000e+00 rev=0.000e+00 revrot=0.000e+00 arrival=1.454e+00
+# RESULT p2lc_skew max_tick_skew=219 (a mod-M byte needs M > 438; ordering uses local time, never tau)
+# RESULT p2lc_batch maxdiff_vs_serial=0.000e+00 workers=1,2,4,8 width=10.9 rounds=6610
+# P2LC scaling: fixed blob (amp=1.6 sigma=2.2), growing quiet bath
+# JAM sweeps=143 max_step=7.520e-05 (tol 1.0e-04, k_end=0.0028) — witness for the settle
+# RESULT p2lc_scale L=16 N=177 ne=617 active=65 ev_sync=198500 ev_async=83908 ev_ratio=2.37 ms_sync=5.3 ms_async=375.0 drift=-2.7e-16
+# JAM sweeps=114 max_step=7.829e-05 (tol 1.0e-04, k_end=0.0010) — witness for the settle
+# RESULT p2lc_scale L=32 N=700 ne=2407 active=65 ev_sync=776750 ev_async=157969 ev_ratio=4.92 ms_sync=22.2 ms_async=960.3 drift=3.1e-16
+# JAM sweeps=90 max_step=9.998e-05 (tol 1.0e-04, k_end=0.0010) — witness for the settle
+# RESULT p2lc_scale L=64 N=2739 ne=9202 active=61 ev_sync=2985250 ev_async=434651 ev_ratio=6.87 ms_sync=119.9 ms_async=2554.8 drift=-9.8e-16
+# RESULT p2lc done

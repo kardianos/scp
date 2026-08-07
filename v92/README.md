@@ -155,7 +155,7 @@ interaction, registered shape, awaits a lawful well to couple to).
 | item | state |
 |---|---|
 | charter (this file) + RECKONING.md | **written, committed** |
-| tree carry / build / baseline battery | **NOT DONE — step zero, first agent** |
-| combined reckoning | **NOT HELD — act one, requires the user** |
+| tree carry / build / baseline battery | **DONE (STEP ZERO, commit 0b06506) — carried from v91, imports → scp/v92, make all clean, BATTERY ALL GREEN 93 incl. abx C≡Go byte-identity** |
+| combined reckoning | **decision taken (Option A, hardened); per-bar mover audit IN PROGRESS (W-L2 prerequisite running)** |
 | Phase L design round (L-0) | not started (after act one) |
-| any v92 kernel work or runs | none, per the user's opening instruction |
+| any v92 kernel work or runs | STEP ZERO only (mechanical carry); no knob/design work |
