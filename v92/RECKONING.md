@@ -31,7 +31,13 @@ purity lines changed. Nothing in this file is a decision.
   balance points and cavities, not particles"). Phase L IS that
   channel — v92 opening satisfies the spirit of the condition
   whether adoption happens at act one or after L-1; the difference
-  is bookkeeping honesty (stop carrying the drive as a knob).
+  is bookkeeping honesty (stop carrying the drive as a knob). NOTE,
+  flagged as a judgment call (review 2026-08-07): this reading is
+  defensible — the coherent channel is the committed next programme,
+  and radiance has been the de facto drive for three days — but §6
+  said adopt TOGETHER. Adopting radiance now keeps the channel's
+  acceptance (L-1 onward) as the outstanding half of that condition,
+  stated explicitly rather than assumed discharged.
 * **Mover audit basis:** R5 classified the movers at 82/93 green +
   11 classified; the CANTUS H5 re-reckoning read 83/93 with both
   candidates live. Those classifications are the starting worksheet.
@@ -49,9 +55,14 @@ purity lines changed. Nothing in this file is a decision.
   e_cond=0 / e_cond=99 per-run split becomes law); the B7-vs-genesis
   tension closes as "creation requires seeds" — the quench-cloud
   discriminator measured in its favor.
-* **Open item, flagged:** the registered W-L2 dense-screen arm was
-  never run. Either run it during the reckoning (one config-only
-  arm) or adopt with the gap recorded.
+* **Prerequisite, hardened (review 2026-08-07):** the registered
+  W-L2 dense-screen arm was never run. W-L2 is the POSITIVE half of
+  the B7 claim (clicks fire at a seeded dense screen only; tier-1
+  fringe rebuild). Adopting WORKFN with W-L2 un-run leaves the law's
+  detection-localization claim as inference, not measurement — a soft
+  bar by omission. It is ONE config-only arm. **W-L2 runs during act
+  one, before WORKFN is adoptable.** The "adopt with the gap recorded"
+  branch is closed by this hardening.
 
 ### 1c. FLOW bed — bed_k=0.5, bed_tau=30
 
@@ -89,7 +100,11 @@ instruments by design). No adoption question exists for these.
 * **workfn × bed:** NEVER RUN TOGETHER. If both are adopted, one
   registered check arm is required (eater + wf_on: the hole's space
   eating is workfn-independent by construction, but the glow-recon
-  economy around it is not).
+  economy around it is not). UNDER OPTION A this interaction is not
+  closed — it is DEFERRED with the bed: when the bed returns for its
+  own reckoning (post Phase-L open-books matter), this check arm is
+  OWED. Recorded as a debt on the bed's future adoption, not on
+  workfn's present one.
 * **× Phase L:** every acceptance number in the v92 ladder is
   defined against a baseline table. This is why the reckoning is
   act one: L-0 design must know what the law IS.
@@ -110,13 +125,16 @@ instruments by design). No adoption question exists for these.
 
 ## 5. The decision menu
 
-* **A (recommended): adopt RADIANCE + WORKFN now (`laws_V3a`); bed
-  stays a knob.** The two mature candidates with complete campaigns
-  and a measured, resolved interaction; the law finally matches how
-  every experiment actually runs; regime declarations retire. The
-  bed waits for its lawful partner (Phase L open-books), then gets
-  its own reckoning with a real second seed. Optional pre-step: run
-  W-L2 first (one arm).
+* **A (recommended, USER-ADOPTED 2026-08-07 with hardening): adopt
+  RADIANCE + WORKFN now (`laws_V3a`); bed stays a knob.** The two
+  mature candidates with complete campaigns and a measured, resolved
+  interaction; the law finally matches how every experiment actually
+  runs; regime declarations retire. The bed waits for its lawful
+  partner (Phase L open-books), then gets its own reckoning with a
+  real second seed — carrying the workfn × bed check-arm debt (§3).
+  **Prerequisite (hardened): W-L2 runs first** (one config-only arm;
+  see §1b) — WORKFN is not adoptable until its detection bar is
+  measured, not inferred.
 * **B: adopt all three (`laws_V3f`).** Fullest table; requires the
   workfn × bed check arm and accepts a one-seed candidate into law.
 * **C: adopt RADIANCE only (`laws_V3r`).** The original R5 shape;
@@ -125,5 +143,12 @@ instruments by design). No adoption question exists for these.
   with knobs. Cost: the gap between the gated table and the run
   reality keeps growing.
 
-Recommendation recorded as A. The decision, per the ratchet, is the
-user's, taken during act one with the mover worksheet on the table.
+Recommendation recorded as A. **User decision (2026-08-07): Option A
+adopted with the review hardening — W-L2 prerequisite non-optional,
+workfn × bed debt pinned on the bed's future reckoning, RADIANCE §6
+condition framing noted as a judgment call.** The remaining ratchet
+gate is the per-bar mover audit (§4 step 3): W-L2 run → V3a table
+written → full battery at V3a → every moved bar gets an explicit
+sharpen/re-gauge/reject decision WITH THE USER → then the adoption
+commit. This file records the brief; the mover worksheet is the act
+deliverable.
