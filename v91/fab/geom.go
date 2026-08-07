@@ -124,6 +124,8 @@ func (s *Sim) slotNew(i, j int) int {
 	s.sA[sl] = 0
 	s.sldd[sl] = 0
 	s.swl[sl] = 0
+	s.sbed[sl] = 1.0 // FLOW: a reborn link has no bed
+	s.bednet[sl] = 0
 	s.sgg[sl] = 0 // cantus: a reborn bond starts mute
 	s.rfp[sl] = 0 // registry: a reborn pair has no past
 	s.rfm[sl] = 0

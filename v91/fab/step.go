@@ -36,6 +36,9 @@ func (s *Sim) step() {
 			}
 			w := (s.sA[sl] / s.Aref) * (s.dref / s.sd[sl])
 			s.swl[sl] = P.SK * dt * w * dp
+			if P.BedK > 0 {
+				s.swl[sl] *= s.sbed[sl] // FLOW: the bed
+			}
 		}
 		for i := 0; i < s.NC; i++ {
 			rq := 0.0
@@ -100,6 +103,63 @@ func (s *Sim) step() {
 				}
 			}
 			s.Es[i] += de
+		}
+		// FLOW (FLOW.md): the bed-digging channel law. Net memory from
+		// the ACTUAL moved flow; growth on |net|; ZERO-SUM per-cell
+		// renorm (the anti-ignition structure); clamp.
+		if P.BedK > 0 {
+			kb := 1.0
+			if P.BedTau > dt {
+				kb = dt / P.BedTau
+			}
+			for sl := 0; sl < s.NSLOT; sl++ {
+				if s.sst[sl] == sFree {
+					continue
+				}
+				f := s.swl[sl]
+				flow := 0.0
+				if f != 0 {
+					src := s.sli[sl]
+					if f <= 0 {
+						src = s.slj[sl]
+					}
+					flow = math.Abs(f) * s.sscl[src]
+					if f <= 0 {
+						flow = -flow
+					}
+				}
+				s.bednet[sl] += kb * (flow/dt - s.bednet[sl])
+				s.sbed[sl] *= 1.0 + P.BedK*dt*math.Abs(s.bednet[sl])
+			}
+			for i := 0; i < s.NC; i++ {
+				sum := 0.0
+				n := 0
+				for q := s.cls[i]; q < s.cls[i+1]; q++ {
+					sl := s.clidx[q]
+					if s.sst[sl] == sFree || s.sA[sl] <= 0 {
+						continue
+					}
+					sum += s.sbed[sl]
+					n++
+				}
+				if n > 0 && sum > 0 {
+					s.bedf[i] = float64(n) / sum
+				} else {
+					s.bedf[i] = 1.0
+				}
+			}
+			for sl := 0; sl < s.NSLOT; sl++ {
+				if s.sst[sl] == sFree || s.sA[sl] <= 0 {
+					continue
+				}
+				s.sbed[sl] *= math.Sqrt(s.bedf[s.sli[sl]] * s.bedf[s.slj[sl]])
+				if s.sbed[sl] < 0.2 {
+					s.sbed[sl] = 0.2
+				}
+				if s.sbed[sl] > 5.0 {
+					s.sbed[sl] = 5.0
+				}
+			}
 		}
 	}
 
@@ -986,6 +1046,16 @@ func (s *Sim) step() {
 			hdx := s.wr(s.px[i] - 0.5*P.L)
 			hdy := s.wr(s.py[i] - 0.5*P.L)
 			hdz := s.wr(s.pz[i] - 0.5*P.L)
+			if P.BhSep > 0 {
+				// FLOW: two centres at cx +- sep/2; use the nearer
+				dxa := s.wr(s.px[i] - (0.5*P.L - 0.5*P.BhSep))
+				dxb := s.wr(s.px[i] - (0.5*P.L + 0.5*P.BhSep))
+				if math.Abs(dxa) < math.Abs(dxb) {
+					hdx = dxa
+				} else {
+					hdx = dxb
+				}
+			}
 			if hdx*hdx+hdy*hdy+hdz*hdz < P.BhR*P.BhR {
 				s.bhNin++
 				if s.Ee[i] > 0 {

@@ -209,6 +209,13 @@ typedef struct {
      * beat, no door, no emission — I2 makes one-way structural).
      * bh_r=0 = byte-inert. --- */
     double bh_r, bh_k;
+    double bh_sep;      /* FLOW: two hole centres at cx ± sep/2 (0 = one) */
+    /* --- FLOW apparatus (FLOW.md; the ASYM.md bed-digging channel
+     * law, v1 = space channel only): per-slot conductance weight
+     * sbed grown by |lowpassed signed net flow| under a zero-sum
+     * per-cell budget (anti-ignition structure); slot-borne, mortal,
+     * clamped [0.2,5]; no energy content. bed_k=0 = byte-inert. --- */
+    double bed_k, bed_tau;
     int    wf_on;       /* 0 = lane OFF (byte-inert)                  */
     double wf_floor;    /* presence floor (W-M1-selected 0.01)        */
     double wf_far;      /* empty-space demand (optics-grade 99)       */
@@ -341,7 +348,8 @@ static void cfg_defaults(void)
     P.wf_on = 0; P.wf_floor = 0.01; P.wf_far = 99;
     P.conf_r = 0; P.conf_gap = 0.3; P.conf_th = 1.6; P.conf_pinw = 3.0;
     P.spin_m = 0; P.imp_k = 0; P.qp_phase = 0;
-    P.bh_r = 0; P.bh_k = 1.0;
+    P.bh_r = 0; P.bh_k = 1.0; P.bh_sep = 0;
+    P.bed_k = 0; P.bed_tau = 30;
     P.amp_tau = 0;
     P.qatom_every = 200;
     /* freecell geometry */
@@ -453,6 +461,9 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "qp_phase")) P.qp_phase = atof(v);
     else if (!strcmp(k, "bh_r")) P.bh_r = atof(v);
     else if (!strcmp(k, "bh_k")) P.bh_k = atof(v);
+    else if (!strcmp(k, "bh_sep")) P.bh_sep = atof(v);
+    else if (!strcmp(k, "bed_k")) P.bed_k = atof(v);
+    else if (!strcmp(k, "bed_tau")) P.bed_tau = atof(v);
     else if (!strcmp(k, "qatom_every")) P.qatom_every = atoi(v);
     else if (!strcmp(k, "cfac")) P.cfac = atof(v);
     else if (!strcmp(k, "k_rep")) P.k_rep = atof(v);
@@ -658,6 +669,8 @@ static double *qcnvD, *qcnvF;
 static double *roughq;
 static double *req1, *scl1;
 static double *sprq, *sscl;
+static double *sbed, *bednet;   /* FLOW: per-slot bed weight + net memory */
+static double *bedf_;           /* FLOW: per-cell renorm factor scratch */
 static double *fsum_;
 static unsigned char *tag;
 static unsigned char *pin;   /* apparatus fixture: pass D skips pinned cells */
@@ -902,6 +915,7 @@ static void alloc_all(int nc)
     roughq = calloc(nc, sizeof(double));
     req1 = malloc(nc * sizeof(double)); scl1 = malloc(nc * sizeof(double));
     sprq = malloc(nc * sizeof(double)); sscl = malloc(nc * sizeof(double));
+    bedf_ = malloc(nc * sizeof(double));
     fsum_ = malloc(nc * sizeof(double));
     tag = calloc(nc, 1);
     pin = calloc(nc, 1);
@@ -927,6 +941,9 @@ static void alloc_all(int nc)
     sflux = calloc(NLMAX, sizeof(double));
     sldd = calloc(NLMAX, sizeof(double));
     swl = calloc(NLMAX, sizeof(double));
+    sbed = malloc(NLMAX * sizeof(double));
+    for (int s0 = 0; s0 < NLMAX; s0++) sbed[s0] = 1.0;
+    bednet = calloc(NLMAX, sizeof(double));
     sgg_ = calloc(NLMAX, sizeof(double));
     rfp_ = calloc(NLMAX, sizeof(double));
     rfm_ = calloc(NLMAX, sizeof(double));
@@ -1007,6 +1024,7 @@ static int slot_new(int i, int j)
     sli[s] = i; slj[s] = j; sst[s] = S_ALIVE;
     slem[2*s] = slem[2*s+1] = 0; slph[2*s] = slph[2*s+1] = 0;
     slp[s] = 1; slq[s] = 1; sA[s] = 0; sldd[s] = 0; swl[s] = 0;
+    sbed[s] = 1.0; bednet[s] = 0;    /* FLOW: a reborn link has no bed */
     sgg_[s] = 0;                     /* cantus: a reborn bond starts mute */
     rfp_[s] = 0; rfm_[s] = 0;        /* registry: a reborn pair has no past */
     rdel_[2*s] = 0; rdel_[2*s+1] = 0;
@@ -1174,6 +1192,7 @@ static void step(void)
             if (dp == 0) continue;
             double w = (sA[s] / Aref_) * (dref_ / sd[s]);
             swl[s] = P.s_k * dt * w * dp;
+            if (P.bed_k > 0) swl[s] *= sbed[s];   /* FLOW: the bed */
         }
         for (int i = 0; i < NC; i++) {
             double rq = 0;
@@ -1209,6 +1228,37 @@ static void step(void)
                 de += (src == i) ? -mag : mag;
             }
             Es[i] += de;
+        }
+        /* FLOW (FLOW.md): the bed-digging channel law. Net memory
+         * from the ACTUAL moved flow; growth on |net|; ZERO-SUM
+         * per-cell renorm (the anti-ignition structure); clamp. */
+        if (P.bed_k > 0) {
+            double kb = P.bed_tau > dt ? dt / P.bed_tau : 1.0;
+            for (int s = 0; s < NSLOT; s++) {
+                if (sst[s] == S_FREE) continue;
+                double f = swl[s], flow = 0;
+                if (f != 0) {
+                    int src = f > 0 ? sli[s] : slj[s];
+                    flow = (f > 0 ? 1.0 : -1.0) * fabs(f) * sscl[src];
+                }
+                bednet[s] += kb * (flow / dt - bednet[s]);
+                sbed[s] *= 1.0 + P.bed_k * dt * fabs(bednet[s]);
+            }
+            for (int i = 0; i < NC; i++) {
+                double sum = 0; int n = 0;
+                for (int q = cls_[i]; q < cls_[i + 1]; q++) {
+                    int s = clidx[q];
+                    if (sst[s] == S_FREE || sA[s] <= 0) continue;
+                    sum += sbed[s]; n++;
+                }
+                bedf_[i] = (n > 0 && sum > 0) ? (double)n / sum : 1.0;
+            }
+            for (int s = 0; s < NSLOT; s++) {
+                if (sst[s] == S_FREE || sA[s] <= 0) continue;
+                sbed[s] *= sqrt(bedf_[sli[s]] * bedf_[slj[s]]);
+                if (sbed[s] < 0.2) sbed[s] = 0.2;
+                if (sbed[s] > 5.0) sbed[s] = 5.0;
+            }
         }
     }
 
@@ -1872,6 +1922,12 @@ static void step(void)
         if (P.bh_r > 0) {
             double hdx = wr(px_[i] - 0.5 * P.L), hdy = wr(py_[i] - 0.5 * P.L);
             double hdz = wr(pz_[i] - 0.5 * P.L);
+            if (P.bh_sep > 0) {
+                /* FLOW: two centres at cx +- sep/2; use the nearer */
+                double dxa = wr(px_[i] - (0.5 * P.L - 0.5 * P.bh_sep));
+                double dxb = wr(px_[i] - (0.5 * P.L + 0.5 * P.bh_sep));
+                hdx = fabs(dxa) < fabs(dxb) ? dxa : dxb;
+            }
             if (hdx*hdx + hdy*hdy + hdz*hdz < P.bh_r * P.bh_r) {
                 bh_nin++;
                 if (Ee[i] > 0) {
@@ -2171,6 +2227,43 @@ static int amp_stats(int cls, double *q25, double *q50, double *q75,
     *q90 = regq1_[(int)(0.90 * (n - 1))];
     *magmed = regq2_[(int)(0.50 * (n - 1))];
     return n;
+}
+
+static int bed_cmp(const void *a, const void *b)
+{
+    double d = *(const double *)a - *(const double *)b;
+    return d < 0 ? -1 : d > 0 ? 1 : 0;
+}
+
+/* FLOW meters: live-slot sbed quartiles + max + grown count */
+static void bed_stats(double *q25, double *q50, double *q75, double *mx,
+                      int *ngrown, int *nlive)
+{
+    static double *buf = NULL;
+    if (!buf) buf = malloc(NSLOT * sizeof(double));
+    int n = 0, ng = 0;
+    double m = 0;
+    for (int s = 0; s < NSLOT; s++) {
+        if (sst[s] == S_FREE || sA[s] <= 0) continue;
+        buf[n++] = sbed[s];
+        if (sbed[s] > m) m = sbed[s];
+        if (fabs(sbed[s] - 1.0) > 0.05) ng++;
+    }
+    *nlive = n; *ngrown = ng; *mx = m;
+    if (n == 0) { *q25 = *q50 = *q75 = 0; return; }
+    qsort(buf, n, sizeof(double), bed_cmp);
+    *q25 = buf[n / 4]; *q50 = buf[n / 2]; *q75 = buf[(3 * n) / 4];
+}
+
+static void bed_map_dump(void)
+{
+    int nout = 0;
+    for (int s = 0; s < NSLOT && nout < 5000; s++) {
+        if (sst[s] == S_FREE || sA[s] <= 0) continue;
+        if (fabs(sbed[s] - 1.0) <= 0.05) continue;
+        printf("# BEDMAP t=%.2f %d %d %.4f\n", sim_t, sli[s], slj[s], sbed[s]);
+        nout++;
+    }
 }
 
 static double total_energy(void)
@@ -2872,8 +2965,10 @@ int main(int argc, char **argv)
            P.amp_tau);
     printf("# QUENCH-2 apparatus: conf_r=%g conf_gap=%g conf_th=%g conf_pinw=%g spin_m=%d imp_k=%g qp_phase=%g\n",
            P.conf_r, P.conf_gap, P.conf_th, P.conf_pinw, P.spin_m, P.imp_k, P.qp_phase);
-    printf("# HORIZON apparatus (HORIZON.md): bh_r=%g bh_k=%g\n",
-           P.bh_r, P.bh_k);
+    printf("# HORIZON apparatus (HORIZON.md): bh_r=%g bh_k=%g bh_sep=%g\n",
+           P.bh_r, P.bh_k, P.bh_sep);
+    printf("# FLOW apparatus (FLOW.md): bed_k=%g bed_tau=%g\n",
+           P.bed_k, P.bed_tau);
     if (P.par_gate && P.par_tau <= 0)
         printf("# CONFIG ERROR: par_gate=1 with par_tau=0 — r_id == 0, gauge dark everywhere\n");
     if (P.par_gate && P.reg_gate) {
@@ -3934,6 +4029,12 @@ int main(int argc, char **argv)
             if (P.bh_r > 0)
                 printf("# HOLE t=%.2f Eh=%.6f nin=%ld eatF=%.4f eatM=%.4f eatS=%.4f\n",
                        sim_t, Eh_total, bh_nin, bh_eat_f, bh_eat_m, bh_eat_s);
+            if (P.bed_k > 0) {
+                double b25, b50, b75, bmx; int bng, bnl;
+                bed_stats(&b25, &b50, &b75, &bmx, &bng, &bnl);
+                printf("# BED t=%.2f n=%d q=[%.3f %.3f %.3f] max=%.3f grown=%d\n",
+                       sim_t, bnl, b25, b50, b75, bmx, bng);
+            }
         }
         if (P.snap_every > 0 && P.snap_dir[0] && st % P.snap_every == 0)
             write_fcs(st / P.snap_every);
@@ -3941,6 +4042,8 @@ int main(int argc, char **argv)
             fcs_cell_frame(fcs_stream);
             fcs_instrument(fcs_stream);
         }
+        if (P.bed_k > 0 && P.snap_every > 0 && st % P.snap_every == 0)
+            bed_map_dump();
         if (st == steps) break;
         step();
         if (!strcmp(P.exp, "slit")) {
@@ -4020,6 +4123,12 @@ int main(int argc, char **argv)
         if (P.bh_r > 0)
             printf("# RESULT hole Eh=%.6f nin=%ld eatF=%.6f eatM=%.6f eatS=%.6f\n",
                    Eh_total, bh_nin, bh_eat_f, bh_eat_m, bh_eat_s);
+        if (P.bed_k > 0) {
+            double b25, b50, b75, bmx; int bng, bnl;
+            bed_stats(&b25, &b50, &b75, &bmx, &bng, &bnl);
+            printf("# RESULT bed n=%d q=[%.4f %.4f %.4f] max=%.4f grown=%d\n",
+                   bnl, b25, b50, b75, bmx, bng);
+        }
         if (P.amp_tau > 0) {
             double a25, a50, a75, a90, amg, b25, b50, b75, b90, bmg;
             int ntp = amp_stats(0, &a25, &a50, &a75, &a90, &amg);

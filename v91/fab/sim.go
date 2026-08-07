@@ -103,6 +103,8 @@ type Sim struct {
 	sflux                       []float64
 	sldd                        []float64
 	swl                         []float64
+	sbed, bednet                []float64 // FLOW: bed weight + net memory
+	bedf                        []float64 // FLOW: per-cell renorm scratch
 	sfluxd                      []float64 // cumulative DIRECTED dense flux [slot][dir]
 	freelist                    []int
 	nfree                       int
@@ -643,6 +645,12 @@ func (s *Sim) allocAll(nc int) {
 	s.sflux = make([]float64, s.NLMAX)
 	s.sldd = make([]float64, s.NLMAX)
 	s.swl = make([]float64, s.NLMAX)
+	s.sbed = make([]float64, s.NLMAX)
+	for sl := range s.sbed {
+		s.sbed[sl] = 1.0
+	}
+	s.bednet = make([]float64, s.NLMAX)
+	s.bedf = make([]float64, s.NC)
 	s.sgg = make([]float64, s.NLMAX)
 	s.rfp = make([]float64, s.NLMAX)
 	s.rfm = make([]float64, s.NLMAX)

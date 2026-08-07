@@ -269,8 +269,10 @@ func (s *Sim) Run() {
 		P.AmpTau)
 	fprintf(s.Out, "# QUENCH-2 apparatus: conf_r=%.6g conf_gap=%.6g conf_th=%.6g conf_pinw=%.6g spin_m=%d imp_k=%.6g qp_phase=%.6g\n",
 		P.ConfR, P.ConfGap, P.ConfTh, P.ConfPinw, P.SpinM, P.ImpK, P.QpPhase)
-	fprintf(s.Out, "# HORIZON apparatus (HORIZON.md): bh_r=%.6g bh_k=%.6g\n",
-		P.BhR, P.BhK)
+	fprintf(s.Out, "# HORIZON apparatus (HORIZON.md): bh_r=%.6g bh_k=%.6g bh_sep=%.6g\n",
+		P.BhR, P.BhK, P.BhSep)
+	fprintf(s.Out, "# FLOW apparatus (FLOW.md): bed_k=%.6g bed_tau=%.6g\n",
+		P.BedK, P.BedTau)
 	if P.ParGate != 0 && P.ParTau <= 0 {
 		fprintf(s.Out, "# CONFIG ERROR: par_gate=1 with par_tau=0 — r_id == 0, gauge dark everywhere\n")
 	}
@@ -1677,10 +1679,29 @@ func (s *Sim) Run() {
 				fprintf(s.Out, "# HOLE t=%.2f Eh=%.6f nin=%d eatF=%.4f eatM=%.4f eatS=%.4f\n",
 					s.simT, s.EhTotal, s.bhNin, s.bhEatF, s.bhEatM, s.bhEatS)
 			}
+			if P.BedK > 0 {
+				b25, b50, b75, bmx, bng, bnl := s.bedStats()
+				fprintf(s.Out, "# BED t=%.2f n=%d q=[%.3f %.3f %.3f] max=%.3f grown=%d\n",
+					s.simT, bnl, b25, b50, b75, bmx, bng)
+			}
 		}
 		if P.SnapEvery > 0 && s.P.SnapDir != "" && st%P.SnapEvery == 0 {
 			s.writeFCS(snapIdx)
 			snapIdx++
+		}
+		if P.BedK > 0 && P.SnapEvery > 0 && st%P.SnapEvery == 0 {
+			nout := 0
+			for sl := 0; sl < s.NSLOT && nout < 5000; sl++ {
+				if s.sst[sl] == sFree || s.sA[sl] <= 0 {
+					continue
+				}
+				if math.Abs(s.sbed[sl]-1.0) <= 0.05 {
+					continue
+				}
+				fprintf(s.Out, "# BEDMAP t=%.2f %d %d %.4f\n",
+					s.simT, s.sli[sl], s.slj[sl], s.sbed[sl])
+				nout++
+			}
 		}
 		if stream != nil && P.SnapEvery > 0 && st%P.SnapEvery == 0 {
 			s.fcsCellFrame(stream)
@@ -1820,6 +1841,11 @@ func (s *Sim) Run() {
 		if P.BhR > 0 {
 			fprintf(s.Out, "# RESULT hole Eh=%.6f nin=%d eatF=%.6f eatM=%.6f eatS=%.6f\n",
 				s.EhTotal, s.bhNin, s.bhEatF, s.bhEatM, s.bhEatS)
+		}
+		if P.BedK > 0 {
+			b25, b50, b75, bmx, bng, bnl := s.bedStats()
+			fprintf(s.Out, "# RESULT bed n=%d q=[%.4f %.4f %.4f] max=%.4f grown=%d\n",
+				bnl, b25, b50, b75, bmx, bng)
 		}
 		if P.AmpTau > 0 {
 			ntp, a25, a50, a75, a90, amg := s.ampStats(0)

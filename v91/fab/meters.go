@@ -2,7 +2,10 @@ package fab
 
 // totals + diagnostics — port of v89/freecell.c lines 1252-1593.
 
-import "math"
+import (
+	"math"
+	"sort"
+)
 
 func (s *Sim) totalEnergy() float64 {
 	sum, comp := 0.0, 0.0
@@ -30,6 +33,30 @@ func (s *Sim) totalEnergy() float64 {
 		sum = t
 	}
 	return sum
+}
+
+// FLOW meters: live-slot sbed quartiles + max + grown count
+func (s *Sim) bedStats() (q25, q50, q75, mx float64, ngrown, nlive int) {
+	buf := make([]float64, 0, s.NSLOT)
+	for sl := 0; sl < s.NSLOT; sl++ {
+		if s.sst[sl] == sFree || s.sA[sl] <= 0 {
+			continue
+		}
+		buf = append(buf, s.sbed[sl])
+		if s.sbed[sl] > mx {
+			mx = s.sbed[sl]
+		}
+		if math.Abs(s.sbed[sl]-1.0) > 0.05 {
+			ngrown++
+		}
+	}
+	nlive = len(buf)
+	if nlive == 0 {
+		return
+	}
+	sort.Float64s(buf)
+	q25, q50, q75 = buf[nlive/4], buf[nlive/2], buf[(3*nlive)/4]
+	return
 }
 
 func (s *Sim) geoStats() (phi, zl float64, nla, nld int, dbar, sigD, maxldd float64) {

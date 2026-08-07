@@ -72,7 +72,9 @@ type Cfg struct {
 	// QUENCH-3 (QUENCH.md §7): door writes wave phase into th2; 0 = inert
 	QpPhase float64
 	// HORIZON apparatus (HORIZON.md): forced hole; bh_r=0 = inert
-	BhR, BhK float64
+	BhR, BhK, BhSep float64
+	// FLOW apparatus (FLOW.md): bed-digging channel law; bed_k=0 = inert
+	BedK, BedTau float64
 	QatomEvery int // apparatus (print-only): QATOM sampler period
 	// --- freecell geometry sector (apparatus, not law) ---
 	Cfac      float64
@@ -210,6 +212,9 @@ func Defaults() Cfg {
 	p.QpPhase = 0
 	p.BhR = 0
 	p.BhK = 1.0
+	p.BhSep = 0
+	p.BedK = 0
+	p.BedTau = 30
 	p.QatomEvery = 200
 	// freecell geometry
 	p.Cfac = 1.15
@@ -454,6 +459,12 @@ func (p *Cfg) SetKV(k, v string) {
 		p.BhR = atof(v)
 	case "bh_k":
 		p.BhK = atof(v)
+	case "bh_sep":
+		p.BhSep = atof(v)
+	case "bed_k":
+		p.BedK = atof(v)
+	case "bed_tau":
+		p.BedTau = atof(v)
 	case "qatom_every":
 		p.QatomEvery = atoi(v)
 	case "cfac":
