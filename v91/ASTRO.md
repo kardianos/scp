@@ -805,3 +805,30 @@ proposed above (the dated row carries the corrected brightness
 numbers and the radiance-conditionality edge from COMBINE CO-AR);
 (a) the identity lane is OPEN — `v91/IDENTITY.md` is the lane's
 registration and record.]**
+
+---
+
+## 8. FINITE-SIZE addendum (registered 2026-08-06, user task #23, BEFORE the runs)
+
+The fold's geometric suspicion, stated: the nv=48 ring (R ≈ 12.9)
+sits ~1.2 cells from uncarved bath at seed in the L=36 box (carve
+clear 14.15) — the fold could be a BOX/CARVE artifact, not medium
+physics. Two single-knob discriminators vs §4.4's A-F2:
+
+* **SZ-1: nv=24 ring, L=36 cool** (double clearance margin, same
+  box). No fold (rms stays > 10, ret@1500 ≥ 0.3) → the fold is
+  size-relative-to-box; fold-and-starve anyway → the embedding
+  limitation is size-independent.
+* **SZ-2: nv=48 ring, L=48 cool** (same ring, bigger box). No fold
+  → THE FOLD IS A BOX ARTIFACT and the "vacuum-conditional /
+  limitation-is-general" verdicts take a dated correction; folds
+  anyway → the fold is contact-with-medium physics, box-independent,
+  and the standing verdicts hold.
+
+P2 note, honest: the P2 batching economy is a Go-kernel benchmark
+experiment (`exp=p2lc`), not a general run mode — wiring it into the
+general step loop is future engineering, recorded, not done here.
+
+### 8.1 Results
+
+(registered empty)
