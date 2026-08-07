@@ -2,23 +2,28 @@
 
 ---
 
-# CURRENT VERSION: v91 — READ THIS FIRST
+# CURRENT VERSION: v92 — READ THIS FIRST
 
-**v91 IS THE ACTIVE PROGRAMME (opened 2026-08-04, user-authorized):
-`v91/README.md` is the single entry point — read it top to bottom, including
-its dated status sections, before any v91 work. Executed so far: RADIANCE
-R0–R5 (the interior flux fixed point exists and is gated: x̂* = 0.62 ± 0.02
-at k_rad=0.05 p_rad=4; laws_V3r NOT adopted — the reckoning awaits user
-sign-off), the 34-pad believer campaign + INTEGRATION (first persistent,
-metabolizing, size-selected bonded matter: nv=48 straight ring, ret 0.95 to
-t=50,000), and CANTUS (user-directed superimposed harmonic-lock field,
-candidate B, inert in both kernels; "atoms are not cells" derived as a
-selection rule — only chords fit at the balance; the exchange registry
-measured load-bearing for coherence itself). The active lane (user-opened
-2026-08-05) is the EXCHANGE REGISTRY with the UUD chord as first test body:
-`v91/REGISTRY.md`. All law-candidate knobs default inert (= laws_V2g
-byte-exactly); the battery must read ALL GREEN 93 at defaults; v90 remains
-the evidence substrate below.**
+**v92 IS THE ACTIVE PROGRAMME (opened 2026-08-07, user-authorized: "Open
+v92 with the Phase L charter and combined reckoning"): `v92/README.md` is
+the single entry point — read it top to bottom, then `v92/RECKONING.md`.
+v92 is the AMPLITUDE SUBSTRATE (Phase L: dense transport promoted from
+magnitude to complex amplitude — the carrier for momentum, spin, exclusion,
+and lawful gravity's open books). STATUS: DOCS-ONLY OPENING per the user's
+instruction — the tree is NOT yet carried, nothing has run; the first v92
+agent executes STEP ZERO (mechanical carry + baseline battery), then ACT
+ONE = the combined adoption reckoning (radiance / workfn / flow-bed) WITH
+THE USER before any Phase-L design. v91 is the frozen evidence substrate:
+its record (RADIANCE fixed point x̂*=0.62; CANTUS/REGISTRY/IDENTITY —
+identity is ontological; ASTRO/COMBINE — species spectra, π-flat far-field
+null; QUENCH 1-3 — first creation, the door-phase instrument, foam phase
+memory τ_φ≈3 t.u.; BLACKHOLE/HORIZON — the π-flatness theorem, the five-wall
+no-go, the forced-hole exterior, the prover's ROSTER_DEATH derivation;
+ASYM/FLOW — the bed-digging channel law, six bars green, anti-ignition
+held) lives in `v91/*.md`; its battery stands ALL GREEN 93 at inert
+defaults (commit f7f5486). All law-candidate knobs remain default-inert
+everywhere (= laws_V2g byte-exactly) until the v92 reckoning adopts a
+table; v90 remains the evidence substrate below.**
 
 **Start at `v90/README.md` (the charter). The carried foundation is v89:
 `v89/README.md`, `v89/PRINCIPLE.md`, `v89/FREECELL.md` — consult v89 freely
