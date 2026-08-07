@@ -139,6 +139,16 @@ func (s *Sim) slotNew(i, j int) int {
 	s.pdm[sl] = 0
 	s.pdel[2*sl] = 0
 	s.pdel[2*sl+1] = 0
+	s.sreA[2*sl] = 0
+	s.sreA[2*sl+1] = 0
+	s.simA[2*sl] = 0
+	s.simA[2*sl+1] = 0
+	s.amre[sl] = 0
+	s.amim[sl] = 0
+	s.amc[sl] = 0
+	s.amdre[sl] = 0
+	s.amdim[sl] = 0
+	s.amdc[sl] = 0
 	s.swant[2*sl] = 0
 	s.swant[2*sl+1] = 0
 	s.sflux[sl] = 0

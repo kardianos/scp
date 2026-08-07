@@ -189,6 +189,13 @@ typedef struct {
     int    wf_on;       /* 0 = lane OFF (byte-inert)                  */
     double wf_floor;    /* presence floor (W-M1-selected 0.01)        */
     double wf_far;      /* empty-space demand (optics-grade 99)       */
+    /* --- v91 AMPLITUDE lane Phase M (AMPLITUDE.md; user task #24).
+     * SHADOW AMPLITUDE meter: a complex amplitude rides the existing
+     * dense flows (deposit sqrt(f)e^{i m theta_src}, transit rotation
+     * -m w dt, delivery composed into the dst chart frame) and moves
+     * NOTHING. The meter is the coherence-deficit map rho_coh =
+     * |sum dA| / sum |dA| per link/class. amp_tau=0 => byte-inert. */
+    double amp_tau;     /* shadow window; 0 = lane OFF                */
     int    qatom_every;   /* apparatus (print-only): QATOM sampler period */
     /* --- freecell geometry sector (apparatus, not law) --- */
     double cfac;          /* candidate rule d < cfac*(ri+rj)  (LIVEFAB) */
@@ -309,6 +316,7 @@ static void cfg_defaults(void)
     P.par_tau = 0; P.par_gate = 0; P.par_form = 0;
     P.par_lo = 0.002; P.par_hi = 0.02; P.par_mature = 400;
     P.wf_on = 0; P.wf_floor = 0.01; P.wf_far = 99;
+    P.amp_tau = 0;
     P.qatom_every = 200;
     /* freecell geometry */
     P.cfac = 1.15; P.k_rep = 1.0; P.mob_geo = 1.0; P.kappa_bond = 1.0;
@@ -409,6 +417,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "wf_on")) P.wf_on = atoi(v);
     else if (!strcmp(k, "wf_floor")) P.wf_floor = atof(v);
     else if (!strcmp(k, "wf_far")) P.wf_far = atof(v);
+    else if (!strcmp(k, "amp_tau")) P.amp_tau = atof(v);
     else if (!strcmp(k, "qatom_every")) P.qatom_every = atoi(v);
     else if (!strcmp(k, "cfac")) P.cfac = atof(v);
     else if (!strcmp(k, "k_rep")) P.k_rep = atof(v);
@@ -649,6 +658,12 @@ static double *pdp_, *pdm_, *pdel_;    /* id-carried delivered rates  */
 static double par_del_tot = 0, par_del_id = 0;
 static long long par_mints = 0, par_retires = 0;
 static double *par_tmp;                /* diag scratch (quartiles)    */
+/* v91 AMPLITUDE Phase M state (AMPLITUDE.md §2): shadow in-flight
+ * amplitude per slot-dir, windowed delivered vector+magnitude per
+ * slot. Born 0 at slot_new, dies with the slot; moves nothing. */
+static double *sre_, *sim_;            /* [slot][dir] in-flight shadow */
+static double *amre_, *amim_, *amc_;   /* [slot] windowed delivery     */
+static double *amdre_, *amdim_, *amdc_;/* [slot] per-step scratch      */
 #define PAR_RING 4096
 static double par_aged[2][PAR_RING];   /* slot age at death: 0=tag-pair, 1=bath */
 static long long par_agedn[2];
@@ -880,6 +895,14 @@ static void alloc_all(int nc)
     pdm_ = calloc(NLMAX, sizeof(double));
     pdel_ = calloc((size_t)2 * NLMAX, sizeof(double));
     par_tmp = malloc(nc > NLMAX ? nc * sizeof(double) : NLMAX * sizeof(double));
+    sre_ = calloc((size_t)2 * NLMAX, sizeof(double));
+    sim_ = calloc((size_t)2 * NLMAX, sizeof(double));
+    amre_ = calloc(NLMAX, sizeof(double));
+    amim_ = calloc(NLMAX, sizeof(double));
+    amc_ = calloc(NLMAX, sizeof(double));
+    amdre_ = calloc(NLMAX, sizeof(double));
+    amdim_ = calloc(NLMAX, sizeof(double));
+    amdc_ = calloc(NLMAX, sizeof(double));
     regq1_ = malloc(NLMAX * sizeof(double));
     regq2_ = malloc(NLMAX * sizeof(double));
     sfluxd = calloc((size_t)2 * NLMAX, sizeof(double));
@@ -944,6 +967,9 @@ static int slot_new(int i, int j)
     slgid_[2*s] = 0; slgid_[2*s+1] = 0;
     pstampa_[s] = 0; pstampb_[s] = 0; pstampt_[s] = 0;
     pdp_[s] = 0; pdm_[s] = 0; pdel_[2*s] = 0; pdel_[2*s+1] = 0;
+    sre_[2*s] = 0; sre_[2*s+1] = 0; sim_[2*s] = 0; sim_[2*s+1] = 0;
+    amre_[s] = 0; amim_[s] = 0; amc_[s] = 0;
+    amdre_[s] = 0; amdim_[s] = 0; amdc_[s] = 0;
     swant[2*s] = swant[2*s+1] = 0; sflux[s] = 0;
     hput(i, j, s);
     if (s >= NSLOT) NSLOT = s + 1;
@@ -1299,6 +1325,13 @@ static void step(void)
              * carries the depositor's episode gid (I-D1 last-depositor
              * label; M-I4 measures the approximation honestly). */
             if (P.par_tau > 0) slgid_[2*s + dir] = cgid_[src];
+            /* AMPLITUDE Phase M: the shadow deposit sqrt(f) e^{i m th} */
+            if (P.amp_tau > 0) {
+                double m_ = dir == 0 ? (double)slq[s] : (double)slp[s];
+                double ph = m_ * th2[src];
+                sre_[2*s + dir] += sqrt(f) * lut_cos(ph);
+                sim_[2*s + dir] += sqrt(f) * lut_sin(ph);
+            }
             sflux[s] += f;
             sfluxd[2*s + dir] += f;   /* directed ledger for circulation */
             if (P.p1_meter && f > 0) {
@@ -1355,6 +1388,16 @@ static void step(void)
             int sslot = 2*s + dir;
             if (slem[sslot] <= 0) continue;
             slph[sslot] += adv;
+            /* AMPLITUDE Phase M: transit rotation -m w dt (the psi_e
+             * flight phase, applied per step while in flight) */
+            if (P.amp_tau > 0 && (sre_[sslot] != 0 || sim_[sslot] != 0)) {
+                double m_ = dir == 0 ? (double)slq[s] : (double)slp[s];
+                double dph = -m_ * w2e[send] * dt;
+                double c_ = lut_cos(dph), s_ = lut_sin(dph);
+                double re0 = sre_[sslot];
+                sre_[sslot] = re0 * c_ - sim_[sslot] * s_;
+                sim_[sslot] = re0 * s_ + sim_[sslot] * c_;
+            }
             if (slph[sslot] < 1.0) continue;
             double freec = P.cap - (Em[recv] + Ee[recv]);
             double take = slem[sslot];
@@ -1376,6 +1419,28 @@ static void step(void)
                     if (slgid_[sslot] != 0 && slgid_[sslot] == cgid_[send]) {
                         pdel_[sslot] += take;
                         par_del_id += take;
+                    }
+                }
+                /* AMPLITUDE Phase M: deliver the amplitude fraction,
+                 * composed into the dst chart frame (rotate by
+                 * -n th_dst); magnitude and vector accumulate
+                 * separately — their ratio is rho_coh. */
+                if (P.amp_tau > 0) {
+                    double Efl = slem[sslot];
+                    double A2 = sre_[sslot]*sre_[sslot] + sim_[sslot]*sim_[sslot];
+                    if (Efl > 1e-30 && A2 > 0) {
+                        double frac = take / Efl;
+                        if (frac > 1) frac = 1;
+                        double sf = sqrt(frac);
+                        double dre = sre_[sslot] * sf, dim = sim_[sslot] * sf;
+                        double keep = sqrt(1.0 - frac);
+                        sre_[sslot] *= keep; sim_[sslot] *= keep;
+                        double n_ = dir == 0 ? (double)slp[s] : (double)slq[s];
+                        double ph = -n_ * th2[recv];
+                        double c_ = lut_cos(ph), s2_ = lut_sin(ph);
+                        amdre_[s] += dre * c_ - dim * s2_;
+                        amdim_[s] += dre * s2_ + dim * c_;
+                        amdc_[s] += sqrt(dre*dre + dim*dim);
                     }
                 }
                 slem[sslot] -= take;
@@ -1421,8 +1486,10 @@ static void step(void)
                 beta_energy += slem[sslot];
                 beta_returns++;
                 slem[sslot] = 0; slph[sslot] = 0;
+                sre_[sslot] = 0; sim_[sslot] = 0;  /* flush = return, not delivery */
             }
-            if (slem[sslot] <= 1e-17) { slem[sslot] = 0; slph[sslot] = 0; }
+            if (slem[sslot] <= 1e-17) { slem[sslot] = 0; slph[sslot] = 0;
+                                        sre_[sslot] = 0; sim_[sslot] = 0; }
             else if (take <= 0) slph[sslot] = 0;
             else slph[sslot] -= 1.0;
         }
@@ -1503,6 +1570,20 @@ static void step(void)
                  * ends; a new pair must re-stamp and re-mature */
                 pstampa_[s] = 0; pstampb_[s] = 0; pstampt_[s] = 0;
             }
+        }
+    }
+
+    /* pass H0c: v91 AMPLITUDE Phase M (AMPLITUDE.md §1) — low-pass the
+     * per-step delivered shadow into windowed vector + magnitude
+     * rates. amp_tau=0 => does not execute. */
+    if (P.amp_tau > 0) {
+        double kam = P.amp_tau > dt ? dt / P.amp_tau : 1.0;
+        for (int s = 0; s < NSLOT; s++) {
+            if (sst[s] == S_FREE) continue;
+            amre_[s] += kam * (amdre_[s] / dt - amre_[s]);
+            amim_[s] += kam * (amdim_[s] / dt - amim_[s]);
+            amc_[s]  += kam * (amdc_[s]  / dt - amc_[s]);
+            amdre_[s] = 0; amdim_[s] = 0; amdc_[s] = 0;
         }
     }
 
@@ -1984,6 +2065,33 @@ static int par_stamp_ages(double *q50, double *mx, int *ntagpair)
     qsort(par_tmp, n, sizeof(double), dcmp_);
     *q50 = par_q(par_tmp, n, 0.50);
     *mx = par_tmp[n - 1];
+    return n;
+}
+
+/* v91 AMPLITUDE Phase M diag helper: per-class rho_coh quartiles
+ * over slots with delivered magnitude (cls 0 = tag pair, 1 = bath) */
+static int amp_stats(int cls, double *q25, double *q50, double *q75,
+                     double *q90, double *magmed)
+{
+    int n = 0;
+    for (int s = 0; s < NSLOT; s++) {
+        if (sst[s] != S_ALIVE) continue;
+        int ti = tag[sli[s]] ? 1 : 0, tj = tag[slj[s]] ? 1 : 0;
+        if (cls == 0 ? !(ti && tj) : (ti || tj)) continue;
+        if (amc_[s] <= 1e-12) continue;
+        regq1_[n] = sqrt(amre_[s]*amre_[s] + amim_[s]*amim_[s]) / amc_[s];
+        regq2_[n] = amc_[s];
+        n++;
+    }
+    *q25 = *q50 = *q75 = *q90 = *magmed = 0;
+    if (!n) return 0;
+    qsort(regq1_, n, sizeof(double), dcmp_);
+    qsort(regq2_, n, sizeof(double), dcmp_);
+    *q25 = regq1_[(int)(0.25 * (n - 1))];
+    *q50 = regq1_[(int)(0.50 * (n - 1))];
+    *q75 = regq1_[(int)(0.75 * (n - 1))];
+    *q90 = regq1_[(int)(0.90 * (n - 1))];
+    *magmed = regq2_[(int)(0.50 * (n - 1))];
     return n;
 }
 
@@ -2678,6 +2786,8 @@ int main(int argc, char **argv)
            P.par_tau, P.par_gate, P.par_form, P.par_lo, P.par_hi, P.par_mature);
     printf("# v91 workfn (emergent-threshold lane, WORKFN.md): wf_on=%d wf_floor=%g wf_far=%g\n",
            P.wf_on, P.wf_floor, P.wf_far);
+    printf("# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=%g\n",
+           P.amp_tau);
     if (P.par_gate && P.par_tau <= 0)
         printf("# CONFIG ERROR: par_gate=1 with par_tau=0 — r_id == 0, gauge dark everywhere\n");
     if (P.par_gate && P.reg_gate) {
@@ -3704,6 +3814,14 @@ int main(int argc, char **argv)
                                cgid_[tri_v[t2][1]] ? sim_t - cbirth_[tri_v[t2][1]] : 0,
                                cgid_[tri_v[t2][2]] ? sim_t - cbirth_[tri_v[t2][2]] : 0);
             }
+            if (P.amp_tau > 0) {
+                double a25, a50, a75, a90, amg, b25, b50, b75, b90, bmg;
+                int ntp = amp_stats(0, &a25, &a50, &a75, &a90, &amg);
+                int nba = amp_stats(1, &b25, &b50, &b75, &b90, &bmg);
+                printf("# AMP t=%.2f tp n=%d rho=[%.3f %.3f %.3f %.3f] mag=%.5f | ba n=%d rho=[%.3f %.3f %.3f %.3f] mag=%.5f\n",
+                       sim_t, ntp, a25, a50, a75, a90, amg,
+                       nba, b25, b50, b75, b90, bmg);
+            }
         }
         if (P.snap_every > 0 && P.snap_dir[0] && st % P.snap_every == 0)
             write_fcs(st / P.snap_every);
@@ -3786,6 +3904,14 @@ int main(int argc, char **argv)
             printf("# RESULT par mints=%lld retires=%lld live=%d del_id=%.6f del_tot=%.6f idfrac=%.4f\n",
                    par_mints, par_retires, ngid, par_del_id, par_del_tot,
                    par_del_tot > 0 ? par_del_id / par_del_tot : 0);
+        }
+        if (P.amp_tau > 0) {
+            double a25, a50, a75, a90, amg, b25, b50, b75, b90, bmg;
+            int ntp = amp_stats(0, &a25, &a50, &a75, &a90, &amg);
+            int nba = amp_stats(1, &b25, &b50, &b75, &b90, &bmg);
+            printf("# RESULT amp tp n=%d rho=[%.4f %.4f %.4f %.4f] mag=%.6f | ba n=%d rho=[%.4f %.4f %.4f %.4f] mag=%.6f\n",
+                   ntp, a25, a50, a75, a90, amg,
+                   nba, b25, b50, b75, b90, bmg);
         }
         if (P.slit_obj || P.convtag)
             /* net field capture at the occulter = cond - evap - rough + backs

@@ -84,6 +84,11 @@ type Sim struct {
 	parAged          [2][parRing]float64
 	parAgedN         [2]int64
 	parTmp           []float64
+	// v91 AMPLITUDE Phase M (AMPLITUDE.md): shadow in-flight amplitude
+	// per slot-dir; windowed delivered vector+magnitude per slot.
+	sreA, simA             []float64 // [slot][dir]
+	amre, amim, amc        []float64 // [slot] windowed
+	amdre, amdim, amdc     []float64 // [slot] scratch
 
 	// channels — persistent slots with identity (birth/death ledger)
 	NLMAX, NSLOT                int
@@ -371,6 +376,41 @@ func (s *Sim) parStampAges() (n, ntagpair int, q50, mx float64) {
 	return
 }
 
+// v91 AMPLITUDE Phase M diag helper (mirror of C amp_stats)
+func (s *Sim) ampStats(cls int) (n int, q25, q50, q75, q90, magmed float64) {
+	for sl := 0; sl < s.NSLOT; sl++ {
+		if s.sst[sl] != sAlive {
+			continue
+		}
+		ti := s.tag[s.sli[sl]] != 0
+		tj := s.tag[s.slj[sl]] != 0
+		if cls == 0 {
+			if !(ti && tj) {
+				continue
+			}
+		} else if ti || tj {
+			continue
+		}
+		if s.amc[sl] <= 1e-12 {
+			continue
+		}
+		s.regq1[n] = math.Sqrt(s.amre[sl]*s.amre[sl]+s.amim[sl]*s.amim[sl]) / s.amc[sl]
+		s.regq2[n] = s.amc[sl]
+		n++
+	}
+	if n == 0 {
+		return
+	}
+	sort.Float64s(s.regq1[:n])
+	sort.Float64s(s.regq2[:n])
+	q25 = s.regq1[int(0.25*float64(n-1))]
+	q50 = s.regq1[int(0.50*float64(n-1))]
+	q75 = s.regq1[int(0.75*float64(n-1))]
+	q90 = s.regq1[int(0.90*float64(n-1))]
+	magmed = s.regq2[int(0.50*float64(n-1))]
+	return
+}
+
 func (s *Sim) gateOf(dphi float64) float64 { // cellfab.c:638 verbatim
 	g := 0.5 * (1.0 + lutCos(dphi))
 	ip := int(s.P.PGate)
@@ -613,6 +653,14 @@ func (s *Sim) allocAll(nc int) {
 	} else {
 		s.parTmp = make([]float64, s.NLMAX)
 	}
+	s.sreA = make([]float64, 2*s.NLMAX)
+	s.simA = make([]float64, 2*s.NLMAX)
+	s.amre = make([]float64, s.NLMAX)
+	s.amim = make([]float64, s.NLMAX)
+	s.amc = make([]float64, s.NLMAX)
+	s.amdre = make([]float64, s.NLMAX)
+	s.amdim = make([]float64, s.NLMAX)
+	s.amdc = make([]float64, s.NLMAX)
 	s.sfluxd = make([]float64, 2*s.NLMAX)
 	s.freelist = make([]int, s.NLMAX)
 	s.nfree = 0

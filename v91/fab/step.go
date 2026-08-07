@@ -345,6 +345,16 @@ func (s *Sim) step() {
 			if P.ParTau > 0 {
 				s.slgid[2*sl+dir] = s.cgid[src]
 			}
+			// AMPLITUDE Phase M: shadow deposit sqrt(f) e^{i m th}
+			if P.AmpTau > 0 {
+				m := float64(s.slq[sl])
+				if dir != 0 {
+					m = float64(s.slp[sl])
+				}
+				ph := m * s.th2[src]
+				s.sreA[2*sl+dir] += math.Sqrt(f) * lutCos(ph)
+				s.simA[2*sl+dir] += math.Sqrt(f) * lutSin(ph)
+			}
 			s.sflux[sl] += f
 			s.sfluxd[2*sl+dir] += f // directed ledger for circulation
 			if P.P1Meter != 0 && f > 0 {
@@ -438,6 +448,19 @@ func (s *Sim) step() {
 				continue
 			}
 			s.slph[sslot] += adv
+			// AMPLITUDE Phase M: transit rotation -m w dt
+			if P.AmpTau > 0 && (s.sreA[sslot] != 0 || s.simA[sslot] != 0) {
+				m := float64(s.slq[sl])
+				if dir != 0 {
+					m = float64(s.slp[sl])
+				}
+				dph := -m * s.w2e[send] * dt
+				c := lutCos(dph)
+				sn := lutSin(dph)
+				re0 := s.sreA[sslot]
+				s.sreA[sslot] = re0*c - s.simA[sslot]*sn
+				s.simA[sslot] = re0*sn + s.simA[sslot]*c
+			}
 			if s.slph[sslot] < 1.0 {
 				continue
 			}
@@ -466,6 +489,34 @@ func (s *Sim) step() {
 					if s.slgid[sslot] != 0 && s.slgid[sslot] == s.cgid[send] {
 						s.pdel[sslot] += take
 						s.parDelID += take
+					}
+				}
+				// AMPLITUDE Phase M: deliver the amplitude fraction,
+				// composed into the dst chart frame
+				if P.AmpTau > 0 {
+					efl := s.slem[sslot]
+					a2 := s.sreA[sslot]*s.sreA[sslot] + s.simA[sslot]*s.simA[sslot]
+					if efl > 1e-30 && a2 > 0 {
+						frac := take / efl
+						if frac > 1 {
+							frac = 1
+						}
+						sf := math.Sqrt(frac)
+						dre := s.sreA[sslot] * sf
+						dim := s.simA[sslot] * sf
+						keep := math.Sqrt(1.0 - frac)
+						s.sreA[sslot] *= keep
+						s.simA[sslot] *= keep
+						n := float64(s.slp[sl])
+						if dir != 0 {
+							n = float64(s.slq[sl])
+						}
+						ph := -n * s.th2[recv]
+						c := lutCos(ph)
+						sn := lutSin(ph)
+						s.amdre[sl] += dre*c - dim*sn
+						s.amdim[sl] += dre*sn + dim*c
+						s.amdc[sl] += math.Sqrt(dre*dre + dim*dim)
 					}
 				}
 				s.slem[sslot] -= take
@@ -530,10 +581,14 @@ func (s *Sim) step() {
 				s.betaReturns++
 				s.slem[sslot] = 0
 				s.slph[sslot] = 0
+				s.sreA[sslot] = 0 // flush = return, not delivery
+				s.simA[sslot] = 0
 			}
 			if s.slem[sslot] <= 1e-17 {
 				s.slem[sslot] = 0
 				s.slph[sslot] = 0
+				s.sreA[sslot] = 0
+				s.simA[sslot] = 0
 			} else if take <= 0 {
 				s.slph[sslot] = 0
 			} else {
@@ -606,6 +661,26 @@ func (s *Sim) step() {
 				s.pstampb[sl] = 0
 				s.pstampt[sl] = 0
 			}
+		}
+	}
+
+	// pass H0c: v91 AMPLITUDE Phase M (AMPLITUDE.md §1) — low-pass the
+	// per-step delivered shadow. amp_tau=0 => skip.
+	if P.AmpTau > 0 {
+		kam := 1.0
+		if P.AmpTau > dt {
+			kam = dt / P.AmpTau
+		}
+		for sl := 0; sl < s.NSLOT; sl++ {
+			if s.sst[sl] == sFree {
+				continue
+			}
+			s.amre[sl] += kam * (s.amdre[sl]/dt - s.amre[sl])
+			s.amim[sl] += kam * (s.amdim[sl]/dt - s.amim[sl])
+			s.amc[sl] += kam * (s.amdc[sl]/dt - s.amc[sl])
+			s.amdre[sl] = 0
+			s.amdim[sl] = 0
+			s.amdc[sl] = 0
 		}
 	}
 

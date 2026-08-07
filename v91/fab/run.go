@@ -265,6 +265,8 @@ func (s *Sim) Run() {
 		P.ParTau, P.ParGate, P.ParForm, P.ParLo, P.ParHi, P.ParMature)
 	fprintf(s.Out, "# v91 workfn (emergent-threshold lane, WORKFN.md): wf_on=%d wf_floor=%.6g wf_far=%.6g\n",
 		P.WfOn, P.WfFloor, P.WfFar)
+	fprintf(s.Out, "# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=%.6g\n",
+		P.AmpTau)
 	if P.ParGate != 0 && P.ParTau <= 0 {
 		fprintf(s.Out, "# CONFIG ERROR: par_gate=1 with par_tau=0 — r_id == 0, gauge dark everywhere\n")
 	}
@@ -1645,6 +1647,13 @@ func (s *Sim) Run() {
 					}
 				}
 			}
+			if P.AmpTau > 0 {
+				ntp, a25, a50, a75, a90, amg := s.ampStats(0)
+				nba, b25, b50, b75, b90, bmg := s.ampStats(1)
+				fprintf(s.Out, "# AMP t=%.2f tp n=%d rho=[%.3f %.3f %.3f %.3f] mag=%.5f | ba n=%d rho=[%.3f %.3f %.3f %.3f] mag=%.5f\n",
+					s.simT, ntp, a25, a50, a75, a90, amg,
+					nba, b25, b50, b75, b90, bmg)
+			}
 		}
 		if P.SnapEvery > 0 && s.P.SnapDir != "" && st%P.SnapEvery == 0 {
 			s.writeFCS(snapIdx)
@@ -1784,6 +1793,13 @@ func (s *Sim) Run() {
 			}
 			fprintf(s.Out, "# RESULT par mints=%d retires=%d live=%d del_id=%.6f del_tot=%.6f idfrac=%.4f\n",
 				s.parMints, s.parRetires, ngid, s.parDelID, s.parDelTot, idf)
+		}
+		if P.AmpTau > 0 {
+			ntp, a25, a50, a75, a90, amg := s.ampStats(0)
+			nba, b25, b50, b75, b90, bmg := s.ampStats(1)
+			fprintf(s.Out, "# RESULT amp tp n=%d rho=[%.4f %.4f %.4f %.4f] mag=%.6f | ba n=%d rho=[%.4f %.4f %.4f %.4f] mag=%.6f\n",
+				ntp, a25, a50, a75, a90, amg,
+				nba, b25, b50, b75, b90, bmg)
 		}
 		if P.SlitObj != 0 || P.Convtag != 0 {
 			// net field capture at the occulter = cond - evap - rough + backs

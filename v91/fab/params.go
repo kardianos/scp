@@ -62,6 +62,9 @@ type Cfg struct {
 	WfOn    int
 	WfFloor float64
 	WfFar   float64
+	// v91 AMPLITUDE lane Phase M (AMPLITUDE.md): shadow amplitude
+	// meter; amp_tau=0 => byte-inert.
+	AmpTau float64
 	QatomEvery int // apparatus (print-only): QATOM sampler period
 	// --- freecell geometry sector (apparatus, not law) ---
 	Cfac      float64
@@ -189,6 +192,7 @@ func Defaults() Cfg {
 	p.WfOn = 0
 	p.WfFloor = 0.01
 	p.WfFar = 99
+	p.AmpTau = 0
 	p.QatomEvery = 200
 	// freecell geometry
 	p.Cfac = 1.15
@@ -413,6 +417,8 @@ func (p *Cfg) SetKV(k, v string) {
 		p.WfFloor = atof(v)
 	case "wf_far":
 		p.WfFar = atof(v)
+	case "amp_tau":
+		p.AmpTau = atof(v)
 	case "qatom_every":
 		p.QatomEvery = atoi(v)
 	case "cfac":
