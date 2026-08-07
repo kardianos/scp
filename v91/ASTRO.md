@@ -849,3 +849,8 @@ standing verdicts (vacuum-conditional embedding; the limitation is
 general; identity-lane direction) HOLD unchanged. Retention-tail
 bars (ret@1500) complete when the runs finish; the fold verdict —
 the decision-carrying half — is final as measured above.
+t=400 confirmation (dated same day): SZ-1 rms 2.94 (folded, ratio
+2.2×), ret 0.2645; SZ-2 rms 5.05 — the SAME folded value as L=36's
+5.16@400 — and **ret 0.2779 vs the L=36 reference 0.2841: within
+2%.** The larger box reproduces the whole starvation trajectory,
+not merely the fold; box-size doubt is closed at trajectory grain.
