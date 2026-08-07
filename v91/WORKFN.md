@@ -108,6 +108,43 @@ grain, not a depth grain:** foam ≡ 0 vs everything-that-is-matter
   §0 resolves as "creation requires seeds"; if no, the user's
   trade (B7 vs genesis) stands as measured.
 
-## 5. Verdict
+**4.3 W-L1 / W-L3 / W-L3b (the law arms; logs
+`runs/quench/wl1_transparent.log`, `wl3_cloud_wf.log`,
+`wl3b_grain.log`) — all three registered predictions land exactly.**
+(harvested 2026-08-06)
 
-(after all arms; adoption, as always, is the user's)
+* **W-L1 PASS — optics through a transparent-by-law foam.** Fringe
+  peak y = 32.3 (bar 32 ± 1.9) with the conversion ledger EXACTLY
+  ZERO (cond = rough = rad = 0.000000): the beam crossed and
+  interfered with no declared regime anywhere.
+* **W-L3 — the cloud is never born, as predicted.** The amp-8 beam
+  that farmed a 2,400-episode cloud in the law regime condenses
+  NOTHING under wf (gids ≡ 0 for 1500 t.u.; mints = 0). Beams
+  through true vacuum do not make matter — the model now agrees
+  with reality on this.
+* **W-L3b — CREATION SURVIVES AS NUCLEATION.** One dense grain in
+  the beam path (the XSEC absorber as dust): the cloud grows FROM
+  THE GRAIN — 0 → 269 (t=300) → 2,330 (t=1500), a full QUENCH
+  §4.1-class population (ages 63/217/558; 6,580 standing stamps,
+  max 1,286; idfrac 0.949). The §0 tension RESOLVES: **creation
+  requires seeds** — supersaturated field nucleating on standing
+  matter, real cloud-chamber physics.
+
+## 5. Verdict (all arms complete; ADOPTION IS THE USER'S)
+
+The W-A presence-threshold work function — one line, one measured
+constant class (the existence-grain floor) — simultaneously
+delivers, in one table with laws_V2g untouched elsewhere:
+transparent vacuum (W-L1, conv ≡ 0), interference optics with no
+declared regime (fringes at the parameter-free locus), detection
+localized to matter (the scond screen becomes emergent in
+principle; the dense-screen click arm W-L2 remains registered, not
+yet run), the quench-genesis mechanism preserved in its physically
+correct form (nucleation on seeds, W-L3b), and darkness of empty
+space (W-L3). B7 — the audit's "cloud-chamber vacuum" ANTI row —
+has its one-table fix measured. What this changes if adopted: the
+per-experiment regime declaration (e_cond 0/99) retires; XSEC's
+absorber/emitter results re-read as nucleation physics; the
+quench-creation story becomes seeded-genesis. Adoption, the W-L2
+dense-screen completion, and any REALITY re-grade are the user's
+decisions; wf_on defaults 0 and the battery stays green either way.
