@@ -196,6 +196,11 @@ typedef struct {
                          * seeded packet — implosion focusing = the
                          * LAWFUL whole-box compress-release (seeded
                          * energy only; conservative). 0 = off. */
+    double qp_phase;    /* QUENCH-3 (QUENCH.md §7): the conversion door
+                         * writes the wave's phase into the matter clock
+                         * it feeds — th2 pulled toward arg(fa) by the
+                         * field-derived fraction of the new holdings.
+                         * No energy content; 0 = byte-inert. */
     int    wf_on;       /* 0 = lane OFF (byte-inert)                  */
     double wf_floor;    /* presence floor (W-M1-selected 0.01)        */
     double wf_far;      /* empty-space demand (optics-grade 99)       */
@@ -327,7 +332,7 @@ static void cfg_defaults(void)
     P.par_lo = 0.002; P.par_hi = 0.02; P.par_mature = 400;
     P.wf_on = 0; P.wf_floor = 0.01; P.wf_far = 99;
     P.conf_r = 0; P.conf_gap = 0.3; P.conf_th = 1.6; P.conf_pinw = 3.0;
-    P.spin_m = 0; P.imp_k = 0;
+    P.spin_m = 0; P.imp_k = 0; P.qp_phase = 0;
     P.amp_tau = 0;
     P.qatom_every = 200;
     /* freecell geometry */
@@ -436,6 +441,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "conf_pinw")) P.conf_pinw = atof(v);
     else if (!strcmp(k, "spin_m")) P.spin_m = atoi(v);
     else if (!strcmp(k, "imp_k")) P.imp_k = atof(v);
+    else if (!strcmp(k, "qp_phase")) P.qp_phase = atof(v);
     else if (!strcmp(k, "qatom_every")) P.qatom_every = atoi(v);
     else if (!strcmp(k, "cfac")) P.cfac = atof(v);
     else if (!strcmp(k, "k_rep")) P.k_rep = atof(v);
@@ -1873,6 +1879,14 @@ static void step(void)
                     Ee[i] -= d1;
                     Es[i] -= dsp;
                     Em[i] += d1 + dsp;
+                    if (P.qp_phase > 0) {
+                        /* QUENCH-3: phase crosses the door (mix ≤ 1 by
+                         * construction: d1 ≤ Em after the add) */
+                        double aph = atan2(fa2[i], fa1[i]);
+                        double mix = P.qp_phase * d1 / Em[i];
+                        th2[i] = fmod(th2[i] + mix * wrap_pi(aph - th2[i])
+                                      + 8.0 * TWO_PI, TWO_PI);
+                    }
                 }
             }
             double tot = Em[i] + Ee[i];
@@ -2806,8 +2820,8 @@ int main(int argc, char **argv)
            P.wf_on, P.wf_floor, P.wf_far);
     printf("# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=%g\n",
            P.amp_tau);
-    printf("# QUENCH-2 apparatus: conf_r=%g conf_gap=%g conf_th=%g conf_pinw=%g spin_m=%d imp_k=%g\n",
-           P.conf_r, P.conf_gap, P.conf_th, P.conf_pinw, P.spin_m, P.imp_k);
+    printf("# QUENCH-2 apparatus: conf_r=%g conf_gap=%g conf_th=%g conf_pinw=%g spin_m=%d imp_k=%g qp_phase=%g\n",
+           P.conf_r, P.conf_gap, P.conf_th, P.conf_pinw, P.spin_m, P.imp_k, P.qp_phase);
     if (P.par_gate && P.par_tau <= 0)
         printf("# CONFIG ERROR: par_gate=1 with par_tau=0 — r_id == 0, gauge dark everywhere\n");
     if (P.par_gate && P.reg_gate) {

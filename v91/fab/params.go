@@ -69,6 +69,8 @@ type Cfg struct {
 	ConfR, ConfGap, ConfTh, ConfPinw float64
 	SpinM                            int
 	ImpK                             float64
+	// QUENCH-3 (QUENCH.md §7): door writes wave phase into th2; 0 = inert
+	QpPhase float64
 	QatomEvery int // apparatus (print-only): QATOM sampler period
 	// --- freecell geometry sector (apparatus, not law) ---
 	Cfac      float64
@@ -203,6 +205,7 @@ func Defaults() Cfg {
 	p.ConfPinw = 3.0
 	p.SpinM = 0
 	p.ImpK = 0
+	p.QpPhase = 0
 	p.QatomEvery = 200
 	// freecell geometry
 	p.Cfac = 1.15
@@ -441,6 +444,8 @@ func (p *Cfg) SetKV(k, v string) {
 		p.SpinM = atoi(v)
 	case "imp_k":
 		p.ImpK = atof(v)
+	case "qp_phase":
+		p.QpPhase = atof(v)
 	case "qatom_every":
 		p.QatomEvery = atoi(v)
 	case "cfac":

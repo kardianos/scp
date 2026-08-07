@@ -70,7 +70,7 @@ func main() {
 	f64 := func(b []byte) float64 { return math.Float64frombits(binary.LittleEndian.Uint64(b)) }
 	u32 := func(b []byte) uint32 { return binary.LittleEndian.Uint32(b) }
 	if *mode == "cells" {
-		fmt.Println("t i x y z r es em ee xload tag")
+		fmt.Println("t i x y z r es em ee xload tag fa1 fa2 th2")
 	} else if *mode == "links" {
 		fmt.Println("t i j d A lem gg")
 	} else {
@@ -122,8 +122,9 @@ func main() {
 				es, em, ee, xl, tg := f32(b[16:]), f32(b[20:]), f32(b[24:]), f32(b[28:]), f32(b[32:])
 				if *mode == "cells" {
 					if !*tagonly || tg > 0.5 {
-						fmt.Printf("%.2f %d %.4f %.4f %.4f %.4f %.5f %.5f %.5f %.5f %.0f\n",
-							t, i, f32(b[0:]), f32(b[4:]), f32(b[8:]), f32(b[12:]), es, em, ee, xl, tg)
+						fmt.Printf("%.2f %d %.4f %.4f %.4f %.4f %.5f %.5f %.5f %.5f %.0f %.6f %.6f %.6f\n",
+							t, i, f32(b[0:]), f32(b[4:]), f32(b[8:]), f32(b[12:]), es, em, ee, xl, tg,
+							f32(b[36:]), f32(b[40:]), f32(b[44:]))
 					}
 					continue
 				}

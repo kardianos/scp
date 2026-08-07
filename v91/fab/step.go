@@ -1039,6 +1039,14 @@ func (s *Sim) step() {
 					s.Ee[i] -= d1
 					s.Es[i] -= dsp
 					s.Em[i] += d1 + dsp
+					if P.QpPhase > 0 {
+						// QUENCH-3: phase crosses the door (mix <= 1
+						// by construction: d1 <= Em after the add)
+						aph := math.Atan2(s.fa2[i], s.fa1[i])
+						mix := P.QpPhase * d1 / s.Em[i]
+						s.th2[i] = math.Mod(s.th2[i]+mix*wrapPi(aph-s.th2[i])+
+							8.0*TwoPi, TwoPi)
+					}
 				}
 			}
 			tot := s.Em[i] + s.Ee[i]

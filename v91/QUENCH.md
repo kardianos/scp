@@ -345,3 +345,248 @@ equation-of-state claim now spans every compression geometry the
 apparatus can produce; the only variable the cloud remembers is
 its energy budget. Implosion animation rendered to the local
 plates set.
+
+### 6.2 DATED CORRECTION to the Q2-S spin claims (2026-08-07, log
+audit ordered by the user: "Currently quench is done incorrectly.
+Specifically, look at the spin-quench.") Three errors of record,
+one structural re-grade; the §6.1 spin text above stands as
+written per the no-rewrite rule, corrected here:
+
+1. **"The debris census identical (2,395)" is FALSE.** 2,395 is
+   the m=2 arm's own number (`q2s_spin2.log` live=2395); the m=0
+   reference landed **2,402** (`q2s_shadow_m0.log`, byte-same
+   protocol, E0 bit-identical 3160.440443538). Both sit inside
+   the five-arm attractor band — the honest wording was
+   "attractor-equal", never "identical".
+2. **"The m=2 winding leaves NO trace at ANY measured grain" is
+   FALSE at the ledger and optics grains, in the same logs:**
+   births 46,429 vs 48,694 (−4.7%), cond 1017.5 vs 1079.0
+   (−5.7%), evap 32.2 vs 42.1 (**−24%**), rad 809.5 vs 864.4
+   (−6.3%), screen exposure 92.10 vs 75.95 (**+21%**). The
+   winding measurably changed the packet's transit optics (as a
+   complex field must — pass F is a genuine unitary wave) and
+   thereby where/how much the beam condensed. What the winding
+   left no trace IN is the equilibrated cloud's matter attributes
+   — a much narrower, and true, claim.
+3. **The §6 registered "circulation for Q2-S" bar was never
+   measured — no instrument existed.** The only circulation meter
+   in the kernel (`tri_meters`, freecell.c:2702) requires a
+   declared 3-cycle; the quench box has none. The bar was
+   silently dropped at harvest. Instrument gap recorded; §7's
+   offline fcs winding meter is the repair (th2 and fa1/fa2 are
+   already snapshot columns — no kernel work needed to measure).
+4. **Structural re-grade of the mechanism sentence.** "The door
+   reads MAGNITUDE (beat-fire on |Ee|)" is correct — but it is a
+   property of pass 6 BY CONSTRUCTION, not a discovery of this
+   experiment: condensation reads Ee = fa1²+fa2² and writes Em as
+   a pure scalar (freecell.c:1851–1875); **th2, the matter clock
+   the gates read, is never written by the door in the
+   field→matter direction** (matter→field writes it into empty
+   cells at line 849 — phase crosses the door one way only).
+   Q2-S therefore measured the apparatus's own known bottleneck —
+   the angular twin of the recorded ~100× radiation-pressure
+   (linear momentum) deficit at the same door (v89/ROADMAP.md
+   P2, an S2-full acceptance criterion). Grade: the spin null is
+   STRUCTURAL-BY-CONSTRUCTION, not an empirical property of the
+   law; the empirical question ("does matter inherit winding when
+   the door can carry it?") was never asked. §7 asks it.
+
+---
+
+## 7. QUENCH-3 — the phase-carrying door (user-directed 2026-08-07: "Back port the answer to the quench work and try it again. Goal is to create a plethora of particles."); registered BEFORE the apparatus lands
+
+Companion analysis: `BLACKHOLE.md` (same date) — the symbolic no-go
+that identifies the missing sector this lane instruments. Summary of
+the identification: **the dense cell has a phase attribute (th2 — the
+clock the bond gates read at retarded relative phase, freecell.c:1623)
+but the conversion door never writes it** (field→matter transfers a
+scalar; matter→field already writes th2 into empty cells). Every
+first-moment book — linear momentum (P2's ~100× deficit), circulation
+(Q2-S), phase (AMPLITUDE Phase M's map) — dies at the same line of
+code. The S2/AMPLITUDE lane is the registered full repair (parcels as
+amplitudes); this lane is its cheapest honest instance: **close the
+door's phase loop in the one direction it is open-circuit, using only
+the existing attribute.** No new state array, no energy content, no
+ledger entry.
+
+### 7.1 The knob (default-inert, purity-pinned, both kernels)
+
+`qp_phase` ∈ [0,1], default **0** = byte-inert. In pass 6, at a
+condensation event (beat-fire, d1 > 0), AFTER the energy moves:
+
+    aph  = atan2(fa2, fa1)                  # the wave's phase at the door
+    mix  = qp_phase · d1 / Em_new           # the field-derived fraction
+    th2 += mix · wrap_pi(aph − th2)         # circular pull toward the wave
+
+A fresh episode (Em_old = 0) is born with its clock ≈ SET by the wave
+that made it (mix → qp·d1/(d1+dsp) ≈ 0.87·qp); a fed episode is
+nudged in proportion to what it just ate. th2 carries no energy:
+drift, E0, p1, and every conservation meter are untouched by
+construction; the DYNAMICS changes only through the gates that
+already read th2 (kappa_lock corrections, interval phase-slips).
+Emission (line 849) already does the mirror image. The QUENCH-2
+apparatus header line gains `qp_phase=%g`; the battery purity pin is
+extended to match at 0.
+
+### 7.2 Meters (offline — no kernel work; th2/fa1/fa2 are fcs columns)
+
+* **W_A** — winding number of the FIELD phase arg(fa1+i·fa2) around
+  the beam origin (srcx=14, cy0), annulus-summed wrapped increments:
+  the injection witness Q2-S never had.
+* **W_th2** — winding number of live-matter th2 (Em ≥ 0.05) around
+  the same axis: the carried-spin meter. Common-mode clock rotation
+  cancels in wrapped differences by construction.
+* **m-spectrum** — |⟨e^{i(th2 − mφ)}⟩| over live cells, m ∈ [−4,4]:
+  the winding-class spectrometer (the "plethora" axis).
+* **n(r)** — live-cell radial profile about the axis (vortex-core
+  donut test — a matter-grain spatial trace §6.1 never looked for).
+* Census/ledger/demographics from the standing PAR/RESULT prints.
+
+### 7.3 Arms (T=1500, L=64 law-regime foam, seed 20260802, exact Q2-S
+protocol otherwise; snap_every=2500 for fcs)
+
+| arm | spin_m | qp_phase | role |
+|---|---|---|---|
+| Q3-A | 0 | 0 | byte-inertness witness: must reproduce `q2s_shadow_m0.log` EXACTLY |
+| Q3-B | 2 | 0 | ditto vs `q2s_spin2.log`; + W_A injection witness, W_th2 erasure witness |
+| Q3-C | 0 | 1 | imprint control: beam's linear kx ramp imprints tilt-texture, no winding |
+| Q3-D | 2 | 1 | THE ARM: does matter inherit the winding? |
+| Q3-E | 4 | 1 | winding ladder (class separation = the plethora claim) |
+
+### 7.4 Bars and registered predictions
+
+* **P-Q3-0 (inertness):** Q3-A/Q3-B logs byte-identical to the
+  archived Q2-S logs; battery ALL GREEN 93 both kernels; C≡Go with
+  the knob FIRING verified once (pair-class run, qp_phase=0.7).
+* **P-Q3-1 (injection):** m=2 arms carry field winding W_A ≈ +2 in
+  transit-era frames; m=0 arms ≈ 0. Closes §6.2 item 3.
+* **P-Q3-2 (erasure, instrumented):** at qp=0, live-matter winding
+  |W_th2| < 0.25 and m-spectrum flat — the §6.1 erasure claim made
+  measurable and (predicted) confirmed at the matter grain.
+* **P-Q3-3 (the door carries):** at qp=1, m=2: transit-era
+  W_th2 ∈ [1,3], unambiguously nonzero vs Q3-B. This bar is the
+  lane's life: if it fails, the imprint never happened and the lane
+  records a null.
+* **P-Q3-4 (retention fork — both outcomes registered as results):**
+  (a) recondensation re-imprint holds W_th2 ≥ 1 to t=1500 → first
+  matter with a carried first-moment attribute; the m-ladder (Q3-E
+  vs D vs C m-spectra pairwise distinct) = species by winding = the
+  plethora door OPEN. (b) churn + differential pitch rotation erode
+  it → W_th2 decays with a measurable time constant → "the door
+  carries, the cloud cannot hold" — the retention wall becomes the
+  next registered number and the Phase-L design inherits it.
+* **P-Q3-5 (attractor, expected null):** census stays inside the
+  five-arm band 2,291–2,411 at qp=1 (the energy attractor should be
+  phase-robust); a >3% departure would be the first census-grain
+  protocol memory — reported either way.
+* **P-Q3-6 (optics continuity):** the §6.2-item-2 transit
+  differences (cond −5.7%, exposure +21%) persist at qp=1 within a
+  few %, since they are transit optics, not door physics.
+* Drift ≤ 2e-15 all arms; nothing adopted; knob stays inert at
+  defaults; decisions are the user's.
+
+### 7.5 Registered extension at harvest (2026-08-07, before it runs):
+the STANDING-VORTEX arm. The fine-cadence §7.4 harvest measured the
+field's winding coherence dying in transit with τ_φ ≈ 3 t.u. (RA2
+1.000/0.796/0.392/0.106/0.011 at t = 0/2.5/5/7.5/10) — FASTER than
+the door's first beat (~5–7 t.u.): the flying packet's spin is
+speckle before the first conversion reads it. Discriminating arm: a
+standing long-wavelength vortex (kx=0, σ=8, box-centred) whose phase
+gradient m/r ≪ the speckle scale — seeded IN PLACE over live foam so
+conversion needs no flight. Q3-G1: slit_mask=3 kx=0 sigma=8
+slit_sy=8 amp=2 slit_srcx=32 spin_m=2 qp_phase=1 T=300; Q3-G0: same
+with qp_phase=0 (control). Predictions: (i) the standing vortex's
+field RA2 survives ≫ 10 t.u.; (ii) matter R2d in G1 rises above the
+G0 control while condensation runs — the first texture-grain
+door-carry proof; (iii) after the field drains, the matter texture
+decays at the differential-rotation rate (~1/30 t.u. from the load
+spread) — the retention number Phase-L inherits.
+
+### 7.6 Results (all arms + §7.5 extension harvested 2026-08-07;
+logs `runs/quench/q3*.log`, fcs local, analysis instruments `report/analyze_winding.py` (fcsdump-fed) and `report/bh_symbolic.py`)
+
+* **P-Q3-0 PASS three ways.** Both byte-witnesses reproduce their
+  archived logs EXACTLY except the one registered header line
+  (q3a ≡ q2s_shadow_m0, q3b ≡ q2s_shadow — every physics/diag/PAR/AMP
+  line identical over 375k steps); fcs common frames identical (the
+  archived spin2 fcs was snapped 5× denser — cadence-only diff,
+  recorded); battery ALL GREEN 93 (`runs/BATTERY_quench3.log`); C≡Go
+  physics byte-equal with the knob firing (drift-column-only
+  divergence = the standing IDENTITY §4.0 envelope; atan2 added no
+  new class).
+* **P-Q3-1 PASS — and it re-reads §6.1.** The demodulated meter on
+  the ARCHIVED q2s_spin2.fcs t=0 frame reads W_A = +2.000,
+  RA2 = 1.000, pkA = m+2: the m=2 injection was always clean, and
+  the Q2-S instrument gap is closed retroactively. The m=4 arm
+  injects W_A = +4 likewise (ladder verified).
+* **THE TRANSIT DISCOVERY (fine-cadence pair, 2.5 t.u. grain):** the
+  flying packet's winding coherence dies in the speckle foam with
+  τ_φ ≈ 3 t.u. — RA2 = 1.000 / 0.796 / 0.392 / 0.106 / 0.011 at
+  t = 0 / 2.5 / 5 / 7.5 / 10 — FASTER than the door's first beat
+  (~5–7 t.u.); the first matter appears at t ≈ 7.5 with the field
+  already speckle. **The spin dies in transit, not at the door.**
+  §6.1's mechanism sentence is re-attributed: even a phase-carrying
+  door inherits speckle from a flying packet at this λ/dmin. P-Q3-3
+  as registered therefore FAILS for the beam arms — with the
+  mechanism and its number in hand, which is worth more.
+* **P-Q3-2 PASS:** at qp=0 the matter clock field sits at the 1/√n
+  floor everywhere, wandering peaks — the erasure claim, finally
+  instrumented.
+* **§7.5 standing-vortex extension — all three predictions land:**
+  (i) the medium's phase memory is WAVELENGTH-DEPENDENT: the
+  standing m=2 vortex holds field coherence to t ≈ 100–110
+  (RA2 0.71 at t=30, pkA=m+2 through t≈100; ~20× the flying packet
+  — part of the decay is consumption: the growing cloud eats its
+  vortex). (ii) **THE DOOR CARRIES — texture-grain proof at ~3.5σ:**
+  while driven, the qp=1 cloud's clocks peak at the seeded m=+2 in
+  **13/39 frames vs 5/39 in the qp=0 control — P(≥13 | chance 1/9)
+  = 2×10⁻⁴ vs 0.44.** The amplitude is weak (driven-era mean R2d
+  0.032 vs 0.026): the imprint fights kappa_lock delivery churn and
+  differential clock rotation continuously. (iii) **NO RETENTION:**
+  once the field drains (t ≳ 110) the m=2 texture dissolves to
+  chance — the winding is a DRIVEN texture, not a carried
+  attribute; intrinsic matter phase memory ≲ 10–20 t.u.
+  (differential-rotation class ~0.2 rad/t.u. from the load spread).
+* **P-Q3-5 PASS (the expected null):** beam censuses 2,337–2,402,
+  inside the band; the standing arms land a different, lower-churn
+  protocol class (live 2,549/2,587 at mints 4.9k vs the beams'
+  21.6k — recorded). **P-Q3-6 PASS:** exposure 91.26 vs 92.10
+  (−0.9% — transit optics door-independent, as predicted).
+* Ledger note, recorded not claimed: qp=1 shifts the m=2 beam arm's
+  ledger coherently (+5.3% births, +4.4% cond, +6.3% rad vs its
+  qp=0 twin) while the m=0 pair moves less and mixed; the qp=1
+  evap ladder is monotone in m (46.1/33.2/21.1 at m=0/2/4). Single
+  seed — chaos-band attribution until replicated.
+
+### 7.7 Verdict (decisions are the user's; nothing adopted;
+qp_phase stays inert at defaults)
+
+1. **Q2-S was done incorrectly in the three §6.2 ways, and the
+   corrected apparatus converts its one-liner into two measured
+   walls.** "The door reads magnitude" re-reads as: (a) the MEDIUM
+   has wavelength-dependent phase memory — flying-packet winding is
+   speckle in ~3 t.u., before the first conversion beat; standing
+   long-wavelength structure survives ~20× longer; (b) the CLOUD
+   churns phase — a door-imprinted texture is driven-only, dying
+   with its field.
+2. **The missing cell attribute, final measured form:** not th2
+   itself — it exists, and the door now provably writes it (the
+   3.5σ standing-vortex imprint is the existence proof that
+   door-carried phase reaches matter at all). What is missing is a
+   phase DOF PROTECTED from the cell's own delivery churn: phase
+   carried on the parcels/slots (where delivery coherence is
+   already measured 0.77–0.95) rather than exposed in the naked
+   cell clock. That is exactly AMPLITUDE Phase L, which this
+   campaign hands a quantitative requirements card: survive ~0.2
+   rad/t.u. differential rotation; do not inherit speckle
+   deliveries; drive on m≥2 charts (the Phase-M ignition guard).
+3. **Plethora verdict:** winding classes are injectable (m = 2/4
+   ladder verified), transit-distinguishable (exposure/evap
+   ladders), and door-transmissible (3.5σ) — but nothing yet
+   carries them to persistence, so no winding-species census
+   exists at this box and law. The two measured roads: λ/dmin ≥ 10
+   (OUTLOOK E-G, 3D/scale — outrun the speckle) and Phase L
+   (protected carriage — outlive the churn). The companion no-go
+   (`BLACKHOLE.md`) shows the same missing sector gates gravity,
+   far fields, frame-drag, and any black-hole analog: one door,
+   many locked rooms.
