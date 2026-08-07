@@ -565,6 +565,30 @@ exception. Unexplained regularity, recorded: in all three deaths
 the loser is T1 — the OFFSET triangle (a seed-geometry bias
 candidate; T0 sits at box center).
 
+**§7.2 RESULTS — the first mixed-species measurements INVERT the
+same-species pattern.** MS-N (contact): **both species alive at
+t=5000 with THREE full-life engines** — UUD's D holds gid 3 and both
+UDD D voices hold gids 5 and 6 from seed; ret 0.3158 — mixed contact
+BEAT the same-species contact ensemble (starvation the rule, 3/4).
+The species-biased-starvation prediction (UDD = loser) is REFUTED in
+this seed: UDD ends healthier (D voices 0.21/0.56). MS-F (far):
+FAILS its both-alive bar — both species drained (UUD 0.000/0.005/
+0.091 with the ENGINE dead-and-reborn, the first observed engine
+rebirth; UDD lean-dying), ret 0.0856; n=1 caveat prominent (the far
+sep meter is wrap-broken as known; no snapshots were taken — true
+separation unverifiable, instrument note). Whether mixed-far is
+hostile or the fragility dice needs replicates — registered as the
+follow-up, not run. Spectra in one box (MS-N, window [1000,3000)):
+law residuals hold (FD rms 1.4%; DF 5.1% marginal with mean −0.009);
+the loci sit TOGETHER at the leaner shared operating point (1.944 vs
+1.968, Δ = 0.024 ± 0.014 — marginal vs the ±0.02 bar) exactly as the
+law's w(x) demands; the registered multiplicity-rate bands FAIL
+numerically (UUD-D 0.034 vs band 0.011 — the mixed pair runs LEAN
+AND HOT: intake up 27%, emission up 3×) while the ratio
+discrimination survives directionally (UUD 0.56 vs UDD 0.33 = 1.7×).
+The standing lesson sharpens: RATES AND LOCI ARE OPERATING POINTS;
+RATIOS AND RESIDUALS ARE THE INVARIANTS.
+
 **§7.3 heavy chord — the knob does not buy statistics; the law
 passes on what exists.** The xU=0.40 chord LIVES (ret 0.3963@5000,
 conn 0.667; the D engine again holds gid 3 for the full run —
