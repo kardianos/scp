@@ -918,6 +918,14 @@ func (s *Sim) step() {
 		}
 		if beatFire {
 			econdI := P.ECond
+			if P.WfOn != 0 {
+				// WORKFN W-A: presence threshold (WORKFN.md §1)
+				if s.Em[i] >= P.WfFloor {
+					econdI = 0
+				} else {
+					econdI = P.WfFar
+				}
+			}
 			if s.scond[i] != 0 {
 				econdI = 0.0
 			}

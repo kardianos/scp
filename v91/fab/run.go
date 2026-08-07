@@ -263,6 +263,8 @@ func (s *Sim) Run() {
 		P.RegTau, P.RegGate, P.RegF0)
 	fprintf(s.Out, "# v91 identity (parcel-identity lane, IDENTITY.md): par_tau=%.6g par_gate=%d par_form=%d par_lo=%.6g par_hi=%.6g par_mature=%.6g\n",
 		P.ParTau, P.ParGate, P.ParForm, P.ParLo, P.ParHi, P.ParMature)
+	fprintf(s.Out, "# v91 workfn (emergent-threshold lane, WORKFN.md): wf_on=%d wf_floor=%.6g wf_far=%.6g\n",
+		P.WfOn, P.WfFloor, P.WfFar)
 	if P.ParGate != 0 && P.ParTau <= 0 {
 		fprintf(s.Out, "# CONFIG ERROR: par_gate=1 with par_tau=0 — r_id == 0, gauge dark everywhere\n")
 	}

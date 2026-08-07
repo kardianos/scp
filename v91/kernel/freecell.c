@@ -180,6 +180,15 @@ typedef struct {
     double par_lo;      /* episode retire threshold on x (hysteresis) */
     double par_hi;      /* episode mint threshold on x                */
     double par_mature;  /* stamp maturity time (anti-ignition clock)  */
+    /* --- v91 WORKFN lane (WORKFN.md; user task list 2026-08-06).
+     * Emergent conversion threshold: the condensation demand lives in
+     * BOUND MATTER, not space (B7 fix). wf_on=0 => the econd line
+     * reads exactly as today (byte-inert). wf_on=1: form W-A,
+     * econd_i = Em[i] >= wf_floor ? 0 : wf_far — a PRESENCE
+     * threshold (W-M1: foam Em == 0 exactly; matter > 0). --- */
+    int    wf_on;       /* 0 = lane OFF (byte-inert)                  */
+    double wf_floor;    /* presence floor (W-M1-selected 0.01)        */
+    double wf_far;      /* empty-space demand (optics-grade 99)       */
     int    qatom_every;   /* apparatus (print-only): QATOM sampler period */
     /* --- freecell geometry sector (apparatus, not law) --- */
     double cfac;          /* candidate rule d < cfac*(ri+rj)  (LIVEFAB) */
@@ -299,6 +308,7 @@ static void cfg_defaults(void)
     P.reg_tau = 0; P.reg_gate = 0; P.reg_f0 = 0;
     P.par_tau = 0; P.par_gate = 0; P.par_form = 0;
     P.par_lo = 0.002; P.par_hi = 0.02; P.par_mature = 400;
+    P.wf_on = 0; P.wf_floor = 0.01; P.wf_far = 99;
     P.qatom_every = 200;
     /* freecell geometry */
     P.cfac = 1.15; P.k_rep = 1.0; P.mob_geo = 1.0; P.kappa_bond = 1.0;
@@ -396,6 +406,9 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "par_lo")) P.par_lo = atof(v);
     else if (!strcmp(k, "par_hi")) P.par_hi = atof(v);
     else if (!strcmp(k, "par_mature")) P.par_mature = atof(v);
+    else if (!strcmp(k, "wf_on")) P.wf_on = atoi(v);
+    else if (!strcmp(k, "wf_floor")) P.wf_floor = atof(v);
+    else if (!strcmp(k, "wf_far")) P.wf_far = atof(v);
     else if (!strcmp(k, "qatom_every")) P.qatom_every = atoi(v);
     else if (!strcmp(k, "cfac")) P.cfac = atof(v);
     else if (!strcmp(k, "k_rep")) P.k_rep = atof(v);
@@ -1733,7 +1746,9 @@ static void step(void)
         if (cbeta[i] >= TWO_PI) { cbeta[i] -= TWO_PI; beat_fire = 1; }
         else if (cbeta[i] <= -TWO_PI) { cbeta[i] += TWO_PI; beat_fire = 1; }
         if (beat_fire) {
-            double econd_i = scond[i] ? 0.0 : P.e_cond;
+            double econd_i = scond[i] ? 0.0
+                : (P.wf_on ? (Em[i] >= P.wf_floor ? 0.0 : P.wf_far)
+                           : P.e_cond);
             if (Ee[i] > econd_i) {
                 double d1 = P.f_conv * (Ee[i] - econd_i);
                 double eF = A0eff * w1e[i] / TWO_PI;
@@ -2661,6 +2676,8 @@ int main(int argc, char **argv)
            P.reg_tau, P.reg_gate, P.reg_f0);
     printf("# v91 identity (parcel-identity lane, IDENTITY.md): par_tau=%g par_gate=%d par_form=%d par_lo=%g par_hi=%g par_mature=%g\n",
            P.par_tau, P.par_gate, P.par_form, P.par_lo, P.par_hi, P.par_mature);
+    printf("# v91 workfn (emergent-threshold lane, WORKFN.md): wf_on=%d wf_floor=%g wf_far=%g\n",
+           P.wf_on, P.wf_floor, P.wf_far);
     if (P.par_gate && P.par_tau <= 0)
         printf("# CONFIG ERROR: par_gate=1 with par_tau=0 — r_id == 0, gauge dark everywhere\n");
     if (P.par_gate && P.reg_gate) {

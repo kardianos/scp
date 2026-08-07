@@ -57,6 +57,11 @@ type Cfg struct {
 	ParLo     float64
 	ParHi     float64
 	ParMature float64
+	// v91 WORKFN lane (WORKFN.md): emergent conversion threshold.
+	// wf_on=0 => byte-inert; 1 => econd_i = Em>=floor ? 0 : far.
+	WfOn    int
+	WfFloor float64
+	WfFar   float64
 	QatomEvery int // apparatus (print-only): QATOM sampler period
 	// --- freecell geometry sector (apparatus, not law) ---
 	Cfac      float64
@@ -181,6 +186,9 @@ func Defaults() Cfg {
 	p.ParLo = 0.002
 	p.ParHi = 0.02
 	p.ParMature = 400
+	p.WfOn = 0
+	p.WfFloor = 0.01
+	p.WfFar = 99
 	p.QatomEvery = 200
 	// freecell geometry
 	p.Cfac = 1.15
@@ -399,6 +407,12 @@ func (p *Cfg) SetKV(k, v string) {
 		p.ParHi = atof(v)
 	case "par_mature":
 		p.ParMature = atof(v)
+	case "wf_on":
+		p.WfOn = atoi(v)
+	case "wf_floor":
+		p.WfFloor = atof(v)
+	case "wf_far":
+		p.WfFar = atof(v)
 	case "qatom_every":
 		p.QatomEvery = atoi(v)
 	case "cfac":
