@@ -68,6 +68,7 @@ type Cfg struct {
 	// QUENCH-2 apparatus (QUENCH.md §6; seed-time only)
 	ConfR, ConfGap, ConfTh, ConfPinw float64
 	SpinM                            int
+	ImpK                             float64
 	QatomEvery int // apparatus (print-only): QATOM sampler period
 	// --- freecell geometry sector (apparatus, not law) ---
 	Cfac      float64
@@ -201,6 +202,7 @@ func Defaults() Cfg {
 	p.ConfTh = 1.6
 	p.ConfPinw = 3.0
 	p.SpinM = 0
+	p.ImpK = 0
 	p.QatomEvery = 200
 	// freecell geometry
 	p.Cfac = 1.15
@@ -437,6 +439,8 @@ func (p *Cfg) SetKV(k, v string) {
 		p.ConfPinw = atof(v)
 	case "spin_m":
 		p.SpinM = atoi(v)
+	case "imp_k":
+		p.ImpK = atof(v)
 	case "qatom_every":
 		p.QatomEvery = atoi(v)
 	case "cfac":

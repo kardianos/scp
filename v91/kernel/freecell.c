@@ -192,6 +192,10 @@ typedef struct {
      * azimuthal phase winding to the seeded packet. Both inert at 0. */
     double conf_r, conf_gap, conf_th, conf_pinw;
     int    spin_m;
+    double imp_k;       /* QUENCH-2 fix: inward radial phase tilt on the
+                         * seeded packet — implosion focusing = the
+                         * LAWFUL whole-box compress-release (seeded
+                         * energy only; conservative). 0 = off. */
     int    wf_on;       /* 0 = lane OFF (byte-inert)                  */
     double wf_floor;    /* presence floor (W-M1-selected 0.01)        */
     double wf_far;      /* empty-space demand (optics-grade 99)       */
@@ -323,7 +327,7 @@ static void cfg_defaults(void)
     P.par_lo = 0.002; P.par_hi = 0.02; P.par_mature = 400;
     P.wf_on = 0; P.wf_floor = 0.01; P.wf_far = 99;
     P.conf_r = 0; P.conf_gap = 0.3; P.conf_th = 1.6; P.conf_pinw = 3.0;
-    P.spin_m = 0;
+    P.spin_m = 0; P.imp_k = 0;
     P.amp_tau = 0;
     P.qatom_every = 200;
     /* freecell geometry */
@@ -431,6 +435,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "conf_th")) P.conf_th = atof(v);
     else if (!strcmp(k, "conf_pinw")) P.conf_pinw = atof(v);
     else if (!strcmp(k, "spin_m")) P.spin_m = atoi(v);
+    else if (!strcmp(k, "imp_k")) P.imp_k = atof(v);
     else if (!strcmp(k, "qatom_every")) P.qatom_every = atoi(v);
     else if (!strcmp(k, "cfac")) P.cfac = atof(v);
     else if (!strcmp(k, "k_rep")) P.k_rep = atof(v);
@@ -2801,8 +2806,8 @@ int main(int argc, char **argv)
            P.wf_on, P.wf_floor, P.wf_far);
     printf("# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=%g\n",
            P.amp_tau);
-    printf("# QUENCH-2 apparatus: conf_r=%g conf_gap=%g conf_th=%g conf_pinw=%g spin_m=%d\n",
-           P.conf_r, P.conf_gap, P.conf_th, P.conf_pinw, P.spin_m);
+    printf("# QUENCH-2 apparatus: conf_r=%g conf_gap=%g conf_th=%g conf_pinw=%g spin_m=%d imp_k=%g\n",
+           P.conf_r, P.conf_gap, P.conf_th, P.conf_pinw, P.spin_m, P.imp_k);
     if (P.par_gate && P.par_tau <= 0)
         printf("# CONFIG ERROR: par_gate=1 with par_tau=0 — r_id == 0, gauge dark everywhere\n");
     if (P.par_gate && P.reg_gate) {
@@ -3190,6 +3195,7 @@ int main(int argc, char **argv)
             if (g < 1e-8) continue;
             double tilt = -(P.kx * dx);
             if (P.spin_m) tilt += P.spin_m * atan2(dy, dx);
+            if (P.imp_k > 0) tilt += P.imp_k * sqrt(dx*dx + dy*dy);
             fa1[i] += sqrt(P.amp * g) * cos(tilt);
             fa2[i] += sqrt(P.amp * g) * sin(tilt);
             Ee[i] = fa1[i]*fa1[i] + fa2[i]*fa2[i];
@@ -3511,6 +3517,7 @@ int main(int argc, char **argv)
             if (g < 1e-8) continue;
             double tilt = -(P.kx * dx);
             if (P.spin_m) tilt += P.spin_m * atan2(dy, dx);
+            if (P.imp_k > 0) tilt += P.imp_k * sqrt(dx*dx + dy*dy);
             fa1[i] += sqrt(P.amp * g) * cos(tilt);
             fa2[i] += sqrt(P.amp * g) * sin(tilt);
             Ee[i] = fa1[i]*fa1[i] + fa2[i]*fa2[i];
