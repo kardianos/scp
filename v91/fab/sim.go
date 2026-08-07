@@ -127,6 +127,11 @@ type Sim struct {
 	// conversion ledgers
 	roughTotal, condTotal, evapTotal, backsTotal float64
 	radTotal                                     float64 // v91 graded sub-cap radiance
+	// HORIZON apparatus (HORIZON.md): the hole ledger (pitchless);
+	// Kahan-compensated so the ledger holds the drift floor
+	EhTotal, ehComp                 float64
+	bhEatF, bhEatM, bhEatS          float64
+	bhNin                           int64
 	tuneTotal                                    float64 // v91 cantus within-mode retune |J| ledger
 	A0eff                                        float64
 	qfireN                                       int64
@@ -215,6 +220,13 @@ func (s *Sim) grand() float64 {
 	u1 := s.frand() + 1e-18
 	u2 := s.frand()
 	return math.Sqrt(-2.0*math.Log(u1)) * math.Cos(TwoPi*u2)
+}
+
+func (s *Sim) ehAdd(v float64) {
+	y := v - s.ehComp
+	t := s.EhTotal + y
+	s.ehComp = (t - s.EhTotal) - y
+	s.EhTotal = t
 }
 
 func wrapPi(a float64) float64 {

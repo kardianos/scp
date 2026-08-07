@@ -201,6 +201,14 @@ typedef struct {
                          * it feeds — th2 pulled toward arg(fa) by the
                          * field-derived fraction of the new holdings.
                          * No energy content; 0 = byte-inert. */
+    /* --- HORIZON apparatus (HORIZON.md; assertion instrument): the
+     * forced hole = the prover's NEW_LEDGER_X + ROUTE structure by
+     * fiat. Cells inside bh_r of box centre are eaten each step into
+     * the uncapped, pitchless, pi-invisible accumulator Eh (in the
+     * conservation sum and nowhere else); their clocks freeze (no
+     * beat, no door, no emission — I2 makes one-way structural).
+     * bh_r=0 = byte-inert. --- */
+    double bh_r, bh_k;
     int    wf_on;       /* 0 = lane OFF (byte-inert)                  */
     double wf_floor;    /* presence floor (W-M1-selected 0.01)        */
     double wf_far;      /* empty-space demand (optics-grade 99)       */
@@ -333,6 +341,7 @@ static void cfg_defaults(void)
     P.wf_on = 0; P.wf_floor = 0.01; P.wf_far = 99;
     P.conf_r = 0; P.conf_gap = 0.3; P.conf_th = 1.6; P.conf_pinw = 3.0;
     P.spin_m = 0; P.imp_k = 0; P.qp_phase = 0;
+    P.bh_r = 0; P.bh_k = 1.0;
     P.amp_tau = 0;
     P.qatom_every = 200;
     /* freecell geometry */
@@ -442,6 +451,8 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "spin_m")) P.spin_m = atoi(v);
     else if (!strcmp(k, "imp_k")) P.imp_k = atof(v);
     else if (!strcmp(k, "qp_phase")) P.qp_phase = atof(v);
+    else if (!strcmp(k, "bh_r")) P.bh_r = atof(v);
+    else if (!strcmp(k, "bh_k")) P.bh_k = atof(v);
     else if (!strcmp(k, "qatom_every")) P.qatom_every = atoi(v);
     else if (!strcmp(k, "cfac")) P.cfac = atof(v);
     else if (!strcmp(k, "k_rep")) P.k_rep = atof(v);
@@ -770,6 +781,18 @@ static double A0eff = 0;
 static long qfire_n = 0;
 static double sim_t = 0;
 static double E0_total = 0;
+static double Eh_total = 0;   /* HORIZON: the hole ledger (pitchless) */
+static double Eh_comp = 0;    /* Kahan compensation — the ledger must
+                               * hold the drift floor while it grows */
+static double bh_eat_f = 0, bh_eat_m = 0, bh_eat_s = 0;
+static long bh_nin = 0;
+
+static void eh_add(double v)
+{
+    double y = v - Eh_comp, t = Eh_total + y;
+    Eh_comp = (t - Eh_total) - y;
+    Eh_total = t;
+}
 static double cenx, ceny, cenz;
 static long ncand_last = 0;
 static double fs_t[512], fs_r[512], fs_y[512], fs_z[512];
@@ -1844,7 +1867,30 @@ static void step(void)
             roughq[i] = 0;
         }
     }
+    bh_nin = 0;
     for (int i = 0; i < NC; i++) {
+        if (P.bh_r > 0) {
+            double hdx = wr(px_[i] - 0.5 * P.L), hdy = wr(py_[i] - 0.5 * P.L);
+            double hdz = wr(pz_[i] - 0.5 * P.L);
+            if (hdx*hdx + hdy*hdy + hdz*hdz < P.bh_r * P.bh_r) {
+                bh_nin++;
+                if (Ee[i] > 0) {
+                    eh_add(Ee[i]); bh_eat_f += Ee[i];
+                    Ee[i] = 0; fa1[i] = 0; fa2[i] = 0;
+                }
+                if (Em[i] > 0) {
+                    eh_add(Em[i]); bh_eat_m += Em[i];
+                    Em[i] = 0;
+                }
+                double avail = Es[i] - P.es_floor;
+                if (avail > 0) {
+                    double d = P.bh_k * avail * dt;
+                    if (d > avail) d = avail;
+                    Es[i] -= d; eh_add(d); bh_eat_s += d;
+                }
+                continue;   /* pitchless: no clock, no beat, no door */
+            }
+        }
         th2[i] = fmod(th2[i] + w2e[i] * dt, TWO_PI);
         cbeta[i] += (w1e[i] - w2e[i]) * dt;
         int beat_fire = 0;
@@ -2139,6 +2185,10 @@ static double total_energy(void)
         if (sst[sl] == S_FREE) continue;
         double v = slem[2*sl] + slem[2*sl+1];
         double y = v - comp, t = s + y;
+        comp = (t - s) - y; s = t;
+    }
+    {
+        double y = Eh_total - comp, t = s + y;
         comp = (t - s) - y; s = t;
     }
     return s;
@@ -2822,6 +2872,8 @@ int main(int argc, char **argv)
            P.amp_tau);
     printf("# QUENCH-2 apparatus: conf_r=%g conf_gap=%g conf_th=%g conf_pinw=%g spin_m=%d imp_k=%g qp_phase=%g\n",
            P.conf_r, P.conf_gap, P.conf_th, P.conf_pinw, P.spin_m, P.imp_k, P.qp_phase);
+    printf("# HORIZON apparatus (HORIZON.md): bh_r=%g bh_k=%g\n",
+           P.bh_r, P.bh_k);
     if (P.par_gate && P.par_tau <= 0)
         printf("# CONFIG ERROR: par_gate=1 with par_tau=0 — r_id == 0, gauge dark everywhere\n");
     if (P.par_gate && P.reg_gate) {
@@ -3879,6 +3931,9 @@ int main(int argc, char **argv)
                        sim_t, ntp, a25, a50, a75, a90, amg,
                        nba, b25, b50, b75, b90, bmg);
             }
+            if (P.bh_r > 0)
+                printf("# HOLE t=%.2f Eh=%.6f nin=%ld eatF=%.4f eatM=%.4f eatS=%.4f\n",
+                       sim_t, Eh_total, bh_nin, bh_eat_f, bh_eat_m, bh_eat_s);
         }
         if (P.snap_every > 0 && P.snap_dir[0] && st % P.snap_every == 0)
             write_fcs(st / P.snap_every);
@@ -3962,6 +4017,9 @@ int main(int argc, char **argv)
                    par_mints, par_retires, ngid, par_del_id, par_del_tot,
                    par_del_tot > 0 ? par_del_id / par_del_tot : 0);
         }
+        if (P.bh_r > 0)
+            printf("# RESULT hole Eh=%.6f nin=%ld eatF=%.6f eatM=%.6f eatS=%.6f\n",
+                   Eh_total, bh_nin, bh_eat_f, bh_eat_m, bh_eat_s);
         if (P.amp_tau > 0) {
             double a25, a50, a75, a90, amg, b25, b50, b75, b90, bmg;
             int ntp = amp_stats(0, &a25, &a50, &a75, &a90, &amg);

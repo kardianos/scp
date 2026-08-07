@@ -23,6 +23,12 @@ func (s *Sim) totalEnergy() float64 {
 		comp = (t - sum) - y
 		sum = t
 	}
+	{
+		y := s.EhTotal - comp
+		t := sum + y
+		comp = (t - sum) - y
+		sum = t
+	}
 	return sum
 }
 

@@ -980,7 +980,39 @@ func (s *Sim) step() {
 			s.roughq[i] = 0
 		}
 	}
+	s.bhNin = 0
 	for i := 0; i < s.NC; i++ {
+		if P.BhR > 0 {
+			hdx := s.wr(s.px[i] - 0.5*P.L)
+			hdy := s.wr(s.py[i] - 0.5*P.L)
+			hdz := s.wr(s.pz[i] - 0.5*P.L)
+			if hdx*hdx+hdy*hdy+hdz*hdz < P.BhR*P.BhR {
+				s.bhNin++
+				if s.Ee[i] > 0 {
+					s.ehAdd(s.Ee[i])
+					s.bhEatF += s.Ee[i]
+					s.Ee[i] = 0
+					s.fa1[i] = 0
+					s.fa2[i] = 0
+				}
+				if s.Em[i] > 0 {
+					s.ehAdd(s.Em[i])
+					s.bhEatM += s.Em[i]
+					s.Em[i] = 0
+				}
+				avail := s.Es[i] - P.EsFloor
+				if avail > 0 {
+					d := P.BhK * avail * dt
+					if d > avail {
+						d = avail
+					}
+					s.Es[i] -= d
+					s.ehAdd(d)
+					s.bhEatS += d
+				}
+				continue // pitchless: no clock, no beat, no door
+			}
+		}
 		s.th2[i] = math.Mod(s.th2[i]+s.w2e[i]*dt, TwoPi)
 		s.cbeta[i] += (s.w1e[i] - s.w2e[i]) * dt
 		beatFire := false

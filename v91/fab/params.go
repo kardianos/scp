@@ -71,6 +71,8 @@ type Cfg struct {
 	ImpK                             float64
 	// QUENCH-3 (QUENCH.md §7): door writes wave phase into th2; 0 = inert
 	QpPhase float64
+	// HORIZON apparatus (HORIZON.md): forced hole; bh_r=0 = inert
+	BhR, BhK float64
 	QatomEvery int // apparatus (print-only): QATOM sampler period
 	// --- freecell geometry sector (apparatus, not law) ---
 	Cfac      float64
@@ -206,6 +208,8 @@ func Defaults() Cfg {
 	p.SpinM = 0
 	p.ImpK = 0
 	p.QpPhase = 0
+	p.BhR = 0
+	p.BhK = 1.0
 	p.QatomEvery = 200
 	// freecell geometry
 	p.Cfac = 1.15
@@ -446,6 +450,10 @@ func (p *Cfg) SetKV(k, v string) {
 		p.ImpK = atof(v)
 	case "qp_phase":
 		p.QpPhase = atof(v)
+	case "bh_r":
+		p.BhR = atof(v)
+	case "bh_k":
+		p.BhK = atof(v)
 	case "qatom_every":
 		p.QatomEvery = atoi(v)
 	case "cfac":

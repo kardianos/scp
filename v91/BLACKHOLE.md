@@ -291,3 +291,18 @@ qp=0 control (13/39 vs 5/39 driven-era peak hits, P 2e-4 vs 0.44) —
 idea 2's existence proof. No retention after the field drains: the
 carried-phase sector needs protected carriage (AMPLITUDE Phase L),
 not a naked cell clock. Walls 1–5 stand unchanged.
+
+**[Second outcome, dated 2026-08-07 — HORIZON.md]:** the forced-hole
+lane ran the walls in reverse. A symbolic prover with backtracing
+(`report/horizon_prover.py`) derived the required structure — an
+uncapped, pitchless, π-invisible store; equivalently CELL DEATH — and
+the assertion apparatus (`bh_r`/`bh_k`, battery ALL GREEN) produced
+the exterior on demand: one-way eating at exact conservation, the
+first standing ≥20-cell far field (π 0.050→0.948 monotone), frame
+accretion to a jamming plateau, halo accretion without body infall
+(the clean B2/B6 split). The horizon itself refused: light escapes
+from INSIDE the eating radius (72% eaten, remnant at full speed) —
+the river runs ~40× below the supersonic threshold because immortal
+cells JAM (the substrate's degeneracy pressure). Walls 1–5 stand;
+the black-hole boundary is measured to need ROSTER_DEATH twice over:
+the horizon is the surface where the roster shrinks at wave speed.
