@@ -167,3 +167,34 @@ phase composition may be load-bearing even as a feedback (the fifth's
 circulation is a standing current the feedback could sustain). The L-1
 feedback apparatus stays (it is safe, conserved, C≡Go, anti-ignition-robust)
 as the substrate either path builds on.
+
+---
+
+## Addendum 3 — chord-track probe (Path B): NEGATIVE, feedback cannot sustain the fifth
+
+User-directed: "B first as a probe, then decide on A." Ran the nv=6
+composite boundary fifth (the L2 acceptance surface) with the feedback at
+mmin=2 (the chord gate), amp_drv=0 vs 0.1, T=100:
+
+- amp_drv=0:  boundary fifth gg = 0.0063 (dead — the V2g fifth-death)
+- amp_drv=0.1: boundary fifth gg = 0.0021 (dead; edge_dev/shape_dev/xbar
+  BYTE-IDENTICAL to amp_drv=0 — the feedback had ~zero effect on the
+  composite)
+
+**The mechanism (chicken-and-egg):** the fifth dies (gg→0) ⇒ no transport
+on those links ⇒ no deposits ⇒ no shadow ⇒ no feedback ⇒ cannot revive
+what is already dead. The feedback reads the shadow of the EXISTING
+transport; where that transport is already incoherent/dead (the dying
+fifth, the marginal e3b), there is nothing to feed back. This is the same
+root cause as L1: the magnitude transport does not carry coherent phase, so
+its shadow is incoherent, so a shadow-driven bias cannot create or sustain
+coherence.
+
+**Verdict on Path B:** the feedback approach is insufficient for the chord
+track too — not just unison transport. **Path A (native complex-transport
+completion) is indicated.** The L-1 feedback apparatus stays as the safe,
+measured substrate; the next step is to make the dense transfer natively
+complex (the deposit composes the arriving phase; the current emerges from
+path composition), which is the S2 memo's actual vision and the one
+construction not yet tried. This is a deep kernel change (the want/deposit
+mechanism becomes complex in both kernels) and awaits explicit sign-off.
