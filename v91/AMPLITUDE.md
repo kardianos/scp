@@ -85,7 +85,43 @@ round.
 
 ## 4. Results
 
-(registered empty)
+**4.1 Phase M complete — the coherence-deficit map INVERTS the
+registered predictions (logs `runs/identity/mam1_*.log`;
+apparatus verified P-AM0/P-AM1, battery ALL GREEN 93).**
+(harvested 2026-08-06)
+
+| body | class | ρ_coh q25/50/75/90 | registered prediction |
+|---|---|---|---|
+| warm bath | bath slots (n≈23.8k) | 0.641 / **0.766** / 0.853 / 0.910 | "incoherent" — REFUTED |
+| frozen chord | the 3 bonds | 0.436 / **0.495** / 0.495 / 0.495 | "ρ→1, the lock manufactures this" — REFUTED |
+| tilted blob | tagged (n≈3.1k) | 0.651 / 0.756 / 0.840 / 0.903 | partial-coherence excess — none at bulk grain (≈ bath 0.743) |
+
+Readings, for the Phase-L design round:
+* **The bath is not the enemy.** The persistent-exchange medium is
+  ~77% amplitude-coherent at delivery grain — consistent, in
+  hindsight, with the ILAG common-mode rhythm and the emergent
+  per-line balance. Unison (1:1) flows compose well.
+* **The deficit is on the chord's own bonds** (0.49) — the lock
+  aligns the GATES while the delivered amplitude on the m=2 fifth
+  and bond charts composes at half strength. Mechanism candidate,
+  measured for free: higher-order charts pay q×-faster phase noise
+  — coherence deficit scales with CHART ORDER; the fifth suffers
+  most. Phase L would act hardest exactly where the flux machine
+  lives.
+* **Registered danger, flagged BEFORE any law code:** an
+  |A|²-driven transport law rewards the bath's coherent unison
+  flows more than the chord's half-coherent fifth — an
+  ignition-shaped asymmetry. The Phase-L design round must gate on
+  something the bath's unison coherence cannot buy (the chart-order
+  structure itself is the candidate: amplitude transport ONLY on
+  m≥2 charts would touch fifths and leave unison magnitude-driven).
+* The e3b directional question needs a directional decomposition of
+  the shadow (per-slot u·k̂ projection) — a Phase-L meter extension,
+  registered.
+
+**Phase M verdict: the entry measurement the completion needed is
+in hand and it redraws the design.** Phase L proceeds only from a
+design round over this map (next campaign unit); nothing adopted.
 
 ## 5. Verdict
 
