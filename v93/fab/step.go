@@ -386,10 +386,11 @@ func (s *Sim) step() {
 		if P.AmpNat > 0 {
 			// v93 UNITARY DENSE CHANNEL: fold the want ingredients into a
 			// pairwise hop angle tau_s (mobility carried by the amplitude
-			// magnitude itself, as in pass F; door enforces cap; closure
-			// gate survives as the angle envelope). Byte-inert at amp_nat=0.
+			// magnitude itself, as in pass F; door enforces cap so NO head
+			// factor -- face 1 sqrt(head) froze the dense core; closure gate
+			// survives as the angle envelope). Byte-inert at amp_nat=0.
 			gsym := math.Sqrt(gIJ * gJI)
-			tau := P.AmpNat * base * gsym * math.Sqrt(headI*headJ)
+			tau := P.AmpNat * base * gsym
 			if tau > 0.5 {
 				tau = 0.5
 			}

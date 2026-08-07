@@ -1456,14 +1456,15 @@ static void step(void)
              * pairwise hop angle tau_s (the existing want-computation maps
              * onto the angle rather than a magnitude to debit). Mobility is
              * carried by the amplitude magnitude itself (as in pass F: a
-             * cell with Em~0 has psi_m~0 and transports nothing); the door
-             * (pass 6) enforces cap, so headroom enters here only as a soft
-             * envelope. The closure gate (cos^p) survives as the angle
-             * envelope. tau_s=0 when closure or headroom vanish.
-             * Byte-inert at amp_nat=0 (swant stays 0 => additive passes 3-5
-             * are no-ops; only the unitary hop below moves dense energy). */
+             * cell with Em~0 has psi_m~0 and transports nothing). The door
+             * (pass 6) enforces cap, so NO head factor here -- face 1 used
+             * sqrt(head_i*head_j) but that FREEZES the dense core (cap-
+             * saturated matter has head~0), leaving only the random-phase
+             * surface to transport (e3b cos seed-variant, incoherent). The
+             * closure gate (cos^p) survives as the angle envelope. tau_s=0
+             * when closure vanishes. Byte-inert at amp_nat=0. */
             double gsym = sqrt(g_ij * g_ji);
-            double tau = P.amp_nat * base * gsym * sqrt(head_i * head_j);
+            double tau = P.amp_nat * base * gsym;
             if (tau > 0.5) tau = 0.5;   /* integrator guard: deep-overlap cap */
             shau_[s] = tau;
         } else {

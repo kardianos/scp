@@ -1,0 +1,24 @@
+=== L1-B: conservation drift floor vs amp_nat (bath T=40, V3a law) ===
+amp_nat=0  # t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+amp_nat=0.5  # t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+amp_nat=1.0  # t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+amp_nat=2.0  # t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+
+=== L1-A: e3b blob translation (exp=blob amp=0.5 sigma=2.5 kx=1.1 L=16 T=80 wf_on=1) ===
+amp_nat  seed       speed        cos_to_kdir
+0        111        0.003138     -0.9394 
+0        20260802   0.001544     -0.2798 
+0        314159     0.001556     -0.9286 
+0.25     111        0.000266     -0.9459 
+0.25     20260802   0.000574     0.8774  
+0.25     314159     0.000804     0.2770  
+0.5      111        0.000720     -0.3967 
+0.5      20260802   0.001920     0.9533  
+0.5      314159     0.000768     0.2875  
+1.0      111        0.000605     -0.5826 
+1.0      20260802   0.001600     0.6793  
+1.0      314159     0.001802     -0.8361 
+2.0      111        0.002387     0.5369  
+2.0      20260802   0.001735     0.8125  
+2.0      314159     0.003451     0.9285  
+=== sweep done ===
