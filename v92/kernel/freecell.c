@@ -226,6 +226,14 @@ typedef struct {
      * NOTHING. The meter is the coherence-deficit map rho_coh =
      * |sum dA| / sum |dA| per link/class. amp_tau=0 => byte-inert. */
     double amp_tau;     /* shadow window; 0 = lane OFF                */
+    /* --- v92 AMPLITUDE Phase L lane L-1 (L0_DESIGN.md §3): the shadow
+     * PROMOTED FROM METER TO DRIVER. Where the shadow amplitude composes
+     * coherently on a chord (m>=amp_mmin) link, it biases the dense want
+     * toward the coherent direction — "translation IS the current"
+     * (momentum as the first moment of conversion). amp_drv=0 => the
+     * shadow stays a Phase-M meter and the step is byte-inert. */
+    double amp_drv;     /* L-1 amplitude-driven transport strength; 0 = OFF */
+    double amp_mmin;    /* L-1 chart-order gate floor (2 = fifths+, not unison) */
     int    qatom_every;   /* apparatus (print-only): QATOM sampler period */
     /* --- freecell geometry sector (apparatus, not law) --- */
     double cfac;          /* candidate rule d < cfac*(ri+rj)  (LIVEFAB) */
@@ -351,6 +359,7 @@ static void cfg_defaults(void)
     P.bh_r = 0; P.bh_k = 1.0; P.bh_sep = 0;
     P.bed_k = 0; P.bed_tau = 30;
     P.amp_tau = 0;
+    P.amp_drv = 0; P.amp_mmin = 2;
     P.qatom_every = 200;
     /* freecell geometry */
     P.cfac = 1.15; P.k_rep = 1.0; P.mob_geo = 1.0; P.kappa_bond = 1.0;
@@ -452,6 +461,8 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "wf_floor")) P.wf_floor = atof(v);
     else if (!strcmp(k, "wf_far")) P.wf_far = atof(v);
     else if (!strcmp(k, "amp_tau")) P.amp_tau = atof(v);
+    else if (!strcmp(k, "amp_drv")) P.amp_drv = atof(v);
+    else if (!strcmp(k, "amp_mmin")) P.amp_mmin = atof(v);
     else if (!strcmp(k, "conf_r")) P.conf_r = atof(v);
     else if (!strcmp(k, "conf_gap")) P.conf_gap = atof(v);
     else if (!strcmp(k, "conf_th")) P.conf_th = atof(v);
@@ -1385,6 +1396,31 @@ static void step(void)
                 if (dd > 0.05) dd = 0.05;
                 if (dd < -0.05) dd = -0.05;
                 sldd[s] = dd;
+            }
+        }
+
+        /* v92 AMPLITUDE Phase L lane L-1 (L0_DESIGN.md §3): promote the
+         * Phase-M shadow from meter to driver. Where the shadow amplitude
+         * composes coherently on a CHORD link (chart order m>=amp_mmin;
+         * unison m=1 is excluded => the bath's churn is untouched), bias
+         * the dense want toward the coherent direction — "translation IS
+         * the current." Signed, saturating (|bias|<=amp_drv), reads the
+         * slot-borne shadow (protected from cell delivery churn). Byte-
+         * inert at amp_drv=0 (the branch is skipped). The per-cell zero-
+         * sum renorm is the registered escalation if L1-C (anti-ignition)
+         * shows runaway; the deposit ledger + outflow limiter conserve
+         * energy regardless. */
+        if (P.amp_drv > 0 && P.amp_tau > 0) {
+            int ms = slp[s] > slq[s] ? slp[s] : slq[s];
+            if (ms >= (int)P.amp_mmin) {
+                double c0 = sqrt(sre_[2*s]*sre_[2*s]     + sim_[2*s]*sim_[2*s]);
+                double c1 = sqrt(sre_[2*s+1]*sre_[2*s+1] + sim_[2*s+1]*sim_[2*s+1]);
+                double tot = c0 + c1;
+                if (tot > 1e-15) {
+                    double bias = P.amp_drv * (c0 - c1) / tot;  /* signed, |.|<=amp_drv */
+                    w_ij *= (1.0 + bias);
+                    w_ji *= (1.0 - bias);
+                }
             }
         }
 
@@ -2963,6 +2999,8 @@ int main(int argc, char **argv)
            P.wf_on, P.wf_floor, P.wf_far);
     printf("# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=%g\n",
            P.amp_tau);
+    printf("# v92 amplitude Phase L lane L-1 (L0_DESIGN.md): amp_drv=%g amp_mmin=%g\n",
+           P.amp_drv, P.amp_mmin);
     printf("# QUENCH-2 apparatus: conf_r=%g conf_gap=%g conf_th=%g conf_pinw=%g spin_m=%d imp_k=%g qp_phase=%g\n",
            P.conf_r, P.conf_gap, P.conf_th, P.conf_pinw, P.spin_m, P.imp_k, P.qp_phase);
     printf("# HORIZON apparatus (HORIZON.md): bh_r=%g bh_k=%g bh_sep=%g\n",

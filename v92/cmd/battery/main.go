@@ -49,6 +49,7 @@ var lawHeader = []string{
 	"# v91 identity (parcel-identity lane, IDENTITY.md): par_tau=0 par_gate=0 par_form=0 par_lo=0.002 par_hi=0.02 par_mature=400",
 	"# v91 workfn (emergent-threshold lane, WORKFN.md): wf_on=1 wf_floor=0.01 wf_far=99",
 	"# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=0",
+	"# v92 amplitude Phase L lane L-1 (L0_DESIGN.md): amp_drv=0 amp_mmin=2",
 	"# QUENCH-2 apparatus: conf_r=0 conf_gap=0.3 conf_th=1.6 conf_pinw=3 spin_m=0 imp_k=0 qp_phase=0",
 	"# HORIZON apparatus (HORIZON.md): bh_r=0 bh_k=1 bh_sep=0",
 	"# FLOW apparatus (FLOW.md): bed_k=0 bed_tau=30",

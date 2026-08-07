@@ -65,6 +65,12 @@ type Cfg struct {
 	// v91 AMPLITUDE lane Phase M (AMPLITUDE.md): shadow amplitude
 	// meter; amp_tau=0 => byte-inert.
 	AmpTau float64
+	// v92 AMPLITUDE Phase L lane L-1 (L0_DESIGN.md §3): shadow promoted
+	// from meter to driver — coherent amplitude biases the dense want on
+	// chord (m>=AmpMmin) links toward the coherent direction. amp_drv=0
+	// => byte-inert (shadow stays a Phase-M meter).
+	AmpDrv  float64
+	AmpMmin float64
 	// QUENCH-2 apparatus (QUENCH.md §6; seed-time only)
 	ConfR, ConfGap, ConfTh, ConfPinw float64
 	SpinM                            int
@@ -203,6 +209,8 @@ func Defaults() Cfg {
 	p.WfFloor = 0.01
 	p.WfFar = 99
 	p.AmpTau = 0
+	p.AmpDrv = 0
+	p.AmpMmin = 2
 	p.ConfR = 0
 	p.ConfGap = 0.3
 	p.ConfTh = 1.6
@@ -441,6 +449,10 @@ func (p *Cfg) SetKV(k, v string) {
 		p.WfFar = atof(v)
 	case "amp_tau":
 		p.AmpTau = atof(v)
+	case "amp_drv":
+		p.AmpDrv = atof(v)
+	case "amp_mmin":
+		p.AmpMmin = atof(v)
 	case "conf_r":
 		p.ConfR = atof(v)
 	case "conf_gap":

@@ -349,6 +349,28 @@ func (s *Sim) step() {
 			}
 		}
 
+		// v92 AMPLITUDE Phase L lane L-1 (L0_DESIGN.md §3): promote the
+		// Phase-M shadow from meter to driver. Where the shadow composes
+		// coherently on a chord (m>=AmpMmin) link, bias the dense want
+		// toward the coherent direction. Signed, saturating, slot-borne.
+		// Byte-inert at AmpDrv=0. (Mirror of freecell.c pass-2 L-1 block.)
+		if P.AmpDrv > 0 && P.AmpTau > 0 {
+			ms := int(s.slp[sl])
+			if int(s.slq[sl]) > ms {
+				ms = int(s.slq[sl])
+			}
+			if float64(ms) >= P.AmpMmin {
+				c0 := math.Sqrt(s.sreA[2*sl]*s.sreA[2*sl] + s.simA[2*sl]*s.simA[2*sl])
+				c1 := math.Sqrt(s.sreA[2*sl+1]*s.sreA[2*sl+1] + s.simA[2*sl+1]*s.simA[2*sl+1])
+				tot := c0 + c1
+				if tot > 1e-15 {
+					bias := P.AmpDrv * (c0 - c1) / tot
+					wIJ *= (1.0 + bias)
+					wJI *= (1.0 - bias)
+				}
+			}
+		}
+
 		if wIJ > 0 {
 			s.swant[2*sl] = wIJ
 		}
