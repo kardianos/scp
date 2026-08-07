@@ -67,4 +67,5 @@ bin/
 .antigravitycli/
 *.lock
 *.fcs
+*.cells
 *.log.raw
