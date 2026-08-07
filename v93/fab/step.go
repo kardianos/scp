@@ -211,6 +211,7 @@ func (s *Sim) step() {
 		s.sA[sl] = A
 		s.swant[2*sl] = 0
 		s.swant[2*sl+1] = 0
+		s.shau[sl] = 0
 		s.sflux[sl] = 0
 		s.sldd[sl] = 0
 		if A <= 0 {
@@ -382,11 +383,24 @@ func (s *Sim) step() {
 			}
 		}
 
-		if wIJ > 0 {
-			s.swant[2*sl] = wIJ
-		}
-		if wJI > 0 {
-			s.swant[2*sl+1] = wJI
+		if P.AmpNat > 0 {
+			// v93 UNITARY DENSE CHANNEL: fold the want ingredients into a
+			// pairwise hop angle tau_s (mobility carried by the amplitude
+			// magnitude itself, as in pass F; door enforces cap; closure
+			// gate survives as the angle envelope). Byte-inert at amp_nat=0.
+			gsym := math.Sqrt(gIJ * gJI)
+			tau := P.AmpNat * base * gsym * math.Sqrt(headI*headJ)
+			if tau > 0.5 {
+				tau = 0.5
+			}
+			s.shau[sl] = tau
+		} else {
+			if wIJ > 0 {
+				s.swant[2*sl] = wIJ
+			}
+			if wJI > 0 {
+				s.swant[2*sl+1] = wJI
+			}
 		}
 	}
 
@@ -418,6 +432,69 @@ func (s *Sim) step() {
 					s.swant[2*sl+dir] *= fac
 				}
 			}
+		}
+	}
+
+	// pass U: v93 UNITARY DENSE CHANNEL — within-mode dense transport as a
+	// product of UNITARY PAIRWISE PLANE ROTATIONS (pass F's cousin,
+	// v93/README.md §II.3). Engages only when amp_nat>0; in that regime the
+	// additive magnitude want above is bypassed (swant stays 0, passes 3-5
+	// are no-ops). The dense amplitude psi_m = sqrt(Em) e^{i th2} hops
+	// between link endpoints by a Givens rotation of angle shau[sl]; each
+	// hop conserves the two-cell norm EXACTLY (conservation is a theorem of
+	// the update). The cross term 2 Im(psi_i* psi_j) IS the link current =
+	// dense momentum. The door (pass 6) is never unitarized. Hops applied in
+	// canonical link order (from the i side). Byte-inert at amp_nat=0.
+	if P.AmpNat > 0 {
+		for i := 0; i < s.NC; i++ {
+			e := s.Em[i]
+			if e > 0 {
+				r := math.Sqrt(e)
+				s.dm1[i] = r * lutCos(s.th2[i])
+				s.dm2[i] = r * lutSin(s.th2[i])
+			} else {
+				s.dm1[i] = 0
+				s.dm2[i] = 0
+			}
+		}
+		for i := 0; i < s.NC; i++ {
+			for q := s.cls[i]; q < s.cls[i+1]; q++ {
+				sl := s.clidx[q]
+				if s.sli[sl] != i {
+					continue // canonical: apply from the i side
+				}
+				if s.sst[sl] == sFree || s.sA[sl] <= 0 {
+					continue
+				}
+				tau := s.shau[sl]
+				if tau <= 0 {
+					continue
+				}
+				j := s.slj[sl]
+				ss, cc := math.Sincos(tau)
+				m1i, m2i, m1j, m2j := s.dm1[i], s.dm2[i], s.dm1[j], s.dm2[j]
+				s.dm1[i] = cc*m1i + ss*m2j
+				s.dm2[i] = cc*m2i - ss*m1j
+				s.dm1[j] = cc*m1j + ss*m2i
+				s.dm2[j] = cc*m2j - ss*m1i
+				if P.P1Meter != 0 {
+					// P1 site (dense): energy the rotation moved into j
+					mj := (s.dm1[j]*s.dm1[j] + s.dm2[j]*s.dm2[j]) - (m1j*m1j + m2j*m2j)
+					m := mj * s.sd[sl]
+					s.p1fd[0] += m * s.sux[sl]
+					s.p1fd[1] += m * s.suy[sl]
+					s.p1fd[2] += m * s.suz[sl]
+				}
+			}
+		}
+		for i := 0; i < s.NC; i++ {
+			a, b := s.dm1[i], s.dm2[i]
+			s.Em[i] = a*a + b*b
+			ph := math.Atan2(b, a)
+			if ph < 0 {
+				ph += TwoPi
+			}
+			s.th2[i] = ph
 		}
 	}
 

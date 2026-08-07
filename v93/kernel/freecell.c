@@ -234,6 +234,18 @@ typedef struct {
      * shadow stays a Phase-M meter and the step is byte-inert. */
     double amp_drv;     /* L-1 amplitude-driven transport strength; 0 = OFF */
     double amp_mmin;    /* L-1 chart-order gate floor (2 = fifths+, not unison) */
+    /* --- v93 THE UNITARY DENSE CHANNEL (v93/README.md PART II): the dense
+     * sector gets the field sector's transport algebra. Within-mode dense
+     * transport becomes a product of UNITARY PAIRWISE PLANE ROTATIONS (pass
+     * F's cousin) on the dense amplitude psi_m = sqrt(Em) e^{i th2},
+     * replacing the additive magnitude want. Each Givens hop conserves the
+     * two-cell norm exactly (conservation is a theorem of the update, not a
+     * patched ledger); the cross term 2 Im(psi_i* psi_j) that the additive
+     * Em-ledger rejected IS the link current = where momentum lives.
+     * amp_nat=0 => the additive want path runs unchanged (byte-inert vs the
+     * 87-bar V3a surface); >0 => the unitary dense hop engages, the additive
+     * want+inflight is bypassed. The door (pass 6) is NEVER unitarized. */
+    double amp_nat;     /* unitary dense channel strength; 0 = additive want (byte-inert) */
     int    qatom_every;   /* apparatus (print-only): QATOM sampler period */
     /* --- freecell geometry sector (apparatus, not law) --- */
     double cfac;          /* candidate rule d < cfac*(ri+rj)  (LIVEFAB) */
@@ -360,6 +372,7 @@ static void cfg_defaults(void)
     P.bed_k = 0; P.bed_tau = 30;
     P.amp_tau = 0;
     P.amp_drv = 0; P.amp_mmin = 2;
+    P.amp_nat = 0;
     P.qatom_every = 200;
     /* freecell geometry */
     P.cfac = 1.15; P.k_rep = 1.0; P.mob_geo = 1.0; P.kappa_bond = 1.0;
@@ -463,6 +476,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "amp_tau")) P.amp_tau = atof(v);
     else if (!strcmp(k, "amp_drv")) P.amp_drv = atof(v);
     else if (!strcmp(k, "amp_mmin")) P.amp_mmin = atof(v);
+    else if (!strcmp(k, "amp_nat")) P.amp_nat = atof(v);
     else if (!strcmp(k, "conf_r")) P.conf_r = atof(v);
     else if (!strcmp(k, "conf_gap")) P.conf_gap = atof(v);
     else if (!strcmp(k, "conf_th")) P.conf_th = atof(v);
@@ -684,6 +698,7 @@ static double *sprq, *sscl;
 static double *sbed, *bednet;   /* FLOW: per-slot bed weight + net memory */
 static double *bedf_;           /* FLOW: per-cell renorm factor scratch */
 static double *fsum_;
+static double *dm1_, *dm2_;   /* v93 unitary dense channel: psi_m per cell scratch */
 static unsigned char *tag;
 static unsigned char *pin;   /* apparatus fixture: pass D skips pinned cells */
 static unsigned char *scond; /* condensation-active override (DS tier 1 screen) */
@@ -745,6 +760,7 @@ static double *sA;                   /* live lens area                  */
 static double *slem, *slph;          /* [slot][dir]: in-flight, phase   */
 static signed char *slp, *slq;       /* locked-in partial ratio p:q     */
 static double *swant;                /* [slot][dir] wants               */
+static double *shau_;                /* v93 [slot] unitary dense hop angle tau_s */
 static double *sflux;                /* dense deposits this step        */
 static double *sldd;                 /* bond misfit buffer (Jacobi)     */
 static double *swl;                  /* space flux per slot             */
@@ -930,6 +946,7 @@ static void alloc_all(int nc)
     sprq = malloc(nc * sizeof(double)); sscl = malloc(nc * sizeof(double));
     bedf_ = malloc(nc * sizeof(double));
     fsum_ = malloc(nc * sizeof(double));
+    dm1_ = malloc(nc * sizeof(double)); dm2_ = malloc(nc * sizeof(double));
     tag = calloc(nc, 1);
     pin = calloc(nc, 1);
     scond = calloc(nc, 1);
@@ -951,6 +968,7 @@ static void alloc_all(int nc)
     slph = calloc((size_t)2 * NLMAX, sizeof(double));
     slp = malloc(NLMAX); slq = malloc(NLMAX);
     swant = calloc((size_t)2 * NLMAX, sizeof(double));
+    shau_ = calloc(NLMAX, sizeof(double));
     sflux = calloc(NLMAX, sizeof(double));
     sldd = calloc(NLMAX, sizeof(double));
     swl = calloc(NLMAX, sizeof(double));
@@ -1306,6 +1324,7 @@ static void step(void)
         }
         sA[s] = A;
         swant[2*s] = swant[2*s+1] = 0;
+        shau_[s] = 0;
         sflux[s] = 0;
         sldd[s] = 0;
         if (A <= 0) continue;
@@ -1432,8 +1451,25 @@ static void step(void)
             }
         }
 
-        if (w_ij > 0) swant[2*s]   = w_ij;
-        if (w_ji > 0) swant[2*s+1] = w_ji;
+        if (P.amp_nat > 0) {
+            /* v93 UNITARY DENSE CHANNEL: fold the want ingredients into a
+             * pairwise hop angle tau_s (the existing want-computation maps
+             * onto the angle rather than a magnitude to debit). Mobility is
+             * carried by the amplitude magnitude itself (as in pass F: a
+             * cell with Em~0 has psi_m~0 and transports nothing); the door
+             * (pass 6) enforces cap, so headroom enters here only as a soft
+             * envelope. The closure gate (cos^p) survives as the angle
+             * envelope. tau_s=0 when closure or headroom vanish.
+             * Byte-inert at amp_nat=0 (swant stays 0 => additive passes 3-5
+             * are no-ops; only the unitary hop below moves dense energy). */
+            double gsym = sqrt(g_ij * g_ji);
+            double tau = P.amp_nat * base * gsym * sqrt(head_i * head_j);
+            if (tau > 0.5) tau = 0.5;   /* integrator guard: deep-overlap cap */
+            shau_[s] = tau;
+        } else {
+            if (w_ij > 0) swant[2*s]   = w_ij;
+            if (w_ji > 0) swant[2*s+1] = w_ji;
+        }
     }
 
     /* L-1 zero-sum renorm (FLOW architecture, L1_FINDINGS/grok fix): hold
@@ -1457,6 +1493,67 @@ static void step(void)
                     swant[2*s + dir] *= fac;
                 }
             }
+        }
+    }
+
+    /* pass U: v93 UNITARY DENSE CHANNEL — within-mode dense transport as a
+     * product of UNITARY PAIRWISE PLANE ROTATIONS (pass F's cousin,
+     * v93/README.md §II.3). Engages only when amp_nat>0; in that regime the
+     * additive magnitude want above is bypassed (swant stays 0, so passes
+     * 3-5 are no-ops). The dense amplitude psi_m = sqrt(Em) e^{i th2} hops
+     * between link endpoints by a Givens rotation of angle shau_[s]:
+     *   dm1[i]' = cc dm1[i] + ss dm2[j];  dm2[i]' = cc dm2[i] - ss dm1[j]
+     *   dm1[j]' = cc dm1[j] + ss dm2[i];  dm2[j]' = cc dm2[j] - ss dm1[i]
+     * Each hop conserves the two-cell norm EXACTLY (conservation is a
+     * theorem of the update, not a patched ledger) -- the same mechanism
+     * that makes the field unitary to roundoff. No sum-then-square ever
+     * occurs (IV.4). The cross term 2 Im(psi_i* psi_j) that the additive
+     * Em-ledger rejected IS the link current J_s = the dense momentum
+     * (II.4/II.6). The door (pass 6) is never unitarized (IV.3). Hops are
+     * applied in canonical link order (from the i side), like pass F.
+     * Byte-inert at amp_nat=0 (this whole pass is skipped). */
+    if (P.amp_nat > 0) {
+        for (int i = 0; i < NC; i++) {
+            double e = Em[i];
+            if (e > 0) {
+                double r = sqrt(e);
+                dm1_[i] = r * lut_cos(th2[i]);
+                dm2_[i] = r * lut_sin(th2[i]);
+            } else {
+                dm1_[i] = dm2_[i] = 0.0;
+            }
+        }
+        for (int i = 0; i < NC; i++) {
+            for (int q = cls_[i]; q < cls_[i + 1]; q++) {
+                int s = clidx[q];
+                if (sli[s] != i) continue;       /* canonical: apply from the i side */
+                if (sst[s] == S_FREE || sA[s] <= 0) continue;
+                double tau = shau_[s];
+                if (tau <= 0.0) continue;
+                int j = slj[s];
+                double cc, ss;
+                sincos(tau, &ss, &cc);
+                double m1i = dm1_[i], m2i = dm2_[i], m1j = dm1_[j], m2j = dm2_[j];
+                dm1_[i] = cc * m1i + ss * m2j;
+                dm2_[i] = cc * m2i - ss * m1j;
+                dm1_[j] = cc * m1j + ss * m2i;
+                dm2_[j] = cc * m2j - ss * m1i;
+                if (P.p1_meter) {
+                    /* P1 site (dense): energy the rotation moved into j,
+                     * pairwise-conserved by construction; displacement i -> j */
+                    double mj = (dm1_[j]*dm1_[j] + dm2_[j]*dm2_[j])
+                              - (m1j*m1j + m2j*m2j);
+                    double m = mj * sd[s];
+                    p1fd[0] += m * sux[s]; p1fd[1] += m * suy[s]; p1fd[2] += m * suz[s];
+                }
+            }
+        }
+        for (int i = 0; i < NC; i++) {
+            double a = dm1_[i], b = dm2_[i];
+            Em[i] = a * a + b * b;
+            double ph = atan2(b, a);
+            if (ph < 0) ph += TWO_PI;            /* keep [0, 2pi) like pass 6 */
+            th2[i] = ph;
         }
     }
 
@@ -3033,6 +3130,8 @@ int main(int argc, char **argv)
            P.amp_tau);
     printf("# v92 amplitude Phase L lane L-1 (L0_DESIGN.md): amp_drv=%g amp_mmin=%g\n",
            P.amp_drv, P.amp_mmin);
+    printf("# v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=%g\n",
+           P.amp_nat);
     printf("# QUENCH-2 apparatus: conf_r=%g conf_gap=%g conf_th=%g conf_pinw=%g spin_m=%d imp_k=%g qp_phase=%g\n",
            P.conf_r, P.conf_gap, P.conf_th, P.conf_pinw, P.spin_m, P.imp_k, P.qp_phase);
     printf("# HORIZON apparatus (HORIZON.md): bh_r=%g bh_k=%g bh_sep=%g\n",

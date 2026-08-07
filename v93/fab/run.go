@@ -269,6 +269,8 @@ func (s *Sim) Run() {
 		P.AmpTau)
 	fprintf(s.Out, "# v92 amplitude Phase L lane L-1 (L0_DESIGN.md): amp_drv=%.6g amp_mmin=%.6g\n",
 		P.AmpDrv, P.AmpMmin)
+	fprintf(s.Out, "# v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=%.6g\n",
+		P.AmpNat)
 	fprintf(s.Out, "# QUENCH-2 apparatus: conf_r=%.6g conf_gap=%.6g conf_th=%.6g conf_pinw=%.6g spin_m=%d imp_k=%.6g qp_phase=%.6g\n",
 		P.ConfR, P.ConfGap, P.ConfTh, P.ConfPinw, P.SpinM, P.ImpK, P.QpPhase)
 	fprintf(s.Out, "# HORIZON apparatus (HORIZON.md): bh_r=%.6g bh_k=%.6g bh_sep=%.6g\n",

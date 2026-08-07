@@ -49,6 +49,7 @@ type Sim struct {
 	ampre               []float64 // L-1 zero-sum renorm: pre-bias per-cell outflow total
 	sprq, sscl          []float64
 	fsum                []float64
+	dm1, dm2            []float64 // v93 unitary dense channel: psi_m per cell scratch
 	tag                 []uint8
 	pin                 []uint8   // wall fixture: pass D skips (slit)
 	scond               []uint8   // condensation-active override (clicks)
@@ -101,6 +102,7 @@ type Sim struct {
 	slem, slph                  []float64 // [slot][dir]
 	slp, slq                    []int8
 	swant                       []float64 // [slot][dir]
+	shau                        []float64 // v93 [slot] unitary dense hop angle tau_s
 	sflux                       []float64
 	sldd                        []float64
 	swl                         []float64
@@ -617,6 +619,8 @@ func (s *Sim) allocAll(nc int) {
 	s.sprq = make([]float64, nc)
 	s.sscl = make([]float64, nc)
 	s.fsum = make([]float64, nc)
+	s.dm1 = make([]float64, nc)
+	s.dm2 = make([]float64, nc)
 	s.tag = make([]uint8, nc)
 	s.pin = make([]uint8, nc)
 	s.scond = make([]uint8, nc)
@@ -644,6 +648,7 @@ func (s *Sim) allocAll(nc int) {
 	s.slp = make([]int8, s.NLMAX)
 	s.slq = make([]int8, s.NLMAX)
 	s.swant = make([]float64, 2*s.NLMAX)
+	s.shau = make([]float64, s.NLMAX)
 	s.sflux = make([]float64, s.NLMAX)
 	s.sldd = make([]float64, s.NLMAX)
 	s.swl = make([]float64, s.NLMAX)

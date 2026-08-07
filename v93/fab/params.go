@@ -71,6 +71,10 @@ type Cfg struct {
 	// => byte-inert (shadow stays a Phase-M meter).
 	AmpDrv  float64
 	AmpMmin float64
+	// v93 THE UNITARY DENSE CHANNEL (v93/README.md PART II): dense within-
+	// mode transport as unitary pairwise plane rotations (pass F's cousin),
+	// replacing the additive magnitude want. amp_nat=0 => byte-inert.
+	AmpNat  float64
 	// QUENCH-2 apparatus (QUENCH.md §6; seed-time only)
 	ConfR, ConfGap, ConfTh, ConfPinw float64
 	SpinM                            int
@@ -211,6 +215,7 @@ func Defaults() Cfg {
 	p.AmpTau = 0
 	p.AmpDrv = 0
 	p.AmpMmin = 2
+	p.AmpNat = 0
 	p.ConfR = 0
 	p.ConfGap = 0.3
 	p.ConfTh = 1.6
@@ -453,6 +458,8 @@ func (p *Cfg) SetKV(k, v string) {
 		p.AmpDrv = atof(v)
 	case "amp_mmin":
 		p.AmpMmin = atof(v)
+	case "amp_nat":
+		p.AmpNat = atof(v)
 	case "conf_r":
 		p.ConfR = atof(v)
 	case "conf_gap":
