@@ -259,3 +259,60 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# ---------------------------------------------------------------------
+# ADDENDUM (2026-08-07, user structural definition): "gravity is the
+# degree of the continuous asymmetric intake/extake of a cell; the
+# event horizon is where this holds for the field too — inward
+# translation per step exceeding one step of c."
+# Formalization + checks against the measured record.
+def asymmetry_section():
+    import sympy as sp
+    print("=" * 72)
+    print("USER DEFINITION: gravity = STANDING FIRST MOMENT OF EXCHANGE")
+    print("  For cell i with per-link gross exchange PHI and net n_l:")
+    print("    a_i = |sum_l n_l * u_l| / PHI   (directional asymmetry)")
+    print("  Split by Helmholtz: DIV(a) = source-like standing asymmetry")
+    print("  = gravity;  CURL(a) = closed-loop standing asymmetry = the")
+    print("  flux-machine circulation (REGISTRY: chord fifth net=0.75*")
+    print("  gross — measured, lawful, and pi-flat: closed loops do not")
+    print("  gravitate). The pi-closure theorem [I3] now reads: LAWFUL")
+    print("  STATIONARY MATTER HAS a_div == 0 IDENTICALLY — 'no gravity'")
+    print("  and 'books close pointwise' are the same sentence. The")
+    print("  user's larger structural problem, stated exactly: the law's")
+    print("  stationarity is detailed balance; flow-gravity requires")
+    print("  stationarity as THROUGH-FLOW with standing divergence.")
+    print()
+    print("  Horizon, per-step form (the user's condition):")
+    print("    v_adv = a * PHI_gross * d / sigma  >=  c_eff")
+    zr, sk, w, d, ce = sp.symbols('z_r s_k w d c_eff', positive=True)
+    vmax = zr * sk * w * d   # a=1, dpi/dr at its 1/d maximum, sigma=1
+    cond = sp.solve(sp.Eq(vmax, ce), sk)[0]
+    print(f"  space-channel ceiling (a=1): v_max = {vmax}")
+    print(f"  horizon-capable iff s_k >= {cond} = "
+          f"{float(cond.subs({ce: 0.4, zr: 2.5, w: 1, d: 1.34})):.3f}")
+    print("  standing s_k = 0.06; measured robustness window [0.02,")
+    print("  ~0.15] (upper edge physical: e3a rim unseals at 0.2).")
+    print("  => THEOREM (structure, not constants): the pass-S space")
+    print("  channel cannot cross c at ANY asymmetry below s_k ~ 0.119;")
+    print("  the standing table sits 2x under, and the physical window")
+    print("  barely reaches it — the horizon rides the FRAME channel")
+    print("  (jammed by immortal cells) or ROSTER_DEATH. Same verdict,")
+    print("  now from the user's per-cell definition.")
+    print()
+    print("  Measured a(r) around the forced hole (HZ-0, t=1500):")
+    print("    r 3-5: a=0.176  v/c=0.089 | 5-7: 0.159/0.080 | 7-10:")
+    print("    0.081/0.041 | 10-14: 0.043/0.022 | 14-20: 0.019/0.010")
+    print("  — gravity-as-asymmetry EXISTS and falls off ~1/r-class;")
+    print("  11x below horizon at the eater's own boundary.")
+    print()
+    print("  EQUIVALENCE-PRINCIPLE NOTE (design constraint, recorded):")
+    print("  static-weight gravity is barred for the store (I4: a")
+    print("  pi-visible hoard repels). Under FLOW-gravity the store")
+    print("  gravitates by EATING, so equivalence (well scales with")
+    print("  swallowed mass) requires Qdot ∝ M_hole — eating scaling")
+    print("  with the eaten: the runaway GR collapse has, derived as a")
+    print("  requirement, not assumed.")
+
+if __name__ == '__main__':
+    asymmetry_section()

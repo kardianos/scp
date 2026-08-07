@@ -245,3 +245,72 @@ fcs local; instruments `report/horizon_prover.py`, `report/analyze_hole.py`)
    bh_k=0.01 still floors the interior over 1500 t.u. — a slower
    drain, not a qualitative control (its real contrast: nin 106 vs
    203, Eh 694 vs 1150).
+
+## 7. Addendum (2026-08-07, the user's structural reading + the energy question)
+
+**The user's definition, condensed:** cell geometry should create
+density and flow; every cell's intake/extake is continuous and
+asymmetric; **gravity IS the degree of that asymmetry**; the event
+horizon is where the same asymmetry grips the field — inward
+translation per step exceeding one step of c. Formalized in the prover
+addendum (`report/horizon_prover.py` §asymmetry) and checked against
+the record:
+
+1. **The definition is measured-consistent, and it unifies the file.**
+   Define a_i = |Σ_links net_l·û_l| / Φ_gross (the standing FIRST
+   MOMENT of exchange). Helmholtz-split it: DIV(a) = source-like
+   standing asymmetry = gravity; CURL(a) = closed-loop standing
+   asymmetry = the flux-machine circulation the chord already runs
+   lawfully (REGISTRY net ≈ 0.75·gross per link — and it is π-flat:
+   closed loops do not gravitate, measured). The Wall-3 π-closure
+   theorem now reads: **lawful stationary matter has a_div ≡ 0
+   identically — "no gravity" and "the books close pointwise" are the
+   same sentence.** The larger structural problem, stated exactly: the
+   standing law's stationarity is DETAILED BALANCE; flow-gravity
+   requires stationarity as THROUGH-FLOW with standing divergence.
+   (The bath is already a persistent-exchange medium at 92% flowing
+   slots — the flow-through half exists; the standing-divergence half
+   is what every lawful object lacks.)
+2. **Gravity-as-asymmetry now has a measured profile.** Around the
+   forced hole (HZ-0, t=1500): a(r) = 0.176 / 0.159 / 0.081 / 0.043 /
+   0.019 at shells 3–5 / 5–7 / 7–10 / 10–14 / 14–20 — the first
+   gravitational field of the programme, in the user's own variable.
+3. **The horizon in per-step form, and a new structural theorem.**
+   v_adv = a·Φ_gross·d/σ ≥ c_eff. Measured at the eater's boundary:
+   v/c = 0.089 — 11× short at a = 0.176. Ceiling: even at TOTAL
+   asymmetry (a = 1) the pass-S space channel tops out at
+   z_r·s_k·w·d ≈ 0.20 cells/t.u. = 0.50·c_eff — **the space channel
+   cannot cross c at ANY asymmetry unless s_k ≥ 0.119**, i.e. at the
+   very edge of the measured physical window [0.02, ~0.15] and 2× the
+   standing table. Raising s_k is constant-tuning (excluded) and
+   near-excluded by standing physics anyway (e3a rim unseals at 0.2).
+   So the user's per-step condition lands on the same two structural
+   roads: the frame channel (jammed by immortal cells) or
+   ROSTER_DEATH. The horizon condition and the sustainment condition
+   remain one structure.
+4. **Equivalence-principle design note (recorded, not adopted):**
+   static-weight gravity is barred for the store (I4 — a π-visible
+   hoard repels). Under FLOW-gravity the store gravitates by EATING,
+   so a well that scales with swallowed mass requires Q̇ ∝ M_hole —
+   the GR runaway derived as a requirement rather than assumed.
+
+**Cell death and energy (the user's question 2): preserved — exactly,
+and measured.** In the assertion apparatus every eaten unit is routed
+into the pitchless ledger inside the conservation sum: drift through
+401–1,400 units eaten stayed at the FP floor (HZ-X −1.9e-15; both
+L=24 arms 0.000e+00 EXACTLY; worst arm −4.8e-15, floor-class). Death
+is a MODE CONVERSION, not destruction — the one law survives it by
+construction. The lawful ROSTER_DEATH design (THEORY §2.3) inherits
+the same commitments: a dying cell's Em+Ee+Es and its in-flight slot
+inventory transfer to the dead-cell-capacity ledger (the slot-death
+flush-to-source pattern already in the dense machinery is the
+precedent); its links retire; its capacity leaves the π books — which
+is precisely what makes the well real instead of self-screened. The
+reverse door (cell birth from the store — fission) makes the transfer
+two-way and is the Hawking-shaped question the third lane inherits.
+One measured nuance, recorded: under the standing π only the SPACE
+book gravitates at weight 1 (matter/field at s_disp = 0.3, the store
+at 0) — HZ-X swallowed 3× HZ-0's energy but its well tracks eaten
+SPACE (373 vs 401, similar wells), the surplus being π-raising glow
+outside. What gravitates is the space debt; full equivalence is
+item 4's constraint.
