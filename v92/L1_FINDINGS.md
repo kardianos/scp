@@ -79,3 +79,45 @@ The L-1 apparatus (knobs + bias + C/Go mirror + purity pin), inert at
 defaults — sound engineering, battery-green, C≡Go-faithful, anti-ignition-
 safe. NOT adopted (amp_drv=0 default). The findings above are the design
 feedback the first implementation owed the L-0 round.
+
+---
+
+## Addendum — the phase-current revision (user-directed: finding-3 fix + both gate tracks)
+
+Driver revised magnitude-bias → **phase-current**: bias by the shadow's
+in-phase projection onto the receiver transport frame
+`J = Re(A·e^{-i·m_rcv·θ_rcv}) = |A|·cos(closure_phase)` (responds to the
+transit-asymmetry term that a uniform tilt breaks). Both kernels mirrored.
+
+**Verified:**
+- **Byte-inert** at amp_drv=0 (battery ALL GREEN 87).
+- **Anti-ignition ROBUST** across BOTH driver forms and BOTH gate settings:
+  bath byte-identical (births 7780) at amp_drv=0 vs 0.1, mmin=1, phase-
+  current. The bath's random closure phases average J→0; the feedback is
+  starved by balance, independent of the gate or the driver form. **The
+  Phase-L substrate is safe.**
+- **Conservation** holds (drift floor).
+- **The driver ENGAGES** (unlike the magnitude form): xsec headroom
+  absorption rises monotonically with amp_drv (6.98 → 7.76 @0.1 → 8.12 @0.2
+  → 10.45 @0.5). The phase-current moves the dynamics.
+
+**Still open:**
+- **C≡Go at strength:** physics stays byte-identical, but the feedback
+  AMPLIFIES C/Go FP differences in meter/diagnostic lines (QATOM `e`, P1
+  `tot`, credit) — 1-ulp, same envelope class as drift/p1. Masked at
+  amp_drv≤0.1; degrades (more lines) at higher strength. A tolerance-based
+  abx comparison may be needed for production-strength sweeps.
+- **L1-A NOT yet met:** the phase-current engages but p1_b2drv v_COE
+  *decreased* (5.16e-5→1.36e-5 @0.1) and xsec over-absorbs — coherent
+  translation is not yet cleanly produced. The e3b direct measurement
+  remains practically blocked (slow under radiance; nfsamp<6 at short T),
+  so L1-A is not yet cleanly measured against either form.
+
+**Reading.** The amplitude-completion transport (L1-A) is the programme's
+central difficulty, now confirmed empirically: two driver forms (magnitude,
+phase-current) are safe and engage the dynamics, but neither cleanly
+delivers "translation IS the current." The safe substrate is built; the
+transport PHYSICS needs deeper work — a clean e3b signal to tune against,
+and likely a driver form that reads the transit-asymmetry current directly.
+The chord track (mmin=2, L2's domain) is untested and may be where the
+shadow's phase composition is actually load-bearing.

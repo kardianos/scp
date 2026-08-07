@@ -1,0 +1,163 @@
+# run conserve_go2   [exp=bath T=40]
+# run conserve_go    [exp=bath T=40]
+# run conserve_c     [exp=bath T=40]
+# run ds1_B_s111     [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=111 slit_mask=2]
+# run p2lc           [exp=p2lc]
+# run conserve_c2    [exp=bath T=40]
+# run ds1_A_s314159  [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=314159 slit_mask=1]
+# run ds_f1          [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=1.0 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 freeze_geo=1 slit_mask=1]
+# run xs_hdr         [exp=slit slit_mask=3 L=64 T=32 sigma=4 slit_sy=3 kx=2.0 amp=4 slit_srcx=14 slit_screenx=40 slit_t0=0 slit_t1=30 sect_meter=1 sect_r0=7 sect_r1=11 sect_t0=0 sect_t1=30 diag_every=100 slit_obj=1 obj_sigma=2.5 obj_amp=0.5 snap_every=250 snap_file=runs/streams/xs_hdr.fcs]
+# run ds1_B_s314159  [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=314159 slit_mask=2]
+# run ds1_A_s271828  [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=271828 slit_mask=1]
+# run ds1_B_s271828  [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=271828 slit_mask=2]
+# run ds1_A_s141421  [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=141421 slit_mask=1]
+# run ds1_B_s141421  [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=141421 slit_mask=2]
+# run ds1_A_s173205  [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=173205 slit_mask=1]
+# run ds1_B_s173205  [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=173205 slit_mask=2]
+# run p1_null        [exp=pair bath=0 T=60 pair_doff=1.0 p1_meter=1]
+# run p1_b2ctl       [exp=blob2 L=16 T=80 amp=0.5 sigma=2.2 blob2_sep=7 diag_every=200 p1_meter=1 snap_every=500 snap_file=runs/streams/p1_b2.fcs]
+# run p1_b2drv       [exp=blob2 L=16 T=80 amp=0.5 sigma=2.2 blob2_sep=7 blob2_kx=3.2 diag_every=200 p1_meter=1]
+# run pz_sat_id      [exp=pair bath=0 T=60 freeze_geo=1 pair_x0=1.0 pair_x1=1.0 pair_doff=-0.983277]
+# run pz_sat_5th     [exp=pair bath=0 T=60 freeze_geo=1 pair_x0=0.388889 pair_x1=1.0 pair_doff=-0.506622]
+# run pz_near_id     [exp=pair bath=0 T=60 freeze_geo=1 pair_x0=0.96 pair_x1=0.96 pair_doff=-0.931278]
+# run pz_near_5th    [exp=pair bath=0 T=60 freeze_geo=1 pair_x0=0.362225 pair_x1=0.96 pair_doff=-0.465025]
+# run xs_ctl         [exp=slit slit_mask=3 L=64 T=32 sigma=4 slit_sy=3 kx=2.0 amp=4 slit_srcx=14 slit_screenx=40 slit_t0=0 slit_t1=30 sect_meter=1 sect_r0=7 sect_r1=11 sect_t0=0 sect_t1=30 diag_every=100]
+# run ds_f2          [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=1.0 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 freeze_geo=1 slit_mask=2]
+# run ds1_two_s20260802 [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=20260802 snap_every=250 snap_file=runs/streams/ds1_two.fcs]
+# run ds1_two_s111   [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=111]
+# run xs_b2          [exp=slit slit_mask=3 L=64 T=32 sigma=4 slit_sy=3 kx=2.0 amp=4 slit_srcx=14 slit_screenx=40 slit_t0=0 slit_t1=30 sect_meter=1 sect_r0=7 sect_r1=11 sect_t0=0 sect_t1=30 diag_every=100 slit_obj=1 obj_sigma=2.5 obj_amp=0.5 obj_y=34 sect_y=34]
+# run xs_opt_ctl     [exp=slit slit_mask=3 L=64 T=32 sigma=4 slit_sy=3 kx=2.0 amp=4 slit_srcx=14 slit_screenx=40 slit_t0=0 slit_t1=30 sect_meter=1 sect_r0=7 sect_r1=11 sect_t0=0 sect_t1=30 diag_every=100 q_detune=0 e_cond=99]
+# run xs_opt_obj     [exp=slit slit_mask=3 L=64 T=32 sigma=4 slit_sy=3 kx=2.0 amp=4 slit_srcx=14 slit_screenx=40 slit_t0=0 slit_t1=30 sect_meter=1 sect_r0=7 sect_r1=11 sect_t0=0 sect_t1=30 diag_every=100 q_detune=0 e_cond=99 slit_obj=1 obj_sigma=2.5 obj_amp=0.5]
+# run ds1_two_s314159 [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=314159]
+# run ds1_two_s271828 [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=271828]
+# run xs_sat20       [exp=slit slit_mask=3 L=64 T=32 sigma=4 slit_sy=3 kx=2.0 amp=4 slit_srcx=14 slit_screenx=40 slit_t0=0 slit_t1=30 sect_meter=1 sect_r0=7 sect_r1=11 sect_t0=0 sect_t1=30 diag_every=100 slit_obj=1 obj_sigma=2.5 obj_amp=20]
+# run pulse_go       [exp=pulse L=24 T=10 amp=0.25 sigma=2.5 kx=1.1 diag_every=50]
+# run pair_up_c      [exp=pair bath=0 T=60 pair_doff=0.05]
+# run ds1_two_s141421 [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=141421]
+# run pair_dn_c      [exp=pair bath=0 T=60 pair_doff=-0.05]
+# run ds1_two_s173205 [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=173205]
+# run pair_nobond_c  [exp=pair bath=0 T=60 pair_doff=0.05 kappa_bond=0]
+# run pair_up_go     [exp=pair bath=0 T=60 pair_doff=0.05]
+# run ds1_two_s577215 [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=577215]
+# run ds1_two_s662607 [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=662607]
+# run ring6_c        [exp=ring ring_n=6 bath=0 T=300]
+# run ring5_c        [exp=ring ring_n=5 bath=0 T=300]
+# run pulse_c        [exp=pulse L=24 T=10 amp=0.25 sigma=2.5 kx=1.1 diag_every=50 snap_every=100 snap_file=runs/streams/pulse_c.fcs]
+# run ds1_two_s299792 [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=299792]
+# run ds1_two_s137035 [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=137035]
+# run ds1_two_s161803 [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=161803]
+# run ds1_two_s618033 [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=618033]
+# run ds1_A_s20260802 [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=20260802 slit_mask=1]
+# run ds1_B_s20260802 [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=20260802 slit_mask=2]
+# run ds1_A_s111     [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=111 slit_mask=1]
+# run xs_b8          [exp=slit slit_mask=3 L=64 T=32 sigma=4 slit_sy=3 kx=2.0 amp=4 slit_srcx=14 slit_screenx=40 slit_t0=0 slit_t1=30 sect_meter=1 sect_r0=7 sect_r1=11 sect_t0=0 sect_t1=30 diag_every=100 slit_obj=1 obj_sigma=2.5 obj_amp=0.5 obj_y=40 sect_y=40]
+# run xs_b4          [exp=slit slit_mask=3 L=64 T=32 sigma=4 slit_sy=3 kx=2.0 amp=4 slit_srcx=14 slit_screenx=40 slit_t0=0 slit_t1=30 sect_meter=1 sect_r0=7 sect_r1=11 sect_t0=0 sect_t1=30 diag_every=100 slit_obj=1 obj_sigma=2.5 obj_amp=0.5 obj_y=36 sect_y=36]
+# run abx_ds1_go     [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=20260802]
+# run abx_ds_c       [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=1.0 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36]
+# run abx_rings_go   [exp=rings rings_kind=1 rings_nv=6 rings_xU=0.28 bath=0 T=100]
+# run abx_rings_c    [exp=rings rings_kind=1 rings_nv=6 rings_xU=0.28 bath=0 T=100]
+# run ds_m0          [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=1.0 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 snap_every=250 snap_file=runs/streams/ds_m0.fcs]
+# run abx_ds_go      [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=1.0 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36]
+# run abx_ds1_c      [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=4 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_clicks=1 seed=20260802]
+# run blob_c         [exp=blob L=16 T=160 snap_every=500 snap_file=runs/streams/blob_c.fcs]
+# run uud_c          [exp=tri tri_xU=0.28 bath=0 T=100]
+# run ds_m2          [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=1.0 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_mask=2]
+# run ds_m1          [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=1.0 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 slit_mask=1]
+# run udd_c          [exp=tri tri_kind=1 tri_xU=0.28 bath=0 T=300]
+# run abx_xs_c       [exp=slit slit_mask=3 L=64 T=32 sigma=4 slit_sy=3 kx=2.0 amp=4 slit_srcx=14 slit_screenx=40 slit_t0=0 slit_t1=30 sect_meter=1 sect_r0=7 sect_r1=11 sect_t0=0 sect_t1=30 diag_every=100 slit_obj=1 obj_sigma=2.5 obj_amp=0.5]
+# run ds_f0          [exp=slit L=64 T=44 sigma=4 kx=0.9 amp=1.0 q_detune=0 e_cond=99 slit_wallx=22 slit_srcx=12 slit_screenx=36 slit_sep=10 slit_hw=2.8 slit_th=2.4 slit_sy=14 slit_t0=20 slit_t1=36 freeze_geo=1]
+# run abx_xs_go      [exp=slit slit_mask=3 L=64 T=32 sigma=4 slit_sy=3 kx=2.0 amp=4 slit_srcx=14 slit_screenx=40 slit_t0=0 slit_t1=30 sect_meter=1 sect_r0=7 sect_r1=11 sect_t0=0 sect_t1=30 diag_every=100 slit_obj=1 obj_sigma=2.5 obj_amp=0.5]
+# run abx_b2_c       [exp=blob2 L=16 T=80 amp=0.5 sigma=2.2 blob2_sep=7 diag_every=200 p1_meter=1]
+# run abx_b2_go      [exp=blob2 L=16 T=80 amp=0.5 sigma=2.2 blob2_sep=7 diag_every=200 p1_meter=1]
+
+EXPERIMENT | BAR                                           | MEASURED         | BOUND      | VERDICT
+----------------------------------------------------------------------------------------------------
+conserve   | c |drift| <= 1e-13                            | 0                | 1e-13      | PASS
+conserve   | c z_live final                                | 16.89            | [8,30]     | PASS
+conserve   | c churn births                                | 4611             | [100,1e+09] | PASS
+conserve   | c byte-determinism                            | sha256           | equal      | PASS
+conserve   | c law purity (laws_V3a header)                | header           | byte-exact | FAIL
+conserve   | go |drift| <= 1e-13                           | 0                | 1e-13      | PASS
+conserve   | go z_live final                               | 16.89            | [8,30]     | PASS
+conserve   | go churn births                               | 4611             | [100,1e+09] | PASS
+conserve   | go byte-determinism                           | sha256           | equal      | PASS
+conserve   | go law purity (laws_V3a header)               | header           | byte-exact | FAIL
+conserve   | cross C==Go (after line 1)                    | full log         | byte-equal | PASS
+pair       | both sides converge |d_up-d_dn| <= 5e-5       | 0                | 5e-5       | PASS
+pair       | off_live = pressure/K_b (up)                  | 0.032898         | [0.02,0.05] | PASS
+pair       | off_live (dn)                                 | 0.032898         | [0.02,0.05] | PASS
+pair       | nobond control slides to contact              | 0.131892         | [0.1,1]    | PASS
+pair       | cross |d_go-d_c| <= 1e-4                      | 0                | 1e-4       | PASS
+ring       | ring5 pi-frustrated: edge_dev_mean >= 0.10    | 0.150343         | [0.1,1]    | PASS
+ring       | ring5 pi defect: >=3 of 5 gates dead          | dead=4 min=0.0000 | >=3 dead   | PASS
+pulse      | v_over_C in the measured band                 | 0.574            | [0.5,0.65] | PASS
+pulse      | |drift| <= 1e-13                              | 0                | 1e-13      | PASS
+pulse      | cross |v_go-v_c| <= 5e-3                      | 0                | 5e-3       | PASS
+blob       | connected: conn = 1                           | 1                | [0.999,1.001] | PASS
+blob       | no spreading: rms <= 3.6                      | 3.5103           | [0,3.6]    | PASS
+blob       | |drift| <= 1e-13                              | 0                | 1e-13      | PASS
+blob       | no densification: z_live <= 30                | 16.84            | [0,30]     | PASS
+fcq        | ladder identity d*_UU == d*_UD at x_D         | 0                | 1e-6       | PASS
+fcq        | UUD closed: 0 dead channels                   | 0                | 0          | PASS
+fcq        | UDD D-D edge beyond contact (seed print)      | seed             | OPEN       | PASS
+fcq        | UDD open chain: exactly 1 dead channel        | 1                | 1          | PASS
+ds         | live: central max at predicted locus (32±1.9) | y=33.10          | 32±1.9     | PASS
+ds         | live: additivity broken at max, r >= 1.2      | 1.67             | >=1.2      | PASS
+ds         | live: minima at predicted loci, r <= 0.8      | 0.37/0.34        | <=0.8      | PASS
+ds         | live: visibility V_r >= 0.35                  | 0.652            | >=0.35     | PASS
+ds         | frozen control shows the same pattern         | y=32.60 r=1.51   | as live    | PASS
+ds         | substrate-freeing does not own the fringes    | V 0.65 vs 0.67   | V_l>=V_f/2 | PASS
+ds         | ds_m0 |drift| <= 1e-13                        | -2.2e-15         | 1e-13      | PASS
+ds         | ds_f0 |drift| <= 1e-13                        | -2.2e-15         | 1e-13      | PASS
+ds1        | grain harvest: n_two >= 200 (in-gate)         | 269              | >=200      | PASS
+ds1        | two-slit clicks phase-locked: sbar >= 0.62    | 0.6815±0.0169    | >=0.62     | PASS
+ds1        | which-slit controls phase-blind: sbar <= 0.50 | 0.3922±0.0357 n=95 | <=0.50     | PASS
+ds1        | phase separation sbar_two - sbar_ctl >= 0.18  | 0.2894           | >=0.18     | PASS
+ds1        | minima dark: f_min_two <= 0.33*f_min_ctl      | 0.048 vs 0.368   | ratio<=0.33 | PASS
+ds1        | control minima fill: nmin_ctl >= 16           | 35               | >=16       | PASS
+ds1        | R3 atomicity: e = k*eps, k>=1 (all clicks)    | dev=3.5e-06 k=[1,2] | <=2e-5 (print) | PASS
+ds1        | panel |drift| <= 1e-13 (worst run)            | 7.04e-15         | 1e-13      | PASS
+p1         | no channels = exactly zero moment flow        | (0,0,0)          | == 0       | PASS
+p1         | p1_b2ctl |v_COE| <= bound (all axes)          | 2.65e-05         | <=5e-05    | PASS
+p1         | p1_b2ctl COE 100x slower than closing         | 2.6e-05 vs 3.2e-03 | <=closing/100 | PASS
+p1         | p1_b2ctl |drift| <= 1e-13                     | 0                | 1e-13      | PASS
+p1         | p1_b2drv |v_COE| <= bound (all axes)          | 3.48e-05         | <=6e-05    | PASS
+p1         | p1_b2drv COE 100x slower than closing         | 3.5e-05 vs 9.7e-03 | <=closing/100 | PASS
+p1         | p1_b2drv |drift| <= 1e-13                     | 0                | 1e-13      | PASS
+p1         | dense-only COM overstates >=20x (ctl)         | 5.8e-04 vs 2.6e-05 | >=20x      | PASS
+pauli0     | at cap: admission bounded (radiating equilibrium, id) | dep=0.266        | <=0.5      | PASS
+pauli0     | at cap: admission bounded (radiating equilibrium, 5th) | dep=0.079        | <=0.1      | PASS
+pauli0     | near cap: identical admitted (throttled)      | 0.256            | >=0.05     | PASS
+pauli0     | near cap: fifth admitted (throttled)          | 4.22e-02         | >=1e-3     | PASS
+pauli0     | pz_sat_id |drift| <= 1e-13                    | 2.63e-14         | 1e-13      | PASS
+pauli0     | pz_sat_5th |drift| <= 1e-13                   | 1.12e-14         | 1e-13      | PASS
+pauli0     | pz_near_id |drift| <= 1e-13                   | 2.5e-14          | 1e-13      | PASS
+pauli0     | pz_near_5th |drift| <= 1e-13                  | 1.13e-14         | 1e-13      | PASS
+xsec       | headroom object absorbs: net_tag in [6.9,7.65] | 10.4490          | [6.9,7.65] | FAIL
+xsec       | saturated object EMITS: net_tag <= -5         | -29.0499         | <=-5       | PASS
+xsec       | saturated shed is evaporation: evap >= 8      | 37.8209          | >=8        | PASS
+xsec       | cross-section falls with b: 7.27>4.21>3.42>2.03 | 10.45/5.63/3.49/1.63 | monotone>0 | PASS
+xsec       | b=8 (2.7 sigma) captures <= 0.35 of b=0       | 0.156            | <=0.35     | PASS
+xsec       | absorber core shadow: rE_core <= 0.60         | 0.4875           | <=0.60     | PASS
+xsec       | inert-lens floor: rE_core(opt) in [0.70,0.88] | 0.8032           | [0.70,0.88] | PASS
+xsec       | absorption below the inert floor by >= 0.15   | 0.3157           | >=0.15     | PASS
+xsec       | shadow is light not foam: rN_core >= 0.95     | 0.9860           | >=0.95     | PASS
+xsec       | upbeam untouched: |rE_back-1| <= 0.05 (opt)   | 0.9866           | ±0.05      | PASS
+xsec       | emitter pours sideways: rE_side(sat20) >= 1.3 | 1.7397           | >=1.3      | PASS
+xsec       | panel |drift| <= 1e-13 (worst of 8)           | 1.84e-15         | 1e-13      | PASS
+abx        | blob2+p1 identical up to drift col            | masked log       | byte-equal | FAIL
+abx        | slit tier-0 identical up to drift col         | masked log       | byte-equal | PASS
+abx        | ds1 clicks identical up to drift col          | masked log       | byte-equal | PASS
+abx        | rings identical up to drift col               | masked log       | byte-equal | PASS
+abx        | xsec arm identical up to drift col            | masked log       | byte-equal | PASS
+abx        | Go drift floor: worst |drift| <= 1e-12        | 1.17e-13         | 1e-12      | PASS
+p2lc       | R1 conservation: both |drift| <= 1e-12        | -5.6e-16/-1.4e-16 | <=1e-12    | PASS
+p2lc       | R2 first-order: ratio in [1.5,2.4]            | 1.715            | [1.5,2.4]  | PASS
+p2lc       | R3 total-order determinism: rot/rev/revrot == 0 | 0/0/0            | == 0       | PASS
+p2lc       | R3 control: arrival order corrupts >= 0.1     | 1.454            | >=0.1      | PASS
+p2lc       | batch == serial schedule (1..8 workers)       | 0                | == 0       | PASS
+p2lc       | cond 4: tick skew diverges (>= 100)           | 219              | >=100      | PASS
+p2lc       | quiet-region economy grows with box           | 2.37/4.92/6.87   | mono, >=6  | PASS
+p2lc       | scaling arms |drift| <= 1e-12                 | 9.8e-16          | <=1e-12    | PASS
+----------------------------------------------------------------------------------------------------
+RED: 4/87 bars failed

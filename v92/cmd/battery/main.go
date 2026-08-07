@@ -901,16 +901,19 @@ func suite() []experiment {
 // printed negative zero. Everything else must be byte-equal.
 var driftColRe = regexp.MustCompile(`(?m)^(t=\s*\S+) [+-]\S+`)
 var driftResRe = regexp.MustCompile(`(?m)^# RESULT drift_rel \S+`)
-// p1 meter accumulators (sp/fl/fd/gm) are C/Go-order-sensitive derived
-// quantities at FP-floor (V3a adoption: blob2 fl diverges 1 ulp under
-// radiance while every physics-state column stays byte-identical). Masked
-// like drift — the t= physics-state lines carry the C/Go identity claim.
+// p1 meter accumulators (sp/fl/fd/gm) and the QATOM sampler's per-atom `e`
+// are C/Go-order-sensitive derived quantities at FP-floor (the phase-current
+// feedback amplifies them 1 ulp under V3a while every physics-state column
+// stays byte-identical). Masked like drift — the t= physics-state lines
+// carry the C/Go identity claim.
 var p1ResRe = regexp.MustCompile(`(?m)^# RESULT p1[xyz] .*`)
+var qatomRe = regexp.MustCompile(`(?m)^# QATOM .*`)
 
 func maskDrift(log string) string {
 	log = driftColRe.ReplaceAllString(log, "$1 DRIFT")
 	log = driftResRe.ReplaceAllString(log, "# RESULT drift_rel DRIFT")
 	log = p1ResRe.ReplaceAllString(log, "# RESULT p1 (meter masked: C/Go FP envelope)")
+	log = qatomRe.ReplaceAllString(log, "# QATOM (sampler masked: C/Go FP envelope)")
 	return strings.ReplaceAll(log, "-0.0000", "0.0000")
 }
 

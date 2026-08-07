@@ -1399,28 +1399,29 @@ static void step(void)
             }
         }
 
-        /* v92 AMPLITUDE Phase L lane L-1 (L0_DESIGN.md §3): promote the
-         * Phase-M shadow from meter to driver. Where the shadow amplitude
-         * composes coherently on a CHORD link (chart order m>=amp_mmin;
-         * unison m=1 is excluded => the bath's churn is untouched), bias
-         * the dense want toward the coherent direction — "translation IS
-         * the current." Signed, saturating (|bias|<=amp_drv), reads the
-         * slot-borne shadow (protected from cell delivery churn). Byte-
-         * inert at amp_drv=0 (the branch is skipped). The per-cell zero-
-         * sum renorm is the registered escalation if L1-C (anti-ignition)
-         * shows runaway; the deposit ledger + outflow limiter conserve
-         * energy regardless. */
+        /* v92 AMPLITUDE Phase L lane L-1 (L0_DESIGN.md §3, rev phase-current
+         * per L1_FINDINGS.md finding 3): promote the Phase-M shadow from
+         * meter to driver. The driver is the shadow's IN-PHASE current —
+         * project each direction's shadow amplitude onto the RECEIVER's
+         * transport frame (the closure phase bq*thi - bq*wi*d/C - bp*thj),
+         * so the bias responds to a phase GRADIENT (the e3b tilt), which
+         * the magnitude form was blind to. Signed, saturating, slot-borne.
+         * Gate amp_mmin: 1 = include unison (e3b/p1 live here); 2 = chords
+         * only (the fifth/nv=6 track). Byte-inert at amp_drv=0. */
         if (P.amp_drv > 0 && P.amp_tau > 0) {
             int ms = slp[s] > slq[s] ? slp[s] : slq[s];
             if (ms >= (int)P.amp_mmin) {
-                double c0 = sqrt(sre_[2*s]*sre_[2*s]     + sim_[2*s]*sim_[2*s]);
-                double c1 = sqrt(sre_[2*s+1]*sre_[2*s+1] + sim_[2*s+1]*sim_[2*s+1]);
-                double tot = c0 + c1;
-                if (tot > 1e-15) {
-                    double bias = P.amp_drv * (c0 - c1) / tot;  /* signed, |.|<=amp_drv */
-                    w_ij *= (1.0 + bias);
-                    w_ji *= (1.0 - bias);
-                }
+                /* J0 = Re(A_{i->j} e^{-i p th_j}) = |A0| cos(q th_i - p th_j)
+                 * J1 = Re(A_{j->i} e^{-i q th_i});  net forward = J0 - J1   */
+                double phr0 = slp[s] * th2[j];
+                double J0 = sre_[2*s]*lut_cos(phr0)   + sim_[2*s]*lut_sin(phr0);
+                double phr1 = slq[s] * th2[i];
+                double J1 = sre_[2*s+1]*lut_cos(phr1) + sim_[2*s+1]*lut_sin(phr1);
+                double Jnet = J0 - J1;
+                double Jabs = fabs(J0) + fabs(J1) + 1e-15;
+                double bias = P.amp_drv * Jnet / Jabs;   /* signed, |.|<=amp_drv */
+                w_ij *= (1.0 + bias);
+                w_ji *= (1.0 - bias);
             }
         }
 
