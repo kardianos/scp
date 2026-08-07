@@ -106,3 +106,37 @@ if a stable particle ever exists here, whatever holds it stable
 will be this ontology's answer to "why rest mass"; the AMPLITUDE
 lane (Phase L) and the seeded-genesis result are the current
 candidates for that road.
+
+## 5. Correction (dated 2026-08-06, user: "isn't that coupling exactly what harmonic geometry will do in practice?")
+
+Conceded and sharpened: in practice the harmonic geometry IS the
+coupling structure — a voice's harmonic role fixes its operating
+load and therefore its held energy (the D engine's Em 1.40–1.46 vs
+the U fuel's lean holdings), which is functionally a Yukawa matrix:
+a universal mechanism mapped onto species-specific masses by
+species-specific numbers. The honest distinction is not "no
+couplings" but **free parameters vs theorems**: the SM's y_f are
+unexplained inputs spanning six orders; here the species numbers
+are DERIVED (w_D/w_U = 2/3 exactly from the chart; x_D =
+(0.5 + 1.8·x_U)/1.2 from the law; operating points from balance).
+If this programme ever produces a mass spectrum, its
+"Yukawa-analogs" would be calculable, not fitted — which is both
+the strongest claim available to this ontology and, until such a
+spectrum exists, an unredeemed one. §2's table row "per-species
+structure: none" is amended accordingly: per-species structure
+EXISTS and is geometric; what is absent is per-species FREEDOM.
+
+## 6. Scale appendix (dated 2026-08-06, user estimate request)
+
+Planck-diameter cells: proton r ≈ 0.84 fm / ℓ_P ≈ 1.6×10⁻³⁵ m →
+~5×10¹⁹ cells across the radius → **~10⁶⁰ cells volumetric**
+(adaptive "field compression" might claw back 10–20 orders;
+infeasible regardless — current runs are 10⁴–10⁵ cells). Planck as
+INTRA-CELL harmonic variance: the cell becomes a wavelength-scale
+object (our cells already are: d* = π/w), landing at the
+strong-interaction wavelength — the proton is then **~3 core cells
+(the UUD chord) + O(10²–10³) sustaining exchange neighborhood**,
+i.e. exactly the simulations already run. The ~10⁵⁷ between the two
+estimates is the compression bought by moving the Planck grain
+inside the cell as harmonic variance instead of beneath it as
+geometry.
