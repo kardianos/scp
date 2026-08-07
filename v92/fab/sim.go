@@ -46,6 +46,7 @@ type Sim struct {
 	qcnvD, qcnvF        []float64
 	roughq              []float64
 	req1, scl1          []float64
+	ampre               []float64 // L-1 zero-sum renorm: pre-bias per-cell outflow total
 	sprq, sscl          []float64
 	fsum                []float64
 	tag                 []uint8
@@ -612,6 +613,7 @@ func (s *Sim) allocAll(nc int) {
 	s.roughq = make([]float64, nc)
 	s.req1 = make([]float64, nc)
 	s.scl1 = make([]float64, nc)
+	s.ampre = make([]float64, nc)
 	s.sprq = make([]float64, nc)
 	s.sscl = make([]float64, nc)
 	s.fsum = make([]float64, nc)

@@ -198,3 +198,44 @@ complex (the deposit composes the arriving phase; the current emerges from
 path composition), which is the S2 memo's actual vision and the one
 construction not yet tried. This is a deep kernel change (the want/deposit
 mechanism becomes complex in both kernels) and awaits explicit sign-off.
+
+---
+
+## Addendum 4 — the clean form-3 test (all grok fixes) + consolidation
+
+User-directed: "one clean form-3 test (all fixes), then consolidate." Added
+the missing fix — the **zero-sum per-cell renorm** (FLOW architecture; the
+bias now only REDISTRIBUTES direction, never amplifying throughput). Both
+kernels mirrored. The form is now: per-slot shadow `sre_/sim_` → signed
+directional phase-current `J0−J1` → saturating bias → **per-cell zero-sum
+renorm** (no ρ_coh, no per-cell R_j — every grok fix applied).
+
+**Engineering (clean):** byte-inert at amp_drv=0; C≡Go green (abx blob2
+identical-up-to-drift at amp_drv=0.1); conservation at floor; **the zero-sum
+renorm fixed the xsec over-absorption** (headroom 7.76→7.18, back in band
+[6.9,7.65] — the throughput amplification is gone); anti-ignition holds
+(bath byte-identical, as for every prior form).
+
+**The L1-A verdict (definitive):** e3b at amp_drv=0.1, zero-sum, 3 seeds —
+|cos| 0.28→0.08, 0.94→0.83 (speed 0.0031→0.0006), 0.93→0.93. **No robust
+improvement; if anything degraded.** Three feedback forms tried
+(magnitude-bias, phase-current, zero-sum phase-current) — all safe, the
+last two engaging the dynamics, NONE delivers coherent translation. The
+feedback hypothesis is **conclusively closed**: a bias on a phase-blind
+magnitude want cannot manufacture the coherence it lacks, with or without
+zero-sum, with or without the chart gate.
+
+**Consolidation.** v92 stands at an honest, clean checkpoint:
+- **laws_V3a adopted** (radiance + workfn; the regime declaration retired).
+- **The L-1 apparatus is built and SAFE** in both kernels (byte-inert,
+  C≡Go, conserved, anti-ignition-robust across all forms/gates, zero-sum).
+  It is the measured substrate (the Phase-M shadow + the closed-loop
+  coupling) any future completion builds on.
+- **The amplitude completion (L1-A) is the programme's confirmed open
+  frontier** — closed three ways (two failed experiments + the grok review).
+  It requires the native complex parcel (the dense transfer itself complex,
+  composition IS transport), which collides with the real conservation
+  problem (|ΣA|² ≠ Σ|A|²; the dense sector is not unitary like the field
+  sector). That is a fresh, focused campaign — not a knob to tune.
+- The full trail is on record: L0_DESIGN, L1_FINDINGS (this file),
+  L1_PATH_A_DESIGN, L1_PATH_A_REVIEW.

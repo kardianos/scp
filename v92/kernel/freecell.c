@@ -679,6 +679,7 @@ static double *flload;
 static double *qcnvD, *qcnvF;
 static double *roughq;
 static double *req1, *scl1;
+static double *ampre;   /* L-1 zero-sum renorm: pre-bias per-cell outflow total */
 static double *sprq, *sscl;
 static double *sbed, *bednet;   /* FLOW: per-slot bed weight + net memory */
 static double *bedf_;           /* FLOW: per-cell renorm factor scratch */
@@ -925,6 +926,7 @@ static void alloc_all(int nc)
     qcnvD = calloc(nc, sizeof(double)); qcnvF = calloc(nc, sizeof(double));
     roughq = calloc(nc, sizeof(double));
     req1 = malloc(nc * sizeof(double)); scl1 = malloc(nc * sizeof(double));
+    ampre = malloc(nc * sizeof(double));
     sprq = malloc(nc * sizeof(double)); sscl = malloc(nc * sizeof(double));
     bedf_ = malloc(nc * sizeof(double));
     fsum_ = malloc(nc * sizeof(double));
@@ -1289,6 +1291,8 @@ static void step(void)
 
     /* pass 2: channel lens area + dense wants + bond misfit buffer
      * (cellfab.c:2911, c==1 branch; field gated transport retired) */
+    if (P.amp_drv > 0 && P.amp_tau > 0)
+        for (int i = 0; i < NC; i++) ampre[i] = 0;   /* L-1 zero-sum bookkeeping */
     for (int s = 0; s < NSLOT; s++) {
         if (sst[s] == S_FREE) { sA[s] = 0; continue; }
         int i = sli[s], j = slj[s];
@@ -1411,6 +1415,9 @@ static void step(void)
         if (P.amp_drv > 0 && P.amp_tau > 0) {
             int ms = slp[s] > slq[s] ? slp[s] : slq[s];
             if (ms >= (int)P.amp_mmin) {
+                /* record pre-bias outflow for the zero-sum renorm */
+                ampre[i] += w_ij;
+                ampre[j] += w_ji;
                 /* J0 = Re(A_{i->j} e^{-i p th_j}) = |A0| cos(q th_i - p th_j)
                  * J1 = Re(A_{j->i} e^{-i q th_i});  net forward = J0 - J1   */
                 double phr0 = slp[s] * th2[j];
@@ -1427,6 +1434,30 @@ static void step(void)
 
         if (w_ij > 0) swant[2*s]   = w_ij;
         if (w_ji > 0) swant[2*s+1] = w_ji;
+    }
+
+    /* L-1 zero-sum renorm (FLOW architecture, L1_FINDINGS/grok fix): hold
+     * each cell's total outflow at its pre-bias level so the bias only
+     * REDISTRIBUTES direction (anti-ignition + coherence-runaway bound),
+     * never amplifying throughput. Energy conserved by construction. */
+    if (P.amp_drv > 0 && P.amp_tau > 0) {
+        for (int i = 0; i < NC; i++) {
+            if (ampre[i] <= 0) continue;
+            double post = 0;
+            for (int q = cls_[i]; q < cls_[i+1]; q++) {
+                int s = clidx[q];
+                int dir = (sli[s] == i) ? 0 : 1;
+                post += swant[2*s + dir];
+            }
+            if (post > 1e-15) {
+                double fac = ampre[i] / post;
+                for (int q = cls_[i]; q < cls_[i+1]; q++) {
+                    int s = clidx[q];
+                    int dir = (sli[s] == i) ? 0 : 1;
+                    swant[2*s + dir] *= fac;
+                }
+            }
+        }
     }
 
     /* pass 3: outflow limiter (cellfab.c:3109), dense only */

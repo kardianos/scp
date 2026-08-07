@@ -155,7 +155,9 @@ interaction, registered shape, awaits a lawful well to couple to).
 | item | state |
 |---|---|
 | charter (this file) + RECKONING.md | **written, committed** |
-| tree carry / build / baseline battery | **DONE (STEP ZERO, commit 0b06506) — carried from v91, imports → scp/v92, make all clean, BATTERY ALL GREEN 93 incl. abx C≡Go byte-identity** |
-| combined reckoning | **ADOPTED — Option A (RADIANCE + WORKFN), hardened + per-bar mover audit complete (commit pending): W-L2 prerequisite PASS; 12 movers all re-gauged by user decision; `laws_V3a.cfg` is the table; battery now runs V3a by default, ALL GREEN 87; `-nolaw` reproduces V2g (93, purity red = law-deviation witness)** |
-| Phase L design round (L-0) | not started (next, after act one) |
-| v92 kernel | UNCHANGED — inert compiled defaults preserved; the LAW is enforced by the battery harness (V3a injection) + `laws_V3a.cfg` |
+| STEP ZERO (tree carry/build/baseline) | **DONE (commit 0b06506) — ALL GREEN 93** |
+| ACT ONE adoption (laws_V3a) | **DONE (commit a46d377) — RADIANCE+WORKFN adopted; regime declaration retired; battery ALL GREEN 87** |
+| Phase L-0 design round | **DONE (commit 112a562) — L0_DESIGN.md** |
+| L-1 apparatus (both kernels) | **BUILT & SAFE (commits 1944b8c→this) — byte-inert, C≡Go, conserved, anti-ignition-robust, zero-sum renorm. The Phase-M shadow + closed-loop coupling = the measured substrate.** |
+| L1-A (coherent translation) | **OPEN FRONTIER — feedback conclusively closed (3 forms failed + grok review). Needs the native complex parcel; conservation-hard. See L1_FINDINGS/L1_PATH_A_REVIEW.** |
+| Phase L design round (L-0) → L-1..L-3 | L-0 done; L-1 apparatus built; L1-A blocked on the native complex parcel |

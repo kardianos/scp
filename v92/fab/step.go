@@ -182,6 +182,11 @@ func (s *Sim) step() {
 	}
 
 	// pass 2: channel lens area + dense wants + bond misfit buffer
+	if P.AmpDrv > 0 && P.AmpTau > 0 {
+		for i := 0; i < s.NC; i++ { // L-1 zero-sum bookkeeping
+			s.ampre[i] = 0
+		}
+	}
 	for sl := 0; sl < s.NSLOT; sl++ {
 		if s.sst[sl] == sFree {
 			s.sA[sl] = 0
@@ -362,6 +367,9 @@ func (s *Sim) step() {
 				ms = int(s.slq[sl])
 			}
 			if float64(ms) >= P.AmpMmin {
+				// record pre-bias outflow for the zero-sum renorm
+				s.ampre[i] += wIJ
+				s.ampre[j] += wJI
 				phr0 := float64(s.slp[sl]) * s.th2[j]
 				J0 := s.sreA[2*sl]*lutCos(phr0) + s.simA[2*sl]*lutSin(phr0)
 				phr1 := float64(s.slq[sl]) * s.th2[i]
@@ -379,6 +387,37 @@ func (s *Sim) step() {
 		}
 		if wJI > 0 {
 			s.swant[2*sl+1] = wJI
+		}
+	}
+
+	// L-1 zero-sum renorm (FLOW architecture, L1_FINDINGS/grok fix): hold
+	// each cell's total outflow at its pre-bias level — the bias only
+	// REDISTRIBUTES direction (anti-ignition + coherence-runaway bound).
+	if P.AmpDrv > 0 && P.AmpTau > 0 {
+		for i := 0; i < s.NC; i++ {
+			if s.ampre[i] <= 0 {
+				continue
+			}
+			post := 0.0
+			for q := s.cls[i]; q < s.cls[i+1]; q++ {
+				sl := s.clidx[q]
+				dir := 0
+				if s.sli[sl] != i {
+					dir = 1
+				}
+				post += s.swant[2*sl+dir]
+			}
+			if post > 1e-15 {
+				fac := s.ampre[i] / post
+				for q := s.cls[i]; q < s.cls[i+1]; q++ {
+					sl := s.clidx[q]
+					dir := 0
+					if s.sli[sl] != i {
+						dir = 1
+					}
+					s.swant[2*sl+dir] *= fac
+				}
+			}
 		}
 	}
 
