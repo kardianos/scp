@@ -319,6 +319,21 @@ Plates: em-channel animation rendered (volview, 100 frames;
 `runs/quench/plates/` local — large binaries stay out of git; an
 exhibit page can carry them on request).
 
+**Q2-S shadow pair (the registered phase-grain follow-up; harvested
+2026-08-06): SPIN IS COMPLETELY ERASED — the quench door is
+phase-blind.** m=0 vs m=2 with the AMPLITUDE shadow on: ρ_coh
+0.5917/0.7342/0.8441/0.9228 vs 0.5830/0.7319/0.8415/0.9215 (Δ ≤
+0.009 at every quartile), delivered magnitude and flowing-slot
+counts matched to 0.1%. With E0 bit-identical and the census
+identical, the m=2 winding leaves NO trace at ANY measured grain —
+population, identity, energy, or delivery-phase coherence. The
+mechanism is the standing one: the conversion door reads MAGNITUDE
+(beat-fire on |Ee|), so the azimuthal phase structure dissipates in
+transit and never imprints on matter. The door-erasure ledger now
+reads: identity (light carries load, never who) AND spin (matter
+carries energy, never winding) — the door is a magnitude
+bottleneck, measured from two independent sides.
+
 **Q2-I (implosion focusing — the fix arm; harvested 2026-08-06):
 SAME ATTRACTOR.** The lawful whole-box compress-release (imp_k=2
 converging wave, matched budget E0 = 3125, drift −2.18e-15 — the
