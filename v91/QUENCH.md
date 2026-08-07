@@ -226,3 +226,46 @@ FIRST POSITIVE.** (harvested 2026-08-06)
    binary; battery green throughout; the one registration
    arithmetic slip (the >1600 bar at T=1500) is recorded in place
    and corrected by the registered Q5 extension, not rewritten.
+
+---
+
+## 6. QUENCH-2 (user-directed 2026-08-06: rate, confinement, spin, precise viewing; kernel updates pre-authorized; registered BEFORE the apparatus lands)
+
+Three apparatus knob families (all default-inert, purity-pinned,
+battery-gated) plus full fcs capture with volview renders on every
+arm:
+
+* **Anneal schedule (the rate knob — the authorized-by-condition
+  instrument, now spent as directed):** `noise_hi` (default 0),
+  `noise_t1` (default 0): for t < noise_t1 the bath noise runs at
+  noise_hi, then drops to noise_amp — the whole-box field
+  compression the original question described ("compress quickly in
+  the first N frames, then release"). RATE = the (noise_hi,
+  noise_t1) pair; arms sweep fast-deep vs slow-shallow at matched
+  total injected energy.
+* **Partial confinement:** `conf_r` (default 0 = off), `conf_k`
+  (default 0): a soft radial spring on cells beyond r > conf_r from
+  box center — a LEAKY bound (finite k lets matter escape). Holds
+  the compressed state during the anneal window; released by
+  setting conf off after… release is the knob pair itself: arms
+  compare quench-with-hold vs free release. (Contact-level
+  apparatus force, no energy ledger entry beyond the standing
+  geometry forces' convention — verified against drift ≤ 2e-15.)
+* **Spin:** `spin_m` (default 0): the seeded packet/anneal noise
+  carries an azimuthal phase winding m·φ about the z-axis through
+  the compression region — angular momentum enters the quench; the
+  question is whether debris inherits circulation (the QATOM/REG
+  circ meters + fcs render read it).
+
+Arms (registered; exact commands fixed at implementation, one knob
+family at a time vs the Q5 reference): Q2-R rate pair (fast/slow at
+matched energy), Q2-C confinement pair (hold/free), Q2-S spin pair
+(m=0/m=2), each amp-8-class, T=1500, par_tau=10, L=64 law-regime
+foam, snap_every for fcs + volview plates. Bars: the Q5 detector
+(cloud population, pair stamps) per arm; circulation for Q2-S;
+drift ≤ 2e-15 with confinement on (the apparatus must not leak
+energy). Results land in §6.1.
+
+### 6.1 Results
+
+(registered empty)
