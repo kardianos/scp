@@ -2,28 +2,38 @@
 
 ---
 
-# CURRENT VERSION: v92 — READ THIS FIRST
+# CURRENT VERSION: v93 — READ THIS FIRST
 
-**v92 IS THE ACTIVE PROGRAMME (opened 2026-08-07, user-authorized: "Open
-v92 with the Phase L charter and combined reckoning"): `v92/README.md` is
-the single entry point — read it top to bottom, then `v92/RECKONING.md`.
-v92 is the AMPLITUDE SUBSTRATE (Phase L: dense transport promoted from
-magnitude to complex amplitude — the carrier for momentum, spin, exclusion,
-and lawful gravity's open books). STATUS: DOCS-ONLY OPENING per the user's
-instruction — the tree is NOT yet carried, nothing has run; the first v92
-agent executes STEP ZERO (mechanical carry + baseline battery), then ACT
-ONE = the combined adoption reckoning (radiance / workfn / flow-bed) WITH
-THE USER before any Phase-L design. v91 is the frozen evidence substrate:
-its record (RADIANCE fixed point x̂*=0.62; CANTUS/REGISTRY/IDENTITY —
-identity is ontological; ASTRO/COMBINE — species spectra, π-flat far-field
-null; QUENCH 1-3 — first creation, the door-phase instrument, foam phase
-memory τ_φ≈3 t.u.; BLACKHOLE/HORIZON — the π-flatness theorem, the five-wall
-no-go, the forced-hole exterior, the prover's ROSTER_DEATH derivation;
-ASYM/FLOW — the bed-digging channel law, six bars green, anti-ignition
-held) lives in `v91/*.md`; its battery stands ALL GREEN 93 at inert
-defaults (commit f7f5486). All law-candidate knobs remain default-inert
-everywhere (= laws_V2g byte-exactly) until the v92 reckoning adopts a
-table; v90 remains the evidence substrate below.**
+**v93 IS THE ACTIVE PROGRAMME (opened 2026-08-07, user-authorized full
+campaign: "You have full authorization start v93 and build and update
+kernel code ... No additional authorization required."): `v93/README.md`
+is the single entry point — read it top to bottom (it is self-contained:
+PART I is the full background). v93 is THE UNITARY DENSE CHANNEL — give the
+dense (matter) sector the field sector's transport algebra: within-mode
+dense transport becomes a product of UNITARY PAIRWISE PLANE ROTATIONS (pass
+F's cousin), replacing the additive magnitude want, so coherent dense
+transport (translation, the live fifth, the far field) emerges with EXACT
+conservation by construction and the missing first moment (momentum) lives
+in the rotation cross-term the additive Em-ledger kept rejecting. The v92
+consultation (grok + claude-fable + opencode) converged on this design
+(`v92/consult/SUBQUARK_synthesis.md`). STATUS: STEP ZERO DONE (tree carried
+v92→v93, battery ALL GREEN 87 at the adopted laws_V3a table — the v92
+baseline reproduced byte-for-byte). The unitary dense hop is being
+implemented behind `amp_nat` (default 0 = byte-inert vs the 87-bar V3a
+surface), face by face, battery-gated.**
+
+**v92 is the frozen evidence substrate:** its record (ACT ONE — laws_V3a
+adopted: RADIANCE k_rad=0.05 p_rad=4 + WORKFN wf_on=1, the regime
+declaration retired; the L-1 apparatus built & safe — Phase-M shadow +
+closed-loop coupling, byte-inert, C≡Go, conserved, anti-ignition-robust;
+the feedback hypothesis CONCLUSIVELY CLOSED — three forms tried (magnitude-
+bias, phase-current, zero-sum phase-current), all safe, none delivers L1-A,
+because the additive Em-ledger rejects the interference term; PATH A
+designed + reviewed as "feedback in disguise"; the consult convergence →
+v93) lives in `v92/*.md`. The ADOPTED LAW is `laws_V3a` (V2g core verbatim
++ radiance + workfn); `v92/laws/laws_V3a.cfg` canonical; the battery
+injects V3a by default (`-nolaw` reproduces the V2g inert baseline). v91
+and v90 remain the deeper evidence substrates below.**
 
 **Start at `v90/README.md` (the charter). The carried foundation is v89:
 `v89/README.md`, `v89/PRINCIPLE.md`, `v89/FREECELL.md` — consult v89 freely
