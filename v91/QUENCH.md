@@ -235,22 +235,42 @@ Three apparatus knob families (all default-inert, purity-pinned,
 battery-gated) plus full fcs capture with volview renders on every
 arm:
 
-* **Anneal schedule (the rate knob — the authorized-by-condition
-  instrument, now spent as directed):** `noise_hi` (default 0),
-  `noise_t1` (default 0): for t < noise_t1 the bath noise runs at
-  noise_hi, then drops to noise_amp — the whole-box field
-  compression the original question described ("compress quickly in
-  the first N frames, then release"). RATE = the (noise_hi,
-  noise_t1) pair; arms sweep fast-deep vs slow-shallow at matched
-  total injected energy.
-* **Partial confinement:** `conf_r` (default 0 = off), `conf_k`
-  (default 0): a soft radial spring on cells beyond r > conf_r from
-  box center — a LEAKY bound (finite k lets matter escape). Holds
-  the compressed state during the anneal window; released by
-  setting conf off after… release is the knob pair itself: arms
-  compare quench-with-hold vs free release. (Contact-level
-  apparatus force, no energy ledger entry beyond the standing
-  geometry forces' convention — verified against drift ≤ 2e-15.)
+* **Rate — CORRECTED AT DESIGN TIME (dated 2026-08-06): the anneal
+  knob is REJECTED BY THE ONE LAW.** `noise_amp` is seed-time only;
+  a runtime noise drive would CREATE energy. The conservative rate
+  knob is packet CONCENTRATION at matched total energy
+  (E ∝ amp²σ² in 2D): fast-deep σ=2/amp=16 vs slow-shallow
+  σ=8/amp=4 vs the Q5 reference σ=4/amp=8 — config-only, no kernel
+  knob. (The "authorized-by-condition anneal" dissolves — there was
+  never a lawful whole-box drive to build.)
+  **[FIX, dated 2026-08-06 (user: "can we fix the QUENCH-2?"): the
+  whole-box compress-release is RESTORED lawfully as IMPLOSION
+  FOCUSING — `imp_k` (default 0, byte-inert, both kernels,
+  battery-gated) adds an inward radial phase tilt to the seeded
+  packet: a large converging wave self-compresses at the focus
+  (the "first N frames") and re-expands (the release), seeded
+  energy only, fully conservative. Arm Q2-I registered: σ=16
+  sy=16 amp=2 (E ≈ 1024 matched) imp_k=2, source at box centre,
+  T=1500, fcs capture.]**
+  **[ENERGY-MATCHING CORRECTION, dated 2026-08-06 (user question:
+  "simulation error or unintentional energy conversion?"): neither
+  — all arms run at the drift floor (≤2e-15) and E0 ledgers
+  confirm the budgets (spin E0 bit-identical to Q5; cavity −81 =
+  the carved shell's bath energy, accounted). But the registered
+  matching FORMULA was wrong: the seed law is Ee = amp·g, so
+  packet energy ∝ amp·σx·σy, NOT amp²σ². The rate pair is matched
+  anyway (amp ∝ 1/σ satisfies both criteria; amp·σ = 32 all
+  three). Q2-I as registered would have carried 5.3× the class
+  energy — caught BEFORE launch; corrected to amp = 0.375
+  (2·16·16 → 0.375·16·16 = 96 = the class budget).]**
+* **Partial confinement:** a PINNED-FIXTURE SHELL (the DS-wall
+  precedent — carved-vacuum walls held as pinned fixtures are
+  standing apparatus): `conf_r` (default 0 = off) seeds a circular
+  shell of pinned wall cells of radius conf_r about the box center
+  with a leak gap `conf_gap` (half-angle, radians; default 0.3).
+  Matter and field bounce by the standing contact machinery; the
+  gap leaks — real cavity physics, no invented force, no energy
+  ledger entry.
 * **Spin:** `spin_m` (default 0): the seeded packet/anneal noise
   carries an azimuthal phase winding m·φ about the z-axis through
   the compression region — angular momentum enters the quench; the
