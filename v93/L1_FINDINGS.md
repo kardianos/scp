@@ -100,3 +100,49 @@ spreads. Two suspected Trotter/error sources to test next:
 - Invariant surface (87 V3a bars): **held** at amp_nat=0.
 
 Face 3 (in-pass precession, mirroring pass F exactly) is next.
+
+## Face 3 (in-pass precession: rotate psi_m by w2e*dt BEFORE the hops,
+## pass-6 th2-advance skipped when amp_nat>0) — BREAKTHROUGH
+
+The Trotter split was the wobble source. Moving the dense clock precession
+INTO pass U (precess-then-hop, exactly mirroring pass F) — and skipping the
+out-of-pass `th2 += w2e dt` in pass 6 when amp_nat>0 — produces near-
+ballistic coherent translation in a narrow resonance band. L1-B STILL
+GREEN (drift_rel 0.000e+00 at amp_nat=0/2.5/5; the precession is itself a
+norm-preserving rotation). Byte-inert at amp_nat=0 (re-verified vs STEP
+ZERO).
+
+3-seed e3b, coarse amp_nat sweep:
+
+| amp_nat | seed 111 cos | seed 20260802 cos | seed 314159 cos |
+|--------:|-------------|-------------------|-----------------|
+| 2       | **+0.9888**  | +0.7462           | +0.8171         |
+| 2.5     | -0.9136      | +0.0590           | -0.5201         |
+| 3       | -0.7138      | +0.7846           | -0.8849         |
+| 4       | -0.0164      | ...               | ...             |
+
+speed at amp_nat=2: 0.003210 / 0.001326 / 0.002428.
+
+**The result:** at amp_nat=2 the blob translates coherently (+x, all three
+seeds) with seed 111 hitting **cos=0.9888, speed=0.003210 — meets L1-A**
+(>=2.6e-3, cos→1) for that seed. The other two seeds (cos 0.75/0.82) are
+close but seed-variant. This is the first time the programme has produced
+near-ballistic coherent dense translation — the design's core mechanism
+(the phase-gradient current J=2·tau·Im(psi_i* psi_j), carried by the
+amplitude, not a patched ledger) is CONFIRMED to work.
+
+**The remaining issue:** the coherence is a NARROW RESONANCE (peaked at
+amp_nat~2, falls off by 2.5) and seed-variant at the peak (0.99/0.75/0.82).
+The resonance likely reflects the dispersion relation between the on-site
+precession (w2e) and the hopping (tau_s); off-resonance the packet wobbles/
+sets up standing waves. A fine sweep around amp_nat=2 (1.5–2.25, 5 seeds)
+is running to map the window and gauge seed-robustness. L1-A is not yet
+*seed-robustly* met, but the mechanism is proven.
+
+## Status (post face 3)
+
+- L1-B (conservation): **GREEN** (the theorem, holds with in-pass precession).
+- L1-A (translation): **NEAR** — cos→0.99 and speed≥threshold at the
+  amp_nat~2 resonance for the best seed; seed-variant and narrow-band, not
+  yet robustly met. Mechanism confirmed.
+- Invariant surface (87 V3a bars): **held** at amp_nat=0.

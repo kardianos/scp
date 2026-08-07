@@ -458,6 +458,17 @@ func (s *Sim) step() {
 				s.dm2[i] = 0
 			}
 		}
+		// Local clock precession IN-pass (face 3, mirroring pass F): rotate
+		// psi_m by +w2e*dt (== th2 += w2e dt) BEFORE the hops. Pass 6 skips
+		// its out-of-pass advance when amp_nat>0 -- removes the first-order
+		// Trotter split (face-2 centroid wobble). Byte-inert at amp_nat=0.
+		for i := 0; i < s.NC; i++ {
+			ang := s.w2e[i] * dt
+			cc, ss := math.Sincos(ang)
+			a, b := s.dm1[i], s.dm2[i]
+			s.dm1[i] = cc*a - ss*b
+			s.dm2[i] = ss*a + cc*b
+		}
 		for i := 0; i < s.NC; i++ {
 			for q := s.cls[i]; q < s.cls[i+1]; q++ {
 				sl := s.clidx[q]
@@ -1225,7 +1236,11 @@ func (s *Sim) step() {
 				continue // pitchless: no clock, no beat, no door
 			}
 		}
-		s.th2[i] = math.Mod(s.th2[i]+s.w2e[i]*dt, TwoPi)
+		// v93 face 3: when amp_nat>0 the dense clock precesses IN pass U
+		// (precess-then-hop, mirroring pass F); skip the out-of-pass advance.
+		if P.AmpNat == 0 {
+			s.th2[i] = math.Mod(s.th2[i]+s.w2e[i]*dt, TwoPi)
+		}
 		s.cbeta[i] += (s.w1e[i] - s.w2e[i]) * dt
 		beatFire := false
 		if s.cbeta[i] >= TwoPi {

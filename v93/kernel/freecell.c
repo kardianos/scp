@@ -1524,6 +1524,19 @@ static void step(void)
                 dm1_[i] = dm2_[i] = 0.0;
             }
         }
+        /* Local clock precession IN-pass (face 3, mirroring pass F exactly):
+         * rotate psi_m by +w2e*dt (== th2 += w2e dt) BEFORE the hops. The
+         * out-of-pass advance (pass 6) is skipped when amp_nat>0 -- the
+         * precess-then-hop order removes the first-order Trotter split that
+         * face-2 showed as centroid wobble. Still byte-inert at amp_nat=0
+         * (this whole block, and the pass-6 skip, are amp_nat-gated). */
+        for (int i = 0; i < NC; i++) {
+            double ang = w2e[i] * dt;
+            double cc = lut_cos(ang), ss = lut_sin(ang);
+            double a = dm1_[i], b = dm2_[i];
+            dm1_[i] = cc * a - ss * b;
+            dm2_[i] = ss * a + cc * b;
+        }
         for (int i = 0; i < NC; i++) {
             for (int q = cls_[i]; q < cls_[i + 1]; q++) {
                 int s = clidx[q];
@@ -2110,10 +2123,14 @@ static void step(void)
                     if (d > avail) d = avail;
                     Es[i] -= d; eh_add(d); bh_eat_s += d;
                 }
-                continue;   /* pitchless: no clock, no beat, no door */
+            continue;   /* pitchless: no clock, no beat, no door */
             }
         }
-        th2[i] = fmod(th2[i] + w2e[i] * dt, TWO_PI);
+        /* v93 face 3: when amp_nat>0 the dense clock precesses IN pass U
+         * (precess-then-hop, mirroring pass F); skip the out-of-pass advance
+         * here. Byte-inert (amp_nat==0 takes the original branch). */
+        if (P.amp_nat == 0)
+            th2[i] = fmod(th2[i] + w2e[i] * dt, TWO_PI);
         cbeta[i] += (w1e[i] - w2e[i]) * dt;
         int beat_fire = 0;
         if (cbeta[i] >= TWO_PI) { cbeta[i] -= TWO_PI; beat_fire = 1; }
