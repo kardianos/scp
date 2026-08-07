@@ -1,0 +1,54 @@
+# freecell — v89 free-cell substance test (exp=blob)
+# laws = laws_V2g VERBATIM (defaults): C=1 w1=1.65 w2=2.9 q_detune=1.2
+# gamma_res=0.25 gamma_res_m=0.1 p_gate=8 lock_floor=0.005 k_dep=1.2 k_dep_m=2 cap=2.5
+# e_s0=1 es_floor=0.05 e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
+# comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
+# quant_A0=1.15 quant_mode=2 (A0eff=1.15)
+# v91 radiance (laws_V3r candidate A): k_rad=0 p_rad=4 rad_clock=0
+# v91 cantus (coherent-channel candidate B): k_cant=0 k_tune=0 cant_tau=50 cant_seed=0 cant_grow=1
+# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=0 reg_gate=0 reg_f0=0
+# v91 identity (parcel-identity lane, IDENTITY.md): par_tau=0 par_gate=0 par_form=0 par_lo=0.002 par_hi=0.02 par_mature=400
+# v91 workfn (emergent-threshold lane, WORKFN.md): wf_on=1 wf_floor=0.01 wf_far=99
+# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=0
+# v92 amplitude Phase L lane L-1 (L0_DESIGN.md): amp_drv=0 amp_mmin=2
+# QUENCH-2 apparatus: conf_r=0 conf_gap=0.3 conf_th=1.6 conf_pinw=3 spin_m=0 imp_k=0 qp_phase=0
+# HORIZON apparatus (HORIZON.md): bh_r=0 bh_k=1 bh_sep=0
+# FLOW apparatus (FLOW.md): bed_k=0 bed_tau=30
+# GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
+# bath=1 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=16 dt=0.02 T=80 seed=314159 diag_every=200
+# JAM sweeps=800 max_step=1.563e-04 (tol 1.0e-04, k_end=0.0010) — witness for the settle
+# SEED blob: amp=0.5 sigma=2.5 kx=1.1 tagged=632 (add>5% of amp)
+# INIT NC=2689 slots=25657 live=20351 phi_nom=1.6851 z_live=15.14 dbar=1.4069 sigma_d=14.71% E0=2769.351473082
+#
+# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+t=    0.00 +0.00e+00 | 1.6851 15.14  20351    0      0      0 | 1.4069 14.71 | 0.00e+00 0.00e+00 |  82.4912 1.0000  0.0109  3.8269 1.000 14.87 | es_core/far=0.9326
+t=    4.00 +0.00e+00 | 1.6851 15.80  21243   16   1323   1166 | 1.4211 14.84 | 1.87e-03 5.01e-03 |  81.1276 0.9835  0.1237  3.8049 1.000 15.78 | es_core/far=0.9145
+t=    8.00 +0.00e+00 | 1.6851 16.08  21626   33   2127   1866 | 1.4274 14.92 | 1.75e-03 6.09e-03 |  78.8478 0.9558  0.2413  3.8347 1.000 16.14 | es_core/far=0.8868
+t=   12.00 +0.00e+00 | 1.6850 16.21  21794   50   2655   2360 | 1.4301 14.95 | 1.85e-03 6.45e-03 |  76.8487 0.9316  0.2969  3.8200 1.000 16.26 | es_core/far=0.8755
+t=   16.00 +0.00e+00 | 1.6850 16.34  21975   42   3152   2825 | 1.4326 14.96 | 1.60e-03 8.78e-03 |  75.3969 0.9140  0.3158  3.8432 1.000 16.26 | es_core/far=0.8929
+t=   20.00 +0.00e+00 | 1.6850 16.39  22038   33   3547   3197 | 1.4338 14.98 | 3.18e-03 9.65e-03 |  74.2996 0.9007  0.2796  3.8474 1.000 16.27 | es_core/far=0.8972
+t=   24.00 +0.00e+00 | 1.6850 16.47  22141   15   3898   3563 | 1.4353 14.99 | 6.30e-03 1.68e-02 |  73.2745 0.8883  0.2322  3.8561 1.000 16.31 | es_core/far=0.9057
+t=   28.00 +0.00e+00 | 1.6850 16.50  22178   23   4209   3858 | 1.4359 15.00 | 3.05e-03 9.91e-03 |  72.7032 0.8813  0.2397  3.9107 1.000 16.29 | es_core/far=0.9159
+t=   32.00 +0.00e+00 | 1.6850 16.52  22215   17   4531   4157 | 1.4366 15.01 | 3.42e-03 1.13e-02 |  72.1091 0.8741  0.2439  3.8832 1.000 16.31 | es_core/far=0.9250
+t=   36.00 +0.00e+00 | 1.6850 16.57  22281   20   4818   4464 | 1.4375 15.02 | 3.22e-03 8.71e-03 |  71.6203 0.8682  0.2533  3.8850 1.000 16.39 | es_core/far=0.9286
+t=   40.00 +0.00e+00 | 1.6850 16.61  22333   25   5102   4724 | 1.4383 15.02 | 4.89e-03 1.15e-02 |  71.0417 0.8612  0.2618  3.8677 1.000 16.44 | es_core/far=0.9291
+t=   44.00 +0.00e+00 | 1.6851 16.63  22359   16   5389   5016 | 1.4386 15.03 | 2.70e-03 9.47e-03 |  70.6144 0.8560  0.2763  3.9085 1.000 16.47 | es_core/far=0.9262
+t=   48.00 +0.00e+00 | 1.6851 16.64  22371   18   5674   5283 | 1.4389 15.03 | 3.82e-03 1.05e-02 |  70.1597 0.8505  0.2761  3.8871 1.000 16.50 | es_core/far=0.9186
+t=   52.00 +0.00e+00 | 1.6850 16.67  22417   15   5923   5510 | 1.4395 15.04 | 3.09e-03 1.25e-02 |  69.6485 0.8443  0.2783  3.8624 1.000 16.52 | es_core/far=0.9184
+t=   56.00 +0.00e+00 | 1.6850 16.70  22451   22   6210   5784 | 1.4399 15.04 | 3.64e-03 9.09e-03 |  68.9271 0.8356  0.2680  3.8706 1.000 16.56 | es_core/far=0.9234
+t=   60.00 +0.00e+00 | 1.6850 16.71  22468   15   6427   6058 | 1.4402 15.04 | 4.89e-03 1.47e-02 |  68.2879 0.8278  0.2700  3.8303 1.000 16.55 | es_core/far=0.9302
+t=   64.00 +0.00e+00 | 1.6850 16.72  22478   13   6655   6281 | 1.4403 15.04 | 7.62e-03 1.76e-02 |  67.9209 0.8234  0.2876  3.8545 1.000 16.54 | es_core/far=0.9205
+t=   68.00 +0.00e+00 | 1.6850 16.73  22500   15   6880   6492 | 1.4406 15.04 | 2.71e-03 9.19e-03 |  67.6821 0.8205  0.2883  3.8447 1.000 16.57 | es_core/far=0.9109
+t=   72.00 +0.00e+00 | 1.6850 16.75  22518    4   7131   6722 | 1.4408 15.03 | 5.14e-03 1.20e-02 |  67.2605 0.8154  0.3118  3.8394 1.000 16.59 | es_core/far=0.9103
+t=   76.00 +0.00e+00 | 1.6850 16.76  22531   14   7404   6988 | 1.4409 15.03 | 5.20e-03 1.65e-02 |  67.0265 0.8125  0.3191  3.8553 1.000 16.59 | es_core/far=0.9140
+t=   80.00 +0.00e+00 | 1.6850 16.77  22548   11   7649   7253 | 1.4412 15.03 | 6.77e-03 1.85e-02 |  66.5808 0.8071  0.3296  3.8279 1.000 16.61 | es_core/far=0.9116
+#
+# RESULT drift_rel 0.000e+00
+# RESULT births 7649 deaths 7253 beta_returns 0 beta_energy 0.000000e+00
+# RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
+# RESULT credit qcnvD=0.000000 qcnvF=149.148942
+# RESULT geometry phi_nom=1.6850 z_live=16.77 dbar=1.4412 sigma_d=0.1503
+# RESULT es_shells 0.9095 0.9097 0.9426 0.9643 0.9854 0.9946 0.9983 1.0000
+# RESULT blob Em_tag=66.58078 com=(7.674,7.959,7.979) rms=3.8279 conn=1.0000 z_tag=16.61
+# RESULT blob_drift speed=0.001556 cos_to_kdir=-0.9286 v=(-1.45e-03,-5.58e-04,-1.50e-04)

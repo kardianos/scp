@@ -121,3 +121,49 @@ transport PHYSICS needs deeper work — a clean e3b signal to tune against,
 and likely a driver form that reads the transit-asymmetry current directly.
 The chord track (mmin=2, L2's domain) is untested and may be where the
 shadow's phase composition is actually load-bearing.
+
+---
+
+## Addendum 2 — e3b unblocked + the feedback-insufficiency finding
+
+e3b measurement UNBLOCKED (the blocker was `diag_every` being in STEPS not
+time — `diag_every=10` = every 0.2 t.u., I/O-bound, timing out before the
+RESULT/blob_drift print; fixed at `diag_every=200`, L=16 T=80 — the battery's
+blob config). Clean signal now in hand.
+
+**e3b baseline (amp_drv=0, wf-on, no radiance, 3 seeds):**
+- 20260802: speed 0.001544, cos −0.2798
+- 111:      speed 0.003138, cos −0.9394
+- 314159:   speed 0.001556, cos −0.9286
+(seed-variant; partly incoherent; the blob drifts anti-kx. The v89 cos+0.95
+was a different config; the L1-A goal is |cos|→1 seed-robust.)
+
+**e3b + phase-current (amp_drv=0.1, mmin=1):**
+- 20260802: speed 0.001624, cos +0.5382
+- 111:      speed 0.002419, cos −0.8104
+- 314159:   speed 0.001897, cos −0.5279
+Seed-variant; |cos| does NOT robustly increase (one seed up, two down).
+
+**The finding — feedback is insufficient.** Both L-1 forms are a *feedback*
+on the magnitude-want (a shadow-driven BIAS on the existing `swant`). But
+the e3b's V2g translation is a marginal residual (~0.002, seed-variant) —
+feeding it back amplifies noise, not coherence. The S2 memo's actual vision
+("dense transfers must carry a complex amplitude whose phase composes along
+paths") is that the dense transfer is NATIVELY complex — the want mechanism
+itself carries phase that composes at deposit/arrival — not a magnitude with
+a corrective bias. A bias cannot manufacture the coherence the magnitude
+transport lacks. **L1-A likely requires the native complex-transport
+completion** (the want as a complex amplitude, composing along paths), which
+is a deeper change than L0_DESIGN's "promote the shadow to driver." That
+promoted shadow is the right MEASUREMENT (Phase M) but the wrong MECHANISM
+for L-1 — it observes what native amplitude transport would do, without
+being it.
+
+**Implication for the order of work.** Either (a) escalate to the native
+complex-transport completion (the want `swant` becomes complex; the deposit
+composes the arriving phase; the current emerges from composition — not a
+bias), or (b) test the chord track (mmin=2 / L2) first, where the shadow's
+phase composition may be load-bearing even as a feedback (the fifth's
+circulation is a standing current the feedback could sustain). The L-1
+feedback apparatus stays (it is safe, conserved, C≡Go, anti-ignition-robust)
+as the substrate either path builds on.
