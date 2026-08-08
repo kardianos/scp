@@ -246,6 +246,15 @@ typedef struct {
      * 87-bar V3a surface); >0 => the unitary dense hop engages, the additive
      * want+inflight is bypassed. The door (pass 6) is NEVER unitarized. */
     double amp_nat;     /* unitary dense channel strength; 0 = additive want (byte-inert) */
+    /* --- v93 arg(psi) door (v93/README.md §II.7): at a condensation event
+     * the field click (sqrt(d1) at phase atan2(fa2,fa1)) composes COHERENTLY
+     * with the existing matter amplitude psi_m, and the result is
+     * renormalized to the conserved energy -- arg(psi_m_new) is the coherent-
+     * sum direction (carries the field phase + the interference cross-term =
+     * the current), |psi_m| fixed by Em. Replaces qp_phase's partial cell-
+     * clock pull: the fired atom carries arg(psi_m), not m*th2 written
+     * piecemeal (IV.6). amp_door=0 => byte-inert (qp_phase path unchanged). */
+    double amp_door;    /* arg(psi) coherent-amplitude door; 0 = qp_phase path (byte-inert) */
     int    qatom_every;   /* apparatus (print-only): QATOM sampler period */
     /* --- freecell geometry sector (apparatus, not law) --- */
     double cfac;          /* candidate rule d < cfac*(ri+rj)  (LIVEFAB) */
@@ -373,6 +382,7 @@ static void cfg_defaults(void)
     P.amp_tau = 0;
     P.amp_drv = 0; P.amp_mmin = 2;
     P.amp_nat = 0;
+    P.amp_door = 0;
     P.qatom_every = 200;
     /* freecell geometry */
     P.cfac = 1.15; P.k_rep = 1.0; P.mob_geo = 1.0; P.kappa_bond = 1.0;
@@ -477,6 +487,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "amp_drv")) P.amp_drv = atof(v);
     else if (!strcmp(k, "amp_mmin")) P.amp_mmin = atof(v);
     else if (!strcmp(k, "amp_nat")) P.amp_nat = atof(v);
+    else if (!strcmp(k, "amp_door")) P.amp_door = atof(v);
     else if (!strcmp(k, "conf_r")) P.conf_r = atof(v);
     else if (!strcmp(k, "conf_gap")) P.conf_gap = atof(v);
     else if (!strcmp(k, "conf_th")) P.conf_th = atof(v);
@@ -2164,7 +2175,23 @@ static void step(void)
                     Ee[i] -= d1;
                     Es[i] -= dsp;
                     Em[i] += d1 + dsp;
-                    if (P.qp_phase > 0) {
+                    if (P.amp_door > 0) {
+                        /* v93 arg(psi) door (§II.7): the field click
+                         * (sqrt(d1) at phase aph) composes COHERENTLY with
+                         * the existing matter amplitude; arg(psi_m_new) is
+                         * the coherent-sum direction (carries the field
+                         * phase + the interference cross-term = the
+                         * current), |psi_m| fixed by the conserved Em.
+                         * Replaces qp_phase's partial cell-clock pull --
+                         * the fired atom carries arg(psi_m), not m*th2. */
+                        double aph = atan2(fa2[i], fa1[i]);
+                        double Em_old = Em[i] - (d1 + dsp);
+                        if (Em_old < 0) Em_old = 0;
+                        double ro = sqrt(Em_old), rc = sqrt(d1);
+                        double s1 = ro * lut_cos(th2[i]) + rc * lut_cos(aph);
+                        double s2 = ro * lut_sin(th2[i]) + rc * lut_sin(aph);
+                        th2[i] = fmod(atan2(s2, s1) + 8.0 * TWO_PI, TWO_PI);
+                    } else if (P.qp_phase > 0) {
                         /* QUENCH-3: phase crosses the door (mix ≤ 1 by
                          * construction: d1 ≤ Em after the add) */
                         double aph = atan2(fa2[i], fa1[i]);
@@ -3150,6 +3177,8 @@ int main(int argc, char **argv)
            P.amp_drv, P.amp_mmin);
     printf("# v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=%g\n",
            P.amp_nat);
+    printf("# v93 arg(psi) door (v93/README.md §II.7): amp_door=%g\n",
+           P.amp_door);
     printf("# QUENCH-2 apparatus: conf_r=%g conf_gap=%g conf_th=%g conf_pinw=%g spin_m=%d imp_k=%g qp_phase=%g\n",
            P.conf_r, P.conf_gap, P.conf_th, P.conf_pinw, P.spin_m, P.imp_k, P.qp_phase);
     printf("# HORIZON apparatus (HORIZON.md): bh_r=%g bh_k=%g bh_sep=%g\n",

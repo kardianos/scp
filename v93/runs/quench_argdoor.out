@@ -1,0 +1,85 @@
+=== h0_nodoor : amp_door=0 amp_nat=0 ===
+  RESULT drift_rel -1.241e-15
+  RESULT births 8733 deaths 8936 beta_returns 0 beta_energy 0.000000e+00
+  R2d retention curve:
+    t=   0.0 R2d=M:
+    t=  20.0 R2d=pk=m+4
+    t=  40.0 R2d=pk=m-1
+    t=  60.0 R2d=pk=m+4
+    t=  80.0 R2d=pk=m-1
+    t= 100.0 R2d=pk=m-2
+    t= 120.0 R2d=pk=m-4
+    t= 140.0 R2d=pk=m+0
+    t= 160.0 R2d=pk=m+1
+    t= 180.0 R2d=pk=m-3
+    t= 200.0 R2d=pk=m-4
+    t= 220.0 R2d=pk=m+0
+    t= 240.0 R2d=pk=m+0
+    t= 260.0 R2d=pk=m-1
+    t= 280.0 R2d=pk=m+4
+    t= 300.0 R2d=pk=m+3
+
+=== h1_door : amp_door=1 amp_nat=0 ===
+  RESULT drift_rel -1.379e-15
+  RESULT births 9111 deaths 9336 beta_returns 0 beta_energy 0.000000e+00
+  R2d retention curve:
+    t=   0.0 R2d=M:
+    t=  20.0 R2d=pk=m+3
+    t=  40.0 R2d=pk=m+4
+    t=  60.0 R2d=pk=m+0
+    t=  80.0 R2d=pk=m-3
+    t= 100.0 R2d=pk=m-2
+    t= 120.0 R2d=pk=m+1
+    t= 140.0 R2d=pk=m+1
+    t= 160.0 R2d=pk=m-3
+    t= 180.0 R2d=pk=m+3
+    t= 200.0 R2d=pk=m+2
+    t= 220.0 R2d=pk=m+3
+    t= 240.0 R2d=pk=m-3
+    t= 260.0 R2d=pk=m+0
+    t= 280.0 R2d=pk=m+1
+    t= 300.0 R2d=pk=m-1
+
+=== h2_door_uni : amp_door=1 amp_nat=2 ===
+  RESULT drift_rel -1.020e-14
+  RESULT births 4580 deaths 5091 beta_returns 0 beta_energy 0.000000e+00
+  R2d retention curve:
+    t=   0.0 R2d=M:
+    t=  20.0 R2d=pk=m-3
+    t=  40.0 R2d=pk=m+2
+    t=  60.0 R2d=pk=m+2
+    t=  80.0 R2d=pk=m+0
+    t= 100.0 R2d=pk=m-3
+    t= 120.0 R2d=pk=m-2
+    t= 140.0 R2d=pk=m+1
+    t= 160.0 R2d=pk=m+4
+    t= 180.0 R2d=pk=m+3
+    t= 200.0 R2d=pk=m+0
+    t= 220.0 R2d=pk=m-3
+    t= 240.0 R2d=pk=m-4
+    t= 260.0 R2d=pk=m-4
+    t= 280.0 R2d=pk=m+0
+    t= 300.0 R2d=pk=m-4
+
+=== h3_uni_clk : amp_door=1 amp_nat=2 q_detune=0 ===
+  RESULT drift_rel 2.148e-13
+  RESULT births 33581 deaths 33911 beta_returns 0 beta_energy 0.000000e+00
+  R2d retention curve:
+    t=   0.0 R2d=M:
+    t=  20.0 R2d=pk=m+0
+    t=  40.0 R2d=pk=m-3
+    t=  60.0 R2d=pk=m+2
+    t=  80.0 R2d=pk=m-1
+    t= 100.0 R2d=pk=m-1
+    t= 120.0 R2d=pk=m+1
+    t= 140.0 R2d=pk=m-2
+    t= 160.0 R2d=pk=m+4
+    t= 180.0 R2d=pk=m+3
+    t= 200.0 R2d=pk=m+2
+    t= 220.0 R2d=pk=m-2
+    t= 240.0 R2d=pk=m+3
+    t= 260.0 R2d=pk=m-1
+    t= 280.0 R2d=pk=m-2
+    t= 300.0 R2d=pk=m+2
+
+=== arg(psi) door suite done ===

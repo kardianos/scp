@@ -278,16 +278,95 @@ sustain needs more (and the chord-probe chicken-and-egg stands: the unitary
 channel fixes the carrier half but a standing fifth still needs a seed,
 IV.8).
 
+## arg(ψ) door face (§II.7) — implemented, byte-inert; retention STILL ~0
+## (the wall is the cell-clock carrier + one-way evap door, NOT churn)
+
+Knob `amp_door` (default 0 = byte-inert, qp_phase path unchanged). At a
+condensation event (d1>0), the field click (√d1 at phase aph=atan2(fa2,fa1))
+composes COHERENTLY with the existing matter amplitude; arg(ψ_m_new) =
+arg(√Em_old·e^{i th2} + √d1·e^{i aph}), |ψ_m| fixed by the conserved Em.
+Both kernels mirrored; full battery ALL GREEN 87 at amp_door=0 (invariant
+surface held).
+
+QUENCH-3 suite (spin_m=2, T=300) — steady-state matter winding R2d:
+
+| arm | births | R2d (t=20..300) |
+|-----|--------|-----------------|
+| h0 no door              | 8733  | ~0.03 |
+| h1 arg(ψ) door          | 9111  | ~0.02 |
+| h2 door + unitary (a=2) | 4580  | ~0.02 |
+| h3 door+uni+q_detune=0  | 33581 | ~0.03 |
+
+Early-time (T=30, snap every 2 t.u.) — the door DOES slow the decay:
+| t | h0 (no door) | h1 (arg ψ door) | h2 (door+uni) |
+|---|---|---|---|
+| 6 | 0.285 | 0.196 | 0.195 |
+| 12 | 0.023 | 0.143 | 0.133 |
+| 14 | 0.035 | 0.105 | 0.098 |
+| 20 | 0.041 | 0.010 | 0.018 |
+
+**Verdict: the arg(ψ) door sustains R2d~0.1 over t=8-14 (~3× longer than no
+door) but steady-state retention is still ~0.02 — the door is necessary but
+NOT sufficient.** (Caveat from review: at t=6 nlive≈21 so 1/√N≈0.22 — the
+early numbers are partly noise-floor; the door's m-peak is often not m=+2.)
+
+## Diagnosis CORRECTED (the 3-reviewer consultation refutes "churn")
+
+My earlier "matter churn is the wall" diagnosis is REFUTED by the suite's own
+data: **h2 (unitary) HALVES births (8733→4580) and h3 (q_detune=0) QUADRUPLES
+them (→33581), yet R2d is flat at ~0.02-0.03 across all arms.** Less churn
+bought NO retention; more churn cost none. So churn is not the driver. The
+real wall (per grok + opencode reviews, `consult/REVIEW_grok.md`,
+`consult/REVIEW_opencode.md`):
+
+1. **Wrong carrier.** The door writes the CELL CLOCK th2 (the design's IV.6
+   forbids this — phase must be slot-borne, protected from delivery churn).
+   th2 is overwritten every condensation AND reset to 0 for empty cells
+   (`freecell.c` pass-U writeback: atan2(0,0)=0) — a phase-slip machine.
+2. **One-way evap door.** `field_inject` real-scales fa (keeps field phase)
+   unless the cell was empty; matter→field evaporation does NOT carry th2.
+   So any winding imprinted at condensation is erased at the next evaporation
+   — steady-state retention is impossible BY CONSTRUCTION while evap is
+   phase-blind.
+3. **No topological support.** Winding is protected only if |ψ|>0 on a cycle;
+   the sparse QUENCH cloud (Em-live threshold holes) is full of phase-slip
+   sites by construction (§II.8).
+4. Field transit decoherence (RA2 1.0→~0.15) is a secondary contributor, not
+   primary (RA2 still ~0.79 at t=20 while matter R2d≈0.02 — the early wall is
+   the imprint/carrier, not field death).
+
+The true §II.7 fix is **slot-borne fired-atom phase** (write into the existing
+shadow/slem infrastructure, not th2) + a **symmetric reverse door** (compose
+√d2·e^{i th2} into fa on evaporation) — both flagged by the reviews.
+
+## Reviewer-flagged gaps (3-reviewer consult, 2026-08-07)
+
+- **No C≡Go at amp_nat>0.** All face-3 / QUENCH / arg-door results are C-only;
+  the design III.3/IV.12 demands tolerance abx at strength. OPEN rigor gap.
+- **L1-A "thesis CONFIRMED" is overclaimed** → downgrade to "mechanism engaged;
+  bar open" (1-2/5 seeds meet L1-A; free-packet COM drift ≠ bound translation).
+- **Narrow resonance confounds:** τ>0.5 clamp nonlinearity, state-dependent τ
+  via p_gate=8, 2nd-half centroid-fit on a wobbling/melting packet. Decisive
+  test: **linearize τ** (freeze gsym, uniform) + kx sweep + dt invariance.
+- **bath=0 → zero motion** may mean "translation" is drag against the bath, not
+  free ballistic packet — the dipole-of-J test in vacuum is missing.
+- **Armed L1-C never run:** the named risk is a ρ_coh≈0.77 COHERENT bath, not
+  the random bath measured.
+- **L1-A and L2 resonances co-locate** at amp_nat≈2 — one mechanism or accident.
+- amp_door is effectively a boolean (only tested >0); evaporation phase
+  asymmetric; the design Re/Im current language is inconsistent (J=Im, code
+  right, doc wrong in places); README status banner stale.
+
 ## Consolidated verdict (all acceptances run)
 
 | bar | status | evidence |
 |-----|--------|----------|
-| L1-A translation | **NEAR** | cos→0.99 / speed 0.0032 at amp_nat=2 resonance (seed 111 meets; 5/5 seeds +x); seed-variant magnitude, narrow band |
+| L1-A translation | **NEAR** (mechanism engaged; bar open) | cos→0.99 / speed 0.0032 at amp_nat=2 (seed 111 meets; 5/5 +x); seed-variant, narrow band, free-packet diffraction |
 | L1-B conservation | **GREEN** | drift_rel 0.000e+00 (the theorem; pairwise norm-preservation) |
-| L1-C anti-ignition | **GREEN** | bath byte-identical amp_nat 0–5; channel self-gating (random phases ⇒ τ_s≈0) |
-| QUENCH-3 spin retention | **NEG (as predicted)** | R2d≈0.02 all arms; confirms the arg(ψ) door is required |
-| L2 fifth sustain | **ENGAGES, partial** | ggm 0→0.13 at amp_nat=2; not 0.9 |
-| invariant surface (87 V3a) | **GREEN** at amp_nat=0 | full battery ALL GREEN 87, C≡Go, byte-inert |
+| L1-C anti-ignition | **GREEN (unarmed); armed ρ_coh≈0.77 bath UNRUN** | bath byte-identical amp_nat 0–5; self-gating |
+| QUENCH-3 spin retention | **NEG** — even with arg(ψ) door | R2d≈0.02 all arms; door slows early decay ~3× but steady-state ~0. Wall = cell-clock carrier + one-way evap door (not churn). Needs slot-borne phase + symmetric reverse door |
+| L2 fifth sustain | **ENGAGES, partial** | ggm 0→0.13 at amp_nat=2 (co-locates with L1-A resonance); not 0.9 |
+| invariant surface (87 V3a) | **GREEN** at amp_nat=0 | full battery ALL GREEN 87, C≡Go, byte-inert. **No C≡Go at amp_nat>0 (rigor gap)** |
 
 **The v93 thesis is confirmed where it makes a structural claim** —
 coherent dense translation emerges (L1-A near, a first), conservation

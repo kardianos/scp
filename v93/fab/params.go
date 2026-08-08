@@ -75,6 +75,10 @@ type Cfg struct {
 	// mode transport as unitary pairwise plane rotations (pass F's cousin),
 	// replacing the additive magnitude want. amp_nat=0 => byte-inert.
 	AmpNat  float64
+	// v93 arg(psi) door (v93/README.md §II.7): at condensation the field
+	// click composes coherently with psi_m, renormalized to conserved Em;
+	// the fired atom carries arg(psi_m), not m*th2. amp_door=0 => byte-inert.
+	AmpDoor float64
 	// QUENCH-2 apparatus (QUENCH.md §6; seed-time only)
 	ConfR, ConfGap, ConfTh, ConfPinw float64
 	SpinM                            int
@@ -216,6 +220,7 @@ func Defaults() Cfg {
 	p.AmpDrv = 0
 	p.AmpMmin = 2
 	p.AmpNat = 0
+	p.AmpDoor = 0
 	p.ConfR = 0
 	p.ConfGap = 0.3
 	p.ConfTh = 1.6
@@ -460,6 +465,8 @@ func (p *Cfg) SetKV(k, v string) {
 		p.AmpMmin = atof(v)
 	case "amp_nat":
 		p.AmpNat = atof(v)
+	case "amp_door":
+		p.AmpDoor = atof(v)
 	case "conf_r":
 		p.ConfR = atof(v)
 	case "conf_gap":

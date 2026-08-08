@@ -1298,7 +1298,24 @@ func (s *Sim) step() {
 					s.Ee[i] -= d1
 					s.Es[i] -= dsp
 					s.Em[i] += d1 + dsp
-					if P.QpPhase > 0 {
+					if P.AmpDoor > 0 {
+						// v93 arg(psi) door (§II.7): the field click
+						// (sqrt(d1) at phase aph) composes COHERENTLY with
+						// the existing matter amplitude; arg(psi_m_new) is
+						// the coherent-sum direction (carries the field
+						// phase + the interference cross-term = the
+						// current), |psi_m| fixed by conserved Em. The
+						// fired atom carries arg(psi_m), not m*th2.
+						aph := math.Atan2(s.fa2[i], s.fa1[i])
+						emOld := s.Em[i] - (d1 + dsp)
+						if emOld < 0 {
+							emOld = 0
+						}
+						ro, rc := math.Sqrt(emOld), math.Sqrt(d1)
+						s1 := ro*lutCos(s.th2[i]) + rc*lutCos(aph)
+						s2 := ro*lutSin(s.th2[i]) + rc*lutSin(aph)
+						s.th2[i] = math.Mod(math.Atan2(s2, s1)+8.0*TwoPi, TwoPi)
+					} else if P.QpPhase > 0 {
 						// QUENCH-3: phase crosses the door (mix <= 1
 						// by construction: d1 <= Em after the add)
 						aph := math.Atan2(s.fa2[i], s.fa1[i])
