@@ -6,6 +6,34 @@ package fab
 
 import "math"
 
+// applyUhop applies one unitary Givens rotation on slot sl at a fractional
+// angle fac*tau (fac=1 full hop; fac=0.5 each half of the Strang symmetric
+// schedule). Pairwise norm-preserving by construction; accumulates the dense-
+// hop current p1fd when the meter is on. Mirrors C apply_uhop. At fac=1.0 the
+// arithmetic is identical to the prior inline hop (shau*1.0 == shau exactly),
+// preserving byte-inertness at hop_order=0.
+func (s *Sim) applyUhop(sl int, fac float64) {
+	tau := s.shau[sl] * fac
+	if tau <= 0 {
+		return
+	}
+	i := s.sli[sl]
+	j := s.slj[sl]
+	ss, cc := math.Sincos(tau) // NOTE: Sincos returns (sin, cos)
+	m1i, m2i, m1j, m2j := s.dm1[i], s.dm2[i], s.dm1[j], s.dm2[j]
+	s.dm1[i] = cc*m1i + ss*m2j
+	s.dm2[i] = cc*m2i - ss*m1j
+	s.dm1[j] = cc*m1j + ss*m2i
+	s.dm2[j] = cc*m2j - ss*m1i
+	if s.P.P1Meter != 0 {
+		mj := (s.dm1[j]*s.dm1[j] + s.dm2[j]*s.dm2[j]) - (m1j*m1j + m2j*m2j)
+		m := mj * s.sd[sl]
+		s.p1fd[0] += m * s.sux[sl]
+		s.p1fd[1] += m * s.suy[sl]
+		s.p1fd[2] += m * s.suz[sl]
+	}
+}
+
 func (s *Sim) step() {
 	dt := s.P.Dt
 	P := &s.P
@@ -474,6 +502,10 @@ func (s *Sim) step() {
 			s.dm1[i] = cc*a - ss*b
 			s.dm2[i] = ss*a + cc*b
 		}
+		// Collect active canonical slots in canonical order, then dispatch by
+		// schedule. At hop_order=0 byte-inert sequential (same slots/order/
+		// fac=1.0 as the prior nested loop).
+		nact := 0
 		for i := 0; i < s.NC; i++ {
 			for q := s.cls[i]; q < s.cls[i+1]; q++ {
 				sl := s.clidx[q]
@@ -483,25 +515,41 @@ func (s *Sim) step() {
 				if s.sst[sl] == sFree || s.sA[sl] <= 0 {
 					continue
 				}
-				tau := s.shau[sl]
-				if tau <= 0 {
+				if s.shau[sl] <= 0 {
 					continue
 				}
-				j := s.slj[sl]
-				ss, cc := math.Sincos(tau)
-				m1i, m2i, m1j, m2j := s.dm1[i], s.dm2[i], s.dm1[j], s.dm2[j]
-				s.dm1[i] = cc*m1i + ss*m2j
-				s.dm2[i] = cc*m2i - ss*m1j
-				s.dm1[j] = cc*m1j + ss*m2i
-				s.dm2[j] = cc*m2j - ss*m1i
-				if P.P1Meter != 0 {
-					// P1 site (dense): energy the rotation moved into j
-					mj := (s.dm1[j]*s.dm1[j] + s.dm2[j]*s.dm2[j]) - (m1j*m1j + m2j*m2j)
-					m := mj * s.sd[sl]
-					s.p1fd[0] += m * s.sux[sl]
-					s.p1fd[1] += m * s.suy[sl]
-					s.p1fd[2] += m * s.suz[sl]
-				}
+				s.actslot[nact] = sl
+				nact++
+			}
+		}
+		switch P.HopOrder {
+		case 1:
+			// Strang symmetric: forward tau/2 + reverse tau/2. Time-reversal-
+			// invariant, so the chiral sweep bias that breaks C6 on a closed
+			// ring cancels to O(tau^2) (RING_DNLS §A.4 vacuum ceiling).
+			for t := 0; t < nact; t++ {
+				s.applyUhop(s.actslot[t], 0.5)
+			}
+			for t := nact - 1; t >= 0; t-- {
+				s.applyUhop(s.actslot[t], 0.5)
+			}
+		case 2:
+			// Randomized: per-step Fisher-Yates shuffle, full angle. hopRng is
+			// a separate stream so the physics RNG draws are untouched.
+			for t := nact - 1; t > 0; t-- {
+				s.hopRng ^= s.hopRng << 13
+				s.hopRng ^= s.hopRng >> 7
+				s.hopRng ^= s.hopRng << 17
+				kk := int(s.hopRng % uint64(t+1))
+				s.actslot[t], s.actslot[kk] = s.actslot[kk], s.actslot[t]
+			}
+			for t := 0; t < nact; t++ {
+				s.applyUhop(s.actslot[t], 1.0)
+			}
+		default:
+			// hop_order == 0 (default): sequential canonical sweep.
+			for t := 0; t < nact; t++ {
+				s.applyUhop(s.actslot[t], 1.0)
 			}
 		}
 		for i := 0; i < s.NC; i++ {

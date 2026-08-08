@@ -257,6 +257,16 @@ typedef struct {
      * clock pull: the fired atom carries arg(psi_m), not m*th2 written
      * piecemeal (IV.6). amp_door=0 => byte-inert (qp_phase path unchanged). */
     double amp_door;    /* arg(psi) coherent-amplitude door; 0 = qp_phase path (byte-inert) */
+    /* --- v93 hop schedule (RING_DNLS §A.4 / RESUME §7-A): the canonical
+     * sequential i<j Givens sweep is a deterministic C6-breaking Trotter
+     * asymmetry -- the vacuum retention ceiling AND item 1's dt-invariance
+     * failure are the same family. hop_order selects the pass-U schedule:
+     *   0 (default) = sequential canonical sweep (byte-inert)
+     *   1 = Strang symmetric (forward tau/2 + reverse tau/2; time-reversal-
+     *       invariant, cancels the chiral sweep bias that breaks C6 rings)
+     *   2 = randomized (per-step Fisher-Yates shuffle of the canonical slots;
+     *       separate RNG stream so the physics draws are untouched). */
+    int    hop_order;
     int    qatom_every;   /* apparatus (print-only): QATOM sampler period */
     /* --- freecell geometry sector (apparatus, not law) --- */
     double cfac;          /* candidate rule d < cfac*(ri+rj)  (LIVEFAB) */
@@ -387,6 +397,7 @@ static void cfg_defaults(void)
     P.amp_nat = 0;
     P.amp_logate = 0;
     P.amp_door = 0;
+    P.hop_order = 0;
     P.qatom_every = 200;
     /* freecell geometry */
     P.cfac = 1.15; P.k_rep = 1.0; P.mob_geo = 1.0; P.kappa_bond = 1.0;
@@ -493,6 +504,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "amp_nat")) P.amp_nat = atof(v);
     else if (!strcmp(k, "amp_logate")) P.amp_logate = atof(v);
     else if (!strcmp(k, "amp_door")) P.amp_door = atof(v);
+    else if (!strcmp(k, "hop_order")) P.hop_order = atoi(v);
     else if (!strcmp(k, "conf_r")) P.conf_r = atof(v);
     else if (!strcmp(k, "conf_gap")) P.conf_gap = atof(v);
     else if (!strcmp(k, "conf_th")) P.conf_th = atof(v);
@@ -625,6 +637,7 @@ static void load_cfg(const char *path)
 /* ------------------------------------------------------------------ */
 
 static uint64_t rng_s;
+static uint64_t hop_rng_s;   /* v93 hop_order=2: separate shuffle stream (physics draws untouched) */
 static uint64_t xrand(void)
 { uint64_t x = rng_s; x ^= x << 13; x ^= x >> 7; x ^= x << 17; return rng_s = x; }
 static double frand(void) { return (double)(xrand() >> 11) * (1.0 / 9007199254740992.0); }
@@ -778,6 +791,7 @@ static double *slem, *slph;          /* [slot][dir]: in-flight, phase   */
 static signed char *slp, *slq;       /* locked-in partial ratio p:q     */
 static double *swant;                /* [slot][dir] wants               */
 static double *shau_;                /* v93 [slot] unitary dense hop angle tau_s */
+static int *actslot_;                /* v93 hop schedule: flat list of active canonical slots */
 static double *sflux;                /* dense deposits this step        */
 static double *sldd;                 /* bond misfit buffer (Jacobi)     */
 static double *swl;                  /* space flux per slot             */
@@ -1001,6 +1015,7 @@ static void alloc_all(int nc)
     slp = malloc(NLMAX); slq = malloc(NLMAX);
     swant = calloc((size_t)2 * NLMAX, sizeof(double));
     shau_ = calloc(NLMAX, sizeof(double));
+    actslot_ = malloc(NLMAX * sizeof(int));
     sflux = calloc(NLMAX, sizeof(double));
     sldd = calloc(NLMAX, sizeof(double));
     swl = calloc(NLMAX, sizeof(double));
@@ -1227,6 +1242,32 @@ static void topo_refresh(void)
 /* ------------------------------------------------------------------ */
 
 static double gm_, G2m_, lockf_, Aref_, dref_;
+
+/* v93 pass-U hop primitive: apply one unitary Givens rotation on slot s at a
+ * fractional angle fac*tau_s (fac=1 full hop; fac=0.5 each half of the Strang
+ * symmetric schedule). Pairwise norm-preserving by construction; accumulates
+ * the dense-hop current p1fd when the meter is on. References only file-scope
+ * state, so usable from step(). At fac=1.0 the arithmetic is identical to the
+ * prior inline hop (shau_[s]*1.0 == shau_[s] exactly), preserving byte-
+ * inertness at hop_order=0. */
+static void apply_uhop(int s, double fac)
+{
+    double tau = shau_[s] * fac;
+    if (tau <= 0.0) return;
+    int i = sli[s], j = slj[s];
+    double cc, ss;
+    sincos(tau, &ss, &cc);
+    double m1i = dm1_[i], m2i = dm2_[i], m1j = dm1_[j], m2j = dm2_[j];
+    dm1_[i] = cc * m1i + ss * m2j;
+    dm2_[i] = cc * m2i - ss * m1j;
+    dm1_[j] = cc * m1j + ss * m2i;
+    dm2_[j] = cc * m2j - ss * m1i;
+    if (P.p1_meter) {
+        double mj = (dm1_[j]*dm1_[j] + dm2_[j]*dm2_[j]) - (m1j*m1j + m2j*m2j);
+        double m = mj * sd[s];
+        p1fd[0] += m * sux[s]; p1fd[1] += m * suy[s]; p1fd[2] += m * suz[s];
+    }
+}
 
 static void step(void)
 {
@@ -1575,30 +1616,41 @@ static void step(void)
             dm1_[i] = cc * a - ss * b;
             dm2_[i] = ss * a + cc * b;
         }
+        /* Collect the active canonical slots (sli[s]==i, live, tau>0) in
+         * canonical order into a flat list, then dispatch by schedule. At
+         * hop_order=0 this is the byte-inert sequential sweep (same slots,
+         * same order, same fac=1.0 angles as the prior nested loop -- the
+         * collection iterates cls_/clidx identically). */
+        int nact = 0;
         for (int i = 0; i < NC; i++) {
             for (int q = cls_[i]; q < cls_[i + 1]; q++) {
                 int s = clidx[q];
                 if (sli[s] != i) continue;       /* canonical: apply from the i side */
                 if (sst[s] == S_FREE || sA[s] <= 0) continue;
-                double tau = shau_[s];
-                if (tau <= 0.0) continue;
-                int j = slj[s];
-                double cc, ss;
-                sincos(tau, &ss, &cc);
-                double m1i = dm1_[i], m2i = dm2_[i], m1j = dm1_[j], m2j = dm2_[j];
-                dm1_[i] = cc * m1i + ss * m2j;
-                dm2_[i] = cc * m2i - ss * m1j;
-                dm1_[j] = cc * m1j + ss * m2i;
-                dm2_[j] = cc * m2j - ss * m1i;
-                if (P.p1_meter) {
-                    /* P1 site (dense): energy the rotation moved into j,
-                     * pairwise-conserved by construction; displacement i -> j */
-                    double mj = (dm1_[j]*dm1_[j] + dm2_[j]*dm2_[j])
-                              - (m1j*m1j + m2j*m2j);
-                    double m = mj * sd[s];
-                    p1fd[0] += m * sux[s]; p1fd[1] += m * suy[s]; p1fd[2] += m * suz[s];
-                }
+                if (shau_[s] <= 0.0) continue;
+                actslot_[nact++] = s;
             }
+        }
+        if (P.hop_order == 1) {
+            /* Strang symmetric: forward tau/2 + reverse tau/2. Time-reversal-
+             * invariant, so the chiral sweep bias that breaks C6 on a closed
+             * ring cancels to O(tau^2) (RING_DNLS §A.4 vacuum ceiling). */
+            for (int t = 0; t < nact; t++) apply_uhop(actslot_[t], 0.5);
+            for (int t = nact - 1; t >= 0; t--) apply_uhop(actslot_[t], 0.5);
+        } else if (P.hop_order == 2) {
+            /* Randomized: per-step Fisher-Yates shuffle, full angle. Breaks
+             * the deterministic sweep bias statistically. hop_rng_s is a
+             * separate stream so the physics RNG draws are untouched. */
+            for (int t = nact - 1; t > 0; t--) {
+                hop_rng_s ^= hop_rng_s << 13; hop_rng_s ^= hop_rng_s >> 7;
+                hop_rng_s ^= hop_rng_s << 17;
+                int kk = (int)(hop_rng_s % (uint64_t)(t + 1));
+                int tmp = actslot_[t]; actslot_[t] = actslot_[kk]; actslot_[kk] = tmp;
+            }
+            for (int t = 0; t < nact; t++) apply_uhop(actslot_[t], 1.0);
+        } else {
+            /* hop_order == 0 (default): sequential canonical sweep. */
+            for (int t = 0; t < nact; t++) apply_uhop(actslot_[t], 1.0);
         }
         for (int i = 0; i < NC; i++) {
             double a = dm1_[i], b = dm2_[i];
@@ -3173,6 +3225,9 @@ int main(int argc, char **argv)
 
     comb_build();
     rng_s = P.seed ? P.seed : 1;
+    hop_rng_s = (uint64_t)(P.seed ? P.seed : 1) * 0x2545F4914F6CDD1DULL
+              + 0x9E3779B97F4A7C15ULL;
+    if (!hop_rng_s) hop_rng_s = 1;
     for (int w = 0; w < 8; w++) xrand();   /* cellfab warm-up */
 
     gm_ = P.gamma_res_m < 0 ? P.gamma_res : P.gamma_res_m;
@@ -3212,6 +3267,8 @@ int main(int argc, char **argv)
            P.amp_nat);
     printf("# v93 arg(psi) door (v93/README.md §II.7): amp_door=%g\n",
            P.amp_door);
+    printf("# v93 hop schedule (RING_DNLS §A.4): hop_order=%d (0=seq, 1=strang, 2=rand)\n",
+           P.hop_order);
     printf("# QUENCH-2 apparatus: conf_r=%g conf_gap=%g conf_th=%g conf_pinw=%g spin_m=%d imp_k=%g qp_phase=%g\n",
            P.conf_r, P.conf_gap, P.conf_th, P.conf_pinw, P.spin_m, P.imp_k, P.qp_phase);
     printf("# HORIZON apparatus (HORIZON.md): bh_r=%g bh_k=%g bh_sep=%g\n",

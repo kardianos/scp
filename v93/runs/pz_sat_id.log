@@ -14,6 +14,7 @@
 # v92 amplitude Phase L lane L-1 (L0_DESIGN.md): amp_drv=0 amp_mmin=2
 # v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=0
 # v93 arg(psi) door (v93/README.md §II.7): amp_door=0
+# v93 hop schedule (RING_DNLS §A.4): hop_order=0 (0=seq, 1=strang, 2=rand)
 # QUENCH-2 apparatus: conf_r=0 conf_gap=0.3 conf_th=1.6 conf_pinw=3 spin_m=0 imp_k=0 qp_phase=0
 # HORIZON apparatus (HORIZON.md): bh_r=0 bh_k=1 bh_sep=0
 # FLOW apparatus (FLOW.md): bed_k=0 bed_tau=30

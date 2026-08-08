@@ -30,7 +30,8 @@ type Sim struct {
 	Out  io.Writer // stdout of the instrument (log lines)
 	Errw io.Writer // stderr (warnings, autopsies)
 
-	rng uint64
+	rng    uint64
+	hopRng uint64 // v93 hop_order=2: separate shuffle stream (physics draws untouched)
 
 	NC int
 	// cells
@@ -103,6 +104,7 @@ type Sim struct {
 	slp, slq                    []int8
 	swant                       []float64 // [slot][dir]
 	shau                        []float64 // v93 [slot] unitary dense hop angle tau_s
+	actslot                     []int     // v93 hop schedule: flat list of active canonical slots
 	sflux                       []float64
 	sldd                        []float64
 	swl                         []float64
@@ -665,6 +667,7 @@ func (s *Sim) allocAll(nc int) {
 	s.slq = make([]int8, s.NLMAX)
 	s.swant = make([]float64, 2*s.NLMAX)
 	s.shau = make([]float64, s.NLMAX)
+	s.actslot = make([]int, s.NLMAX)
 	s.sflux = make([]float64, s.NLMAX)
 	s.sldd = make([]float64, s.NLMAX)
 	s.swl = make([]float64, s.NLMAX)

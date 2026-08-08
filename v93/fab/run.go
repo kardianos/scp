@@ -224,6 +224,10 @@ func (s *Sim) Run() {
 	if s.rng == 0 {
 		s.rng = 1
 	}
+	s.hopRng = P.Seed*0x2545F4914F6CDD1D + 0x9E3779B97F4A7C15
+	if s.hopRng == 0 {
+		s.hopRng = 1
+	}
 	for w := 0; w < 8; w++ {
 		s.xrand() // cellfab warm-up
 	}
@@ -273,6 +277,8 @@ func (s *Sim) Run() {
 		P.AmpNat)
 	fprintf(s.Out, "# v93 arg(psi) door (v93/README.md §II.7): amp_door=%.6g\n",
 		P.AmpDoor)
+	fprintf(s.Out, "# v93 hop schedule (RING_DNLS §A.4): hop_order=%d (0=seq, 1=strang, 2=rand)\n",
+		P.HopOrder)
 	fprintf(s.Out, "# QUENCH-2 apparatus: conf_r=%.6g conf_gap=%.6g conf_th=%.6g conf_pinw=%.6g spin_m=%d imp_k=%.6g qp_phase=%.6g\n",
 		P.ConfR, P.ConfGap, P.ConfTh, P.ConfPinw, P.SpinM, P.ImpK, P.QpPhase)
 	fprintf(s.Out, "# HORIZON apparatus (HORIZON.md): bh_r=%.6g bh_k=%.6g bh_sep=%.6g\n",

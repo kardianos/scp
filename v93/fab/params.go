@@ -81,6 +81,13 @@ type Cfg struct {
 	// click composes coherently with psi_m, renormalized to conserved Em;
 	// the fired atom carries arg(psi_m), not m*th2. amp_door=0 => byte-inert.
 	AmpDoor float64
+	// v93 hop schedule (RING_DNLS §A.4 / RESUME §7-A): the canonical sequential
+	// i<j Givens sweep is a deterministic C6-breaking Trotter asymmetry (the
+	// vacuum retention ceiling + item 1's dt artifact, same family).
+	//   0 (default) = sequential canonical sweep (byte-inert)
+	//   1 = Strang symmetric (forward tau/2 + reverse tau/2)
+	//   2 = randomized (per-step Fisher-Yates shuffle; separate RNG stream)
+	HopOrder int
 	// QUENCH-2 apparatus (QUENCH.md §6; seed-time only)
 	ConfR, ConfGap, ConfTh, ConfPinw float64
 	SpinM                            int
@@ -228,6 +235,7 @@ func Defaults() Cfg {
 	p.AmpNat = 0
 	p.AmpLogate = 0
 	p.AmpDoor = 0
+	p.HopOrder = 0
 	p.ConfR = 0
 	p.ConfGap = 0.3
 	p.ConfTh = 1.6
@@ -477,6 +485,8 @@ func (p *Cfg) SetKV(k, v string) {
 		p.AmpLogate = atof(v)
 	case "amp_door":
 		p.AmpDoor = atof(v)
+	case "hop_order":
+		p.HopOrder = atoi(v)
 	case "conf_r":
 		p.ConfR = atof(v)
 	case "conf_gap":
