@@ -258,3 +258,42 @@ honest result.
 - QUENCH-3 (spin retention): **NEGATIVE as predicted** — confirms the
   arg(ψ) door is the required next face.
 - Invariant surface (87 V3a bars): **held** at amp_nat=0.
+
+## L2 (chord / fifth) — engages, partial
+
+FCQ fifth-triangle (`exp=tri tri_xU=0.28 bath=0 T=100`, V2g so radiance
+does not tax the fifth), `ggm` = the fifth gg product:
+
+| amp_nat | ggm   |
+|--------:|-------|
+| 0       | 0.000 |
+| 1       | 0.006 |
+| 2       | **0.132** |
+| 3       | 0.015 |
+
+The unitary channel ACTIVATES the fifth (dead at amp_nat=0 → live, ggm 0.13
+at amp_nat=2) where the additive model leaves it dead — but not to the 0.9
+L2 bar. Same shape as L1-A: coherent transport engages the structure, full
+sustain needs more (and the chord-probe chicken-and-egg stands: the unitary
+channel fixes the carrier half but a standing fifth still needs a seed,
+IV.8).
+
+## Consolidated verdict (all acceptances run)
+
+| bar | status | evidence |
+|-----|--------|----------|
+| L1-A translation | **NEAR** | cos→0.99 / speed 0.0032 at amp_nat=2 resonance (seed 111 meets; 5/5 seeds +x); seed-variant magnitude, narrow band |
+| L1-B conservation | **GREEN** | drift_rel 0.000e+00 (the theorem; pairwise norm-preservation) |
+| L1-C anti-ignition | **GREEN** | bath byte-identical amp_nat 0–5; channel self-gating (random phases ⇒ τ_s≈0) |
+| QUENCH-3 spin retention | **NEG (as predicted)** | R2d≈0.02 all arms; confirms the arg(ψ) door is required |
+| L2 fifth sustain | **ENGAGES, partial** | ggm 0→0.13 at amp_nat=2; not 0.9 |
+| invariant surface (87 V3a) | **GREEN** at amp_nat=0 | full battery ALL GREEN 87, C≡Go, byte-inert |
+
+**The v93 thesis is confirmed where it makes a structural claim** —
+coherent dense translation emerges (L1-A near, a first), conservation
+dissolves into a theorem (L1-B), and anti-ignition is structural (L1-C,
+self-gating). Where the design itself flags a missing piece — spin
+retention needs the arg(ψ) door (§II.7/IV.6) — the experiment agrees
+(QUENCH-3 negative; L2 partial). The **arg(ψ) door face** is the
+registered next step: the fired atom carries arg(ψ_m) slot-borne, not the
+cell-clock th2 written from a decohering field.
