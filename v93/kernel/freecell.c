@@ -397,7 +397,7 @@ static void cfg_defaults(void)
     P.amp_nat = 0;
     P.amp_logate = 0;
     P.amp_door = 0;
-    P.hop_order = 0;
+    P.hop_order = 1;   /* v93 face A: Strang symmetric is the adopted default (L1-A re-run passes: fd +285/+300/+272, seed-robust +x; battery ALL GREEN 87 -- pass U is skipped at amp_nat=0). hop_order=0 reproduces all prior amp_nat>0 sequential-sweep results. */
     P.qatom_every = 200;
     /* freecell geometry */
     P.cfac = 1.15; P.k_rep = 1.0; P.mob_geo = 1.0; P.kappa_bond = 1.0;

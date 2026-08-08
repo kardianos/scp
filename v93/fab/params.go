@@ -235,7 +235,7 @@ func Defaults() Cfg {
 	p.AmpNat = 0
 	p.AmpLogate = 0
 	p.AmpDoor = 0
-	p.HopOrder = 0
+	p.HopOrder = 1 // v93 face A: Strang symmetric adopted default (L1-A passes; pass U skipped at amp_nat=0). 0 reproduces prior sequential-sweep results.
 	p.ConfR = 0
 	p.ConfGap = 0.3
 	p.ConfTh = 1.6
