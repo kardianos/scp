@@ -192,6 +192,7 @@ typedef struct {
      * azimuthal phase winding to the seeded packet. Both inert at 0. */
     double conf_r, conf_gap, conf_th, conf_pinw;
     int    spin_m;
+    double seed_mw;   /* v93 item 4: seed MATTER azimuthal winding m*phi on the blob (no field/door) */
     double imp_k;       /* QUENCH-2 fix: inward radial phase tilt on the
                          * seeded packet — implosion focusing = the
                          * LAWFUL whole-box compress-release (seeded
@@ -378,6 +379,7 @@ static void cfg_defaults(void)
     P.wf_on = 0; P.wf_floor = 0.01; P.wf_far = 99;
     P.conf_r = 0; P.conf_gap = 0.3; P.conf_th = 1.6; P.conf_pinw = 3.0;
     P.spin_m = 0; P.imp_k = 0; P.qp_phase = 0;
+    P.seed_mw = 0;
     P.bh_r = 0; P.bh_k = 1.0; P.bh_sep = 0;
     P.bed_k = 0; P.bed_tau = 30;
     P.amp_tau = 0;
@@ -496,6 +498,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "conf_th")) P.conf_th = atof(v);
     else if (!strcmp(k, "conf_pinw")) P.conf_pinw = atof(v);
     else if (!strcmp(k, "spin_m")) P.spin_m = atoi(v);
+    else if (!strcmp(k, "seed_mw")) P.seed_mw = atof(v);
     else if (!strcmp(k, "imp_k")) P.imp_k = atof(v);
     else if (!strcmp(k, "qp_phase")) P.qp_phase = atof(v);
     else if (!strcmp(k, "bh_r")) P.bh_r = atof(v);
@@ -3478,8 +3481,14 @@ int main(int argc, char **argv)
             if (pull > avail) pull = avail > 0 ? avail : 0;
             Es[i] -= pull;
             Em[i] += pull;
-            /* e3b tilt: phase ramp along x (cellfab.c:1750 convention) */
-            th2[i] = P.kx != 0 ? fmod(-(P.kx * dx) + 8.0 * TWO_PI, TWO_PI) : 0;
+            /* e3b tilt: phase ramp along x (cellfab.c:1750 convention);
+             * OR seed_mw: a MATTER azimuthal winding m*phi about the blob
+             * centre (v93 item 4 -- hand-seeded matter vortex, no field/door,
+             * isolates hold-vs-imprint for retention). */
+            if (P.seed_mw != 0)
+                th2[i] = fmod(P.seed_mw * atan2(dy, dx) + 8.0 * TWO_PI, TWO_PI);
+            else
+                th2[i] = P.kx != 0 ? fmod(-(P.kx * dx) + 8.0 * TWO_PI, TWO_PI) : 0;
             if (add > 0.05 * P.amp) { tag[i] = 1; nload++; }
         }
         if (P.kx != 0)
