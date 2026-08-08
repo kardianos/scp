@@ -464,7 +464,7 @@ func (s *Sim) step() {
 		// Trotter split (face-2 centroid wobble). Byte-inert at amp_nat=0.
 		for i := 0; i < s.NC; i++ {
 			ang := s.w2e[i] * dt
-			cc, ss := math.Sincos(ang)
+			cc, ss := lutCos(ang), lutSin(ang) // mirror C lut_cos/lut_sin (libm Sincos diverges over 4000 steps)
 			a, b := s.dm1[i], s.dm2[i]
 			s.dm1[i] = cc*a - ss*b
 			s.dm2[i] = ss*a + cc*b
