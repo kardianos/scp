@@ -192,3 +192,69 @@ exactly. The ratchet surface is intact.
 - **Packet binding:** a free unitary packet diffracts; the additive model's
   cap/inflight binding is bypassed. A bound coherent packet (soliton-like)
   may need a companion mechanism — open design question.
+
+## L1-C (anti-ignition) — GREEN, and structurally so
+
+Quiescent bath (`exp=bath T=40`, V3a law), amp_nat sweep:
+
+| amp_nat | drift_rel | births | deaths | z_live |
+|--------:|-----------|--------|--------|--------|
+| 0       | 0.000e+00 | 4611   | 4077   | 16.89  |
+| 1       | 0.000e+00 | 4611   | 4077   | 16.89  |
+| 2       | 0.000e+00 | 4611   | 4077   | 16.89  |
+| 3       | 0.000e+00 | 4611   | 4077   | 16.89  |
+| 5       | 0.000e+00 | 4611   | 4077   | 16.89  |
+
+**Byte-identical.** The unitary channel is SELF-GATING: the bath's random
+phases give g_sym ≈ 0 ⇒ τ_s ≈ 0 ⇒ it transports nothing on incoherent
+matter. It engages only on coherent phase structure (the e3b tilt) and is
+inert on the random bath — so coherence-runaway (the armed ρ_coh≈0.77 risk)
+is structurally starved. This is exactly the design's anti-ignition
+mechanism (§II.9: "rotations exchange amplitude reversibly; the bath's
+random closure averages to zero, starving the channel"). L1-C PASSES.
+
+(Driven-beam note: the QUENCH-3 beam arm below shows births DROP at
+amp_nat>0, 8800→3100–4400 — the channel reshapes condensation but never
+*increases* it. No ignition in either regime.)
+
+## QUENCH-3 winding retention — NEGATIVE, and it CONFIRMS the design
+
+Standing-vortex suite (v91 §7.5: `slit_mask=3 L=64 T=300 sigma=8 slit_srcx=32
+kx=0 spin_m=2 qp_phase∈{0,1}`, door carries field phase atan2(fa2,fa1) into
+th2). R2d = matter winding coherence |⟨e^{i(th2−2φ)}⟩|, the retention meter:
+
+| arm | qp_phase | amp_nat | R2d range (t=20..300) | mean |
+|-----|---------|---------|-----------------------|------|
+| G0  | 0 | 0 | 0.006–0.043 | ~0.025 |
+| G1 (v91) | 1 | 0 | 0.016–0.048 | ~0.029 |
+| G2 (v93) | 1 | 1 | 0.005–0.050 | ~0.024 |
+| G3 (v93) | 1 | 2 | 0.003–0.048 | ~0.020 |
+
+**All four arms R2d ≈ 0.02–0.03 — no coherent matter winding retention.**
+The unitary dense channel ALONE does not make matter hold the field-injected
+winding. This is exactly what v93 §II.7 / IV.6 predict: the `qp_phase` door
+writes the *field* phase piecemeal into the *cell clock* th2 at each beat —
+that is the m·th2-style write the design forbids ("phase is carried slot-
+borne, protected from delivery churn; the fired atom carries arg(ψ), not
+m·th2"). Coherent transport of an incoherently-imprinted phase cannot
+retain it. The field winding itself also decoheres in transit (RA2 1.0 at
+t=0 → ~0.15 by t=300), so by the time matter condenses the imprint is
+already speckle.
+
+**Verdict:** the QUENCH-3 retention fork lands on outcome (b) — "the door
+carries, the cloud cannot hold" — and the unitary channel does not change
+that, BECAUSE the door is the wrong door. This is the registered
+prerequisite for the **arg(ψ) door face**: the fired atom must carry the
+dense amplitude's departure phase arg(ψ_m) slot-borne, not the cell-clock
+th2 written from a decohering field. That face is the design's named fix
+for spin retention (§II.7); until it lands, R2d≈0 is the expected and
+honest result.
+
+## Status (post QUENCH-3 + L1-C)
+
+- L1-B (conservation): **GREEN**.
+- L1-C (anti-ignition): **GREEN** (bath byte-identical; channel self-gating).
+- L1-A (translation): **NEAR** (cos→0.99 at amp_nat=2; seed-variant).
+- QUENCH-3 (spin retention): **NEGATIVE as predicted** — confirms the
+  arg(ψ) door is the required next face.
+- Invariant surface (87 V3a bars): **held** at amp_nat=0.
