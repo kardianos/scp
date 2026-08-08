@@ -65,6 +65,13 @@ Search by these comment markers (line numbers shift; markers don't):
 - **`amp_logate`** (item 1, default 0): >0 drops the phase-dependent gate from
   τ_s → linear Schrödinger hop. This RECOVERS coherent transport (the gate was
   an artifact source post-empty-cell-fix).
+- **`hop_order`** (face A, default 0 = byte-inert): the pass-U hop schedule.
+  0=sequential canonical sweep; 1=Strang symmetric (forward τ/2 + reverse τ/2,
+  time-reversal-invariant — best retention); 2=randomized (per-step Fisher-Yates
+  shuffle, separate `hop_rng_s`/`hopRng` stream — best dt-invariance). Refactor:
+  collect active canonical slots into `actslot_`/`actslot`, dispatch by schedule;
+  `apply_uhop`/`applyUhop(sl, fac)` is the hop primitive (fac=1 full, 0.5 Strang
+  half). Header line `# v93 hop schedule`.
 - **`amp_door`** (default 0): the arg(ψ) door. At condensation (pass 6,
   `v93 arg(psi) door (§II.7)`): coherent merge arg(ψ_m_new)=arg(√Em_old·e^{i th2}+√(amp_door·d1)·e^{i aph}),
   |ψ_m| fixed by Em. CONTINUOUS mix weight (not boolean).
@@ -161,32 +168,41 @@ Build: `cd v93 && make all` (freecell + fabrun + battery + volview).
 
 ## 7. The next face (when the user wants to continue)
 
+Faces **A/B/C below are EXECUTED (2026-08-08)** — see `FACE_A.md`,
+`FACE_B.md`, `FACE_C.md` for the data. Outcomes in brief:
+- **A. Symmetrized hop schedule — DONE.** New byte-inert knob `hop_order`
+  (0=seq default, 1=Strang, 2=randomized) in BOTH kernels. Battery ALL
+  GREEN 87. LIVE vacuum ring holds W=+2 to t=1000 under Strang/random
+  (sequential degrades to W=+1); frozen Strang holds to ~t=108 then succumbs
+  to the independent q_detune condensation. e3b dt-spread 4%(seq)->1.3%(Strang)
+  ->0.3%(rand). **Strang = best retention; random = best dt-invariance.**
+- **B. Lit-bath refill + arg(ψ) door — DONE, prediction REFUTED.** noise_amp
+  lights the medium (cond=41-52 vs 0 dark). In the bath, contact dephasing
+  (A.2 ~8 t.u.) beats the door's beat cycle (~7 t.u.). Fair test (vacuum +
+  Strang + noise_amp): door traffic (~28 fires) destroys W by t~14-16
+  REGARDLESS of amp_door. Composing a random-phase field "coherently" is
+  still random injection. amp_door is NOT the retention rescue; the ceiling
+  is contact dephasing + the door's own random-phase injection.
+- **C. Condensation lane — DONE.** Self-trapped hoards persist to t=300
+  (stable mass formation, no lock/gate/door). Deep corner (qd3.6 amp2):
+  Em_max~7 (3×cap), frozen envelope. 189 hoards in a long-tailed hierarchy
+  (0.5→7.2). **Radiance SELECTS sizes**: V3a tax truncates the spectrum at
+  the fixed point (Em*~1.55); deep self-traps resist. Creation-adjacent.
+
 The retention face (§2 last row, `RING_DNLS.md`) EXECUTED both prior routes.
-What it opened, in recommended order:
-- **A. Symmetrized hop schedule (kernel face):** the sequential i<j
-  Givens-sweep order is a deterministic C6-breaking Trotter perturbation —
-  measured as BOTH the vacuum retention ceiling (frozen scaffold slips by
-  t≈50–100 with all noise off; live geometry ~250–300) AND (same family)
-  item 1's dt-invariance failure. One face — Strang/paired/randomized hop
-  ordering behind a byte-inert knob — targets both. Acceptance: frozen-
-  scaffold vacuum ring holds W=+2 to t=1000; e3b speed dt-invariant at
-  fixed amp_nat·dt.
-- **B. Lit-bath refill (the untested rescue):** rerun the ring retention
-  under V3a with a WARM bath (QUENCH-style lit medium) so the door actually
-  fires on cycle voices (A.5: cond=0 — amp_door never engaged). The
-  arg(ψ) door (amp_door=1) is the piece built for exactly this; predict
-  amp_door=0 scrambles on refill, amp_door=1 is the only candidate hold.
-- **C. Condensation lane (creation-adjacent):** characterize the
-  spontaneous incoherent condensation (B.1/B.2) as a mass-formation
-  mechanism: lifetimes vs qd/amp, hoard spectra, interaction with radiance
-  (does the tax select hoard sizes?), connection to the QUENCH cloud.
+What it opened (A/B/C above, now all done):
 
 Also still open (lower priority per user): formal tolerance-C≡Go abx at
-amp_nat>0; armed L1-C (ρ_coh≈0.77 coherent bath).
+amp_nat>0; armed L1-C (ρ_coh≈0.77 coherent bath); a COHERENT phase-matched
+field driver (the one case where amp_door might still help — untested).
 
 ## 8. Recent git (the v93 arc)
 ```
-(HEAD)  retention face: ring seed_mw + RING_DNLS.md (routes A+B executed)
+(HEAD)  face C: condensation lane (mass formation; radiance selects hoards)
+42a6aab face C: condensation lane — stable hierarchical mass formation
+f70f238 face B: lit-bath refill + arg(psi) door — NOT a retention rescue
+2f55e78 face A: symmetrized hop schedule (hop_order) — fixes Trotter artifact
+(retention face: ring seed_mw + RING_DNLS.md, routes A+B executed)
 d178813 items 1/2/4 writeup + battery ALL GREEN 87
 1239bd4 item 4 (matter-winding retention): unitary scrambles localized winding
 c7e77e2 item 2 (group velocity): tagged-centroid meter wrong; fd is seed-robust +x
@@ -195,7 +211,6 @@ c7e77e2 item 2 (group velocity): tagged-centroid meter wrong; fd is seed-robust 
 cc16db7 review FIXES: empty-cell reset + symmetric reverse door + amp_door cont.
 227a832 FIX Go precession sin/cos swap + lut mirror
 32138ec arg(ψ) door face + 3-reviewer consultation
-fa1026f, 0f5e256, d07aa39, d6bb6b7, 286418d, d934b78  (faces 1–3 + L1/QUENCH/L2)
 6dcc0c8  STEP ZERO (v92→v93 carry, baseline ALL GREEN 87) — the byte-inert anchor
 ```
 `git show 6dcc0c8:v93/runs/conserve_c.log` is the canonical byte-inert
