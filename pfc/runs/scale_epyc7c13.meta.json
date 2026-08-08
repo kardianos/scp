@@ -1,0 +1,13 @@
+{
+  "id": 37955908,
+  "dph": 0.14875,
+  "cpu": "AMD EPYC 7C13 64-Core Processor",
+  "vcpu": 32.0,
+  "host_cores": 128.0,
+  "hbw": 409.6,
+  "peak": 204.8,
+  "sock": 2,
+  "geo": "British Columbia, CA",
+  "gpu": "RTX 3090",
+  "contract": 47171932
+}

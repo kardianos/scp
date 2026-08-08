@@ -14,9 +14,69 @@ type SimSetupParams struct {
 	Executor  string            `json:"executor" desc:"Execution type: local or remote" required:"true"`
 	Host      string            `json:"host" desc:"SSH host for existing remote instance"`
 	Port      int               `json:"port" desc:"SSH port for existing remote instance"`
-	GPUFilter map[string]string `json:"gpu_filter" desc:"GPU filter as key-value pairs. Keys: gpu_name (e.g. Tesla_V100), min_ram (GB). Allowed GPUs: Tesla_V100, A100_SXM4, A100_PCIE, L40S, H100_SXM, H100_PCIE, B200"`
+	GPUFilter map[string]string `json:"gpu_filter" desc:"Offer filter key=value (ops: >=,<=,!=,=,>,<). GPU: gpu_name, min_ram(GB), num_gpus. CPU: min_cpu_cores, min_cpu_ghz, min_cpu_ram(GB), cpu_name, has_avx. DRAM: min_cpu_mem_bw(GB/s theoretical host peak from local CPU table). Disk/GPU BW: min_disk_bw(MB/s), min_pcie_bw, min_gpu_mem_bw(GB/s). Price: max_dph. Escape: any_gpu=1, region=any|US,CA. Default GPU allowlist: Tesla_V100,A100_*,L40S,H100_*,B200,RTX_PRO_*"`
 	DiskGB    int               `json:"disk_gb" desc:"Disk space in GB to provision (required for remote)" required:"true"`
 	WorkDir   string            `json:"work_dir" desc:"Working directory"`
+}
+
+// SimSearchOffersParams searches Vast.ai without provisioning.
+// Prefer structured fields; filter_str accepts the same token language as gpu_filter / CLI.
+type SimSearchOffersParams struct {
+	// FilterStr is a whitespace-separated query, e.g.
+	// "max_dph=0.5 min_disk_bw=400 min_cpu_cores=8 any_gpu=1 region=US,CA"
+	FilterStr string `json:"filter" desc:"Whitespace-separated filter tokens (same language as gpu_filter / CLI search). Example: max_dph=0.5 min_disk_bw=400 min_cpu_cores=8 any_gpu=1"`
+	// Structured knobs (merged into filter; override filter_str on conflict for the same key).
+	MaxDPH       float64 `json:"max_dph" desc:"Max $/hour (dph_total)"`
+	MinDiskBW    float64 `json:"min_disk_bw" desc:"Min disk read bandwidth MB/s (Vast disk_bw; closest API field to 'memory bandwidth in MB/s')"`
+	MinCPUCores  float64 `json:"min_cpu_cores" desc:"Min effective vCPUs"`
+	MinCPUGHz    float64 `json:"min_cpu_ghz" desc:"Min CPU clock GHz"`
+	MinCPURamGB  float64 `json:"min_cpu_ram_gb" desc:"Min system RAM in GB"`
+	MinPCIeBW    float64 `json:"min_pcie_bw" desc:"Min PCIe bandwidth (CPU↔GPU)"`
+	MinGPUMemBW  float64 `json:"min_gpu_mem_bw" desc:"Min GPU memory bandwidth GB/s"`
+	MinCPUMemBW  float64 `json:"min_cpu_mem_bw" desc:"Min host DRAM theoretical peak GB/s from local CPU model table (channels×MT/s×8/1000 × sockets). Aliases: min_dram_bw, min_mem_bw. Overrides in ~/.scp-runner/cpu_mem_bw.json"`
+	CPUContains  string  `json:"cpu_contains" desc:"Substring match on cpu_name (client-side; Vast API cannot filter cpu_name)"`
+	GPUName      string  `json:"gpu_name" desc:"GPU model (underscores ok: RTX_3090)"`
+	MinGPURamGB  float64 `json:"min_gpu_ram_gb" desc:"Min GPU VRAM in GB"`
+	AnyGPU       bool    `json:"any_gpu" desc:"If true, skip the production GPU allowlist (needed for cheap consumer GPUs / CPU-oriented hosts)"`
+	Region       string  `json:"region" desc:"Country codes comma-separated (default US,CA) or 'any'"`
+	Limit        int     `json:"limit" desc:"Max offers to return (default 20)"`
+}
+
+type SimSearchOffersResult struct {
+	Count  int              `json:"count"`
+	Filter string           `json:"filter_used"`
+	Note   string           `json:"note,omitempty"`
+	Offers []VastOfferBrief `json:"offers"`
+}
+
+// VastOfferBrief is a compact offer row for MCP/CLI output.
+type VastOfferBrief struct {
+	ID                int     `json:"id"`
+	MachineID         int     `json:"machine_id"`
+	DPHTotal          float64 `json:"dph_total"`
+	GPUName           string  `json:"gpu_name"`
+	NumGPUs           int     `json:"num_gpus"`
+	GPUMemMB          int64   `json:"gpu_ram_mb"`
+	GPUMemBW          float64 `json:"gpu_mem_bw_gbs"`
+	CPUName           string  `json:"cpu_name"`
+	CPUClass          string  `json:"cpu_class,omitempty"`
+	CPUNote           string  `json:"cpu_note,omitempty"`
+	CPUMemPeakGBs     float64 `json:"cpu_mem_peak_gbs,omitempty"`  // theoretical / socket
+	CPUMemHostGBs     float64 `json:"cpu_mem_host_gbs,omitempty"`  // × estimated sockets
+	CPUMemStreamGBs   float64 `json:"cpu_mem_stream_gbs,omitempty"` // ~0.78 × host peak
+	CPUMemChannels    int     `json:"cpu_mem_channels,omitempty"`
+	CPUMemMTs         int     `json:"cpu_mem_mts,omitempty"`
+	CPUMemTech        string  `json:"cpu_mem_tech,omitempty"`
+	CPUMemConf        string  `json:"cpu_mem_confidence,omitempty"`
+	CPUCoresEffective float64 `json:"cpu_cores_effective"`
+	CPUGHz            float64 `json:"cpu_ghz"`
+	CPURamGB          float64 `json:"cpu_ram_gb"`
+	DiskBW            float64 `json:"disk_bw_mbs"`
+	PCIeBW            float64 `json:"pcie_bw"`
+	InetDown          float64 `json:"inet_down"`
+	Geolocation       string  `json:"geolocation"`
+	Reliability       float64 `json:"reliability"`
+	DiskSpace         float64 `json:"disk_space_gb"`
 }
 
 type SimSetupResult struct {

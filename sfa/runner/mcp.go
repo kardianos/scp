@@ -550,6 +550,16 @@ func (s *MCPServer) buildToolTable() []ToolDef {
 			InputType:   reflect.TypeOf(SimListTemplatesParams{}),
 			Handler:     s.handleListTemplates,
 		},
+		{
+			Name: "sim_search_offers",
+			Description: "Search Vast.ai offers without provisioning. Filters: max_dph, min_disk_bw (MB/s disk), " +
+				"min_cpu_mem_bw (GB/s host DRAM theoretical peak from local CPU model table), min_cpu_cores, " +
+				"cpu_contains, min_gpu_mem_bw (GB/s VRAM), any_gpu, region. " +
+				"cpu_name is post-filtered (Vast cannot filter it). DRAM BW is derived: channels×MT/s×8/1000 × sockets; " +
+				"override table at ~/.scp-runner/cpu_mem_bw.json.",
+			InputType: reflect.TypeOf(SimSearchOffersParams{}),
+			Handler:   s.handleSearchOffers,
+		},
 	}
 }
 
@@ -1275,4 +1285,125 @@ func (s *MCPServer) handleExec(ctx context.Context, raw any) (any, error) {
 		return &SimExecResult{Output: out, Error: err.Error()}, nil
 	}
 	return &SimExecResult{Output: out, Status: "ok"}, nil
+}
+
+// buildSearchFilter merges structured SimSearchOffersParams into a filter string.
+func buildSearchFilter(p *SimSearchOffersParams) string {
+	var parts []string
+	if p.FilterStr != "" {
+		parts = append(parts, p.FilterStr)
+	}
+	if p.MaxDPH > 0 {
+		parts = append(parts, fmt.Sprintf("max_dph=%g", p.MaxDPH))
+	}
+	if p.MinDiskBW > 0 {
+		parts = append(parts, fmt.Sprintf("min_disk_bw=%g", p.MinDiskBW))
+	}
+	if p.MinCPUCores > 0 {
+		parts = append(parts, fmt.Sprintf("min_cpu_cores=%g", p.MinCPUCores))
+	}
+	if p.MinCPUGHz > 0 {
+		parts = append(parts, fmt.Sprintf("min_cpu_ghz=%g", p.MinCPUGHz))
+	}
+	if p.MinCPURamGB > 0 {
+		parts = append(parts, fmt.Sprintf("min_cpu_ram=%g", p.MinCPURamGB))
+	}
+	if p.MinPCIeBW > 0 {
+		parts = append(parts, fmt.Sprintf("min_pcie_bw=%g", p.MinPCIeBW))
+	}
+	if p.MinGPUMemBW > 0 {
+		parts = append(parts, fmt.Sprintf("min_gpu_mem_bw=%g", p.MinGPUMemBW))
+	}
+	if p.MinCPUMemBW > 0 {
+		parts = append(parts, fmt.Sprintf("min_cpu_mem_bw=%g", p.MinCPUMemBW))
+	}
+	if p.CPUContains != "" {
+		parts = append(parts, "cpu_contains="+strings.ReplaceAll(p.CPUContains, " ", "_"))
+	}
+	if p.GPUName != "" {
+		parts = append(parts, "gpu_name="+p.GPUName)
+	}
+	if p.MinGPURamGB > 0 {
+		parts = append(parts, fmt.Sprintf("min_ram=%g", p.MinGPURamGB))
+	}
+	if p.AnyGPU {
+		parts = append(parts, "any_gpu=1")
+	}
+	if p.Region != "" {
+		parts = append(parts, "region="+p.Region)
+	}
+	limit := p.Limit
+	if limit <= 0 {
+		limit = 20
+	}
+	parts = append(parts, fmt.Sprintf("limit=%d", limit))
+	return strings.Join(parts, " ")
+}
+
+func offerToBrief(o VastOffer) VastOfferBrief {
+	ramGB := o.CPURamMB
+	if ramGB > 512 {
+		ramGB = ramGB / 1024
+	}
+	return VastOfferBrief{
+		ID:                o.ID,
+		MachineID:         o.MachineID,
+		DPHTotal:          o.DPHTot,
+		GPUName:           o.GPUName,
+		NumGPUs:           o.NumGPUs,
+		GPUMemMB:          o.GPUMemMB,
+		GPUMemBW:          o.GPUMemBW,
+		CPUName:           strings.TrimSpace(o.CPUName),
+		CPUClass:          o.CPUClass,
+		CPUNote:           o.CPUNote,
+		CPUMemPeakGBs:     o.CPUMemPeakGBs,
+		CPUMemHostGBs:     o.CPUMemHostGBs,
+		CPUMemStreamGBs:   o.CPUMemStreamGBs,
+		CPUMemChannels:    o.CPUMemChannels,
+		CPUMemMTs:         o.CPUMemMTs,
+		CPUMemTech:        o.CPUMemTech,
+		CPUMemConf:        o.CPUMemConf,
+		CPUCoresEffective: o.CPUCoresEffective,
+		CPUGHz:            o.CPUGHz,
+		CPURamGB:          ramGB,
+		DiskBW:            o.DiskBW,
+		PCIeBW:            o.PCIeBW,
+		InetDown:          o.InetDown,
+		Geolocation:       o.Geolocation,
+		Reliability:       o.Reliability,
+		DiskSpace:         o.DiskSpace,
+	}
+}
+
+func (s *MCPServer) handleSearchOffers(ctx context.Context, raw any) (any, error) {
+	p := raw.(*SimSearchOffersParams)
+	filter := buildSearchFilter(p)
+	// Default discovery path: if caller did not set any_gpu and did not name a
+	// production GPU, assume they want broad search (any_gpu) so cheap CPU hosts appear.
+	if !p.AnyGPU && p.GPUName == "" && !strings.Contains(p.FilterStr, "gpu_name") &&
+		!strings.Contains(p.FilterStr, "any_gpu") && !strings.Contains(p.FilterStr, "whitelist") {
+		filter = strings.TrimSpace(filter + " any_gpu=1")
+	}
+
+	client, err := NewVastClient()
+	if err != nil {
+		return nil, fmt.Errorf("vast client: %w", err)
+	}
+	offers, err := client.SearchOffers(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	briefs := make([]VastOfferBrief, 0, len(offers))
+	for _, o := range offers {
+		briefs = append(briefs, offerToBrief(o))
+	}
+	return &SimSearchOffersResult{
+		Count:  len(briefs),
+		Filter: filter,
+		Note: "cpu_mem_*_gbs is theoretical host DRAM from the local CPU model table " +
+			"(channels×MT/s×8/1000 × estimated sockets). stream ≈ 0.78×peak. " +
+			"disk_bw is measured MB/s disk; gpu_mem_bw is GPU VRAM GB/s. " +
+			"Overrides: ~/.scp-runner/cpu_mem_bw.json",
+		Offers: briefs,
+	}, nil
 }

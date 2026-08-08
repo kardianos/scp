@@ -15,6 +15,30 @@ func main() {
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.SetOutput(os.Stderr)
 
+	// CLI subcommands (non-MCP): search / help. MCP is the zero-arg default.
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "search", "offers":
+			if err := runSearchCLI(os.Args[2:]); err != nil {
+				log.Fatalf("scp-runner search: %v", err)
+			}
+			return
+		case "help", "-h", "--help":
+			printCLIHelp()
+			return
+		case "mcp", "serve":
+			// fall through to MCP
+		default:
+			// Unknown flag/arg — still try MCP if it looks like nothing useful;
+			// but surface a hint for common mistakes.
+			if !strings.HasPrefix(os.Args[1], "{") {
+				fmt.Fprintf(os.Stderr, "scp-runner: unknown command %q (try: search, help, or run with no args for MCP)\n", os.Args[1])
+				printCLIHelp()
+				os.Exit(2)
+			}
+		}
+	}
+
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
@@ -46,6 +70,82 @@ func main() {
 		}
 		log.Fatalf("scp-runner: %v", err)
 	}
+}
+
+func printCLIHelp() {
+	fmt.Fprintf(os.Stdout, `scp-runner — MCP simulation runner + Vast.ai helpers
+
+Usage:
+  scp-runner                     Start MCP server on stdio
+  scp-runner search [filter...]  Search Vast offers (no rent)
+  scp-runner help
+
+Search filter tokens (space-separated, ops: >= <= != = > <):
+  Price:   max_dph=0.5  dph_total<0.5
+  DRAM:    min_cpu_mem_bw=100   (GB/s host theoretical peak from local CPU table)
+           aliases: min_dram_bw, min_mem_bw
+  Disk BW: min_disk_bw=400      (MB/s — Vast measured disk read)
+  CPU:     min_cpu_cores=8  min_cpu_ghz=3  min_cpu_ram=32  cpu_name=EPYC  has_avx=1
+  GPU BW:  min_gpu_mem_bw=400   (GB/s GPU VRAM bandwidth)
+  PCIe:    min_pcie_bw=10
+  Net:     min_inet_down=500
+  GPU:     gpu_name=Tesla_V100  min_ram=32  any_gpu=1
+  Region:  region=US,CA | region=any
+  Limit:   limit=20
+
+DRAM bandwidth (system memory):
+  Vast does not publish DRAM STREAM. scp-runner maps cpu_name → channels × MT/s × 8/1000
+  (datasheet theoretical peak) and multiplies by an estimated socket count. STREAM triad
+  is typically ~78%% of peak when DIMMs are fully populated. Builtin table covers EPYC
+  Naples→Turin, Threadripper, Ryzen, Xeon E5/Scalable/W, and desktop Core gens.
+  User overrides: ~/.scp-runner/cpu_mem_bw.json
+    {"overrides":[{"match":"EPYC 7742","channels":8,"mem_mts":3200,"mem_tech":"DDR4","model_cores":64}]}
+
+Notes:
+  • cpu_name is returned by Vast but is NOT filterable server-side; we post-filter + annotate.
+  • Default provision path keeps the production GPU allowlist; search defaults to any_gpu=1
+    unless you pass a gpu_name.
+
+Examples:
+  scp-runner search max_dph=0.5 min_cpu_mem_bw=100 min_cpu_cores=8 region=US,CA
+  scp-runner search 'cpu_name=EPYC max_dph=0.3 min_cpu_mem_bw=200 any_gpu=1'
+  scp-runner search max_dph=0.5 min_disk_bw=400   # disk MB/s, not DRAM
+`)
+}
+
+// runSearchCLI implements `scp-runner search …`.
+func runSearchCLI(args []string) error {
+	filter := strings.Join(args, " ")
+	if filter == "" {
+		filter = "max_dph=0.5 min_disk_bw=400 limit=20"
+	}
+	// Discovery default: any_gpu unless caller constrained GPU / whitelist.
+	if !strings.Contains(filter, "gpu_name") && !strings.Contains(filter, "any_gpu") &&
+		!strings.Contains(filter, "whitelist") {
+		filter = strings.TrimSpace(filter + " any_gpu=1")
+	}
+	if !strings.Contains(filter, "limit=") {
+		filter = strings.TrimSpace(filter + " limit=20")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+
+	client, err := NewVastClient()
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(os.Stderr, "scp-runner: search filter: %s\n", filter)
+	offers, err := client.SearchOffers(ctx, filter)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintf(os.Stderr, "scp-runner: %d offers\n", len(offers))
+	fmt.Fprintf(os.Stderr, "note: dram= theoretical host DRAM GB/s (CPU table); disk_bw= measured disk MB/s; gpu_mem= VRAM GB/s\n")
+	for _, o := range offers {
+		fmt.Println(FormatOfferLine(o))
+	}
+	return nil
 }
 
 // recoverFromState attempts to reconnect to previously running remote instances

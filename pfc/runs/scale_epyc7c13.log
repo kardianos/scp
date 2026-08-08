@@ -1,0 +1,91 @@
+sizeof CellLo=112 CellHi=96 (split AoS)
+GOMAXPROCS(default)=31  NumCPU=128  steps=30 warmup=2
+sizes=[8000 27000 64000 125000 216000]  workers=[1 2 4 8 16 32]
+
+======== n≈8000  NC=8000  side=20  slots=24000  L=20.0 ========
+serial               119.7 ms     250.5 steps/s
+  workers=1 GOMAXPROCS=1 boundary_edges=0  sh0:own=8000/gh=0
+par workers=1         78.0 ms     384.5 steps/s  vs1w=1.00x  vsSer=1.53x
+  workers=2 GOMAXPROCS=2 boundary_edges=800  sh0:own=4000/gh=800  sh1:own=4000/gh=800
+par workers=2        150.0 ms     200.0 steps/s  vs1w=0.52x  vsSer=0.80x
+  workers=4 GOMAXPROCS=4 boundary_edges=1600  sh0:own=2000/gh=800  sh1:own=2000/gh=800  sh2:own=2000/gh=800  sh3:own=2000/gh=800
+par workers=4         81.1 ms     370.0 steps/s  vs1w=0.96x  vsSer=1.48x
+  workers=8 GOMAXPROCS=8 boundary_edges=3200  sh0:own=1200/gh=800  sh1:own=1200/gh=800  sh2:own=1200/gh=800  sh3:own=1200/gh=800
+par workers=8         73.3 ms     409.3 steps/s  vs1w=1.06x  vsSer=1.63x
+par workers=16        74.2 ms     404.2 steps/s  vs1w=1.05x  vsSer=1.61x
+par workers=32        79.7 ms     376.6 steps/s  vs1w=0.98x  vsSer=1.50x
+
+======== n≈27000  NC=27000  side=30  slots=81000  L=30.0 ========
+serial               298.5 ms     100.5 steps/s
+  workers=1 GOMAXPROCS=1 boundary_edges=0  sh0:own=27000/gh=0
+par workers=1        262.1 ms     114.5 steps/s  vs1w=1.00x  vsSer=1.14x
+  workers=2 GOMAXPROCS=2 boundary_edges=1800  sh0:own=13500/gh=1800  sh1:own=13500/gh=1800
+par workers=2        467.7 ms      64.1 steps/s  vs1w=0.56x  vsSer=0.64x
+  workers=4 GOMAXPROCS=4 boundary_edges=3600  sh0:own=7200/gh=1800  sh1:own=7200/gh=1800  sh2:own=6300/gh=1800  sh3:own=6300/gh=1800
+par workers=4        275.6 ms     108.9 steps/s  vs1w=0.95x  vsSer=1.08x
+  workers=8 GOMAXPROCS=8 boundary_edges=7200  sh0:own=3600/gh=1800  sh1:own=3600/gh=1800  sh2:own=3600/gh=1800  sh3:own=3600/gh=1800
+par workers=8        192.3 ms     156.0 steps/s  vs1w=1.36x  vsSer=1.55x
+par workers=16       162.3 ms     184.9 steps/s  vs1w=1.62x  vsSer=1.84x
+par workers=32       219.3 ms     136.8 steps/s  vs1w=1.20x  vsSer=1.36x
+
+======== n≈64000  NC=64000  side=40  slots=192000  L=40.0 ========
+serial               901.2 ms      33.3 steps/s
+  workers=1 GOMAXPROCS=1 boundary_edges=0  sh0:own=64000/gh=0
+par workers=1        745.0 ms      40.3 steps/s  vs1w=1.00x  vsSer=1.21x
+  workers=2 GOMAXPROCS=2 boundary_edges=3200  sh0:own=32000/gh=3200  sh1:own=32000/gh=3200
+par workers=2       1133.1 ms      26.5 steps/s  vs1w=0.66x  vsSer=0.80x
+  workers=4 GOMAXPROCS=4 boundary_edges=6400  sh0:own=16000/gh=3200  sh1:own=16000/gh=3200  sh2:own=16000/gh=3200  sh3:own=16000/gh=3200
+par workers=4        595.7 ms      50.4 steps/s  vs1w=1.25x  vsSer=1.51x
+  workers=8 GOMAXPROCS=8 boundary_edges=12800  sh0:own=8000/gh=3200  sh1:own=8000/gh=3200  sh2:own=8000/gh=3200  sh3:own=8000/gh=3200
+par workers=8        369.8 ms      81.1 steps/s  vs1w=2.01x  vsSer=2.44x
+par workers=16       345.7 ms      86.8 steps/s  vs1w=2.16x  vsSer=2.61x
+par workers=32       465.8 ms      64.4 steps/s  vs1w=1.60x  vsSer=1.93x
+
+======== n≈125000  NC=125000  side=50  slots=375000  L=50.0 ========
+serial              1856.6 ms      16.2 steps/s
+  workers=1 GOMAXPROCS=1 boundary_edges=0  sh0:own=125000/gh=0
+par workers=1       1731.0 ms      17.3 steps/s  vs1w=1.00x  vsSer=1.07x
+  workers=2 GOMAXPROCS=2 boundary_edges=5000  sh0:own=62500/gh=5000  sh1:own=62500/gh=5000
+par workers=2       1673.2 ms      17.9 steps/s  vs1w=1.03x  vsSer=1.11x
+  workers=4 GOMAXPROCS=4 boundary_edges=10000  sh0:own=32500/gh=5000  sh1:own=32500/gh=5000  sh2:own=30000/gh=5000  sh3:own=30000/gh=5000
+par workers=4       1258.7 ms      23.8 steps/s  vs1w=1.38x  vsSer=1.47x
+  workers=8 GOMAXPROCS=8 boundary_edges=20000  sh0:own=17500/gh=5000  sh1:own=17500/gh=5000  sh2:own=15000/gh=5000  sh3:own=15000/gh=5000
+par workers=8        737.9 ms      40.7 steps/s  vs1w=2.35x  vsSer=2.52x
+par workers=16       676.1 ms      44.4 steps/s  vs1w=2.56x  vsSer=2.75x
+par workers=32       850.0 ms      35.3 steps/s  vs1w=2.04x  vsSer=2.18x
+
+======== n≈216000  NC=216000  side=60  slots=648000  L=60.0 ========
+serial              3798.1 ms       7.9 steps/s
+  workers=1 GOMAXPROCS=1 boundary_edges=0  sh0:own=216000/gh=0
+par workers=1       3054.6 ms       9.8 steps/s  vs1w=1.00x  vsSer=1.24x
+  workers=2 GOMAXPROCS=2 boundary_edges=7200  sh0:own=108000/gh=7200  sh1:own=108000/gh=7200
+par workers=2       1732.1 ms      17.3 steps/s  vs1w=1.76x  vsSer=2.19x
+  workers=4 GOMAXPROCS=4 boundary_edges=14400  sh0:own=54000/gh=7200  sh1:own=54000/gh=7200  sh2:own=54000/gh=7200  sh3:own=54000/gh=7200
+par workers=4       2005.1 ms      15.0 steps/s  vs1w=1.52x  vsSer=1.89x
+  workers=8 GOMAXPROCS=8 boundary_edges=28800  sh0:own=28800/gh=7200  sh1:own=28800/gh=7200  sh2:own=28800/gh=7200  sh3:own=28800/gh=7200
+par workers=8       1309.9 ms      22.9 steps/s  vs1w=2.33x  vsSer=2.90x
+par workers=16       971.6 ms      30.9 steps/s  vs1w=3.14x  vsSer=3.91x
+par workers=32      1113.3 ms      26.9 steps/s  vs1w=2.74x  vsSer=3.41x
+
+======== SUMMARY: steps/s ========
+      NC\W          1          2          4          8         16         32
+      8000      384.5      200.0      370.0      409.3      404.2      376.6
+     27000      114.5       64.1      108.9      156.0      184.9      136.8
+     64000       40.3       26.5       50.4       81.1       86.8       64.4
+    125000       17.3       17.9       23.8       40.7       44.4       35.3
+    216000        9.8       17.3       15.0       22.9       30.9       26.9
+======== SUMMARY: speedup vs 1 worker ========
+      NC\W          1          2          4          8         16         32
+      8000      1.00x      0.52x      0.96x      1.06x      1.05x      0.98x
+     27000      1.00x      0.56x      0.95x      1.36x      1.62x      1.20x
+     64000      1.00x      0.66x      1.25x      2.01x      2.16x      1.60x
+    125000      1.00x      1.03x      1.38x      2.35x      2.56x      2.04x
+    216000      1.00x      1.76x      1.52x      2.33x      3.14x      2.74x
+======== scaling notes (efficiency = speedup/workers) ========
+NC=8000:  1:100%  2:26%  4:24%  8:13%  16:7%  32:3%
+NC=27000:  1:100%  2:28%  4:24%  8:17%  16:10%  32:4%
+NC=64000:  1:100%  2:33%  4:31%  8:25%  16:13%  32:5%
+NC=125000:  1:100%  2:52%  4:34%  8:29%  16:16%  32:6%
+NC=216000:  1:100%  2:88%  4:38%  8:29%  16:20%  32:9%
+
+csv → /tmp/pfc_scale.csv

@@ -1,0 +1,22 @@
+{
+  "overrides": [
+    {
+      "match": "EPYC 7742",
+      "family": "EPYC Rome (7002) measured",
+      "channels": 8,
+      "mem_mts": 3200,
+      "mem_tech": "DDR4",
+      "model_cores": 64,
+      "note": "Example override — peak = channels×MT/s×8/1000 = 204.8 GB/s/socket"
+    },
+    {
+      "match": "/EPYC\\s*9[0-9]{2}4/",
+      "family": "EPYC Genoa override",
+      "channels": 12,
+      "mem_mts": 4800,
+      "mem_tech": "DDR5",
+      "model_cores": 32,
+      "note": "Regex override (slashes)"
+    }
+  ]
+}

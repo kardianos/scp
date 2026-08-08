@@ -1,0 +1,10 @@
+{
+  "contract": 47176823,
+  "offer": 46443709,
+  "cpu": "AMD EPYC 7742 64-Core Processor",
+  "dph": 0.08898148148148148,
+  "vcpu": 32.0,
+  "ram_gb": 62.88671875,
+  "geo": "Michigan, US",
+  "gpu": "RTX A4000"
+}
