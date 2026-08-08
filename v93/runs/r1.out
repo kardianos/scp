@@ -1,0 +1,15 @@
+--- r1_deep (amp=2 amp_nat=2 q_detune=3.6) ---
+  cond=cond=72.887922 evap=evap=129.997604 rad=rad=0.000000
+    t=0.0 Emax=2.2538 PR=455.7 rms=4.296
+    t=300.0 Emax=7.2445 PR=249.9 rms=4.512
+    t=1000.0 Emax=4.8736 PR=273.3 rms=5.020
+    t=2000.0 Emax=2.7284 PR=309.3 rms=5.466
+    t=3000.0 Emax=2.6714 PR=345.3 rms=5.849
+--- r1_law (amp=0.5 amp_nat=2 q_detune=1.2) ---
+  cond=cond=0.000000 evap=evap=0.000000 rad=rad=0.000000
+    t=0.0 Emax=0.5634 PR=455.6 rms=4.295
+    t=300.0 Emax=2.1715 PR=203.1 rms=6.008
+    t=1000.0 Emax=1.9601 PR=254.9 rms=6.760
+    t=2000.0 Emax=1.9206 PR=297.0 rms=7.154
+    t=3000.0 Emax=1.8112 PR=336.4 rms=7.381
+=== r1 done ===
