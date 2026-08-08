@@ -501,12 +501,15 @@ func (s *Sim) step() {
 		}
 		for i := 0; i < s.NC; i++ {
 			a, b := s.dm1[i], s.dm2[i]
-			s.Em[i] = a*a + b*b
-			ph := math.Atan2(b, a)
-			if ph < 0 {
-				ph += TwoPi
+			enew := a*a + b*b
+			s.Em[i] = enew
+			if enew > 1e-12 { // preserve old th2 for empty cells (atan2(0,0)=0 phase sink; reviewer fix)
+				ph := math.Atan2(b, a)
+				if ph < 0 {
+					ph += TwoPi
+				}
+				s.th2[i] = ph
 			}
-			s.th2[i] = ph
 		}
 	}
 
@@ -1311,7 +1314,7 @@ func (s *Sim) step() {
 						if emOld < 0 {
 							emOld = 0
 						}
-						ro, rc := math.Sqrt(emOld), math.Sqrt(d1)
+						ro, rc := math.Sqrt(emOld), math.Sqrt(P.AmpDoor*d1) // amp_door continuous mix
 						s1 := ro*lutCos(s.th2[i]) + rc*lutCos(aph)
 						s2 := ro*lutSin(s.th2[i]) + rc*lutSin(aph)
 						s.th2[i] = math.Mod(math.Atan2(s2, s1)+8.0*TwoPi, TwoPi)

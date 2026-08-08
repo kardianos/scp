@@ -571,7 +571,23 @@ func (s *Sim) fieldInject(i int, dE float64) { // cellfab.c:2711 verbatim
 		return
 	}
 	e := s.fa1[i]*s.fa1[i] + s.fa2[i]*s.fa2[i]
-	if e > 1e-20 {
+	if s.P.AmpDoor > 0 {
+		// v93 symmetric reverse door (§II.7): evaporated matter click
+		// (sqrt(amp_door*dE) at th2) composes coherently with the existing
+		// field amplitude; |fa_new|=sqrt(e+dE). Reduces to real-scale as
+		// amp_door->0. Fixes the one-way door (matter->field carries th2).
+		argf := s.th2[i]
+		if e > 1e-20 {
+			argf = math.Atan2(s.fa2[i], s.fa1[i])
+		}
+		ro, rc := math.Sqrt(e), math.Sqrt(s.P.AmpDoor*dE)
+		s1 := ro*lutCos(argf) + rc*lutCos(s.th2[i])
+		s2 := ro*lutSin(argf) + rc*lutSin(s.th2[i])
+		rm := math.Sqrt(e + dE)
+		np := math.Atan2(s2, s1)
+		s.fa1[i] = rm * lutCos(np)
+		s.fa2[i] = rm * lutSin(np)
+	} else if e > 1e-20 {
 		fac := math.Sqrt((e + dE) / e)
 		s.fa1[i] *= fac
 		s.fa2[i] *= fac

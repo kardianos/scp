@@ -923,7 +923,22 @@ static void field_inject(int i, double dE)   /* cellfab.c:2711 verbatim */
 {
     if (dE <= 0) return;
     double e = fa1[i]*fa1[i] + fa2[i]*fa2[i];
-    if (e > 1e-20) {
+    if (P.amp_door > 0) {
+        /* v93 symmetric reverse door (§II.7): the evaporated matter click
+         * (sqrt(amp_door*dE) at phase th2) composes COHERENTLY with the
+         * existing field amplitude; arg(fa_new) = the coherent-sum direction,
+         * |fa_new| = sqrt(e+dE) (conserved). Reduces to the real-scale path
+         * as amp_door->0. Fixes the one-way door: matter->field now carries
+         * th2 (so winding imprinted at condensation is not erased on evap). */
+        double argf = (e > 1e-20) ? atan2(fa2[i], fa1[i]) : th2[i];
+        double ro = sqrt(e), rc = sqrt(P.amp_door * dE);
+        double s1 = ro * lut_cos(argf) + rc * lut_cos(th2[i]);
+        double s2 = ro * lut_sin(argf) + rc * lut_sin(th2[i]);
+        double rm = sqrt(e + dE);
+        double np = atan2(s2, s1);
+        fa1[i] = rm * lut_cos(np);
+        fa2[i] = rm * lut_sin(np);
+    } else if (e > 1e-20) {
         double fac = sqrt((e + dE) / e);
         fa1[i] *= fac; fa2[i] *= fac;
     } else {
@@ -1575,10 +1590,15 @@ static void step(void)
         }
         for (int i = 0; i < NC; i++) {
             double a = dm1_[i], b = dm2_[i];
-            Em[i] = a * a + b * b;
-            double ph = atan2(b, a);
-            if (ph < 0) ph += TWO_PI;            /* keep [0, 2pi) like pass 6 */
-            th2[i] = ph;
+            double enew = a * a + b * b;
+            Em[i] = enew;
+            if (enew > 1e-12) {              /* preserve old th2 for empty cells
+                * (atan2(0,0)=0 would pin every briefly-empty cell's clock to 0
+                * every step = a phase-slip machine; reviewer fix) */
+                double ph = atan2(b, a);
+                if (ph < 0) ph += TWO_PI;    /* keep [0, 2pi) like pass 6 */
+                th2[i] = ph;
+            }
         }
     }
 
@@ -2176,18 +2196,19 @@ static void step(void)
                     Es[i] -= dsp;
                     Em[i] += d1 + dsp;
                     if (P.amp_door > 0) {
-                        /* v93 arg(psi) door (§II.7): the field click
-                         * (sqrt(d1) at phase aph) composes COHERENTLY with
-                         * the existing matter amplitude; arg(psi_m_new) is
-                         * the coherent-sum direction (carries the field
-                         * phase + the interference cross-term = the
-                         * current), |psi_m| fixed by the conserved Em.
-                         * Replaces qp_phase's partial cell-clock pull --
-                         * the fired atom carries arg(psi_m), not m*th2. */
+                        /* v93 arg(psi) door (§II.7): the field click composes
+                         * COHERENTLY with the existing matter amplitude;
+                         * arg(psi_m_new) = the coherent-sum direction (carries
+                         * the field phase + the interference cross-term),
+                         * |psi_m| fixed by conserved Em. amp_door is a CONTINUOUS
+                         * mix weight: the click amplitude is sqrt(amp_door*d1),
+                         * so the door reduces to th2_old as amp_door->0 and is
+                         * the full merge at amp_door=1. Fired atom carries
+                         * arg(psi_m), not m*th2. */
                         double aph = atan2(fa2[i], fa1[i]);
                         double Em_old = Em[i] - (d1 + dsp);
                         if (Em_old < 0) Em_old = 0;
-                        double ro = sqrt(Em_old), rc = sqrt(d1);
+                        double ro = sqrt(Em_old), rc = sqrt(P.amp_door * d1);
                         double s1 = ro * lut_cos(th2[i]) + rc * lut_cos(aph);
                         double s2 = ro * lut_sin(th2[i]) + rc * lut_sin(aph);
                         th2[i] = fmod(atan2(s2, s1) + 8.0 * TWO_PI, TWO_PI);
