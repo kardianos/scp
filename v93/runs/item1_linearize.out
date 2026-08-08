@@ -1,0 +1,23 @@
+=== 1a) GATE-ON (amp_logate=0) vs GATE-OFF/LINEAR (amp_logate=1), amp_nat=2 ===
+gate       seed     amp_nat    speed/cos         
+ON         111      2          0.000915 cos=-0.7672
+OFF        111      2          0.002926 cos=-0.8781
+ON         20260802 2          0.001556 cos=0.6831
+OFF        20260802 2          0.005394 cos=-0.9905
+ON         314159   2          0.002182 cos=-0.4577
+OFF        314159   2          0.003212 cos=-0.2899
+
+=== 1b) kx SWEEP (LINEAR, amp_nat=2 amp_logate=1, seed 111) -- v_g ~ sin(kx*d)? ===
+    (d~1.4; sin(kx*d) peaks near kx~1.1, zero near kx~2.2)
+kx       speed/cos         
+0.5      0.003418 cos=0.6620
+0.8      0.005242 cos=-0.7821
+1.1      0.002926 cos=-0.8781
+1.5      0.001951 cos=-0.4199
+2.0      0.002830 cos=0.1922
+
+=== 1c) dt-INVARIANCE (LINEAR, amp_nat*dt product fixed; real rate invariant, artifacts move) ===
+dt       amp_nat    speed/cos         
+0.02     2          0.002926 cos=-0.8781
+0.01     4          0.005914 cos=-0.5617
+=== item 1 done ===

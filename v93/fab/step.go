@@ -390,11 +390,16 @@ func (s *Sim) step() {
 			// factor -- face 1 sqrt(head) froze the dense core; closure gate
 			// survives as the angle envelope). Byte-inert at amp_nat=0.
 			gsym := math.Sqrt(gIJ * gJI)
-			tau := P.AmpNat * base * gsym
-			if tau > 0.5 {
-				tau = 0.5
+			// amp_logate (LINEARIZE probe, reviewer item 1): drop the phase-
+			// dependent gate -> phase-independent linear hop (tau=amp_nat*base).
+			taub := P.AmpNat * base * gsym
+			if P.AmpLogate > 0 {
+				taub = P.AmpNat * base
 			}
-			s.shau[sl] = tau
+			if taub > 0.5 {
+				taub = 0.5
+			}
+			s.shau[sl] = taub
 		} else {
 			if wIJ > 0 {
 				s.swant[2*sl] = wIJ

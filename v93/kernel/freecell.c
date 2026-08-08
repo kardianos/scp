@@ -246,6 +246,7 @@ typedef struct {
      * 87-bar V3a surface); >0 => the unitary dense hop engages, the additive
      * want+inflight is bypassed. The door (pass 6) is NEVER unitarized. */
     double amp_nat;     /* unitary dense channel strength; 0 = additive want (byte-inert) */
+    double amp_logate;  /* linearize probe: >0 drops the phase-dependent gate from tau_s */
     /* --- v93 arg(psi) door (v93/README.md §II.7): at a condensation event
      * the field click (sqrt(d1) at phase atan2(fa2,fa1)) composes COHERENTLY
      * with the existing matter amplitude psi_m, and the result is
@@ -382,6 +383,7 @@ static void cfg_defaults(void)
     P.amp_tau = 0;
     P.amp_drv = 0; P.amp_mmin = 2;
     P.amp_nat = 0;
+    P.amp_logate = 0;
     P.amp_door = 0;
     P.qatom_every = 200;
     /* freecell geometry */
@@ -487,6 +489,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "amp_drv")) P.amp_drv = atof(v);
     else if (!strcmp(k, "amp_mmin")) P.amp_mmin = atof(v);
     else if (!strcmp(k, "amp_nat")) P.amp_nat = atof(v);
+    else if (!strcmp(k, "amp_logate")) P.amp_logate = atof(v);
     else if (!strcmp(k, "amp_door")) P.amp_door = atof(v);
     else if (!strcmp(k, "conf_r")) P.conf_r = atof(v);
     else if (!strcmp(k, "conf_gap")) P.conf_gap = atof(v);
@@ -1490,9 +1493,15 @@ static void step(void)
              * closure gate (cos^p) survives as the angle envelope. tau_s=0
              * when closure vanishes. Byte-inert at amp_nat=0. */
             double gsym = sqrt(g_ij * g_ji);
-            double tau = P.amp_nat * base * gsym;
-            if (tau > 0.5) tau = 0.5;   /* integrator guard: deep-overlap cap */
-            shau_[s] = tau;
+            /* amp_logate (LINEARIZE probe, reviewer item 1): drop the phase-
+             * dependent gate from tau_s -> a phase-independent linear hop
+             * (tau = amp_nat*base). Tests whether the gate's phase->tau
+             * feedback (the parametric drive) is the artifact source. The
+             * gated form (cos^p closure envelope) is the default. */
+            double taub = P.amp_nat * base * gsym;
+            if (P.amp_logate > 0) taub = P.amp_nat * base;   /* LINEAR: no gate */
+            if (taub > 0.5) taub = 0.5;   /* integrator guard: deep-overlap cap */
+            shau_[s] = taub;
         } else {
             if (w_ij > 0) swant[2*s]   = w_ij;
             if (w_ji > 0) swant[2*s+1] = w_ji;
