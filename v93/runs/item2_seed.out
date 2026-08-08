@@ -1,0 +1,4 @@
+=== LINEAR fd current, seed-robustness ===
+seed=20260802  p1x: # RESULT p1x sp=+1.405907e-01 fl=+0.000000e+00 fd=+2.969315e+02 gm=-7.478395e-01
+seed=314159  p1x: # RESULT p1x sp=+5.828485e-02 fl=+0.000000e+00 fd=+2.769535e+02 gm=+1.009965e+00
+=== done ===
