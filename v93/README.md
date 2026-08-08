@@ -1,10 +1,22 @@
-# v93 — THE UNITARY DENSE CHANNEL (design document; docs-only, NOT opened)
+# v93 — THE UNITARY DENSE CHANNEL (OPENED; implemented behind amp_nat/amp_door)
 
-**STATUS: a design document, pre-registered before any kernel edit. v92
-remains the active programme; v93 is the pending next-version design that
-the v92 consultation (`v92/consult/SUBQUARK_synthesis.md`) converged on.
-Nothing here is code, a decision, or authorized for implementation — it is
-the design the ratchet will test, awaiting explicit user sign-off.**
+**STATUS: OPENED and implemented (user-authorized full campaign, 2026-08-07).
+The design below is the pre-registration; it has since been built — the
+unitary dense hop (pass U) behind `amp_nat` and the arg(ψ) door behind
+`amp_door`, both kernels, byte-inert at 0, full battery ALL GREEN 87 at
+amp_nat=0. Results in `L1_FINDINGS.md`; a 3-reviewer consultation (claude
+fable/max, grok, opencode) in `consult/REVIEW_*.md` corrected several early
+overclaims (the design language below is the pre-registration; see
+L1_FINDINGS for what actually measured — notably J = 2·Im(ψ_i*·ψ_j) (the
+design text says Re in §II.4 in places; Im is correct), and "exactly mirrors
+pass F" is approximate (opposite precession chirality). The code is the
+implemention of record.**
+
+**Pre-registration status (kept verbatim for the record):** the design was
+pre-registered before any kernel edit; v92 was the active programme when it
+was written; the v92 consultation (`v92/consult/SUBQUARK_synthesis.md`)
+converged on it. The ratchet governs: every kernel change runs the full
+battery before commit; bars sharpen by measurement, never soften to pass.
 
 ## The one-sentence thesis
 
@@ -105,7 +117,7 @@ projective/toroidal/DEC geometry" **converged** (`v92/consult/`):
 - **what must change is the transport algebra** (unitary pairwise rotations
   replace the additive want);
 - **conservation dissolves** (Givens hops never sum-then-square; the cross
-  term `2·Re(ψᵢ*wψⱼ)` that broke additive bookkeeping IS the link current —
+   term `2·Im(ψᵢ*wψⱼ)` that broke additive bookkeeping IS the link current —
   it is where momentum lives);
 - projective line = notation (drop); torus = parcel-level (acceptance
   language); **DEC = the implementation language**;
@@ -173,7 +185,7 @@ envelope (it was already a rotation-ready real factor).
 ## II.4 Conservation (dissolves — the key result)
 
 Under II.3, conservation is a **theorem of the update** (pairwise norm
-preservation), not a patched ledger. The cross term `2·Re(ψ_i*·w·ψ_j)` that
+preservation), not a patched ledger. The cross term `2·Im(ψ_i*·w·ψ_j)` that
 broke additive bookkeeping — that surfaced as xsec over-absorption and had
 to be renormed away — is no longer a bug: **it is the link current J_s, the
 dense momentum.** The conservation wall (`|ΣA|² ≠ Σ|A|²`) that blocked Path

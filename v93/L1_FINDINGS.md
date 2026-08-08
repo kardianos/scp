@@ -1,5 +1,43 @@
 # v93 L1 — first findings (face 1 & 2 of the unitary dense hop)
 
+> **POST-REVIEW CORRECTION (2026-08-07, supersedes the overclaims below).**
+> A 3-reviewer consultation (claude fable/max, grok, opencode —
+> `consult/REVIEW_*.md`) found two real bugs and several vacuous measurements
+> that had INFLATED the early results. After fixing them (`cc16db7`):
+>
+> - **L1-B (conservation) re-measured on LIVE MATTER** (e3b blob, which has
+>   Em; the `exp=bath` runs used below are matterless — Em≡0 — so their
+>   drift=0.000e+00 was VACUOUS, the channel never engaged): drift
+>   **-1.8e-15 at amp_nat=2** (GREEN, ≪1e-13). The long T=300 QUENCH arm is
+>   2.15e-13 (slightly >1e-13 — needs per-step-normalized reckoning).
+> - **L1-A "coherence window" RETRACTED.** The empty-cell `th2→0` reset
+>   (atan2(0,0)=0) had phase-flattened the whole medium the blob propagates
+>   into — the amp_nat=2 window (cos→0.99, speed 0.0032) was substantially
+>   THIS ARTIFACT. Post-fix, e3b amp_nat=2 seed 111 is 0.0009/−0.77 (C) and
+>   the regime is chaotic/C≠Go (Go gave +0.52). "First coherent translation"
+>   → "a transport channel that engages but does not robustly cohere once the
+>   medium carries random precessing phases."
+> - **QUENCH-3 retention still ~0.02** even after fixing BOTH defects
+>   (empty-cell reset + symmetric reverse evap door). The wall is deeper:
+>   field transit decoherence (RA2 1→0.15) + no topological support (sparse
+>   cloud = phase-slip sites) + cell-clock churn by speckle-arriving field.
+>   Needs slot-borne phase + a closed-ring substrate.
+> - **L1-C:** the matterless-bath byte-identity was vacuous; the channel IS
+>   active on matter (driven-beam births 8800→4200 at amp_nat=2). The §II.9
+>   armed (ρ_coh≈0.77) bath bar is still unrun. Also the "self-gating τ≈0"
+>   claim is quantitatively wrong (random-phase ⟨√(gᵢⱼgⱼᵢ)⟩≈0.07–0.2 at
+>   p_gate=8, not ≈0); the real anti-ignition guarantee is unitarity.
+>
+> **Honest status:** pass U is a sound, conservative, battery-safe unitary
+> primitive. But robust coherent translation (L1-A), armed anti-ignition
+> (L1-C), and spin retention (QUENCH-3) are NOT yet achieved. The early
+> "CONFIRMED" language below is retained as the record but is superseded by
+> this correction. The fixes are committed; the deeper faces (slot-borne
+> phase, topological substrate, linearize-τ to isolate dispersion from
+> artifact, group-velocity reframing of L1-A) are the open work.
+
+---
+
 Opened 2026-08-07. The unitary dense hop (pass U) is implemented behind
 `amp_nat` in both kernels, byte-inert at `amp_nat=0`, C≡Go (battery ALL
 GREEN 87). This file records what `amp_nat>0` actually does to the dense
