@@ -419,3 +419,45 @@ returns instantly with cached state.
 - Track per-cluster mass, centroid, aspect ratio — not just global totals
 - Time-averaged death check (rolling window, not instantaneous)
 - Absorbing boundary damping for compact objects (not periodic-only)
+
+## External Reviewer CLIs (claude, grok) — for design review / research-path consultation
+
+The programme uses independent external CLIs as reviewers/strategists (the
+3-reviewer consultations: claude CLI "fable/max", grok CLI, opencode). They
+are NOT simulators — they read the brief/docs/code and return written review.
+**Binaries:** `claude` (`/home/d/.local/bin/claude`), `grok`
+(`/home/d/.grok/bin/grok`). Both are opencode-style TUIs with a headless
+single-turn mode.
+
+**Invocation (headless, non-interactive):**
+```
+# claude — -p / --print prints the response and exits; --model selects the
+# alias (e.g. fable, max); --add-dir grants file access; bypassPermissions
+# auto-approves tool/file reads.
+claude --model fable --permission-mode bypassPermissions -p "$(cat BRIEF.md)" > OUT.md
+
+# grok — -p / --single is the single-turn flag; -m / --model selects the
+# model; --prompt-file reads the prompt from a file; --always-approve auto-
+# approves tools.
+grok -m <model> --always-approve --prompt-file BRIEF.md > OUT.md
+```
+
+**Both take several minutes and will exceed the bash tool's 120s limit — ALWAYS
+run detached and poll a marker file** (same pattern as long sim runs):
+```
+setsid bash -c 'claude --model fable --permission-mode bypassPermissions \
+    -p "$(cat v93/consult/BRIEF.md)" > v93/consult/REVIEW_claude.md 2> v93/consult/REVIEW_claude.err; \
+    touch v93/consult/REVIEW_claude.done' </dev/null >/dev/null 2>&1 & disown $!
+# then poll: ls v93/consult/REVIEW_claude.done  (instant; no sleep polling)
+```
+(`</dev/null >/dev/null 2>&1` is required — a plain `&` makes the bash tool
+hold the pipe for 120s even with `disown`.)
+
+**Convention:** write the self-contained brief to `vNN/consult/REQUEST.md`
+(the reviewer has no session context — give it the law, the substrate, the
+measured results, and the explicit ask); outputs to `vNN/consult/REVIEW_*.md`
++ a `.done`/`.err` marker. Give the reviewer read access to the version dir
+(claude `--add-dir`, grok `--cwd`) so it can ground its review in the actual
+docs/runs. Past consultations: `v92/consult/SUBQUARK_synthesis.md`,
+`v93/consult/REVIEW_{claude,grok,opencode}.md`, `v93/consult/PATH_REQUEST.md`.
+
