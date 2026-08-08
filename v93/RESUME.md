@@ -20,8 +20,9 @@ term 2·Im(ψ_i*·ψ_j) is the link current J = the dense momentum. Knob `amp_na
 1. `CLAUDE.md` — project conventions (the banner now points at v93 as active).
 2. `v93/README.md` — the design (PART I–V). NOTE its status banner was updated:
    v93 is OPENED/implemented (the "docs-only" line is stale history).
-3. `v93/ITEMS_OUTCOMES.md` — **the most current results synthesis** (items
-   1/2/4). Read this for the honest state.
+3. `v93/ITEMS_OUTCOMES.md` — the items 1/2/4 synthesis, then
+   `v93/RING_DNLS.md` — **the most current results** (the retention face:
+   closed-ring route A + DNLS route B, both executed to completion).
 4. `v93/L1_FINDINGS.md` — the chronological findings (has a POST-REVIEW
    CORRECTION banner at top that **supersedes** the early "CONFIRMED" claims —
    the early claims were inflated by two bugs; trust the banner + ITEMS_OUTCOMES).
@@ -37,6 +38,7 @@ term 2·Im(ψ_i*·ψ_j) is the link current J = the dense momentum. Knob `amp_na
 | **L1-B conservation** | **GREEN on live matter** (drift −1.8e-15 at amp_nat=2 e3b ≪1e-13). The matterless `exp=bath` runs (Em≡0) were VACUOUS — never use them to grade the channel. The long T=300 QUENCH arm is 2.15e-13 (>1e-13; needs per-step-normalized reckoning). |
 | **L1-C anti-ignition** | The byte-identical-bath result was vacuous (matterless bath). The channel IS active on matter (driven-beam births 8800→4200). The §II.9 **armed ρ_coh≈0.77 coherent bath** is the real bar — UNRUN. "Self-gating τ≈0" is quantitatively wrong (gate mean ~0.1–0.2 at p_gate=8); the real guarantee is unitarity (can't raise ΣEm). |
 | **QUENCH-3 + item-4 retention** | **NEGATIVE, precisely diagnosed.** A *localized* winding cannot be retained by the linear unitary channel: it diffracts the packet and |ψ|→0 edges are phase-slip sites. Independent of the door. Even after fixing the one-way evap door + empty-cell reset, R2d≈0.02. **Needs topological support (closed ring, |ψ|>0 on cycle) + possibly DNLS nonlinear binding.** |
+| **Retention face (RING_DNLS.md)** | **EXECUTED, both routes.** Route A: vacuum C6 ring HOLDS the winding (W=+2 exact ≥200 t.u. — first retained matter winding; existence proof for topological support), but the medium kills it in ~10 t.u. via contact dephasing (both laws; leak = accretion, throttled non-monotonically by the q_detune barrier); the vacuum ceiling is the kernel's own sequential hop-sweep order (Trotter family, same as item 1). Route B: the q_detune detuning IS a real self-trap nonlinearity (qd0 melts / qd≥0.6 condenses / deep corner envelope-frozen) but it binds ENERGY not PHASE (retention dead at every corner) and kills mobility (kx arms stall). Spontaneous incoherent condensation under the unitary channel = a creation-adjacent discovery (no lock/gate/door; additive can't). amp_door refill UNTESTED (dark bath — door never fired). |
 
 **Bottom line:** pass U is a sound, conservative, battery-safe unitary
 primitive that genuinely transports coherently (when linearized + measured by
@@ -69,9 +71,11 @@ Search by these comment markers (line numbers shift; markers don't):
 - **symmetric reverse door** (`field_inject`, `v93 symmetric reverse door`):
   when amp_door>0, matter→field evap composes √(amp_door·dE)·e^{i th2} into fa,
   |fa|=√(e+dE). Fixes the one-way door. Go: `fab/sim.go:fieldInject`.
-- **`seed_mw`** (item 4, default 0): seeds a MATTER azimuthal vortex
-  (th2=m·atan2(dy,dx) on the blob) — for hold-vs-imprint retention tests, no
-  field/door.
+- **`seed_mw`** (item 4 + retention face, default 0): seeds a MATTER
+  azimuthal vortex th2=m·atan2(dy,dx) — on the blob (item 4) AND on the
+  exp=ring cycle (`v93 ring-retention face` marker; overrides the chain
+  lock). Mirrored in Go (params/blob/ring; the Go ring also gained the
+  previously-unmirrored MOTION-#31 kx tilt).
 - **pass 6 clock skip** (`Byte-inert (amp_nat==0 takes the original branch)`):
   when amp_nat>0, the out-of-pass `th2 += w2e·dt` is skipped (precession is
   in-pass U instead).
@@ -157,25 +161,32 @@ Build: `cd v93 && make all` (freecell + fabrun + battery + volview).
 
 ## 7. The next face (when the user wants to continue)
 
-**Retention needs topology/nonlinearity — the linear channel diffracts local
-windings.** Two parallel routes:
-- **A. Closed dense ring (topological protection):** seed a matter RING
-  (|ψ|>0 everywhere on the cycle — the programme's persistent-matter shape:
-  nv=48/6/comp12) with winding (seed_mw), under amp_nat>0. If the winding
-  survives, topology beat diffraction. The kernel has `exp=ring`; needs a seed
-  path that sets th2=winding on the ring (extend seed_mw to the ring seed).
-- **B. DNLS self-trap:** the load-detuning w₂e(Em)=w2/(1+q_detune·Em/cap)
-  already in the kernel IS the discrete-NLS self-trapping nonlinearity. Map
-  the existence region in (amp_nat, q_detune) — a self-focused packet would
-  bind AND translate. Sweep kx toward the band edge (kx·d→π) looking for
-  melt-rate suppression.
+The retention face (§2 last row, `RING_DNLS.md`) EXECUTED both prior routes.
+What it opened, in recommended order:
+- **A. Symmetrized hop schedule (kernel face):** the sequential i<j
+  Givens-sweep order is a deterministic C6-breaking Trotter perturbation —
+  measured as BOTH the vacuum retention ceiling (frozen scaffold slips by
+  t≈50–100 with all noise off; live geometry ~250–300) AND (same family)
+  item 1's dt-invariance failure. One face — Strang/paired/randomized hop
+  ordering behind a byte-inert knob — targets both. Acceptance: frozen-
+  scaffold vacuum ring holds W=+2 to t=1000; e3b speed dt-invariant at
+  fixed amp_nat·dt.
+- **B. Lit-bath refill (the untested rescue):** rerun the ring retention
+  under V3a with a WARM bath (QUENCH-style lit medium) so the door actually
+  fires on cycle voices (A.5: cond=0 — amp_door never engaged). The
+  arg(ψ) door (amp_door=1) is the piece built for exactly this; predict
+  amp_door=0 scrambles on refill, amp_door=1 is the only candidate hold.
+- **C. Condensation lane (creation-adjacent):** characterize the
+  spontaneous incoherent condensation (B.1/B.2) as a mass-formation
+  mechanism: lifetimes vs qd/amp, hoard spectra, interaction with radiance
+  (does the tax select hoard sizes?), connection to the QUENCH cloud.
 
 Also still open (lower priority per user): formal tolerance-C≡Go abx at
-amp_nat>0; the dt-Trotter artifact (item 1 — try symmetric precess-half/hop/
-precess-half); armed L1-C (ρ_coh≈0.77 coherent bath).
+amp_nat>0; armed L1-C (ρ_coh≈0.77 coherent bath).
 
 ## 8. Recent git (the v93 arc)
 ```
+(HEAD)  retention face: ring seed_mw + RING_DNLS.md (routes A+B executed)
 d178813 items 1/2/4 writeup + battery ALL GREEN 87
 1239bd4 item 4 (matter-winding retention): unitary scrambles localized winding
 c7e77e2 item 2 (group velocity): tagged-centroid meter wrong; fd is seed-robust +x

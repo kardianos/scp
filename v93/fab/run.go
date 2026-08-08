@@ -566,6 +566,26 @@ func (s *Sim) Run() {
 				s.th2[j] = math.Mod(s.th2[i]-we*d/P.C+8.0*TwoPi, TwoPi)
 			}
 		}
+		if P.Kx != 0 && P.Exp == "ring" {
+			// MOTION #31: e3b-style tilt ON a bound object (drive
+			// detunes the bonds by design; pre-registered null)
+			for k := 0; k < nvo; k++ {
+				i := baseI + k
+				s.th2[i] = math.Mod(s.th2[i]-P.Kx*s.wr(s.px[i]-cx0)+8.0*TwoPi, TwoPi)
+			}
+			fprintf(s.Out, "# SEED ring tilt: kx=%.6g applied on top of the chain\n", P.Kx)
+		}
+		if P.SeedMw != 0 && P.Exp == "ring" {
+			// v93 ring-retention face: seed a MATTER azimuthal winding
+			// m*phi ON THE CLOSED RING (topological support: |psi|>0
+			// everywhere on the cycle). Overrides the chain lock.
+			for k := 0; k < nvo; k++ {
+				i := baseI + k
+				s.th2[i] = math.Mod(P.SeedMw*math.Atan2(s.py[i]-cy0, s.px[i]-cx0)+8.0*TwoPi, TwoPi)
+			}
+			fprintf(s.Out, "# SEED ring winding: seed_mw=%.6g (th2 = m*phi on the cycle; overrides chain lock)\n",
+				P.SeedMw)
+		}
 		fprintf(s.Out, "# SEED %s: n=%d x=%.4f d*=%.6f d_edge=%.6f edges=%d\n",
 			P.Exp, nvo, x, ds, de, s.trussN)
 
@@ -599,8 +619,11 @@ func (s *Sim) Run() {
 			}
 			s.Es[i] -= pull
 			s.Em[i] += pull
-			// e3b tilt: phase ramp along x
-			if P.Kx != 0 {
+			// e3b tilt: phase ramp along x; OR seed_mw: a MATTER azimuthal
+			// winding m*phi about the blob centre (v93 item 4 mirror)
+			if P.SeedMw != 0 {
+				s.th2[i] = math.Mod(P.SeedMw*math.Atan2(dy, dx)+8.0*TwoPi, TwoPi)
+			} else if P.Kx != 0 {
 				s.th2[i] = math.Mod(-(P.Kx*dx)+8.0*TwoPi, TwoPi)
 			} else {
 				s.th2[i] = 0

@@ -87,6 +87,10 @@ type Cfg struct {
 	ImpK                             float64
 	// QUENCH-3 (QUENCH.md §7): door writes wave phase into th2; 0 = inert
 	QpPhase float64
+	// v93 item 4 / ring-retention face: seed a MATTER azimuthal winding
+	// m*phi (blob: about the blob centre; ring: on the closed cycle,
+	// overriding the chain lock). seed_mw=0 => inert.
+	SeedMw float64
 	// HORIZON apparatus (HORIZON.md): forced hole; bh_r=0 = inert
 	BhR, BhK, BhSep float64
 	// FLOW apparatus (FLOW.md): bed-digging channel law; bed_k=0 = inert
@@ -231,6 +235,7 @@ func Defaults() Cfg {
 	p.SpinM = 0
 	p.ImpK = 0
 	p.QpPhase = 0
+	p.SeedMw = 0
 	p.BhR = 0
 	p.BhK = 1.0
 	p.BhSep = 0
@@ -486,6 +491,8 @@ func (p *Cfg) SetKV(k, v string) {
 		p.ImpK = atof(v)
 	case "qp_phase":
 		p.QpPhase = atof(v)
+	case "seed_mw":
+		p.SeedMw = atof(v)
 	case "bh_r":
 		p.BhR = atof(v)
 	case "bh_k":

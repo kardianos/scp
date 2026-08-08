@@ -3462,6 +3462,21 @@ int main(int argc, char **argv)
             }
             printf("# SEED ring tilt: kx=%g applied on top of the chain\n", P.kx);
         }
+        if (P.seed_mw != 0 && !strcmp(P.exp, "ring")) {
+            /* v93 ring-retention face: seed a MATTER azimuthal winding
+             * m*phi ON THE CLOSED RING — the topologically-supported
+             * substrate item 4 said retention needs (|psi|>0 everywhere
+             * on the cycle, no |psi|->0 phase-slip sites). Overrides the
+             * chain lock (which is the staggered/-nvo/2-winding state).
+             * Byte-inert at seed_mw=0 (no RNG consumed either way). */
+            for (int k = 0; k < nvo; k++) {
+                int i = base_i + k;
+                th2[i] = fmod(P.seed_mw * atan2(py_[i] - cy0, px_[i] - cx0)
+                              + 8.0 * TWO_PI, TWO_PI);
+            }
+            printf("# SEED ring winding: seed_mw=%g (th2 = m*phi on the cycle; overrides chain lock)\n",
+                   P.seed_mw);
+        }
         printf("# SEED %s: n=%d x=%.4f d*=%.6f d_edge=%.6f edges=%d\n",
                P.exp, nvo, x, ds, de, truss_n);
     }

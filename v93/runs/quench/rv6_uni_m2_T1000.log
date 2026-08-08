@@ -1,0 +1,51 @@
+# freecell — v89 free-cell substance test (exp=ring)
+# laws = laws_V2g VERBATIM (defaults): C=1 w1=1.65 w2=2.9 q_detune=1.2
+# gamma_res=0.25 gamma_res_m=0.1 p_gate=8 lock_floor=0.005 k_dep=1.2 k_dep_m=2 cap=2.5
+# e_s0=1 es_floor=0.05 e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
+# comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
+# quant_A0=1.15 quant_mode=2 (A0eff=1.15)
+# v91 radiance (laws_V3r candidate A): k_rad=0 p_rad=4 rad_clock=0
+# v91 cantus (coherent-channel candidate B): k_cant=0 k_tune=0 cant_tau=50 cant_seed=0 cant_grow=1
+# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=0 reg_gate=0 reg_f0=0
+# v91 identity (parcel-identity lane, IDENTITY.md): par_tau=0 par_gate=0 par_form=0 par_lo=0.002 par_hi=0.02 par_mature=400
+# v91 workfn (emergent-threshold lane, WORKFN.md): wf_on=0 wf_floor=0.01 wf_far=99
+# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=0
+# v92 amplitude Phase L lane L-1 (L0_DESIGN.md): amp_drv=0 amp_mmin=2
+# v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=2
+# v93 arg(psi) door (v93/README.md §II.7): amp_door=0
+# QUENCH-2 apparatus: conf_r=0 conf_gap=0.3 conf_th=1.6 conf_pinw=3 spin_m=0 imp_k=0 qp_phase=0
+# HORIZON apparatus (HORIZON.md): bh_r=0 bh_k=1 bh_sep=0
+# FLOW apparatus (FLOW.md): bed_k=0 bed_tau=30
+# GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
+# bath=0 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=16 dt=0.02 T=1000 seed=20260802 diag_every=5000
+# JAM skipped (no bath)
+# SEED ring winding: seed_mw=2 (th2 = m*phi on the cycle; overrides chain lock)
+# SEED ring: n=6 x=0.3250 d*=1.505798 d_edge=1.505798 edges=6
+# INIT NC=6 slots=6 live=6 phi_nom=0.0034 z_live=2.00 dbar=1.5058 sigma_d=0.00% E0=10.239130435
+#
+# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+t=    0.00 +0.00e+00 | 0.0034  2.00      6    0      0      0 | 1.5058  0.00 | 0.00e+00 0.00e+00 |   4.8750 1.0000  0.0000  1.5058 1.000  2.00 | edge_dev mean=0.0000 max=0.0000 gg=0.0000 shape_dev=0.0000 xbar=0.3250
+t=  100.00 +1.56e-15 | 0.0034  2.00      6    0      0      0 | 1.6377  0.00 | 7.41e-16 4.40e-16 |   4.8750 1.0000  0.0038  1.6377 1.000  2.00 | edge_dev mean=0.1319 max=0.1319 gg=0.0218 shape_dev=0.4146 xbar=0.3250
+t=  200.00 +1.04e-15 | 0.0034  2.00      6    0      0      0 | 1.6377  0.00 | 6.63e-16 2.93e-15 |   4.8750 1.0000  0.0038  1.6377 1.000  2.00 | edge_dev mean=0.1319 max=0.1319 gg=0.0902 shape_dev=0.4146 xbar=0.3250
+t=  300.00 -3.44e-14 | 0.0034  1.00      3    0      0      0 | 1.6163  1.87 | 1.43e-03 5.43e-03 |   4.8750 1.0000  0.0203  1.6323 0.500  1.00 | edge_dev mean=0.1264 max=0.1489 gg=0.1412 shape_dev=0.3968 xbar=0.3250
+t=  400.00 -7.13e-14 | 0.0034  1.00      3    0      0      0 | 1.6293  0.73 | 1.30e-04 7.57e-04 |   4.8750 1.0000  0.0601  1.6346 0.500  1.00 | edge_dev mean=0.1298 max=0.1382 gg=0.0997 shape_dev=0.4079 xbar=0.3250
+t=  500.00 -3.78e-14 | 0.0034  0.67      2    0      0      0 | 1.6378  0.00 | 1.44e-14 1.55e-13 |   4.8750 1.0000  0.0462  1.6371 0.333  0.67 | edge_dev mean=0.1319 max=0.1321 gg=0.0807 shape_dev=0.4148 xbar=0.3250
+t=  600.00 +2.83e-14 | 0.0034  1.33      4    0      0      0 | 1.6378  0.01 | 5.83e-16 4.82e-20 |   4.8750 1.0000  0.0462  1.6371 0.833  1.33 | edge_dev mean=0.1319 max=0.1321 gg=0.1359 shape_dev=0.4148 xbar=0.3250
+t=  700.00 +6.97e-14 | 0.0034  1.33      4    0      0      0 | 1.6378  0.01 | 5.89e-16 7.64e-16 |   4.8750 1.0000  0.0462  1.6371 0.833  1.33 | edge_dev mean=0.1319 max=0.1321 gg=0.1788 shape_dev=0.4148 xbar=0.3250
+t=  800.00 +1.05e-13 | 0.0034  1.33      4    0      0      0 | 1.6378  0.01 | 5.58e-16 3.56e-24 |   4.8750 1.0000  0.0462  1.6371 0.833  1.33 | edge_dev mean=0.1319 max=0.1321 gg=0.0000 shape_dev=0.4148 xbar=0.3250
+t=  900.00 +1.46e-13 | 0.0034  1.33      4    0      0      0 | 1.6378  0.01 | 5.56e-16 3.94e-18 |   4.8750 1.0000  0.0462  1.6371 0.833  1.33 | edge_dev mean=0.1319 max=0.1321 gg=0.0049 shape_dev=0.4148 xbar=0.3250
+t= 1000.00 +1.70e-13 | 0.0034  1.33      4    0      0      0 | 1.6378  0.01 | 4.93e-16 7.90e-16 |   4.8750 1.0000  0.0462  1.6371 0.833  1.33 | edge_dev mean=0.1319 max=0.1321 gg=0.1073 shape_dev=0.4148 xbar=0.3250
+#
+# RESULT drift_rel 1.702e-13
+# RESULT births 0 deaths 0 beta_returns 0 beta_energy 0.000000e+00
+# RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
+# RESULT credit qcnvD=0.000000 qcnvF=0.000000
+# RESULT geometry phi_nom=0.0034 z_live=1.33 dbar=1.6378 sigma_d=0.0001
+# RESULT truss edge_dev_mean=0.131941 edge_dev_max=0.132086 shape=(-0.0000,1.3411,1.3411) shape0=(0.0000,1.1337,1.1337)
+# EDGE 0 0-1 d=1.63788 dev=+0.13209 gg=0.0097 gpl=0.9354
+# EDGE 1 1-2 d=1.63783 dev=+0.13203 gg=0.6343 gpl=0.2643
+# EDGE 2 2-3 d=1.63769 dev=+0.13189 gg=0.0000 gpl=0.5458
+# EDGE 3 3-4 d=1.63769 dev=+0.13189 gg=0.0000 gpl=0.7086
+# EDGE 4 4-5 d=1.63767 dev=+0.13187 gg=0.0000 gpl=0.3753
+# EDGE 5 5-0 d=1.63768 dev=+0.13188 gg=0.0000 gpl=0.7680

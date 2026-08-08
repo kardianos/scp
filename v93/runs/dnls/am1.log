@@ -1,0 +1,45 @@
+# freecell — v89 free-cell substance test (exp=blob)
+# laws = laws_V2g VERBATIM (defaults): C=1 w1=1.65 w2=2.9 q_detune=1.2
+# gamma_res=0.25 gamma_res_m=0.1 p_gate=8 lock_floor=0.005 k_dep=1.2 k_dep_m=2 cap=2.5
+# e_s0=1 es_floor=0.05 e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
+# comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
+# quant_A0=1.15 quant_mode=2 (A0eff=1.15)
+# v91 radiance (laws_V3r candidate A): k_rad=0 p_rad=4 rad_clock=0
+# v91 cantus (coherent-channel candidate B): k_cant=0 k_tune=0 cant_tau=50 cant_seed=0 cant_grow=1
+# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=0 reg_gate=0 reg_f0=0
+# v91 identity (parcel-identity lane, IDENTITY.md): par_tau=0 par_gate=0 par_form=0 par_lo=0.002 par_hi=0.02 par_mature=400
+# v91 workfn (emergent-threshold lane, WORKFN.md): wf_on=0 wf_floor=0.01 wf_far=99
+# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=0
+# v92 amplitude Phase L lane L-1 (L0_DESIGN.md): amp_drv=0 amp_mmin=2
+# v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=2
+# v93 arg(psi) door (v93/README.md §II.7): amp_door=0
+# QUENCH-2 apparatus: conf_r=0 conf_gap=0.3 conf_th=1.6 conf_pinw=3 spin_m=0 imp_k=0 qp_phase=0
+# HORIZON apparatus (HORIZON.md): bh_r=0 bh_k=1 bh_sep=0
+# FLOW apparatus (FLOW.md): bed_k=0 bed_tau=30
+# GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
+# bath=1 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=16 dt=0.02 T=80 seed=20260802 diag_every=500
+# JAM sweeps=800 max_step=1.402e-04 (tol 1.0e-04, k_end=0.0010) — witness for the settle
+# SEED blob: amp=1 sigma=2.5 kx=0 tagged=629 (add>5% of amp)
+# INIT NC=2700 slots=25806 live=20663 phi_nom=1.6892 z_live=15.31 dbar=1.4089 sigma_d=14.77% E0=2861.704541697
+#
+# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+t=    0.00 +0.00e+00 | 1.6892 15.31  20663    0      0      0 | 1.4089 14.77 | 0.00e+00 0.00e+00 | 165.5501 1.0000  0.0080  3.8202 1.000 14.78 | es_core/far=0.8602
+t=   10.00 -3.18e-16 | 1.6890 16.19  21852    0   2252   2053 | 1.4278 15.00 | 1.62e-03 2.87e-03 | 153.9821 0.9301  0.0735  3.7147 1.000 15.92 | es_core/far=0.7871
+# QATOM t=18.80 dir=DF w=1.19465958 e=0.218656374015 i=205 Em=2.9734
+t=   20.00 -4.77e-16 | 1.6890 16.46  22221    0   3398   3044 | 1.4334 15.07 | 1.53e-03 4.19e-03 | 152.0101 0.9182  0.0728  3.7104 1.000 16.12 | es_core/far=0.5876
+t=   30.00 -6.36e-16 | 1.6888 16.61  22423    0   4193   3820 | 1.4363 15.10 | 9.61e-04 5.32e-03 | 150.9632 0.9119  0.0725  3.6963 1.000 16.35 | es_core/far=0.5884
+t=   40.00 -7.95e-16 | 1.6890 16.72  22570    0   4785   4427 | 1.4385 15.13 | 9.35e-04 4.25e-03 | 148.7838 0.8987  0.0771  3.6974 1.000 16.48 | es_core/far=0.4924
+t=   50.00 -1.11e-15 | 1.6892 16.75  22618    0   5269   4875 | 1.4394 15.16 | 8.91e-04 6.58e-03 | 149.2915 0.9018  0.1019  3.6990 1.000 16.54 | es_core/far=0.5191
+t=   60.00 -1.27e-15 | 1.6894 16.78  22651    0   5733   5279 | 1.4400 15.17 | 1.32e-03 1.96e-03 | 146.4335 0.8845  0.1016  3.6874 1.000 16.51 | es_core/far=0.6058
+t=   70.00 -1.27e-15 | 1.6893 16.83  22714    0   6122   5715 | 1.4411 15.19 | 7.85e-04 3.55e-03 | 146.4701 0.8847  0.1194  3.7118 1.000 16.51 | es_core/far=0.5617
+t=   80.00 -1.43e-15 | 1.6894 16.86  22758    0   6531   6115 | 1.4417 15.19 | 7.23e-04 5.10e-03 | 146.2058 0.8832  0.0818  3.7212 1.000 16.52 | es_core/far=0.6195
+#
+# RESULT drift_rel -1.430e-15
+# RESULT births 6531 deaths 6115 beta_returns 0 beta_energy 0.000000e+00
+# RESULT conv rough=0.000000 cond=0.000000 evap=1.493863 backs=0.194852 rad=0.000000
+# RESULT credit qcnvD=1.175870 qcnvF=0.253007
+# RESULT geometry phi_nom=1.6894 z_live=16.86 dbar=1.4417 sigma_d=0.1519
+# RESULT es_shells 0.6184 0.8333 0.8258 0.9274 0.9644 0.9875 1.0030 1.0038
+# RESULT blob Em_tag=146.20579 com=(8.080,7.985,7.993) rms=3.7212 conn=1.0000 z_tag=16.52
+# RESULT blob_drift speed=0.001126 cos_to_kdir=0.6054 v=(6.82e-04,-1.10e-04,8.90e-04)

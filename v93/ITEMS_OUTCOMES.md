@@ -106,3 +106,13 @@ winding is topologically protected there, retention finally works and the
 linear-channel diffraction is beaten by topology. In parallel, the DNLS route
 (load-detuning × amp_nat existence map) could bind a localized packet without
 a ring. Either is the registered path to real spin retention.
+
+**[2026-08-07, same day: EXECUTED — both routes. See `RING_DNLS.md`.** Vacuum
+C6 ring holds W=+2 exactly ≥200 t.u. (topology beats diffraction — the
+existence proof); the medium kills it in ~10 t.u. by contact dephasing in
+both laws; the vacuum ceiling is the kernel's own hop-sweep Trotter order.
+The DNLS nonlinearity is real (qd0 melts, qd≥0.6 condenses, deep corner
+envelope-frozen) but binds energy NOT phase — retention dead at every
+corner, mobility dies with binding. The clause "possibly DNLS binding" is
+closed negative; spontaneous incoherent condensation is the new
+creation-adjacent finding.]
