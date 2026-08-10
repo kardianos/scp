@@ -261,6 +261,8 @@ func (s *Sim) Run() {
 	fprintf(s.Out, "# quant_A0=%.6g quant_mode=%d (A0eff=%.6g)\n", P.QuantA0, P.QuantMode, s.A0eff)
 	fprintf(s.Out, "# v91 radiance (laws_V3r candidate A): k_rad=%.6g p_rad=%.6g rad_clock=%d\n",
 		P.KRad, P.PRad, P.RadClock)
+	fprintf(s.Out, "# v93 P2 dual intake (qgraph UNIFIED_LAW): rad_dual=%.6g bath_xb=%.6g bath_em=%.6g\n",
+		P.RadDual, P.BathXb, P.BathEm)
 	fprintf(s.Out, "# v91 cantus (coherent-channel candidate B): k_cant=%.6g k_tune=%.6g cant_tau=%.6g cant_seed=%d cant_grow=%d\n",
 		P.KCant, P.KTune, P.CantTau, P.CantSeed, P.CantGrow)
 	fprintf(s.Out, "# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=%.6g reg_gate=%d reg_f0=%.6g\n",
@@ -1392,7 +1394,7 @@ func (s *Sim) Run() {
 	// ---------------- run ----------------
 	steps := int(P.T/P.Dt + 0.5)
 	sheared := false
-	fprintf(s.Out, "#\n# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d%% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far\n")
+	fprintf(s.Out, "#\n# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d%% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far | Em_tot\n")
 	emt0 := -1.0
 	snapIdx := 0
 	for st := 0; st <= steps; st++ {
@@ -1436,6 +1438,10 @@ func (s *Sim) Run() {
 					(comz-s.cenz)*(comz-s.cenz))
 			}
 			mstep := s.maxNetForce()
+			emTot := 0.0
+			for i2 := 0; i2 < s.NC; i2++ {
+				emTot += s.Em[i2]
+			}
 			fprintf(s.Out, "t=%8.2f %+9.2e | %.4f %5.2f %6d %4d %6d %6d | %.4f %5.2f | %8.2e %8.2e | %8.4f %6.4f %7.4f %7.4f %5.3f %5.2f",
 				s.simT, drift, phi, zl, nla, nld, s.births, s.deaths,
 				dbar, 100*sig, mstep, mld, emt, ret, comdev, rms, conn, zb)
@@ -1626,6 +1632,8 @@ func (s *Sim) Run() {
 					fprintf(s.Out, " | sep=%.4f", math.Sqrt(ddx*ddx+ddy*ddy))
 				}
 			}
+			// v93 sustain: all-cell dense inventory (not tag-only) on every diag line
+			fprintf(s.Out, " | Em_tot=%.4f", emTot)
 			fprintf(s.Out, "\n")
 			if P.P1Meter != 0 {
 				tx := s.p1sp[0] + s.p1fl[0] + s.p1fd[0] + s.p1gm[0]

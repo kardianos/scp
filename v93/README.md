@@ -1,5 +1,11 @@
 # v93 — THE UNITARY DENSE CHANNEL (OPENED; implemented behind amp_nat/amp_door)
 
+## Theory/sustain campaign closeout (2026-08-08 → 08-09)
+
+**→ [`theory/STATUS_COMPLETE.md`](theory/STATUS_COMPLETE.md)** — full status:
+sustain YES (uni+qd to T=10k), dual SLOW_REFILL not adopted, battery 87 GREEN,
+**FCS archive** under `theory/runs/`, **WebP/PNG** under `/space/scp/v93/`.
+
 **STATUS: OPENED and implemented (user-authorized full campaign, 2026-08-07).
 The design below is the pre-registration; it has since been built — the
 unitary dense hop (pass U) behind `amp_nat` and the arg(ψ) door behind

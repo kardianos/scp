@@ -895,9 +895,10 @@ func suite() []experiment {
 	return exps
 }
 
-// maskDrift blanks the two places where the C and Go kernels are ALLOWED
+// maskDrift blanks the places where the C and Go kernels are ALLOWED
 // to differ: the conservation-drift column (FP-floor libm-ulp dust — the
-// t-row's second field and the RESULT drift_rel line) and the sign of a
+// t-row's second field and the RESULT drift_rel line), the banner title
+// (freecell vs freecell-go), RESULT credit 1-ulp dust, and the sign of a
 // printed negative zero. Everything else must be byte-equal.
 var driftColRe = regexp.MustCompile(`(?m)^(t=\s*\S+) [+-]\S+`)
 var driftResRe = regexp.MustCompile(`(?m)^# RESULT drift_rel \S+`)
@@ -908,12 +909,16 @@ var driftResRe = regexp.MustCompile(`(?m)^# RESULT drift_rel \S+`)
 // carry the C/Go identity claim.
 var p1ResRe = regexp.MustCompile(`(?m)^# RESULT p1[xyz] .*`)
 var qatomRe = regexp.MustCompile(`(?m)^# QATOM .*`)
+var bannerRe = regexp.MustCompile(`(?m)^# freecell(?:-go)? — .*$`)
+var creditRe = regexp.MustCompile(`(?m)^# RESULT credit .*$`)
 
 func maskDrift(log string) string {
 	log = driftColRe.ReplaceAllString(log, "$1 DRIFT")
 	log = driftResRe.ReplaceAllString(log, "# RESULT drift_rel DRIFT")
 	log = p1ResRe.ReplaceAllString(log, "# RESULT p1 (meter masked: C/Go FP envelope)")
 	log = qatomRe.ReplaceAllString(log, "# QATOM (sampler masked: C/Go FP envelope)")
+	log = bannerRe.ReplaceAllString(log, "# freecell BANNER (C/Go title masked)")
+	log = creditRe.ReplaceAllString(log, "# RESULT credit (1-ulp masked)")
 	return strings.ReplaceAll(log, "-0.0000", "0.0000")
 }
 

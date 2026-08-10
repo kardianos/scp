@@ -35,6 +35,15 @@ type Cfg struct {
 	// A; k_rad=0 => V2g byte-exactly). See kernel pass-6 comment.
 	KRad, PRad float64
 	RadClock   int
+	// v93 P2 dual intake (theory/qgraph UNIFIED_LAW §3.3): spontaneous
+	// dual of radiance I = k_rad*rad_dual*cap*xb^p_rad (xb = Ee/cap).
+	// rad_dual=0 => byte-inert (default; battery surface unchanged).
+	RadDual float64
+	// Apparatus: hold ambient field load on vacuum cells for P2
+	// thermometer sweep. bath_xb=0 => off. When >0, cells with
+	// Em < bath_em get Ee retargeted to bath_xb*cap each step.
+	BathXb float64
+	BathEm float64
 	// v91 LAW CANDIDATE B (CANTUS, coherent channel): the superimposed
 	// harmonic-lock field (CANTUS.md). k_cant=0 && k_tune=0 => the
 	// step is byte-identical. See kernel pass-H comment.
@@ -212,6 +221,9 @@ func Defaults() Cfg {
 	p.KRad = 0
 	p.PRad = 4
 	p.RadClock = 0
+	p.RadDual = 0
+	p.BathXb = 0
+	p.BathEm = 0.01
 	p.KCant = 0
 	p.KTune = 0
 	p.CantTau = 50
@@ -439,6 +451,12 @@ func (p *Cfg) SetKV(k, v string) {
 		p.PRad = atof(v)
 	case "rad_clock":
 		p.RadClock = atoi(v)
+	case "rad_dual":
+		p.RadDual = atof(v)
+	case "bath_xb":
+		p.BathXb = atof(v)
+	case "bath_em":
+		p.BathEm = atof(v)
 	case "k_cant":
 		p.KCant = atof(v)
 	case "k_tune":

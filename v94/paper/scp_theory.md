@@ -1,0 +1,1036 @@
+---
+title: "The SCP Substrate: One Law, Three Modes, and a Door"
+subtitle: >
+  A ground-up account of the Space-Conversion Programme, through v94.
+  Session `aebbc7eb-4716-4e30-8c22-484e115428f2`.
+author: "The SCP Programme (v89--v94 record)"
+date: "2026-08-09"
+abstract: >
+  We present, from first principles, a theory in which the only law is that
+  energy is never destroyed --- it only changes *mode* --- and in which space
+  itself is one of the modes. There is no fixed stage: the world is a network
+  of cells that are born, live, and die, each holding energy in three forms
+  (field, matter, and space) plus a small register that holds energy in the
+  act of changing form. All continuous motion of energy is one primitive
+  operation --- an energy-preserving rotation between two neighbouring
+  amplitudes --- applied along three kinds of connection: field links, matter
+  links, and the "door" between modes inside each cell. Conversion through
+  the door is quantized: it fires only when an internal phase completes a
+  full turn, and only in whole action atoms. From this substrate we derive,
+  and compare against simulation measurements, the shapes of familiar
+  physics: Maxwell-type wave propagation and a fixed wave speed; refraction;
+  mass--energy equivalence as an identity of the ledger; a Stefan-Boltzmann-like
+  fourth-power radiance law and a metabolic fixed point;
+  gravity as space flow with a maintained footprint (and an honestly open
+  far field); and double-slit interference rebuilt click by single click.
+  We close with a structural theorem: any substrate with refraction, an
+  action grain, and local dynamics must carry at least the three-station
+  conversion path used here (field, register, matter) --- only the size of
+  the action atom remains a postulate.
+header-includes:
+  - \usepackage{graphicx}
+  - \usepackage{array}
+---
+
+```{=latex}
+\twocolumn
+\setlength{\emergencystretch}{3em}
+```
+
+# The one law, and the four working constraints
+
+Most physical theories begin with many laws: one for electricity, one for
+gravity, one for heat, plus a list of particles to put on the stage. The
+Space-Conversion Programme (SCP) begins with one:
+
+> **Energy is never destroyed. It only changes mode. Space is one of the
+> modes.**
+
+Everything else in this paper is either a *consequence* of that sentence, a
+*definition* needed to state it precisely, or a *measurement* of how well
+the consequences hold up in simulation. Four working constraints keep the
+construction honest:
+
+1. **Energy is never destroyed** --- the only law. In the simulation this is
+   not a hope but a checked number: the total energy of a closed run drifts
+   only at the level of computer round-off (parts in $10^{13}$--$10^{15}$),
+   because every operation in the update conserves energy *by construction*
+   (§3.2, §8).
+2. **No background.** Nothing in the theory is allowed to persist forever
+   and merely have its values updated. There is no fixed grid of points, no
+   eternal coordinate system. The cells of §2 are created and destroyed;
+   space is a *participant*, not a stage.
+3. **No imported species.** We do not add an "electron field" or a "photon"
+   by hand. Whatever objects exist must *emerge* as configurations of the
+   substrate.
+4. **Emergent from the fabric alone.** Familiar laws (Maxwell, $E=mc^2$,
+   the $T^4$ radiation law, Newtonian gravity, quantum interference) are
+   targets to be *derived and measured*, never assumptions.
+
+**How claims are graded.** Throughout, statements carry one of four tags.
+**[derived]**: follows mathematically from the substrate rules.
+**[measured]**: confirmed in simulation, with the number quoted.
+**[adopted]**: a rule or constant chosen and then held fixed under a
+regression battery (the "ratchet": every change to the substrate must
+re-pass every previously passing experiment --- 87 gated experiments at the
+current law table). **[open]**: honestly unresolved. A theory paper that
+never says "open" is hiding something; §10 is a list of what we are hiding
+from no one.
+
+**Two ways to read.** The mathematical spine runs §3 → §4 → §5; every
+equation in it is optional in the sense of §2.3 (the words carry the
+content). For the story without the equations, read §§1--2, §4.1, §4.4,
+§6, §7, the plain-language theorem at the start of §8.2, and §9 ---
+whose correspondence table (Table \ref{tab:corr}) can equally be read
+*now*, as a map of where this paper is going.
+
+# The substrate: cells, modes, and the door
+
+## Cells and the roster
+
+The world is a finite collection of **cells**. A cell is not a location in
+space --- it is a *piece* of space: a parcel of the space mode of energy,
+with a size set by how much space-energy it holds. Cells that are close
+enough touch; touching cells are joined by **links**, along which energy
+can be exchanged. The set of live cells and links --- the **roster** --- is
+itself dynamical: cells are born when energy condenses, die when they
+drain, and the linkage rearranges as cells move and resize. This is what
+"no background" means operationally: *there is no list of places; there is
+only the roster, and the roster is made of the same stuff it describes.*
+
+## The three sectors and the register
+
+```{=latex}
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{fig_substrate.pdf}
+\caption{\textbf{The substrate.} (a) One cell carries three energy modes
+--- field $\psi_e$, matter $\psi_m$, space $E_s$ --- plus the register
+$\chi$, which holds energy \emph{in the act of converting} between field
+and matter. The field--register connection is continuous; the
+register--matter connection fires only in discrete clicks of whole atoms.
+(b) The full graph: spatial field links, spatial matter links, and the
+per-cell mode (``fiber'') links. One rotation primitive operates on every
+edge type.}
+\label{fig:substrate}
+\end{figure*}
+```
+
+Each cell holds energy in three **modes** (sectors), plus one bookkeeping
+carrier (Fig. \ref{fig:substrate}):
+
+- **The field**, written $\psi_e$. This is the light-like sector: it is fast,
+  it carries waves, and in the vacuum it travels at the substrate's top
+  speed. $\psi_e$ is a *complex amplitude* --- explained below.
+- **Matter**, written $\psi_m$, with energy $E_m$. This is the slow,
+  storable sector: the stuff lumps, objects, and (eventually) particles are
+  made of.
+- **Space**, written $E_s$. A plain (non-oscillating) energy store. The
+  amount of $E_s$ a cell holds sets its size. Matter is *converted space*:
+  making matter somewhere means space-energy was consumed there, and that
+  deficit is the seed of gravity (§6).
+- **The register**, written $\chi$: a small complex amplitude holding
+  energy *in transit between modes* --- energy that has left the field but
+  has not yet become matter (or the reverse). It is the exact cousin of the
+  "flight" parcels that carry energy mid-link between two cells
+  (Fig. \ref{fig:transit}): flight is energy in space-transit; the register
+  is energy in *mode*-transit. It is bookkeeping for an incomplete
+  conversion, not a fourth kind of substance --- a claim we make precise,
+  and prove necessary, in §8.
+
+```{=latex}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_transit.pdf}
+\caption{\textbf{Energy in transit, twice.} (a) A flight parcel: energy
+mid-hop on a link between two cells --- it has left cell A and not yet
+arrived at cell B, and the ledger books it separately. (b) The register
+$\chi$: the same idea in the \emph{mode} direction --- energy that has
+left the field and not yet settled as matter, inside one cell. Both are
+counted in the conservation sum; neither is a new kind of substance.}
+\label{fig:transit}
+\end{figure}
+```
+
+**What a complex amplitude is.** A complex amplitude is just an arrow in a
+plane: it has a *length* and a *direction* (a phase, i.e. a clock reading).
+We write it as two ordinary numbers --- $\psi_e = f_{a1} + i f_{a2}$ means
+"an arrow whose two perpendicular components are $f_{a1}$ and $f_{a2}$."
+The **energy** of the sector is the squared length of the arrow:
+$$E_e = |\psi_e|^2 = f_{a1}^2 + f_{a2}^2 .$$
+The direction of the arrow is the sector's internal clock. Nothing quantum
+is being smuggled in here: an arrow with a length and a clock is exactly
+how one describes any oscillation (a pendulum has an amplitude and a
+phase). What *will* be derived --- not assumed --- is that adding arrows
+before squaring produces interference (§7). (Every symbol in this paper is
+collected in Appendix A; dip into it freely.)
+
+## The arrow, the quarter-turn, and energy
+
+Because the rest of the paper leans on this one picture, we spell it out
+once, slowly (Fig. \ref{fig:arrow}). An amplitude is an arrow. Its
+*length* says how big the oscillation is; its *angle* is a clock hand
+saying where in its cycle the oscillation is. Two operations cover
+everything the substrate ever does to arrows:
+
+- **Turning.** Multiplying by the imaginary unit $i$ is nothing deeper
+  than *turning the arrow a quarter-turn* ($90^\circ$)
+  counter-clockwise. That is the only sense in which $i$ appears in this
+  paper: it is a rotation instruction, not a mysterious number. An
+  equation like "$\text{rate of change of } \psi = -i\,\Omega\,\psi$"
+  says, in words: *the arrow's tip moves at right angles to the arrow*
+  --- which is exactly what "rotating steadily at rate $\Omega$" means.
+- **Squaring the length.** The energy carried by the arrow is its length
+  squared, $E = f_{a1}^2 + f_{a2}^2$ --- always positive, zero only for
+  a zero arrow. Two arrows can point opposite ways and *add* to a short
+  arrow (that is interference, §7), but energy is only ever computed
+  from the arrow a cell actually has --- never by cancelling one cell's
+  energy against another's.
+
+Readers comfortable with complex numbers can read every equation below
+as written; readers who are not can, everywhere, substitute the words
+"turn a quarter-turn" for $i$ and "rotate steadily" for
+$e^{-i\Omega t}$, and no content is lost.
+
+```{=latex}
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{fig_arrow.pdf}
+\caption{\textbf{The one picture behind all the math.} (a) An amplitude
+is an arrow with a length and a clock angle. (b) The imaginary unit $i$
+is a quarter-turn: $i\psi$ is $\psi$ rotated $90^\circ$. (c) Energy is
+the squared length of the arrow --- the sum of the squares of its two
+perpendicular components, and never negative.}
+\label{fig:arrow}
+\end{figure*}
+```
+
+## Pitches, load, and the flattening law
+
+Every oscillating sector has a natural frequency, its **pitch**: $w_1$ for
+the field and $w_2$ for matter, with $w_2 > w_1$ (matter's clock runs
+faster than the field's --- in the adopted law table, $w_1 = 1.65$,
+$w_2 = 2.9$ in substrate units). Pitch is not fixed: a loaded cell runs
+slow. Define the **load**
+$$x = \frac{E_m + \text{(energy in transit)}}{\mathrm{cap}},$$
+the fraction of the cell's carrying capacity $\mathrm{cap}$ that is in
+use. Then the effective pitches are **[adopted, battery-gated]**
+$$w_{1e} = \frac{w_1}{1 + q\,x}, \qquad
+  w_{2e} = \frac{w_2}{1 + q\,x},$$
+with a single constant $q$ ($=1.2$ in the law table). *Load flattens
+pitch.* This one rule --- a full cell ticks slower --- will reappear as
+refraction (§5.2), as the work function of the conversion door (§5.1), and
+as a click-rate throttle (§4.3).
+
+## The door and the atoms
+
+Energy moves *within* a mode continuously. Energy moves *between* modes
+only through the **door**, and the door is quantized: every conversion
+fires in whole **action atoms**
+$$\boxed{\;\varepsilon = \frac{A_0\,\omega}{2\pi}\;}$$
+--- the energy that carries exactly $A_0$ of *action* (energy $\times$
+time) in one cycle of the source's pitch $\omega$. Why that form: one
+full turn of a clock ticking at pitch $\omega$ takes time $2\pi/\omega$,
+so a packet that carries action $A_0$ in one turn carries energy
+$A_0 \div (2\pi/\omega) = A_0\omega/2\pi$ --- the $2\pi$ is just "per
+full turn." The constant $A_0$
+($=1.15$ in the law table) is the substrate's version of Planck's constant:
+the size of the smallest tradable packet of oscillation. That conversion
+is atom-grained while transport is smooth is the deepest structural fact
+of the substrate --- "amplitudes within a mode, atoms at mode boundaries"
+--- and §8 proves the two cannot be merged. Linearity of $\varepsilon$ in
+$A_0$ is **[measured]** to about one part in $10^{8}$.
+
+## The conservation ledger
+
+The books close over everything:
+$$\frac{d}{dt}\;\sum_{\text{cells}}\Big(E_m + E_e + E_s + |\chi|^2\Big)
+  \;+\; \frac{d}{dt}\,\big(\text{flight}\big) \;=\; 0 .$$
+**[derived + measured]** Derived, because (as §3--§4 show) every continuous
+update step is a rotation --- and rotations do not change lengths --- while
+every discrete click is an explicit ledger move; measured, because closed
+runs hold this sum to $\sim 10^{-13}$--$10^{-15}$ relative drift over
+thousands of time units, and a single bookkeeping bug (an uncapped clamp
+in one kernel's outtake branch) announced itself as a drift eight orders
+of magnitude above that floor and was found *by this meter*.
+
+# The translation primitive: how anything moves
+
+## Two half-oscillations that feed each other
+
+How does a wave move? In the substrate, the field update per time step
+$dt$ consists of exactly two operations. **[derived from the kernel; this
+section is the measured code, written as mathematics]**
+
+**(a) Precession.** Each cell's field arrow rotates in place at its
+effective pitch: $\psi_e \to e^{-i\,\Omega_1 dt}\,\psi_e$ with
+$\Omega_1 = w_{1e}$. Component-wise, the arrow $(f_{a1}, f_{a2})$ turns by
+angle $\Omega_1 dt$.
+
+**(b) Exchange.** Each link mixes the arrows of its two end cells by a
+small energy-preserving rotation (a *Givens rotation* --- the plane
+rotation familiar from geometry, applied to the pair of amplitudes):
+$$\psi_i \to \cos\tau\,\psi_i - i\sin\tau\,\psi_j, \qquad
+  \psi_j \to \cos\tau\,\psi_j - i\sin\tau\,\psi_i,$$
+with a small angle $\tau$ per step. Because it is a rotation,
+$|\psi_i|^2 + |\psi_j|^2$ --- the two cells' combined energy --- is
+*exactly* unchanged. Conservation is not imposed; it is geometry. (The
+$-i$ in the mix rule says the neighbour's arrow arrives *turned a
+quarter-turn* --- Fig. \ref{fig:arrow}b --- the same $90^\circ$
+relationship the arrow's own two components keep between themselves.
+Those two perpendicular components, $f_{a1}$ and $f_{a2}$, are called
+the **quadratures**.)
+
+Now write the same two operations in terms of the arrow's two components.
+With neighbours indexed by $j$ and exchange strengths $K_{ij}$:
+$$\frac{d f_{a1}(i)}{dt} = +\Omega_1 f_{a2}(i) + \sum_j K_{ij} f_{a2}(j),$$
+$$\frac{d f_{a2}(i)}{dt} = -\Omega_1 f_{a1}(i) - \sum_j K_{ij} f_{a1}(j).$$
+Look at the *shape* of this pair, because it is the whole point:
+
+- each equation is **first-order** (no accelerations anywhere);
+- each is **incomplete** --- $f_{a1}$'s rate of change contains no
+  $f_{a1}$ at all: it is sourced *entirely* by the other component, on-site
+  and on the neighbours; and symmetrically for $f_{a2}$;
+- the two are **mutually inducing**: freeze either component and the other
+  goes inert.
+
+Propagation is the *interleaving* of two incomplete conversions
+(Fig. \ref{fig:maxwell}). Neither half moves on its own: precession alone
+is oscillation in place; exchange alone spreads a lump symmetrically with
+no preferred direction. A travelling wave is a phase *gradient* (the
+arrows' clocks reading slightly differently from cell to cell) advanced by
+precession while exchange converts that gradient into displacement.
+Figure \ref{fig:pulsehop} shows it happening: these are not sketches but
+the actual update run on a 40-cell chain --- precession, then the pairwise
+exchange sweep, repeated --- and the pulse walks.
+
+```{=latex}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_pulsehop.pdf}
+\caption{\textbf{Watch the pulse move.} Four snapshots of the actual
+precession-plus-exchange update on a 40-cell chain (energy per cell,
+successive times). No cell ever ``sends'' anything: each step only
+rotates neighbouring pairs of arrows, yet the energy packet advances at
+the band speed. Total energy is identical in every frame.}
+\label{fig:pulsehop}
+\end{figure}
+```
+
+```{=latex}
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{fig_maxwell.pdf}
+\caption{\textbf{The translation primitive.} (a) In one cell the two
+quadratures $f_{a1}, f_{a2}$ form a rotating arrow; each component's rate
+of change is sourced only by the other. (b) Across many cells the same
+pairing propagates: the two components run a quarter-cycle apart and hand
+the waveform forward at the band speed $c_{\mathrm{sub}}$. This is the
+Maxwell shape --- two first-order, mutually-inducing, incomplete
+conversions --- realized on the roster.}
+\label{fig:maxwell}
+\end{figure*}
+```
+
+## The Maxwell correspondence
+
+> **The familiar law.** In everyday electromagnetism, light is two
+> fields --- electric $\mathbf{E}$ and magnetic $\mathbf{B}$ --- and the
+> essential content of Maxwell's equations in empty space is a loop:
+> *the electric field's rate of change is caused by the magnetic field,
+> and the magnetic field's rate of change is caused by the electric
+> field* (with one sign flipped). Neither field sustains itself; each
+> exists by inducing the other, and the loop propagates at a fixed
+> speed $c$. For readers who have met the symbols, the pair is
+> $$\frac{\partial \mathbf{E}}{\partial t} = c^2\,\nabla\times\mathbf{B},
+>   \qquad
+>   \frac{\partial \mathbf{B}}{\partial t} = -\,\nabla\times\mathbf{E};$$
+> the words above are the content, and the rest of this section needs
+> only the words.
+
+Compare with the substrate pair above. The correspondence is structural
+and exact in the properties that matter: two first-order equations; no
+self-terms; mutual induction with one sign flip; elimination of either
+component gives a second-order wave equation
+$d^2\psi/dt^2 = -H^2\psi$ on the roster. In this sense **the field sector
+does not *satisfy* a Maxwell-like law; it *is* the Maxwell mechanism**,
+with $f_{a1}$ and $f_{a2}$ playing the roles of $\mathbf{E}$ and
+$\mathbf{B}$.
+
+One honest caveat **[stated, not hidden]**: the textbook
+$\nabla\times$ acts on *vector* fields in three dimensions; the roster
+field is one complex amplitude per cell, so the neighbour coupling is the
+graph operator $K$, not a literal curl. What carries over is the
+shape --- and the shape is what forces wave behaviour.
+
+*(Skippable remark, for readers who have met quantum mechanics; everyone
+else may jump to §3.3 losing nothing.)* The same pair, written for
+the complex arrow, is a discrete Schrödinger equation
+$$i\,\frac{d\psi}{dt} = H\psi,$$
+where the matrix $H = \mathrm{diag}(\Omega_1(i)) + K$ is symmetric. That
+the *classical field update* and the *Schrödinger form* are the same
+object on the substrate is not an analogy --- they are literally the same
+two lines of arithmetic.
+
+## The speed of light, derived
+
+For a wave $\psi \propto e^{i(kx - \omega t)}$ on a regular chain of
+cells with spacing $d$ and mean exchange rate $\bar K$, the update above
+gives the **dispersion relation** **[derived]**
+$$\omega(k) = \Omega_1 + \epsilon(k), \qquad
+  \epsilon(k) = 2\bar K\,(1 - \cos kd),$$
+and a packet travels at the *group velocity* $v_g = d\omega/dk$, whose
+maximum over the band is the substrate speed of light:
+$$\boxed{\;c_{\mathrm{sub}} \;\approx\; 2\,\bar K\, d\;}$$
+fixed entirely by the law constants and the roster geometry --- no speed
+is imported. Every wave in the vacuum, regardless of wavelength or
+intensity, is capped by the same band slope: the constancy of $c$ is a
+*graph property*, not a postulate. **[measured]** Vacuum optics at the
+adopted law table are linear (intensity-independent) and dispersive
+exactly per this band.
+
+# The door pair: how field becomes matter
+
+## Why conversion needs a register
+
+The door of §2.4 says conversion is quantized. But *refraction* --- light
+slowing in glass --- requires the field in matter to be continuously,
+reversibly, *partially* converting into a matter-side response and back
+(this is the actual textbook mechanism of the refractive index: the field
+polarizes the medium, the polarization re-radiates). A conversion that is
+only ever whole atoms cannot do this. So the substrate needs a state for
+*incomplete conversion to stand in*: the register $\chi$. Energy rotates
+continuously and reversibly between $\psi_e$ and $\chi$ ("virtual"
+conversion --- optics), and settles from $\chi$ into matter only in whole
+atoms at discrete clicks ("real" conversion). §8 proves this two-stage
+structure is not a convenience but a necessity.
+
+## The pair
+
+Between clicks, the field and the register in one cell obey the coupled
+first-order pair **[derived; implemented in v94; conservation of
+$E_e + |\chi|^2$ under the pair is exact]**
+$$
+i\,\frac{d\psi_e}{dt} = \Omega_1\,\psi_e - g\,\chi, \qquad
+i\,\frac{d\chi}{dt}   = \Omega_2\,\chi   - g\,\psi_e,
+$$
+with $\Omega_2 = w_{2e}$ (the register is matter-pitched: it is matter in
+the making) and coupling $g = \mathrm{door}_g\, w_2$, built from the bare
+matter pitch --- the door's stiffness belongs to the fabric, not the local
+load. Note the shape: *this is the Maxwell pair again*, pointing along the
+mode direction instead of the space direction. Intake (field $\to$
+register) and outtake (register $\to$ field) are the two half-cycles of
+one rotation; conversion is incomplete by construction, with maximum
+transferred fraction
+$$F(x) = \frac{4g^2}{\Delta(x)^2 + 4g^2}, \qquad
+  \Delta(x) = \Omega_1 - \Omega_2 = \frac{w_1 - w_2}{1 + q\,x}.$$
+$\Delta$ is the **detuning** --- the mismatch between the two clocks. In
+vacuum ($x=0$) the mismatch is maximal and the door barely opens; in
+loaded matter the flattening law shrinks $\Delta$ and the door opens.
+*"Empty space demands a far threshold; bound matter converts freely"* ---
+the work-function rule --- stops being a rule and becomes clock
+arithmetic. **[derived from the adopted pitch law]**
+
+## The beat, the winding, and the click
+
+```{=latex}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_click.pdf}
+\caption{\textbf{The click grain.} Top: the accumulated phase difference
+between the field and matter clocks (the beat). The door may fire only
+when it completes a full turn ($2\pi$) --- a \emph{winding} event.
+Bottom: between clicks the register $|\chi|^2$ evolves continuously and
+reversibly; matter $E_m$ changes only at clicks, and only by whole atoms
+$\varepsilon$. Illustration with law-table values.}
+\label{fig:click}
+\end{figure}
+```
+
+*When* may the door fire? The kernel keeps, per cell, the accumulated
+phase difference between the two clocks:
+$$\varphi_D \mathrel{+}= (w_{1e} - w_{2e})\,dt,$$
+the **beat**. The door fires only when $\varphi_D$ completes a full turn
+($|\varphi_D| = 2\pi$) --- and then transfers whole atoms $\varepsilon$
+from the register into matter, by an energy-preserving rotation between
+$\chi$ and $\psi_m$ solved to move exactly the fired amount
+(Fig. \ref{fig:click}). Three facts about this arrangement, each doing
+real work:
+
+1. **The click is a topological event.** A full turn of a phase is a
+   *winding*, and winding numbers are integers by geometry, not by decree.
+   The integer character of conversion --- you get 0, 1, 2 atoms, never
+   $1.37$ --- comes for free from topology. Only the *size* of the atom,
+   $A_0$, is a postulate (§8).
+2. **The click clock is load-throttled.** The beat rate is
+   $|\Delta(x)| = (w_2 - w_1)/(1+qx)$: loaded cells click *less often*.
+   This derived throttle is one layer of the substrate's defence against
+   runaway conversion (§5.3).
+3. **Phase can cross the door.** The transfer is a rotation, not an
+   erasure: the register's clock reading composes into matter's clock
+   algebraically. Whether it *survives* the environment is a measured
+   question --- and the current answer on one geometry is *no*
+   (§10, the retention wall).
+
+## The mass--energy correspondence
+
+> **The familiar law.** $E = mc^2$: mass is a form of energy; a mass $m$
+> at rest "contains" energy $mc^2$, and nuclear reactions that destroy
+> mass release exactly that energy.
+
+In the substrate this famous equation is not a surprising discovery but a
+*dissolved identity*. Matter simply **is** energy in the dense mode:
+$E_m$ is one ledger column. "Mass" is the name for how much energy sits
+settled in matter; "creating matter" is moving ledger entries through the
+door; "annihilation" is the door running the other way. In substrate
+units where $c_{\mathrm{sub}} = 1$, the relation $E = m$ is the
+*definition* of the ledger, and destroying a mass without its energy
+appearing elsewhere is not merely forbidden --- it is not even
+expressible.
+
+**A worked ledger line, with law-table numbers.** Take one loaded cell
+and let the door fire one atom of matter outward. The matter column
+drops by exactly $\varepsilon = A_0\,w_{2e}/2\pi \approx
+1.15 \times 2.09 / 6.28 \approx 0.38$ energy units; the field column
+rises by the same $0.38$; the conservation meter does not move. That
+*is* the content of "mass converted to energy" here: one number moving
+between two columns of a ledger that always sums to the same total.
+And the $c^2$? In substrate units the wave speed is $1$ and $E = m$
+outright; the $c^2$ of the SI formula is a *unit conversion* --- the
+price of measuring mass in kilograms but energy in joules --- not a
+physical ingredient.
+
+**What $E = mc^2$ *does* give us here, measured:**
+
+- conversion is quantized (the atoms) --- **[measured]**;
+- energy leaving matter arrives in the field at the right total ---
+  **[measured, drift floor]**.
+
+**What it does *not* yet give us:**
+
+- the *inertial* content of mass --- that momentum crosses the door with
+  the energy --- is partially **[open]**: momentum is the first moment of
+  conversion (a centre-of-energy theorem replaces Noether's theorem on
+  the roster), but the measured radiation-pressure delivery at the
+  conversion door is roughly $100\times$ below the naive expectation.
+  The v94 door pair predicts this deficit shrinks because phase (and
+  hence the momentum-carrying gradient) now crosses the door as algebra;
+  that is a registered, scored prediction, not yet a result.
+
+# The metabolic cycle: matter that eats and shines
+
+## Intake, outtake, and the polariton
+
+```{=latex}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_dispersion.pdf}
+\caption{\textbf{The mixed branch.} Coupling the travelling field band
+(blue dashed) to the stationary register line (grey dashed) splits the
+spectrum into two mixed branches $\omega_\pm$ separated by $2g$ at the
+crossing. A wave on a mixed branch is part field, part register: it
+travels at $c_{\mathrm{sub}}$ times its field fraction --- slower in
+matter. This is refraction, derived from the door.}
+\label{fig:dispersion}
+\end{figure}
+```
+
+With the pair in place, an object's life is a cycle: **intake** (ambient
+field settles through the door into $E_m$) and **outtake** (matter returns
+energy fieldward --- spontaneously as radiance, §5.2, or stimulated,
+through the same pair run backward). Coupling the travelling field to the
+stationary register splits the spectrum into **two mixed travelling
+waves** (Fig. \ref{fig:dispersion}; physicists call such a mixed
+light--matter wave a *polariton*; the branch formula is in Appendix C).
+**[derived]** Away from the crossing one branch is field-like (speed
+$c_{\mathrm{sub}}$) and one register-like (going nowhere); near it, a
+wave is *part field, part matter-in-the-making*, and it travels at
+$$v = c_{\mathrm{sub}} \cdot W_e,$$
+where $W_e < 1$ is simply *the fraction of the mixed wave that is still
+field*. A wave that spends part of each cycle as register does not spend
+that part moving --- the refractive slow-down, now a consequence of the
+door rather than a missing mechanism. The same algebra predicts a
+**metabolic wave**: a disturbance of the intake/outtake cycle propagating
+at a finite, $g$-tunable speed $v_M$ (the in-flight experiment M1
+measures the $v_M(\mathrm{door}_g)$ curve).
+
+## Radiance and the $T^4$ correspondence
+
+> **The familiar law.** A hot body radiates with power
+> $P = \sigma A T^4$ (Stefan--Boltzmann): double the absolute
+> temperature, sixteen times the light.
+
+```{=latex}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_radiance.pdf}
+\caption{\textbf{The metabolic balance.} Outtake is graded steeply in the
+load ($O \propto x^4$, orange); intake opens with load but is
+supply-limited (blue). Where they cross with outtake steeper, a
+\emph{restoring fixed point} $x^*$ exists: matter that eats and shines
+and holds its size. The park itself is the in-flight measurement M6.}
+\label{fig:radiance}
+\end{figure}
+```
+
+Before the formula, its status, so no one hunts for a missing
+derivation: the *form* below --- a steep, graded outtake --- is
+**adopted**: chosen, then held fixed under the battery. Whether the
+substrate *must* use the fourth power is open; the mode-counting sketch
+afterwards is the candidate derivation, no more. With that said: every
+beat, a loaded cell sheds
+$$O(x) = k_{\mathrm{rad}}\;\mathrm{cap}\;x^{\,p_{\mathrm{rad}}},
+  \qquad p_{\mathrm{rad}} = 4,$$
+into the field, in atoms, where $x = E_m/\mathrm{cap}$ is the holdings
+load ($k_{\mathrm{rad}} = 0.05$ in the law table). The correspondence:
+the load $x$ --- how full, hence how fast-clocked and crowded, a cell is
+--- is the substrate's temperature-*like* variable (a fullness, not a
+thermometer reading --- the analogy is structural), and the quartic
+grading is the $T^4$ shape. *Why* the fourth power? The mode-counting
+sketch: in equilibrium
+radiation in $D$ spatial dimensions, energy density scales as
+$T^{D+1}$ (each of the $\sim T^D$ available field modes carries $\sim T$);
+on the three-dimensional contact graph this gives exponent $4$
+**[open]**. What the law
+demonstrably buys **[measured]**: hoarded, non-metabolizing energy blobs
+are taxed away (half-lives drop from $\sim 260$--$510$ to $80$--$140$
+time units when radiance is on), a bath of cells acquires a glow, and the
+balance diagram of Fig. \ref{fig:radiance} acquires its restoring wall.
+
+## The measured intake ramp, the fold, and why nothing ignites
+
+```{=latex}
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{fig_fold.pdf}
+\caption{\textbf{Virtual dressing has a threshold structure.} (a)
+Predicted: the self-consistent register dressing $u$ versus drive $\beta$
+has a fold --- beyond it no small reversible solution exists.
+(b) Measured (M3b ramp, v94): door intake versus per-cell field energy.
+Intake wakes exactly at one atom ($E_e \approx 0.36 \approx \varepsilon$),
+the coherent channel dominates from $E_e \approx 1.0$ (the fold, within
+its $O(1)$ calibration), stimulated outtake wakes above that and, with
+capacity defence, keeps the growth bounded: no runaway to the highest
+drive tested.}
+\label{fig:fold}
+\end{figure*}
+```
+
+A door that opens with load invites a worry: coherent light shining on
+matter makes it grow; growth opens the door further; does matter ignite
+and eat the world? The substrate defends in layers, all structural
+**[derived]**, all now probed **[measured]**:
+
+1. vacuum is maximally detuned (the door barely opens where there is
+   nothing);
+2. a random-phase bath drives the register incoherently --- its pushes
+   average out (no net pumping without phase order);
+3. real conversion is gated: below one atom, nothing fires
+   (Fig. \ref{fig:fold}b: intake wakes *exactly* at
+   $E_e \approx \varepsilon$); a presence rule makes truly empty cells
+   demand an unpayable threshold (vacuum cannot settle at any tested
+   intensity);
+4. the pair is a rotation --- it can redistribute energy but never
+   amplify it;
+5. loaded cells click more slowly (the beat throttle, §4.3).
+
+Above a derived drive threshold --- the **fold** of Fig. \ref{fig:fold}a,
+meaning the point beyond which no *small, reversible* response exists;
+predicted from the pair plus the flattening law, and located within its
+stated $O(1)$ factor by measurement --- the register dressing over
+*existing* matter outgrows the small-response regime and conversion
+accelerates ($\propto E_e^{1.75}$ measured). Even there: **no runaway** up to the
+strongest drive tested --- capacity defence (over-full cells evaporate)
+and the stimulated outtake bound the growth, with the energy ledger at
+the round-off floor throughout. The fold is thus not an instability but
+the substrate's *stimulated conversion threshold* --- the intensity at
+which light over matter breeds matter, boundedly: pair production's
+structural cousin. **[measured, v94 M3b]**
+
+# Gravity: space flow
+
+## Matter digs a well in the space ledger
+
+```{=latex}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_gravity.pdf}
+\caption{\textbf{The footprint.} A mass is converted space: its cells run
+a maintained deficit of $E_s$, graded outward over a few cells
+\textbf{[measured, g1]}. Space transport is pressure-only --- flow runs
+down the gradient toward the deficit; nothing attracts at a distance. The
+steady $1/r$ far field of Newtonian gravity has \emph{not} been measured
+(g4) and is an open problem tied to the metabolic cycle.}
+\label{fig:gravity}
+\end{figure}
+```
+
+Recall the founding sentence: matter is *converted space*. Where matter
+condensed, space-energy was consumed. A live mass therefore sits in a
+maintained, graded depression of $E_s$ --- its **footprint** ---
+extending over its neighbourhood (Fig. \ref{fig:gravity})
+**[measured, experiment g1]**. Space transport in the substrate obeys one
+signed rule: **pressure pushes; nothing pulls**. Cells with more $E_s$
+push space toward cells with less; "attraction" is only ever the
+appearance of being pushed down someone's gradient. Consequences, each a
+gated measurement:
+
+- **Opacity (g3):** matter is emergently opaque to space flow ---
+  occultation happens; a mass shadows what is behind it. **[measured]**
+- **The flat-medium result** (internally, "$\pi$-flatness")**:** matter
+  with *closed books* (intake = outtake, nothing net flowing) loads the
+  surrounding medium with essentially nothing: measured medium response
+  flat to a few parts in $10^{4}$ across a ladder of stable objects.
+  Only *dying* (net-radiating) matter disturbs the medium at range.
+  **[measured, v91]**
+
+## The Poisson correspondence --- and its honest limit
+
+> **The familiar law.** Newtonian gravity, in field form: the potential
+> $\Phi$ obeys Poisson's equation $\nabla^2\Phi = 4\pi G\rho$, giving the
+> $1/r$ potential of a point mass, and bodies accelerate down
+> $-\nabla\Phi$.
+
+The near-field correspondence is direct and needs no jargon: *a
+permanent drain makes a permanent dip.* Matter converting space is the
+drain; the maintained $E_s$ deficit is the dip, and its shape is set by
+how space pushes downhill toward it. In the map to Newton: the depth of
+the dip plays the potential $\Phi$; the conversion rate plays the mass
+density $\rho$; being pushed down someone's dip plays gravitational
+attraction. Down-gradient drift of nearby objects is measured.
+**[measured at footprint range]**
+
+The far field is where honesty bites. Newtonian gravity requires the
+$1/r$ tail to extend *arbitrarily far, statically*. The substrate
+measurement (experiment g4) is negative so far: a leaking blob's entire
+space flux is accounted by its mass-rate bookkeeping --- outward wind
+balanced by inward refill --- with **no steady $1/r$ tail** (a
+"monopole" tail, in the jargon) **[measured negative]**. The theory's own diagnosis: a *static* far field
+must be maintained by a *cycle* --- a stable particle whose internal
+metabolism continuously turns space over --- and no such particle has
+yet parked (the M6 fixed point is in flight). Newton's far field is
+therefore **[open]**, and marked as such in the correspondence table:
+the substrate currently derives the well, the shadow, and the flatness
+theorem, but not yet the $1/r$ tail. A theory that quietly extrapolated
+the footprint to infinity would be lying with a graph.
+
+# Interference: the double slit, click by click
+
+> **The familiar experiment.** Light (or single electrons!) sent through
+> two narrow slits lands on a far screen in *fringes* --- bands of bright
+> and dark. The pattern persists even when quanta arrive one at a time:
+> each click is pointlike, yet thousands of clicks trace the wave
+> pattern. This is the standard demonstration that nature adds
+> *amplitudes*, not probabilities.
+
+```{=latex}
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{fig_doubleslit.pdf}
+\caption{\textbf{Fringes, twice.} Top: the wave intensity on the far
+screen --- the two path families' arrows added, then squared. Bottom: 362
+single-atom clicks sampled by the door (the count matching the v89/v90
+tier-1 run), rebuilding the same fringes one click at a time. Measured
+minima on the substrate are $7.7\times$ darker than neighbouring maxima,
+at parameter-free predicted positions.}
+\label{fig:doubleslit}
+\end{figure}
+```
+
+The substrate derivation needs nothing beyond §3 and §4:
+
+1. **Transport carries phase.** The field update is *unitary* --- it
+   preserves arrow lengths and relative clock angles; a packet
+   splitting through two openings arrives at a far cell as the *sum of
+   two arrows*, one per path family, each having precessed through its
+   own path length: phase difference
+   $\Delta\varphi = k\,\Delta L$.
+2. **Energy is the squared sum.** The far cell's field energy is
+   $|\psi_1 + \psi_2|^2 = |\psi_1|^2 + |\psi_2|^2 +
+   2|\psi_1||\psi_2|\cos\Delta\varphi$ --- the interference term is just
+   the cross-term of adding arrows before squaring. Maxima where paths
+   agree, near-zeros where they cancel (Fig. \ref{fig:doubleslit}, top).
+3. **Detection is the door.** A detector cell converts field to matter
+   through the same atom-grained door as everything else: whole clicks,
+   at a rate set by the local field energy. Sparse arrivals therefore
+   sample the fringe pattern probabilistically --- detection probability
+   tracks $|\psi|^2$. (In quantum mechanics that rule carries the name
+   *Born rule*; here it is door behaviour, not an extra axiom.)
+
+The measured record **[v89--v90, battery-gated]**: fringes at
+parameter-free predicted loci; detection statistics matching
+$|\psi|^2$ to $\pm 0.02$; and the tier-1 claim --- **362 whole-atom
+clicks, arriving one at a time, rebuilding the fringes** with minima
+$7.7\times$ dark and the correct fringe phase (coherence score 0.683
+versus 0.380 for the control). Eraser fringes/anti-fringes, delayed
+choice, and exact no-signaling are further gated tiers of the same
+apparatus. The double slit is not an interpretation puzzle here; it is
+what an atom-doored wave substrate *does*.
+
+# The unification theorem
+
+## One primitive, three edge types
+
+Follow the arc backwards. Spatial field links (the *field hop*) move
+field by precession + exchange rotation (§3). Spatial matter links (the
+*matter hop*) move matter by the *same* algebra. The v94 door pair
+showed the *conversion door* is a third link type --- a link in the
+**mode** direction rather than the space direction --- carrying the same
+primitive, with one distinguishing feature: its settlement is quantized.
+One graph, one rotation algebra, three edge families
+(Fig. \ref{fig:substrate}b). That is the v94 unification of *law*.
+
+## Can matter be retired altogether?
+
+The obvious next question --- the deepest the programme has asked --- is
+whether the unification can also erase the *structure*: could matter be
+just a self-bound lump of the one field, with $\psi_m$ (and the click)
+eliminated? The answer is **no, by a theorem** --- and the theorem is
+more informative than the hope.
+
+In plain language first: *if light really slows in matter by
+continuously dipping partway into conversion and back (that is what
+refraction is), and if settled matter only ever changes by whole
+packets (that is what the measurements say), and if the rules are local
+with no hidden eternal grid, then every cell needs* **two** *conversion
+stages with a temporary holding slot between them. One stage alone
+cannot be both smooth enough for glass and chunky enough for clicks.*
+The formal version (the "fiber" is just the cell's internal conversion
+path, field--register--matter):
+
+**Theorem (fiber minimality).** *Assume:*
+
+- **(H1) Refraction is real:** loaded matter slows the field by
+  continuous, reversible, phase-coherent partial conversion (§4.1, §5.1
+  --- the mechanism behind every refractive index);
+- **(H2) The grain is real:** settled matter changes only in whole atoms
+  $\varepsilon = A_0\omega/2\pi$ (measured to $\sim 10^{-8}$);
+- **(H3) Dynamics is local and memoryless:** the update is per-cell /
+  per-link, one step at a time, with no persistent hidden reference (no
+  background --- constraint 2).
+
+*Then* the conversion path of every cell must contain **at least two
+connections** --- one continuous, carrying *no* settled-inventory
+change, and one firing only at discrete instants, carrying *all* of it,
+in atoms --- **and a persistent two-component carrier between them,
+distinct from the settled inventory.** That is: $\psi_e\,$---$\,\chi\,$---$\,\psi_m$, exactly the
+three-node fiber of Fig. \ref{fig:substrate}a, is minimal.
+
+*Proof sketch.* A single connection would have to transfer energy both
+continuously (H1: the dressing exists between clicks) and in exact
+integers into the inventory (H2). Continuous transfer with integer
+inventory steps means the connection's two ends do not form a conserved
+pair between clicks --- contradicting the rotation primitive --- unless
+the transfer is zero between clicks, contradicting H1. Hence two
+connections with the stated roles. The node between them must hold
+in-transit energy *and its clock reading* across many steps (the
+reversible dressing persists over many beats), hence a persistent
+two-component amplitude; identify it with the inventory and H2 applies
+to it, killing H1 again. $\square$
+
+The escapes are exactly: drop H2 (contradicts measurement), drop H3
+(hidden memory --- a background by another name), or quantize the
+substrate itself (a different theory). The register is not scaffolding;
+it is forced.
+
+## What remains imposed
+
+The theorem sharpens what the door's "specialness" actually consists of.
+Three irreducibles:
+
+1. the **two-connection fiber** --- imposed, and now *proven minimal*;
+2. the click's **timing and integer character** --- *not* imposed:
+   derived from winding topology (§4.3);
+3. the **action scale $A_0$** --- imposed. This single constant is the
+   substrate's Planck postulate: the one quantum assumption the theory
+   makes. Deriving $A_0$ would require quantizing the substrate's own
+   dynamics --- a different programme, deliberately not this one.
+
+# The correspondence table
+
+```{=latex}
+\begin{table*}[t]
+\centering
+\small
+\begin{tabular}{p{2.6cm} p{5.4cm} p{2.2cm} p{5.6cm}}
+\hline
+\textbf{Familiar law} & \textbf{SCP mechanism} & \textbf{Status} &
+\textbf{Measurement (v89--v94)} \\
+\hline
+Maxwell pair; fixed $c$ &
+two first-order mutually-inducing quadratures; $c_{\mathrm{sub}}$ = band
+slope of the roster graph (\S3) &
+exact in shape; scalar (no vector curl) &
+linear vacuum optics; dispersion per band; conservation at
+$10^{-13}$--$10^{-15}$ \\
+Refraction ($v<c$ in matter) &
+polariton mixing of field with the door register (\S5.1) &
+derived (v94); dressing measured &
+register filling and mixed-channel intake measured on the M3b ramp;
+$v_M$ curve in flight (M1) \\
+$E=mc^2$ &
+matter \emph{is} the dense-mode ledger column; conversion through the
+atom-grained door (\S4.4) &
+identity (ledger); inertia part open &
+atom linearity $\sim 10^{-8}$; energy books close at drift floor;
+radiation-pressure deficit $\sim 100\times$ recorded, engaged by the
+door pair (scored prediction) \\
+Stefan--Boltzmann $T^4$ &
+graded outtake $O = k_{\mathrm{rad}}\,\mathrm{cap}\,x^4$ per beat; $x$
+the temperature-like load (\S5.2) &
+form adopted + gated; exponent derivation open &
+hoard taxing (half-lives $260$--$510 \to 80$--$140$); bath glow; battery
+87/87 at the adopted table \\
+Poisson / Newton &
+maintained $E_s$ footprint = Green's-function well; pressure-push
+transport (\S6) &
+near field derived + measured; far field OPEN &
+g1 footprint; g3 opacity; $\pi$-flatness $\sim 10^{-4}$; g4: no steady
+$1/r$ monopole (negative) \\
+Double slit / Born rule &
+unitary phase transport; arrows added then squared; detection = the atom
+door (\S7) &
+derived; measured &
+fringes at parameter-free loci; Born to $\pm0.02$; 362 single clicks
+rebuild fringes, minima $7.7\times$ dark; no-signaling exact \\
+Quantization ($\hbar$) &
+click timing + integers from beat-phase winding topology; scale $A_0$
+postulated (\S4.3, \S8) &
+timing/integers derived; $A_0$ imposed &
+$\varepsilon = A_0\omega/2\pi$ linearity $\sim 10^{-8}$; measured intake
+onset exactly at one atom (M3b) \\
+\hline
+\end{tabular}
+\caption{Where the familiar laws come from on the substrate, with the
+grading of each claim and the experiment that gates it.}
+\label{tab:corr}
+\end{table*}
+```
+
+Table \ref{tab:corr} collects the derivations of §3--§7 with their
+status and their gating measurements. The pattern worth noticing: the
+correspondences are strongest exactly where the substrate's one
+primitive operates unobstructed (waves, interference, conversion
+bookkeeping), and open exactly where a *persistent structure* must hold
+itself together against its environment (the far field needs a parked
+particle; inertia needs phase across the door; see §10). The theory's
+frontier is not a missing force --- it is the stability of matter.
+
+# Open questions
+
+The programme's rule is that the open list is load-bearing. In current
+priority order:
+
+1. **The retention wall (M4, measured negative).** On a test ring
+   carrying a quantized circulation, door traffic *erodes* the phase
+   structure it should carry: the stimulated outtake samples an
+   oscillating cross-term at one frozen instant per beat, and cells
+   frozen on the draining half fire every beat --- a ratchet. The
+   diagnosis is precise (the sampling, not the pair, is at fault) and
+   the registered fix is principled: integrate the cross-term over the
+   full beat (synchronous detection), so reversible oscillation averages
+   to zero and only genuinely phase-locked geometry drives outtake.
+   Notably, the same measurement produced a positive surprise: on a hot
+   bath the ring *self-heals* its circulation without the door pair ---
+   topology plus accretion is itself a phase-retention mechanism.
+2. **The metabolic fixed point (M6, in flight).** Does matter park ---
+   intake = outtake at a restoring load $x^*$ (Fig. \ref{fig:radiance})?
+   This is the programme's oldest open ledger and the prerequisite for
+   the g4 far field.
+3. **The metabolic wave (M1) and the mobility release (M5), in
+   flight.** Does the cycle propagate at the predicted $v_M$, and can an
+   object bound by self-trapping *move by converting* --- intake at the
+   front, outtake at the rear --- when its internal transport is locked?
+4. **The far field (g4).** No steady $1/r$ tail without a parked,
+   metabolizing particle; depends on 2.
+5. **The action scale $A_0$.** The one imposed quantum constant (§8.3).
+   Whether any deeper substrate could yield it is outside the current
+   programme's rules.
+6. **The path to atoms.** Shells, exclusion, chemistry: nothing beyond
+   suggestive structure yet; blocked behind stable particles (2) and
+   phase retention (1).
+7. **Engineering debt, stated because honesty includes plumbing:** the
+   two independent kernel implementations agree bit-for-bit on the gated
+   battery but diverge at strength on one transport path; all campaign
+   data therefore come from the designated campaign kernel until the
+   debt is paid.
+
+# Appendix A: notation
+
+Table \ref{tab:notation} collects every symbol used in the paper, with
+the adopted law-table value where one exists.
+
+```{=latex}
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{p{1.5cm} p{6.0cm}}
+\hline
+\textbf{Symbol} & \textbf{Meaning} \\
+\hline
+$\psi_e$ & field amplitude per cell ($=f_{a1}+i f_{a2}$); energy $E_e = |\psi_e|^2$ \\
+$\psi_m$ & matter amplitude; energy $E_m = |\psi_m|^2$, clock $\theta_2$ \\
+$\chi$ & door register: energy in mode-transit; $|\chi|^2$ booked in the ledger \\
+$E_s$ & space energy (sets cell size); non-oscillating \\
+flight & energy in space-transit on a link (mid-hop parcels) \\
+$w_1, w_2$ & bare pitches of field and matter ($1.65$, $2.9$) \\
+$x$ & load: (holdings + transit)/$\mathrm{cap}$ \\
+$q$ & pitch-flattening constant ($1.2$); $w_{e} = w/(1+qx)$ \\
+$\mathrm{cap}$ & cell carrying capacity ($2.5$) \\
+$\Omega_1, \Omega_2$ & effective pitches $w_{1e}, w_{2e}$ \\
+$\Delta(x)$ & detuning $\Omega_1 - \Omega_2$; the beat rate \\
+$\varphi_D$ & accumulated beat phase; door fires at $|\varphi_D| = 2\pi$ \\
+$g$ & door coupling $= \mathrm{door}_g \cdot w_2$ (knob $\mathrm{door}_g$) \\
+$F(x)$ & maximum transfer fraction $4g^2/(\Delta^2 + 4g^2)$ \\
+$A_0$ & action atom (the substrate's $\hbar$; $1.15$) \\
+$\varepsilon$ & energy atom $A_0\omega/2\pi$ at source pitch $\omega$ \\
+$K_{ij}$ & link exchange rate; $\bar K$ its mean \\
+$\epsilon(k)$ & field band $2\bar K(1 - \cos kd)$ \\
+$c_{\mathrm{sub}}$ & substrate light speed $\approx 2\bar K d$ \\
+$k_{\mathrm{rad}}, p_{\mathrm{rad}}$ & radiance constants ($0.05$, $4$): $O = k_{\mathrm{rad}}\,\mathrm{cap}\,x^{p_{\mathrm{rad}}}$ \\
+$\omega_\pm(k)$ & polariton branches of the door pair \\
+$v_M$ & metabolic wave speed (mixed-branch group velocity) \\
+\hline
+\end{tabular}
+\caption{Notation. All quantities in substrate units (cell spacing, step
+time); no SI constants are imported anywhere in the theory.}
+\label{tab:notation}
+\end{table}
+```
+
+# Appendix B: method --- the battery and the ratchet
+
+Every claim tagged **[measured]** is gated by a regression battery: a
+fixed suite of experiments (87 at the current law table; grown from 20 at
+v89) that every modification of the substrate must re-pass *in full*
+before adoption. Bars encode claims quantitatively and may be sharpened
+by measurement but never softened to pass; a green test leaves the suite
+only by explicit decision. New mechanisms enter behind knobs that are
+**byte-inert at default zero** --- with the knob off, the simulation
+reproduces the previous law table bit-for-bit --- so that every
+comparison is against a frozen, reproducible baseline. Two independent
+kernel implementations (C and Go) mirror the update; the gated battery is
+bit-identical between them. Conservation is not asserted but *metered*:
+the ledger of Appendix A is summed every step, and its drift is a
+tripwire (it caught a real bookkeeping bug during v94 face-2 testing at
+eight orders of magnitude above the floor). The theory in this paper is,
+in that specific sense, an *instrumented* theory: each section's claims
+name the experiment that would have falsified them.
+
+# Appendix C: the mixed-branch formula
+
+The two mixed travelling waves of §5.1 (the avoided crossing of
+Fig. \ref{fig:dispersion}) have frequencies, as functions of
+wavenumber $k$:
+
+$$
+\omega_\pm(k) = \tfrac{1}{2}\big[\Omega_1 + \epsilon(k) + \Omega_2\big]
+ \pm \sqrt{\tfrac{1}{4}\big[\Omega_1 + \epsilon(k) - \Omega_2\big]^2 + g^2}.
+$$
+
+This is the standard result of coupling a travelling band
+$\Omega_1 + \epsilon(k)$ to a stationary line $\Omega_2$ with strength
+$g$: far from the crossing each branch follows its parent; at the
+crossing they repel by $2g$ and each is an equal mix. The field weight
+$W_e(k)$ of §5.1 is the squared field share of the branch's makeup, and
+the branch's speed is the parent band's speed times that share.

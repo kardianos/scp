@@ -139,6 +139,13 @@ typedef struct {
      * routed like evaporation. k_rad=0 => V2g byte-exactly. --- */
     double k_rad, p_rad;
     int    rad_clock;
+    /* v93 P2 dual intake (theory/qgraph UNIFIED_LAW §3.3):
+     * I = k_rad*rad_dual*cap*xb^p_rad with xb = Ee/cap.
+     * rad_dual=0 => byte-inert (default). */
+    double rad_dual;
+    /* Apparatus: hold ambient field load on vacuum cells for P2.
+     * bath_xb=0 => off. Cells with Em < bath_em retarget Ee. */
+    double bath_xb, bath_em;
     /* --- v91 LAW CANDIDATE B (CANTUS, coherent channel): the
      * superimposed harmonic-lock field (CANTUS.md; user-directed
      * 2026-08-04, "atoms are NOT cells"). Per-cell order parameter
@@ -382,6 +389,7 @@ static void cfg_defaults(void)
     P.mob_sym = 1; P.mob_floor = 0.004; P.field_J = 1.8;
     P.quant_A0 = 1.15; P.quant_mode = 2;
     P.k_rad = 0; P.p_rad = 4; P.rad_clock = 0;
+    P.rad_dual = 0; P.bath_xb = 0; P.bath_em = 0.01;
     P.k_cant = 0; P.k_tune = 0; P.cant_tau = 50; P.cant_seed = 0; P.cant_grow = 1;
     P.reg_tau = 0; P.reg_gate = 0; P.reg_f0 = 0;
     P.par_tau = 0; P.par_gate = 0; P.par_form = 0;
@@ -481,6 +489,9 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "k_rad")) P.k_rad = atof(v);
     else if (!strcmp(k, "p_rad")) P.p_rad = atof(v);
     else if (!strcmp(k, "rad_clock")) P.rad_clock = atoi(v);
+    else if (!strcmp(k, "rad_dual")) P.rad_dual = atof(v);
+    else if (!strcmp(k, "bath_xb")) P.bath_xb = atof(v);
+    else if (!strcmp(k, "bath_em")) P.bath_em = atof(v);
     else if (!strcmp(k, "k_cant")) P.k_cant = atof(v);
     else if (!strcmp(k, "k_tune")) P.k_tune = atof(v);
     else if (!strcmp(k, "cant_tau")) P.cant_tau = atof(v);
@@ -848,6 +859,7 @@ static double bin_sz = 0;
 /* conversion ledgers */
 static double rough_total = 0, cond_total = 0, evap_total = 0, backs_total = 0;
 static double rad_total = 0;   /* v91 graded sub-cap radiance */
+static double rad_in_total = 0; /* v93 P2 dual intake ledger */
 static double tune_total = 0;  /* v91 cantus within-mode retune |J| ledger */
 static double A0eff = 0;
 static long qfire_n = 0;
@@ -2332,6 +2344,85 @@ static void step(void)
                     Es[i] += bsr;
                 }
             }
+            /* v93 P2 dual intake: I = k_rad*rad_dual*cap*xb^p, xb=Ee/cap.
+             * Reverse bookkeeping of radiance. rad_dual=0 => skipped.
+             * Em>0 gate: no vacuum minting (workfn-safe). */
+            if (P.k_rad > 0 && P.rad_dual > 0 && Em[i] > 0 && Ee[i] > 0) {
+                double xb = Ee[i] / P.cap;
+                double comp = P.rad_clock ? 1.0 : (P.w2 / w2e[i]);
+                double di = P.k_rad * P.rad_dual * P.cap * pow(xb, P.p_rad) * comp;
+                double eFi = A0eff * w1e[i] / TWO_PI;
+                double eDi = A0eff * w2e[i] / TWO_PI;
+                di = atoms_fire(di, eFi, eDi, &qcnvD[i]);
+                double bsi_want = di * P.s_pull / (1.0 + P.s_pull);
+                double availS = Es[i] - P.es_floor;
+                if (availS < 0) availS = 0;
+                if (bsi_want > availS) {
+                    if (P.s_pull > 0)
+                        di = availS * (1.0 + P.s_pull) / P.s_pull;
+                    else
+                        di = 0;
+                    bsi_want = availS;
+                }
+                double field_need = di - bsi_want;
+                if (field_need > 0.98 * Ee[i] && di > 0 && field_need > 0) {
+                    double scale = 0.98 * Ee[i] / field_need;
+                    di *= scale;
+                    bsi_want *= scale;
+                    field_need = di - bsi_want;
+                }
+                di = atoms_clamp(di, 0.98 * Ee[i] + bsi_want, eFi, eDi, &qcnvD[i]);
+                if (di > 0) {
+                    double bsi = di * P.s_pull / (1.0 + P.s_pull);
+                    if (bsi > availS) bsi = availS;
+                    double field_take = di - bsi;
+                    if (field_take > Ee[i]) {
+                        field_take = Ee[i];
+                        di = field_take + bsi;
+                    }
+                    if (field_take > 0 || bsi > 0) {
+                        rad_in_total += di;
+                        qatom_diag(1, atoms_w(w1e[i], w2e[i]), di, i, Em[i]);
+                        if (tag[i]) { ct_cond += di; ct_backs += bsi; }
+                        if (field_take > 0 && Ee[i] > 0) {
+                            double fac = sqrt((Ee[i] - field_take) / Ee[i]);
+                            fa1[i] *= fac;
+                            fa2[i] *= fac;
+                            Ee[i] -= field_take;
+                        }
+                        if (bsi > 0) {
+                            Es[i] -= bsi;
+                            backs_total += bsi;
+                        }
+                        Em[i] += di;
+                    }
+                }
+            }
+        }
+    }
+
+    /* Apparatus: hold ambient field load on vacuum cells (P2 thermometer).
+     * bath_xb=0 => off. */
+    if (P.bath_xb > 0) {
+        double te = P.bath_xb * P.cap;
+        if (te < 0) te = 0;
+        double bem = P.bath_em > 0 ? P.bath_em : 0.01;
+        for (int i = 0; i < NC; i++) {
+            if (Em[i] >= bem) continue;
+            double e = fa1[i]*fa1[i] + fa2[i]*fa2[i];
+            if (te <= 0) {
+                fa1[i] = fa2[i] = Ee[i] = 0;
+                continue;
+            }
+            if (e > 1e-20) {
+                double fac = sqrt(te / e);
+                fa1[i] *= fac;
+                fa2[i] *= fac;
+            } else {
+                fa1[i] = sqrt(te) * lut_cos(th2[i]);
+                fa2[i] = sqrt(te) * lut_sin(th2[i]);
+            }
+            Ee[i] = te;
         }
     }
 
@@ -3251,6 +3342,8 @@ int main(int argc, char **argv)
     printf("# quant_A0=%g quant_mode=%d (A0eff=%g)\n", P.quant_A0, P.quant_mode, A0eff);
     printf("# v91 radiance (laws_V3r candidate A): k_rad=%g p_rad=%g rad_clock=%d\n",
            P.k_rad, P.p_rad, P.rad_clock);
+    printf("# v93 P2 dual intake (qgraph UNIFIED_LAW): rad_dual=%g bath_xb=%g bath_em=%g\n",
+           P.rad_dual, P.bath_xb, P.bath_em);
     printf("# v91 cantus (coherent-channel candidate B): k_cant=%g k_tune=%g cant_tau=%g cant_seed=%d cant_grow=%d\n",
            P.k_cant, P.k_tune, P.cant_tau, P.cant_seed, P.cant_grow);
     printf("# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=%g reg_gate=%d reg_f0=%g\n",
@@ -4120,7 +4213,7 @@ int main(int argc, char **argv)
     /* ---------------- run ---------------- */
     int steps = (int)(P.T / P.dt + 0.5);
     int sheared = 0;
-    printf("#\n# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d%% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far\n");
+    printf("#\n# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d%% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far | Em_tot\n");
     double emt0 = -1;
     for (int st = 0; st <= steps; st++) {
         sim_t = st * P.dt;
@@ -4290,6 +4383,12 @@ int main(int argc, char **argv)
                     double ddx = (c2x - c1x) / 3, ddy = (c2y - c1y) / 3;
                     printf(" | sep=%.4f", sqrt(ddx*ddx + ddy*ddy));
                 }
+            }
+            /* v93 sustain: all-cell dense inventory (not tag-only) — match Go fabrun */
+            {
+                double em_tot = 0;
+                for (int i2 = 0; i2 < NC; i2++) em_tot += Em[i2];
+                printf(" | Em_tot=%.4f", em_tot);
             }
             printf("\n");
             if (P.p1_meter) {

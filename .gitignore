@@ -69,3 +69,17 @@ bin/
 *.fcs
 *.cells
 *.log.raw
+
+# v94/v95/v96 transient files
+*.done
+*.exit
+battery.done
+battery.exit
+battery.log
+battery.err
+**/consult/*.json
+**/consult/*.err
+**/consult/*.exit
+**/consult/*.done
+**/paper/*.err
+v96/consult/*.json

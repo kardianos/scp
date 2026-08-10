@@ -134,6 +134,7 @@ type Sim struct {
 	// conversion ledgers
 	roughTotal, condTotal, evapTotal, backsTotal float64
 	radTotal                                     float64 // v91 graded sub-cap radiance
+	radInTotal                                   float64 // v93 P2 dual intake ledger
 	// HORIZON apparatus (HORIZON.md): the hole ledger (pitchless);
 	// Kahan-compensated so the ledger holds the drift floor
 	EhTotal, ehComp                 float64

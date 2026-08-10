@@ -1,0 +1,64 @@
+# freecell-go — v90 Go port of v89/freecell.c (exp=blob)
+# laws = laws_V2g VERBATIM (defaults): C=1 w1=1.65 w2=2.9 q_detune=1.2
+# gamma_res=0.25 gamma_res_m=0.1 p_gate=8 lock_floor=0.005 k_dep=1.2 k_dep_m=2 cap=2.5
+# e_s0=1 es_floor=0.05 e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
+# comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
+# quant_A0=1.15 quant_mode=2 (A0eff=1.15)
+# v91 radiance (laws_V3r candidate A): k_rad=0 p_rad=4 rad_clock=0
+# v93 P2 dual intake (qgraph UNIFIED_LAW): rad_dual=0 bath_xb=0 bath_em=0.01
+# v91 cantus (coherent-channel candidate B): k_cant=0 k_tune=0 cant_tau=50 cant_seed=0 cant_grow=1
+# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=0 reg_gate=0 reg_f0=0
+# v91 identity (parcel-identity lane, IDENTITY.md): par_tau=0 par_gate=0 par_form=0 par_lo=0.002 par_hi=0.02 par_mature=400
+# v91 workfn (emergent-threshold lane, WORKFN.md): wf_on=1 wf_floor=0.01 wf_far=99
+# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=0
+# v92 amplitude Phase L lane L-1 (L0_DESIGN.md): amp_drv=0 amp_mmin=2
+# v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=2
+# v93 arg(psi) door (v93/README.md §II.7): amp_door=0
+# v94 DOOR PAIR (v94/consult/DESIGN_claude.md): door_g=0.5
+# v94 door_avg (face-3 rev Y.4): door_avg=1
+# v93 hop schedule (RING_DNLS §A.4): hop_order=1 (0=seq, 1=strang, 2=rand)
+# QUENCH-2 apparatus: conf_r=0 conf_gap=0.3 conf_th=1.6 conf_pinw=3 spin_m=0 imp_k=0 qp_phase=0
+# HORIZON apparatus (HORIZON.md): bh_r=0 bh_k=1 bh_sep=0
+# FLOW apparatus (FLOW.md): bed_k=0 bed_tau=30
+# GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
+# bath=1 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=16 dt=0.02 T=100 seed=20260802 diag_every=9999
+# JAM sweeps=800 max_step=1.402e-04 (tol 1.0e-04, k_end=0.0010) — witness for the settle
+# SEED blob: amp=1.2 sigma=2.5 kx=1.1 tagged=629 (add>5% of amp)
+# SEED noise: amp=2 (e1-class churn)
+# INIT NC=2700 slots=25774 live=20612 phi_nom=1.6861 z_live=15.27 dbar=1.4083 sigma_d=14.77% E0=5638.947934830
+#
+# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far | Em_tot
+t=    0.00 +0.00e+00 | 1.6861 15.27  20612    0      0      0 | 1.4083 14.77 | 0.00e+00 0.00e+00 | 198.6602 1.0000  0.0080  3.8202 1.000 14.63 | es_core/far=0.8320 | Em_tot=223.1562
+# QATOM t=5.60 dir=DF w=2.17363721 e=0.397836872524 i=810 Em=0.6992
+# QATOM t=19.40 dir=FD w=1.63811982 e=0.299822097372 i=1586 Em=0.0145
+# QATOM t=28.36 dir=FD w=1.58994674 e=0.291005065222 i=2184 Em=0.0815
+# QATOM t=35.84 dir=FD w=1.42346989 e=0.260535109434 i=1027 Em=0.3309
+# QATOM t=41.28 dir=DF w=1.86755491 e=0.341815184985 i=322 Em=1.1501
+# QATOM t=46.94 dir=FD w=1.61344464 e=0.295305843792 i=1943 Em=0.0450
+# QATOM t=51.94 dir=FD w=1.61653744 e=0.295871913128 i=2029 Em=0.0411
+# QATOM t=56.56 dir=FD w=0.65800881 e=0.240868315775 i=174 Em=3.1396
+# QATOM t=60.66 dir=DF w=2.83933295 e=1.0393559106 i=1357 Em=2.1273
+# QATOM t=64.38 dir=DF w=2.70488355 e=0.49506992521 i=956 Em=0.8155
+# QATOM t=67.80 dir=FD w=1.61819857 e=0.296175947167 i=996 Em=0.0408
+# QATOM t=71.40 dir=FD w=1.60657937 e=0.294049305749 i=2031 Em=0.0533
+# QATOM t=74.14 dir=DF w=2.31575427 e=0.42384830015 i=2204 Em=0.5277
+# QATOM t=77.48 dir=FD w=1.41984824 e=0.259872245185 i=344 Em=0.3377
+# QATOM t=80.20 dir=DF w=2.86525622 e=1.04884528811 i=2282 Em=3.6528
+# QATOM t=82.94 dir=FD w=1.63799963 e=0.299800098617 i=476 Em=0.0167
+# QATOM t=85.94 dir=FD w=1.63227734 e=0.298752757597 i=2251 Em=0.0229
+# QATOM t=88.78 dir=FD w=1.62727096 e=0.297836449185 i=745 Em=0.0313
+# QATOM t=91.28 dir=DF w=2.07331302 e=0.758949437654 i=571 Em=0.8329
+# QATOM t=93.88 dir=DF w=2.18341378 e=0.399626260056 i=1813 Em=0.6847
+# QATOM t=96.42 dir=FD w=1.62811025 e=0.297990062878 i=787 Em=0.0275
+# QATOM t=99.12 dir=FD w=1.61224372 e=0.295086040372 i=911 Em=0.0487
+t=  100.00 -7.63e-13 | 1.7109 16.26  21953    0  40228  39342 | 1.4368 15.70 | 2.35e-03 1.16e-02 | 127.0316 0.6394  0.7586  4.4392 1.000 16.14 | es_core/far=0.8562 | Em_tot=354.0476
+#
+# RESULT drift_rel -7.626e-13
+# RESULT births 40228 deaths 39342 beta_returns 0 beta_energy 0.000000e+00
+# RESULT conv rough=0.000000 cond=705.759311 evap=1073.480193 backs=139.729105 rad=0.000000
+# RESULT v94 door_g=0.500000 chi2_tot=557.829648 door_in=705.759311 door_out=929.065727
+# RESULT credit qcnvD=698.292031 qcnvF=1331.132417
+# RESULT geometry phi_nom=1.7109 z_live=16.26 dbar=1.4368 sigma_d=0.1570
+# RESULT es_shells 0.8608 1.0302 0.9637 0.9911 0.9993 0.9925 1.0140 1.0097
+# RESULT blob Em_tag=127.03158 com=(8.756,8.025,8.053) rms=4.4392 conn=1.0000 z_tag=16.14

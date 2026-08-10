@@ -1429,6 +1429,114 @@ func (s *Sim) step() {
 					s.Es[i] += bsr
 				}
 			}
+			// v93 P2 dual intake (qgraph UNIFIED_LAW §3.3): spontaneous
+			// dual of radiance. I = k_rad*rad_dual*cap*xb^p with
+			// xb = Ee/cap. Exact reverse bookkeeping of radiance so
+			// Em+Ee+Es is conserved. rad_dual=0 => skipped (byte-inert).
+			// Gated on Em>0 so vacuum does not mint matter (workfn-safe).
+			if P.KRad > 0 && P.RadDual > 0 && s.Em[i] > 0 && s.Ee[i] > 0 {
+				xb := s.Ee[i] / P.Cap
+				comp := 1.0
+				if P.RadClock == 0 {
+					comp = P.W2 / s.w2e[i]
+				}
+				di := P.KRad * P.RadDual * P.Cap * math.Pow(xb, P.PRad) * comp
+				eFi := s.A0eff * s.w1e[i] / TwoPi // field is source
+				eDi := s.A0eff * s.w2e[i] / TwoPi // dense is dest
+				di = s.atomsFire(di, eFi, eDi, &s.qcnvD[i])
+				// Clamp to field available after reverse-backs share.
+				// Reverse of radiance: Ee loses (di - bsi), Es loses bsi.
+				bsiWant := di * P.SPull / (1.0 + P.SPull)
+				availS := s.Es[i] - P.EsFloor
+				if availS < 0 {
+					availS = 0
+				}
+				if bsiWant > availS {
+					// Scale di so backs fit Es budget.
+					if P.SPull > 0 {
+						di = availS * (1.0 + P.SPull) / P.SPull
+					} else {
+						di = 0
+					}
+					bsiWant = availS
+				}
+				fieldNeed := di - bsiWant
+				if fieldNeed > 0.98*s.Ee[i] {
+					// Scale to field budget.
+					if di > 0 {
+						scale := 0.98 * s.Ee[i] / fieldNeed
+						di *= scale
+						bsiWant *= scale
+						fieldNeed = di - bsiWant
+					}
+				}
+				di = s.atomsClamp(di, 0.98*s.Ee[i]+bsiWant, eFi, eDi, &s.qcnvD[i])
+				if di > 0 && fieldNeed >= 0 && fieldNeed <= s.Ee[i]+1e-15 {
+					bsi := di * P.SPull / (1.0 + P.SPull)
+					if bsi > availS {
+						bsi = availS
+					}
+					fieldTake := di - bsi
+					if fieldTake > s.Ee[i] {
+						fieldTake = s.Ee[i]
+						di = fieldTake + bsi
+					}
+					if fieldTake > 0 || bsi > 0 {
+						s.radInTotal += di
+						s.qatomDiag(1, s.atomsW(s.w1e[i], s.w2e[i]), di, i, s.Em[i])
+						if s.tag[i] != 0 {
+							s.ctCond += di
+							s.ctBacks += bsi
+						}
+						// Shrink field amplitude (reverse of fieldInject).
+						if fieldTake > 0 && s.Ee[i] > 0 {
+							fac := math.Sqrt((s.Ee[i] - fieldTake) / s.Ee[i])
+							s.fa1[i] *= fac
+							s.fa2[i] *= fac
+							s.Ee[i] -= fieldTake
+						}
+						if bsi > 0 {
+							s.Es[i] -= bsi
+							s.backsTotal += bsi // ledger tracks both directions
+						}
+						s.Em[i] += di
+					}
+				}
+			}
+		}
+	}
+
+	// Apparatus: hold ambient field load on vacuum cells (P2 thermometer).
+	// bath_xb=0 => off. Retargets Ee of cells with Em < bath_em so the
+	// dual-intake bath load stays fixed while the hoard evolves.
+	if P.BathXb > 0 {
+		te := P.BathXb * P.Cap
+		if te < 0 {
+			te = 0
+		}
+		bem := P.BathEm
+		if bem <= 0 {
+			bem = 0.01
+		}
+		for i := 0; i < s.NC; i++ {
+			if s.Em[i] >= bem {
+				continue
+			}
+			e := s.fa1[i]*s.fa1[i] + s.fa2[i]*s.fa2[i]
+			if te <= 0 {
+				s.fa1[i], s.fa2[i], s.Ee[i] = 0, 0, 0
+				continue
+			}
+			if e > 1e-20 {
+				fac := math.Sqrt(te / e)
+				s.fa1[i] *= fac
+				s.fa2[i] *= fac
+			} else {
+				// Fresh bath phase from dense clock (or zero).
+				s.fa1[i] = math.Sqrt(te) * lutCos(s.th2[i])
+				s.fa2[i] = math.Sqrt(te) * lutSin(s.th2[i])
+			}
+			s.Ee[i] = te
 		}
 	}
 
