@@ -1401,11 +1401,11 @@ func (s *Sim) step() {
 					s.fa1[i] = 0
 					s.fa2[i] = 0
 				}
-			if s.Em[i] > 0 {
-				s.ehAdd(s.Em[i])
-				s.bhEatM += s.Em[i]
-				s.Em[i] = 0
-			}
+				if s.Em[i] > 0 {
+					s.ehAdd(s.Em[i])
+					s.bhEatM += s.Em[i]
+					s.Em[i] = 0
+				}
 				// v94 (grok review §5): flush the door register chi too,
 				// else chi is a horizon leak-around at bh_r>0 && door_g>0.
 				if P.DoorG > 0 {
@@ -1417,7 +1417,7 @@ func (s *Sim) step() {
 						s.dc2[i] = 0
 					}
 				}
-			avail := s.Es[i] - P.EsFloor
+				avail := s.Es[i] - P.EsFloor
 				if avail > 0 {
 					d := P.BhK * avail * dt
 					if d > avail {
@@ -1563,128 +1563,128 @@ func (s *Sim) step() {
 								s.clickT[s.nclick] = s.simT
 								s.clickY[s.nclick] = s.py[i]
 								s.clickE[s.nclick] = d1r
-							s.nclick++
-						}
-						s.qatomDiag(1, s.atomsW(s.w1e[i], s.w2e[i]), d1r, i, emOld)
-					}
-				}
-			}
-			// v94 face 2 (DESIGN_claude.md §2.5 "Direction"): stimulated outtake.
-			// Same solved Givens, opposite direction. When the phase geometry
-			// drives ΔEm < 0 (matter "ahead" of register, C > 0 in the corrected
-			// sign convention), the rotation moves atoms OUT of Em into χ,
-			// ledgered on outtake credits (qcnvF). The register then unloads to
-			// the field through pass P continuously. Backsplash as radiance: a
-			// fraction of the outtake returns to space (the de-pull of the
-			// original intake's s_pull). The same door_g knob governs both
-			// directions; they are mutually exclusive per cell-step (the phase
-			// geometry gives either C > 0 or C < 0, not both).
-			if P.DoorG > 0 && P.DoorOutEnable != 0 && s.Em[i] > 0 && beatFire {
-				emOld := s.Em[i]
-				rOld := math.Sqrt(emOld)
-				m1 := rOld * lutCos(s.th2[i])
-				m2 := rOld * lutSin(s.th2[i])
-			dc1o, dc2o := s.dc1[i], s.dc2[i]
-			// v94 door_avg (face-3 rev Y.4): use beat-integrated D instead of
-			// instantaneous C for the outtake direction/demand. D averages out
-			// random-phase chi (synchronous detection at the beat frequency);
-			// only pitch-locked coherence survives.
-			var ccross float64
-			if P.DoorAvg > 0 {
-				dw := math.Abs(s.w1e[i] - s.w2e[i])
-				if dw > 1e-12 {
-					Tbeat := TwoPi / dw
-					ccross = s.dcc[i] / Tbeat // C averaged over the beat period
-				} else {
-					ccross = 0
-				}
-			} else {
-				ccross = 2.0 * (m1*dc2o - m2*dc1o) // instantaneous C
-			}
-			Aa := (dc1o*dc1o + dc2o*dc2o) - emOld
-				// find thetaMin (most negative ΔEm) over theta in [0, pi/2]
-				thetaMin := 0.0
-				dmin := 0.0
-				for k := 1; k <= 256; k++ {
-					th := (math.Pi / 2.0) * (float64(k) / 256.0)
-					sn, cs := math.Sincos(th)
-					d := sn*sn*Aa - sn*cs*ccross
-					if d < dmin {
-						dmin = d
-						thetaMin = th
-					}
-				}
-				if dmin < -1e-10 {
-					// meaningful threshold: avoid FP-noise dmin triggering
-					// atoms_fire's credit side-effect on qcnvF (shared with
-					// cap-evap and radiance). Without this, C and Go diverge
-					// through tiny credit accumulation differences.
-					// demand = |dmin|; quantize on outtake credits (dense-source)
-					eF2 := s.A0eff * s.w2e[i] / TwoPi
-					eD2 := s.A0eff * s.w1e[i] / TwoPi
-					d2dem := -dmin
-					d2r := s.atomsFire(d2dem, eF2, eD2, &s.qcnvF[i])
-					d2r = s.atomsClamp(d2r, -dmin, eF2, eD2, &s.qcnvF[i])
-					d2r = s.atomsClamp(d2r, 0.98*emOld, eF2, eD2, &s.qcnvF[i])
-					if d2r > 0 && thetaMin > 1e-12 {
-						// bisect theta in [0, theta_min] for ΔEm(theta) = -d2r
-						lo, hi := 0.0, thetaMin
-						for it := 0; it < 60; it++ {
-							mid := 0.5 * (lo + hi)
-							sn, cs := math.Sincos(mid)
-							d := sn*sn*Aa - sn*cs*ccross
-							if d > -d2r {
-								lo = mid
-							} else {
-								hi = mid
+								s.nclick++
 							}
+							s.qatomDiag(1, s.atomsW(s.w1e[i], s.w2e[i]), d1r, i, emOld)
 						}
-						theta := 0.5 * (lo + hi)
-						cc, ss := math.Sincos(theta)
-						// settlement Givens (same convention as forward intake)
-						m1n := cc*m1 - ss*dc2o
-						m2n := cc*m2 + ss*dc1o
-						dc1n := cc*dc1o - ss*m2
-						dc2n := cc*dc2o + ss*m1
-						// backsplash de-pull: a fraction of d2r returns to space
-						// (the s_pull that came in with the original intake)
-						bs := d2r * P.SPull / (1.0 + P.SPull)
-						emNew := m1n*m1n + m2n*m2n
-						if bs > emNew {
-							// cap bs at the post-Givens Em to avoid negative
-							bs = emNew
-						}
-						// commit: Givens moves d2r matter -> register; bs returns to space
-						s.dc1[i] = dc1n
-						s.dc2[i] = dc2n
-						s.Em[i] = emNew - bs
-						if emNew > 1e-12 {
-							s.th2[i] = math.Mod(math.Atan2(m2n, m1n)+8.0*TwoPi, TwoPi)
-						}
-						s.Es[i] += bs
-						// ledger on outtake side
-						s.evapTotal += d2r
-						s.doorOutTotal += d2r
-						s.backsTotal += bs
-						if s.tag[i] != 0 {
-							s.ctEvap += d2r
-							s.ctBacks += bs
-						}
-						s.qatomDiag(0, s.atomsW(s.w2e[i], s.w1e[i]), d2r, i, emOld)
 					}
 				}
-			}
-			// v94 door_avg: reset the beat-integrated accumulator after the
-			// outtake has used it. Zeroed here so the next beat period starts
-			// fresh (synchronous detection — one integral per beat cycle).
-			if P.DoorAvg > 0 {
-				s.dcc[i] = 0
-			}
-		} else if s.Ee[i] > econdI {
-			d1 := P.FConv * (s.Ee[i] - econdI)
-			eF := s.A0eff * s.w1e[i] / TwoPi
-			eD := s.A0eff * s.w2e[i] / TwoPi
-			d1 = s.atomsFire(d1, eF, eD, &s.qcnvD[i])
+				// v94 face 2 (DESIGN_claude.md §2.5 "Direction"): stimulated outtake.
+				// Same solved Givens, opposite direction. When the phase geometry
+				// drives ΔEm < 0 (matter "ahead" of register, C > 0 in the corrected
+				// sign convention), the rotation moves atoms OUT of Em into χ,
+				// ledgered on outtake credits (qcnvF). The register then unloads to
+				// the field through pass P continuously. Backsplash as radiance: a
+				// fraction of the outtake returns to space (the de-pull of the
+				// original intake's s_pull). The same door_g knob governs both
+				// directions; they are mutually exclusive per cell-step (the phase
+				// geometry gives either C > 0 or C < 0, not both).
+				if P.DoorG > 0 && P.DoorOutEnable != 0 && s.Em[i] > 0 && beatFire {
+					emOld := s.Em[i]
+					rOld := math.Sqrt(emOld)
+					m1 := rOld * lutCos(s.th2[i])
+					m2 := rOld * lutSin(s.th2[i])
+					dc1o, dc2o := s.dc1[i], s.dc2[i]
+					// v94 door_avg (face-3 rev Y.4): use beat-integrated D instead of
+					// instantaneous C for the outtake direction/demand. D averages out
+					// random-phase chi (synchronous detection at the beat frequency);
+					// only pitch-locked coherence survives.
+					var ccross float64
+					if P.DoorAvg > 0 {
+						dw := math.Abs(s.w1e[i] - s.w2e[i])
+						if dw > 1e-12 {
+							Tbeat := TwoPi / dw
+							ccross = s.dcc[i] / Tbeat // C averaged over the beat period
+						} else {
+							ccross = 0
+						}
+					} else {
+						ccross = 2.0 * (m1*dc2o - m2*dc1o) // instantaneous C
+					}
+					Aa := (dc1o*dc1o + dc2o*dc2o) - emOld
+					// find thetaMin (most negative ΔEm) over theta in [0, pi/2]
+					thetaMin := 0.0
+					dmin := 0.0
+					for k := 1; k <= 256; k++ {
+						th := (math.Pi / 2.0) * (float64(k) / 256.0)
+						sn, cs := math.Sincos(th)
+						d := sn*sn*Aa - sn*cs*ccross
+						if d < dmin {
+							dmin = d
+							thetaMin = th
+						}
+					}
+					if dmin < -1e-10 {
+						// meaningful threshold: avoid FP-noise dmin triggering
+						// atoms_fire's credit side-effect on qcnvF (shared with
+						// cap-evap and radiance). Without this, C and Go diverge
+						// through tiny credit accumulation differences.
+						// demand = |dmin|; quantize on outtake credits (dense-source)
+						eF2 := s.A0eff * s.w2e[i] / TwoPi
+						eD2 := s.A0eff * s.w1e[i] / TwoPi
+						d2dem := -dmin
+						d2r := s.atomsFire(d2dem, eF2, eD2, &s.qcnvF[i])
+						d2r = s.atomsClamp(d2r, -dmin, eF2, eD2, &s.qcnvF[i])
+						d2r = s.atomsClamp(d2r, 0.98*emOld, eF2, eD2, &s.qcnvF[i])
+						if d2r > 0 && thetaMin > 1e-12 {
+							// bisect theta in [0, theta_min] for ΔEm(theta) = -d2r
+							lo, hi := 0.0, thetaMin
+							for it := 0; it < 60; it++ {
+								mid := 0.5 * (lo + hi)
+								sn, cs := math.Sincos(mid)
+								d := sn*sn*Aa - sn*cs*ccross
+								if d > -d2r {
+									lo = mid
+								} else {
+									hi = mid
+								}
+							}
+							theta := 0.5 * (lo + hi)
+							cc, ss := math.Sincos(theta)
+							// settlement Givens (same convention as forward intake)
+							m1n := cc*m1 - ss*dc2o
+							m2n := cc*m2 + ss*dc1o
+							dc1n := cc*dc1o - ss*m2
+							dc2n := cc*dc2o + ss*m1
+							// backsplash de-pull: a fraction of d2r returns to space
+							// (the s_pull that came in with the original intake)
+							bs := d2r * P.SPull / (1.0 + P.SPull)
+							emNew := m1n*m1n + m2n*m2n
+							if bs > emNew {
+								// cap bs at the post-Givens Em to avoid negative
+								bs = emNew
+							}
+							// commit: Givens moves d2r matter -> register; bs returns to space
+							s.dc1[i] = dc1n
+							s.dc2[i] = dc2n
+							s.Em[i] = emNew - bs
+							if emNew > 1e-12 {
+								s.th2[i] = math.Mod(math.Atan2(m2n, m1n)+8.0*TwoPi, TwoPi)
+							}
+							s.Es[i] += bs
+							// ledger on outtake side
+							s.evapTotal += d2r
+							s.doorOutTotal += d2r
+							s.backsTotal += bs
+							if s.tag[i] != 0 {
+								s.ctEvap += d2r
+								s.ctBacks += bs
+							}
+							s.qatomDiag(0, s.atomsW(s.w2e[i], s.w1e[i]), d2r, i, emOld)
+						}
+					}
+				}
+				// v94 door_avg: reset the beat-integrated accumulator after the
+				// outtake has used it. Zeroed here so the next beat period starts
+				// fresh (synchronous detection — one integral per beat cycle).
+				if P.DoorAvg > 0 {
+					s.dcc[i] = 0
+				}
+			} else if s.Ee[i] > econdI {
+				d1 := P.FConv * (s.Ee[i] - econdI)
+				eF := s.A0eff * s.w1e[i] / TwoPi
+				eD := s.A0eff * s.w2e[i] / TwoPi
+				d1 = s.atomsFire(d1, eF, eD, &s.qcnvD[i])
 				d1 = s.atomsClamp(d1, 0.98*s.Ee[i], eF, eD, &s.qcnvD[i])
 				if d1 > 0 {
 					s.condTotal += d1
@@ -1699,47 +1699,7 @@ func (s *Sim) step() {
 					}
 					s.qatomDiag(1, s.atomsW(s.w1e[i], s.w2e[i]), d1, i, s.Em[i])
 					dsp := P.SPull * d1
-					avail := s.Es[i] - P.EsFloor
-					if avail < 0 {
-						avail = 0
-					}
-					if dsp > avail {
-						dsp = avail
-					}
-					fac := 0.0
-					if s.Ee[i] > 0 {
-						fac = math.Sqrt((s.Ee[i] - d1) / s.Ee[i])
-					}
-					s.fa1[i] *= fac
-					s.fa2[i] *= fac
-					s.Ee[i] -= d1
-					s.Es[i] -= dsp
-					s.Em[i] += d1 + dsp
-					if P.AmpDoor > 0 {
-						// v93 arg(psi) door (§II.7): the field click
-						// (sqrt(d1) at phase aph) composes COHERENTLY with
-						// the existing matter amplitude; arg(psi_m_new) is
-						// the coherent-sum direction (carries the field
-						// phase + the interference cross-term = the
-						// current), |psi_m| fixed by conserved Em. The
-						// fired atom carries arg(psi_m), not m*th2.
-						aph := math.Atan2(s.fa2[i], s.fa1[i])
-						emOld := s.Em[i] - (d1 + dsp)
-						if emOld < 0 {
-							emOld = 0
-						}
-						ro, rc := math.Sqrt(emOld), math.Sqrt(P.AmpDoor*d1) // amp_door continuous mix
-						s1 := ro*lutCos(s.th2[i]) + rc*lutCos(aph)
-						s2 := ro*lutSin(s.th2[i]) + rc*lutSin(aph)
-						s.th2[i] = math.Mod(math.Atan2(s2, s1)+8.0*TwoPi, TwoPi)
-					} else if P.QpPhase > 0 {
-						// QUENCH-3: phase crosses the door (mix <= 1
-						// by construction: d1 <= Em after the add)
-						aph := math.Atan2(s.fa2[i], s.fa1[i])
-						mix := P.QpPhase * d1 / s.Em[i]
-						s.th2[i] = math.Mod(s.th2[i]+mix*wrapPi(aph-s.th2[i])+
-							8.0*TwoPi, TwoPi)
-					}
+					s.applyPromoCond(i, d1, dsp)
 				}
 			}
 			tot := s.Em[i] + s.Ee[i]
@@ -1758,9 +1718,7 @@ func (s *Sim) step() {
 						s.ctEvap += d2
 						s.ctBacks += bs
 					}
-					s.Em[i] -= d2
-					s.fieldInject(i, d2-bs)
-					s.Es[i] += bs
+					s.applyPromoOut(i, d2, bs)
 				}
 			}
 			// v91 RADIANCE (laws_V3r candidate A) — mirrors the C
@@ -1785,9 +1743,7 @@ func (s *Sim) step() {
 						s.ctEvap += dr
 						s.ctBacks += bsr
 					}
-					s.Em[i] -= dr
-					s.fieldInject(i, dr-bsr)
-					s.Es[i] += bsr
+					s.applyPromoOut(i, dr, bsr)
 				}
 			}
 			// v93 P2 dual intake (qgraph UNIFIED_LAW §3.3): spontaneous

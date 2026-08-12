@@ -37,7 +37,8 @@ Do not read anything before v89.
 | Battery 87 at defaults | **ALL GREEN 87** (`runs/BATTERY.log`) |
 | H0 meter honesty | **PASS** (5/5 classes; current-direction SKIP) — `H0.md` |
 | H1 dipole hunt | **EMPTY** (0/203 inhabited) — `H1.md` |
-| Kernel faces (slot door, promotion write, …) | **not authorized** |
+| Promo leads (Go `promo=1/2/3`) | **tried** — sep+Es now co-occur; H1 still EMPTY — `LEADS.md` |
+| Kernel faces (slot door, promotion write, …) | leads only; **not adopted** |
 | Law-table change | **none** |
 
 ## 3. The code (carried, all default-0)
@@ -57,6 +58,7 @@ Carried knobs that exist and must stay inert at 0:
 | `door_g` / `door_avg` / `chi_load` / `door_out_enable` | v94 | door pair + register `χ` |
 | `j_metric` | v95 | FLOW bed on dense J |
 | `rad_dual` / `bath_xb` | v93 theory | dual intake (not adopted) |
+| `promo` | v97 leads | oriented door (0=off; not adopted) |
 
 Do not flip any of these as “the v97 law.” They are instruments.
 
@@ -65,9 +67,9 @@ Do not flip any of these as “the v97 law.” They are instruments.
 Instruments are built (Go-only, C ignored): `hunt/` + `./dipole`.
 H0 is green (`H0.md`). H1 is **EMPTY** (`H1.md`).
 
-1. Stop. H2–H5 have no motif.
-2. The named first kernel face is the slot door (P3). It needs
-   explicit user sign-off; this hunt is not that sign-off.
+1. H1 is still EMPTY after the promo leads (`LEADS.md`). The
+   missing pair (sep + Es cycle) now exists; Φ/Em and J-lock do not.
+2. H2–H5 still have no motif. Do not adopt `promo`.
 
 ## 5. Conventions (unchanged)
 

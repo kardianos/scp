@@ -1,0 +1,50 @@
+# freecell-go — v90 Go port of v89/freecell.c (exp=blob)
+# laws = laws_V2g VERBATIM (defaults): C=1 w1=1.65 w2=2.9 q_detune=1.2
+# gamma_res=0.25 gamma_res_m=0.1 p_gate=8 lock_floor=0.005 k_dep=1.2 k_dep_m=2 cap=2.5
+# e_s0=1 es_floor=0.05 e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
+# comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
+# quant_A0=1.15 quant_mode=2 (A0eff=1.15)
+# v91 radiance (laws_V3r candidate A): k_rad=0.05 p_rad=4 rad_clock=0
+# v93 P2 dual intake (qgraph UNIFIED_LAW): rad_dual=1 bath_xb=0 bath_em=0.01
+# v91 cantus (coherent-channel candidate B): k_cant=0 k_tune=0 cant_tau=50 cant_seed=0 cant_grow=1
+# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=0 reg_gate=0 reg_f0=0
+# v91 identity (parcel-identity lane, IDENTITY.md): par_tau=0 par_gate=0 par_form=0 par_lo=0.002 par_hi=0.02 par_mature=400
+# v91 workfn (emergent-threshold lane, WORKFN.md): wf_on=1 wf_floor=0.01 wf_far=99
+# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=0
+# v92 amplitude Phase L lane L-1 (L0_DESIGN.md): amp_drv=0 amp_mmin=2
+# v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=2
+# v93 arg(psi) door (v93/README.md §II.7): amp_door=0
+# v94 DOOR PAIR (v94/consult/DESIGN_claude.md): door_g=0
+# v94 door_avg (face-3 rev Y.4): door_avg=0
+# v94 chi_load (face-3 §III): chi_load=0
+# v95 J-metric (FLOW law mirrored): j_metric=0 j_tau=4 j_rel=0
+# v97 promo leads (oriented door): promo=2 (0=off 1=slot 2=space-leg 3=close)
+# v93 hop schedule (RING_DNLS §A.4): hop_order=1 (0=seq, 1=strang, 2=rand)
+# QUENCH-2 apparatus: conf_r=0 conf_gap=0.3 conf_th=1.6 conf_pinw=3 spin_m=0 imp_k=0 qp_phase=0
+# HORIZON apparatus (HORIZON.md): bh_r=0 bh_k=1 bh_sep=0
+# FLOW apparatus (FLOW.md): bed_k=0 bed_tau=30
+# GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
+# bath=1 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=16 dt=0.02 T=240 seed=20260802 diag_every=2000
+# JAM sweeps=800 max_step=1.402e-04 (tol 1.0e-04, k_end=0.0010) — witness for the settle
+# SEED blob: amp=0.8 sigma=2.5 kx=1.1 tagged=629 (add>5% of amp)
+# INIT NC=2700 slots=25839 live=20699 phi_nom=1.6922 z_live=15.33 dbar=1.4093 sigma_d=14.77% E0=2829.360806057
+#
+# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far | Em_tot
+t=    0.00 +0.00e+00 | 1.6922 15.33  20699    0      0      0 | 1.4093 14.77 | 0.00e+00 0.00e+00 | 132.4401 1.0000  0.0080  3.8202 1.000 14.88 | es_core/far=0.8883 | Em_tot=148.7649
+# QATOM t=25.34 dir=DF w=1.15579573 e=0.211543194977 i=2279 Em=3.1446
+t=   40.00 -8.84e-15 | 1.6923 16.69  22531    0   5257   4856 | 1.4386 15.15 | 1.36e-03 8.67e-03 | 103.6922 0.7829  1.4758  3.6736 1.000 16.41 | es_core/far=0.8167 | Em_tot=147.0706
+t=   80.00 -1.77e-14 | 1.6925 16.88  22789    0   7817   7345 | 1.4424 15.19 | 1.03e-03 5.00e-03 |  96.3332 0.7274  1.4171  3.7214 1.000 16.66 | es_core/far=0.7492 | Em_tot=145.4201
+t=  120.00 -2.67e-14 | 1.6927 16.93  22860    0  10063   9549 | 1.4433 15.18 | 1.03e-03 4.29e-03 |  88.1279 0.6654  1.4762  3.6993 1.000 16.78 | es_core/far=0.8331 | Em_tot=142.5116
+t=  160.00 -3.54e-14 | 1.6933 16.92  22837    0  12302  11779 | 1.4431 15.18 | 1.90e-03 4.14e-03 |  81.3945 0.6146  1.1698  3.8617 1.000 16.78 | es_core/far=0.9280 | Em_tot=140.1600
+t=  200.00 -4.40e-14 | 1.6932 16.96  22894    0  14670  14132 | 1.4438 15.18 | 1.71e-03 6.28e-03 |  75.3188 0.5687  1.0880  3.8621 1.000 16.84 | es_core/far=0.9663 | Em_tot=138.2608
+t=  240.00 -5.27e-14 | 1.6934 16.96  22894    0  16913  16364 | 1.4438 15.17 | 1.25e-03 3.61e-03 |  70.4091 0.5316  1.0740  4.0402 1.000 16.75 | es_core/far=0.9725 | Em_tot=136.6033
+#
+# RESULT drift_rel -5.272e-14
+# RESULT births 16913 deaths 16364 beta_returns 0 beta_energy 0.000000e+00
+# RESULT conv rough=0.000000 cond=0.163711 evap=0.612923 backs=1.707057 rad=12.105744
+# RESULT credit qcnvD=36.338347 qcnvF=12.499098
+# RESULT geometry phi_nom=1.6934 z_live=16.96 dbar=1.4438 sigma_d=0.1517
+# RESULT es_shells 0.9660 0.9043 0.9372 0.9536 0.9776 0.9854 0.9952 0.9992
+# RESULT blob Em_tag=70.40912 com=(9.052,8.143,7.840) rms=4.0402 conn=1.0000 z_tag=16.75
+# RESULT blob_drift speed=0.003628 cos_to_kdir=-0.9298 v=(-3.37e-03,5.98e-04,-1.19e-03)

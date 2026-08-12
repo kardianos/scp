@@ -53,10 +53,11 @@ type Stream struct {
 }
 
 type Cell struct {
-	X, Y, Z, R    float64
-	Es, Em, Ee    float64
-	Xload, Tag    float64
-	Fa1, Fa2, Th2 float64
+	X, Y, Z, R     float64
+	Es, Em, Ee     float64
+	Xload, Tag     float64
+	Fa1, Fa2, Th2  float64
+	PromoI, PromoO float64
 }
 
 type Link struct {
@@ -294,6 +295,8 @@ func (s *Stream) parseCELL(p []byte) (Frame, error) {
 	ifa1 := colIdx(s.CellCols, "fa1")
 	ifa2 := colIdx(s.CellCols, "fa2")
 	ith := colIdx(s.CellCols, "th2")
+	ipi := colIdx(s.CellCols, "promo_i")
+	ipo := colIdx(s.CellCols, "promo_o")
 	get := func(b []byte, i int) float64 {
 		if i < 0 {
 			return 0
@@ -308,6 +311,7 @@ func (s *Stream) parseCELL(p []byte) (Frame, error) {
 			Es: get(b, ies), Em: get(b, iem), Ee: get(b, iee),
 			Xload: get(b, ixl), Tag: get(b, itg),
 			Fa1: get(b, ifa1), Fa2: get(b, ifa2), Th2: get(b, ith),
+			PromoI: get(b, ipi), PromoO: get(b, ipo),
 		}
 	}
 	return fr, nil

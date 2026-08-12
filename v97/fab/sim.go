@@ -35,27 +35,28 @@ type Sim struct {
 
 	NC int
 	// cells
-	px, py, pz          []float64 // POSITIONS — dynamical here
-	cr0, cr             []float64
-	n1x, n1y, n1z       []float64
-	n2x, n2y, n2z       []float64
-	th2, cbeta          []float64
-	w1e, w2e            []float64
-	Es, Em, Ee          []float64
-	fa1, fa2            []float64
-	flload              []float64
-	qcnvD, qcnvF        []float64
-	roughq              []float64
-	req1, scl1          []float64
-	ampre               []float64 // L-1 zero-sum renorm: pre-bias per-cell outflow total
-	sprq, sscl          []float64
-	fsum                []float64
-	dm1, dm2            []float64 // v93 unitary dense channel: psi_m per cell scratch
-	dc1, dc2            []float64 // v94 door pair: persistent register chi = dc1 + i*dc2 per cell
-	dcc                 []float64 // v94 door_avg: beat-integrated cross-term accumulator
+	px, py, pz    []float64 // POSITIONS — dynamical here
+	cr0, cr       []float64
+	n1x, n1y, n1z []float64
+	n2x, n2y, n2z []float64
+	th2, cbeta    []float64
+	w1e, w2e      []float64
+	Es, Em, Ee    []float64
+	fa1, fa2      []float64
+	flload        []float64
+	qcnvD, qcnvF  []float64
+	roughq        []float64
+	req1, scl1    []float64
+	ampre         []float64 // L-1 zero-sum renorm: pre-bias per-cell outflow total
+	sprq, sscl    []float64
+	fsum          []float64
+	dm1, dm2      []float64 // v93 unitary dense channel: psi_m per cell scratch
+	dc1, dc2      []float64 // v94 door pair: persistent register chi = dc1 + i*dc2 per cell
+	dcc           []float64 // v94 door_avg: beat-integrated cross-term accumulator
+	pI, pO        []float64 // v97 promo: per-cell intake/outtake since last snap
 	// v95 J-metric: FLOW bed-digging for dense link current
-	jbed, jnet, jflow  []float64 // per-slot weight, low-pass, flow accumulator
-	jbedf              []float64 // per-cell renorm factor (∫2·Im(ψ_m*·χ)·dt)
+	jbed, jnet, jflow   []float64 // per-slot weight, low-pass, flow accumulator
+	jbedf               []float64 // per-cell renorm factor (∫2·Im(ψ_m*·χ)·dt)
 	tag                 []uint8
 	pin                 []uint8   // wall fixture: pass D skips (slit)
 	scond               []uint8   // condensation-active override (clicks)
@@ -94,9 +95,9 @@ type Sim struct {
 	parTmp           []float64
 	// v91 AMPLITUDE Phase M (AMPLITUDE.md): shadow in-flight amplitude
 	// per slot-dir; windowed delivered vector+magnitude per slot.
-	sreA, simA             []float64 // [slot][dir]
-	amre, amim, amc        []float64 // [slot] windowed
-	amdre, amdim, amdc     []float64 // [slot] scratch
+	sreA, simA         []float64 // [slot][dir]
+	amre, amim, amc    []float64 // [slot] windowed
+	amdre, amdim, amdc []float64 // [slot] scratch
 
 	// channels — persistent slots with identity (birth/death ledger)
 	NLMAX, NSLOT                int
@@ -144,18 +145,18 @@ type Sim struct {
 	doorOutTotal                                 float64 // v94 face-2 stimulated outtake (Em -> chi) ledger
 	// HORIZON apparatus (HORIZON.md): the hole ledger (pitchless);
 	// Kahan-compensated so the ledger holds the drift floor
-	EhTotal, ehComp                 float64
-	bhEatF, bhEatM, bhEatS          float64
-	bhNin                           int64
-	tuneTotal                                    float64 // v91 cantus within-mode retune |J| ledger
-	A0eff                                        float64
-	qfireN                                       int64
-	simT                                         float64
-	E0                                           float64
-	cenx, ceny, cenz                             float64
-	ncandLast                                    int64
-	fsT, fsR, fsY, fsZ                           [512]float64
-	nfsamp                                       int
+	EhTotal, ehComp        float64
+	bhEatF, bhEatM, bhEatS float64
+	bhNin                  int64
+	tuneTotal              float64 // v91 cantus within-mode retune |J| ledger
+	A0eff                  float64
+	qfireN                 int64
+	simT                   float64
+	E0                     float64
+	cenx, ceny, cenz       float64
+	ncandLast              int64
+	fsT, fsR, fsY, fsZ     [512]float64
+	nfsamp                 int
 
 	// derived law constants
 	gm, lockf, Aref, dref float64
@@ -650,9 +651,13 @@ func (s *Sim) allocAll(nc int) {
 	s.dc1 = make([]float64, nc) // v94 door register (persistent; zero-init via make)
 	s.dc2 = make([]float64, nc)
 	s.dcc = make([]float64, nc) // v94 door_avg accumulator (persistent; zero-init)
+	s.pI = make([]float64, nc)
+	s.pO = make([]float64, nc)
 	// v95 J-metric arrays
 	s.jbed = make([]float64, s.NLMAX)
-	for i := range s.jbed { s.jbed[i] = 1.0 }
+	for i := range s.jbed {
+		s.jbed[i] = 1.0
+	}
 	s.jnet = make([]float64, s.NLMAX)
 	s.jflow = make([]float64, s.NLMAX)
 	s.jbedf = make([]float64, nc)

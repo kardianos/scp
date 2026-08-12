@@ -54,9 +54,9 @@ type Cfg struct {
 	// reciprocal deliveries; reg_tau=0 => byte-identical step.
 	// reg_gate: 0 off; 1 = F-B rho*gross/(gross+f0) (f0=0 => F-A);
 	// 2 = F-D s/(s+f0) with s = 2*min = the reciprocal flow.
-	RegTau     float64
-	RegGate    int
-	RegF0      float64
+	RegTau  float64
+	RegGate int
+	RegF0   float64
 	// v91 IDENTITY lane (IDENTITY.md): parcel-carried ontological
 	// identity — episode gids on cells, parcel labels + maturity-
 	// clocked bond stamps on slots. par_tau=0 => byte-identical step.
@@ -83,7 +83,7 @@ type Cfg struct {
 	// v93 THE UNITARY DENSE CHANNEL (v93/README.md PART II): dense within-
 	// mode transport as unitary pairwise plane rotations (pass F's cousin),
 	// replacing the additive magnitude want. amp_nat=0 => byte-inert.
-	AmpNat  float64
+	AmpNat float64
 	// amp_logate: linearize probe (>0 drops the phase-dependent gate from tau_s).
 	AmpLogate float64
 	// v93 arg(psi) door (v93/README.md §II.7): at condensation the field
@@ -132,8 +132,14 @@ type Cfg struct {
 	// weight evolves via low-pass |flow|, multiplicative growth, zero-sum
 	// per-cell renorm, clamp [0.2,5]. Mirrors BedK/BedTau verbatim.
 	JMetric float64
-	JTau    float64
-	JRel    float64
+	// v97 promo leads (H1 EMPTY → try oriented door). 0 = vertex door
+	// (byte-inert). 1 = deposit Em / inject field on the J-oriented
+	// neighbour. 2 = also move the Es pull/return on that neighbour
+	// (space-leg). 3 = (2) plus cycle-closure stall (phase-matched
+	// slots only). Go-only probe; C ignores the key.
+	Promo int
+	JTau  float64
+	JRel  float64
 	// v93 hop schedule (RING_DNLS §A.4 / RESUME §7-A): the canonical sequential
 	// i<j Givens sweep is a deterministic C6-breaking Trotter asymmetry (the
 	// vacuum retention ceiling + item 1's dt artifact, same family).
@@ -155,7 +161,7 @@ type Cfg struct {
 	BhR, BhK, BhSep float64
 	// FLOW apparatus (FLOW.md): bed-digging channel law; bed_k=0 = inert
 	BedK, BedTau float64
-	QatomEvery int // apparatus (print-only): QATOM sampler period
+	QatomEvery   int // apparatus (print-only): QATOM sampler period
 	// --- freecell geometry sector (apparatus, not law) ---
 	Cfac      float64
 	KRep      float64
@@ -291,16 +297,17 @@ func Defaults() Cfg {
 	p.AmpNat = 0
 	p.AmpLogate = 0
 	p.AmpDoor = 0
-	p.DoorG = 0 // v94 door-pair: default off (byte-inert vs the 87-bar V3a surface)
-	p.DoorAvg = 0 // v94 face-3 rev Y.4: default off (instant-C face-2 behavior)
-	p.ChiLoad = 0 // v94 face-3: default off (register does not load the pitch)
+	p.DoorG = 0         // v94 door-pair: default off (byte-inert vs the 87-bar V3a surface)
+	p.DoorAvg = 0       // v94 face-3 rev Y.4: default off (instant-C face-2 behavior)
+	p.ChiLoad = 0       // v94 face-3: default off (register does not load the pitch)
 	p.DoorOutEnable = 1 // v94 face-2 enabled by default; =0 for face-1-only tests
-	p.SwKx = 0         // v94 DS-G3: standing wave wavenumber (0 = off)
-	p.SwAmp = 0        // v94 DS-G3: standing wave amplitude
-	p.JMetric = 0      // v95 J-metric: default off (byte-inert)
-	p.JTau = 4.0       // v95 J-metric: low-pass timescale
-	p.JRel = 0         // v95 J-metric: healing toward 1.0 (off)
-	p.HopOrder = 1 // v93 face A: Strang symmetric adopted default (L1-A passes; pass U skipped at amp_nat=0). 0 reproduces prior sequential-sweep results.
+	p.SwKx = 0          // v94 DS-G3: standing wave wavenumber (0 = off)
+	p.SwAmp = 0         // v94 DS-G3: standing wave amplitude
+	p.JMetric = 0       // v95 J-metric: default off (byte-inert)
+	p.Promo = 0         // v97 oriented-door leads: default off
+	p.JTau = 4.0        // v95 J-metric: low-pass timescale
+	p.JRel = 0          // v95 J-metric: healing toward 1.0 (off)
+	p.HopOrder = 1      // v93 face A: Strang symmetric adopted default (L1-A passes; pass U skipped at amp_nat=0). 0 reproduces prior sequential-sweep results.
 	p.ConfR = 0
 	p.ConfGap = 0.3
 	p.ConfTh = 1.6
@@ -568,6 +575,8 @@ func (p *Cfg) SetKV(k, v string) {
 		p.SwKx = atof(v)
 	case "sw_amp":
 		p.SwAmp = atof(v)
+	case "promo":
+		p.Promo = atoi(v)
 	case "j_metric":
 		p.JMetric = atof(v)
 	case "j_tau":

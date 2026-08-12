@@ -50,6 +50,13 @@ func fcsShuffle4(p []byte) []byte {
 var fcsCellCols = []string{"x", "y", "z", "r", "es", "em", "ee", "xload", "tag", "fa1", "fa2", "th2"}
 var fcsLinkCols = []string{"d", "A", "lem", "gg"}
 
+func (s *Sim) fcsCells() []string {
+	if s.P.Promo > 0 {
+		return append(append([]string(nil), fcsCellCols...), "promo_i", "promo_o")
+	}
+	return fcsCellCols
+}
+
 type fcsW struct {
 	f    *os.File
 	w    *bufio.Writer
@@ -124,8 +131,9 @@ func (s *Sim) fcsBegin(o *fcsW) {
 		binary.LittleEndian.PutUint32(b[:], v)
 		sb = append(sb, b[:]...)
 	}
-	app32(uint32(len(fcsCellCols)))
-	for _, c := range fcsCellCols {
+	cols := s.fcsCells()
+	app32(uint32(len(cols)))
+	for _, c := range cols {
 		sb = append(sb, byte(len(c)))
 		sb = append(sb, c...)
 	}
@@ -140,7 +148,8 @@ func (s *Sim) fcsBegin(o *fcsW) {
 }
 
 func (s *Sim) fcsCellFrame(o *fcsW) {
-	nc := len(fcsCellCols)
+	cols := s.fcsCells()
+	nc := len(cols)
 	cp := make([]byte, 0, 20+s.NC*nc*4)
 	put64 := func(v float64) {
 		var b [8]byte
@@ -170,6 +179,12 @@ func (s *Sim) fcsCellFrame(o *fcsW) {
 		putf(float32(s.fa1[i]))
 		putf(float32(s.fa2[i]))
 		putf(float32(s.th2[i]))
+		if s.P.Promo > 0 {
+			putf(float32(s.pI[i]))
+			putf(float32(s.pO[i]))
+			s.pI[i] = 0
+			s.pO[i] = 0
+		}
 	}
 	o.chunkOut("CELL", cp, 20, nc)
 

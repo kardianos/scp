@@ -120,6 +120,13 @@ func MeasureConvert(prev, cur Frame, m Motif, jx, jy, jz float64) Convert {
 	if jn > 0 {
 		jx, jy, jz = jx/jn, jy/jn, jz/jn
 	}
+	usePromo := false
+	for _, idx := range m.Cells {
+		if idx >= 0 && idx < len(cur.Cells) && (cur.Cells[idx].PromoI > 0 || cur.Cells[idx].PromoO > 0) {
+			usePromo = true
+			break
+		}
+	}
 	mt := matchCells(prev, cur, 0.6)
 	var ixs, iys, izs, iws []float64
 	var oxs, oys, ozs, ows []float64
@@ -128,13 +135,19 @@ func MeasureConvert(prev, cur Frame, m Motif, jx, jy, jz float64) Convert {
 		if !inside[j] {
 			continue
 		}
-		pi := mt[j]
-		if pi < 0 {
-			out.Unmatched++
-			continue
+		var I, O float64
+		if usePromo {
+			I, O = c.PromoI, c.PromoO
+			out.Matched++
+		} else {
+			pi := mt[j]
+			if pi < 0 {
+				out.Unmatched++
+				continue
+			}
+			out.Matched++
+			I, O = cellIO(prev.Cells[pi], c)
 		}
-		out.Matched++
-		I, O := cellIO(prev.Cells[pi], c)
 		proj := wrap(c.X-m.Cx, L)*jx + wrap(c.Y-m.Cy, L)*jy + wrap(c.Z-m.Cz, L)*jz
 		out.I += I
 		out.O += O

@@ -284,6 +284,7 @@ func (s *Sim) Run() {
 	fprintf(s.Out, "# v94 door_avg (face-3 rev Y.4): door_avg=%.6g\n", P.DoorAvg)
 	fprintf(s.Out, "# v94 chi_load (face-3 §III): chi_load=%.6g\n", P.ChiLoad)
 	fprintf(s.Out, "# v95 J-metric (FLOW law mirrored): j_metric=%.6g j_tau=%.6g j_rel=%.6g\n", P.JMetric, P.JTau, P.JRel)
+	fprintf(s.Out, "# v97 promo leads (oriented door): promo=%d (0=off 1=slot 2=space-leg 3=close)\n", P.Promo)
 	fprintf(s.Out, "# v93 hop schedule (RING_DNLS §A.4): hop_order=%d (0=seq, 1=strang, 2=rand)\n",
 		P.HopOrder)
 	fprintf(s.Out, "# QUENCH-2 apparatus: conf_r=%.6g conf_gap=%.6g conf_th=%.6g conf_pinw=%.6g spin_m=%d imp_k=%.6g qp_phase=%.6g\n",
