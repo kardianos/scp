@@ -132,6 +132,56 @@ func TestGlobalJPlaneWave(t *testing.T) {
 	}
 }
 
+func TestH1EmptyOnPointBook(t *testing.T) {
+	rows := make([]Row, 15)
+	for i := range rows {
+		rows[i] = Row{
+			T: float64(i) * 20, N: 50, Em: 100, EmTot: 100,
+			Phi: 0.01, I: 0.01, O: 0, Sep: 0.1,
+			Jdip: 1, Circ: 20, JdipX: float64(1 - 2*(i%2)),
+			CoreEsThru: 0.2, DEmTot: 0,
+		}
+	}
+	rep := GradeH1("point", rows)
+	if rep.Inhabited {
+		t.Fatalf("point book must be EMPTY\n%s", rep)
+	}
+	if rep.Best.NPass >= 5 {
+		t.Fatalf("expected <5 clauses, got %d\n%s", rep.Best.NPass, rep)
+	}
+}
+
+func TestH1InhabitedSynthetic(t *testing.T) {
+	rows := make([]Row, 12)
+	for i := range rows {
+		rows[i] = Row{
+			T: float64(i) * 20, N: 20, Em: 50, EmTot: 50, DEmTot: 0.01,
+			Phi: 2, I: 2.2, O: 2.0, Sep: 1.5,
+			Ifore: 2.0, Oaft: 1.8, Iaft: 0.2, Ofore: 0.2,
+			Jdip: 8, Circ: 4, JdipX: 8, Jnet: 5,
+			CoreEsThru: 3, CoreEsNet: 0.1,
+		}
+	}
+	rep := GradeH1("synth", rows)
+	if !rep.Inhabited {
+		t.Fatalf("synthetic dipole must be INHABITED\n%s", rep)
+	}
+	if rep.Best.Span < 100 {
+		t.Fatalf("span %g", rep.Best.Span)
+	}
+}
+
+func TestH1ShortIsEmpty(t *testing.T) {
+	rows := []Row{
+		{T: 0, N: 10, Em: 10, Phi: 2, I: 2, O: 2, Sep: 2, Jdip: 5, Circ: 1, JdipX: 5, CoreEsThru: 4},
+		{T: 40, N: 10, Em: 10, Phi: 2, I: 2, O: 2, Sep: 2, Jdip: 5, Circ: 1, JdipX: 5, CoreEsThru: 4},
+	}
+	rep := GradeH1("short", rows)
+	if rep.Inhabited {
+		t.Fatal("short stream must not inhabit")
+	}
+}
+
 func TestPearson(t *testing.T) {
 	xs := []float64{1, 2, 3, 4, 5}
 	ys := []float64{2, 4, 6, 8, 10}

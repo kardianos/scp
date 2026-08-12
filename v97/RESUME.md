@@ -36,7 +36,7 @@ Do not read anything before v89.
 | STEP ZERO carry v95 → v97 | **done** (this opening) |
 | Battery 87 at defaults | **ALL GREEN 87** (`runs/BATTERY.log`) |
 | H0 meter honesty | **PASS** (5/5 classes; current-direction SKIP) — `H0.md` |
-| H1 dipole hunt | **not started** |
+| H1 dipole hunt | **EMPTY** (0/203 inhabited) — `H1.md` |
 | Kernel faces (slot door, promotion write, …) | **not authorized** |
 | Law-table change | **none** |
 
@@ -63,11 +63,11 @@ Do not flip any of these as “the v97 law.” They are instruments.
 ## 4. Next work (when the user wants to continue)
 
 Instruments are built (Go-only, C ignored): `hunt/` + `./dipole`.
-H0 is green (`H0.md`).
+H0 is green (`H0.md`). H1 is **EMPTY** (`H1.md`).
 
-1. **H1** — run `./dipole` on the existing stream set; one-page
-   inhabited-or-empty verdict (`METRICS.md` H1).
-2. Stop and ask before any kernel edit.
+1. Stop. H2–H5 have no motif.
+2. The named first kernel face is the slot door (P3). It needs
+   explicit user sign-off; this hunt is not that sign-off.
 
 ## 5. Conventions (unchanged)
 

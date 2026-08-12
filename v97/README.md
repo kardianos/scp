@@ -165,8 +165,8 @@ Property table (score these, not the store):
 
 Staged bars **H0–H5** (meter honesty → inhabited? → restoring mass →
 topology → space book → contact interaction) are in `METRICS.md`.
-H0/H1 are config-only on existing streams. Kernel faces wait on H1
-and on explicit authorization.
+H0 is green. **H1 is EMPTY** (`H1.md`). Kernel faces wait on
+explicit authorization. The named first face is the slot door (P3).
 
 ---
 

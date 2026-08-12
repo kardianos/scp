@@ -96,6 +96,7 @@ parallel ledger.
 ```
 ./dipole FILE.fcs                         # per-frame TSV
 ./dipole -h0 sealed|leak|ring|bathring|current FILE.fcs
+./dipole -h1 FILE.fcs [...]               # inhabited / empty
 ./dipole -tag FILE.fcs                    # census on painted cells
 ```
 
@@ -188,6 +189,9 @@ not enough to claim correspondence.
 1. ~~Build the five missing instruments~~ **done** (`hunt/`, `./dipole`).
 2. ~~Run H0~~ **done** — `H0.md` / `runs/H0.out`. All five classes
    PASS; current-direction SKIP (snapshot J ≠ fd).
-3. **Next:** H1 — inhabited or empty. One-page verdict.
-4. Stop. H2–H5 wait on H1. Kernel faces wait on that page and on
-   explicit user authorization (`README.md` §V).
+3. ~~Run H1~~ **done — EMPTY.** `H1.md` / `runs/H1.out`. 0 / 203
+   streams inhabited. Closest 3/5. Polarized I/O and Es-at-constant-M
+   never co-occur. P3 (slot door) is the named first kernel face;
+   not authorized by the hunt.
+4. Stop. H2–H5 have no motif. Kernel faces wait on explicit
+   user authorization (`README.md` §V).
