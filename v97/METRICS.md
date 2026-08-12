@@ -73,22 +73,35 @@ parallel ledger.
 | `analyze_hoard.py` / `_phase.py` | occupancy histogram, within-hoard `R2` | Face C's 189 “hoards” were a cell histogram, not a particle spectrum |
 | `scpan` | column-by-name parse of RESULT lines | do not `awk` column offsets |
 
-**Missing instruments (to build when the hunt starts, config-only
-first):**
+**Instruments (Go-only, offline on FCS; 2026-08-12):** package
+`hunt/`, CLI `./dipole`. H0 honesty suite is green — `H0.md`,
+`runs/H0.out`. C is unused.
 
-1. **Motif census** — connected support of live Em, tracked across
-   frames (centroid continuity), not a per-cell occupancy dump.
-2. **Per-motif I / O** — condensation vs radiance/evap attributed to
-   the motif, split into a fore half and an aft half along the
-   current dipole.
-3. **Dipole of J** — `Σ_slots J_s · r_s` (or the first moment of `fd`
-   about the motif centroid), time series.
-4. **Es throughput at constant M** — space current into / out of a
-   control surface around a motif whose `Em` is stationary. g4's
-   leaking-blob wind is the negative control (throughput tracks
-   `dM/dt`). The positive is throughput *not* tracking `dM/dt`.
-5. **Separation of I and O** — a signed distance between the
-   intake-weighted and outtake-weighted centroids. Zero = point book.
+1. **Motif census** — union-find on live-Em cells via LINK contacts;
+   tracked by wrapped centroid. Face C reports a handful of connected
+   components, not a 189-hoard histogram.
+2. **Per-motif I / O** — frame-to-frame mode-crossing heuristic
+   (cells matched by position, not roster index); split fore/aft
+   along J. Hops contaminate; sealed/vacuum streams correctly read
+   Φ ≈ 0.
+3. **Dipole of J** — `J = 2 Im(ψ_i* ψ_j)` on links. Reports Jnet,
+   Jdip (monopole first moment), Circ, plus global and tagged sums.
+   Vacuum ring: Jnet ≪ Circ (loop, not dipole).
+4. **Es throughput** — pass-S pressure law on the motif surface and
+   on the Em>0.5 core surface. Leak streams: core `|Thru|` tracks
+   `|dEmTot|`.
+5. **Separation of I and O** — `(c_I − c_O) · ĵ`. Zero on the ring
+   (point book / no I/O).
+
+```
+./dipole FILE.fcs                         # per-frame TSV
+./dipole -h0 sealed|leak|ring|bathring|current FILE.fcs
+./dipole -tag FILE.fcs                    # census on painted cells
+```
+
+**Limit (H0 current SKIP):** snapshot J is not `fd`. `fd` is a
+time-integral of hops and is not in the FCS. Instantaneous TJnet
+sloshes on e3b; that is reported, not forced into a direction bar.
 
 ---
 
@@ -172,9 +185,9 @@ not enough to claim correspondence.
 
 ## 5. First actions (no kernel change)
 
-1. Build the five missing instruments (§2) against existing `.fcs`
-   (v93 Face C / RING, v94 DS-G, v95 J1 / C1, theory HOLD streams).
-2. Run H0 on those streams. Fix meters until H0 is boring.
-3. Run H1. Write the empty-or-inhabited verdict in one page.
+1. ~~Build the five missing instruments~~ **done** (`hunt/`, `./dipole`).
+2. ~~Run H0~~ **done** — `H0.md` / `runs/H0.out`. All five classes
+   PASS; current-direction SKIP (snapshot J ≠ fd).
+3. **Next:** H1 — inhabited or empty. One-page verdict.
 4. Stop. H2–H5 wait on H1. Kernel faces wait on that page and on
    explicit user authorization (`README.md` §V).

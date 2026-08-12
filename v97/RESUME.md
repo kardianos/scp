@@ -35,7 +35,7 @@ Do not read anything before v89.
 | Charter / principles / metrics | **adopted** (2026-08-12) |
 | STEP ZERO carry v95 → v97 | **done** (this opening) |
 | Battery 87 at defaults | **ALL GREEN 87** (`runs/BATTERY.log`) |
-| H0 meter honesty | **not started** |
+| H0 meter honesty | **PASS** (5/5 classes; current-direction SKIP) — `H0.md` |
 | H1 dipole hunt | **not started** |
 | Kernel faces (slot door, promotion write, …) | **not authorized** |
 | Law-table change | **none** |
@@ -44,7 +44,8 @@ Do not read anything before v89.
 
 C kernel of record: `v97/kernel/freecell.c`.
 Go A/B mirror: `v97/fab/`.
-Build: `cd v97 && make all`.
+Build: `cd v97 && make all` (includes `dipole`).
+Hunt: `./dipole -h0 ring ../v93/runs/quench/rv6_uni_m2.fcs`.
 
 Carried knobs that exist and must stay inert at 0:
 
@@ -61,15 +62,12 @@ Do not flip any of these as “the v97 law.” They are instruments.
 
 ## 4. Next work (when the user wants to continue)
 
-The charter already authorized the measurement half, not a kernel
-face:
+Instruments are built (Go-only, C ignored): `hunt/` + `./dipole`.
+H0 is green (`H0.md`).
 
-1. Missing instruments in `METRICS.md` §2 (motif census, per-motif
-   I/O split, dipole of J, Es throughput at constant M, I/O
-   separation).
-2. **H0** on existing streams until the meters repeat known verdicts.
-3. **H1** — inhabited or empty. One page.
-4. Stop and ask before any kernel edit.
+1. **H1** — run `./dipole` on the existing stream set; one-page
+   inhabited-or-empty verdict (`METRICS.md` H1).
+2. Stop and ask before any kernel edit.
 
 ## 5. Conventions (unchanged)
 

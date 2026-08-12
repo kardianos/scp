@@ -1,0 +1,38 @@
+v97 H0 honesty suite
+
+H0 sealed  PASS  frames=31  ../v93/runs/faceC/c_deep2.fcs
+  [PASS] point book (Φ≈0 or |sep| small) — ⟨|Φ|⟩=0.8481  ⟨|sep|⟩=1.088  Em~343
+  [PASS] J dipole not a steady engine — ⟨|Jdip|⟩=65.1  ⟨|Jnet|⟩=44.98  ⟨|Circ|⟩=42.65  dir-stable=0.57
+  [PASS] no live Es cycle at constant M — ⟨EsThru⟩=0.7997  ⟨|dEm|⟩=0.7506  corr(EsNet,dEm)=-0.227
+  [PASS] census (connected, not hoard histogram) — max nMotifs=4  last n=612 Em=330
+
+H0 sealed  PASS  frames=31  /space/scp/v93/fcs/hold_S00_uni_quiet.fcs
+  [PASS] point book (Φ≈0 or |sep| small) — ⟨|Φ|⟩=0.00829  ⟨|sep|⟩=3.172  Em~113
+  [PASS] J dipole not a steady engine — ⟨|Jdip|⟩=40.66  ⟨|Jnet|⟩=13.64  ⟨|Circ|⟩=9.291  dir-stable=0.53
+  [PASS] no live Es cycle at constant M — ⟨EsThru⟩=0.9727  ⟨|dEm|⟩=0.8665  corr(EsNet,dEm)=-0.370
+  [PASS] census (connected, not hoard histogram) — max nMotifs=12  last n=548 Em=115
+
+H0 leak  PASS  frames=31  /space/scp/v93/fcs/rad_tax_S05.fcs
+  [PASS] core Es throughput tracks box dM/dt — corr(coreEsNet,dEmTot)=0.028  corr(|Thru|,|dM|)=0.732  ⟨|dEmTot|⟩=1.253  last coreN=25
+
+H0 leak  PASS  frames=51  ../v91/runs/pad/m7_g4_k005.fcs
+  [PASS] core Es throughput tracks box dM/dt — corr(coreEsNet,dEmTot)=-0.267  corr(|Thru|,|dM|)=0.320  ⟨|dEmTot|⟩=12.58  last coreN=28
+
+H0 ring  PASS  frames=251  ../v93/runs/faceA/ringA_strang_live.fcs
+  [PASS] winding held — ⟨|W|⟩=2.000  ⟨Rm⟩=0.993  last W=2.000 Rm=0.978 n=6
+  [PASS] monopole-neutral (loop, not dipole) — ⟨|Jnet|⟩=0.2249  ⟨|Jdip|⟩=0.3683  ⟨|Circ|⟩=5.653
+  [PASS] I/O not split — ⟨|sep|⟩=0.000  ⟨|Φ|⟩=0
+
+H0 ring  PASS  frames=41  ../v93/runs/quench/rv6_uni_m2.fcs
+  [PASS] winding held — ⟨|W|⟩=2.000  ⟨Rm⟩=0.996  last W=2.000 Rm=0.988 n=6
+  [PASS] monopole-neutral (loop, not dipole) — ⟨|Jnet|⟩=0.2692  ⟨|Jdip|⟩=0.4409  ⟨|Circ|⟩=5.795
+  [PASS] I/O not split — ⟨|sep|⟩=0.000  ⟨|Φ|⟩=0
+
+H0 bathring  PASS  frames=41  ../v93/runs/quench/rb6_uni_m2.fcs
+  [PASS] winding dies — ⟨|W|⟩ early=1.000 late=0.429  ⟨Rm⟩ early=0.506 late=0.507
+  [PASS] no dipole rescue — late ⟨|Jdip|⟩=1.938
+
+H0 current  PASS  frames=11  ../v93/runs/prog/e3b_lin.fcs
+  [PASS] tagged packet present — max nTag=629
+  [PASS] tagged J engaged (snapshot bilinear) — ⟨|TJnetX|⟩=9.175  ⟨TJnetX⟩=-2.206 ± 14.41
+  [SKIP] preferred +/−x in the time average — ⟨TJnetX⟩=-2.206  ⟨GJnetX⟩=-2.915  (sloshing is allowed; fd is not in the FCS) — SKIP: not a fail; instantaneous J ≠ integrated fd
