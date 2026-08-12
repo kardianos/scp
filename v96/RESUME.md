@@ -1,4 +1,7 @@
-# v96 RESUME — stage-setting for the next session
+# v96 RESUME — stage-setting (FROZEN; active programme is v97)
+
+W-A is reinterpreted by v97 P5, not adopted. W-C remains a lawful
+config-only probe if the dipole hunt wants it.
 
 **Written:** 2026-08-09 (end of day).
 **Next claude session:** FRESH START (do NOT resume `0fc5d7e7-...`). Start a

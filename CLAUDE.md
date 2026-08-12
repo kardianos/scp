@@ -2,38 +2,37 @@
 
 ---
 
-# CURRENT VERSION: v93 — READ THIS FIRST
+# CURRENT VERSION: v97 — READ THIS FIRST
 
-**v93 IS THE ACTIVE PROGRAMME (opened 2026-08-07, user-authorized full
-campaign: "You have full authorization start v93 and build and update
-kernel code ... No additional authorization required."): `v93/README.md`
-is the single entry point — read it top to bottom (it is self-contained:
-PART I is the full background). v93 is THE UNITARY DENSE CHANNEL — give the
-dense (matter) sector the field sector's transport algebra: within-mode
-dense transport becomes a product of UNITARY PAIRWISE PLANE ROTATIONS (pass
-F's cousin), replacing the additive magnitude want, so coherent dense
-transport (translation, the live fifth, the far field) emerges with EXACT
-conservation by construction and the missing first moment (momentum) lives
-in the rotation cross-term the additive Em-ledger kept rejecting. The v92
-consultation (grok + claude-fable + opencode) converged on this design
-(`v92/consult/SUBQUARK_synthesis.md`). STATUS: STEP ZERO DONE (tree carried
-v92→v93, battery ALL GREEN 87 at the adopted laws_V3a table — the v92
-baseline reproduced byte-for-byte). The unitary dense hop is being
-implemented behind `amp_nat` (default 0 = byte-inert vs the 87-bar V3a
-surface), face by face, battery-gated.**
+**v97 IS THE ACTIVE PROGRAMME (opened 2026-08-12, user-authorized:
+"adopt the prior turn's revised metrics and open a new version with
+these stated 6 principles at hand"): `v97/README.md` is the single
+entry point — read it top to bottom (self-contained: PART I is the
+background). Then `v97/PRINCIPLES.md` and `v97/METRICS.md`. v97 is
+THE REGULAR METHOD — conversion is promotions of one energy on
+oriented links, proceeding only where a cycle can close, so the
+properties lumps never hosted become moments of a live conversion
+dipole, and correspondence is an identity claim rather than a unit
+choice. STATUS: STEP ZERO (tree carried v95→v97; battery ALL GREEN 87
+at the adopted laws_V3a table, defaults inert). No principle-face is
+implemented; kernel edits still need explicit sign-off. The first
+authorized work is the dipole hunt (H0 then H1), config-only.**
 
-**v92 is the frozen evidence substrate:** its record (ACT ONE — laws_V3a
-adopted: RADIANCE k_rad=0.05 p_rad=4 + WORKFN wf_on=1, the regime
-declaration retired; the L-1 apparatus built & safe — Phase-M shadow +
-closed-loop coupling, byte-inert, C≡Go, conserved, anti-ignition-robust;
-the feedback hypothesis CONCLUSIVELY CLOSED — three forms tried (magnitude-
-bias, phase-current, zero-sum phase-current), all safe, none delivers L1-A,
-because the additive Em-ledger rejects the interference term; PATH A
-designed + reviewed as "feedback in disguise"; the consult convergence →
-v93) lives in `v92/*.md`. The ADOPTED LAW is `laws_V3a` (V2g core verbatim
-+ radiance + workfn); `v92/laws/laws_V3a.cfg` canonical; the battery
-injects V3a by default (`-nolaw` reproduces the V2g inert baseline). v91
-and v90 remain the deeper evidence substrates below.**
+**v93–v96 are frozen evidence immediately below.** v93 = unitary
+dense channel (`amp_nat`; Face C is a transient; RING holds winding
+in vacuum only). v94 = door pair (`door_g`, register `χ`; DS-G3
+coherent conversion). v95 = J-metric (amplifier, not generator; the
+carried kernel). v96 = diagnosis only (no consumption, no pricing;
+W-A is a v97 *candidate*, reinterpreted by P5, not adopted). **v92
+is the deeper evidence substrate:** ACT ONE adopted laws_V3a
+(RADIANCE k_rad=0.05 p_rad=4 + WORKFN wf_on=1); L-1 apparatus built
+and safe; feedback hypothesis closed three ways (additive Em-ledger
+rejects the interference term); consult convergence → v93. The
+ADOPTED LAW remains `laws_V3a` (V2g core verbatim + radiance +
+workfn); `v97/laws/laws_V3a.cfg` is the working copy, canonical
+prose still in `v92/laws/laws_V3a.cfg`; the battery injects V3a by
+default (`-nolaw` reproduces the V2g inert baseline). v91 and v90
+remain the deeper evidence substrates below.**
 
 **Start at `v90/README.md` (the charter). The carried foundation is v89:
 `v89/README.md`, `v89/PRINCIPLE.md`, `v89/FREECELL.md` — consult v89 freely

@@ -1,4 +1,7 @@
-# v93 — THE UNITARY DENSE CHANNEL (OPENED; implemented behind amp_nat/amp_door)
+# v93 — THE UNITARY DENSE CHANNEL (FROZEN; active programme is v97)
+
+Implemented behind `amp_nat`/`amp_door`. This tree is the evidence
+substrate for the unitary dense hop, not the live programme.
 
 ## Theory/sustain campaign closeout (2026-08-08 → 08-09)
 
