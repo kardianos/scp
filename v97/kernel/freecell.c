@@ -299,6 +299,9 @@ typedef struct {
      *   2 = randomized (per-step Fisher-Yates shuffle of the canonical slots;
      *       separate RNG stream so the physics draws are untouched). */
     int    hop_order;
+    /* v99 Tact 1: retire the dense fluid. 0 = legacy Em + dense hop
+     * (byte-inert). 1 = Es + fa only. 2 = 1 plus wrap-gate. */
+    int    pattern_only;
     int    qatom_every;   /* apparatus (print-only): QATOM sampler period */
     /* --- freecell geometry sector (apparatus, not law) --- */
     double cfac;          /* candidate rule d < cfac*(ri+rj)  (LIVEFAB) */
@@ -438,6 +441,7 @@ static void cfg_defaults(void)
     P.j_tau = 4.0;         /* v95 J-metric: low-pass timescale */
     P.j_rel = 0;           /* v95 J-metric: healing off */
     P.hop_order = 1;   /* v93 face A: Strang symmetric is the adopted default (L1-A re-run passes: fd +285/+300/+272, seed-robust +x; battery ALL GREEN 87 -- pass U is skipped at amp_nat=0). hop_order=0 reproduces all prior amp_nat>0 sequential-sweep results. */
+    P.pattern_only = 0;
     P.qatom_every = 200;
     /* freecell geometry */
     P.cfac = 1.15; P.k_rep = 1.0; P.mob_geo = 1.0; P.kappa_bond = 1.0;
@@ -555,6 +559,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "j_tau")) P.j_tau = atof(v);
     else if (!strcmp(k, "j_rel")) P.j_rel = atof(v);
     else if (!strcmp(k, "hop_order")) P.hop_order = atoi(v);
+    else if (!strcmp(k, "pattern_only")) P.pattern_only = atoi(v);
     else if (!strcmp(k, "conf_r")) P.conf_r = atof(v);
     else if (!strcmp(k, "conf_gap")) P.conf_gap = atof(v);
     else if (!strcmp(k, "conf_th")) P.conf_th = atof(v);
@@ -1028,6 +1033,125 @@ static void field_inject(int i, double dE)   /* cellfab.c:2711 verbatim */
     Ee[i] = e + dE;
 }
 
+static int pattern_on(void) { return P.pattern_only != 0; }
+
+static double space_def(int i)
+{
+    double d = P.e_s0 - Es[i];
+    return d > 0 ? d : 0;
+}
+
+static int present_matter(int i)
+{
+    if (pattern_on()) return space_def(i) >= P.wf_floor;
+    return Em[i] >= P.wf_floor;
+}
+
+static void absorb_em(void)
+{
+    if (!pattern_on()) return;
+    for (int i = 0; i < NC; i++) {
+        if (Em[i] > 0) field_inject(i, Em[i]);
+        Em[i] = 0;
+    }
+}
+
+static void pattern_cond(int i, double d1, double dsp)
+{
+    if (d1 <= 0) return;
+    if (scond[i]) {
+        if (d1 > Ee[i]) d1 = Ee[i];
+        if (d1 <= 0) return;
+        if (Ee[i] > 0) {
+            double fac = sqrt((Ee[i] - d1) / Ee[i]);
+            fa1[i] *= fac; fa2[i] *= fac;
+        }
+        Ee[i] -= d1;
+        Es[i] += d1;
+        return;
+    }
+    double avail = Es[i] - P.es_floor;
+    if (avail < 0) avail = 0;
+    if (dsp > avail) dsp = avail;
+    if (dsp > 0) {
+        Es[i] -= dsp;
+        field_inject(i, dsp);
+    }
+}
+
+static void pattern_evap(int i, double d2)
+{
+    if (d2 > Ee[i]) d2 = Ee[i];
+    if (d2 <= 0) return;
+    if (Ee[i] > 0) {
+        double fac = sqrt((Ee[i] - d2) / Ee[i]);
+        fa1[i] *= fac; fa2[i] *= fac;
+    }
+    Ee[i] -= d2;
+    Es[i] += d2;
+}
+
+static double fa_phase(int i)
+{
+    if (fa1[i] == 0 && fa2[i] == 0) return 0;
+    return atan2(fa2[i], fa1[i]);
+}
+
+static int linked_ij(int i, int j)
+{
+    if (i < 0 || j < 0 || i == j) return 0;
+    for (int q = cls_[i]; q < cls_[i + 1]; q++) {
+        int s = clidx[q];
+        if (sst[s] == S_FREE || sA[s] <= 0) continue;
+        int o = sli[s] + slj[s] - i;
+        if (o == j) return 1;
+    }
+    return 0;
+}
+
+static double face_wind3(int a, int b, int c)
+{
+    return wrap_pi(fa_phase(b) - fa_phase(a))
+         + wrap_pi(fa_phase(c) - fa_phase(b))
+         + wrap_pi(fa_phase(a) - fa_phase(c));
+}
+
+static double face_wind4(int a, int b, int c, int d)
+{
+    return wrap_pi(fa_phase(b) - fa_phase(a))
+         + wrap_pi(fa_phase(c) - fa_phase(b))
+         + wrap_pi(fa_phase(d) - fa_phase(c))
+         + wrap_pi(fa_phase(a) - fa_phase(d));
+}
+
+static int wrap_hop_blocked(int s)
+{
+    if (P.pattern_only < 2) return 0;
+    if (sst[s] == S_FREE || sA[s] <= 0) return 0;
+    int i = sli[s], j = slj[s];
+    if (!present_matter(i) || !present_matter(j)) return 0;
+    const double wind_min = 3.0;
+    for (int q = cls_[i]; q < cls_[i + 1]; q++) {
+        int s2 = clidx[q];
+        if (sst[s2] == S_FREE || sA[s2] <= 0) continue;
+        int k = sli[s2] + slj[s2] - i;
+        if (k == j || k == i) continue;
+        if (linked_ij(j, k) && present_matter(k)) {
+            if (fabs(face_wind3(i, j, k)) > wind_min) return 1;
+        }
+        for (int qj = cls_[j]; qj < cls_[j + 1]; qj++) {
+            int s3 = clidx[qj];
+            if (sst[s3] == S_FREE || sA[s3] <= 0) continue;
+            int b = sli[s3] + slj[s3] - j;
+            if (b == i || b == j || b == k) continue;
+            if (linked_ij(k, b) && present_matter(b) && present_matter(k)) {
+                if (fabs(face_wind4(i, j, b, k)) > wind_min) return 1;
+            }
+        }
+    }
+    return 0;
+}
+
 /* ------------------------------------------------------------------ */
 /* allocation                                                          */
 /* ------------------------------------------------------------------ */
@@ -1348,6 +1472,7 @@ static void apply_uhop(int s, double fac)
 static void step(void)
 {
     double dt = P.dt;
+    absorb_em();
 
     /* pass 0: pitch share of in-flight dense energy (cellfab.c:2795) */
     for (int i = 0; i < NC; i++) {
@@ -1446,7 +1571,9 @@ static void step(void)
     for (int i = 0; i < NC; i++) {
         double ratio = Es[i] / P.e_s0;
         cr[i] = cr0[i] * cbrt(ratio > 0 ? ratio : 0);
-        double x = (Em[i] + flload[i]) / P.cap;
+        double x = pattern_on()
+            ? (Ee[i] + flload[i]) / P.cap
+            : (Em[i] + flload[i]) / P.cap;
         if (P.door_g > 0 && P.chi_load > 0)
             x += (dc1_[i]*dc1_[i] + dc2_[i]*dc2_[i]) / P.cap;   /* v94 chi_load: register self-detuning */
         double det = 1.0 + P.q_detune * x;
@@ -1672,7 +1799,7 @@ static void step(void)
      * (II.4/II.6). The door (pass 6) is never unitarized (IV.3). Hops are
      * applied in canonical link order (from the i side), like pass F.
      * Byte-inert at amp_nat=0 (this whole pass is skipped). */
-    if (P.amp_nat > 0) {
+    if (P.amp_nat > 0 && !pattern_on()) {
         for (int i = 0; i < NC; i++) {
             double e = Em[i];
             if (e > 0) {
@@ -2301,6 +2428,7 @@ static void step(void)
             int s = clidx[q];
             if (sli[s] != i) continue;       /* canonical: apply from the i side */
             if (sA[s] <= 0) continue;
+            if (wrap_hop_blocked(s)) continue;
             int j = slj[s];
             double si = fsum_[i], sj = fsum_[j];
             if (si <= 1e-12 || sj <= 1e-12) continue;
@@ -2418,9 +2546,9 @@ static void step(void)
         else if (cbeta[i] <= -TWO_PI) { cbeta[i] += TWO_PI; beat_fire = 1; }
         if (beat_fire) {
             double econd_i = scond[i] ? 0.0
-                : (P.wf_on ? (Em[i] >= P.wf_floor ? 0.0 : P.wf_far)
+                : (P.wf_on ? (present_matter(i) ? 0.0 : P.wf_far)
                            : P.e_cond);
-            if (P.door_g > 0) {
+            if (P.door_g > 0 && !pattern_on()) {
                 /* v94 door settlement (DESIGN_claude.md §III.5.3): the
                  * continuous pair (pass P) filled the register chi from the
                  * field; this is the click that settles register energy into
@@ -2623,8 +2751,11 @@ static void step(void)
                         click_e[nclick] = d1;
                         nclick++;
                     }
-                    qatom_diag(1, atoms_w(w1e[i], w2e[i]), d1, i, Em[i]);
+                    qatom_diag(1, atoms_w(w1e[i], w2e[i]), d1, i, pattern_on() ? Ee[i] : Em[i]);
                     double dsp = P.s_pull * d1;
+                    if (pattern_on()) {
+                        pattern_cond(i, d1, dsp);
+                    } else {
                     double avail = Es[i] - P.es_floor;
                     if (avail < 0) avail = 0;
                     if (dsp > avail) dsp = avail;
@@ -2658,24 +2789,29 @@ static void step(void)
                         th2[i] = fmod(th2[i] + mix * wrap_pi(aph - th2[i])
                                       + 8.0 * TWO_PI, TWO_PI);
                     }
+                    } /* else !pattern_only */
                 }
             }
-            double tot = Em[i] + Ee[i];
+            double tot = pattern_on() ? Ee[i] : (Em[i] + Ee[i]);
             if (tot > P.cap) {
                 double d2 = P.f_evap * (tot - P.cap);
                 double eF2 = A0eff * w2e[i] / TWO_PI;
                 double eD2 = A0eff * w1e[i] / TWO_PI;
                 d2 = atoms_fire(d2, eF2, eD2, &qcnvF[i]);
-                d2 = atoms_clamp(d2, Em[i], eF2, eD2, &qcnvF[i]);
+                d2 = atoms_clamp(d2, pattern_on() ? Ee[i] : Em[i], eF2, eD2, &qcnvF[i]);
                 if (d2 > 0) {
                     evap_total += d2;
-                    qatom_diag(0, atoms_w(w2e[i], w1e[i]), d2, i, Em[i]);
+                    qatom_diag(0, atoms_w(w2e[i], w1e[i]), d2, i, pattern_on() ? Ee[i] : Em[i]);
                     double bs = d2 * P.s_pull / (1.0 + P.s_pull);
                     backs_total += bs;
                     if (tag[i]) { ct_evap += d2; ct_backs += bs; }
+                    if (pattern_on()) {
+                        pattern_evap(i, d2);
+                    } else {
                     Em[i] -= d2;
                     field_inject(i, d2 - bs);
                     Es[i] += bs;
+                    }
                 }
             }
             /* v91 RADIANCE (laws_V3r candidate A): graded SUB-CAP
@@ -3729,6 +3865,9 @@ int main(int argc, char **argv)
     printf("# v95 J-metric (FLOW law mirrored): j_metric=%g j_tau=%g j_rel=%g\n", P.j_metric, P.j_tau, P.j_rel);
     printf("# v93 hop schedule (RING_DNLS §A.4): hop_order=%d (0=seq, 1=strang, 2=rand)\n",
            P.hop_order);
+    if (P.pattern_only)
+        printf("# v99 Tact 1 (pattern_only): pattern_only=%d (1=Es+fa, 2=+wrap-gate)\n",
+               P.pattern_only);
     printf("# QUENCH-2 apparatus: conf_r=%g conf_gap=%g conf_th=%g conf_pinw=%g spin_m=%d imp_k=%g qp_phase=%g\n",
            P.conf_r, P.conf_gap, P.conf_th, P.conf_pinw, P.spin_m, P.imp_k, P.qp_phase);
     printf("# HORIZON apparatus (HORIZON.md): bh_r=%g bh_k=%g bh_sep=%g\n",
@@ -4533,7 +4672,8 @@ int main(int argc, char **argv)
 
     /* v91 cantus init: holdings memory starts AT the seeded part
      * (no startup retune transient) */
-    for (int i = 0; i < NC; i++) cxl_[i] = Em[i] / P.cap;
+    absorb_em();
+    for (int i = 0; i < NC; i++) cxl_[i] = (pattern_on() ? Ee[i] : Em[i]) / P.cap;
 
     /* initial radii + topology + ledger */
     for (int i = 0; i < NC; i++) {

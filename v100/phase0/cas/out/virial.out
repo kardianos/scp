@@ -1,0 +1,48 @@
+
+batch("v100/phase0/cas/virial.mac")
+E(lam):=lam*E2+E4/lam
+                                               E4
+                            E(lam) := lam E2 + ---
+                                               lam
+ratio(lam):=E(lam)/E(1)
+                                           E(lam)
+                             ratio(lam) := ------
+                                            E(1)
+dEdlam:diff(E(lam),lam)
+                                         E4
+                                   E2 - ----
+                                           2
+                                        lam
+print("dE/dlam =",factor(dEdlam))
+                2
+          E2 lam  - E4
+dE/dlam = ------------ 
+                 2
+              lam
+                                       2
+                                 E2 lam  - E4
+                                 ------------
+                                        2
+                                     lam
+print("critical at lam=1 <=>",factor(subst(lam = 1,dEdlam)),"= 0")
+critical at lam=1 <=> - (E4 - E2) = 0 
+                                      = 0
+print("ratio(2) at E2=E4:",factor(subst(E2 = E4,ratio(2))))
+                   5
+ratio(2) at E2=E4: -- 
+                    2
+                   2
+                                      5
+                                      --
+                                       2
+                                      2
+print("ratio(1/2) at E2=E4:",factor(subst(E2 = E4,ratio(1/2))))
+                     5
+ratio(1/2) at E2=E4: -- 
+                      2
+                     2
+                                      5
+                                      --
+                                       2
+                                      2
+quit()

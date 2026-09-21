@@ -51,10 +51,14 @@ var fcsCellCols = []string{"x", "y", "z", "r", "es", "em", "ee", "xload", "tag",
 var fcsLinkCols = []string{"d", "A", "lem", "gg"}
 
 func (s *Sim) fcsCells() []string {
+	cols := fcsCellCols
 	if s.P.Promo > 0 {
-		return append(append([]string(nil), fcsCellCols...), "promo_i", "promo_o")
+		cols = append(append([]string(nil), cols...), "promo_i", "promo_o")
 	}
-	return fcsCellCols
+	if s.P.PjMeter > 0 {
+		cols = append(append([]string(nil), cols...), "pj_x", "pj_y", "pj_z")
+	}
+	return cols
 }
 
 type fcsW struct {
@@ -167,6 +171,9 @@ func (s *Sim) fcsCellFrame(o *fcsW) {
 	put32(uint32(s.NC))
 	for i := 0; i < s.NC; i++ {
 		xload := (s.Em[i] + s.flload[i]) / s.P.Cap
+		if s.patternOnly() {
+			xload = (s.Ee[i] + s.flload[i]) / s.P.Cap
+		}
 		putf(float32(s.px[i]))
 		putf(float32(s.py[i]))
 		putf(float32(s.pz[i]))
@@ -184,6 +191,14 @@ func (s *Sim) fcsCellFrame(o *fcsW) {
 			putf(float32(s.pO[i]))
 			s.pI[i] = 0
 			s.pO[i] = 0
+		}
+		if s.P.PjMeter > 0 {
+			putf(float32(s.pjx[i]))
+			putf(float32(s.pjy[i]))
+			putf(float32(s.pjz[i]))
+			s.pjx[i] = 0
+			s.pjy[i] = 0
+			s.pjz[i] = 0
 		}
 	}
 	o.chunkOut("CELL", cp, 20, nc)

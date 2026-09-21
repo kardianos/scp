@@ -1,0 +1,57 @@
+=== pulse_kx ===
+runs/prog/pulse_kx.log:# v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=0
+runs/prog/pulse_kx.log:# SEED pulse: amp=2 sigma=3 kx=1.2 (prealigned transverse)
+runs/prog/pulse_kx.log:# RESULT drift_rel -2.520e-15
+runs/prog/pulse_kx.log:# RESULT births 3865 deaths 3335 beta_returns 0 beta_energy 0.000000e+00
+runs/prog/pulse_kx.log:# RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
+runs/prog/pulse_kx.log:# RESULT credit qcnvD=0.000000 qcnvF=0.198900
+runs/prog/pulse_kx.log:# RESULT geometry phi_nom=1.7041 z_live=16.72 dbar=1.4391 sigma_d=0.1515
+runs/prog/pulse_kx.log:# RESULT front_speed v=0.0927 v_over_C=0.0927 (second-half fit, n=7)
+runs/prog/pulse_kx.prog:# SUMMARY t0=0.0 t1=24.0 F_tag 0.000->0.000 PR 0.0->0.0 Em_max 0.000->0.000 R2 0.000->0.000 mean_Jaccard=0.000 J_mean 0.0000->0.0000 n_comp 0->0
+=== pulse_k0 ===
+runs/prog/pulse_k0.log:# v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=0
+runs/prog/pulse_k0.log:# SEED pulse: amp=2 sigma=3 kx=0 (prealigned transverse)
+runs/prog/pulse_k0.log:# RESULT drift_rel -2.240e-15
+runs/prog/pulse_k0.log:# RESULT births 3812 deaths 3307 beta_returns 0 beta_energy 0.000000e+00
+runs/prog/pulse_k0.log:# RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
+runs/prog/pulse_k0.log:# RESULT credit qcnvD=0.000000 qcnvF=0.000000
+runs/prog/pulse_k0.log:# RESULT geometry phi_nom=1.7038 z_live=16.74 dbar=1.4393 sigma_d=0.1514
+runs/prog/pulse_k0.log:# RESULT front_speed v=0.2339 v_over_C=0.2339 (second-half fit, n=7)
+runs/prog/pulse_k0.prog:# SUMMARY t0=0.0 t1=24.0 F_tag 0.000->0.000 PR 0.0->0.0 Em_max 0.000->0.000 R2 0.000->0.000 mean_Jaccard=0.000 J_mean 0.0000->0.0000 n_comp 0->0
+=== noise_ctl ===
+runs/prog/noise_ctl.log:# v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=0
+runs/prog/noise_ctl.log:# SEED noise: amp=2 (e1-class churn)
+runs/prog/noise_ctl.log:# RESULT drift_rel -7.350e-15
+runs/prog/noise_ctl.log:# RESULT births 12563 deaths 12077 beta_returns 0 beta_energy 0.000000e+00
+runs/prog/noise_ctl.log:# RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
+runs/prog/noise_ctl.log:# RESULT credit qcnvD=0.000000 qcnvF=369.603766
+runs/prog/noise_ctl.log:# RESULT geometry phi_nom=1.7062 z_live=15.91 dbar=1.4309 sigma_d=0.1580
+runs/prog/noise_ctl.prog:# SUMMARY t0=0.0 t1=24.0 F_tag 0.000->0.000 PR 0.0->0.0 Em_max 0.000->0.000 R2 0.000->0.000 mean_Jaccard=0.000 J_mean 0.0000->0.0000 n_comp 0->0
+=== e3b_lin ===
+runs/prog/e3b_lin.log:# v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=2
+runs/prog/e3b_lin.log:# SEED blob: amp=0.5 sigma=2.5 kx=1.1 tagged=629 (add>5% of amp)
+runs/prog/e3b_lin.log:# RESULT drift_rel -1.635e-16
+runs/prog/e3b_lin.log:# RESULT births 5014 deaths 4610 beta_returns 0 beta_energy 0.000000e+00
+runs/prog/e3b_lin.log:# RESULT conv rough=0.000000 cond=0.000000 evap=0.226473 backs=0.029540 rad=0.000000
+runs/prog/e3b_lin.log:# RESULT credit qcnvD=0.005646 qcnvF=0.140391
+runs/prog/e3b_lin.log:# RESULT p1 tot=(+2.856784e+02,+1.145641e+01,+3.244499e+00) rate=(+7.141959e+00,+2.864102e-01,+8.111247e-02)
+runs/prog/e3b_lin.log:# RESULT p1x sp=+1.205725e-01 fl=+0.000000e+00 fd=+2.855063e+02 gm=+5.147780e-02
+runs/prog/e3b_lin.log:# RESULT geometry phi_nom=1.6967 z_live=16.79 dbar=1.4402 sigma_d=0.1514
+runs/prog/e3b_lin.log:# RESULT es_shells 0.9966 0.9623 0.9383 0.9528 0.9845 0.9948 1.0001 0.9996
+runs/prog/e3b_lin.log:# RESULT blob Em_tag=61.11205 com=(9.290,8.019,8.070) rms=3.7441 conn=1.0000 z_tag=16.60
+runs/prog/e3b_lin.log:# RESULT blob_drift speed=0.005900 cos_to_kdir=0.1871 v=(1.10e-03,4.04e-03,4.15e-03)
+runs/prog/e3b_lin.prog:# SUMMARY t0=0.0 t1=40.0 F_tag 0.890->0.659 PR 455.6->154.1 Em_max 0.563->2.815 R2 0.085->0.065 mean_Jaccard=0.447 J_mean 0.2365->0.2177 n_comp 1->27
+=== e3b_add ===
+runs/prog/e3b_add.log:# v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=0
+runs/prog/e3b_add.log:# SEED blob: amp=0.5 sigma=2.5 kx=1.1 tagged=629 (add>5% of amp)
+runs/prog/e3b_add.log:# RESULT drift_rel 1.635e-16
+runs/prog/e3b_add.log:# RESULT births 5085 deaths 4687 beta_returns 0 beta_energy 0.000000e+00
+runs/prog/e3b_add.log:# RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
+runs/prog/e3b_add.log:# RESULT credit qcnvD=0.000000 qcnvF=73.453921
+runs/prog/e3b_add.log:# RESULT p1 tot=(-1.437922e+02,-2.470494e-01,-5.052299e-01) rate=(-3.594804e+00,-6.176234e-03,-1.263075e-02)
+runs/prog/e3b_add.log:# RESULT p1x sp=+2.142744e-02 fl=-1.450926e+02 fd=+0.000000e+00 gm=+1.279000e+00
+runs/prog/e3b_add.log:# RESULT geometry phi_nom=1.6969 z_live=16.70 dbar=1.4384 sigma_d=0.1509
+runs/prog/e3b_add.log:# RESULT es_shells 0.8945 0.9217 0.9401 0.9668 0.9841 0.9928 0.9986 1.0005
+runs/prog/e3b_add.log:# RESULT blob Em_tag=71.45385 com=(7.740,7.995,8.038) rms=3.8995 conn=1.0000 z_tag=16.45
+runs/prog/e3b_add.log:# RESULT blob_drift speed=0.003348 cos_to_kdir=0.4348 v=(1.46e-03,-2.40e-03,1.83e-03)
+runs/prog/e3b_add.prog:# SUMMARY t0=0.0 t1=40.0 F_tag 0.890->0.806 PR 455.6->281.2 Em_max 0.563->0.630 R2 0.085->0.121 mean_Jaccard=0.692 J_mean 0.2365->0.1766 n_comp 1->16

@@ -1,0 +1,65 @@
+/* wind.mac -- discrete fiber = C_n, winding W, plus a site cost.
+
+   E_w(n,W) = n * 2 (1 - cos(2 π W / n))     (graph Dirichlet, amp=1/site)
+            = 4 n sin²(π W / n)
+   E_s(n)   = n                               (one space-unit per vertex)
+   E(n)     = α E_w + β E_s
+
+   Claims:
+   W1  E_w is exact as above (closed form of λ_W * n).
+   W2  E_w decreases toward 0 as n→∞ (winding wants to spread).
+   W3  β=0: no finite minimizer (zoo / hoard).
+   W4  β>0: a finite-n minimizer exists; n* depends on β/α.
+   W5  the integer argmin vs ρ=β/α is tabulated. If ρ is not forced,
+       unique size is not forced.
+
+   Run: maxima --very-quiet -b wind.mac < /dev/null
+*/
+ratprint : false$
+fpprintprec : 6$
+
+Ew(n,W) := 4*n*sin(%pi*W/n)^2$
+Es(n)   := n$
+E(n,W,rho) := Ew(n,W) + rho*Es(n)$   /* units α=1, ρ=β/α */
+
+print("=== W1: closed form vs Laplacian on C_n ===")$
+/* λ_m = 2(1-cos(2π m/n)) = 4 sin²(π m/n).  n sites * λ_W = E_w. */
+print("  lambda_W = 4 sin^2(pi W/n)")$
+print("  n*lambda_W = 4 n sin^2(pi W/n) = E_w")$
+print("  n=6 W=1: E_w =", Ew(6,1), " =", float(Ew(6,1)), " (expect 6)")$
+print("  n=4 W=1: E_w =", Ew(4,1), " =", float(Ew(4,1)), " (expect 8)")$
+print("  n=3 W=1: E_w =", Ew(3,1), " =", float(Ew(3,1)), " (expect 9)")$
+
+print("=== W2: E_w -> 0 as n grows (fixed W=1) ===")$
+for n: 3 thru 16 do
+  print("  n =", n, "  E_w =", float(Ew(n,1)))$
+print("  large-n expansion: 4 n (pi/n)^2 = 4 pi^2 / n -> 0")$
+print("  4 pi^2 =", float(4*%pi^2))$
+
+print("=== W3/W4: integer argmin of E_w + rho n, W=1, n=3..24 ===")$
+ns : makelist(n, n, 3, 24)$
+/* even-only list for the F-odd filter */
+ne : makelist(2*k, k, 2, 12)$
+scan_rho(rhos, nlist) :=
+  for rho in rhos do block([best, be, vals],
+    vals : map(lambda([n], float(E(n,1,rho))), nlist),
+    be   : apply(min, vals),
+    best : [],
+    for i: 1 thru length(nlist) do
+      if abs(vals[i] - be) < 1e-9 then best : endcons(nlist[i], best),
+    print("  rho =", float(rho), "  min E =", be, "  n* =", best))$
+
+print("  -- all n >= 3 --")$
+scan_rho([0, 0.1, 0.3, 0.5, 1, 2, 4, 8], ns)$
+print("  -- even n only (F-odd) --")$
+scan_rho([0, 0.1, 0.3, 0.5, 1, 2, 4, 8], ne)$
+
+print("=== W5: at rho=1, the values (almost flat near 3..6) ===")$
+for n: 3 thru 12 do
+  print("  n =", n, "  E =", float(E(n,1,1)),
+        "  E_w =", float(Ew(n,1)), "  E_s =", n)$
+
+print("=== W6: no half-winding on C_n ===")$
+print("  W must be integer or ψ is not single-valued on the cycle.")$
+print("  E_w(n, 1/2) is not a lock: the cycle does not close.")$
+print("DONE")$

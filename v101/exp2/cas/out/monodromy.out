@@ -1,0 +1,29 @@
+
+batch("v101/exp2/cas/monodromy.mac")
+load("functs")
+           /usr/share/maxima/5.49.0/share/simplification/functs.mac
+c11(n):=2*%pi*n
+                               c11(n) := 2 %pi n
+c_oct(n1,n2):=(2*%pi*n1+2*%pi*n2)/2
+                                      2 %pi n1 + 2 %pi n2
+                     c_oct(n1, n2) := -------------------
+                                               2
+print("1:1 positive generator:",c11(1))
+1:1 positive generator: 2 %pi 
+                                     2 %pi
+print("octave n=(1,0):",c_oct(1,0))
+octave n=(1,0): %pi 
+                                      %pi
+print("octave n=(1,1):",c_oct(1,1))
+octave n=(1,1): 2 %pi 
+                                     2 %pi
+print("octave n=(2,0):",c_oct(2,0))
+octave n=(2,0): 2 %pi 
+                                     2 %pi
+print("psi=2*theta odd:",2*c_oct(1,0))
+psi=2*theta odd: 2 %pi 
+                                     2 %pi
+print("psi=2*theta even:",2*c_oct(1,1))
+psi=2*theta even: 4 %pi 
+                                     4 %pi
+quit()

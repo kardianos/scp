@@ -1,0 +1,108 @@
+
+batch("/home/d/code/scp/v99/phase1/cas/srel.mac")
+ratprint:false
+fpprintprec:8
+Ew(n):=4*n*sin(%pi/n)^2
+om(n):=2*sin(%pi/n)
+eps(n):=om(n)/(2*%pi)
+print("=== I1/I2/I3: closed forms at n=3,4,6,8,12,24 ===")
+=== I1/I2/I3: closed forms at n=3,4,6,8,12,24 === 
+for n in [3,4,6,8,12,24] do
+    print("  n=",n,"  E_w=",float(Ew(n)),"  ω=",float(om(n)),"  ε=",
+          float(eps(n)),"  nε=",float(n*eps(n)),"  E_w/ε=",
+          float(Ew(n)/eps(n)))
+  n= 3   E_w= 9.0   ω= 1.7320508   ε= 0.27566445   nε= 0.82699334   E_w/ε= 
+                                                                     32.648389 
+  n= 4   E_w= 8.0   ω= 1.4142136   ε= 0.22507908   nε= 0.90031632   E_w/ε= 
+                                                                     35.543064 
+  n= 6   E_w= 6.0   ω= 1.0   ε= 0.15915494   nε= 0.95492966   E_w/ε= 
+                                                                     37.699112 
+  n= 8   E_w= 4.6862915   ω= 0.76536686   ε= 0.12181192   nε= 0.97449536 
+                                                             E_w/ε= 38.471535 
+  n= 12   E_w= 3.2153903   ω= 0.51763809   ε= 0.082384661   nε= 0.98861593 
+                                                             E_w/ε= 39.028993 
+  n= 24   E_w= 1.6355603   ω= 0.26105238   ε= 0.041547777   nε= 0.99714666 
+                                                             E_w/ε= 39.365772 
+print("=== I3: E_w/ε = 4 π n sin(π/n) is increasing ===")
+=== I3: E_w/ε = 4 π n sin(π/n) is increasing === 
+print("  n=3:",float(4*%pi*3*sin(%pi/3)),"  n→∞:",float(4*%pi*%pi))
+  n=3: 32.648389   n→∞: 39.478418 
+print("=== I4: integer argmin of E_w + n ε, n=3..24 ===")
+=== I4: integer argmin of E_w + n ε, n=3..24 === 
+ns:makelist(n,n,3,24)
+vals4:map(lambda([n],float(Ew(n)+n*eps(n))),ns)
+be4:apply(min,vals4)
+best4:[]
+for i thru length(ns) do
+    if abs(vals4[i]-be4) < 1.0E-9 then best4:endcons(ns[i],best4)
+print("  min=",be4,"  n*=",best4)
+  min= 2.632707   n*= [24] 
+for n from 3 thru 12 do print("    n=",n,"  E_w+nε=",float(Ew(n)+n*eps(n)))
+    n= 3   E_w+nε= 9.8269933 
+    n= 4   E_w+nε= 8.9003163 
+    n= 5   E_w+nε= 7.8453193 
+    n= 6   E_w+nε= 6.9549297 
+    n= 7   E_w+nε= 6.2379092 
+    n= 8   E_w+nε= 5.6607869 
+    n= 9   E_w+nε= 5.1910156 
+    n= 10   E_w+nε= 4.8032918 
+    n= 11   E_w+nε= 4.4788831 
+    n= 12   E_w+nε= 4.2040062 
+print("=== I5: integer argmin of E_w/ε + n ===")
+=== I5: integer argmin of E_w/ε + n === 
+vals5:map(lambda([n],float(Ew(n)/eps(n)+n)),ns)
+be5:apply(min,vals5)
+best5:[]
+for i thru length(ns) do
+    if abs(vals5[i]-be5) < 1.0E-9 then best5:endcons(ns[i],best5)
+print("  min=",be5,"  n*=",best5)
+  min= 35.648389   n*= [3] 
+print("=== I6: ΔE_w + ε(n)  (conservation stop if this crosses 0) ===")
+=== I6: ΔE_w + ε(n)  (conservation stop if this crosses 0) === 
+for n from 3 thru 16 do
+    print("  n=",n,"  dEw=",float(Ew(n+1)-Ew(n)),"  ε=",float(eps(n)),
+          "  dEw+ε=",float(Ew(n+1)-Ew(n)+eps(n)),"  dEw+1=",
+          float(Ew(n+1)-Ew(n)+1))
+  n= 3   dEw= - 1.0   ε= 0.27566445   dEw+ε= - 0.72433555   dEw+1= 0.0 
+  n= 4   dEw= - 1.0901699   ε= 0.22507908   dEw+ε= - 0.86509086   dEw+1= 
+                                                                 - 0.090169944 
+  n= 5   dEw= - 0.90983006   ε= 0.18709786   dEw+ε= - 0.7227322   dEw+1= 
+                                                                   0.090169944 
+  n= 6   dEw= - 0.72885723   ε= 0.15915494   dEw+ε= - 0.56970228   dEw+1= 
+                                                                    0.27114277 
+  n= 7   dEw= - 0.58485127   ε= 0.13810948   dEw+ε= - 0.44674179   dEw+1= 
+                                                                    0.41514873 
+  n= 8   dEw= - 0.47509148   ε= 0.12181192   dEw+ε= - 0.35327956   dEw+1= 
+                                                                    0.52490852 
+  n= 9   dEw= - 0.39153991   ε= 0.10886839   dEw+ε= - 0.28267152   dEw+1= 
+                                                                    0.60846009 
+  n= 10   dEw= - 0.32723783   ε= 0.098363164   dEw+ε= - 0.22887467   dEw+1= 
+                                                                    0.67276217 
+  n= 11   dEw= - 0.27703197   ε= 0.089678258   dEw+ε= - 0.18735371   dEw+1= 
+                                                                    0.72296803 
+  n= 12   dEw= - 0.23724698   ε= 0.082384661   dEw+ε= - 0.15486232   dEw+1= 
+                                                                    0.76275302 
+  n= 13   dEw= - 0.20527163   ε= 0.076176542   dEw+ε= - 0.12909509   dEw+1= 
+                                                                    0.79472837 
+  n= 14   dEw= - 0.17923543   ε= 0.070830613   dEw+ε= - 0.10840481   dEw+1= 
+                                                                    0.82076457 
+  n= 15   dEw= - 0.15778131   ε= 0.066180347   dEw+ε= - 0.091600964   dEw+1= 
+                                                                    0.84221869 
+  n= 16   dEw= - 0.13991076   ε= 0.062099178   dEw+ε= - 0.077811581   dEw+1= 
+                                                                    0.86008924 
+print("=== I7: sign of ΔE_w + 1 (ρ=1 discrete) ===")
+=== I7: sign of ΔE_w + 1 (ρ=1 discrete) === 
+print("  v98: ρ=1 ties even 4 and 6 in the *total* E_w+n, not in the first difference.")
+  v98: ρ=1 ties even 4 and 6 in the *total* E_w+n, not in the first differenc\
+e. 
+print("  first n where ΔE_w + 1 > 0 is the stop if you walk n → n+1 paying 1.")
+  first n where ΔE_w + 1 > 0 is the stop if you walk n → n+1 paying 1. 
+found:false
+for n from 3 thru 23 do
+    if not found and float(Ew(n+1)-Ew(n)+1) > 0
+        then (print("  first positive ΔE_w+1 at n=",n,"  value=",
+                    float(Ew(n+1)-Ew(n)+1)),found:true)
+  first positive ΔE_w+1 at n= 5   value= 0.090169944 
+print("DONE")
+DONE 
+                   /home/d/code/scp/v99/phase1/cas/srel.mac

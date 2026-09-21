@@ -139,6 +139,9 @@ func (s *Sim) tagStats() (emt, comx, comy, comz, rms, conn, zblob float64) {
 			fl += s.slem[2*sl] + s.slem[2*sl+1]
 		}
 		w := s.Em[i] + 0.5*fl
+		if s.patternOnly() {
+			w = s.Ee[i] + 0.5*fl
+		}
 		em += w
 		cx2 += w * (s.cenx + s.wr(s.px[i]-s.cenx))
 		cy2 += w * (s.ceny + s.wr(s.py[i]-s.ceny))
@@ -159,6 +162,9 @@ func (s *Sim) tagStats() (emt, comx, comy, comz, rms, conn, zblob float64) {
 				continue
 			}
 			w := s.Em[i] + s.flload[i]
+			if s.patternOnly() {
+				w = s.Ee[i] + s.flload[i]
+			}
 			dx := s.wr(s.px[i] - cx2)
 			dy := s.wr(s.py[i] - cy2)
 			dz := s.wr(s.pz[i] - cz2)

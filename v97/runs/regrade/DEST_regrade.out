@@ -1,0 +1,9 @@
+== rg2c dest-only ==
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.007115  ⟨I⟩=0.2053  ⟨O⟩=0.0438  Φ/Em=0.001208  (rate 0.000302/t.u. Δt=4; min⟨⟩=0.0438; I/O=4.69; exact)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.416  ⟨polar⟩=0.953  (book frames 1/26)
+== rg2f dest-only ==
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.02736  ⟨I⟩=0.211  ⟨O⟩=0.06754  Φ/Em=0.005741  (rate 0.00124/t.u. Δt=4.63; min⟨⟩=0.06754; I/O=3.12; exact)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.794  ⟨polar⟩=0.807  (book frames 2/20)
+== rg2e dest-only ==
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0.01299  Φ/Em=0  (rate 0/t.u. Δt=4.17; min⟨⟩=0; I/O=0; exact)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=1.000  (book frames 0/25)

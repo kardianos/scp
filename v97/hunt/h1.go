@@ -177,20 +177,42 @@ func clausePhi(rows []Row) Check {
 		return Check{Name: "Φ > 0", OK: false, Detail: "no live motif"}
 	}
 	var phi, em, ii, oo []float64
+	ledger := false
 	for _, r := range rs {
 		phi = append(phi, r.Phi)
 		em = append(em, r.Em)
 		ii = append(ii, r.I)
 		oo = append(oo, r.O)
+		if r.Ledger {
+			ledger = true
+		}
 	}
 	emBar := mean(em)
 	if emBar <= 0 {
 		emBar = 1
 	}
 	p, iBar, oBar := mean(phi), mean(ii), mean(oo)
+	// Reporting only (bars unchanged): the per-t.u. rate makes the
+	// snap-dependence of the 0.015 frame-ratio bar visible, and
+	// min(⟨I⟩,⟨O⟩) vs ⟨min(I,O)⟩ separates mean imbalance from
+	// asynchrony (REVIEW_grok_next Q5c).
+	dtBar := 0.0
+	if len(rs) >= 2 {
+		dtBar = (rs[len(rs)-1].T - rs[0].T) / float64(len(rs)-1)
+	}
+	rate := math.NaN()
+	if dtBar > 0 {
+		rate = p / emBar / dtBar
+	}
+	minMeans := math.Min(iBar, oBar)
+	src := "heuristic"
+	if ledger {
+		src = "exact"
+	}
 	ok := p >= h1PhiAbs && p/emBar >= h1PhiOverEm && iBar >= h1PhiAbs/2 && oBar >= h1PhiAbs/2
 	return Check{Name: "Φ > 0 (live throughput)", OK: ok,
-		Detail: fmt.Sprintf("⟨Φ⟩=%.4g  ⟨I⟩=%.4g  ⟨O⟩=%.4g  Φ/Em=%.4g", p, iBar, oBar, p/emBar)}
+		Detail: fmt.Sprintf("⟨Φ⟩=%.4g  ⟨I⟩=%.4g  ⟨O⟩=%.4g  Φ/Em=%.4g  (rate %.3g/t.u. Δt=%.3g; min⟨⟩=%.4g; I/O=%.3g; %s)",
+			p, iBar, oBar, p/emBar, rate, dtBar, minMeans, safeRatio(iBar, oBar), src)}
 }
 
 func clauseSep(rows []Row) Check {
@@ -198,9 +220,18 @@ func clauseSep(rows []Row) Check {
 	if len(rs) == 0 {
 		return Check{Name: "I/O spatially separated", OK: false, Detail: "no live motif"}
 	}
+	// sep of an empty book is undefined, not zero: average only over
+	// frames where BOTH I and O fired (matches the polar convention,
+	// which already skips den≈0 frames). On the grainy exact ledger
+	// most snaps have a one-sided or silent door; counting those as
+	// sep=0 graded a fiction. nBook/nLive keeps sparsity visible.
 	var sep, pol []float64
+	nBook := 0
 	for _, r := range rs {
-		sep = append(sep, r.Sep)
+		if r.I > 0 && r.O > 0 {
+			sep = append(sep, r.Sep)
+			nBook++
+		}
 		// opposite-half traffic: intake fore & outtake aft, or the reverse
 		a := r.Ifore + r.Oaft
 		b := r.Iaft + r.Ofore
@@ -211,9 +242,9 @@ func clauseSep(rows []Row) Check {
 	}
 	sepBar := meanAbs(sep)
 	polBar := mean(pol)
-	ok := sepBar >= h1SepAbs && polBar >= h1Polar
+	ok := nBook > 0 && sepBar >= h1SepAbs && polBar >= h1Polar
 	return Check{Name: "I/O spatially separated", OK: ok,
-		Detail: fmt.Sprintf("⟨|sep|⟩=%.3f  ⟨polar⟩=%.3f", sepBar, polBar)}
+		Detail: fmt.Sprintf("⟨|sep|⟩=%.3f  ⟨polar⟩=%.3f  (book frames %d/%d)", sepBar, polBar, nBook, len(rs))}
 }
 
 func clauseMass(rows []Row) Check {
@@ -251,6 +282,33 @@ func clauseJDip(rows []Row) Check {
 	if len(rs) < 3 {
 		return Check{Name: "dipole of J steady", OK: false, Detail: "too few live frames"}
 	}
+	// Preferred channel: the integrated per-cell hop current (pj_meter
+	// columns), H0'd against the kernel's own fd on e3b ×3 seeds
+	// (identity at the f32 floor; snapshot bilinear pointed the WRONG
+	// way there, mean −92 sd 253). Same bars; honest meter. Snapshot
+	// bilinear remains the fallback for streams without the columns.
+	hasPJ := true
+	for _, r := range rs {
+		if !r.HasPJ {
+			hasPJ = false
+			break
+		}
+	}
+	if hasPJ {
+		var net, ca, nx, ny []float64
+		for _, r := range rs {
+			net = append(net, math.Sqrt(r.MotPJx*r.MotPJx+r.MotPJy*r.MotPJy+r.MotPJz*r.MotPJz))
+			ca = append(ca, r.MotPJa)
+			nx = append(nx, r.MotPJx)
+			ny = append(ny, r.MotPJy)
+		}
+		jd, ci := mean(net), mean(ca)
+		dir := math.Max(fracSameSign(nx), fracSameSign(ny))
+		notLoop := jd >= h1JdipOverCirc*math.Max(ci, 1e-9)
+		ok := jd > 1e-3 && notLoop && dir >= h1DirStable
+		return Check{Name: "dipole of J steady", OK: ok,
+			Detail: fmt.Sprintf("⟨|pJnet|⟩=%.4g  ⟨Σ|pJ|⟩=%.4g  dir-stable=%.2f  (integrated fd channel)", jd, ci, dir)}
+	}
 	var jdip, circ, jdx, jdy []float64
 	for _, r := range rs {
 		jdip = append(jdip, r.Jdip)
@@ -264,7 +322,7 @@ func clauseJDip(rows []Row) Check {
 	notLoop := jd >= h1JdipOverCirc*math.Max(ci, 1e-9)
 	ok := jd > 1e-3 && notLoop && dir >= h1DirStable
 	return Check{Name: "dipole of J steady", OK: ok,
-		Detail: fmt.Sprintf("⟨|Jdip|⟩=%.4g  ⟨|Circ|⟩=%.4g  dir-stable=%.2f", jd, ci, dir)}
+		Detail: fmt.Sprintf("⟨|Jdip|⟩=%.4g  ⟨|Circ|⟩=%.4g  dir-stable=%.2f  (snapshot fallback)", jd, ci, dir)}
 }
 
 func clauseEsCycle(rows []Row) Check {

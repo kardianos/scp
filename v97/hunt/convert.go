@@ -18,6 +18,13 @@ type Convert struct {
 	Phi       float64 // min(I, O)
 	Matched   int
 	Unmatched int
+	// Exact: I/O came from the promo_i/promo_o ledger columns
+	// (gross door traffic), not the mode-crossing heuristic.
+	Exact bool
+	// Ih/Oh: the heuristic estimate, always computed, so the
+	// inflation of the mode-crossing meter stays measurable
+	// (H0 `exact` class; REGRADE).
+	Ih, Oh float64
 }
 
 // Match cells of b to a by wrapped position (roster indices are not identity).
@@ -101,7 +108,17 @@ func cellIO(prev, cur Cell) (I, O float64) {
 // MeasureConvert estimates I/O on motif m (cells of `cur`) vs `prev`.
 // Axis (jx,jy,jz) splits fore/aft; if near-zero, the motif's longest
 // principal direction is used.
-func MeasureConvert(prev, cur Frame, m Motif, jx, jy, jz float64) Convert {
+//
+// dilate: expand the I/O collection set by that many rings of LINK
+// neighbours (Em accounting is untouched). Rationale, measured on
+// rg2a: promo>0 books each door event at the oriented link's FAR
+// cell (fab/promo.go dest), so a machine's own deposits land one
+// cell outside its census and ⟨O⟩ reads 0 while the box ledger
+// carries the full rad total. Direction acknowledged: dilation can
+// only raise motif I/O; it is scope correction (the link's far end
+// is part of the machine's book by the promo semantics), not a
+// softer bar — default remains 0 and both gradings are reported.
+func MeasureConvert(prev, cur Frame, m Motif, jx, jy, jz float64, dilate int, dest bool) Convert {
 	var out Convert
 	if m.N == 0 || len(prev.Cells) == 0 {
 		return out
@@ -112,6 +129,31 @@ func MeasureConvert(prev, cur Frame, m Motif, jx, jy, jz float64) Convert {
 			inside[i] = true
 		}
 	}
+	// Dest-only scope (dest.go): overrides dilate. I counted only on
+	// the motif ∪ replayed fore picks; O only on motif ∪ aft picks.
+	var iSet, oSet []bool
+	if dest && cur.HasPromo {
+		iSet, oSet = DestSets(cur, m)
+		for k := range inside {
+			inside[k] = iSet[k] || oSet[k]
+		}
+		dilate = 0
+	}
+	for d := 0; d < dilate; d++ {
+		grow := make([]bool, len(inside))
+		copy(grow, inside)
+		for _, lk := range cur.Links {
+			if lk.I >= 0 && lk.I < len(inside) && lk.J >= 0 && lk.J < len(inside) {
+				if inside[lk.I] {
+					grow[lk.J] = true
+				}
+				if inside[lk.J] {
+					grow[lk.I] = true
+				}
+			}
+		}
+		inside = grow
+	}
 	jn := hypot3(jx, jy, jz)
 	if jn < 1e-12 {
 		jx, jy, jz = motifAxis(cur, m)
@@ -120,13 +162,13 @@ func MeasureConvert(prev, cur Frame, m Motif, jx, jy, jz float64) Convert {
 	if jn > 0 {
 		jx, jy, jz = jx/jn, jy/jn, jz/jn
 	}
-	usePromo := false
-	for _, idx := range m.Cells {
-		if idx >= 0 && idx < len(cur.Cells) && (cur.Cells[idx].PromoI > 0 || cur.Cells[idx].PromoO > 0) {
-			usePromo = true
-			break
-		}
-	}
+	// Exact ledger vs heuristic is a SCHEMA property, not a per-frame
+	// one: when the stream carries promo_i/promo_o, use them always,
+	// zeros included. The old per-frame opportunistic switch fell back
+	// to the hop-shaped heuristic on every quiet snap (atom grain),
+	// inflating I/O and faking simultaneity (REVIEW_grok_next §F1).
+	usePromo := cur.HasPromo
+	out.Exact = usePromo
 	mt := matchCells(prev, cur, 0.6)
 	var ixs, iys, izs, iws []float64
 	var oxs, oys, ozs, ows []float64
@@ -136,17 +178,31 @@ func MeasureConvert(prev, cur Frame, m Motif, jx, jy, jz float64) Convert {
 			continue
 		}
 		var I, O float64
+		pi := mt[j]
+		var hI, hO float64
+		if pi >= 0 {
+			hI, hO = cellIO(prev.Cells[pi], c)
+		}
+		out.Ih += hI
+		out.Oh += hO
 		if usePromo {
 			I, O = c.PromoI, c.PromoO
+			if iSet != nil {
+				if !iSet[j] {
+					I = 0
+				}
+				if !oSet[j] {
+					O = 0
+				}
+			}
 			out.Matched++
 		} else {
-			pi := mt[j]
 			if pi < 0 {
 				out.Unmatched++
 				continue
 			}
 			out.Matched++
-			I, O = cellIO(prev.Cells[pi], c)
+			I, O = hI, hO
 		}
 		proj := wrap(c.X-m.Cx, L)*jx + wrap(c.Y-m.Cy, L)*jy + wrap(c.Z-m.Cz, L)*jz
 		out.I += I

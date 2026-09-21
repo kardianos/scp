@@ -106,7 +106,7 @@ func TestConvertCondensation(t *testing.T) {
 	cur.Cells[0].Em = 0.9
 	cur.Cells[0].Ee = 0.6 // dEm=+0.4, dEe=-0.4 → I=0.4
 	ms := Census(cur, CensusCfg{EmFloor: 0.1})
-	cv := MeasureConvert(prev, cur, ms[0], 1, 0, 0)
+	cv := MeasureConvert(prev, cur, ms[0], 1, 0, 0, 0, false)
 	if math.Abs(cv.I-0.4) > 1e-9 {
 		t.Fatalf("I=%g want 0.4", cv.I)
 	}
@@ -191,5 +191,120 @@ func TestPearson(t *testing.T) {
 	zs := []float64{-1, -2, -3, -4, -5}
 	if math.Abs(pearson(xs, zs)+1) > 1e-9 {
 		t.Fatalf("pearson=%g", pearson(xs, zs))
+	}
+}
+
+// --- exact-ledger regression (PLAN.md step 1′; REVIEW_grok_next §F1) ---
+//
+// The graded I/O on a promo stream must BE the kernel's own door
+// ledger. Expected totals come from the kernel RESULT lines of the
+// leads runs (runs/leads/p2_space.log):
+//   cond=0.524917   evap=0.612923   rad=13.572040  (evap+rad=14.184963)
+// If this test fails after a meter edit, the meter regressed to the
+// hop-shaped heuristic (or the ledger columns broke).
+
+func openLeads(t *testing.T, name string) []Row {
+	t.Helper()
+	s, err := Open("../runs/leads/" + name)
+	if err != nil {
+		t.Skipf("leads stream not present: %v", err)
+	}
+	defer s.Close()
+	rows, err := Analyze(s, Options{Census: CensusCfg{EmFloor: 0.05, MinN: 3}})
+	if err != nil {
+		t.Fatalf("analyze: %v", err)
+	}
+	return rows
+}
+
+func TestExactLedgerP2Space(t *testing.T) {
+	rows := openLeads(t, "p2_space.fcs")
+	if len(rows) == 0 {
+		t.Fatal("no frames")
+	}
+	var boxI, boxO, motI, motO, hI, hO float64
+	for i, r := range rows {
+		if !r.Ledger {
+			t.Fatalf("frame %d: ledger missing on a promo stream", i)
+		}
+		boxI += r.BoxPI
+		boxO += r.BoxPO
+		if i == 0 {
+			continue
+		}
+		motI += r.I
+		motO += r.O
+		hI += r.Ih
+		hO += r.Oh
+		if r.N > 0 && (r.I > r.BoxPI+1e-6 || r.O > r.BoxPO+1e-6) {
+			t.Fatalf("frame %d: motif I/O exceeds box ledger (I=%.4g/%.4g O=%.4g/%.4g) — heuristic leaked in",
+				i, r.I, r.BoxPI, r.O, r.BoxPO)
+		}
+	}
+	const wantI, wantO = 0.524917, 14.184963
+	if math.Abs(boxI-wantI) > 0.02 {
+		t.Errorf("Σ box promo_i = %.6g, kernel cond = %.6g", boxI, wantI)
+	}
+	if math.Abs(boxO-wantO) > 0.30 {
+		t.Errorf("Σ box promo_o = %.6g, kernel evap+rad = %.6g", boxO, wantO)
+	}
+	// The documented failure mode of the old meter: the heuristic
+	// inflates I far beyond the door (~40× on this stream). Keep the
+	// direction pinned so nobody "fixes" it backwards again.
+	if hI < 5*boxI {
+		t.Errorf("heuristic ΣI=%.4g not ≫ ledger ΣI=%.4g — inflation direction changed; re-verify against RESULT lines", hI, boxI)
+	}
+}
+
+func TestHeuristicFallbackP0Ctl(t *testing.T) {
+	rows := openLeads(t, "p0_ctl.fcs")
+	if len(rows) == 0 {
+		t.Fatal("no frames")
+	}
+	for i, r := range rows {
+		if r.Ledger {
+			t.Fatalf("frame %d: promo=0 stream must not report a ledger", i)
+		}
+		if r.BoxPI != 0 || r.BoxPO != 0 {
+			t.Fatalf("frame %d: nonzero box promo sums without columns", i)
+		}
+	}
+}
+
+// Dest-only scope: books on the replayed fore/aft picks count; books
+// on an unrelated neighbour do not (the dilate-halo contamination).
+func TestDestOnlyScope(t *testing.T) {
+	// 4 cells on a line: A(0) - M(1) - F(2) - X(3). M is the motif.
+	// M's matter J points +x (θ gradient), so fore pick = F, aft = A.
+	L := 16.0
+	mk := func() Frame {
+		fr := Frame{T: 0, L: L, HasPromo: true, Cells: make([]Cell, 4)}
+		for i := range fr.Cells {
+			fr.Cells[i] = Cell{X: 5 + float64(i), Y: 8, Z: 8, R: 0.8, Em: 1, Es: 1}
+		}
+		// θ decreasing in +x ⇒ sin(θj−θi) < 0 toward +x… choose the
+		// sign so û·Ĵ selects F: θ(x) = +0.5x ⇒ J_MF = 2·sin(+0.5) > 0.
+		for i := range fr.Cells {
+			fr.Cells[i].Th2 = 0.5 * float64(i)
+		}
+		fr.Links = []Link{{I: 0, J: 1, A: 1, D: 1}, {I: 1, J: 2, A: 1, D: 1}, {I: 2, J: 3, A: 1, D: 1}}
+		return fr
+	}
+	prev, cur := mk(), mk()
+	cur.T = 4
+	cur.Cells[2].PromoI = 0.7 // book on the fore pick (F)
+	cur.Cells[0].PromoO = 0.3 // book on the aft pick (A)
+	cur.Cells[0].PromoI = 9.9 // contamination: intake booked on the AFT cell
+	// (dest scope counts only O there; dilate swallows its I too)
+	m := Motif{ID: 1, N: 1, Cells: []int{1}, Em: 1, Cx: 6, Cy: 8, Cz: 8}
+
+	cv := MeasureConvert(prev, cur, m, 1, 0, 0, 0, true)
+	if math.Abs(cv.I-0.7) > 1e-12 || math.Abs(cv.O-0.3) > 1e-12 {
+		t.Fatalf("dest-only I=%.3g O=%.3g, want 0.7/0.3 (X excluded)", cv.I, cv.O)
+	}
+	// dilate-1 by contrast swallows X's book too
+	cd := MeasureConvert(prev, cur, m, 1, 0, 0, 1, false)
+	if cd.I < 0.7+9.9-1e-9 {
+		t.Fatalf("dilate control should include contamination, I=%.3g", cd.I)
 	}
 }

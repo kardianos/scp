@@ -34,11 +34,17 @@ Do not read anything before v89.
 |---|---|
 | Charter / principles / metrics | **adopted** (2026-08-12) |
 | STEP ZERO carry v95 → v97 | **done** (this opening) |
-| Battery 87 at defaults | **ALL GREEN 87** (`runs/BATTERY.log`) |
-| H0 meter honesty | **PASS** (5/5 classes; current-direction SKIP) — `H0.md` |
-| H1 dipole hunt | **EMPTY** (0/203 inhabited) — `H1.md` |
-| Promo leads (Go `promo=1/2/3`) | **tried** — sep+Es now co-occur; H1 still EMPTY — `LEADS.md` |
-| Kernel faces (slot door, promotion write, …) | leads only; **not adopted** |
+| Battery 87 at defaults | **ALL GREEN 87** (`runs/regrade/BATTERY_helixseed.log`; the leads commit had silently broken 6 C≡Go parity bars — found, proven pre-existing, fixed — `REGRADE.md` §4b) |
+| H0 meter honesty | **PASS** (now scripted `runs/h0.sh`; + `exact` class) — `H0.md`, `runs/regrade/H0_recheck.out` |
+| H1 dipole hunt | **EMPTY** — archive 0/259 on honest meters (`runs/regrade/`), leads 0/10 (`REGRADE.md`) |
+| PLAN (2026-08-13, grok-consulted) | **executed** — `PLAN.md`; consult `consult/REVIEW_grok_next.md` |
+| Exact-ledger meters | **adopted in hunt/** — heuristic was inflating I ~14–39×; pI/pO now grade whenever present; `-dilate` book-scope; regression tests pin kernel RESULT totals |
+| A5 ring campaign (7 arms + T=1000) | **done** — `A5_RING.md` + dated correction: the apparent Φ pass was dilate-halo bookkeeping (**retracted** — see §5b row and `REPLICATE.md`); what survives: orientation splits I/O wherever the door fires; J and park failures localized |
+| Theory | `theory/PHI_BAR.md` (Φ bar passable at g=0; g-term is H2), `theory/DOOR_RULE.md` (selection rule = DFT of door profile; oriented edge door is ANTI-selective — pre-registered Δm=±1 prediction REFUTED), `theory/calc/` tests green |
+| Kernel edits (Go) | **two, user-authorized 2026-08-13**: composed helix seed (kx now composes with seed_mw) + promo-header parity gate; battery ALL GREEN 87 after |
+| §5b queue (grok state-check, user-directed L=24 dt=0.01) | **executed** — `REPLICATE.md`: Φ never passed on honest books (dest kill band + 0/6 seeds); drive window starve↔flood, no balance; promo=3 closed; `pJ` meter H0 GREEN (snapshot J can invert sign — J clause now grades integrated channel); rf_pj = first trustworthy J verdict (net directed current, direction unpinned) |
+| Kernel faces (steer/door-locus signed credit; g-term/H2 after a 0.2–0.3 drive sweep; source-booked ledgers) | named with honest exhibits in `REPLICATE.md`; **not opened, need sign-off** |
+| `CHARTEXP.md` (other agent, fork) | noted; 3+1 chart projection = candidate meter-only instrument; chart write-paths refuted — do not adopt |
 | Law-table change | **none** |
 
 ## 3. The code (carried, all default-0)
@@ -64,12 +70,32 @@ Do not flip any of these as “the v97 law.” They are instruments.
 
 ## 4. Next work (when the user wants to continue)
 
-Instruments are built (Go-only, C ignored): `hunt/` + `./dipole`.
-H0 is green (`H0.md`). H1 is **EMPTY** (`H1.md`).
+Read `PLAN.md` → `REGRADE.md` → `A5_RING.md` → `REPLICATE.md` →
+`theory/` first.
+H1 is EMPTY on honest meters at both scales (`REPLICATE.md` campaign
+verdict). The measured blockers: Φ has never passed honest books
+(asynchrony + one-sided intake + seed-contingent feeding + a
+starve↔flood drive window with no observed balance); the J direction
+is genuinely unpinned (rf_pj, integrated channel — the first
+trustworthy J verdict). Candidate next steps, each needing a brief +
+user sign-off where they touch the kernel:
 
-1. H1 is still EMPTY after the promo leads (`LEADS.md`). The
-   missing pair (sep + Es cycle) now exists; Φ/Em and J-lock do not.
-2. H2–H5 still have no motif. Do not adopt `promo`.
+1. **Door-locus signed credit** (steer face): stop `promoPick`
+   re-picking from the snapshot compass; per-link signed promotion
+   integral with FLOW-τ decay. Now backed by an honest exhibit
+   (rf_pj) — brief it as "the door listens to a bad clock."
+2. **Drive sweep first, then the g-term (H2)**: a 0.2–0.3
+   `noise_amp` sweep decides whether any g=0 balance exists between
+   the measured starve (0.1) and flood (0.4) ends. Only then does
+   the stimulated-intake brief have a complete exhibit. v92
+   feedback-closure priors must be addressed in it.
+3. **Instrument debts**: source-booked ledgers (dest replay is a
+   lower bound); unconditional ledger columns (promo=0 controls
+   can't be exact-graded); optionally the CHARTEXP 3+1 projection
+   as a meter-only hunt/ANLZ column.
+
+Do not adopt `promo`. Do not move 0.015/0.80. H2–H5 still wait on
+an inhabited H1.
 
 ## 5. Conventions (unchanged)
 
@@ -94,3 +120,13 @@ H0 is green (`H0.md`). H1 is **EMPTY** (`H1.md`).
 - v94 stimulated outtake (`door_out_enable=1`) is the named pathology
   across M4/M5; do not “just turn it on” for the hunt.
 - v95 J-metric amplifies a current; it does not generate one.
+- (2026-08-13) ring seeds: `kx` now composes ON TOP of `seed_mw`
+  (helix); previously kx+seed_mw silently discarded the tilt.
+- (2026-08-13) the Go `# v97 promo leads` header prints only at
+  promo≠0 (C≡Go parity at defaults depends on it).
+- promo>0 books door events at the link's FAR cell — grade motifs
+  with `dipole -dest` (replayed picks; `-dilate` is diagnostic only —
+  its halo faked the retracted Φ pass).
+- The mode-crossing heuristic INFLATES I/O (~14–39×); trust it only
+  on streams with no `promo_*` columns, and prefer small tagged
+  motifs over foam censuses (census dilution, PHI_BAR §C).

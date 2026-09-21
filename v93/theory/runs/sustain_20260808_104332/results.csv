@@ -1,0 +1,3 @@
+name,family,cond,evap,rad,fd,fl,Em_end,Em_max,Em_mid,slope,Jx,R2f,Ee,seconds,err
+S00_uni_base,sust,0,0,0,1.08176,0,148.765,2.1728,148.765,0,0,0,0,93.6,
+S03_qd0_melt,sust,0,0,0,0,0,148.765,0.6692,148.765,0,0,0,0,87.6,

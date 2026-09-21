@@ -1,0 +1,59 @@
+# freecell-go — v90 Go port of v89/freecell.c (exp=ring)
+# laws = laws_V2g VERBATIM (defaults): C=1 w1=1.65 w2=2.9 q_detune=1.2
+# gamma_res=0.25 gamma_res_m=0.1 p_gate=8 lock_floor=0.005 k_dep=1.2 k_dep_m=2 cap=2.5
+# e_s0=1 es_floor=0.05 e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
+# comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
+# quant_A0=1.15 quant_mode=2 (A0eff=1.15)
+# v91 radiance (laws_V3r candidate A): k_rad=0.05 p_rad=4 rad_clock=0
+# v93 P2 dual intake (qgraph UNIFIED_LAW): rad_dual=0 bath_xb=0 bath_em=0.01
+# v91 cantus (coherent-channel candidate B): k_cant=0 k_tune=0 cant_tau=50 cant_seed=0 cant_grow=1
+# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=0 reg_gate=0 reg_f0=0
+# v91 identity (parcel-identity lane, IDENTITY.md): par_tau=0 par_gate=0 par_form=0 par_lo=0.002 par_hi=0.02 par_mature=400
+# v91 workfn (emergent-threshold lane, WORKFN.md): wf_on=1 wf_floor=0.01 wf_far=99
+# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=0
+# v92 amplitude Phase L lane L-1 (L0_DESIGN.md): amp_drv=0 amp_mmin=2
+# v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=2
+# v93 arg(psi) door (v93/README.md §II.7): amp_door=1
+# v94 DOOR PAIR (v94/consult/DESIGN_claude.md): door_g=0
+# v94 door_avg (face-3 rev Y.4): door_avg=0
+# v94 chi_load (face-3 §III): chi_load=0
+# v95 J-metric (FLOW law mirrored): j_metric=0 j_tau=4 j_rel=0
+# v97 promo leads (oriented door): promo=2 (0=off 1=slot 2=space-leg 3=close)
+# v93 hop schedule (RING_DNLS §A.4): hop_order=1 (0=seq, 1=strang, 2=rand)
+# QUENCH-2 apparatus: conf_r=0 conf_gap=0.3 conf_th=1.6 conf_pinw=3 spin_m=0 imp_k=0 qp_phase=0
+# HORIZON apparatus (HORIZON.md): bh_r=0 bh_k=1 bh_sep=0
+# FLOW apparatus (FLOW.md): bed_k=0 bed_tau=30
+# GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
+# bath=1 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=24 dt=0.01 T=240 seed=20260802 diag_every=4000
+# JAM sweeps=800 max_step=1.454e-04 (tol 1.0e-04, k_end=0.0010) — witness for the settle
+# CARVE removed 52 bath cells (clear=2.71)
+# SEED ring winding: seed_mw=2 (th2 = m*phi on the cycle; overrides chain lock)
+# SEED ring tilt: kx=1.1 applied on top of the chain/winding
+# SEED ring: n=6 x=0.3250 d*=1.505798 d_edge=1.505798 edges=6
+# SEED noise: amp=0.4 (e1-class churn)
+# INIT NC=8967 slots=84443 live=68112 phi_nom=1.6707 z_live=15.19 dbar=1.4105 sigma_d=14.57% E0=10771.506170269
+#
+# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far | Em_tot
+t=    0.00 +0.00e+00 | 1.6707 15.19  68112    0      0      0 | 1.4105 14.57 | 0.00e+00 0.00e+00 |   4.8750 1.0000  0.0000  1.5058 1.000  3.83 | edge_dev mean=0.0000 max=0.0000 gg=0.0772 shape_dev=0.0000 xbar=0.3250 | Em_tot=4.8750
+# QATOM t=37.26 dir=FD w=1.24933903 e=0.228664254637 i=8966 Em=0.6680
+t=   40.00 -1.69e-14 | 1.6708 16.42  73603    0  20697  19141 | 1.4396 14.92 | 5.70e-04 1.02e-04 |   4.3476 0.8918  0.5310  0.9175 1.000 14.83 | edge_dev mean=0.2548 max=0.4576 gg=0.2548 shape_dev=1.2273 xbar=0.2898 | Em_tot=5.1380
+t=   80.00 -4.19e-14 | 1.6708 16.56  74260    0  33114  31251 | 1.4429 14.97 | 5.79e-04 1.17e-04 |   4.0314 0.8270  0.2267  0.7745 1.000 14.83 | edge_dev mean=0.2085 max=0.3300 gg=0.1146 shape_dev=1.2480 xbar=0.2688 | Em_tot=7.1651
+t=  120.00 -6.84e-14 | 1.6707 16.62  74530    0  44172  42230 | 1.4441 14.98 | 4.17e-04 4.63e-04 |   4.3427 0.8908  0.2760  1.1114 1.000 14.83 | edge_dev mean=0.1771 max=0.2997 gg=0.0515 shape_dev=1.1648 xbar=0.2895 | Em_tot=13.4080
+t=  160.00 -9.49e-14 | 1.6705 16.64  74584    0  54583  52539 | 1.4445 14.99 | 3.99e-04 1.31e-03 |   3.6501 0.7487  0.4617  0.7712 1.000 15.17 | edge_dev mean=0.1785 max=0.3375 gg=0.0044 shape_dev=1.1014 xbar=0.2433 | Em_tot=25.4710
+t=  200.00 -1.22e-13 | 1.6699 16.65  74639    0  64338  62380 | 1.4447 14.98 | 3.33e-04 8.52e-04 |   4.4848 0.9200  0.4970  1.0289 1.000 14.67 | edge_dev mean=0.1923 max=0.4727 gg=0.0110 shape_dev=1.0612 xbar=0.2990 | Em_tot=49.5673
+# QATOM t=211.96 dir=FD w=1.62391572 e=0.29722234666 i=3514 Em=0.0336
+t=  240.00 -1.50e-13 | 1.6686 16.66  74694    0  73878  71917 | 1.4449 14.99 | 5.27e-04 1.04e-03 |   4.8453 0.9939  0.3019  1.1532 1.000 14.33 | edge_dev mean=0.1816 max=0.3855 gg=0.0031 shape_dev=0.9811 xbar=0.3230 | Em_tot=101.4448
+#
+# RESULT drift_rel -1.503e-13
+# RESULT births 73878 deaths 71917 beta_returns 0 beta_energy 0.000000e+00
+# RESULT conv rough=0.000000 cond=86.591678 evap=0.000000 backs=0.392693 rad=3.010648
+# RESULT credit qcnvD=100.122360 qcnvF=2.358538
+# RESULT geometry phi_nom=1.6686 z_live=16.66 dbar=1.4449 sigma_d=0.1499
+# RESULT truss edge_dev_mean=0.181617 edge_dev_max=0.385493 shape=(0.0193,0.5291,0.7766) shape0=(0.0000,1.1337,1.1337)
+# EDGE 0 8961-8962 d=1.12033 dev=-0.38546 gg=0.0000 gpl=0.6651
+# EDGE 1 8962-8963 d=1.42359 dev=-0.08221 gg=0.0000 gpl=0.6229
+# EDGE 2 8963-8964 d=1.38914 dev=-0.11666 gg=0.0000 gpl=0.8060
+# EDGE 3 8964-8965 d=1.29337 dev=-0.21243 gg=0.0187 gpl=0.6690
+# EDGE 4 8965-8966 d=1.23241 dev=-0.27339 gg=0.0000 gpl=0.5584
+# EDGE 5 8966-8961 d=1.48632 dev=-0.01948 gg=0.0000 gpl=0.9335

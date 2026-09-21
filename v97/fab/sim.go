@@ -54,6 +54,7 @@ type Sim struct {
 	dc1, dc2      []float64 // v94 door pair: persistent register chi = dc1 + i*dc2 per cell
 	dcc           []float64 // v94 door_avg: beat-integrated cross-term accumulator
 	pI, pO        []float64 // v97 promo: per-cell intake/outtake since last snap
+	pjx, pjy, pjz []float64 // v97 pj_meter: per-cell integrated hop current since last snap
 	// v95 J-metric: FLOW bed-digging for dense link current
 	jbed, jnet, jflow   []float64 // per-slot weight, low-pass, flow accumulator
 	jbedf               []float64 // per-cell renorm factor (∫2·Im(ψ_m*·χ)·dt)
@@ -652,6 +653,9 @@ func (s *Sim) allocAll(nc int) {
 	s.dc2 = make([]float64, nc)
 	s.dcc = make([]float64, nc) // v94 door_avg accumulator (persistent; zero-init)
 	s.pI = make([]float64, nc)
+	s.pjx = make([]float64, nc)
+	s.pjy = make([]float64, nc)
+	s.pjz = make([]float64, nc)
 	s.pO = make([]float64, nc)
 	// v95 J-metric arrays
 	s.jbed = make([]float64, s.NLMAX)

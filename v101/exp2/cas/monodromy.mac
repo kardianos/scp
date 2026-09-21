@@ -1,0 +1,18 @@
+/* v101 exp2 — corrected monodromy, alpha = 0.
+   c := (p*c + 2*pi*n)/q.
+   Run: maxima --very-quiet -b v101/exp2/cas/monodromy.mac < /dev/null
+*/
+load("functs");
+
+/* one edge */
+c11(n) := 2*%pi*n;
+/* octave cycle (2:1) then (1:2) */
+c_oct(n1, n2) := (2*%pi*n1 + 2*%pi*n2)/2;
+
+print("1:1 positive generator:", c11(1));
+print("octave n=(1,0):", c_oct(1, 0));
+print("octave n=(1,1):", c_oct(1, 1));
+print("octave n=(2,0):", c_oct(2, 0));
+print("psi=2*theta odd:", 2*c_oct(1, 0));
+print("psi=2*theta even:", 2*c_oct(1, 1));
+quit();

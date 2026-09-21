@@ -2,37 +2,39 @@
 
 ---
 
-# CURRENT VERSION: v97 — READ THIS FIRST
+# CURRENT VERSION: v99 — READ THIS FIRST
 
-**v97 IS THE ACTIVE PROGRAMME (opened 2026-08-12, user-authorized:
-"adopt the prior turn's revised metrics and open a new version with
-these stated 6 principles at hand"): `v97/README.md` is the single
-entry point — read it top to bottom (self-contained: PART I is the
-background). Then `v97/PRINCIPLES.md` and `v97/METRICS.md`. v97 is
-THE REGULAR METHOD — conversion is promotions of one energy on
-oriented links, proceeding only where a cycle can close, so the
-properties lumps never hosted become moments of a live conversion
-dipole, and correspondence is an identity claim rather than a unit
-choice. STATUS: STEP ZERO (tree carried v95→v97; battery ALL GREEN 87
-at the adopted laws_V3a table, defaults inert). No principle-face is
-implemented; kernel edits still need explicit sign-off. The first
-authorized work is the dipole hunt (H0 then H1), config-only.**
+**v99 IS THE ACTIVE PROGRAMME (opened 2026-08-19, user-authorized:
+relative-entropy lock as the size selector, representation split
+from the Dorau–Much / Jacobson method, no imported \(S=A/4\)):
+`v99/README.md` is the single entry point — read it top to bottom.
+Then `v99/PRINCIPLES.md`. The proton ledger remains `v98/UNFOLD.md`.
+v99 holds that mass is not an occupation of the traveling-field
+array; a lock would be a wrap distinguished from unlocked vacuum
+on a conversion door. STATUS: Phase 1 executed and closed
+(`v99/phase1/DECIDE.md`, ending C) — Gaussian `S_rel` on `C_n` does
+not force unique size; Phase 3 (size face) not authorized.
+**Kernel face `pattern_only` (Tact 1, user 2026-08-19):** default
+0, battery 87 GREEN; `=1` retires the Em fluid (`v99/KERNEL.md`).
+Live code tree is still v97 (inert v95 carry, laws_V3a). Opening
+v99 is not a law-table change.**
 
-**v93–v96 are frozen evidence immediately below.** v93 = unitary
-dense channel (`amp_nat`; Face C is a transient; RING holds winding
-in vacuum only). v94 = door pair (`door_g`, register `χ`; DS-G3
-coherent conversion). v95 = J-metric (amplifier, not generator; the
-carried kernel). v96 = diagnosis only (no consumption, no pricing;
-W-A is a v97 *candidate*, reinterpreted by P5, not adopted). **v92
-is the deeper evidence substrate:** ACT ONE adopted laws_V3a
-(RADIANCE k_rad=0.05 p_rad=4 + WORKFN wf_on=1); L-1 apparatus built
-and safe; feedback hypothesis closed three ways (additive Em-ledger
-rejects the interference term); consult convergence → v93. The
-ADOPTED LAW remains `laws_V3a` (V2g core verbatim + radiance +
-workfn); `v97/laws/laws_V3a.cfg` is the working copy, canonical
-prose still in `v92/laws/laws_V3a.cfg`; the battery injects V3a by
-default (`-nolaw` reproduces the V2g inert baseline). v91 and v90
-remain the deeper evidence substrates below.**
+**v98 is frozen evidence immediately below.** v98 = LOCKED SIZE
+(3+2 fiber; 1A zoo; 1B unforced `ρ`; unfold ledger; Phase 2 size
+meter H0 green; Phase 3 refused). **v97 below that:** v97 = dipole hunt
+(H0 honest, H1 EMPTY; oriented door splits I/O; Φ never passed on
+honest books). **v93–v96 below that:** v93 = unitary dense channel
+(`amp_nat`; Face C is a transient; RING holds winding in vacuum only).
+v94 = door pair (`door_g`, register `χ`; DS-G3 coherent conversion).
+v95 = J-metric (amplifier, not generator; the carried kernel). v96 =
+diagnosis only (no consumption, no pricing). **v92 is the deeper
+evidence substrate:** ACT ONE adopted laws_V3a (RADIANCE k_rad=0.05
+p_rad=4 + WORKFN wf_on=1); L-1 apparatus built and safe; feedback
+hypothesis closed three ways. The ADOPTED LAW remains `laws_V3a`
+(V2g core verbatim + radiance + workfn); `v97/laws/laws_V3a.cfg` is
+the working copy, canonical prose still in `v92/laws/laws_V3a.cfg`;
+the battery injects V3a by default (`-nolaw` reproduces the V2g inert
+baseline). v91 and v90 remain the deeper evidence substrates below.**
 
 **Start at `v90/README.md` (the charter). The carried foundation is v89:
 `v89/README.md`, `v89/PRINCIPLE.md`, `v89/FREECELL.md` — consult v89 freely

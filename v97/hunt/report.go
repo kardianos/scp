@@ -45,6 +45,15 @@ type Row struct {
 	CoreN      int
 	CoreEsThru float64
 	CoreEsNet  float64
+	// Exact-ledger channel (schema promo_i/promo_o; zero when absent).
+	Ledger       bool    // frame carried the exact door ledger
+	BoxPI, BoxPO float64 // box-wide gross intake/outtake this snap
+	Ih, Oh       float64 // heuristic estimate on the motif (side-channel)
+	// Integrated hop current (pj_meter columns; zero when absent).
+	HasPJ                  bool
+	BoxPJx, BoxPJy, BoxPJz float64 // box sums (≡ p1fd increment)
+	MotPJx, MotPJy, MotPJz float64 // motif net (loop ⇒ ~0)
+	MotPJa                 float64 // motif Σ|pJ_cell| (loop ⇒ large)
 }
 
 type Options struct {
@@ -52,6 +61,13 @@ type Options struct {
 	// If FollowID > 0, only that tracked ID is emitted after the first
 	// assignment. Otherwise the dominant (heaviest) motif is emitted.
 	FollowID int
+	// BookDilate: rings of link-neighbours added to the I/O collection
+	// set (promo books land on the oriented link's far cell). 0 = off.
+	BookDilate int
+	// BookDest: dest-only scope (dest.go) — I/O counted only on the
+	// motif plus its replayed promoPick fore/aft picks. Overrides
+	// BookDilate. The honest promo book scope (REVIEW_grok_state A).
+	BookDest bool
 }
 
 func RowHeader() string {
@@ -66,6 +82,8 @@ func RowHeader() string {
 		"EmTot", "dEmTot", "GJnetX", "GJnetY", "GJnetZ",
 		"TJnetX", "TJnetY", "TJnetZ", "nTag",
 		"coreN", "coreEm", "coreEsThru", "coreEsNet",
+		"ledger", "boxPI", "boxPO", "Ih", "Oh",
+		"boxPJx", "boxPJy", "boxPJz", "motPJx", "motPJy", "motPJz",
 	}, "\t")
 }
 
@@ -74,7 +92,9 @@ func (r Row) TSV() string {
 		"%.4f\t%d\t%d\t%d\t%.6g\t%.6g\t%.4f\t%.4f\t%.4f\t%.4f\t%.5g\t"+
 			"%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t"+
 			"%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.4f\t%.4f\t"+
-			"%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%d\t%d\t%.6g\t%.6g\t%.6g",
+			"%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%d\t%d\t%.6g\t%.6g\t%.6g\t"+
+			"%d\t%.6g\t%.6g\t%.6g\t%.6g\t"+
+			"%.6g\t%.6g\t%.6g\t%.6g\t%.6g\t%.6g",
 		r.T, r.NMotifs, r.ID, r.N, r.Em, r.DEm,
 		r.Cx, r.Cy, r.Cz, r.Rms, r.EmMin,
 		r.Jnet, r.JnetX, r.JnetY, r.JnetZ,
@@ -84,7 +104,9 @@ func (r Row) TSV() string {
 		r.W, r.Rm,
 		r.EmTot, r.DEmTot, r.GJnetX, r.GJnetY, r.GJnetZ,
 		r.TJnetX, r.TJnetY, r.TJnetZ, r.NTag,
-		r.CoreN, r.CoreEm, r.CoreEsThru, r.CoreEsNet)
+		r.CoreN, r.CoreEm, r.CoreEsThru, r.CoreEsNet,
+		boolInt(r.Ledger), r.BoxPI, r.BoxPO, r.Ih, r.Oh,
+		r.BoxPJx, r.BoxPJy, r.BoxPJz, r.MotPJx, r.MotPJy, r.MotPJz)
 }
 
 // Analyze walks a stream and yields one Row per frame for the followed motif.
@@ -120,9 +142,25 @@ func Analyze(s *Stream, opt Options) ([]Row, error) {
 			ID: m.ID, N: m.N, Em: m.Em,
 			Cx: m.Cx, Cy: m.Cy, Cz: m.Cz,
 			Rms: m.Rms, EmMin: m.EmMin,
+			Ledger: fr.HasPromo,
 		}
+		r.HasPJ = fr.HasPJ
 		for _, c := range fr.Cells {
 			r.EmTot += c.Em
+			r.BoxPI += c.PromoI
+			r.BoxPO += c.PromoO
+			r.BoxPJx += c.PJx
+			r.BoxPJy += c.PJy
+			r.BoxPJz += c.PJz
+		}
+		for _, ci := range m.Cells {
+			if ci >= 0 && ci < len(fr.Cells) {
+				c := fr.Cells[ci]
+				r.MotPJx += c.PJx
+				r.MotPJy += c.PJy
+				r.MotPJz += c.PJz
+				r.MotPJa += math.Sqrt(c.PJx*c.PJx + c.PJy*c.PJy + c.PJz*c.PJz)
+			}
 		}
 		if havePrev {
 			r.DEmTot = r.EmTot - prevEmTot
@@ -148,11 +186,12 @@ func Analyze(s *Stream, opt Options) ([]Row, error) {
 			r.EsThru, r.EsNet = cur.EsThru, cur.EsNet
 			r.W, r.Rm, _ = Winding(fr, m)
 			if havePrev {
-				cv := MeasureConvert(prev, fr, m, cur.JnetX, cur.JnetY, cur.JnetZ)
+				cv := MeasureConvert(prev, fr, m, cur.JnetX, cur.JnetY, cur.JnetZ, opt.BookDilate, opt.BookDest)
 				r.I, r.O, r.Phi = cv.I, cv.O, cv.Phi
 				r.Ifore, r.Ofore = cv.Ifore, cv.Ofore
 				r.Iaft, r.Oaft = cv.Iaft, cv.Oaft
 				r.Sep = cv.Sep
+				r.Ih, r.Oh = cv.Ih, cv.Oh
 			}
 		}
 		if m.ID != 0 {
@@ -239,6 +278,13 @@ func fracSameSign(xs []float64) float64 {
 	return float64(n) / float64(t)
 }
 
+func boolInt(b bool) int {
+	if b {
+		return 1
+	}
+	return 0
+}
+
 type H0Class string
 
 const (
@@ -247,6 +293,7 @@ const (
 	H0Ring     H0Class = "ring"
 	H0BathRing H0Class = "bathring"
 	H0Current  H0Class = "current"
+	H0Exact    H0Class = "exact"
 )
 
 type Check struct {
@@ -304,6 +351,8 @@ func GradeH0(class H0Class, path string, rows []Row) H0Report {
 		rep.Checks = gradeBathRing(rows)
 	case H0Current:
 		rep.Checks = gradeCurrent(rows)
+	case H0Exact:
+		rep.Checks = gradeExact(rows)
 	default:
 		rep.Checks = []Check{{Name: "class", OK: false, Detail: string(class)}}
 	}
@@ -486,6 +535,60 @@ func gradeCurrent(rows []Row) []Check {
 		c3.Detail += " — SKIP: not a fail; instantaneous J ≠ integrated fd"
 	}
 	return []Check{c1, c2, c3}
+}
+
+// gradeExact — H0 class `exact`: on a stream that carries the
+// promo_i/promo_o ledger, the graded I/O must BE that ledger, and the
+// mode-crossing heuristic's inflation must be visible, not hidden.
+// Stream-specific totals (p2_space cond=0.5249, evap+rad=14.185) are
+// asserted in hunt_test.go against the kernel's own RESULT lines.
+func gradeExact(rows []Row) []Check {
+	nLedger := 0
+	var boxI, boxO, motI, motO, hI, hO float64
+	subsetViol := 0
+	live := 0
+	for i, r := range rows {
+		if r.Ledger {
+			nLedger++
+		}
+		boxI += r.BoxPI
+		boxO += r.BoxPO
+		if i == 0 {
+			continue // no convert on the first frame
+		}
+		motI += r.I
+		motO += r.O
+		hI += r.Ih
+		hO += r.Oh
+		if r.N > 0 {
+			live++
+			// motif exact I/O is a subset of the box ledger
+			if r.I > r.BoxPI+1e-6 || r.O > r.BoxPO+1e-6 {
+				subsetViol++
+			}
+		}
+	}
+	c1 := Check{Name: "ledger present on every frame", OK: nLedger == len(rows),
+		Detail: fmt.Sprintf("ledger frames %d/%d", nLedger, len(rows))}
+	c2 := Check{Name: "graded I/O ⊆ box ledger (exact channel in use)",
+		OK: nLedger == len(rows) && subsetViol == 0,
+		Detail: fmt.Sprintf("violations %d/%d live frames  ΣmotI=%.4g ΣmotO=%.4g  ΣboxPI=%.4g ΣboxPO=%.4g",
+			subsetViol, live, motI, motO, boxI, boxO)}
+	// The heuristic ran as a side-channel: report its inflation. This
+	// is informational unless the heuristic is *smaller* than the
+	// ledger on the box scale (which would mean the old meter had been
+	// under-counting, the direction the review wrongly guessed).
+	c3 := Check{Name: "heuristic inflation measured", OK: true,
+		Detail: fmt.Sprintf("heuristic ΣI=%.4g ΣO=%.4g  vs exact motif ΣI=%.4g ΣO=%.4g  (inflation I×%.3g O×%.3g)",
+			hI, hO, motI, motO, safeRatio(hI, motI), safeRatio(hO, motO))}
+	return []Check{c1, c2, c3}
+}
+
+func safeRatio(a, b float64) float64 {
+	if b <= 0 {
+		return math.Inf(1)
+	}
+	return a / b
 }
 
 func stddev(xs []float64) float64 {

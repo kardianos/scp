@@ -1,0 +1,23 @@
+CHART softmax N=200 X=20 E=72.941778 grad_y_inf=1.403e-03 success=False nit=4000
+METER gradient rel 5.735e-09
+METER scaler lam=1/2 rel 0.000e+00
+METER scaler lam=2 rel 1.254e-04
+RUN coarse N=500 X=30 E_A=72.923984 E_B=72.923984 seed_rel=1.949e-16 virial_num=2.093e-04 grad_inf=1.261e-13 nit=4 ok=True
+RUN mid N=1000 X=60 E_A=72.921137 E_B=72.921137 seed_rel=0.000e+00 virial_num=9.215e-05 grad_inf=1.386e-13 nit=4 ok=True
+RUN fine N=2000 X=60 E_A=72.923092 E_B=72.923092 seed_rel=0.000e+00 virial_num=3.366e-05 grad_inf=6.182e-13 nit=4 ok=True
+METER seeds rel 0.000e+00
+METER virial 3.366e-05 E2=36.460319 E4=36.462774
+METER stationarity grad_inf 6.182e-13 success True
+METER refinement rel 2.682e-05
+METER textbook rel 3.168e-04 E=72.923092
+RECORD inertia 52.211433
+SCAN lam=0.50 E=91.155707 ratio=1.250025
+SCAN lam=0.75 E=75.962271 ratio=1.041676
+SCAN lam=1.00 E=72.923092 ratio=1.000000
+SCAN lam=1.25 E=74.746511 ratio=1.025005
+SCAN lam=1.50 E=79.000465 ratio=1.083339
+SCAN lam=2.00 E=91.154827 ratio=1.250013
+METER wall lam=1/2 dev 2.020e-05
+METER wall lam=2 dev 1.055e-05
+G1 PASS
+WROTE /home/d/code/scp/v100/phase0/cas/out/profile.tsv

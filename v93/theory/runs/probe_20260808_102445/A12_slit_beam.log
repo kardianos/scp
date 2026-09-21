@@ -1,0 +1,154 @@
+# freecell — v89 free-cell substance test (exp=slit)
+# laws = laws_V2g VERBATIM (defaults): C=1 w1=1.65 w2=2.9 q_detune=1.2
+# gamma_res=0.25 gamma_res_m=0.1 p_gate=8 lock_floor=0.005 k_dep=1.2 k_dep_m=2 cap=2.5
+# e_s0=1 es_floor=0.05 e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
+# comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
+# quant_A0=1.15 quant_mode=2 (A0eff=1.15)
+# v91 radiance (laws_V3r candidate A): k_rad=0 p_rad=4 rad_clock=0
+# v91 cantus (coherent-channel candidate B): k_cant=0 k_tune=0 cant_tau=50 cant_seed=0 cant_grow=1
+# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=0 reg_gate=0 reg_f0=0
+# v91 identity (parcel-identity lane, IDENTITY.md): par_tau=0 par_gate=0 par_form=0 par_lo=0.002 par_hi=0.02 par_mature=400
+# v91 workfn (emergent-threshold lane, WORKFN.md): wf_on=1 wf_floor=0.01 wf_far=99
+# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=0
+# v92 amplitude Phase L lane L-1 (L0_DESIGN.md): amp_drv=0 amp_mmin=2
+# v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=0
+# v93 arg(psi) door (v93/README.md §II.7): amp_door=0
+# v93 hop schedule (RING_DNLS §A.4): hop_order=1 (0=seq, 1=strang, 2=rand)
+# QUENCH-2 apparatus: conf_r=0 conf_gap=0.3 conf_th=1.6 conf_pinw=3 spin_m=0 imp_k=0 qp_phase=0
+# HORIZON apparatus (HORIZON.md): bh_r=0 bh_k=1 bh_sep=0
+# FLOW apparatus (FLOW.md): bed_k=0 bed_tau=30
+# GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
+# bath=1 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=16 dt=0.02 T=24 seed=20260802 diag_every=200
+# JAM sweeps=800 max_step=1.677e-04 (tol 1.0e-04, k_end=0.0028) — witness for the settle
+# CARVE slit wall: removed 8 cells (mask=0 wall_x=16 th=1.6 slits y=3.50/12.50 hw=2)
+# PIN wall fixture: 57 cells within +-3 of x=16
+# SEED slit: src_x=4 sigma_x=2 sigma_y=4 kx=1.2 amp=2 -> lam_seed=5.2360
+# SEED slit loci: D=12.00 s=9.00 dy_smallangle=6.981 screen_x=28 gate=[16,60]
+# INIT NC=162 slots=505 live=471 phi_nom=0.1018 z_live=5.81 dbar=1.3408 sigma_d=10.77% E0=224.451684981
+#
+# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+t=    0.00 +0.00e+00 | 0.1018  5.81    471    0      0      0 | 1.3408 10.77 | 0.00e+00 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00
+t=    4.00 -5.07e-16 | 0.1018  5.81    471    0      7      4 | 1.3395 10.40 | 7.82e-04 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00
+t=    8.00 -1.27e-15 | 0.1018  5.84    473    0     10      9 | 1.3403 10.31 | 4.29e-04 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00
+t=   12.00 -1.77e-15 | 0.1017  5.84    473    0     11     12 | 1.3399 10.21 | 2.86e-04 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00
+t=   16.00 -2.41e-15 | 0.1017  5.83    472    0     13     16 | 1.3392 10.16 | 2.51e-04 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00
+t=   20.00 -2.91e-15 | 0.1017  5.84    473    0     17     17 | 1.3402 10.28 | 2.33e-04 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00
+t=   24.00 -3.55e-15 | 0.1017  5.85    474    0     18     22 | 1.3410 10.34 | 2.43e-04 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00
+#
+# RESULT drift_rel -3.546e-15
+# RESULT births 18 deaths 22 beta_returns 0 beta_energy 0.000000e+00
+# RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
+# RESULT credit qcnvD=0.000000 qcnvF=0.547396
+# RESULT geometry phi_nom=0.1017 z_live=5.85 dbar=1.3410 sigma_d=0.1034
+# RESULT ds exposure=40.746081 gate=[16,60] screen_x=28 nbin=96
+# SCREEN y=0.0833 I=3.78842460
+# SCREEN y=0.2500 I=0.00000000
+# SCREEN y=0.4167 I=0.00000000
+# SCREEN y=0.5833 I=0.00000000
+# SCREEN y=0.7500 I=0.00000000
+# SCREEN y=0.9167 I=7.84372524
+# SCREEN y=1.0833 I=0.00000000
+# SCREEN y=1.2500 I=0.00000000
+# SCREEN y=1.4167 I=0.00000000
+# SCREEN y=1.5833 I=0.00000000
+# SCREEN y=1.7500 I=0.00000000
+# SCREEN y=1.9167 I=0.00000000
+# SCREEN y=2.0833 I=0.00000000
+# SCREEN y=2.2500 I=2.87385557
+# SCREEN y=2.4167 I=0.00000000
+# SCREEN y=2.5833 I=0.00000000
+# SCREEN y=2.7500 I=0.00000000
+# SCREEN y=2.9167 I=0.00000000
+# SCREEN y=3.0833 I=0.00000000
+# SCREEN y=3.2500 I=0.00000000
+# SCREEN y=3.4167 I=0.00000000
+# SCREEN y=3.5833 I=2.67558926
+# SCREEN y=3.7500 I=0.00000000
+# SCREEN y=3.9167 I=0.00000000
+# SCREEN y=4.0833 I=0.00000000
+# SCREEN y=4.2500 I=0.00000000
+# SCREEN y=4.4167 I=0.00000000
+# SCREEN y=4.5833 I=0.00000000
+# SCREEN y=4.7500 I=0.99384583
+# SCREEN y=4.9167 I=0.00000000
+# SCREEN y=5.0833 I=0.00000000
+# SCREEN y=5.2500 I=0.00000000
+# SCREEN y=5.4167 I=0.00000000
+# SCREEN y=5.5833 I=0.00000000
+# SCREEN y=5.7500 I=0.00000000
+# SCREEN y=5.9167 I=1.09211691
+# SCREEN y=6.0833 I=0.00000000
+# SCREEN y=6.2500 I=0.00000000
+# SCREEN y=6.4167 I=0.00000000
+# SCREEN y=6.5833 I=0.00000000
+# SCREEN y=6.7500 I=0.00000000
+# SCREEN y=6.9167 I=0.00000000
+# SCREEN y=7.0833 I=1.97159636
+# SCREEN y=7.2500 I=0.00000000
+# SCREEN y=7.4167 I=0.00000000
+# SCREEN y=7.5833 I=0.00000000
+# SCREEN y=7.7500 I=0.00000000
+# SCREEN y=7.9167 I=0.00000000
+# SCREEN y=8.0833 I=0.00000000
+# SCREEN y=8.2500 I=2.94261689
+# SCREEN y=8.4167 I=0.00000000
+# SCREEN y=8.5833 I=0.00000000
+# SCREEN y=8.7500 I=0.00000000
+# SCREEN y=8.9167 I=0.00000000
+# SCREEN y=9.0833 I=0.00000000
+# SCREEN y=9.2500 I=0.00000000
+# SCREEN y=9.4167 I=0.00000000
+# SCREEN y=9.5833 I=1.72834473
+# SCREEN y=9.7500 I=0.00000000
+# SCREEN y=9.9167 I=0.00000000
+# SCREEN y=10.0833 I=0.00000000
+# SCREEN y=10.2500 I=0.00000000
+# SCREEN y=10.4167 I=0.00000000
+# SCREEN y=10.5833 I=0.00000000
+# SCREEN y=10.7500 I=0.00000000
+# SCREEN y=10.9167 I=1.10406722
+# SCREEN y=11.0833 I=0.00000000
+# SCREEN y=11.2500 I=0.00000000
+# SCREEN y=11.4167 I=0.00000000
+# SCREEN y=11.5833 I=0.00000000
+# SCREEN y=11.7500 I=0.00000000
+# SCREEN y=11.9167 I=0.00000000
+# SCREEN y=12.0833 I=0.00000000
+# SCREEN y=12.2500 I=0.56464745
+# SCREEN y=12.4167 I=0.00000000
+# SCREEN y=12.5833 I=0.00000000
+# SCREEN y=12.7500 I=0.00000000
+# SCREEN y=12.9167 I=0.00000000
+# SCREEN y=13.0833 I=0.00000000
+# SCREEN y=13.2500 I=0.00000000
+# SCREEN y=13.4167 I=0.33382867
+# SCREEN y=13.5833 I=0.00000000
+# SCREEN y=13.7500 I=0.00000000
+# SCREEN y=13.9167 I=0.00000000
+# SCREEN y=14.0833 I=0.00000000
+# SCREEN y=14.2500 I=0.00000000
+# SCREEN y=14.4167 I=0.00000000
+# SCREEN y=14.5833 I=0.00000000
+# SCREEN y=14.7500 I=4.03631933
+# SCREEN y=14.9167 I=0.66815238
+# SCREEN y=15.0833 I=0.00000000
+# SCREEN y=15.2500 I=0.00000000
+# SCREEN y=15.4167 I=0.00000000
+# SCREEN y=15.5833 I=0.00000000
+# SCREEN y=15.7500 I=1.53399113
+# SCREEN y=15.9167 I=6.59495988
+# SCREENCELL y=4.7284 x=12.1435 I=0.99384583
+# SCREENCELL y=0.1333 x=12.7697 I=3.78842460
+# SCREENCELL y=7.0090 x=12.4289 I=1.97159636
+# SCREENCELL y=5.9070 x=11.5555 I=1.09211691
+# SCREENCELL y=3.5393 x=12.3427 I=2.67558926
+# SCREENCELL y=13.4540 x=12.0098 I=0.33382867
+# SCREENCELL y=9.5830 x=12.1706 I=1.72834473
+# SCREENCELL y=2.1895 x=11.7597 I=2.87385557
+# SCREENCELL y=14.8424 x=12.1450 I=4.70447171
+# SCREENCELL y=12.2004 x=12.3257 I=0.56464745
+# SCREENCELL y=15.8517 x=11.5237 I=8.12895101
+# SCREENCELL y=8.2951 x=12.0046 I=2.94261689
+# SCREENCELL y=10.9650 x=12.3845 I=1.10406722
+# SCREENCELL y=0.9861 x=11.7344 I=7.84372524

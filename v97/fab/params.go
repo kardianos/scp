@@ -138,8 +138,11 @@ type Cfg struct {
 	// (space-leg). 3 = (2) plus cycle-closure stall (phase-matched
 	// slots only). Go-only probe; C ignores the key.
 	Promo int
-	JTau  float64
-	JRel  float64
+	// v99 Tact 1: retire the dense fluid. 0 = legacy Em + dense hop
+	// (byte-inert). 1 = Es + fa only. 2 = 1 plus wrap-gate on field hops.
+	PatternOnly int
+	JTau        float64
+	JRel        float64
 	// v93 hop schedule (RING_DNLS §A.4 / RESUME §7-A): the canonical sequential
 	// i<j Givens sweep is a deterministic C6-breaking Trotter asymmetry (the
 	// vacuum retention ceiling + item 1's dt artifact, same family).
@@ -216,6 +219,9 @@ type Cfg struct {
 	SlitClicks int
 	// MOTION: all-modes center-of-energy meter
 	P1Meter int
+	// v97 PLAN §5b item 3: per-cell integrated dense-hop current meter
+	// (the per-cell fd). Physics-inert; FCS gains pj_x/y/z when 1.
+	PjMeter int
 	// XSEC: annular sector meter
 	SectMeter, SectN             int
 	SectR0, SectR1, SectX, SectY float64
@@ -305,6 +311,7 @@ func Defaults() Cfg {
 	p.SwAmp = 0         // v94 DS-G3: standing wave amplitude
 	p.JMetric = 0       // v95 J-metric: default off (byte-inert)
 	p.Promo = 0         // v97 oriented-door leads: default off
+	p.PatternOnly = 0   // v99 Tact 1: default off (Em fluid, byte-inert)
 	p.JTau = 4.0        // v95 J-metric: low-pass timescale
 	p.JRel = 0          // v95 J-metric: healing toward 1.0 (off)
 	p.HopOrder = 1      // v93 face A: Strang symmetric adopted default (L1-A passes; pass U skipped at amp_nat=0). 0 reproduces prior sequential-sweep results.
@@ -396,6 +403,7 @@ func Defaults() Cfg {
 	p.ObjSigma = 1.6
 	p.SlitClicks = 0
 	p.P1Meter = 0
+	p.PjMeter = 0
 	p.SectMeter = 0
 	p.SectN = 24
 	p.SectR0 = 7.0
@@ -577,6 +585,8 @@ func (p *Cfg) SetKV(k, v string) {
 		p.SwAmp = atof(v)
 	case "promo":
 		p.Promo = atoi(v)
+	case "pattern_only":
+		p.PatternOnly = atoi(v)
 	case "j_metric":
 		p.JMetric = atof(v)
 	case "j_tau":
@@ -757,6 +767,8 @@ func (p *Cfg) SetKV(k, v string) {
 		p.SlitClicks = atoi(v)
 	case "p1_meter":
 		p.P1Meter = atoi(v)
+	case "pj_meter":
+		p.PjMeter = atoi(v)
 	case "sect_meter":
 		p.SectMeter = atoi(v)
 	case "sect_n":

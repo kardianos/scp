@@ -77,3 +77,14 @@ matched cycle), not add more isotropic traffic.
 A candidate that was *not* tried here: a slot that remembers its
 last successful promotion (a one-bit “this link is the machine”)
 instead of re-picking max J every beat. That is a different face.
+
+---
+
+**Addendum (2026-08-13, exact-ledger re-grade):** the ⟨I⟩/⟨O⟩ and
+sep/polar numbers above were graded by the mode-crossing heuristic,
+which the exact `promo_i/promo_o` ledger shows inflates I by ~14–39×
+(hops counted as conversion). On honest books H1 is still EMPTY
+(0/10), the split *narrows* to arms where the door fired both ways
+(and strengthens there: p2_space polar 0.88), and the Φ failure is
+re-diagnosed as near-dead one-sided intake, not pairing noise.
+Record: `REGRADE.md`, `runs/regrade/H1_exact.out`.

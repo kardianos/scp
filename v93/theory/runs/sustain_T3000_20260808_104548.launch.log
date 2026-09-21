@@ -1,0 +1,65 @@
+# theory/probe
+# suite=sustain kernel=fabrun T=3000 seed=20260802 j=4 snap_every=5000 n=29
+# out=theory/runs/sustain_T3000_20260808_104548
+[ok] S03_qd0_melt           cond=0 Em=148.8 slope=-5.48e-13/1k  fd=+0 Jx=+0  sust (3358s)
+[ok] S02_uni_gated          cond=0 Em=148.8 slope=-5.48e-13/1k  fd=+4.51 Jx=+0  sust (3449s)
+[ok] S00_uni_base           cond=0 Em=148.3 slope=-2.74e-13/1k  fd=+2.84 Jx=+2.23e-07  sust (3473s)
+[ok] S01_additive           cond=0.1927 Em=77.57 slope=-4.58/1k  fd=-3.43 Jx=-3.13e-05  sust (3616s)
+[ok] S04_qd36_deep          cond=0 Em=147.4 slope=-0.142/1k  fd=+0 Jx=+4.49e-06  sust (3276s)
+[ok] S05_rad                cond=3.265 Em=109.9 slope=-3.89/1k  fd=+0 Jx=-5.51e-05  sust (3297s)
+[ok] S06_deep_rad           cond=11.04 Em=119.7 slope=-3.83/1k  fd=+0 Jx=+0.00015  sust (3295s)
+[ok] S07_noise              cond=7170 Em=2338 slope=-1.57/1k  fd=+52.6 Jx=+0.00119  sust (3361s)
+[ok] S08_noise_rad          cond=2.032e+04 Em=2207 slope=+1.47/1k  fd=+0 Jx=-0.000872  sust (3201s)
+[ok] S09_noise_deep         cond=5104 Em=2367 slope=+0.378/1k  fd=+0 Jx=-0.000362  sust (3224s)
+[ok] S10_nowf_quiet         cond=0 Em=148.3 slope=-2.74e-13/1k  fd=+0 Jx=+2.23e-07  sust (3359s)
+[ok] S11_nowf_noise         cond=6945 Em=2339 slope=-2.7/1k  fd=+227 Jx=+3.61e-05  sust (3371s)
+[ok] S12_nowf_noise_rad     cond=2.013e+04 Em=2206 slope=+1.33/1k  fd=+0 Jx=-0.0019  sust (3195s)
+[ok] S13_nowf_deep_noise    cond=4894 Em=2360 slope=-3.62/1k  fd=+0 Jx=+0.000123  sust (3337s)
+[ok] S14_kx_tilt            cond=0 Em=147.7 slope=+0/1k  fd=+650 Jx=+5.2e-06  sust (3541s)
+[ok] S15_kx_noise           cond=1.015e+04 Em=2317 slope=+16.6/1k  fd=+802 Jx=+0.000545  sust (3369s)
+[ok] S16_seed_mw            cond=0 Em=148.1 slope=+5.48e-13/1k  fd=+0 Jx=-2.52e-06  sust (3439s)
+[ok] S17_add_noise          cond=8762 Em=2157 slope=-10.3/1k  fd=+486 Jx=-0.000966  sust (3475s)
+[ok] S18_v3a_quiet          cond=3.265 Em=109.9 slope=-3.89/1k  fd=+0 Jx=-5.51e-05  sust (3382s)
+[ok] S19_v3a_noise          cond=2.032e+04 Em=2207 slope=+1.47/1k  fd=+0.359 Jx=-0.000872  sust (3399s)
+[ok] G03_wf_kx              cond=0 Em=0 slope=+0/1k  fd=+0 Jx=+0.00223  genesis (2061s)
+[ok] G01_nowf_kx            cond=1033 Em=650.1 slope=+1.66/1k  fd=+0 Jx=+0.000198  genesis (3439s)
+[ok] R01_ring_uni           cond=0 Em=4.875 slope=+0/1k  fd=+0 Jx=+0  sust (1s)
+[ok] G02_nowf_k0            cond=1082 Em=637.6 slope=+7.36/1k  fd=+0 Jx=-0.000276  genesis (3416s)
+[ok] G04_nowf_kx_rad        cond=3.09e+04 Em=438.7 slope=+8.87/1k  fd=+0 Jx=+0.00197  genesis (3503s)
+[ok] G05_nowf_k0_rad        cond=3.097e+04 Em=442.6 slope=+10.3/1k  fd=+0 Jx=+0.00272  genesis (3452s)
+[ok] R02_ring_bath          cond=0 Em=4.875 slope=+0/1k  fd=+0 Jx=+0  sust (3118s)
+[ok] S00b_uni_base_s111     cond=0 Em=146.8 slope=+0/1k  fd=+0 Jx=+0  sust (3211s)
+[ok] S11b_nowf_noise_s111   cond=6362 Em=2280 slope=+0.165/1k  fd=-627 Jx=-0.000465  sust (3230s)
+
+# done → theory/runs/sustain_T3000_20260808_104548
+
+# SUSTAIN VERDICT
+  HOLD: 26
+  empty: 3
+  HOLD G01_nowf_kx Em=650.1 slope=+0.001663
+  HOLD G02_nowf_k0 Em=637.6 slope=+0.007358
+  HOLD G04_nowf_kx_rad Em=438.7 slope=+0.008871
+  HOLD G05_nowf_k0_rad Em=442.6 slope=+0.01029
+  HOLD S00_uni_base Em=148.3 slope=-2.739e-16
+  HOLD S00b_uni_base_s111 Em=146.8 slope=+0
+  HOLD S01_additive Em=77.6 slope=-0.004584
+  HOLD S02_uni_gated Em=148.8 slope=-5.478e-16
+  HOLD S03_qd0_melt Em=148.8 slope=-5.478e-16
+  HOLD S04_qd36_deep Em=147.4 slope=-0.0001423
+  HOLD S05_rad Em=109.9 slope=-0.003887
+  HOLD S06_deep_rad Em=119.7 slope=-0.003825
+  HOLD S07_noise Em=2337.7 slope=-0.001568
+  HOLD S08_noise_rad Em=2207.4 slope=+0.001467
+  HOLD S09_noise_deep Em=2366.5 slope=+0.0003783
+  HOLD S10_nowf_quiet Em=148.3 slope=-2.739e-16
+  HOLD S11_nowf_noise Em=2338.8 slope=-0.002699
+  HOLD S11b_nowf_noise_s111 Em=2280.0 slope=+0.0001653
+  HOLD S12_nowf_noise_rad Em=2206.0 slope=+0.001327
+  HOLD S13_nowf_deep_noise Em=2360.0 slope=-0.003616
+  HOLD S14_kx_tilt Em=147.7 slope=+0
+  HOLD S15_kx_noise Em=2316.9 slope=+0.01662
+  HOLD S16_seed_mw Em=148.1 slope=+5.478e-16
+  HOLD S17_add_noise Em=2156.7 slope=-0.01026
+  HOLD S18_v3a_quiet Em=109.9 slope=-0.003887
+  HOLD S19_v3a_noise Em=2207.4 slope=+0.001467
+EXIT=0

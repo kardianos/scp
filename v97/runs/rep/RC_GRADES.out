@@ -1,0 +1,30 @@
+== rc_s20260802 ==
+rough=0.000000 cond=35.702762 evap=0.000000 backs=0.358452 rad=2.748136
+  stream t=[0.0, 240.0]  best window t=[140.0, 240.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0.123  ⟨O⟩=0.009927  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0.009927; I/O=12.4; exact)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.929  (book frames 0/26)
+  [PASS] dM/dt ≈ 0 (parked) — Em 5.858→5.832  |Δ|/⟨Em⟩=0.005  |ΔEmTot|/EmTot0=2.860
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=3.501  ⟨|Circ|⟩=1.893  dir-stable=0.58  (snapshot fallback)
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1266  ⟨|dEmTot|⟩=1.253  corr(net,dM)=-0.037  |Thru|~|dM|=0.632  tracks=true
+
+
+== rc_s111 ==
+rough=0.000000 cond=139.798578 evap=0.000000 backs=0.388367 rad=2.977483
+  stream t=[0.0, 240.0]  best window t=[140.0, 240.0] Δt=100.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.01126  ⟨I⟩=0.123  ⟨O⟩=0.01126  Φ/Em=0.00283  (rate 0.000623/t.u. Δt=4.55; min⟨⟩=0.01126; I/O=10.9; exact)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.703  ⟨polar⟩=0.948  (book frames 1/23)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 5.102→3.878  |Δ|/⟨Em⟩=0.308  |ΔEmTot|/EmTot0=4.818
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=2.309  ⟨|Circ|⟩=1.762  dir-stable=0.57  (snapshot fallback)
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.4107  ⟨|dEmTot|⟩=5.46  corr(net,dM)=0.103  |Thru|~|dM|=0.894  tracks=true
+
+
+== rc_s271828 ==
+rough=0.000000 cond=80.096072 evap=0.000000 backs=0.260178 rad=1.994694
+  stream t=[0.0, 240.0]  best window t=[140.0, 240.0] Δt=100.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.03883  ⟨I⟩=0.1842  ⟨O⟩=0.04278  Φ/Em=0.007079  (rate 0.00134/t.u. Δt=5.26; min⟨⟩=0.04278; I/O=4.3; exact)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=2.055  ⟨polar⟩=0.847  (book frames 3/20)
+  [PASS] dM/dt ≈ 0 (parked) — Em 5.925→6.676  |Δ|/⟨Em⟩=0.137  |ΔEmTot|/EmTot0=4.139
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=2.662  ⟨|Circ|⟩=1.89  dir-stable=0.60  (snapshot fallback)
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.2226  ⟨|dEmTot|⟩=2.793  corr(net,dM)=0.037  |Thru|~|dM|=0.868  tracks=true
+
+

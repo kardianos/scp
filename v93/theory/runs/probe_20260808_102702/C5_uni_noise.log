@@ -1,0 +1,52 @@
+# freecell — v89 free-cell substance test (exp=blob)
+# laws = laws_V2g VERBATIM (defaults): C=1 w1=1.65 w2=2.9 q_detune=1.2
+# gamma_res=0.25 gamma_res_m=0.1 p_gate=8 lock_floor=0.005 k_dep=1.2 k_dep_m=2 cap=2.5
+# e_s0=1 es_floor=0.05 e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
+# comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
+# quant_A0=1.15 quant_mode=2 (A0eff=1.15)
+# v91 radiance (laws_V3r candidate A): k_rad=0 p_rad=4 rad_clock=0
+# v91 cantus (coherent-channel candidate B): k_cant=0 k_tune=0 cant_tau=50 cant_seed=0 cant_grow=1
+# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=0 reg_gate=0 reg_f0=0
+# v91 identity (parcel-identity lane, IDENTITY.md): par_tau=0 par_gate=0 par_form=0 par_lo=0.002 par_hi=0.02 par_mature=400
+# v91 workfn (emergent-threshold lane, WORKFN.md): wf_on=1 wf_floor=0.01 wf_far=99
+# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=0
+# v92 amplitude Phase L lane L-1 (L0_DESIGN.md): amp_drv=0 amp_mmin=2
+# v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=2
+# v93 arg(psi) door (v93/README.md §II.7): amp_door=0
+# v93 hop schedule (RING_DNLS §A.4): hop_order=1 (0=seq, 1=strang, 2=rand)
+# QUENCH-2 apparatus: conf_r=0 conf_gap=0.3 conf_th=1.6 conf_pinw=3 spin_m=0 imp_k=0 qp_phase=0
+# HORIZON apparatus (HORIZON.md): bh_r=0 bh_k=1 bh_sep=0
+# FLOW apparatus (FLOW.md): bed_k=0 bed_tau=30
+# GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
+# bath=1 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=16 dt=0.02 T=16 seed=20260802 diag_every=200
+# JAM sweeps=800 max_step=1.402e-04 (tol 1.0e-04, k_end=0.0010) — witness for the settle
+# SEED blob: amp=0.5 sigma=2.5 kx=1.1 tagged=629 (add>5% of amp)
+# SEED noise: amp=1.5 (e1-class churn)
+# INIT NC=2700 slots=25884 live=20764 phi_nom=1.6968 z_live=15.38 dbar=1.4102 sigma_d=14.78% E0=4839.520157073
+#
+# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+t=    0.00 +0.00e+00 | 1.6968 15.38  20764    0      0      0 | 1.4102 14.78 | 0.00e+00 0.00e+00 |  82.7751 1.0000  0.0080  3.8202 1.000 15.07 | es_core/far=0.9303
+# P1 t=0.00 tot=(+0.000000e+00,+0.000000e+00,+0.000000e+00) sp=+0.000e+00 fl=+0.000e+00 fd=+0.000e+00 gm=+0.000e+00 (x)
+t=    4.00 +1.88e-16 | 1.6973 15.72  21228    0   1830   1736 | 1.4198 15.05 | 2.50e-03 4.35e-03 |  69.6894 0.8419  1.4232  3.5152 1.000 15.47 | es_core/far=0.9223
+# P1 t=4.00 tot=(+2.684694e+02,+9.946563e+01,-1.762168e+01) sp=+3.629e-03 fl=+0.000e+00 fd=+2.687e+02 gm=-2.566e-01 (x)
+# QATOM t=5.08 dir=FD w=1.64084112 e=0.300320171518 i=2443 Em=0.0122
+t=    8.00 +0.00e+00 | 1.6935 15.84  21380    0   3607   3406 | 1.4234 15.21 | 2.86e-03 5.61e-03 |  85.0626 1.0276  1.1739  3.8296 1.000 15.57 | es_core/far=0.8836
+# P1 t=8.00 tot=(+3.400433e+02,+1.934863e+02,+5.759699e+01) sp=+1.569e-01 fl=+0.000e+00 fd=+3.468e+02 gm=-6.898e+00 (x)
+# QATOM t=9.54 dir=FD w=1.62968781 e=0.298278802153 i=2639 Em=0.0281
+t=   12.00 +1.88e-16 | 1.6864 15.81  21347    0   5129   4945 | 1.4237 15.26 | 1.88e-03 7.06e-03 | 112.2994 1.3567  0.9794  4.0834 1.000 15.67 | es_core/far=0.9802
+# P1 t=12.00 tot=(+4.695420e+02,+2.408921e+02,+9.871123e+01) sp=+4.010e-01 fl=+0.000e+00 fd=+4.778e+02 gm=-8.644e+00 (x)
+# QATOM t=12.76 dir=FD w=1.58469562 e=0.290043963273 i=2186 Em=0.0879
+# QATOM t=15.34 dir=FD w=1.64152248 e=0.3004448794 i=1373 Em=0.0102
+t=   16.00 +1.88e-16 | 1.6785 15.80  21324    0   6604   6546 | 1.4239 15.31 | 4.86e-03 1.20e-02 | 151.5223 1.8305  0.7754  4.2486 1.000 15.56 | es_core/far=0.8538
+# P1 t=16.00 tot=(+4.326622e+02,+3.146049e+02,+1.363115e+02) sp=+3.456e-01 fl=+0.000e+00 fd=+4.402e+02 gm=-7.930e+00 (x)
+#
+# RESULT drift_rel 1.879e-16
+# RESULT births 6604 deaths 6546 beta_returns 0 beta_energy 0.000000e+00
+# RESULT conv rough=0.000000 cond=220.077846 evap=20.620973 backs=2.689692 rad=0.000000
+# RESULT credit qcnvD=207.916599 qcnvF=65.885013
+# RESULT p1 tot=(+4.326622e+02,+3.146049e+02,+1.363115e+02) rate=(+2.704139e+01,+1.966281e+01,+8.519468e+00)
+# RESULT p1x sp=+3.456457e-01 fl=+0.000000e+00 fd=+4.402468e+02 gm=-7.930301e+00
+# RESULT geometry phi_nom=1.6785 z_live=15.80 dbar=1.4239 sigma_d=0.1531
+# RESULT es_shells 0.8425 0.9459 0.9242 0.9537 0.9526 0.9819 0.9820 0.9965
+# RESULT blob Em_tag=151.52233 com=(8.760,8.123,7.906) rms=4.2486 conn=1.0000 z_tag=15.56

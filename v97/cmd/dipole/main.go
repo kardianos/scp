@@ -6,8 +6,12 @@
 //
 //	dipole FILE.fcs                 # TSV on stdout
 //	dipole -h0 sealed FILE.fcs      # H0 honesty grade
-//	dipole -h0 leak|ring|bathring|current FILE.fcs
+//	dipole -h0 leak|ring|bathring|current|exact FILE.fcs
 //	dipole -h1 FILE.fcs [FILE.fcs ...]   # inhabited / empty hunt
+//
+// I/O source: when the stream schema carries the exact door ledger
+// (promo_i/promo_o), it is used on every frame; otherwise the
+// frame-diff mode-crossing heuristic. `-h0 exact` audits the switch.
 package main
 
 import (
@@ -19,21 +23,25 @@ import (
 )
 
 func main() {
-	h0 := flag.String("h0", "", "H0 class: sealed|leak|ring|bathring|current")
+	h0 := flag.String("h0", "", "H0 class: sealed|leak|ring|bathring|current|exact")
 	h1 := flag.Bool("h1", false, "H1 inhabited/empty grade (accepts many files)")
 	em := flag.Float64("em", 0.05, "live-Em floor")
 	minN := flag.Int("minn", 3, "minimum motif size")
 	id := flag.Int("id", 0, "follow tracked motif id (0 = dominant)")
 	tag := flag.Bool("tag", false, "restrict census to tagged cells")
+	dilate := flag.Int("dilate", 0, "rings of link-neighbours added to the I/O book (promo deposits land on the link's far cell); 0=off")
+	dest := flag.Bool("dest", false, "dest-only I/O book: motif plus replayed promoPick fore/aft picks (overrides -dilate)")
 	flag.Parse()
 	if flag.NArg() < 1 {
-		fmt.Fprintln(os.Stderr, "usage: dipole [-h0 class|-h1] [-em 0.05] [-minn 3] [-id N] [-tag] file.fcs ...")
+		fmt.Fprintln(os.Stderr, "usage: dipole [-h0 class|-h1] [-em 0.05] [-minn 3] [-id N] [-tag] [-dilate N] [-dest] file.fcs ...")
 		os.Exit(2)
 	}
 	if *h1 {
 		code := runH1(flag.Args(), hunt.Options{
-			Census:   hunt.CensusCfg{EmFloor: *em, MinN: *minN, TagOnly: *tag},
-			FollowID: *id,
+			Census:     hunt.CensusCfg{EmFloor: *em, MinN: *minN, TagOnly: *tag},
+			FollowID:   *id,
+			BookDilate: *dilate,
+			BookDest:   *dest,
 		})
 		os.Exit(code)
 	}
@@ -45,8 +53,10 @@ func main() {
 	}
 	defer s.Close()
 	rows, err := hunt.Analyze(s, hunt.Options{
-		Census:   hunt.CensusCfg{EmFloor: *em, MinN: *minN, TagOnly: *tag},
-		FollowID: *id,
+		Census:     hunt.CensusCfg{EmFloor: *em, MinN: *minN, TagOnly: *tag},
+		FollowID:   *id,
+		BookDilate: *dilate,
+		BookDest:   *dest,
 	})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)

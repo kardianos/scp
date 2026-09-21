@@ -32,6 +32,18 @@ func (s *Sim) applyUhop(sl int, fac float64) {
 		s.p1fd[1] += m * s.suy[sl]
 		s.p1fd[2] += m * s.suz[sl]
 	}
+	if s.P.PjMeter != 0 {
+		// per-cell fd: same booking as p1fd, half to each endpoint so
+		// Σ_cells pj ≡ p1fd increments exactly (H0 identity check).
+		mj := (s.dm1[j]*s.dm1[j] + s.dm2[j]*s.dm2[j]) - (m1j*m1j + m2j*m2j)
+		m := 0.5 * mj * s.sd[sl]
+		s.pjx[i] += m * s.sux[sl]
+		s.pjy[i] += m * s.suy[sl]
+		s.pjz[i] += m * s.suz[sl]
+		s.pjx[j] += m * s.sux[sl]
+		s.pjy[j] += m * s.suy[sl]
+		s.pjz[j] += m * s.suz[sl]
+	}
 	if s.P.JMetric > 0 {
 		// v95 J-metric: record actual energy moved on this slot
 		mj := (s.dm1[j]*s.dm1[j] + s.dm2[j]*s.dm2[j]) - (m1j*m1j + m2j*m2j)
@@ -42,6 +54,7 @@ func (s *Sim) applyUhop(sl int, fac float64) {
 func (s *Sim) step() {
 	dt := s.P.Dt
 	P := &s.P
+	s.absorbEm()
 
 	// pass 0: pitch share of in-flight dense energy (cellfab.c:2795)
 	for i := 0; i < s.NC; i++ {
@@ -203,10 +216,7 @@ func (s *Sim) step() {
 			ratio = 0
 		}
 		s.cr[i] = s.cr0[i] * math.Cbrt(ratio)
-		x := (s.Em[i] + s.flload[i]) / P.Cap
-		if P.DoorG > 0 && P.ChiLoad > 0 {
-			x += (s.dc1[i]*s.dc1[i] + s.dc2[i]*s.dc2[i]) / P.Cap // v94 chi_load: register self-detuning
-		}
+		x := s.occupancyX(i)
 		det := 1.0 + P.QDetune*x
 		s.w1e[i] = P.W1 / det
 		s.w2e[i] = P.W2 / det
@@ -493,7 +503,7 @@ func (s *Sim) step() {
 	// the update). The cross term 2 Im(psi_i* psi_j) IS the link current =
 	// dense momentum. The door (pass 6) is never unitarized. Hops applied in
 	// canonical link order (from the i side). Byte-inert at amp_nat=0.
-	if P.AmpNat > 0 {
+	if P.AmpNat > 0 && !s.patternOnly() {
 		for i := 0; i < s.NC; i++ {
 			e := s.Em[i]
 			if e > 0 {
@@ -956,6 +966,9 @@ func (s *Sim) step() {
 	if P.ParTau > 0 {
 		for i := 0; i < s.NC; i++ {
 			xep := (s.Em[i] + s.flload[i]) / P.Cap
+			if s.patternOnly() {
+				xep = (s.Ee[i] + s.flload[i]) / P.Cap
+			}
 			if s.cgid[i] == 0 {
 				if xep >= P.ParHi {
 					s.cgid[i] = s.gidNext
@@ -1305,6 +1318,9 @@ func (s *Sim) step() {
 			if s.sA[sl] <= 0 {
 				continue
 			}
+			if s.wrapHopBlocked(sl) {
+				continue
+			}
 			j := s.slj[sl]
 			si, sj := s.fsum[i], s.fsum[j]
 			if si <= 1e-12 || sj <= 1e-12 {
@@ -1448,7 +1464,7 @@ func (s *Sim) step() {
 			econdI := P.ECond
 			if P.WfOn != 0 {
 				// WORKFN W-A: presence threshold (WORKFN.md §1)
-				if s.Em[i] >= P.WfFloor {
+				if s.presentMatter(i) {
 					econdI = 0
 				} else {
 					econdI = P.WfFar
@@ -1457,7 +1473,7 @@ func (s *Sim) step() {
 			if s.scond[i] != 0 {
 				econdI = 0.0
 			}
-			if P.DoorG > 0 {
+			if P.DoorG > 0 && !s.patternOnly() {
 				// v94 door settlement (DESIGN_claude.md §III.5.3): the continuous
 				// pair (pass P) filled the register chi from the field; this is
 				// the click that settles register energy into dense matter, in
@@ -1697,28 +1713,43 @@ func (s *Sim) step() {
 						s.clickE[s.nclick] = d1
 						s.nclick++
 					}
-					s.qatomDiag(1, s.atomsW(s.w1e[i], s.w2e[i]), d1, i, s.Em[i])
+					s.qatomDiag(1, s.atomsW(s.w1e[i], s.w2e[i]), d1, i, s.holdings(i))
 					dsp := P.SPull * d1
-					s.applyPromoCond(i, d1, dsp)
+					if s.patternOnly() {
+						s.applyPatternCond(i, d1, dsp)
+					} else {
+						s.applyPromoCond(i, d1, dsp)
+					}
 				}
 			}
 			tot := s.Em[i] + s.Ee[i]
+			if s.patternOnly() {
+				tot = s.Ee[i]
+			}
 			if tot > P.Cap {
 				d2 := P.FEvap * (tot - P.Cap)
 				eF2 := s.A0eff * s.w2e[i] / TwoPi
 				eD2 := s.A0eff * s.w1e[i] / TwoPi
 				d2 = s.atomsFire(d2, eF2, eD2, &s.qcnvF[i])
-				d2 = s.atomsClamp(d2, s.Em[i], eF2, eD2, &s.qcnvF[i])
+				hold := s.Em[i]
+				if s.patternOnly() {
+					hold = s.Ee[i]
+				}
+				d2 = s.atomsClamp(d2, hold, eF2, eD2, &s.qcnvF[i])
 				if d2 > 0 {
 					s.evapTotal += d2
-					s.qatomDiag(0, s.atomsW(s.w2e[i], s.w1e[i]), d2, i, s.Em[i])
+					s.qatomDiag(0, s.atomsW(s.w2e[i], s.w1e[i]), d2, i, s.holdings(i))
 					bs := d2 * P.SPull / (1.0 + P.SPull)
 					s.backsTotal += bs
 					if s.tag[i] != 0 {
 						s.ctEvap += d2
 						s.ctBacks += bs
 					}
-					s.applyPromoOut(i, d2, bs)
+					if s.patternOnly() {
+						s.applyPatternEvap(i, d2)
+					} else {
+						s.applyPromoOut(i, d2, bs)
+					}
 				}
 			}
 			// v91 RADIANCE (laws_V3r candidate A) — mirrors the C

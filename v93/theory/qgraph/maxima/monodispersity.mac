@@ -1,0 +1,64 @@
+/* monodispersity.mac -- why a species has ONE size.
+
+   The metabolic fixed point of the coarse law (detailed_balance.mac) is a
+   CONTINUOUS x* = x_bath: thermalization, not a species.  Discreteness
+   enters only through the SHELL LADDER: the bound stack of a contact graph
+   has integer capacities c_k, so the neutral totals are the magic numbers
+       Z_j = c_0 + c_1 + ... + c_j .
+   A configuration is a species when it sits at N = Z_j AND the shell gap
+   beats the temperature.
+
+   M1  grand-canonical weight P(N) ~ exp(-(E(N) - mu N)/T) with E(N) the
+       aufbau-filled energy: plateaux at N = Z_j.
+   M2  stability window for N = Z_j is  eps_j < mu < eps_(j+1);
+       its width is exactly the shell gap  Delta_j = eps_(j+1) - eps_j.
+   M3  escape (melt) time from the closed configuration ~ exp(Delta_j/2T):
+       monodispersity requires  Delta_j >> T,  NOT  O = 0.
+   M4  as T rises the distribution smears into a HIERARCHY with no magic
+       peaks -- which is exactly what Face C measured.
+
+   Run:  maxima --very-quiet -b monodispersity.mac < /dev/null            */
+
+assume(T > 0, D > 0)$  ratprint : false$
+
+print("=== M2: the two one-quantum rates about a closed shell ===")$
+Rplus  : exp(-(ej1 - mu)/T)$      /* gain: must pay the NEXT shell energy  */
+Rminus : exp(-(mu - ej)/T)$       /* lose: must unbind the TOP shell       */
+print("  R+ =", Rplus, "   R- =", Rminus)$
+print("  balance R+ = R- at mu =", solve(Rplus = Rminus, mu))$
+print("  ==> the closed configuration is stationary at mu = (eps_j+eps_j1)/2,")$
+print("      i.e. exactly mid-gap.  The gap IS the stability window.")$
+
+print("=== M3: residence time at mid-gap ===")$
+tau : ratsimp( ev(1/(Rplus + Rminus), [ej1 = ej + D, mu = ej + D/2]) )$
+print("  tau ~", tau, " = (1/2) exp(Delta/(2T))")$
+print("  numeric, Delta/T = 1,2,4,8,16:")$
+for r: 1 thru 5 do block([rr : 2^(r-1)],
+  print("      Delta/T =", rr, "  tau ~", float(exp(rr/2)/2)))$
+print("  ==> a species is sharp when Delta >> T.  A 4x gap already buys 7x;")$
+print("      a 16x gap buys ~1500x.  This is the ONLY source of sharpness --")$
+print("      radiance alone gives a soft ceiling, never a line.")$
+
+print("=== M1/M4: the mass distribution vs temperature ===")$
+/* Real C_10 rung energies: omega_k = sqrt(lambda_k) = 2 sin(pi k/10),
+   capacities c = [1,2,2,2,2,1].  E(N) = aufbau sum of the N lowest. */
+NR   : 10$
+caps : [1,2,2,2,2,1]$
+rung : makelist( float(2*sin(%pi*k/NR)), k, 0, floor(NR/2) )$
+print("  C_10 rung energies omega_k =", rung)$
+print("  capacities", caps, " -> magic N =", [1,3,5,7,9,10])$
+Etot(N) := block([e : 0.0, left : N, k : 1],
+  for c in caps do (
+    if left > 0 then block([take : min(left, c)],
+      e : e + take*rung[k], left : left - take),
+    k : k + 1),
+  e)$
+Pw(N, mu, T) := exp(-(Etot(N) - mu*N)/T)$
+for Tv in [0.05, 0.3, 1.5] do block([mu : 1.7, Z : 0, ps : []],
+  for N: 0 thru NR do Z : Z + Pw(N, mu, Tv),
+  for N: 0 thru NR do ps : endcons(round(100*Pw(N,mu,Tv)/Z), ps),
+  print("      T =", Tv, "  P(N = 0..10) % =", ps))$
+print("  ==> cold: the distribution collapses onto a magic number (a SPECIES).")$
+print("      hot:  it smears across all N (a HIERARCHY, no line).")$
+print("  ==> Face C's broad long-tailed hoard spectrum is the HOT branch;")$
+print("      the prediction is that cooling it must reveal magic peaks.")$

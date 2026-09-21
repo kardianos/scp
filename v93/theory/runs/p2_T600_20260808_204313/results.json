@@ -1,0 +1,1074 @@
+[
+  {
+    "arm": {
+      "Name": "P2_ctrl_kr0",
+      "Family": "p2",
+      "Desc": "P2 control k_rad=0 (no tax, no dual)",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=600",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "amp_nat=2",
+        "amp_logate=1",
+        "wf_on=1",
+        "noise_amp=0",
+        "kx=0",
+        "q_detune=1.2",
+        "k_rad=0.05",
+        "p_rad=4",
+        "rad_clock=0",
+        "bath_em=0.05",
+        "bath_xb=0.6",
+        "rad_dual=0",
+        "k_rad=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": 2.903,
+      "Cond": 35726.647385,
+      "Evap": 34770.025445,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 4535.22071,
+      "QcnvD": 147.544657,
+      "QcnvF": 161.347785,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 1512.19695,
+      "BlobSpeed": 0.000714,
+      "BlobCos": -0.3765,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 6258.231800000013,
+      "EeTot": 2722.9618100000002,
+      "EmMax": 7.75655,
+      "PR": 2017.9405284385452,
+      "FTag": 0.24163325653741316,
+      "JAbs": 1.5109481115088783,
+      "Jx": -0.0010385228471360625,
+      "R2f": 0.02120656827443672,
+      "JdAbs": 2.814697667114836,
+      "NCells": 2700,
+      "NLinks": 15492,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 3360.7745,
+        "EmMax": 4.0332,
+        "SumEe": 5196.2865,
+        "NHot": 2199
+      },
+      {
+        "T": 200,
+        "EmTot": 4772.8978,
+        "EmMax": 5.4098,
+        "SumEe": 3864.3001,
+        "NHot": 2522
+      },
+      {
+        "T": 300,
+        "EmTot": 5466.2261,
+        "EmMax": 6.2358,
+        "SumEe": 3292.5052,
+        "NHot": 2575
+      },
+      {
+        "T": 400,
+        "EmTot": 5842.385,
+        "EmMax": 7.0325,
+        "SumEe": 2986.8638,
+        "NHot": 2601
+      },
+      {
+        "T": 500,
+        "EmTot": 6085.3348,
+        "EmMax": 7.294,
+        "SumEe": 2813.6621,
+        "NHot": 2605
+      },
+      {
+        "T": 600,
+        "EmTot": 6258.2318,
+        "EmMax": 7.7565,
+        "SumEe": 2722.9619,
+        "NHot": 2616
+      }
+    ],
+    "seconds": 645.79512831
+  },
+  {
+    "arm": {
+      "Name": "P2_xb03_d0",
+      "Family": "p2",
+      "Desc": "P2 dual intake xb=0.3 rad_dual=0",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=600",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "amp_nat=2",
+        "amp_logate=1",
+        "wf_on=1",
+        "noise_amp=0",
+        "kx=0",
+        "q_detune=1.2",
+        "k_rad=0.05",
+        "p_rad=4",
+        "rad_clock=0",
+        "bath_em=0.05",
+        "bath_xb=0.3",
+        "rad_dual=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": 2.098,
+      "Cond": 30056.622187,
+      "Evap": 21188.956533,
+      "Rough": 0,
+      "Rad": 9285.457226,
+      "Backs": 3974.923534,
+      "QcnvD": 192.903786,
+      "QcnvF": 325.601759,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 964.35401,
+      "BlobSpeed": 0.000386,
+      "BlobCos": -0.1896,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 4214.270530000013,
+      "EeTot": 2378.8889700000013,
+      "EmMax": 5.25803,
+      "PR": 2189.793648668643,
+      "FTag": 0.22883057770854534,
+      "JAbs": 1.3375096520576704,
+      "Jx": 0.008625480220974022,
+      "R2f": 0.006491653257515158,
+      "JdAbs": 1.994393903387717,
+      "NCells": 2700,
+      "NLinks": 16359,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 3363.5723,
+        "EmMax": 3.6022,
+        "SumEe": 2522.5001,
+        "NHot": 2252
+      },
+      {
+        "T": 200,
+        "EmTot": 4144.5656,
+        "EmMax": 4.2889,
+        "SumEe": 2289.643,
+        "NHot": 2522
+      },
+      {
+        "T": 300,
+        "EmTot": 4216.176,
+        "EmMax": 4.886,
+        "SumEe": 2262.2957,
+        "NHot": 2542
+      },
+      {
+        "T": 400,
+        "EmTot": 4226.5835,
+        "EmMax": 4.1561,
+        "SumEe": 2295.1226,
+        "NHot": 2543
+      },
+      {
+        "T": 500,
+        "EmTot": 4214.9243,
+        "EmMax": 4.4439,
+        "SumEe": 2347.0265,
+        "NHot": 2536
+      },
+      {
+        "T": 600,
+        "EmTot": 4214.2706,
+        "EmMax": 5.258,
+        "SumEe": 2378.8892,
+        "NHot": 2538
+      }
+    ],
+    "seconds": 747.014330294
+  },
+  {
+    "arm": {
+      "Name": "P2_xb03_d1",
+      "Family": "p2",
+      "Desc": "P2 dual intake xb=0.3 rad_dual=1",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=600",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "amp_nat=2",
+        "amp_logate=1",
+        "wf_on=1",
+        "noise_amp=0",
+        "kx=0",
+        "q_detune=1.2",
+        "k_rad=0.05",
+        "p_rad=4",
+        "rad_clock=0",
+        "bath_em=0.05",
+        "bath_xb=0.3",
+        "rad_dual=1"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": 2.21,
+      "Cond": 29094.814617,
+      "Evap": 22937.913674,
+      "Rough": 0,
+      "Rad": 11090.055204,
+      "Backs": 5093.607031,
+      "QcnvD": 201.244082,
+      "QcnvF": 316.111384,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 1066.94932,
+      "BlobSpeed": 0.000428,
+      "BlobCos": -0.9164,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 4568.440829999997,
+      "EeTot": 2379.141040000005,
+      "EmMax": 4.51622,
+      "PR": 2227.386082480527,
+      "FTag": 0.23354780760069527,
+      "JAbs": 1.340047075149297,
+      "Jx": 0.005828558802161901,
+      "R2f": 0.016360321448607582,
+      "JdAbs": 2.1299784795503185,
+      "NCells": 2700,
+      "NLinks": 16197,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 3776.6183,
+        "EmMax": 4.0299,
+        "SumEe": 2601.8385,
+        "NHot": 2384
+      },
+      {
+        "T": 200,
+        "EmTot": 4527.6705,
+        "EmMax": 5.1429,
+        "SumEe": 2343.0057,
+        "NHot": 2590
+      },
+      {
+        "T": 300,
+        "EmTot": 4564.345,
+        "EmMax": 4.468,
+        "SumEe": 2344.8565,
+        "NHot": 2595
+      },
+      {
+        "T": 400,
+        "EmTot": 4582.1467,
+        "EmMax": 4.6142,
+        "SumEe": 2333.659,
+        "NHot": 2609
+      },
+      {
+        "T": 500,
+        "EmTot": 4575.5011,
+        "EmMax": 4.4023,
+        "SumEe": 2353.1027,
+        "NHot": 2598
+      },
+      {
+        "T": 600,
+        "EmTot": 4568.4409,
+        "EmMax": 4.5162,
+        "SumEe": 2379.1413,
+        "NHot": 2595
+      }
+    ],
+    "seconds": 746.476508668
+  },
+  {
+    "arm": {
+      "Name": "P2_xb06_d0",
+      "Family": "p2",
+      "Desc": "P2 dual intake xb=0.6 rad_dual=0",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=600",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "amp_nat=2",
+        "amp_logate=1",
+        "wf_on=1",
+        "noise_amp=0",
+        "kx=0",
+        "q_detune=1.2",
+        "k_rad=0.05",
+        "p_rad=4",
+        "rad_clock=0",
+        "bath_em=0.05",
+        "bath_xb=0.6",
+        "rad_dual=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": 2.78,
+      "Cond": 46731.00333,
+      "Evap": 41986.065719,
+      "Rough": 0,
+      "Rad": 7707.599277,
+      "Backs": 6481.782391,
+      "QcnvD": 149.663838,
+      "QcnvF": 282.998242,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 908.54085,
+      "BlobSpeed": 0.000356,
+      "BlobCos": 0.9565,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 3883.6720000000014,
+      "EeTot": 4345.649760000002,
+      "EmMax": 4.95624,
+      "PR": 2054.923249784786,
+      "FTag": 0.23393860758581042,
+      "JAbs": 2.3293284865750246,
+      "Jx": -0.026083303539375612,
+      "R2f": 0.011866503444082915,
+      "JdAbs": 1.8637824942758092,
+      "NCells": 2700,
+      "NLinks": 17582,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 3031.489,
+        "EmMax": 3.7446,
+        "SumEe": 5535.7788,
+        "NHot": 2098
+      },
+      {
+        "T": 200,
+        "EmTot": 3738.5998,
+        "EmMax": 4.4767,
+        "SumEe": 4587.6193,
+        "NHot": 2374
+      },
+      {
+        "T": 300,
+        "EmTot": 3840.9746,
+        "EmMax": 4.4594,
+        "SumEe": 4449.3318,
+        "NHot": 2400
+      },
+      {
+        "T": 400,
+        "EmTot": 3910.3174,
+        "EmMax": 4.2573,
+        "SumEe": 4260.9768,
+        "NHot": 2400
+      },
+      {
+        "T": 500,
+        "EmTot": 3871.8172,
+        "EmMax": 5.0768,
+        "SumEe": 4412.2726,
+        "NHot": 2388
+      },
+      {
+        "T": 600,
+        "EmTot": 3883.6719,
+        "EmMax": 4.9562,
+        "SumEe": 4345.6496,
+        "NHot": 2386
+      }
+    ],
+    "seconds": 693.665614316
+  },
+  {
+    "arm": {
+      "Name": "P2_xb06_d1",
+      "Family": "p2",
+      "Desc": "P2 dual intake xb=0.6 rad_dual=1",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=600",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "amp_nat=2",
+        "amp_logate=1",
+        "wf_on=1",
+        "noise_amp=0",
+        "kx=0",
+        "q_detune=1.2",
+        "k_rad=0.05",
+        "p_rad=4",
+        "rad_clock=0",
+        "bath_em=0.05",
+        "bath_xb=0.6",
+        "rad_dual=1"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": 3.718,
+      "Cond": 41388.323215,
+      "Evap": 48444.38285,
+      "Rough": 0,
+      "Rad": 12798.619907,
+      "Backs": 10497.770971,
+      "QcnvD": 139.712585,
+      "QcnvF": 227.69049,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 1249.36009,
+      "BlobSpeed": 0.000557,
+      "BlobCos": -0.145,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 5360.779030000013,
+      "EeTot": 5656.197870000013,
+      "EmMax": 7.14331,
+      "PR": 2107.7741255473443,
+      "FTag": 0.23305571876929165,
+      "JAbs": 2.8730138922365507,
+      "Jx": -0.00007198734408942095,
+      "R2f": 0.007635837038188418,
+      "JdAbs": 2.469728148121596,
+      "NCells": 2700,
+      "NLinks": 16324,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 4454.163,
+        "EmMax": 5.4916,
+        "SumEe": 6559.2729,
+        "NHot": 2573
+      },
+      {
+        "T": 200,
+        "EmTot": 5196.5124,
+        "EmMax": 5.6249,
+        "SumEe": 5911.5042,
+        "NHot": 2653
+      },
+      {
+        "T": 300,
+        "EmTot": 5287.6228,
+        "EmMax": 6.7081,
+        "SumEe": 5790.3283,
+        "NHot": 2641
+      },
+      {
+        "T": 400,
+        "EmTot": 5315.2289,
+        "EmMax": 7.4098,
+        "SumEe": 5721.6609,
+        "NHot": 2631
+      },
+      {
+        "T": 500,
+        "EmTot": 5355.4877,
+        "EmMax": 8.0382,
+        "SumEe": 5659.9009,
+        "NHot": 2617
+      },
+      {
+        "T": 600,
+        "EmTot": 5360.7792,
+        "EmMax": 7.1433,
+        "SumEe": 5656.1976,
+        "NHot": 2614
+      }
+    ],
+    "seconds": 662.038817615
+  },
+  {
+    "arm": {
+      "Name": "P2_xb10_d0",
+      "Family": "p2",
+      "Desc": "P2 dual intake xb=1.0 rad_dual=0",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=600",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "amp_nat=2",
+        "amp_logate=1",
+        "wf_on=1",
+        "noise_amp=0",
+        "kx=0",
+        "q_detune=1.2",
+        "k_rad=0.05",
+        "p_rad=4",
+        "rad_clock=0",
+        "bath_em=0.05",
+        "bath_xb=1.0",
+        "rad_dual=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": 4.575,
+      "Cond": 68551.681338,
+      "Evap": 68349.168578,
+      "Rough": 0,
+      "Rad": 6059,
+      "Backs": 9705.413293,
+      "QcnvD": 106.18021,
+      "QcnvF": 315.449221,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 726.40091,
+      "BlobSpeed": 0.000369,
+      "BlobCos": 0.7831,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 3228.582569999995,
+      "EeTot": 9094.711800000006,
+      "EmMax": 5.6119,
+      "PR": 1705.9088117106157,
+      "FTag": 0.2249905846453234,
+      "JAbs": 4.280776859600878,
+      "Jx": 0.0159485556739344,
+      "R2f": 0.0006372604265339279,
+      "JdAbs": 1.6722636395470913,
+      "NCells": 2700,
+      "NLinks": 23122,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 2337.7057,
+        "EmMax": 4.916,
+        "SumEe": 10693.0664,
+        "NHot": 1677
+      },
+      {
+        "T": 200,
+        "EmTot": 2885.5635,
+        "EmMax": 4.1564,
+        "SumEe": 8872.1032,
+        "NHot": 1913
+      },
+      {
+        "T": 300,
+        "EmTot": 3064.3068,
+        "EmMax": 4.6021,
+        "SumEe": 8603.7179,
+        "NHot": 1975
+      },
+      {
+        "T": 400,
+        "EmTot": 3135.0308,
+        "EmMax": 5.9055,
+        "SumEe": 8600.7202,
+        "NHot": 1966
+      },
+      {
+        "T": 500,
+        "EmTot": 3167.2628,
+        "EmMax": 5.0043,
+        "SumEe": 8948.6175,
+        "NHot": 1953
+      },
+      {
+        "T": 600,
+        "EmTot": 3228.5829,
+        "EmMax": 5.6119,
+        "SumEe": 9094.7118,
+        "NHot": 1965
+      }
+    ],
+    "seconds": 858.625148624
+  },
+  {
+    "arm": {
+      "Name": "P2_xb10_d1",
+      "Family": "p2",
+      "Desc": "P2 dual intake xb=1.0 rad_dual=1",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=600",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "amp_nat=2",
+        "amp_logate=1",
+        "wf_on=1",
+        "noise_amp=0",
+        "kx=0",
+        "q_detune=1.2",
+        "k_rad=0.05",
+        "p_rad=4",
+        "rad_clock=0",
+        "bath_em=0.05",
+        "bath_xb=1.0",
+        "rad_dual=1"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": 3.997,
+      "Cond": 43022.64236,
+      "Evap": 52262.123747,
+      "Rough": 0,
+      "Rad": 13380.116503,
+      "Backs": 11432.619347,
+      "QcnvD": 130.645553,
+      "QcnvF": 210.448004,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 1272.86757,
+      "BlobSpeed": 0.000551,
+      "BlobCos": 0.4101,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 5521.478920000001,
+      "EeTot": 6228.333469999994,
+      "EmMax": 6.96951,
+      "PR": 2065.793187009312,
+      "FTag": 0.23053017469457263,
+      "JAbs": 3.132813943083872,
+      "Jx": -0.0516934557919619,
+      "R2f": 0.014625155164865133,
+      "JdAbs": 2.5188698876352147,
+      "NCells": 2700,
+      "NLinks": 16620,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 4869.4083,
+        "EmMax": 5.2396,
+        "SumEe": 6845.2781,
+        "NHot": 2635
+      },
+      {
+        "T": 200,
+        "EmTot": 5319.1814,
+        "EmMax": 6.027,
+        "SumEe": 6416.1634,
+        "NHot": 2641
+      },
+      {
+        "T": 300,
+        "EmTot": 5405.5089,
+        "EmMax": 6.9644,
+        "SumEe": 6311.7158,
+        "NHot": 2638
+      },
+      {
+        "T": 400,
+        "EmTot": 5446.8769,
+        "EmMax": 6.7922,
+        "SumEe": 6279.6753,
+        "NHot": 2634
+      },
+      {
+        "T": 500,
+        "EmTot": 5502.5523,
+        "EmMax": 7.553,
+        "SumEe": 6223.7823,
+        "NHot": 2622
+      },
+      {
+        "T": 600,
+        "EmTot": 5521.479,
+        "EmMax": 6.9695,
+        "SumEe": 6228.3335,
+        "NHot": 2622
+      }
+    ],
+    "seconds": 670.800805084
+  },
+  {
+    "arm": {
+      "Name": "P2_xb15_d0",
+      "Family": "p2",
+      "Desc": "P2 dual intake xb=1.5 rad_dual=0",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=600",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "amp_nat=2",
+        "amp_logate=1",
+        "wf_on=1",
+        "noise_amp=0",
+        "kx=0",
+        "q_detune=1.2",
+        "k_rad=0.05",
+        "p_rad=4",
+        "rad_clock=0",
+        "bath_em=0.05",
+        "bath_xb=1.5",
+        "rad_dual=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": 8.184,
+      "Cond": 99262.597939,
+      "Evap": 103562.171642,
+      "Rough": 0,
+      "Rad": 5312.913471,
+      "Backs": 14201.098058,
+      "QcnvD": 77.609432,
+      "QcnvF": 587.204333,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 515.51808,
+      "BlobSpeed": 0.000841,
+      "BlobCos": 0.4087,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 2229.4875300000085,
+      "EeTot": 18567.913139999986,
+      "EmMax": 5.79751,
+      "PR": 1286.2591136286185,
+      "FTag": 0.23122713316992566,
+      "JAbs": 7.601425103947555,
+      "Jx": -0.057212352421638454,
+      "R2f": 0.01240124556966481,
+      "JdAbs": 1.3514516468355795,
+      "NCells": 2700,
+      "NLinks": 32803,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 1445.7602,
+        "EmMax": 2.6946,
+        "SumEe": 17393.2512,
+        "NHot": 1028
+      },
+      {
+        "T": 200,
+        "EmTot": 1782.566,
+        "EmMax": 3.8507,
+        "SumEe": 16787.8274,
+        "NHot": 1195
+      },
+      {
+        "T": 300,
+        "EmTot": 1915.949,
+        "EmMax": 3.5407,
+        "SumEe": 17501.3876,
+        "NHot": 1258
+      },
+      {
+        "T": 400,
+        "EmTot": 2005.9786,
+        "EmMax": 4.5187,
+        "SumEe": 17974.5949,
+        "NHot": 1240
+      },
+      {
+        "T": 500,
+        "EmTot": 2138.7313,
+        "EmMax": 5.0475,
+        "SumEe": 17980.3834,
+        "NHot": 1305
+      },
+      {
+        "T": 600,
+        "EmTot": 2229.4875,
+        "EmMax": 5.7975,
+        "SumEe": 18567.9132,
+        "NHot": 1316
+      }
+    ],
+    "seconds": 1090.685774487
+  },
+  {
+    "arm": {
+      "Name": "P2_xb15_d1",
+      "Family": "p2",
+      "Desc": "P2 dual intake xb=1.5 rad_dual=1",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=600",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "amp_nat=2",
+        "amp_logate=1",
+        "wf_on=1",
+        "noise_amp=0",
+        "kx=0",
+        "q_detune=1.2",
+        "k_rad=0.05",
+        "p_rad=4",
+        "rad_clock=0",
+        "bath_em=0.05",
+        "bath_xb=1.5",
+        "rad_dual=1"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": 5.154,
+      "Cond": 46171.038314,
+      "Evap": 61713.504826,
+      "Rough": 0,
+      "Rad": 13948.510788,
+      "Backs": 13689.217408,
+      "QcnvD": 111.683253,
+      "QcnvF": 181.407295,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 1423.65223,
+      "BlobSpeed": 0.000263,
+      "BlobCos": 0.7623,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 6098.17089,
+      "EeTot": 8735.514239999999,
+      "EmMax": 8.67361,
+      "PR": 1949.4528630248274,
+      "FTag": 0.23345560425906645,
+      "JAbs": 4.070259667706053,
+      "Jx": -0.01705937528320633,
+      "R2f": 0.014899779133458725,
+      "JdAbs": 2.7695343431607005,
+      "NCells": 2700,
+      "NLinks": 17223,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 5019.2115,
+        "EmMax": 5.8748,
+        "SumEe": 9716.5989,
+        "NHot": 2652
+      },
+      {
+        "T": 200,
+        "EmTot": 5576.0204,
+        "EmMax": 6.8079,
+        "SumEe": 9180.7028,
+        "NHot": 2652
+      },
+      {
+        "T": 300,
+        "EmTot": 5766.873,
+        "EmMax": 8.127,
+        "SumEe": 8994.9428,
+        "NHot": 2641
+      },
+      {
+        "T": 400,
+        "EmTot": 5866.359,
+        "EmMax": 7.6412,
+        "SumEe": 8907.1196,
+        "NHot": 2628
+      },
+      {
+        "T": 500,
+        "EmTot": 5981.1918,
+        "EmMax": 8.9063,
+        "SumEe": 8796.5603,
+        "NHot": 2614
+      },
+      {
+        "T": 600,
+        "EmTot": 6098.171,
+        "EmMax": 8.6736,
+        "SumEe": 8735.5144,
+        "NHot": 2610
+      }
+    ],
+    "seconds": 721.320241433
+  }
+]

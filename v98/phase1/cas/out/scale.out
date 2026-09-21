@@ -1,0 +1,55 @@
+
+batch("/home/d/code/scp/v98/phase1/cas/scale.mac")
+
+read and interpret /home/d/code/scp/v98/phase1/cas/scale.mac
+ratprint:false
+assume(R > 0,u > 0,W > 0,a > 0)
+print("=== S1: scaled profile ρ = R u, f = f(u) ===")
+=== S1: scaled profile ρ = R u, f = f(u) === 
+print("  E_rad ~ 2 pi int_0^1 (f')^2 u du     -- no R")
+  E_rad ~ 2 pi int_0^1 (f')^2 u du     -- no R 
+print("  E_ang ~ 2 pi W^2 int_0^1 f^2 / u du -- no R")
+  E_ang ~ 2 pi W^2 int_0^1 f^2 / u du -- no R 
+print("  ==> S1: fiber |grad|^2 is R-invariant for any scaled profile.")
+  ==> S1: fiber |grad|^2 is R-invariant for any scaled profile. 
+print("=== S2: add space-area Es = k R^2 ===")
+=== S2: add space-area Es = k R^2 === 
+E2(R):=C0+k*R^2
+dE2:diff(E2(R),R)
+print("  dE/dR =",dE2,"  (strictly positive for k>0, R>0)")
+  dE/dR = 2 R k   (strictly positive for k>0, R>0) 
+print("  ==> S2: no interior trough. The pinch wants R=0.")
+  ==> S2: no interior trough. The pinch wants R=0. 
+print("=== S3: grain-fixed core, angular IR log + area ===")
+=== S3: grain-fixed core, angular IR log + area === 
+assume(k > 0)
+E3(R):=Ccore+2*%pi*W^2*log(R/a)+k*R^2
+dE3:diff(E3(R),R)
+print("  dE/dR =",dE3)
+                         2
+                  2 %pi W
+  dE/dR = 2 R k + -------- 
+                     R
+print("  sign: for R>0, k>0, W real, every term is >= 0.")
+  sign: for R>0, k>0, W real, every term is >= 0. 
+print("  2 k R > 0 and 2 pi W^2 / R > 0  =>  dE/dR > 0.")
+  2 k R > 0 and 2 pi W^2 / R > 0  =>  dE/dR > 0. 
+crit:solve(dE3 = 0,R)
+print("  formal solve(dE=0):",crit,"  (imaginary -- no real R>0 root)")
+                             sqrt(%pi) %i W      sqrt(%pi) %i W
+  formal solve(dE=0): [R = - --------------, R = --------------] 
+                                sqrt(k)             sqrt(k)
+                                               (imaginary -- no real R>0 root) 
+print("  ==> S3: log(IR)+area has NO interior trough. Min is R = a+")
+  ==> S3: log(IR)+area has NO interior trough. Min is R = a+ 
+print("           (the grain). Unique, but the size is the grain,")
+           (the grain). Unique, but the size is the grain, 
+print("           not a derived composite lock.")
+           not a derived composite lock. 
+print("=== S4: Derrick check on a 3-D lump of unlocked field ===")
+=== S4: Derrick check on a 3-D lump of unlocked field === 
+print("  E_3D(|grad|^2) ~ R   ==> shrinks.  No 3-D trough from kinetics.")
+  E_3D(|grad|^2) ~ R   ==> shrinks.  No 3-D trough from kinetics. 
+print("DONE")
+DONE 
+                   /home/d/code/scp/v98/phase1/cas/scale.mac

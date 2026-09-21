@@ -1,0 +1,48 @@
+/* stefan.mac -- Stefan exponent from spectral dimension.
+   CLAIM: a field sector with density of states g(w) = c*w^(ds-1)
+   (ds = spectral dimension) plus Planck occupancy gives
+       u(T) ~ T^(ds+1),   j(T) = (c/4) u ~ T^(ds+1).
+   Hence  p_rad = ds + 1, and  p_rad = 4  <=>  ds = 3.
+   Run:  maxima --very-quiet -b stefan.mac < /dev/null            */
+
+assume(T > 0, y > 0, n > 0)$
+ratprint : false$
+
+/* ---- 1. the T-scaling is exact and geometry-free ---- */
+integrand : w^(ds-1) * w / (exp(w/T) - 1)$
+scaled    : ratsimp( subst(w = T*y, integrand) * T )$     /* dw = T dy */
+print("(1) g(w) w nbar(w) dw   under w = T y  =>", scaled)$
+print("    i.e.  u(T) = T^(ds+1) * int_0^inf y^ds/(e^y-1) dy")$
+
+/* ---- 2. the dimensionless constant, by the Bose sum ----
+   int_0^inf y^d/(e^y-1) dy = sum_{n>=1} int_0^inf y^d e^(-n y) dy
+                            = sum_{n>=1} d!/n^(d+1) = Gamma(d+1) zeta(d+1)  */
+print("(2) term check, int_0^inf y^d e^(-n y) dy = d!/n^(d+1):")$
+for d: 1 thru 4 do
+  print("      d =", d, " ->", integrate(y^d*exp(-n*y), y, 0, inf),
+        "  (expect", d!/n^(d+1), ")")$
+
+Cd(d) := gamma(d+1) * zeta(d+1)$
+print("(3) C(ds) = Gamma(ds+1) zeta(ds+1):")$
+for d: 1 thru 5 do
+  print("      ds =", d, " C =", Cd(d), " =", float(ev(Cd(d), numer)))$
+
+/* ---- 3. explicit ds = 3 : Stefan-Boltzmann ---- */
+print("(4) ds=3:  C = 6 zeta(4) =", ratsimp(Cd(3)), "=", float(%pi^4/15))$
+print("    => u = (pi^4/15) T^4,  j = (c/4) u ~ T^4   ==>  p_rad = 4")$
+print("    => p_rad = 4 IS NOT an axiom: it is ds = 3 for the field sector.")$
+
+/* ---- 4. matter side: why the LAW's x^4 equals T^4 ----
+   adopted: O_rad = k_rad cap x^p, x = Em/cap, p = 4.
+   O ~ T^4 requires x ~ T, i.e. Em linear in T = Dulong-Petit:
+   a stack of FIXED mode count M with every mode live, Em = M T.  */
+print("(5) Dulong-Petit (all M modes live): Em = M T => x ~ T => O = k cap x^4 ~ T^4")$
+
+/* ---- 5. low-load crossover: modes freeze out ----
+   if the matter stack is itself Debye-like with spectral dimension dm,
+   Em ~ T^(dm+1) => T ~ x^(1/(dm+1)) => O ~ T^4 ~ x^(4/(dm+1)).      */
+print("(6) frozen (small-x) limit: p_eff = 4/(dm+1)")$
+for dm: 1 thru 3 do
+  print("      matter dm =", dm, " p_eff =", 4/(dm+1), "=", float(4/(dm+1)))$
+print("    PREDICTION: adopted p=4 is the SATURATED-load limit only;")$
+print("    small hoards must radiate with p_eff = 4/(dm+1) < 4.")$

@@ -1,0 +1,47 @@
+# freecell — v89 free-cell substance test (exp=blob)
+# laws = laws_V2g VERBATIM (defaults): C=1 w1=1.65 w2=2.9 q_detune=1.2
+# gamma_res=0.25 gamma_res_m=0.1 p_gate=8 lock_floor=0.005 k_dep=1.2 k_dep_m=2 cap=2.5
+# e_s0=1 es_floor=0.05 e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
+# comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
+# quant_A0=1.15 quant_mode=2 (A0eff=1.15)
+# v91 radiance (laws_V3r candidate A): k_rad=0 p_rad=4 rad_clock=0
+# v91 cantus (coherent-channel candidate B): k_cant=0 k_tune=0 cant_tau=50 cant_seed=0 cant_grow=1
+# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=0 reg_gate=0 reg_f0=0
+# v91 identity (parcel-identity lane, IDENTITY.md): par_tau=0 par_gate=0 par_form=0 par_lo=0.002 par_hi=0.02 par_mature=400
+# v91 workfn (emergent-threshold lane, WORKFN.md): wf_on=1 wf_floor=0.01 wf_far=99
+# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=0
+# v92 amplitude Phase L lane L-1 (L0_DESIGN.md): amp_drv=0 amp_mmin=2
+# v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=2
+# v93 arg(psi) door (v93/README.md §II.7): amp_door=0
+# v93 hop schedule (RING_DNLS §A.4): hop_order=2 (0=seq, 1=strang, 2=rand)
+# QUENCH-2 apparatus: conf_r=0 conf_gap=0.3 conf_th=1.6 conf_pinw=3 spin_m=0 imp_k=0 qp_phase=0
+# HORIZON apparatus (HORIZON.md): bh_r=0 bh_k=1 bh_sep=0
+# FLOW apparatus (FLOW.md): bed_k=0 bed_tau=30
+# GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
+# bath=1 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=16 dt=0.01 T=40 seed=20260802 diag_every=1000
+# JAM sweeps=800 max_step=1.402e-04 (tol 1.0e-04, k_end=0.0010) — witness for the settle
+# SEED blob: amp=0.5 sigma=2.5 kx=1.1 tagged=629 (add>5% of amp)
+# INIT NC=2700 slots=25884 live=20764 phi_nom=1.6968 z_live=15.38 dbar=1.4102 sigma_d=14.78% E0=2780.845839558
+#
+# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+t=    0.00 +0.00e+00 | 1.6968 15.38  20764    0      0      0 | 1.4102 14.78 | 0.00e+00 0.00e+00 |  82.7751 1.0000  0.0080  3.8202 1.000 15.07 | es_core/far=0.9303
+# P1 t=0.00 tot=(+0.000000e+00,+0.000000e+00,+0.000000e+00) sp=+0.000e+00 fl=+0.000e+00 fd=+0.000e+00 gm=+0.000e+00 (x)
+t=   10.00 +0.00e+00 | 1.6967 16.28  21973    0   2325   2074 | 1.4298 15.02 | 8.79e-04 1.95e-03 |  66.0240 0.7976  1.3954  3.5228 1.000 16.08 | es_core/far=0.9126
+# P1 t=10.00 tot=(+2.911079e+02,-2.668352e+00,+1.540444e+00) sp=+8.475e-02 fl=+0.000e+00 fd=+2.923e+02 gm=-1.267e+00 (x)
+t=   20.00 +0.00e+00 | 1.6969 16.56  22360    0   3549   3198 | 1.4356 15.08 | 5.85e-04 2.94e-03 |  64.3091 0.7769  1.3991  3.6198 1.000 16.29 | es_core/far=0.8828
+# P1 t=20.00 tot=(+2.934968e+02,-2.203520e+00,+7.474661e+00) sp=+1.197e-01 fl=+0.000e+00 fd=+2.942e+02 gm=-7.998e-01 (x)
+t=   30.00 +0.00e+00 | 1.6969 16.69  22533    0   4358   3953 | 1.4381 15.11 | 5.92e-04 1.57e-03 |  60.4398 0.7302  1.4106  3.5642 1.000 16.47 | es_core/far=0.9086
+# P1 t=30.00 tot=(+2.990993e+02,+2.237484e+00,+9.646395e+00) sp=+1.306e-01 fl=+0.000e+00 fd=+2.996e+02 gm=-6.415e-01 (x)
+t=   40.00 +0.00e+00 | 1.6969 16.75  22609    0   5064   4627 | 1.4396 15.14 | 8.71e-04 3.39e-03 |  58.3225 0.7046  1.4580  3.5715 1.000 16.50 | es_core/far=0.9281
+# P1 t=40.00 tot=(+3.091586e+02,-9.771010e-01,+9.834425e+00) sp=+1.269e-01 fl=+0.000e+00 fd=+3.095e+02 gm=-4.769e-01 (x)
+#
+# RESULT drift_rel 0.000e+00
+# RESULT births 5064 deaths 4627 beta_returns 0 beta_energy 0.000000e+00
+# RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
+# RESULT credit qcnvD=0.000000 qcnvF=0.000000
+# RESULT p1 tot=(+3.091586e+02,-9.771010e-01,+9.834425e+00) rate=(+7.728964e+00,-2.442752e-02,+2.458606e-01)
+# RESULT p1x sp=+1.269405e-01 fl=+0.000000e+00 fd=+3.095085e+02 gm=-4.768999e-01
+# RESULT geometry phi_nom=1.6969 z_live=16.75 dbar=1.4396 sigma_d=0.1514
+# RESULT es_shells 0.9265 0.9740 0.9271 0.9634 0.9812 0.9953 0.9994 1.0000
+# RESULT blob Em_tag=58.32255 com=(9.458,8.016,7.980) rms=3.5715 conn=1.0000 z_tag=16.50

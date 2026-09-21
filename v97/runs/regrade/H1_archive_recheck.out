@@ -1,0 +1,2197 @@
+H1 EMPTY  frames=21  span=200.0  /space/scp/v93/fcs/ambient_vs_core_rad.fcs
+  stream t=[0.0, 200.0]  best window t=[100.0, 200.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=12.03  ⟨I⟩=21.01  ⟨O⟩=12.03  Φ/Em=0.01596  (rate 0.0016/t.u. Δt=10; min⟨⟩=12.03; I/O=1.75; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.161  ⟨polar⟩=0.034  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 686.3→791.5  |Δ|/⟨Em⟩=0.140  |ΔEmTot|/EmTot0=0.148
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=253.8  ⟨|Circ|⟩=45.31  dir-stable=0.64
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=3.767  ⟨|dEmTot|⟩=12.21  corr(net,dM)=-0.299  |Thru|~|dM|=0.133  tracks=false
+
+H1 EMPTY  frames=21  span=200.0  /space/scp/v93/fcs/collision_blob2.fcs
+  stream t=[0.0, 200.0]  best window t=[100.0, 200.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.2921  ⟨I⟩=0.4457  ⟨O⟩=0.2988  Φ/Em=0.001575  (rate 0.000158/t.u. Δt=10; min⟨⟩=0.2988; I/O=1.49; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=1.411  ⟨polar⟩=0.088  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 186.9→183.5  |Δ|/⟨Em⟩=0.018  |ΔEmTot|/EmTot0=0.003
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=49.03  ⟨|Circ|⟩=17.62  dir-stable=0.55
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.9999  ⟨|dEmTot|⟩=0.07456  corr(net,dM)=0.436  |Thru|~|dM|=0.612  tracks=true
+
+H1 EMPTY  frames=21  span=200.0  /space/scp/v93/fcs/core_quiet.fcs
+  stream t=[0.0, 200.0]  best window t=[100.0, 200.0] Δt=100.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.1299  ⟨I⟩=0.1663  ⟨O⟩=0.1695  Φ/Em=0.0008727  (rate 8.73e-05/t.u. Δt=10; min⟨⟩=0.1663; I/O=0.982; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.912  ⟨polar⟩=0.193  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 151.8→147.5  |Δ|/⟨Em⟩=0.029  |ΔEmTot|/EmTot0=0.006
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=25.74  ⟨|Circ|⟩=11  dir-stable=0.64
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.4688  ⟨|dEmTot|⟩=0.1057  corr(net,dM)=0.094  |Thru|~|dM|=0.116  tracks=false
+
+H1 EMPTY  frames=21  span=200.0  /space/scp/v93/fcs/emf_absorb_noise.fcs
+  stream t=[0.0, 200.0]  best window t=[100.0, 200.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=45.09  ⟨I⟩=54.69  ⟨O⟩=45.17  Φ/Em=0.01502  (rate 0.0015/t.u. Δt=10; min⟨⟩=45.17; I/O=1.21; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=5.113  ⟨polar⟩=0.036  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 2875→3038  |Δ|/⟨Em⟩=0.054  |ΔEmTot|/EmTot0=0.057
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1091  ⟨|Circ|⟩=105.9  dir-stable=0.73
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=8.632  ⟨|dEmTot|⟩=24.76  corr(net,dM)=-0.142  |Thru|~|dM|=0.801  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  /space/scp/v93/fcs/fuel_noise_S07.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=20.91  ⟨I⟩=26.74  ⟨O⟩=20.91  Φ/Em=0.008972  (rate 8.97e-05/t.u. Δt=100; min⟨⟩=20.91; I/O=1.28; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.322  ⟨polar⟩=0.041  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 2333→2327  |Δ|/⟨Em⟩=0.003  |ΔEmTot|/EmTot0=0.003
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=1021  ⟨|Circ|⟩=93.09  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=7.849  ⟨|dEmTot|⟩=2.441  corr(net,dM)=0.407  |Thru|~|dM|=-0.871  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  /space/scp/v93/fcs/genesis_G01_wind.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=11.46  ⟨I⟩=18.57  ⟨O⟩=11.46  Φ/Em=0.01835  (rate 0.000184/t.u. Δt=100; min⟨⟩=11.46; I/O=1.62; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=5.193  ⟨polar⟩=0.027  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 619.9→635.4  |Δ|/⟨Em⟩=0.025  |ΔEmTot|/EmTot0=0.025
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=226.7  ⟨|Circ|⟩=21.14  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=1.962  ⟨|dEmTot|⟩=7.55  corr(net,dM)=-0.210  |Thru|~|dM|=0.679  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  /space/scp/v93/fcs/hold_S00_uni_quiet.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.007018  ⟨I⟩=0.03187  ⟨O⟩=0.007018  Φ/Em=6.196e-05  (rate 6.2e-07/t.u. Δt=100; min⟨⟩=0.007018; I/O=4.54; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=5.995  ⟨polar⟩=0.023  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 111.7→114.8  |Δ|/⟨Em⟩=0.027  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=32.12  ⟨|Circ|⟩=14.44  dir-stable=0.75
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.1319  ⟨|dEmTot|⟩=1.551e-07  corr(net,dM)=-0.044  |Thru|~|dM|=-0.599  tracks=false
+
+H1 EMPTY  frames=31  span=3000.0  /space/scp/v93/fcs/hold_S04_deep.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.03618  ⟨I⟩=0.06125  ⟨O⟩=0.04515  Φ/Em=0.0003166  (rate 3.17e-06/t.u. Δt=100; min⟨⟩=0.04515; I/O=1.36; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.722  ⟨polar⟩=0.216  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 112.2→115.3  |Δ|/⟨Em⟩=0.027  |ΔEmTot|/EmTot0=0.002
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=33.13  ⟨|Circ|⟩=7.439  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1528  ⟨|dEmTot|⟩=0.05603  corr(net,dM)=0.777  |Thru|~|dM|=-0.348  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  /space/scp/v93/fcs/progressive_S14_kx.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.01535  ⟨I⟩=0.07532  ⟨O⟩=0.01535  Φ/Em=0.0001361  (rate 1.36e-06/t.u. Δt=100; min⟨⟩=0.01535; I/O=4.91; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.891  ⟨polar⟩=0.053  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 113.3→112  |Δ|/⟨Em⟩=0.012  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=60.58  ⟨|Circ|⟩=5.59  dir-stable=0.75
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.1148  ⟨|dEmTot|⟩=2.507e-07  corr(net,dM)=0.333  |Thru|~|dM|=0.203  tracks=false
+
+H1 EMPTY  frames=31  span=3000.0  /space/scp/v93/fcs/rad_tax_S05.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.4014  ⟨I⟩=2.292  ⟨O⟩=0.4014  Φ/Em=0.005441  (rate 5.44e-05/t.u. Δt=100; min⟨⟩=0.4014; I/O=5.71; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.200  ⟨polar⟩=0.087  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 73.44→73.8  |Δ|/⟨Em⟩=0.005  |ΔEmTot|/EmTot0=0.006
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=28.96  ⟨|Circ|⟩=3.723  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.06077  ⟨|dEmTot|⟩=0.2706  corr(net,dM)=-0.109  |Thru|~|dM|=0.985  tracks=true
+
+H1 EMPTY  frames=126  span=5000.0  ../v91/runs/pad/i1.fcs
+  stream t=[0.0, 5000.0]  best window t=[4880.0, 5000.0] Δt=120.0  clauses 3/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=1.391  ⟨I⟩=1.473  ⟨O⟩=1.583  Φ/Em=0.021  (rate 0.000525/t.u. Δt=40; min⟨⟩=1.473; I/O=0.93; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=6.902  ⟨polar⟩=0.428  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 66.4→65.95  |Δ|/⟨Em⟩=0.007  |ΔEmTot|/EmTot0=0.007
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=89.15  ⟨|Circ|⟩=3.154  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0  ⟨|dEmTot|⟩=0.4176  corr(net,dM)=NaN  |Thru|~|dM|=NaN  tracks=false
+
+H1 EMPTY  frames=126  span=5000.0  ../v91/runs/pad/i2.fcs
+  stream t=[0.0, 5000.0]  best window t=[4880.0, 5000.0] Δt=120.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=1.377  ⟨I⟩=1.615  ⟨O⟩=1.661  Φ/Em=0.02235  (rate 0.000559/t.u. Δt=40; min⟨⟩=1.615; I/O=0.973; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.888  ⟨polar⟩=0.067  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 62.31→61.97  |Δ|/⟨Em⟩=0.005  |ΔEmTot|/EmTot0=0.005
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=61.75  ⟨|Circ|⟩=10.92  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.01063  ⟨|dEmTot|⟩=0.8393  corr(net,dM)=0.905  |Thru|~|dM|=0.065  tracks=true
+
+H1 EMPTY  frames=126  span=5000.0  ../v91/runs/pad/i3.fcs
+  stream t=[0.0, 5000.0]  best window t=[4880.0, 5000.0] Δt=120.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.2927  ⟨I⟩=0.4638  ⟨O⟩=0.7308  Φ/Em=0.00533  (rate 0.000133/t.u. Δt=40; min⟨⟩=0.4638; I/O=0.635; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.036  ⟨polar⟩=0.234  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 54.64→54.11  |Δ|/⟨Em⟩=0.010  |ΔEmTot|/EmTot0=0.010
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=69.52  ⟨|Circ|⟩=14.38  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.01341  ⟨|dEmTot|⟩=0.811  corr(net,dM)=0.642  |Thru|~|dM|=-0.944  tracks=true
+
+H1 EMPTY  frames=201  span=2000.0  ../v91/runs/pad/m1_glow_k005.fcs
+  stream t=[0.0, 2000.0]  best window t=[1900.0, 2000.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=18.45  ⟨I⟩=25.21  ⟨O⟩=18.45  Φ/Em=0.05088  (rate 0.00509/t.u. Δt=10; min⟨⟩=18.45; I/O=1.37; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.848  ⟨polar⟩=0.056  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 359.8→370.1  |Δ|/⟨Em⟩=0.028  |ΔEmTot|/EmTot0=0.027
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=151.5  ⟨|Circ|⟩=15.61  dir-stable=0.64
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1325  ⟨|dEmTot|⟩=4.798  corr(net,dM)=0.088  |Thru|~|dM|=0.179  tracks=false
+
+H1 EMPTY  frames=201  span=2000.0  ../v91/runs/pad/m1_glow_k0.fcs
+  stream t=[0.0, 2000.0]  best window t=[1900.0, 2000.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=8.249  ⟨I⟩=9.571  ⟨O⟩=8.249  Φ/Em=0.01621  (rate 0.00162/t.u. Δt=10; min⟨⟩=8.249; I/O=1.16; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.391  ⟨polar⟩=0.021  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 504.4→513.5  |Δ|/⟨Em⟩=0.018  |ΔEmTot|/EmTot0=0.014
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=176.2  ⟨|Circ|⟩=17.51  dir-stable=0.73
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=1.292  ⟨|dEmTot|⟩=5.391  corr(net,dM)=-0.144  |Thru|~|dM|=0.108  tracks=false
+
+H1 EMPTY  frames=101  span=20000.0  ../v91/runs/pad/m2_cav.fcs
+  stream t=[0.0, 20000.0]  best window t=[19400.0, 20000.0] Δt=600.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0.0607  Φ/Em=0  (rate 0/t.u. Δt=200; min⟨⟩=0; I/O=0; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=1.000  (book frames 0/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 4.05→3.957  |Δ|/⟨Em⟩=0.023  |ΔEmTot|/EmTot0=0.023
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=2.216  ⟨|Circ|⟩=2.135  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.008087  ⟨|dEmTot|⟩=0.04631  corr(net,dM)=0.636  |Thru|~|dM|=0.656  tracks=true
+
+H1 EMPTY  frames=61  span=600.0  ../v91/runs/pad/m3_a0.15_k005.fcs
+  stream t=[0.0, 600.0]  best window t=[500.0, 600.0] Δt=100.0  clauses 1/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.5607  ⟨I⟩=1.289  ⟨O⟩=0.5607  Φ/Em=0.02288  (rate 0.00229/t.u. Δt=10; min⟨⟩=0.5607; I/O=2.3; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.759  ⟨polar⟩=0.170  (book frames 11/11)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 11.14→25.93  |Δ|/⟨Em⟩=0.604  |ΔEmTot|/EmTot0=0.023
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=10.89  ⟨|Circ|⟩=1.815  dir-stable=0.64
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.001429  ⟨|dEmTot|⟩=0.8748  corr(net,dM)=-0.509  |Thru|~|dM|=-0.364  tracks=true
+
+H1 EMPTY  frames=61  span=600.0  ../v91/runs/pad/m3_a0.15_k0.fcs
+  stream t=[0.0, 600.0]  best window t=[500.0, 600.0] Δt=100.0  clauses 3/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.3669  ⟨I⟩=0.7225  ⟨O⟩=0.3734  Φ/Em=0.02379  (rate 0.00238/t.u. Δt=10; min⟨⟩=0.3734; I/O=1.93; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.019  ⟨polar⟩=0.171  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 10.6→10.42  |Δ|/⟨Em⟩=0.012  |ΔEmTot|/EmTot0=0.017
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=6.384  ⟨|Circ|⟩=1.692  dir-stable=0.82
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.01232  ⟨|dEmTot|⟩=0.9201  corr(net,dM)=-0.334  |Thru|~|dM|=0.135  tracks=false
+
+H1 EMPTY  frames=61  span=600.0  ../v91/runs/pad/m3_a0.3_k005.fcs
+  stream t=[0.0, 600.0]  best window t=[500.0, 600.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=6.4  ⟨I⟩=10.33  ⟨O⟩=6.4  Φ/Em=0.03408  (rate 0.00341/t.u. Δt=10; min⟨⟩=6.4; I/O=1.61; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.723  ⟨polar⟩=0.046  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 185.5→186  |Δ|/⟨Em⟩=0.003  |ΔEmTot|/EmTot0=0.007
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=49.89  ⟨|Circ|⟩=9.905  dir-stable=0.64
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.03492  ⟨|dEmTot|⟩=2.412  corr(net,dM)=0.423  |Thru|~|dM|=-0.028  tracks=true
+
+H1 EMPTY  frames=61  span=600.0  ../v91/runs/pad/m3_a0.3_k0.fcs
+  stream t=[0.0, 600.0]  best window t=[500.0, 600.0] Δt=100.0  clauses 3/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=4.561  ⟨I⟩=6.486  ⟨O⟩=4.561  Φ/Em=0.01949  (rate 0.00195/t.u. Δt=10; min⟨⟩=4.561; I/O=1.42; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.683  ⟨polar⟩=0.059  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 234→239.1  |Δ|/⟨Em⟩=0.021  |ΔEmTot|/EmTot0=0.018
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=77.23  ⟨|Circ|⟩=11.14  dir-stable=0.91
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.3212  ⟨|dEmTot|⟩=2.577  corr(net,dM)=-0.095  |Thru|~|dM|=-0.401  tracks=false
+
+H1 EMPTY  frames=61  span=600.0  ../v91/runs/pad/m3_a0.5_k005.fcs
+  stream t=[0.0, 600.0]  best window t=[500.0, 600.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=18.86  ⟨I⟩=25  ⟨O⟩=18.86  Φ/Em=0.05126  (rate 0.00513/t.u. Δt=10; min⟨⟩=18.86; I/O=1.33; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.858  ⟨polar⟩=0.027  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 362.1→366.9  |Δ|/⟨Em⟩=0.013  |ΔEmTot|/EmTot0=0.010
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=144.9  ⟨|Circ|⟩=20.38  dir-stable=0.73
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.2394  ⟨|dEmTot|⟩=4.484  corr(net,dM)=0.164  |Thru|~|dM|=-0.678  tracks=false
+
+H1 EMPTY  frames=61  span=600.0  ../v91/runs/pad/m3_a0.5_k0.fcs
+  stream t=[0.0, 600.0]  best window t=[500.0, 600.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=8.796  ⟨I⟩=10.48  ⟨O⟩=8.796  Φ/Em=0.01714  (rate 0.00171/t.u. Δt=10; min⟨⟩=8.796; I/O=1.19; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.082  ⟨polar⟩=0.034  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 515.6→511.7  |Δ|/⟨Em⟩=0.008  |ΔEmTot|/EmTot0=0.007
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=161.7  ⟨|Circ|⟩=25.28  dir-stable=0.64
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=1.408  ⟨|dEmTot|⟩=2.062  corr(net,dM)=0.045  |Thru|~|dM|=-0.055  tracks=false
+
+H1 EMPTY  frames=61  span=600.0  ../v91/runs/pad/m3_a0.8_k005.fcs
+  stream t=[0.0, 600.0]  best window t=[500.0, 600.0] Δt=100.0  clauses 3/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=38.28  ⟨I⟩=46.15  ⟨O⟩=38.28  Φ/Em=0.05544  (rate 0.00554/t.u. Δt=10; min⟨⟩=38.28; I/O=1.21; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.574  ⟨polar⟩=0.019  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 682.3→685  |Δ|/⟨Em⟩=0.004  |ΔEmTot|/EmTot0=0.005
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=252.5  ⟨|Circ|⟩=39.95  dir-stable=0.82
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=2.575  ⟨|dEmTot|⟩=4.868  corr(net,dM)=-0.109  |Thru|~|dM|=-0.169  tracks=false
+
+H1 EMPTY  frames=61  span=600.0  ../v91/runs/pad/m3_a0.8_k0.fcs
+  stream t=[0.0, 600.0]  best window t=[500.0, 600.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=15.33  ⟨I⟩=16.53  ⟨O⟩=15.4  Φ/Em=0.01614  (rate 0.00161/t.u. Δt=10; min⟨⟩=15.4; I/O=1.07; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.183  ⟨polar⟩=0.033  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 945.8→955  |Δ|/⟨Em⟩=0.010  |ΔEmTot|/EmTot0=0.009
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=350.6  ⟨|Circ|⟩=50.52  dir-stable=0.73
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=3.391  ⟨|dEmTot|⟩=4.137  corr(net,dM)=0.737  |Thru|~|dM|=0.290  tracks=true
+
+H1 EMPTY  frames=61  span=300.0  ../v91/runs/pad/m7_and_rj0.01.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+
+H1 EMPTY  frames=61  span=300.0  ../v91/runs/pad/m7_and_rj0.06.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+
+H1 EMPTY  frames=61  span=300.0  ../v91/runs/pad/m7_and_rj0.15.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+
+H1 EMPTY  frames=51  span=1000.0  ../v91/runs/pad/m7_g4_k005.fcs
+  stream t=[0.0, 1000.0]  best window t=[900.0, 1000.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=17.98  ⟨I⟩=27.13  ⟨O⟩=17.98  Φ/Em=0.05009  (rate 0.0025/t.u. Δt=20; min⟨⟩=17.98; I/O=1.51; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.440  ⟨polar⟩=0.028  (book frames 6/6)
+  [PASS] dM/dt ≈ 0 (parked) — Em 361.2→355.4  |Δ|/⟨Em⟩=0.016  |ΔEmTot|/EmTot0=0.014
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=95.93  ⟨|Circ|⟩=15.35  dir-stable=0.50
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1369  ⟨|dEmTot|⟩=4.281  corr(net,dM)=0.021  |Thru|~|dM|=0.155  tracks=false
+
+H1 EMPTY  frames=51  span=1000.0  ../v91/runs/pad/m7_g4_k0.fcs
+  stream t=[0.0, 1000.0]  best window t=[900.0, 1000.0] Δt=100.0  clauses 3/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=9.076  ⟨I⟩=11.57  ⟨O⟩=9.076  Φ/Em=0.01854  (rate 0.000927/t.u. Δt=20; min⟨⟩=9.076; I/O=1.27; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.691  ⟨polar⟩=0.058  (book frames 6/6)
+  [PASS] dM/dt ≈ 0 (parked) — Em 492.3→492.3  |Δ|/⟨Em⟩=0.000  |ΔEmTot|/EmTot0=0.002
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=168.4  ⟨|Circ|⟩=33.2  dir-stable=0.83
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=1.141  ⟨|dEmTot|⟩=3.203  corr(net,dM)=0.667  |Thru|~|dM|=-0.255  tracks=true
+
+H1 EMPTY  frames=61  span=300.0  ../v91/runs/pad/p17_amp0.10.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.0048  ⟨I⟩=0.0508  ⟨O⟩=0.01021  Φ/Em=0.005228  (rate 0.000993/t.u. Δt=5.26; min⟨⟩=0.01021; I/O=4.98; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=1.037  ⟨polar⟩=0.846  (book frames 5/20)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 0.5853→0.9839  |Δ|/⟨Em⟩=0.434  |ΔEmTot|/EmTot0=0.508
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=0.9519  ⟨|Circ|⟩=0.6126  dir-stable=0.65
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.004705  ⟨|dEmTot|⟩=0.5087  corr(net,dM)=-0.132  |Thru|~|dM|=-0.005  tracks=false
+
+H1 EMPTY  frames=61  span=300.0  ../v91/runs/pad/p17_amp0.20.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=1.578  ⟨I⟩=2.595  ⟨O⟩=1.578  Φ/Em=0.01749  (rate 0.0035/t.u. Δt=5; min⟨⟩=1.578; I/O=1.64; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.298  ⟨polar⟩=0.073  (book frames 21/21)
+  [PASS] dM/dt ≈ 0 (parked) — Em 85.07→93.98  |Δ|/⟨Em⟩=0.099  |ΔEmTot|/EmTot0=0.024
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=34.74  ⟨|Circ|⟩=3.374  dir-stable=0.57
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.05781  ⟨|dEmTot|⟩=1.044  corr(net,dM)=0.004  |Thru|~|dM|=-0.155  tracks=false
+
+H1 EMPTY  frames=61  span=300.0  ../v91/runs/pad/p17_amp0.30.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=5.217  ⟨I⟩=7.103  ⟨O⟩=5.217  Φ/Em=0.02667  (rate 0.00533/t.u. Δt=5; min⟨⟩=5.217; I/O=1.36; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.594  ⟨polar⟩=0.070  (book frames 21/21)
+  [PASS] dM/dt ≈ 0 (parked) — Em 198→194.4  |Δ|/⟨Em⟩=0.018  |ΔEmTot|/EmTot0=0.007
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=67.31  ⟨|Circ|⟩=10.56  dir-stable=0.52
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1449  ⟨|dEmTot|⟩=2.018  corr(net,dM)=-0.173  |Thru|~|dM|=0.487  tracks=true
+
+H1 EMPTY  frames=76  span=1500.0  ../v91/runs/pad/w2_blob2.fcs
+  stream t=[0.0, 1500.0]  best window t=[1400.0, 1500.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=36.17  ⟨I⟩=46.82  ⟨O⟩=36.17  Φ/Em=0.0561  (rate 0.0028/t.u. Δt=20; min⟨⟩=36.17; I/O=1.29; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.937  ⟨polar⟩=0.036  (book frames 6/6)
+  [PASS] dM/dt ≈ 0 (parked) — Em 642.1→635.1  |Δ|/⟨Em⟩=0.011  |ΔEmTot|/EmTot0=0.011
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=172.2  ⟨|Circ|⟩=31.03  dir-stable=0.67
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=2.061  ⟨|dEmTot|⟩=6.308  corr(net,dM)=0.195  |Thru|~|dM|=0.578  tracks=true
+
+H1 EMPTY  frames=201  span=2000.0  ../v91/runs/pad/w2_blob.fcs
+  stream t=[0.0, 2000.0]  best window t=[1900.0, 2000.0] Δt=100.0  clauses 3/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=26.96  ⟨I⟩=32.96  ⟨O⟩=26.96  Φ/Em=0.05494  (rate 0.00549/t.u. Δt=10; min⟨⟩=26.96; I/O=1.22; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.234  ⟨polar⟩=0.036  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 491.7→494.1  |Δ|/⟨Em⟩=0.005  |ΔEmTot|/EmTot0=0.005
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=216  ⟨|Circ|⟩=21.89  dir-stable=0.82
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.8524  ⟨|dEmTot|⟩=6.112  corr(net,dM)=-0.150  |Thru|~|dM|=-0.414  tracks=false
+
+H1 EMPTY  frames=61  span=600.0  ../v91/runs/pad/w2_compdim.fcs
+  stream t=[0.0, 600.0]  best window t=[500.0, 600.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=2.426  ⟨I⟩=4.381  ⟨O⟩=2.426  Φ/Em=0.02442  (rate 0.00244/t.u. Δt=10; min⟨⟩=2.426; I/O=1.81; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.534  ⟨polar⟩=0.035  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 98.85→102.5  |Δ|/⟨Em⟩=0.037  |ΔEmTot|/EmTot0=0.020
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=32.61  ⟨|Circ|⟩=5.471  dir-stable=0.55
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.02992  ⟨|dEmTot|⟩=1.113  corr(net,dM)=-0.071  |Thru|~|dM|=-0.112  tracks=false
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/add_am05.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/21)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 76.69→35.87  |Δ|/⟨Em⟩=0.725  |ΔEmTot|/EmTot0=0.330
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=13.99  ⟨|Circ|⟩=13.25  dir-stable=0.55
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.04587  ⟨|dEmTot|⟩=1.532  corr(net,dM)=0.244  |Thru|~|dM|=0.337  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/add_am2.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.2713  ⟨I⟩=0.2823  ⟨O⟩=0.3734  Φ/Em=0.0008742  (rate 0.000219/t.u. Δt=4; min⟨⟩=0.2823; I/O=0.756; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=1.966  ⟨polar⟩=0.242  (book frames 14/21)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 353.8→281.1  |Δ|/⟨Em⟩=0.234  |ΔEmTot|/EmTot0=0.172
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=165.6  ⟨|Circ|⟩=46.15  dir-stable=0.70
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.6932  ⟨|dEmTot|⟩=3.382  corr(net,dM)=-0.163  |Thru|~|dM|=0.257  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/am025.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/21)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 31.71→21.73  |Δ|/⟨Em⟩=0.376  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=7.644  ⟨|Circ|⟩=3.263  dir-stable=0.60
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.0793  ⟨|dEmTot|⟩=1.319e-07  corr(net,dM)=-0.113  |Thru|~|dM|=-0.173  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/am1.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 3/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.04057  ⟨I⟩=0.0532  ⟨O⟩=0.07169  Φ/Em=0.000255  (rate 6.38e-05/t.u. Δt=4; min⟨⟩=0.0532; I/O=0.742; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=1.678  ⟨polar⟩=0.354  (book frames 15/21)
+  [PASS] dM/dt ≈ 0 (parked) — Em 168.1→151.8  |Δ|/⟨Em⟩=0.103  |ΔEmTot|/EmTot0=0.008
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=57.65  ⟨|Circ|⟩=26.37  dir-stable=0.55
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.6912  ⟨|dEmTot|⟩=0.07114  corr(net,dM)=0.248  |Thru|~|dM|=-0.213  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/am2.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.5904  ⟨I⟩=0.5996  ⟨O⟩=0.9747  Φ/Em=0.001741  (rate 0.000435/t.u. Δt=4; min⟨⟩=0.5996; I/O=0.615; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=1.624  ⟨polar⟩=0.243  (book frames 16/21)
+  [PASS] dM/dt ≈ 0 (parked) — Em 353.8→326.1  |Δ|/⟨Em⟩=0.082  |ΔEmTot|/EmTot0=0.044
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=177.9  ⟨|Circ|⟩=55.38  dir-stable=0.70
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=1.367  ⟨|dEmTot|⟩=0.783  corr(net,dM)=0.496  |Thru|~|dM|=-0.367  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/an05.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/21)
+  [PASS] dM/dt ≈ 0 (parked) — Em 76.69→73.18  |Δ|/⟨Em⟩=0.047  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=15.47  ⟨|Circ|⟩=17.22  dir-stable=0.55
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.1522  ⟨|dEmTot|⟩=1.703e-07  corr(net,dM)=-0.018  |Thru|~|dM|=-0.073  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/an1.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/21)
+  [PASS] dM/dt ≈ 0 (parked) — Em 76.69→68.39  |Δ|/⟨Em⟩=0.115  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=16.94  ⟨|Circ|⟩=10.6  dir-stable=0.60
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.2183  ⟨|dEmTot|⟩=1.841e-07  corr(net,dM)=0.015  |Thru|~|dM|=0.169  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/an2.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/21)
+  [PASS] dM/dt ≈ 0 (parked) — Em 76.69→64.25  |Δ|/⟨Em⟩=0.180  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=25.78  ⟨|Circ|⟩=10.06  dir-stable=0.60
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.2762  ⟨|dEmTot|⟩=2.021e-07  corr(net,dM)=0.023  |Thru|~|dM|=0.043  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/an4.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/21)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 76.69→56.87  |Δ|/⟨Em⟩=0.306  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=16.75  ⟨|Circ|⟩=10.16  dir-stable=0.50
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.33  ⟨|dEmTot|⟩=2.071e-07  corr(net,dM)=0.031  |Thru|~|dM|=0.316  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/kx11.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.002787  ⟨I⟩=0.008682  ⟨O⟩=0.00658  Φ/Em=4.71e-05  (rate 1.18e-05/t.u. Δt=4; min⟨⟩=0.00658; I/O=1.32; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.837  ⟨polar⟩=0.439  (book frames 7/21)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 76.69→51.63  |Δ|/⟨Em⟩=0.423  |ΔEmTot|/EmTot0=0.003
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=51.16  ⟨|Circ|⟩=9.778  dir-stable=0.57
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.316  ⟨|dEmTot|⟩=0.01125  corr(net,dM)=-0.038  |Thru|~|dM|=-0.004  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/kx20.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/21)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 76.69→53.49  |Δ|/⟨Em⟩=0.384  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=44.01  ⟨|Circ|⟩=8.512  dir-stable=0.57
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.3739  ⟨|dEmTot|⟩=2.178e-07  corr(net,dM)=0.034  |Thru|~|dM|=0.177  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/kx26.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/21)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 76.69→52.33  |Δ|/⟨Em⟩=0.418  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=26.91  ⟨|Circ|⟩=9.907  dir-stable=0.57
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.3237  ⟨|dEmTot|⟩=1.373e-07  corr(net,dM)=-0.499  |Thru|~|dM|=0.495  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/qd06.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.003594  ⟨I⟩=0.007081  ⟨O⟩=0.01126  Φ/Em=5.433e-05  (rate 1.36e-05/t.u. Δt=4; min⟨⟩=0.007081; I/O=0.629; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=1.939  ⟨polar⟩=0.292  (book frames 8/21)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 76.69→58.47  |Δ|/⟨Em⟩=0.275  |ΔEmTot|/EmTot0=0.003
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=19.87  ⟨|Circ|⟩=8.469  dir-stable=0.55
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.2917  ⟨|dEmTot|⟩=0.01495  corr(net,dM)=-0.176  |Thru|~|dM|=-0.178  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/qd0.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/21)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 76.69→55.77  |Δ|/⟨Em⟩=0.326  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=33.48  ⟨|Circ|⟩=6.89  dir-stable=0.55
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.1774  ⟨|dEmTot|⟩=1.432e-07  corr(net,dM)=-0.220  |Thru|~|dM|=0.160  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/qd12am2.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.006411  ⟨I⟩=0.007839  ⟨O⟩=0.009413  Φ/Em=1.799e-05  (rate 4.5e-06/t.u. Δt=4; min⟨⟩=0.007839; I/O=0.833; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.773  ⟨polar⟩=0.338  (book frames 7/21)
+  [PASS] dM/dt ≈ 0 (parked) — Em 353.8→356.3  |Δ|/⟨Em⟩=0.007  |ΔEmTot|/EmTot0=0.001
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=116.6  ⟨|Circ|⟩=38.14  dir-stable=0.55
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=1.677  ⟨|dEmTot|⟩=0.01139  corr(net,dM)=0.092  |Thru|~|dM|=-0.162  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/qd12.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/21)
+  [PASS] dM/dt ≈ 0 (parked) — Em 76.69→78.83  |Δ|/⟨Em⟩=0.027  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=19.71  ⟨|Circ|⟩=11.87  dir-stable=0.60
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.1977  ⟨|dEmTot|⟩=1.659e-07  corr(net,dM)=0.135  |Thru|~|dM|=-0.111  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/qd36am2.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 3/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.09508  ⟨I⟩=0.09839  ⟨O⟩=0.185  Φ/Em=0.00027  (rate 6.75e-05/t.u. Δt=4; min⟨⟩=0.09839; I/O=0.532; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=1.410  ⟨polar⟩=0.347  (book frames 14/21)
+  [PASS] dM/dt ≈ 0 (parked) — Em 353.8→348.6  |Δ|/⟨Em⟩=0.015  |ΔEmTot|/EmTot0=0.008
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=130.9  ⟨|Circ|⟩=44.08  dir-stable=0.60
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=1.245  ⟨|dEmTot|⟩=0.1332  corr(net,dM)=0.032  |Thru|~|dM|=-0.131  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=21  span=80.0  ../v93/runs/dnls/qd36.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/21)
+  [PASS] dM/dt ≈ 0 (parked) — Em 76.69→72.92  |Δ|/⟨Em⟩=0.050  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=16.92  ⟨|Circ|⟩=13.53  dir-stable=0.70
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.2046  ⟨|dEmTot|⟩=1.98e-07  corr(net,dM)=0.098  |Thru|~|dM|=-0.181  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/dnls/ret_qd12am2.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 3/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.01018  ⟨I⟩=0.01155  ⟨O⟩=0.01529  Φ/Em=2.857e-05  (rate 1.43e-05/t.u. Δt=2; min⟨⟩=0.01155; I/O=0.755; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=1.122  ⟨polar⟩=0.252  (book frames 19/41)
+  [PASS] dM/dt ≈ 0 (parked) — Em 353.8→355.9  |Δ|/⟨Em⟩=0.006  |ΔEmTot|/EmTot0=0.001
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=102.7  ⟨|Circ|⟩=36.63  dir-stable=0.66
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=1.638  ⟨|dEmTot|⟩=0.009358  corr(net,dM)=-0.022  |Thru|~|dM|=-0.200  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/dnls/ret_qd12.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=2; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/41)
+  [PASS] dM/dt ≈ 0 (parked) — Em 76.69→78.78  |Δ|/⟨Em⟩=0.027  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=25.23  ⟨|Circ|⟩=11.69  dir-stable=0.59
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.2012  ⟨|dEmTot|⟩=1.257e-07  corr(net,dM)=0.103  |Thru|~|dM|=0.089  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/dnls/ret_qd36.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=2; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/41)
+  [PASS] dM/dt ≈ 0 (parked) — Em 76.69→73.48  |Δ|/⟨Em⟩=0.043  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=19.66  ⟨|Circ|⟩=10.85  dir-stable=0.54
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.1933  ⟨|dEmTot|⟩=1.745e-07  corr(net,dM)=0.010  |Thru|~|dM|=-0.081  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=251  span=1000.0  ../v93/runs/faceA/ringA_rand.fcs
+  stream t=[0.0, 1000.0]  best window t=[900.0, 1000.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/26)
+  [PASS] dM/dt ≈ 0 (parked) — Em 4.848→4.84  |Δ|/⟨Em⟩=0.002  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=3.953  ⟨|Circ|⟩=2.268  dir-stable=0.54
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.0008571  ⟨|dEmTot|⟩=4.855e-08  corr(net,dM)=0.306  |Thru|~|dM|=0.283  tracks=false
+
+H1 EMPTY  frames=251  span=1000.0  ../v93/runs/faceA/ringA_rand_live.fcs
+  stream t=[0.0, 1000.0]  best window t=[900.0, 1000.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/26)
+  [PASS] dM/dt ≈ 0 (parked) — Em 4.875→4.875  |Δ|/⟨Em⟩=0.000  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=0.2468  ⟨|Circ|⟩=5.641  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0  ⟨|dEmTot|⟩=0  corr(net,dM)=NaN  |Thru|~|dM|=NaN  tracks=false
+
+H1 EMPTY  frames=251  span=1000.0  ../v93/runs/faceA/ringA_seq.fcs
+  stream t=[0.0, 1000.0]  best window t=[900.0, 1000.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/26)
+  [PASS] dM/dt ≈ 0 (parked) — Em 4.856→4.863  |Δ|/⟨Em⟩=0.001  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=3.289  ⟨|Circ|⟩=1.733  dir-stable=0.54
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.001262  ⟨|dEmTot|⟩=6.014e-08  corr(net,dM)=-0.186  |Thru|~|dM|=0.033  tracks=false
+
+H1 EMPTY  frames=251  span=1000.0  ../v93/runs/faceA/ringA_seq_live.fcs
+  stream t=[0.0, 1000.0]  best window t=[900.0, 1000.0] Δt=100.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/26)
+  [PASS] dM/dt ≈ 0 (parked) — Em 4.875→4.875  |Δ|/⟨Em⟩=0.000  |ΔEmTot|/EmTot0=0.000
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=3.405  ⟨|Circ|⟩=2.588  dir-stable=0.85
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0  ⟨|dEmTot|⟩=0  corr(net,dM)=NaN  |Thru|~|dM|=NaN  tracks=false
+
+H1 EMPTY  frames=251  span=1000.0  ../v93/runs/faceA/ringA_strang.fcs
+  stream t=[0.0, 1000.0]  best window t=[900.0, 1000.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/26)
+  [PASS] dM/dt ≈ 0 (parked) — Em 4.875→4.875  |Δ|/⟨Em⟩=0.000  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=2.333  ⟨|Circ|⟩=1.63  dir-stable=0.54
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.0009376  ⟨|dEmTot|⟩=4.212e-08  corr(net,dM)=0.191  |Thru|~|dM|=0.722  tracks=true
+
+H1 EMPTY  frames=251  span=1000.0  ../v93/runs/faceA/ringA_strang_live.fcs
+  stream t=[0.0, 1000.0]  best window t=[900.0, 1000.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/26)
+  [PASS] dM/dt ≈ 0 (parked) — Em 4.875→4.875  |Δ|/⟨Em⟩=0.000  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=0.7781  ⟨|Circ|⟩=5.557  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0  ⟨|dEmTot|⟩=0  corr(net,dM)=NaN  |Thru|~|dM|=NaN  tracks=false
+
+H1 EMPTY  frames=501  span=80.0  ../v93/runs/faceB/dark_uni_d1.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.0001651  ⟨I⟩=0.0002697  ⟨O⟩=0.0007461  Φ/Em=3.866e-05  (rate 0.000242/t.u. Δt=0.16; min⟨⟩=0.0002697; I/O=0.361; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.878  ⟨polar⟩=0.835  (book frames 122/501)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→3.593  |Δ|/⟨Em⟩=0.300  |ΔEmTot|/EmTot0=0.056
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=2.452  ⟨|Circ|⟩=2.611  dir-stable=0.56
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.03868  ⟨|dEmTot|⟩=0.0005494  corr(net,dM)=-0.010  |Thru|~|dM|=-0.015  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=501  span=80.0  ../v93/runs/faceB/lit_add.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.002165  ⟨I⟩=0.01567  ⟨O⟩=0.01523  Φ/Em=0.0003051  (rate 0.00191/t.u. Δt=0.16; min⟨⟩=0.01523; I/O=1.03; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.757  ⟨polar⟩=0.717  (book frames 164/501)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→8.487  |Δ|/⟨Em⟩=0.509  |ΔEmTot|/EmTot0=0.764
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=4.965  ⟨|Circ|⟩=4.368  dir-stable=0.57
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.1927  ⟨|dEmTot|⟩=0.0532  corr(net,dM)=-0.029  |Thru|~|dM|=-0.089  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=501  span=80.0  ../v93/runs/faceB/lit_uni_d0.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.04521  ⟨I⟩=0.1225  ⟨O⟩=0.06478  Φ/Em=0.002564  (rate 0.016/t.u. Δt=0.16; min⟨⟩=0.06478; I/O=1.89; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.826  ⟨polar⟩=0.532  (book frames 467/501)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→43.61  |Δ|/⟨Em⟩=2.196  |ΔEmTot|/EmTot0=8.151
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=8.742  ⟨|Circ|⟩=5.889  dir-stable=0.52
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.5318  ⟨|dEmTot|⟩=0.09883  corr(net,dM)=0.029  |Thru|~|dM|=0.295  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=501  span=80.0  ../v93/runs/faceB/lit_uni_d1.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.03844  ⟨I⟩=0.09896  ⟨O⟩=0.05506  Φ/Em=0.002468  (rate 0.0154/t.u. Δt=0.16; min⟨⟩=0.05506; I/O=1.8; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.693  ⟨polar⟩=0.501  (book frames 466/501)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→34.52  |Δ|/⟨Em⟩=1.903  |ΔEmTot|/EmTot0=6.877
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=7.075  ⟨|Circ|⟩=5.056  dir-stable=0.62
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.4157  ⟨|dEmTot|⟩=0.0775  corr(net,dM)=0.061  |Thru|~|dM|=0.216  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=201  span=200.0  ../v93/runs/faceB/vac_strang_d0_na0.fcs
+  stream t=[0.0, 200.0]  best window t=[100.0, 200.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=1; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/101)
+  [PASS] dM/dt ≈ 0 (parked) — Em 4.875→4.875  |Δ|/⟨Em⟩=0.000  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=0.09052  ⟨|Circ|⟩=5.67  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0  ⟨|dEmTot|⟩=0  corr(net,dM)=NaN  |Thru|~|dM|=NaN  tracks=false
+
+H1 EMPTY  frames=201  span=200.0  ../v93/runs/faceB/vac_strang_d0_na2.fcs
+  stream t=[0.0, 200.0]  best window t=[100.0, 200.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0.001433  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=1; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=1.000  (book frames 0/101)
+  [PASS] dM/dt ≈ 0 (parked) — Em 11.14→11.14  |Δ|/⟨Em⟩=0.000  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=9.402  ⟨|Circ|⟩=4.267  dir-stable=0.61
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0  ⟨|dEmTot|⟩=0.001648  corr(net,dM)=NaN  |Thru|~|dM|=NaN  tracks=false
+
+H1 EMPTY  frames=201  span=200.0  ../v93/runs/faceB/vac_strang_d1_na0.fcs
+  stream t=[0.0, 200.0]  best window t=[100.0, 200.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=1; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/101)
+  [PASS] dM/dt ≈ 0 (parked) — Em 4.875→4.875  |Δ|/⟨Em⟩=0.000  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=0.09052  ⟨|Circ|⟩=5.67  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0  ⟨|dEmTot|⟩=0  corr(net,dM)=NaN  |Thru|~|dM|=NaN  tracks=false
+
+H1 EMPTY  frames=201  span=200.0  ../v93/runs/faceB/vac_strang_d1_na2.fcs
+  stream t=[0.0, 200.0]  best window t=[100.0, 200.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0.001433  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=1; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=1.000  (book frames 0/101)
+  [PASS] dM/dt ≈ 0 (parked) — Em 11.14→11.14  |Δ|/⟨Em⟩=0.000  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=9.382  ⟨|Circ|⟩=5.023  dir-stable=0.78
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0  ⟨|dEmTot|⟩=0.001648  corr(net,dM)=NaN  |Thru|~|dM|=NaN  tracks=false
+
+H1 EMPTY  frames=31  span=300.0  ../v93/runs/faceC/c_deep05.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=10; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 71.12→69.77  |Δ|/⟨Em⟩=0.019  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=27.87  ⟨|Circ|⟩=11.55  dir-stable=0.64
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1337  ⟨|dEmTot|⟩=2.892e-07  corr(net,dM)=0.084  |Thru|~|dM|=0.410  tracks=true
+
+H1 EMPTY  frames=31  span=300.0  ../v93/runs/faceC/c_deep05_V3a.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.09949  ⟨I⟩=0.1087  ⟨O⟩=0.146  Φ/Em=0.001439  (rate 0.000144/t.u. Δt=10; min⟨⟩=0.1087; I/O=0.744; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.417  ⟨polar⟩=0.230  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 70.51→66.5  |Δ|/⟨Em⟩=0.058  |ΔEmTot|/EmTot0=0.013
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=14.04  ⟨|Circ|⟩=12.88  dir-stable=0.82
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1444  ⟨|dEmTot|⟩=0.1072  corr(net,dM)=0.319  |Thru|~|dM|=0.481  tracks=true
+
+H1 EMPTY  frames=31  span=300.0  ../v93/runs/faceC/c_deep2.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=1.571  ⟨I⟩=1.72  ⟨O⟩=1.674  Φ/Em=0.004719  (rate 0.000472/t.u. Δt=10; min⟨⟩=1.674; I/O=1.03; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.853  ⟨polar⟩=0.092  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 336.6→330.5  |Δ|/⟨Em⟩=0.018  |ΔEmTot|/EmTot0=0.012
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=65.97  ⟨|Circ|⟩=40.14  dir-stable=0.73
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.8888  ⟨|dEmTot|⟩=0.5093  corr(net,dM)=-0.074  |Thru|~|dM|=0.544  tracks=true
+
+H1 EMPTY  frames=31  span=300.0  ../v93/runs/faceC/c_deep2_V3a.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=3.548  ⟨I⟩=3.806  ⟨O⟩=3.623  Φ/Em=0.01182  (rate 0.00118/t.u. Δt=10; min⟨⟩=3.623; I/O=1.05; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=1.306  ⟨polar⟩=0.082  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 304.9→293.4  |Δ|/⟨Em⟩=0.038  |ΔEmTot|/EmTot0=0.030
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=56.31  ⟨|Circ|⟩=25.67  dir-stable=0.55
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.9483  ⟨|dEmTot|⟩=1.268  corr(net,dM)=-0.151  |Thru|~|dM|=0.034  tracks=false
+
+H1 EMPTY  frames=31  span=300.0  ../v93/runs/faceC/c_law05.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=10; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 54.82→53.82  |Δ|/⟨Em⟩=0.019  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=20.67  ⟨|Circ|⟩=9.191  dir-stable=0.55
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.1641  ⟨|dEmTot|⟩=1.916e-07  corr(net,dM)=0.282  |Thru|~|dM|=-0.259  tracks=false
+
+H1 EMPTY  frames=31  span=300.0  ../v93/runs/faceC/c_law05_V3a.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.1468  ⟨I⟩=0.1979  ⟨O⟩=0.1575  Φ/Em=0.002927  (rate 0.000293/t.u. Δt=10; min⟨⟩=0.1575; I/O=1.26; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=1.325  ⟨polar⟩=0.162  (book frames 11/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 52.53→47.91  |Δ|/⟨Em⟩=0.092  |ΔEmTot|/EmTot0=0.013
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=11.2  ⟨|Circ|⟩=6.624  dir-stable=0.64
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1137  ⟨|dEmTot|⟩=0.1238  corr(net,dM)=-0.249  |Thru|~|dM|=0.090  tracks=false
+
+H1 EMPTY  frames=31  span=300.0  ../v93/runs/faceC/c_melt05.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=10; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/11)
+  [PASS] dM/dt ≈ 0 (parked) — Em 53.79→54.2  |Δ|/⟨Em⟩=0.007  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=22.78  ⟨|Circ|⟩=5.02  dir-stable=0.64
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.01318  ⟨|dEmTot|⟩=1.09e-07  corr(net,dM)=0.029  |Thru|~|dM|=-0.439  tracks=false
+
+H1 EMPTY  frames=11  span=40.0  ../v93/runs/prog/e3b_add.fcs
+  stream t=[0.0, 40.0]  best window t=[0.0, 40.0] Δt=40.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/11)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 76.69→47.14  |Δ|/⟨Em⟩=0.481  |ΔEmTot|/EmTot0=0.332
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=159.8  ⟨|Circ|⟩=6.429  dir-stable=0.64
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.06345  ⟨|dEmTot|⟩=2.804  corr(net,dM)=-0.006  |Thru|~|dM|=-0.198  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=11  span=40.0  ../v93/runs/prog/e3b_lin.fcs
+  stream t=[0.0, 40.0]  best window t=[0.0, 40.0] Δt=40.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0.003675  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0; I/O=0; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.443  (book frames 0/11)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 76.69→58.18  |Δ|/⟨Em⟩=0.291  |ΔEmTot|/EmTot0=0.002
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=86.79  ⟨|Circ|⟩=14.38  dir-stable=0.55
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.3702  ⟨|dEmTot|⟩=0.02059  corr(net,dM)=0.222  |Thru|~|dM|=-0.139  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=7  span=24.0  ../v93/runs/prog/noise_ctl.fcs
+  stream t=[0.0, 24.0]  best window t=[0.0, 24.0] Δt=24.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=7  span=24.0  ../v93/runs/prog/pulse_k0.fcs
+  stream t=[0.0, 24.0]  best window t=[0.0, 24.0] Δt=24.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=7  span=24.0  ../v93/runs/prog/pulse_kx.fcs
+  stream t=[0.0, 24.0]  best window t=[0.0, 24.0] Δt=24.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=16  span=300.0  ../v93/runs/quench/fix_g0.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=5.291  ⟨I⟩=7.036  ⟨O⟩=5.291  Φ/Em=0.02693  (rate 0.00135/t.u. Δt=20; min⟨⟩=5.291; I/O=1.33; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=1.639  ⟨polar⟩=0.084  (book frames 6/6)
+  [PASS] dM/dt ≈ 0 (parked) — Em 195.4→195  |Δ|/⟨Em⟩=0.002  |ΔEmTot|/EmTot0=0.016
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=12.11  ⟨|Circ|⟩=10.24  dir-stable=0.67
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.2406  ⟨|dEmTot|⟩=3.442  corr(net,dM)=0.433  |Thru|~|dM|=0.540  tracks=true
+
+H1 EMPTY  frames=16  span=300.0  ../v93/runs/quench/fix_g1.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 3/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=5.211  ⟨I⟩=6.735  ⟨O⟩=5.306  Φ/Em=0.02688  (rate 0.00134/t.u. Δt=20; min⟨⟩=5.306; I/O=1.27; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=1.400  ⟨polar⟩=0.069  (book frames 6/6)
+  [PASS] dM/dt ≈ 0 (parked) — Em 193.2→188.2  |Δ|/⟨Em⟩=0.026  |ΔEmTot|/EmTot0=0.028
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=17.82  ⟨|Circ|⟩=6.698  dir-stable=0.83
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.2372  ⟨|dEmTot|⟩=5.033  corr(net,dM)=0.339  |Thru|~|dM|=-0.303  tracks=false
+
+H1 EMPTY  frames=16  span=300.0  ../v93/runs/quench/fix_g2.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=10.94  ⟨I⟩=13.03  ⟨O⟩=10.98  Φ/Em=0.02462  (rate 0.00123/t.u. Δt=20; min⟨⟩=10.98; I/O=1.19; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.387  ⟨polar⟩=0.034  (book frames 6/6)
+  [PASS] dM/dt ≈ 0 (parked) — Em 417.6→472.6  |Δ|/⟨Em⟩=0.124  |ΔEmTot|/EmTot0=0.030
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=176.1  ⟨|Circ|⟩=23.43  dir-stable=0.67
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.5874  ⟨|dEmTot|⟩=3.048  corr(net,dM)=-0.600  |Thru|~|dM|=0.543  tracks=true
+
+H1 EMPTY  frames=16  span=300.0  ../v93/runs/quench/fix_g3.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 3/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=10.39  ⟨I⟩=11.72  ⟨O⟩=10.39  Φ/Em=0.02478  (rate 0.00124/t.u. Δt=20; min⟨⟩=10.39; I/O=1.13; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=8.798  ⟨polar⟩=0.032  (book frames 6/6)
+  [PASS] dM/dt ≈ 0 (parked) — Em 399.6→457.7  |Δ|/⟨Em⟩=0.139  |ΔEmTot|/EmTot0=0.038
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=47.5  ⟨|Circ|⟩=21.69  dir-stable=0.83
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=1.795  ⟨|dEmTot|⟩=3.82  corr(net,dM)=-0.490  |Thru|~|dM|=0.102  tracks=true
+
+H1 EMPTY  frames=16  span=30.0  ../v93/runs/quench/h0e_nodoor.fcs
+  stream t=[0.0, 30.0]  best window t=[0.0, 30.0] Δt=30.0  clauses 1/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=2.302  ⟨I⟩=14.94  ⟨O⟩=2.302  Φ/Em=0.01643  (rate 0.00822/t.u. Δt=2; min⟨⟩=2.302; I/O=6.49; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=1.952  ⟨polar⟩=0.208  (book frames 12/13)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 1.736→206.3  |Δ|/⟨Em⟩=1.461  |ΔEmTot|/EmTot0=21.685
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=9.855  ⟨|Circ|⟩=6.977  dir-stable=0.54
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.3211  ⟨|dEmTot|⟩=16.33  corr(net,dM)=-0.481  |Thru|~|dM|=0.419  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=16  span=300.0  ../v93/runs/quench/h0_nodoor.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=5.291  ⟨I⟩=7.036  ⟨O⟩=5.291  Φ/Em=0.02693  (rate 0.00135/t.u. Δt=20; min⟨⟩=5.291; I/O=1.33; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=1.639  ⟨polar⟩=0.084  (book frames 6/6)
+  [PASS] dM/dt ≈ 0 (parked) — Em 195.4→195  |Δ|/⟨Em⟩=0.002  |ΔEmTot|/EmTot0=0.016
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=12.11  ⟨|Circ|⟩=10.24  dir-stable=0.67
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.2406  ⟨|dEmTot|⟩=3.442  corr(net,dM)=0.433  |Thru|~|dM|=0.540  tracks=true
+
+H1 EMPTY  frames=16  span=300.0  ../v93/runs/quench/h1_door.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 3/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=4.88  ⟨I⟩=6.979  ⟨O⟩=4.88  Φ/Em=0.02523  (rate 0.00126/t.u. Δt=20; min⟨⟩=4.88; I/O=1.43; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.569  ⟨polar⟩=0.076  (book frames 6/6)
+  [PASS] dM/dt ≈ 0 (parked) — Em 194.2→191.8  |Δ|/⟨Em⟩=0.012  |ΔEmTot|/EmTot0=0.007
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=13.15  ⟨|Circ|⟩=7.111  dir-stable=0.83
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1896  ⟨|dEmTot|⟩=2.335  corr(net,dM)=-0.657  |Thru|~|dM|=-0.239  tracks=true
+
+H1 EMPTY  frames=16  span=30.0  ../v93/runs/quench/h1e_door.fcs
+  stream t=[0.0, 30.0]  best window t=[0.0, 30.0] Δt=30.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=2.173  ⟨I⟩=14.84  ⟨O⟩=2.265  Φ/Em=0.01566  (rate 0.00783/t.u. Δt=2; min⟨⟩=2.265; I/O=6.55; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.423  ⟨polar⟩=0.230  (book frames 12/13)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 1.731→196.3  |Δ|/⟨Em⟩=1.402  |ΔEmTot|/EmTot0=20.329
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=18.18  ⟨|Circ|⟩=12.47  dir-stable=0.92
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.3067  ⟨|dEmTot|⟩=16.34  corr(net,dM)=-0.559  |Thru|~|dM|=0.605  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=16  span=300.0  ../v93/runs/quench/h2_door_uni.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=11.45  ⟨I⟩=13.61  ⟨O⟩=11.45  Φ/Em=0.02551  (rate 0.00128/t.u. Δt=20; min⟨⟩=11.45; I/O=1.19; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=9.914  ⟨polar⟩=0.051  (book frames 6/6)
+  [PASS] dM/dt ≈ 0 (parked) — Em 389.6→474.7  |Δ|/⟨Em⟩=0.189  |ΔEmTot|/EmTot0=0.030
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=197.7  ⟨|Circ|⟩=32.38  dir-stable=0.67
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.6195  ⟨|dEmTot|⟩=3.121  corr(net,dM)=0.370  |Thru|~|dM|=0.693  tracks=true
+
+H1 EMPTY  frames=16  span=30.0  ../v93/runs/quench/h2_early.fcs
+  stream t=[0.0, 30.0]  best window t=[0.0, 30.0] Δt=30.0  clauses 1/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=2.65  ⟨I⟩=17.59  ⟨O⟩=2.65  Φ/Em=0.01597  (rate 0.00799/t.u. Δt=2; min⟨⟩=2.65; I/O=6.64; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.814  ⟨polar⟩=0.202  (book frames 12/13)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 1.736→256.4  |Δ|/⟨Em⟩=1.534  |ΔEmTot|/EmTot0=26.469
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=18.01  ⟨|Circ|⟩=13.48  dir-stable=0.69
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.4483  ⟨|dEmTot|⟩=20.16  corr(net,dM)=-0.612  |Thru|~|dM|=-0.301  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=16  span=30.0  ../v93/runs/quench/h2e_dooruni.fcs
+  stream t=[0.0, 30.0]  best window t=[0.0, 30.0] Δt=30.0  clauses 1/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=2.65  ⟨I⟩=17.59  ⟨O⟩=2.65  Φ/Em=0.01597  (rate 0.00799/t.u. Δt=2; min⟨⟩=2.65; I/O=6.64; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.814  ⟨polar⟩=0.202  (book frames 12/13)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 1.736→256.4  |Δ|/⟨Em⟩=1.534  |ΔEmTot|/EmTot0=26.469
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=18.01  ⟨|Circ|⟩=13.48  dir-stable=0.69
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.4483  ⟨|dEmTot|⟩=20.16  corr(net,dM)=-0.612  |Thru|~|dM|=-0.301  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=16  span=300.0  ../v93/runs/quench/h3_uni_clk.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=11.17  ⟨I⟩=11.84  ⟨O⟩=11.46  Φ/Em=0.02611  (rate 0.00131/t.u. Δt=20; min⟨⟩=11.46; I/O=1.03; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=13.365  ⟨polar⟩=0.019  (book frames 6/6)
+  [PASS] dM/dt ≈ 0 (parked) — Em 409.6→447.9  |Δ|/⟨Em⟩=0.089  |ΔEmTot|/EmTot0=0.031
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=38.81  ⟨|Circ|⟩=24.42  dir-stable=0.67
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=1.716  ⟨|dEmTot|⟩=3.357  corr(net,dM)=-0.226  |Thru|~|dM|=-0.175  tracks=false
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/quench/mw_add.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.004498  ⟨I⟩=0.006708  ⟨O⟩=0.005944  Φ/Em=8.229e-05  (rate 4.11e-05/t.u. Δt=2; min⟨⟩=0.005944; I/O=1.13; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.680  ⟨polar⟩=0.294  (book frames 6/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 76.69→39.11  |Δ|/⟨Em⟩=0.687  |ΔEmTot|/EmTot0=0.333
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=17.72  ⟨|Circ|⟩=6.869  dir-stable=0.76
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.06508  ⟨|dEmTot|⟩=1.278  corr(net,dM)=0.057  |Thru|~|dM|=0.149  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=3  span=4.0  ../v93/runs/quench/mw_t0.fcs
+  stream t=[0.0, 4.0]  best window t=[0.0, 4.0] Δt=4.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=2; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/3)
+  [PASS] dM/dt ≈ 0 (parked) — Em 76.69→76.78  |Δ|/⟨Em⟩=0.001  |ΔEmTot|/EmTot0=0.000
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=28.5  ⟨|Circ|⟩=19.8  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.311  ⟨|dEmTot|⟩=1.061e-07  corr(net,dM)=0.959  |Thru|~|dM|=0.243  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/quench/mw_uni.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=2; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/41)
+  [PASS] dM/dt ≈ 0 (parked) — Em 76.69→64.52  |Δ|/⟨Em⟩=0.176  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=16.64  ⟨|Circ|⟩=11.37  dir-stable=0.68
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.2701  ⟨|dEmTot|⟩=1.384e-07  corr(net,dM)=0.148  |Thru|~|dM|=0.091  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=16  span=300.0  ../v93/runs/quench/q3_g0_ctl.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=5.291  ⟨I⟩=7.036  ⟨O⟩=5.291  Φ/Em=0.02693  (rate 0.00135/t.u. Δt=20; min⟨⟩=5.291; I/O=1.33; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=1.639  ⟨polar⟩=0.084  (book frames 6/6)
+  [PASS] dM/dt ≈ 0 (parked) — Em 195.4→195  |Δ|/⟨Em⟩=0.002  |ΔEmTot|/EmTot0=0.016
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=12.11  ⟨|Circ|⟩=10.24  dir-stable=0.67
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.2406  ⟨|dEmTot|⟩=3.442  corr(net,dM)=0.433  |Thru|~|dM|=0.540  tracks=true
+
+H1 EMPTY  frames=16  span=300.0  ../v93/runs/quench/q3_g1_v91.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=4.414  ⟨I⟩=5.96  ⟨O⟩=4.414  Φ/Em=0.02309  (rate 0.00115/t.u. Δt=20; min⟨⟩=4.414; I/O=1.35; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.394  ⟨polar⟩=0.103  (book frames 6/6)
+  [PASS] dM/dt ≈ 0 (parked) — Em 200.5→187.2  |Δ|/⟨Em⟩=0.069  |ΔEmTot|/EmTot0=0.037
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=13.3  ⟨|Circ|⟩=4.207  dir-stable=0.67
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.2139  ⟨|dEmTot|⟩=3.796  corr(net,dM)=-0.079  |Thru|~|dM|=0.504  tracks=true
+
+H1 EMPTY  frames=16  span=300.0  ../v93/runs/quench/q3_g2_a1.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=7.559  ⟨I⟩=8.173  ⟨O⟩=7.614  Φ/Em=0.01939  (rate 0.00097/t.u. Δt=20; min⟨⟩=7.614; I/O=1.07; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.961  ⟨polar⟩=0.040  (book frames 6/6)
+  [PASS] dM/dt ≈ 0 (parked) — Em 361.2→431.2  |Δ|/⟨Em⟩=0.180  |ΔEmTot|/EmTot0=0.022
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=116.1  ⟨|Circ|⟩=20.87  dir-stable=0.67
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.483  ⟨|dEmTot|⟩=2.508  corr(net,dM)=0.802  |Thru|~|dM|=0.738  tracks=true
+
+H1 EMPTY  frames=16  span=300.0  ../v93/runs/quench/q3_g3_a2.fcs
+  stream t=[0.0, 300.0]  best window t=[200.0, 300.0] Δt=100.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=10.88  ⟨I⟩=13.87  ⟨O⟩=10.88  Φ/Em=0.02408  (rate 0.0012/t.u. Δt=20; min⟨⟩=10.88; I/O=1.28; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=11.277  ⟨polar⟩=0.033  (book frames 6/6)
+  [PASS] dM/dt ≈ 0 (parked) — Em 428→465.9  |Δ|/⟨Em⟩=0.084  |ΔEmTot|/EmTot0=0.035
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=115.2  ⟨|Circ|⟩=14.75  dir-stable=0.67
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.5975  ⟨|dEmTot|⟩=3.412  corr(net,dM)=-0.574  |Thru|~|dM|=0.882  tracks=true
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/quench/rb12_uni_m2.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.002724  ⟨I⟩=0.006577  ⟨O⟩=0.01535  Φ/Em=0.0003506  (rate 0.000175/t.u. Δt=2; min⟨⟩=0.006577; I/O=0.428; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.850  ⟨polar⟩=0.728  (book frames 26/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 9.75→5.421  |Δ|/⟨Em⟩=0.557  |ΔEmTot|/EmTot0=0.069
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=5.187  ⟨|Circ|⟩=3.351  dir-stable=0.54
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.05135  ⟨|dEmTot|⟩=0.01635  corr(net,dM)=-0.062  |Thru|~|dM|=-0.064  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/quench/rb6_add_m1.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=2; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/41)
+  [PASS] dM/dt ≈ 0 (parked) — Em 4.875→3.973  |Δ|/⟨Em⟩=0.198  |ΔEmTot|/EmTot0=0.171
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=3.716  ⟨|Circ|⟩=3.132  dir-stable=0.63
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.01954  ⟨|dEmTot|⟩=0.1059  corr(net,dM)=-0.133  |Thru|~|dM|=0.054  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/quench/rb6_add_m2.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=2; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/41)
+  [PASS] dM/dt ≈ 0 (parked) — Em 4.875→4.121  |Δ|/⟨Em⟩=0.167  |ΔEmTot|/EmTot0=0.080
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=3.36  ⟨|Circ|⟩=2.06  dir-stable=0.70
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.02527  ⟨|dEmTot|⟩=0.07872  corr(net,dM)=-0.030  |Thru|~|dM|=0.621  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/quench/rb6_uni_m0.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=2; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→3.653  |Δ|/⟨Em⟩=0.279  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=2.759  ⟨|Circ|⟩=2.59  dir-stable=0.59
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.04245  ⟨|dEmTot|⟩=7.126e-08  corr(net,dM)=-0.012  |Thru|~|dM|=-0.153  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/quench/rb6_uni_m1.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=2.16; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/38)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→3.387  |Δ|/⟨Em⟩=0.369  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=2.227  ⟨|Circ|⟩=1.777  dir-stable=0.61
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.02913  ⟨|dEmTot|⟩=5.992e-08  corr(net,dM)=0.051  |Thru|~|dM|=0.075  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/quench/rb6_uni_m2_an05.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=2; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/41)
+  [PASS] dM/dt ≈ 0 (parked) — Em 4.875→4.83  |Δ|/⟨Em⟩=0.009  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=3.135  ⟨|Circ|⟩=2.399  dir-stable=0.76
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.03462  ⟨|dEmTot|⟩=5.866e-08  corr(net,dM)=-0.103  |Thru|~|dM|=-0.045  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/quench/rb6_uni_m2.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=2; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→3.866  |Δ|/⟨Em⟩=0.228  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=2.451  ⟨|Circ|⟩=1.724  dir-stable=0.68
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.03427  ⟨|dEmTot|⟩=7.181e-08  corr(net,dM)=0.021  |Thru|~|dM|=-0.144  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/quench/rb6_uni_m2_fg.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=2; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/41)
+  [PASS] dM/dt ≈ 0 (parked) — Em 4.875→4.841  |Δ|/⟨Em⟩=0.007  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=2.962  ⟨|Circ|⟩=2.435  dir-stable=0.60
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.06313  ⟨|dEmTot|⟩=5.625e-08  corr(net,dM)=-0.123  |Thru|~|dM|=-0.137  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/quench/rb6_uni_m2_qd0.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=2; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→1.815  |Δ|/⟨Em⟩=1.095  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1.025  ⟨|Circ|⟩=0.7822  dir-stable=0.51
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.02766  ⟨|dEmTot|⟩=3.188e-08  corr(net,dM)=-0.304  |Thru|~|dM|=0.315  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/quench/rb6_uni_m2_qd36.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=2; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/40)
+  [PASS] dM/dt ≈ 0 (parked) — Em 4.875→4.051  |Δ|/⟨Em⟩=0.187  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=2.404  ⟨|Circ|⟩=1.931  dir-stable=0.62
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.02634  ⟨|dEmTot|⟩=5.779e-08  corr(net,dM)=0.033  |Thru|~|dM|=-0.110  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/quench/rbV3a_add_m2.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.001306  ⟨I⟩=0.004394  ⟨O⟩=0.02764  Φ/Em=0.0003286  (rate 0.000164/t.u. Δt=2; min⟨⟩=0.004394; I/O=0.159; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.736  ⟨polar⟩=0.795  (book frames 13/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→2.879  |Δ|/⟨Em⟩=0.502  |ΔEmTot|/EmTot0=0.390
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=2.702  ⟨|Circ|⟩=1.904  dir-stable=0.53
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.02313  ⟨|dEmTot|⟩=0.1468  corr(net,dM)=-0.100  |Thru|~|dM|=0.358  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/quench/rbV3a_uniDoor_m2.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.002475  ⟨I⟩=0.004086  ⟨O⟩=0.00789  Φ/Em=0.0005764  (rate 0.000288/t.u. Δt=2; min⟨⟩=0.004086; I/O=0.518; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.720  ⟨polar⟩=0.835  (book frames 10/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→3.684  |Δ|/⟨Em⟩=0.277  |ΔEmTot|/EmTot0=0.056
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=2.433  ⟨|Circ|⟩=1.813  dir-stable=0.68
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.03328  ⟨|dEmTot|⟩=0.006632  corr(net,dM)=-0.003  |Thru|~|dM|=0.025  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v93/runs/quench/rbV3a_uni_m2.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.002475  ⟨I⟩=0.004086  ⟨O⟩=0.00789  Φ/Em=0.0005764  (rate 0.000288/t.u. Δt=2; min⟨⟩=0.004086; I/O=0.518; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.720  ⟨polar⟩=0.835  (book frames 10/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→3.684  |Δ|/⟨Em⟩=0.277  |ΔEmTot|/EmTot0=0.056
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=2.433  ⟨|Circ|⟩=1.813  dir-stable=0.68
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.03328  ⟨|dEmTot|⟩=0.006632  corr(net,dM)=-0.003  |Thru|~|dM|=0.025  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=4  span=60.0  ../v93/runs/quench/test_g1.fcs
+  stream t=[0.0, 60.0]  best window t=[0.0, 60.0] Δt=60.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=2.014  ⟨I⟩=61.99  ⟨O⟩=3.995  Φ/Em=0.01017  (rate 0.000508/t.u. Δt=20; min⟨⟩=3.995; I/O=15.5; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.001  ⟨polar⟩=0.031  (book frames 2/3)
+  [PASS] dM/dt ≈ 0 (parked) — Em 198.3→197.4  |Δ|/⟨Em⟩=0.004  |ΔEmTot|/EmTot0=0.199
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=14.16  ⟨|Circ|⟩=12.6  dir-stable=0.67
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.2628  ⟨|dEmTot|⟩=79.71  corr(net,dM)=-0.637  |Thru|~|dM|=0.930  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=61  span=3000.0  ../v93/runs/reckon/r1_deep.fcs
+  stream t=[0.0, 3000.0]  best window t=[2850.0, 3000.0] Δt=150.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=1.843  ⟨I⟩=3.29  ⟨O⟩=1.843  Φ/Em=0.006112  (rate 0.000122/t.u. Δt=50; min⟨⟩=1.843; I/O=1.79; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.710  ⟨polar⟩=0.023  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 301.2→302.2  |Δ|/⟨Em⟩=0.003  |ΔEmTot|/EmTot0=0.004
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=68.08  ⟨|Circ|⟩=5.475  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.5355  ⟨|dEmTot|⟩=0.3716  corr(net,dM)=-0.522  |Thru|~|dM|=-0.835  tracks=true
+
+H1 EMPTY  frames=61  span=3000.0  ../v93/runs/reckon/r1_law.fcs
+  stream t=[0.0, 3000.0]  best window t=[2850.0, 3000.0] Δt=150.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=50; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 48.07→50.16  |Δ|/⟨Em⟩=0.046  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=24.54  ⟨|Circ|⟩=3.836  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.01751  ⟨|dEmTot|⟩=1.587e-07  corr(net,dM)=-0.233  |Thru|~|dM|=-0.051  tracks=false
+
+H1 EMPTY  frames=6  span=100.0  ../v93/runs/reckon/r2_s1.0_a0.5.fcs
+  stream t=[0.0, 100.0]  best window t=[0.0, 100.0] Δt=100.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=20; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/6)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.874→3.73  |Δ|/⟨Em⟩=0.273  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1.707  ⟨|Circ|⟩=2.316  dir-stable=0.60
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.005443  ⟨|dEmTot|⟩=4.53e-08  corr(net,dM)=-0.310  |Thru|~|dM|=-0.808  tracks=false
+
+H1 EMPTY  frames=3  span=40.0  ../v93/runs/reckon/r2_s1.0_a2.fcs
+  stream t=[0.0, 40.0]  best window t=[0.0, 40.0] Δt=40.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0.01771  Φ/Em=0  (rate 0/t.u. Δt=20; min⟨⟩=0; I/O=0; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.159  (book frames 0/3)
+  [PASS] dM/dt ≈ 0 (parked) — Em 22.49→21.34  |Δ|/⟨Em⟩=0.052  |ΔEmTot|/EmTot0=0.008
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=7.609  ⟨|Circ|⟩=0.7848  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1558  ⟨|dEmTot|⟩=0.06337  corr(net,dM)=0.463  |Thru|~|dM|=-0.593  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=51  span=1000.0  ../v93/runs/reckon/r2_tight_T1000.fcs
+  stream t=[0.0, 1000.0]  best window t=[900.0, 1000.0] Δt=100.0  clauses 3/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.01359  ⟨I⟩=0.02192  ⟨O⟩=0.01379  Φ/Em=0.0009142  (rate 4.57e-05/t.u. Δt=20; min⟨⟩=0.01379; I/O=1.59; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.805  ⟨polar⟩=0.360  (book frames 6/6)
+  [PASS] dM/dt ≈ 0 (parked) — Em 15.04→14.49  |Δ|/⟨Em⟩=0.037  |ΔEmTot|/EmTot0=0.000
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=8.308  ⟨|Circ|⟩=5.056  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.02942  ⟨|dEmTot|⟩=9.478e-08  corr(net,dM)=-0.632  |Thru|~|dM|=0.268  tracks=true
+
+H1 EMPTY  frames=21  span=2000.0  ../v93/theory/runs/mono_T2000_20260808_190046/M_qd12_kr00.fcs
+  stream t=[0.0, 2000.0]  best window t=[1700.0, 2000.0] Δt=300.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.006991  ⟨I⟩=0.0337  ⟨O⟩=0.006991  Φ/Em=6.215e-05  (rate 6.21e-07/t.u. Δt=100; min⟨⟩=0.006991; I/O=4.82; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.484  ⟨polar⟩=0.052  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 111.1→112.5  |Δ|/⟨Em⟩=0.013  |ΔEmTot|/EmTot0=0.000
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=42.83  ⟨|Circ|⟩=13.02  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1173  ⟨|dEmTot|⟩=3.519e-07  corr(net,dM)=-0.692  |Thru|~|dM|=0.708  tracks=true
+
+H1 EMPTY  frames=21  span=2000.0  ../v93/theory/runs/mono_T2000_20260808_190046/M_qd12_kr02.fcs
+  stream t=[0.0, 2000.0]  best window t=[1700.0, 2000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.3394  ⟨I⟩=1.234  ⟨O⟩=0.3394  Φ/Em=0.003811  (rate 3.81e-05/t.u. Δt=100; min⟨⟩=0.3394; I/O=3.64; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.891  ⟨polar⟩=0.066  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 89.68→89.06  |Δ|/⟨Em⟩=0.007  |ΔEmTot|/EmTot0=0.016
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=32.92  ⟨|Circ|⟩=5.204  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1235  ⟨|dEmTot|⟩=0.5718  corr(net,dM)=0.456  |Thru|~|dM|=-0.661  tracks=true
+
+H1 EMPTY  frames=21  span=2000.0  ../v93/theory/runs/mono_T2000_20260808_190046/M_qd12_kr05.fcs
+  stream t=[0.0, 2000.0]  best window t=[1700.0, 2000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.3378  ⟨I⟩=2.145  ⟨O⟩=0.3378  Φ/Em=0.004453  (rate 4.45e-05/t.u. Δt=100; min⟨⟩=0.3378; I/O=6.35; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.617  ⟨polar⟩=0.104  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 80.05→73.13  |Δ|/⟨Em⟩=0.091  |ΔEmTot|/EmTot0=0.012
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=29.5  ⟨|Circ|⟩=3.812  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.07853  ⟨|dEmTot|⟩=0.443  corr(net,dM)=0.330  |Thru|~|dM|=0.097  tracks=false
+
+H1 EMPTY  frames=21  span=2000.0  ../v93/theory/runs/mono_T2000_20260808_190046/M_qd12_kr10.fcs
+  stream t=[0.0, 2000.0]  best window t=[1700.0, 2000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.3887  ⟨I⟩=2.297  ⟨O⟩=0.3887  Φ/Em=0.00585  (rate 5.85e-05/t.u. Δt=100; min⟨⟩=0.3887; I/O=5.91; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.036  ⟨polar⟩=0.074  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 66.85→62.84  |Δ|/⟨Em⟩=0.060  |ΔEmTot|/EmTot0=0.011
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=40.36  ⟨|Circ|⟩=7.507  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.03595  ⟨|dEmTot|⟩=0.6534  corr(net,dM)=0.736  |Thru|~|dM|=0.847  tracks=true
+
+H1 EMPTY  frames=21  span=2000.0  ../v93/theory/runs/mono_T2000_20260808_190046/M_qd36_kr00.fcs
+  stream t=[0.0, 2000.0]  best window t=[1700.0, 2000.0] Δt=300.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.05269  ⟨I⟩=0.07278  ⟨O⟩=0.05289  Φ/Em=0.0004499  (rate 4.5e-06/t.u. Δt=100; min⟨⟩=0.05289; I/O=1.38; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.197  ⟨polar⟩=0.185  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 118.2→119.3  |Δ|/⟨Em⟩=0.009  |ΔEmTot|/EmTot0=0.000
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=25.01  ⟨|Circ|⟩=14.94  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1648  ⟨|dEmTot|⟩=2.277e-07  corr(net,dM)=0.817  |Thru|~|dM|=0.596  tracks=true
+
+H1 EMPTY  frames=21  span=2000.0  ../v93/theory/runs/mono_T2000_20260808_190046/M_qd36_kr02.fcs
+  stream t=[0.0, 2000.0]  best window t=[1700.0, 2000.0] Δt=300.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.3808  ⟨I⟩=0.7357  ⟨O⟩=0.3808  Φ/Em=0.003727  (rate 3.73e-05/t.u. Δt=100; min⟨⟩=0.3808; I/O=1.93; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=1.954  ⟨polar⟩=0.084  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 103.1→100.7  |Δ|/⟨Em⟩=0.023  |ΔEmTot|/EmTot0=0.012
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=24.41  ⟨|Circ|⟩=11.88  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1313  ⟨|dEmTot|⟩=0.4203  corr(net,dM)=0.219  |Thru|~|dM|=-0.053  tracks=false
+
+H1 EMPTY  frames=21  span=2000.0  ../v93/theory/runs/mono_T2000_20260808_190046/M_qd36_kr05.fcs
+  stream t=[0.0, 2000.0]  best window t=[1700.0, 2000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.5498  ⟨I⟩=1.107  ⟨O⟩=0.5498  Φ/Em=0.00593  (rate 5.93e-05/t.u. Δt=100; min⟨⟩=0.5498; I/O=2.01; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.005  ⟨polar⟩=0.092  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 93.58→95.21  |Δ|/⟨Em⟩=0.018  |ΔEmTot|/EmTot0=0.015
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=30.62  ⟨|Circ|⟩=6.196  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1497  ⟨|dEmTot|⟩=0.7319  corr(net,dM)=0.076  |Thru|~|dM|=-0.240  tracks=false
+
+H1 EMPTY  frames=21  span=2000.0  ../v93/theory/runs/mono_T2000_20260808_190046/M_qd36_kr10.fcs
+  stream t=[0.0, 2000.0]  best window t=[1700.0, 2000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.5985  ⟨I⟩=1.186  ⟨O⟩=0.5985  Φ/Em=0.006887  (rate 6.89e-05/t.u. Δt=100; min⟨⟩=0.5985; I/O=1.98; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.304  ⟨polar⟩=0.141  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 85.68→86.46  |Δ|/⟨Em⟩=0.009  |ΔEmTot|/EmTot0=0.018
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=11.84  ⟨|Circ|⟩=7.67  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.09934  ⟨|dEmTot|⟩=0.646  corr(net,dM)=-0.075  |Thru|~|dM|=-0.289  tracks=false
+
+H1 EMPTY  frames=21  span=2000.0  ../v93/theory/runs/p2quiet_T2000_20260808_230025/Q_qd12_d0.fcs
+  stream t=[0.0, 2000.0]  best window t=[1700.0, 2000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.3378  ⟨I⟩=2.145  ⟨O⟩=0.3378  Φ/Em=0.004453  (rate 4.45e-05/t.u. Δt=100; min⟨⟩=0.3378; I/O=6.35; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.617  ⟨polar⟩=0.104  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 80.05→73.13  |Δ|/⟨Em⟩=0.091  |ΔEmTot|/EmTot0=0.012
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=29.5  ⟨|Circ|⟩=3.812  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.07853  ⟨|dEmTot|⟩=0.443  corr(net,dM)=0.330  |Thru|~|dM|=0.097  tracks=false
+
+H1 EMPTY  frames=21  span=2000.0  ../v93/theory/runs/p2quiet_T2000_20260808_230025/Q_qd12_d1.fcs
+  stream t=[0.0, 2000.0]  best window t=[1700.0, 2000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.2156  ⟨I⟩=1.366  ⟨O⟩=0.2156  Φ/Em=0.00225  (rate 2.25e-05/t.u. Δt=100; min⟨⟩=0.2156; I/O=6.34; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.773  ⟨polar⟩=0.078  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 91.31→101.7  |Δ|/⟨Em⟩=0.108  |ΔEmTot|/EmTot0=0.040
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=40.35  ⟨|Circ|⟩=2.829  dir-stable=0.50
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.08799  ⟨|dEmTot|⟩=2.077  corr(net,dM)=0.257  |Thru|~|dM|=-0.194  tracks=false
+
+H1 EMPTY  frames=21  span=2000.0  ../v93/theory/runs/p2quiet_T2000_20260808_230025/Q_qd36_d0.fcs
+  stream t=[0.0, 2000.0]  best window t=[1700.0, 2000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.5498  ⟨I⟩=1.107  ⟨O⟩=0.5498  Φ/Em=0.00593  (rate 5.93e-05/t.u. Δt=100; min⟨⟩=0.5498; I/O=2.01; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.005  ⟨polar⟩=0.092  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 93.58→95.21  |Δ|/⟨Em⟩=0.018  |ΔEmTot|/EmTot0=0.015
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=30.62  ⟨|Circ|⟩=6.196  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1497  ⟨|dEmTot|⟩=0.7319  corr(net,dM)=0.076  |Thru|~|dM|=-0.240  tracks=false
+
+H1 EMPTY  frames=21  span=2000.0  ../v93/theory/runs/p2quiet_T2000_20260808_230025/Q_qd36_d1.fcs
+  stream t=[0.0, 2000.0]  best window t=[1700.0, 2000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.402  ⟨I⟩=0.8888  ⟨O⟩=0.402  Φ/Em=0.004206  (rate 4.21e-05/t.u. Δt=100; min⟨⟩=0.402; I/O=2.21; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.660  ⟨polar⟩=0.070  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 96.84→97.29  |Δ|/⟨Em⟩=0.005  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=51.45  ⟨|Circ|⟩=3.835  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1693  ⟨|dEmTot|⟩=0.1837  corr(net,dM)=0.208  |Thru|~|dM|=0.590  tracks=true
+
+H1 EMPTY  frames=26  span=5000.0  ../v93/theory/runs/p2quiet_T5000_20260809_010524/Q5_qd12_d0.fcs
+  stream t=[0.0, 5000.0]  best window t=[4400.0, 5000.0] Δt=600.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.3075  ⟨I⟩=2.448  ⟨O⟩=0.3075  Φ/Em=0.004317  (rate 2.16e-05/t.u. Δt=200; min⟨⟩=0.3075; I/O=7.96; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.685  ⟨polar⟩=0.052  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 70.53→72.5  |Δ|/⟨Em⟩=0.028  |ΔEmTot|/EmTot0=0.003
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=27.66  ⟨|Circ|⟩=9.968  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.04573  ⟨|dEmTot|⟩=0.1901  corr(net,dM)=0.535  |Thru|~|dM|=-0.987  tracks=true
+
+H1 EMPTY  frames=26  span=5000.0  ../v93/theory/runs/p2quiet_T5000_20260809_010524/Q5_qd12_d1.fcs
+  stream t=[0.0, 5000.0]  best window t=[4400.0, 5000.0] Δt=600.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.1103  ⟨I⟩=0.6509  ⟨O⟩=0.1103  Φ/Em=0.001032  (rate 5.16e-06/t.u. Δt=200; min⟨⟩=0.1103; I/O=5.9; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.632  ⟨polar⟩=0.075  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 105.8→107.6  |Δ|/⟨Em⟩=0.017  |ΔEmTot|/EmTot0=0.002
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=32.42  ⟨|Circ|⟩=7.218  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1219  ⟨|dEmTot|⟩=0.1805  corr(net,dM)=-0.107  |Thru|~|dM|=0.314  tracks=false
+
+H1 EMPTY  frames=26  span=5000.0  ../v93/theory/runs/p2quiet_T5000_20260809_010524/Q5_qd36_d0.fcs
+  stream t=[0.0, 5000.0]  best window t=[4400.0, 5000.0] Δt=600.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.4535  ⟨I⟩=1.621  ⟨O⟩=0.4535  Φ/Em=0.005258  (rate 2.63e-05/t.u. Δt=200; min⟨⟩=0.4535; I/O=3.57; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.621  ⟨polar⟩=0.072  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 86.7→85.98  |Δ|/⟨Em⟩=0.008  |ΔEmTot|/EmTot0=0.006
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=27.73  ⟨|Circ|⟩=10.77  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.06051  ⟨|dEmTot|⟩=0.1863  corr(net,dM)=0.396  |Thru|~|dM|=-0.518  tracks=false
+
+H1 EMPTY  frames=26  span=5000.0  ../v93/theory/runs/p2quiet_T5000_20260809_010524/Q5_qd36_d1.fcs
+  stream t=[0.0, 5000.0]  best window t=[4400.0, 5000.0] Δt=600.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.2199  ⟨I⟩=0.6157  ⟨O⟩=0.2199  Φ/Em=0.001977  (rate 9.88e-06/t.u. Δt=200; min⟨⟩=0.2199; I/O=2.8; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.127  ⟨polar⟩=0.096  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 107.9→112.8  |Δ|/⟨Em⟩=0.044  |ΔEmTot|/EmTot0=0.007
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=44.32  ⟨|Circ|⟩=6.578  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.06721  ⟨|dEmTot|⟩=0.3166  corr(net,dM)=-0.264  |Thru|~|dM|=0.549  tracks=true
+
+H1 EMPTY  frames=7  span=600.0  ../v93/theory/runs/p2_T600_20260808_204313/P2_ctrl_kr0.fcs
+  stream t=[0.0, 600.0]  best window t=[300.0, 600.0] Δt=300.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=228.1  ⟨I⟩=314.2  ⟨O⟩=228.1  Φ/Em=0.03858  (rate 0.000386/t.u. Δt=100; min⟨⟩=228.1; I/O=1.38; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.661  ⟨polar⟩=0.057  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 5466→6258  |Δ|/⟨Em⟩=0.134  |ΔEmTot|/EmTot0=0.145
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1599  ⟨|Circ|⟩=261.4  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=6.477  ⟨|dEmTot|⟩=371.3  corr(net,dM)=-0.855  |Thru|~|dM|=0.997  tracks=true
+
+H1 EMPTY  frames=7  span=600.0  ../v93/theory/runs/p2_T600_20260808_204313/P2_xb03_d0.fcs
+  stream t=[0.0, 600.0]  best window t=[300.0, 600.0] Δt=300.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=216.6  ⟨I⟩=219.4  ⟨O⟩=226.8  Φ/Em=0.05136  (rate 0.000514/t.u. Δt=100; min⟨⟩=219.4; I/O=0.968; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.426  ⟨polar⟩=0.019  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 4216→4214  |Δ|/⟨Em⟩=0.000  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=910.2  ⟨|Circ|⟩=129.8  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=7.84  ⟨|dEmTot|⟩=23.58  corr(net,dM)=-0.593  |Thru|~|dM|=-0.890  tracks=true
+
+H1 EMPTY  frames=7  span=600.0  ../v93/theory/runs/p2_T600_20260808_204313/P2_xb03_d1.fcs
+  stream t=[0.0, 600.0]  best window t=[300.0, 600.0] Δt=300.0  clauses 3/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=200.8  ⟨I⟩=211.3  ⟨O⟩=204.5  Φ/Em=0.04392  (rate 0.000439/t.u. Δt=100; min⟨⟩=204.5; I/O=1.03; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.918  ⟨polar⟩=0.051  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 4564→4568  |Δ|/⟨Em⟩=0.001  |ΔEmTot|/EmTot0=0.001
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=1434  ⟨|Circ|⟩=335.7  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=4.682  ⟨|dEmTot|⟩=17.05  corr(net,dM)=0.809  |Thru|~|dM|=-0.474  tracks=true
+
+H1 EMPTY  frames=7  span=600.0  ../v93/theory/runs/p2_T600_20260808_204313/P2_xb06_d0.fcs
+  stream t=[0.0, 600.0]  best window t=[300.0, 600.0] Δt=300.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=259.5  ⟨I⟩=284.7  ⟨O⟩=261.7  Φ/Em=0.06695  (rate 0.00067/t.u. Δt=100; min⟨⟩=261.7; I/O=1.09; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.819  ⟨polar⟩=0.030  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 3841→3883  |Δ|/⟨Em⟩=0.011  |ΔEmTot|/EmTot0=0.011
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1485  ⟨|Circ|⟩=153.3  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=27.19  ⟨|dEmTot|⟩=55.52  corr(net,dM)=-0.368  |Thru|~|dM|=-0.578  tracks=false
+
+H1 EMPTY  frames=7  span=600.0  ../v93/theory/runs/p2_T600_20260808_204313/P2_xb06_d1.fcs
+  stream t=[0.0, 600.0]  best window t=[300.0, 600.0] Δt=300.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=242.9  ⟨I⟩=279.7  ⟨O⟩=242.9  Φ/Em=0.04557  (rate 0.000456/t.u. Δt=100; min⟨⟩=242.9; I/O=1.15; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.727  ⟨polar⟩=0.021  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 5288→5361  |Δ|/⟨Em⟩=0.014  |ΔEmTot|/EmTot0=0.014
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1918  ⟨|Circ|⟩=328.4  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=9.085  ⟨|dEmTot|⟩=41.07  corr(net,dM)=-0.209  |Thru|~|dM|=-0.929  tracks=false
+
+H1 EMPTY  frames=7  span=600.0  ../v93/theory/runs/p2_T600_20260808_204313/P2_xb10_d0.fcs
+  stream t=[0.0, 600.0]  best window t=[300.0, 600.0] Δt=300.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=270.9  ⟨I⟩=293.7  ⟨O⟩=275.5  Φ/Em=0.08608  (rate 0.000861/t.u. Δt=100; min⟨⟩=275.5; I/O=1.07; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.168  ⟨polar⟩=0.052  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 3063→3227  |Δ|/⟨Em⟩=0.052  |ΔEmTot|/EmTot0=0.054
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1244  ⟨|Circ|⟩=202  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=114.2  ⟨|dEmTot|⟩=85.75  corr(net,dM)=0.897  |Thru|~|dM|=-0.844  tracks=true
+
+H1 EMPTY  frames=7  span=600.0  ../v93/theory/runs/p2_T600_20260808_204313/P2_xb10_d1.fcs
+  stream t=[0.0, 600.0]  best window t=[300.0, 600.0] Δt=300.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=264.9  ⟨I⟩=285.7  ⟨O⟩=272.2  Φ/Em=0.04844  (rate 0.000484/t.u. Δt=100; min⟨⟩=272.2; I/O=1.05; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.980  ⟨polar⟩=0.029  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 5405→5521  |Δ|/⟨Em⟩=0.021  |ΔEmTot|/EmTot0=0.021
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1100  ⟨|Circ|⟩=188.7  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=9.809  ⟨|dEmTot|⟩=50.57  corr(net,dM)=0.490  |Thru|~|dM|=-0.915  tracks=true
+
+H1 EMPTY  frames=7  span=600.0  ../v93/theory/runs/p2_T600_20260808_204313/P2_xb15_d0.fcs
+  stream t=[0.0, 600.0]  best window t=[300.0, 600.0] Δt=300.0  clauses 3/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=235.9  ⟨I⟩=290.7  ⟨O⟩=235.9  Φ/Em=0.1141  (rate 0.00114/t.u. Δt=100; min⟨⟩=235.9; I/O=1.23; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.476  ⟨polar⟩=0.042  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 1912→2225  |Δ|/⟨Em⟩=0.152  |ΔEmTot|/EmTot0=0.164
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=923.6  ⟨|Circ|⟩=135.6  dir-stable=0.75
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=296.6  ⟨|dEmTot|⟩=111.7  corr(net,dM)=0.387  |Thru|~|dM|=-0.453  tracks=false
+
+H1 EMPTY  frames=7  span=600.0  ../v93/theory/runs/p2_T600_20260808_204313/P2_xb15_d1.fcs
+  stream t=[0.0, 600.0]  best window t=[300.0, 600.0] Δt=300.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=332.2  ⟨I⟩=340.3  ⟨O⟩=342.9  Φ/Em=0.05604  (rate 0.00056/t.u. Δt=100; min⟨⟩=340.3; I/O=0.992; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.493  ⟨polar⟩=0.032  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 5767→6098  |Δ|/⟨Em⟩=0.056  |ΔEmTot|/EmTot0=0.057
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1920  ⟨|Circ|⟩=262  dir-stable=0.50
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=15.52  ⟨|dEmTot|⟩=130.5  corr(net,dM)=-0.226  |Thru|~|dM|=-0.694  tracks=false
+
+H1 EMPTY  frames=8  span=56.0  ../v93/theory/runs/probe_20260808_102445/A10_long_kx.fcs
+  stream t=[0.0, 56.0]  best window t=[0.0, 56.0] Δt=56.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=4  span=24.0  ../v93/theory/runs/probe_20260808_102445/A13_spin_kx.fcs
+  stream t=[0.0, 24.0]  best window t=[0.0, 24.0] Δt=24.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=4  span=24.0  ../v93/theory/runs/probe_20260808_102445/A1_kx06.fcs
+  stream t=[0.0, 24.0]  best window t=[0.0, 24.0] Δt=24.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=4  span=24.0  ../v93/theory/runs/probe_20260808_102445/A2_kx12.fcs
+  stream t=[0.0, 24.0]  best window t=[0.0, 24.0] Δt=24.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=4  span=24.0  ../v93/theory/runs/probe_20260808_102445/A3_kx20.fcs
+  stream t=[0.0, 24.0]  best window t=[0.0, 24.0] Δt=24.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=4  span=24.0  ../v93/theory/runs/probe_20260808_102445/A4_spin2.fcs
+  stream t=[0.0, 24.0]  best window t=[0.0, 24.0] Δt=24.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=4  span=24.0  ../v93/theory/runs/probe_20260808_102445/A5_imp_kx.fcs
+  stream t=[0.0, 24.0]  best window t=[0.0, 24.0] Δt=24.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=4  span=24.0  ../v93/theory/runs/probe_20260808_102445/A6_hiamp_kx.fcs
+  stream t=[0.0, 24.0]  best window t=[0.0, 24.0] Δt=24.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=4  span=24.0  ../v93/theory/runs/probe_20260808_102445/A7_hiamp_k0.fcs
+  stream t=[0.0, 24.0]  best window t=[0.0, 24.0] Δt=24.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=4  span=24.0  ../v93/theory/runs/probe_20260808_102445/A8_noise_plus_kx.fcs
+  stream t=[0.0, 24.0]  best window t=[0.0, 24.0] Δt=24.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=4  span=24.0  ../v93/theory/runs/probe_20260808_102445/A9_noise_only.fcs
+  stream t=[0.0, 24.0]  best window t=[0.0, 24.0] Δt=24.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=3  span=16.0  ../v93/theory/runs/probe_20260808_102445/B1_e3b_uni.fcs
+  stream t=[0.0, 16.0]  best window t=[0.0, 16.0] Δt=16.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=8; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/3)
+  [PASS] dM/dt ≈ 0 (parked) — Em 76.69→63.28  |Δ|/⟨Em⟩=0.194  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=259.8  ⟨|Circ|⟩=9.94  dir-stable=0.67
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.3526  ⟨|dEmTot|⟩=8.247e-08  corr(net,dM)=1.000  |Thru|~|dM|=0.959  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=3  span=16.0  ../v93/theory/runs/probe_20260808_102445/B2_e3b_add.fcs
+  stream t=[0.0, 16.0]  best window t=[0.0, 16.0] Δt=16.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=8; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/3)
+  [PASS] dM/dt ≈ 0 (parked) — Em 76.69→66.03  |Δ|/⟨Em⟩=0.149  |ΔEmTot|/EmTot0=0.165
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=341.3  ⟨|Circ|⟩=9.856  dir-stable=0.67
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.06124  ⟨|dEmTot|⟩=5.107  corr(net,dM)=-0.503  |Thru|~|dM|=0.985  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=3  span=16.0  ../v93/theory/runs/probe_20260808_102445/B3_e3b_gated.fcs
+  stream t=[0.0, 16.0]  best window t=[0.0, 16.0] Δt=16.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=8; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/3)
+  [PASS] dM/dt ≈ 0 (parked) — Em 76.69→76.47  |Δ|/⟨Em⟩=0.003  |ΔEmTot|/EmTot0=0.000
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=432.8  ⟨|Circ|⟩=16.56  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.05509  ⟨|dEmTot|⟩=6.401e-08  corr(net,dM)=-0.668  |Thru|~|dM|=-0.187  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=3  span=16.0  ../v93/theory/runs/probe_20260808_102445/B4_uni_melt.fcs
+  stream t=[0.0, 16.0]  best window t=[0.0, 16.0] Δt=16.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=8; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/3)
+  [PASS] dM/dt ≈ 0 (parked) — Em 76.69→69.77  |Δ|/⟨Em⟩=0.094  |ΔEmTot|/EmTot0=0.000
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=25.76  ⟨|Circ|⟩=7.905  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1868  ⟨|dEmTot|⟩=1.562e-07  corr(net,dM)=-0.089  |Thru|~|dM|=0.815  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=3  span=16.0  ../v93/theory/runs/probe_20260808_102445/B5_uni_deep.fcs
+  stream t=[0.0, 16.0]  best window t=[0.0, 16.0] Δt=16.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=8; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/3)
+  [PASS] dM/dt ≈ 0 (parked) — Em 168.1→167.6  |Δ|/⟨Em⟩=0.003  |ΔEmTot|/EmTot0=0.000
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=25.79  ⟨|Circ|⟩=17.87  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.5605  ⟨|dEmTot|⟩=1.9e-07  corr(net,dM)=0.993  |Thru|~|dM|=0.912  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=4  span=24.0  ../v93/theory/runs/probe_20260808_102445/S0b_noise.fcs
+  stream t=[0.0, 24.0]  best window t=[0.0, 24.0] Δt=24.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=4  span=24.0  ../v93/theory/runs/probe_20260808_102445/S0_pulse_k0.fcs
+  stream t=[0.0, 24.0]  best window t=[0.0, 24.0] Δt=24.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=6  span=40.0  ../v93/theory/runs/probe_20260808_102702/C1_nowf_kx.fcs
+  stream t=[0.0, 40.0]  best window t=[0.0, 40.0] Δt=40.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=5.017  ⟨I⟩=58.93  ⟨O⟩=5.017  Φ/Em=0.01993  (rate 0.00249/t.u. Δt=8; min⟨⟩=5.017; I/O=11.7; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=2.277  ⟨polar⟩=0.405  (book frames 4/5)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 38.09→466.6  |Δ|/⟨Em⟩=1.703  |ΔEmTot|/EmTot0=11.316
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=84.69  ⟨|Circ|⟩=21.46  dir-stable=0.60
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.9694  ⟨|dEmTot|⟩=94.74  corr(net,dM)=-0.444  |Thru|~|dM|=0.548  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=6  span=40.0  ../v93/theory/runs/probe_20260808_102702/C2_nowf_k0.fcs
+  stream t=[0.0, 40.0]  best window t=[0.0, 40.0] Δt=40.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=3.316  ⟨I⟩=68.89  ⟨O⟩=3.316  Φ/Em=0.01472  (rate 0.00184/t.u. Δt=8; min⟨⟩=3.316; I/O=20.8; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.731  ⟨polar⟩=0.153  (book frames 3/5)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 35.3→446.4  |Δ|/⟨Em⟩=1.826  |ΔEmTot|/EmTot0=11.803
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=78.31  ⟨|Circ|⟩=14.48  dir-stable=0.80
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.8019  ⟨|dEmTot|⟩=90.46  corr(net,dM)=-0.680  |Thru|~|dM|=0.763  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=4  span=24.0  ../v93/theory/runs/probe_20260808_102702/C3_blob_field.fcs
+  stream t=[0.0, 24.0]  best window t=[0.0, 24.0] Δt=24.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=3.473  ⟨I⟩=58.89  ⟨O⟩=3.473  Φ/Em=0.01198  (rate 0.0015/t.u. Δt=8; min⟨⟩=3.473; I/O=17; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.938  ⟨polar⟩=0.217  (book frames 3/4)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 76.69→580.3  |Δ|/⟨Em⟩=1.736  |ΔEmTot|/EmTot0=5.305
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=143.2  ⟨|Circ|⟩=44.68  dir-stable=0.67
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=7.12  ⟨|dEmTot|⟩=123.3  corr(net,dM)=-0.528  |Thru|~|dM|=0.997  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=4  span=24.0  ../v93/theory/runs/probe_20260808_102702/C4_blob_quiet.fcs
+  stream t=[0.0, 24.0]  best window t=[0.0, 24.0] Δt=24.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=8; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 76.69→67.8  |Δ|/⟨Em⟩=0.122  |ΔEmTot|/EmTot0=0.101
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=18.53  ⟨|Circ|⟩=15.34  dir-stable=0.67
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.03846  ⟨|dEmTot|⟩=2.339  corr(net,dM)=-0.017  |Thru|~|dM|=0.974  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=3  span=16.0  ../v93/theory/runs/probe_20260808_102702/C5_uni_noise.fcs
+  stream t=[0.0, 16.0]  best window t=[0.0, 16.0] Δt=16.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=2.339  ⟨I⟩=32.68  ⟨O⟩=2.339  Φ/Em=0.01531  (rate 0.00191/t.u. Δt=8; min⟨⟩=2.339; I/O=14; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.182  ⟨polar⟩=0.194  (book frames 2/3)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 76.69→284.4  |Δ|/⟨Em⟩=1.360  |ΔEmTot|/EmTot0=2.500
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=299.5  ⟨|Circ|⟩=23.19  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=3.973  ⟨|dEmTot|⟩=77.48  corr(net,dM)=0.746  |Thru|~|dM|=0.988  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=11  span=500.0  ../v93/theory/runs/qgraph_P5_20260808_175524/P3_prad2.fcs
+  stream t=[0.0, 500.0]  best window t=[350.0, 500.0] Δt=150.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.8631  ⟨I⟩=1.845  ⟨O⟩=0.8631  Φ/Em=0.01342  (rate 0.000268/t.u. Δt=50; min⟨⟩=0.8631; I/O=2.14; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=1.544  ⟨polar⟩=0.051  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 66.66→60.83  |Δ|/⟨Em⟩=0.091  |ΔEmTot|/EmTot0=0.095
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=42.51  ⟨|Circ|⟩=3.065  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1292  ⟨|dEmTot|⟩=3.567  corr(net,dM)=0.777  |Thru|~|dM|=0.541  tracks=true
+
+H1 EMPTY  frames=11  span=500.0  ../v93/theory/runs/qgraph_P5_20260808_175524/P3_prad4.fcs
+  stream t=[0.0, 500.0]  best window t=[350.0, 500.0] Δt=150.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.429  ⟨I⟩=0.6852  ⟨O⟩=0.476  Φ/Em=0.004626  (rate 9.25e-05/t.u. Δt=50; min⟨⟩=0.476; I/O=1.44; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.367  ⟨polar⟩=0.164  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 93.42→90.32  |Δ|/⟨Em⟩=0.033  |ΔEmTot|/EmTot0=0.036
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=22.9  ⟨|Circ|⟩=9.189  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.2283  ⟨|dEmTot|⟩=1.454  corr(net,dM)=0.660  |Thru|~|dM|=0.476  tracks=true
+
+H1 EMPTY  frames=11  span=500.0  ../v93/theory/runs/qgraph_P5_20260808_175524/P5_door0.fcs
+  stream t=[0.0, 500.0]  best window t=[350.0, 500.0] Δt=150.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=22.9  ⟨I⟩=30.63  ⟨O⟩=22.9  Φ/Em=0.009886  (rate 0.000198/t.u. Δt=50; min⟨⟩=22.9; I/O=1.34; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.671  ⟨polar⟩=0.041  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 2318→2317  |Δ|/⟨Em⟩=0.000  |ΔEmTot|/EmTot0=0.001
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=545.6  ⟨|Circ|⟩=60.58  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=7.557  ⟨|dEmTot|⟩=4.076  corr(net,dM)=0.586  |Thru|~|dM|=0.161  tracks=true
+
+H1 EMPTY  frames=11  span=500.0  ../v93/theory/runs/qgraph_P5_20260808_175524/P5_door1.fcs
+  stream t=[0.0, 500.0]  best window t=[350.0, 500.0] Δt=150.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=22.58  ⟨I⟩=28.28  ⟨O⟩=22.58  Φ/Em=0.009763  (rate 0.000195/t.u. Δt=50; min⟨⟩=22.58; I/O=1.25; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=1.408  ⟨polar⟩=0.028  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 2312→2310  |Δ|/⟨Em⟩=0.001  |ΔEmTot|/EmTot0=0.001
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=666.8  ⟨|Circ|⟩=84.48  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=7.664  ⟨|dEmTot|⟩=4.571  corr(net,dM)=-0.350  |Thru|~|dM|=0.364  tracks=false
+
+H1 EMPTY  frames=1  span=0.0  ../v93/theory/runs/r1_20260808_170010/R1_S00.fcs
+  stream t=[0.0, 0.0]  best window t=[0.0, 0.0] Δt=0.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate NaN/t.u. Δt=0; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/1)
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=1  span=0.0  ../v93/theory/runs/r1_20260808_170010/R1_S00_rad.fcs
+  stream t=[0.0, 0.0]  best window t=[0.0, 0.0] Δt=0.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate NaN/t.u. Δt=0; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/1)
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=51  span=10000.0  ../v93/theory/runs/R1_T10000_20260808_172409/R1_S00_amp12.fcs
+  stream t=[0.0, 10000.0]  best window t=[9400.0, 10000.0] Δt=600.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.3213  ⟨I⟩=1.444  ⟨O⟩=0.3213  Φ/Em=0.001838  (rate 9.19e-06/t.u. Δt=200; min⟨⟩=0.3213; I/O=4.49; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=5.302  ⟨polar⟩=0.059  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 173.1→174.9  |Δ|/⟨Em⟩=0.010  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=92.99  ⟨|Circ|⟩=10.25  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.2026  ⟨|dEmTot|⟩=7.034e-08  corr(net,dM)=0.661  |Thru|~|dM|=-0.460  tracks=true
+
+H1 EMPTY  frames=51  span=10000.0  ../v93/theory/runs/R1_T10000_20260808_172409/R1_S00.fcs
+  stream t=[0.0, 10000.0]  best window t=[9400.0, 10000.0] Δt=600.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.006461  ⟨I⟩=0.03602  ⟨O⟩=0.006461  Φ/Em=5.754e-05  (rate 2.88e-07/t.u. Δt=200; min⟨⟩=0.006461; I/O=5.58; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.205  ⟨polar⟩=0.047  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 116.1→111.1  |Δ|/⟨Em⟩=0.045  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=50.13  ⟨|Circ|⟩=3.333  dir-stable=0.75
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.07661  ⟨|dEmTot|⟩=2.202e-07  corr(net,dM)=0.040  |Thru|~|dM|=-0.843  tracks=false
+
+H1 EMPTY  frames=51  span=10000.0  ../v93/theory/runs/R1_T10000_20260808_172409/R1_S00_rad.fcs
+  stream t=[0.0, 10000.0]  best window t=[9400.0, 10000.0] Δt=600.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.3964  ⟨I⟩=2.576  ⟨O⟩=0.3964  Φ/Em=0.005885  (rate 2.94e-05/t.u. Δt=200; min⟨⟩=0.3964; I/O=6.5; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.594  ⟨polar⟩=0.067  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 67.56→68.06  |Δ|/⟨Em⟩=0.007  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=31.86  ⟨|Circ|⟩=1.648  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.04484  ⟨|dEmTot|⟩=0.1907  corr(net,dM)=-0.064  |Thru|~|dM|=-0.175  tracks=false
+
+H1 EMPTY  frames=51  span=10000.0  ../v93/theory/runs/R1_T10000_20260808_172409/R1_S00_s111.fcs
+  stream t=[0.0, 10000.0]  best window t=[9400.0, 10000.0] Δt=600.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=200; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 114.7→111  |Δ|/⟨Em⟩=0.033  |ΔEmTot|/EmTot0=0.000
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=43.22  ⟨|Circ|⟩=5.079  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.09878  ⟨|dEmTot|⟩=1.138e-07  corr(net,dM)=-0.475  |Thru|~|dM|=-0.078  tracks=true
+
+H1 EMPTY  frames=51  span=10000.0  ../v93/theory/runs/R1_T10000_20260808_172409/R1_S04.fcs
+  stream t=[0.0, 10000.0]  best window t=[9400.0, 10000.0] Δt=600.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.03094  ⟨I⟩=0.08344  ⟨O⟩=0.03094  Φ/Em=0.0002624  (rate 1.31e-06/t.u. Δt=200; min⟨⟩=0.03094; I/O=2.7; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.865  ⟨polar⟩=0.056  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 116.1→113.5  |Δ|/⟨Em⟩=0.022  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=90.95  ⟨|Circ|⟩=10.86  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.06861  ⟨|dEmTot|⟩=2.052e-07  corr(net,dM)=0.937  |Thru|~|dM|=-0.062  tracks=true
+
+H1 EMPTY  frames=51  span=10000.0  ../v93/theory/runs/R1_T10000_20260808_172409/R1_S04_rad.fcs
+  stream t=[0.0, 10000.0]  best window t=[9400.0, 10000.0] Δt=600.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.4669  ⟨I⟩=1.737  ⟨O⟩=0.4669  Φ/Em=0.005543  (rate 2.77e-05/t.u. Δt=200; min⟨⟩=0.4669; I/O=3.72; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.511  ⟨polar⟩=0.069  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 86.57→86.2  |Δ|/⟨Em⟩=0.004  |ΔEmTot|/EmTot0=0.002
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=19.15  ⟨|Circ|⟩=4.543  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.04315  ⟨|dEmTot|⟩=0.06672  corr(net,dM)=-0.735  |Thru|~|dM|=-0.442  tracks=true
+
+H1 EMPTY  frames=51  span=10000.0  ../v93/theory/runs/R1_T10000_20260808_172409/R1_S14.fcs
+  stream t=[0.0, 10000.0]  best window t=[9400.0, 10000.0] Δt=600.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.01528  ⟨I⟩=0.08215  ⟨O⟩=0.01528  Φ/Em=0.0001323  (rate 6.61e-07/t.u. Δt=200; min⟨⟩=0.01528; I/O=5.38; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.978  ⟨polar⟩=0.076  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 116.7→115.2  |Δ|/⟨Em⟩=0.013  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=60.33  ⟨|Circ|⟩=4.252  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.08528  ⟨|dEmTot|⟩=2.092e-07  corr(net,dM)=0.817  |Thru|~|dM|=0.723  tracks=true
+
+H1 EMPTY  frames=51  span=10000.0  ../v93/theory/runs/R1_T10000_20260808_172409/R1_S16.fcs
+  stream t=[0.0, 10000.0]  best window t=[9400.0, 10000.0] Δt=600.0  clauses 3/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.009813  ⟨I⟩=0.05256  ⟨O⟩=0.009813  Φ/Em=8.638e-05  (rate 4.32e-07/t.u. Δt=200; min⟨⟩=0.009813; I/O=5.36; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.079  ⟨polar⟩=0.088  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 113.1→113.1  |Δ|/⟨Em⟩=0.000  |ΔEmTot|/EmTot0=0.000
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=37.87  ⟨|Circ|⟩=10.34  dir-stable=1.00
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.1144  ⟨|dEmTot|⟩=6.556e-08  corr(net,dM)=-0.246  |Thru|~|dM|=-0.334  tracks=false
+
+H1 EMPTY  frames=3  span=80.0  ../v93/theory/runs/sustain_20260808_104332/S00_uni_base.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=40; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/3)
+  [PASS] dM/dt ≈ 0 (parked) — Em 131.2→115.9  |Δ|/⟨Em⟩=0.125  |ΔEmTot|/EmTot0=0.000
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=30.15  ⟨|Circ|⟩=16.01  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.3593  ⟨|dEmTot|⟩=1.192e-07  corr(net,dM)=0.776  |Thru|~|dM|=0.639  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=3  span=80.0  ../v93/theory/runs/sustain_20260808_104332/S03_qd0_melt.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=40; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/3)
+  [PASS] dM/dt ≈ 0 (parked) — Em 131.2→114.2  |Δ|/⟨Em⟩=0.141  |ΔEmTot|/EmTot0=0.000
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=56.8  ⟨|Circ|⟩=8.395  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.2549  ⟨|dEmTot|⟩=5.902e-08  corr(net,dM)=0.994  |Thru|~|dM|=0.809  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/G01_nowf_kx.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=11.46  ⟨I⟩=18.57  ⟨O⟩=11.46  Φ/Em=0.01835  (rate 0.000184/t.u. Δt=100; min⟨⟩=11.46; I/O=1.62; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=5.193  ⟨polar⟩=0.027  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 619.9→635.4  |Δ|/⟨Em⟩=0.025  |ΔEmTot|/EmTot0=0.025
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=226.7  ⟨|Circ|⟩=21.14  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=1.962  ⟨|dEmTot|⟩=7.55  corr(net,dM)=-0.210  |Thru|~|dM|=0.679  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/G02_nowf_k0.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=12.19  ⟨I⟩=18.97  ⟨O⟩=12.19  Φ/Em=0.01963  (rate 0.000196/t.u. Δt=100; min⟨⟩=12.19; I/O=1.56; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.026  ⟨polar⟩=0.023  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 623.5→622.1  |Δ|/⟨Em⟩=0.002  |ΔEmTot|/EmTot0=0.002
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=155.4  ⟨|Circ|⟩=17.76  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=1.929  ⟨|dEmTot|⟩=3.342  corr(net,dM)=0.792  |Thru|~|dM|=-0.521  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/G03_wf_kx.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/G04_nowf_kx_rad.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=26.03  ⟨I⟩=47.89  ⟨O⟩=26.03  Φ/Em=0.06094  (rate 0.000609/t.u. Δt=100; min⟨⟩=26.03; I/O=1.84; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.837  ⟨polar⟩=0.026  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 432.8→422.7  |Δ|/⟨Em⟩=0.024  |ΔEmTot|/EmTot0=0.022
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=135.5  ⟨|Circ|⟩=43.34  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.5971  ⟨|dEmTot|⟩=2.589  corr(net,dM)=0.073  |Thru|~|dM|=0.021  tracks=false
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/G05_nowf_k0_rad.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=24.64  ⟨I⟩=48.41  ⟨O⟩=24.64  Φ/Em=0.05715  (rate 0.000571/t.u. Δt=100; min⟨⟩=24.64; I/O=1.96; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=1.705  ⟨polar⟩=0.026  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 437.1→427.3  |Δ|/⟨Em⟩=0.023  |ΔEmTot|/EmTot0=0.022
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=153.2  ⟨|Circ|⟩=36.63  dir-stable=0.50
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.5255  ⟨|dEmTot|⟩=6.792  corr(net,dM)=-0.950  |Thru|~|dM|=0.406  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/R02_ring_bath.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S00b_uni_base_s111.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=100; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 109.8→111.6  |Δ|/⟨Em⟩=0.016  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=46.65  ⟨|Circ|⟩=13.74  dir-stable=0.75
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.1295  ⟨|dEmTot|⟩=3.279e-07  corr(net,dM)=0.123  |Thru|~|dM|=0.308  tracks=false
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S00_uni_base.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.007018  ⟨I⟩=0.03187  ⟨O⟩=0.007018  Φ/Em=6.196e-05  (rate 6.2e-07/t.u. Δt=100; min⟨⟩=0.007018; I/O=4.54; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=5.995  ⟨polar⟩=0.023  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 111.7→114.8  |Δ|/⟨Em⟩=0.027  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=32.12  ⟨|Circ|⟩=14.44  dir-stable=0.75
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.1319  ⟨|dEmTot|⟩=1.551e-07  corr(net,dM)=-0.044  |Thru|~|dM|=-0.599  tracks=false
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S01_additive.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.09656  ⟨I⟩=0.1885  ⟨O⟩=0.09656  Φ/Em=0.002778  (rate 2.78e-05/t.u. Δt=100; min⟨⟩=0.09656; I/O=1.95; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.082  ⟨polar⟩=0.221  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 35.63→32.72  |Δ|/⟨Em⟩=0.084  |ΔEmTot|/EmTot0=0.016
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=14.46  ⟨|Circ|⟩=6.59  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.008126  ⟨|dEmTot|⟩=1.883  corr(net,dM)=-0.448  |Thru|~|dM|=-0.145  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S02_uni_gated.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=100; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 104.9→104.1  |Δ|/⟨Em⟩=0.008  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=29.83  ⟨|Circ|⟩=4.545  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0  ⟨|dEmTot|⟩=9.875e-08  corr(net,dM)=NaN  |Thru|~|dM|=NaN  tracks=false
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S03_qd0_melt.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=100; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.000  (book frames 0/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 113.9→114.3  |Δ|/⟨Em⟩=0.003  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=37.29  ⟨|Circ|⟩=10.8  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.09884  ⟨|dEmTot|⟩=1.131e-07  corr(net,dM)=-0.513  |Thru|~|dM|=0.523  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S04_qd36_deep.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.03618  ⟨I⟩=0.06125  ⟨O⟩=0.04515  Φ/Em=0.0003166  (rate 3.17e-06/t.u. Δt=100; min⟨⟩=0.04515; I/O=1.36; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.722  ⟨polar⟩=0.216  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 112.2→115.3  |Δ|/⟨Em⟩=0.027  |ΔEmTot|/EmTot0=0.002
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=33.13  ⟨|Circ|⟩=7.439  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1528  ⟨|dEmTot|⟩=0.05603  corr(net,dM)=0.777  |Thru|~|dM|=-0.348  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S05_rad.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.4014  ⟨I⟩=2.292  ⟨O⟩=0.4014  Φ/Em=0.005441  (rate 5.44e-05/t.u. Δt=100; min⟨⟩=0.4014; I/O=5.71; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.200  ⟨polar⟩=0.087  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 73.44→73.8  |Δ|/⟨Em⟩=0.005  |ΔEmTot|/EmTot0=0.006
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=28.96  ⟨|Circ|⟩=3.723  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.06077  ⟨|dEmTot|⟩=0.2706  corr(net,dM)=-0.109  |Thru|~|dM|=0.985  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S06_deep_rad.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.5074  ⟨I⟩=1.199  ⟨O⟩=0.5074  Φ/Em=0.005708  (rate 5.71e-05/t.u. Δt=100; min⟨⟩=0.5074; I/O=2.36; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=2.564  ⟨polar⟩=0.097  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 86.35→87.65  |Δ|/⟨Em⟩=0.015  |ΔEmTot|/EmTot0=0.005
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=18.18  ⟨|Circ|⟩=6.384  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.09726  ⟨|dEmTot|⟩=0.2189  corr(net,dM)=-0.038  |Thru|~|dM|=0.236  tracks=false
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S07_noise.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=20.91  ⟨I⟩=26.74  ⟨O⟩=20.91  Φ/Em=0.008972  (rate 8.97e-05/t.u. Δt=100; min⟨⟩=20.91; I/O=1.28; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.322  ⟨polar⟩=0.041  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 2333→2327  |Δ|/⟨Em⟩=0.003  |ΔEmTot|/EmTot0=0.003
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=1021  ⟨|Circ|⟩=93.09  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=7.849  ⟨|dEmTot|⟩=2.441  corr(net,dM)=0.407  |Thru|~|dM|=-0.871  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S08_noise_rad.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=34.26  ⟨I⟩=42.28  ⟨O⟩=34.26  Φ/Em=0.0156  (rate 0.000156/t.u. Δt=100; min⟨⟩=34.26; I/O=1.23; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.063  ⟨polar⟩=0.041  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 2199→2200  |Δ|/⟨Em⟩=0.000  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=544.4  ⟨|Circ|⟩=126.3  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=9.228  ⟨|dEmTot|⟩=6.634  corr(net,dM)=0.160  |Thru|~|dM|=-0.069  tracks=false
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S09_noise_deep.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=17.65  ⟨I⟩=20.39  ⟨O⟩=17.65  Φ/Em=0.007494  (rate 7.49e-05/t.u. Δt=100; min⟨⟩=17.65; I/O=1.16; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.771  ⟨polar⟩=0.018  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 2355→2358  |Δ|/⟨Em⟩=0.001  |ΔEmTot|/EmTot0=0.001
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=902.8  ⟨|Circ|⟩=40.25  dir-stable=0.50
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=7.497  ⟨|dEmTot|⟩=2.49  corr(net,dM)=-0.906  |Thru|~|dM|=0.320  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S10_nowf_quiet.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.007018  ⟨I⟩=0.03187  ⟨O⟩=0.007018  Φ/Em=6.196e-05  (rate 6.2e-07/t.u. Δt=100; min⟨⟩=0.007018; I/O=4.54; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=5.995  ⟨polar⟩=0.023  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 111.7→114.8  |Δ|/⟨Em⟩=0.027  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=32.12  ⟨|Circ|⟩=14.44  dir-stable=0.75
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.1319  ⟨|dEmTot|⟩=1.551e-07  corr(net,dM)=-0.044  |Thru|~|dM|=-0.599  tracks=false
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S11b_nowf_noise_s111.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=19.14  ⟨I⟩=26.93  ⟨O⟩=19.14  Φ/Em=0.008443  (rate 8.44e-05/t.u. Δt=100; min⟨⟩=19.14; I/O=1.41; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=6.540  ⟨polar⟩=0.030  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 2266→2269  |Δ|/⟨Em⟩=0.001  |ΔEmTot|/EmTot0=0.002
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=803.9  ⟨|Circ|⟩=108.5  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=7.386  ⟨|dEmTot|⟩=2.748  corr(net,dM)=-0.950  |Thru|~|dM|=0.236  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S11_nowf_noise.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=19.95  ⟨I⟩=27.24  ⟨O⟩=19.95  Φ/Em=0.008565  (rate 8.56e-05/t.u. Δt=100; min⟨⟩=19.95; I/O=1.37; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=1.891  ⟨polar⟩=0.046  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 2327→2328  |Δ|/⟨Em⟩=0.001  |ΔEmTot|/EmTot0=0.001
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=1087  ⟨|Circ|⟩=155.5  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=7.622  ⟨|dEmTot|⟩=3.468  corr(net,dM)=-0.756  |Thru|~|dM|=0.044  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S12_nowf_noise_rad.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 3/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=35.34  ⟨I⟩=42.04  ⟨O⟩=35.34  Φ/Em=0.01607  (rate 0.000161/t.u. Δt=100; min⟨⟩=35.34; I/O=1.19; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.404  ⟨polar⟩=0.039  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 2203→2198  |Δ|/⟨Em⟩=0.002  |ΔEmTot|/EmTot0=0.002
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=667.3  ⟨|Circ|⟩=85.39  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=8.934  ⟨|dEmTot|⟩=4.349  corr(net,dM)=0.428  |Thru|~|dM|=-0.863  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S13_nowf_deep_noise.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=19.06  ⟨I⟩=21.05  ⟨O⟩=19.29  Φ/Em=0.008103  (rate 8.1e-05/t.u. Δt=100; min⟨⟩=19.29; I/O=1.09; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=6.280  ⟨polar⟩=0.022  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 2351→2351  |Δ|/⟨Em⟩=0.000  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=862.3  ⟨|Circ|⟩=53.23  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=7.501  ⟨|dEmTot|⟩=3.69  corr(net,dM)=-0.860  |Thru|~|dM|=0.183  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S14_kx_tilt.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.01535  ⟨I⟩=0.07532  ⟨O⟩=0.01535  Φ/Em=0.0001361  (rate 1.36e-06/t.u. Δt=100; min⟨⟩=0.01535; I/O=4.91; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.891  ⟨polar⟩=0.053  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 113.3→112  |Δ|/⟨Em⟩=0.012  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=60.58  ⟨|Circ|⟩=5.59  dir-stable=0.75
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.1148  ⟨|dEmTot|⟩=2.507e-07  corr(net,dM)=0.333  |Thru|~|dM|=0.203  tracks=false
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S15_kx_noise.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=20.73  ⟨I⟩=27.46  ⟨O⟩=20.73  Φ/Em=0.009003  (rate 9e-05/t.u. Δt=100; min⟨⟩=20.73; I/O=1.32; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.157  ⟨polar⟩=0.016  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 2300→2306  |Δ|/⟨Em⟩=0.003  |ΔEmTot|/EmTot0=0.002
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=627.4  ⟨|Circ|⟩=136.6  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=9.089  ⟨|dEmTot|⟩=2.183  corr(net,dM)=0.193  |Thru|~|dM|=0.437  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S16_seed_mw.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.01055  ⟨I⟩=0.04861  ⟨O⟩=0.01055  Φ/Em=9.265e-05  (rate 9.27e-07/t.u. Δt=100; min⟨⟩=0.01055; I/O=4.61; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.345  ⟨polar⟩=0.088  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 114.3→113.8  |Δ|/⟨Em⟩=0.005  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=40.49  ⟨|Circ|⟩=8.972  dir-stable=0.75
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.1218  ⟨|dEmTot|⟩=1.266e-07  corr(net,dM)=0.133  |Thru|~|dM|=-0.012  tracks=false
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S17_add_noise.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=34.01  ⟨I⟩=35.74  ⟨O⟩=34.35  Φ/Em=0.01585  (rate 0.000158/t.u. Δt=100; min⟨⟩=34.35; I/O=1.04; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=6.491  ⟨polar⟩=0.026  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 2143→2156  |Δ|/⟨Em⟩=0.006  |ΔEmTot|/EmTot0=0.006
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=711.5  ⟨|Circ|⟩=169.4  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=5.565  ⟨|dEmTot|⟩=9.25  corr(net,dM)=0.734  |Thru|~|dM|=-0.336  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S18_v3a_quiet.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.4014  ⟨I⟩=2.292  ⟨O⟩=0.4014  Φ/Em=0.005441  (rate 5.44e-05/t.u. Δt=100; min⟨⟩=0.4014; I/O=5.71; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=3.200  ⟨polar⟩=0.087  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 73.44→73.8  |Δ|/⟨Em⟩=0.005  |ΔEmTot|/EmTot0=0.006
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=28.96  ⟨|Circ|⟩=3.723  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.06077  ⟨|dEmTot|⟩=0.2706  corr(net,dM)=-0.109  |Thru|~|dM|=0.985  tracks=true
+
+H1 EMPTY  frames=31  span=3000.0  ../v93/theory/runs/sustain_T3000_20260808_104548/S19_v3a_noise.fcs
+  stream t=[0.0, 3000.0]  best window t=[2700.0, 3000.0] Δt=300.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=34.26  ⟨I⟩=42.28  ⟨O⟩=34.26  Φ/Em=0.0156  (rate 0.000156/t.u. Δt=100; min⟨⟩=34.26; I/O=1.23; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.063  ⟨polar⟩=0.041  (book frames 4/4)
+  [PASS] dM/dt ≈ 0 (parked) — Em 2199→2200  |Δ|/⟨Em⟩=0.000  |ΔEmTot|/EmTot0=0.000
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=544.4  ⟨|Circ|⟩=126.3  dir-stable=0.75
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=9.228  ⟨|dEmTot|⟩=6.634  corr(net,dM)=0.160  |Thru|~|dM|=-0.069  tracks=false
+
+H1 EMPTY  frames=2  span=60.0  ../v94/runs/dsg/dg0_snap.fcs
+  stream t=[0.0, 60.0]  best window t=[0.0, 60.0] Δt=60.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=49.23  ⟨O⟩=0  Φ/Em=0  (rate NaN/t.u. Δt=0; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.807  (book frames 0/1)
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=2  span=60.0  ../v94/runs/dsg/dg2.0_snap.fcs
+  stream t=[0.0, 60.0]  best window t=[0.0, 60.0] Δt=60.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=33.21  ⟨O⟩=0  Φ/Em=0  (rate NaN/t.u. Δt=0; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.301  (book frames 0/1)
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=2  span=60.0  ../v94/runs/dsg/dg2_cl1_snap.fcs
+  stream t=[0.0, 60.0]  best window t=[0.0, 60.0] Δt=60.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=33.21  ⟨O⟩=0  Φ/Em=0  (rate NaN/t.u. Δt=0; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.301  (book frames 0/1)
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=2  span=50.0  ../v94/runs/dsg/dsg3_ctl.fcs
+  stream t=[0.0, 50.0]  best window t=[0.0, 50.0] Δt=50.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=51.11  ⟨O⟩=0  Φ/Em=0  (rate NaN/t.u. Δt=0; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.102  (book frames 0/1)
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=2  span=50.0  ../v94/runs/dsg/dsg3_frozen.fcs
+  stream t=[0.0, 50.0]  best window t=[0.0, 50.0] Δt=50.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=13.69  ⟨O⟩=0  Φ/Em=0  (rate NaN/t.u. Δt=0; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.110  (book frames 0/1)
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=2  span=50.0  ../v94/runs/dsg/dsg3_snap.fcs
+  stream t=[0.0, 50.0]  best window t=[0.0, 50.0] Δt=50.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=7.428  ⟨O⟩=0  Φ/Em=0  (rate NaN/t.u. Δt=0; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.033  (book frames 0/1)
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=2  span=60.0  ../v94/runs/dsg/f1only_snap.fcs
+  stream t=[0.0, 60.0]  best window t=[0.0, 60.0] Δt=60.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=33.75  ⟨O⟩=0  Φ/Em=0  (rate NaN/t.u. Δt=0; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.207  (book frames 0/1)
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=3  span=80.0  ../v94/runs/m1/dg0.5.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.9192  ⟨I⟩=1.312  ⟨O⟩=0.9192  Φ/Em=0.0486  (rate 0.00122/t.u. Δt=40; min⟨⟩=0.9192; I/O=1.43; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.697  ⟨polar⟩=0.190  (book frames 2/3)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 36.24→8.661  |Δ|/⟨Em⟩=1.458  |ΔEmTot|/EmTot0=0.088
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=107.4  ⟨|Circ|⟩=8.067  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1955  ⟨|dEmTot|⟩=4.985  corr(net,dM)=0.978  |Thru|~|dM|=-0.544  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=3  span=80.0  ../v94/runs/m1/dg0.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=2.805  ⟨I⟩=128.4  ⟨O⟩=2.805  Φ/Em=0.004307  (rate 0.000108/t.u. Δt=40; min⟨⟩=2.805; I/O=45.8; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=4.574  ⟨polar⟩=0.025  (book frames 2/3)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 36.24→1073  |Δ|/⟨Em⟩=1.591  |ΔEmTot|/EmTot0=26.095
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=284.8  ⟨|Circ|⟩=77.64  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=6.142  ⟨|dEmTot|⟩=350.3  corr(net,dM)=0.988  |Thru|~|dM|=0.820  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v94/runs/m4/da0.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.03875  ⟨I⟩=0.1184  ⟨O⟩=0.08864  Φ/Em=0.01521  (rate 0.00549/t.u. Δt=2.77; min⟨⟩=0.08864; I/O=1.34; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.927  ⟨polar⟩=0.665  (book frames 15/27)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→0.4695  |Δ|/⟨Em⟩=1.729  |ΔEmTot|/EmTot0=0.739
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1.559  ⟨|Circ|⟩=1.42  dir-stable=0.65
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.0477  ⟨|dEmTot|⟩=0.2173  corr(net,dM)=-0.148  |Thru|~|dM|=-0.082  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v94/runs/m4/da1.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.05649  ⟨I⟩=0.1195  ⟨O⟩=0.09166  Φ/Em=0.02567  (rate 0.01/t.u. Δt=2.56; min⟨⟩=0.09166; I/O=1.3; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.842  ⟨polar⟩=0.700  (book frames 12/26)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→0.5491  |Δ|/⟨Em⟩=1.966  |ΔEmTot|/EmTot0=0.710
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1.173  ⟨|Circ|⟩=1.168  dir-stable=0.54
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.05161  ⟨|dEmTot|⟩=0.2056  corr(net,dM)=-0.258  |Thru|~|dM|=-0.083  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v94/runs/m4/dg0.3.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.0542  ⟨I⟩=0.1442  ⟨O⟩=0.124  Φ/Em=0.02374  (rate 0.0119/t.u. Δt=2; min⟨⟩=0.124; I/O=1.16; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.968  ⟨polar⟩=0.704  (book frames 23/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→2.601  |Δ|/⟨Em⟩=0.996  |ΔEmTot|/EmTot0=0.327
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1.323  ⟨|Circ|⟩=0.9357  dir-stable=0.62
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.04753  ⟨|dEmTot|⟩=0.3752  corr(net,dM)=-0.165  |Thru|~|dM|=0.014  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v94/runs/m4/dg0.5.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.03875  ⟨I⟩=0.1184  ⟨O⟩=0.08864  Φ/Em=0.01521  (rate 0.00549/t.u. Δt=2.77; min⟨⟩=0.08864; I/O=1.34; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.927  ⟨polar⟩=0.665  (book frames 15/27)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→0.4695  |Δ|/⟨Em⟩=1.729  |ΔEmTot|/EmTot0=0.739
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1.559  ⟨|Circ|⟩=1.42  dir-stable=0.65
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.0477  ⟨|dEmTot|⟩=0.2173  corr(net,dM)=-0.148  |Thru|~|dM|=-0.082  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v94/runs/m4/dg0.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.144  ⟨I⟩=0.4289  ⟨O⟩=0.1882  Φ/Em=0.0152  (rate 0.0076/t.u. Δt=2; min⟨⟩=0.1882; I/O=2.28; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.837  ⟨polar⟩=0.514  (book frames 33/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→21.66  |Δ|/⟨Em⟩=1.771  |ΔEmTot|/EmTot0=3.665
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=5.917  ⟨|Circ|⟩=3.886  dir-stable=0.60
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1429  ⟨|dEmTot|⟩=0.4625  corr(net,dM)=0.252  |Thru|~|dM|=0.619  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=38  span=74.0  ../v94/runs/m4/dg1.0.fcs
+  stream t=[0.0, 74.0]  best window t=[0.0, 74.0] Δt=74.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.04736  ⟨I⟩=0.1879  ⟨O⟩=0.1165  Φ/Em=0.01788  (rate 0.00387/t.u. Δt=4.62; min⟨⟩=0.1165; I/O=1.61; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=1.010  ⟨polar⟩=0.802  (book frames 7/17)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→0.7401  |Δ|/⟨Em⟩=1.561  |ΔEmTot|/EmTot0=0.504
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1.366  ⟨|Circ|⟩=1.42  dir-stable=0.62
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.04777  ⟨|dEmTot|⟩=0.2335  corr(net,dM)=-0.153  |Thru|~|dM|=-0.167  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v94/runs/m4/test.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.03875  ⟨I⟩=0.1184  ⟨O⟩=0.08864  Φ/Em=0.01521  (rate 0.00549/t.u. Δt=2.77; min⟨⟩=0.08864; I/O=1.34; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.927  ⟨polar⟩=0.665  (book frames 15/27)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→0.4695  |Δ|/⟨Em⟩=1.729  |ΔEmTot|/EmTot0=0.739
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1.559  ⟨|Circ|⟩=1.42  dir-stable=0.65
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.0477  ⟨|dEmTot|⟩=0.2173  corr(net,dM)=-0.148  |Thru|~|dM|=-0.082  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=17  span=160.0  ../v94/runs/streams/blob_c.fcs
+  stream t=[0.0, 160.0]  best window t=[60.0, 160.0] Δt=100.0  clauses 1/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=2.004  ⟨I⟩=2.187  ⟨O⟩=2.563  Φ/Em=0.02321  (rate 0.00232/t.u. Δt=10; min⟨⟩=2.187; I/O=0.853; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.995  ⟨polar⟩=0.132  (book frames 11/11)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 117.6→69.01  |Δ|/⟨Em⟩=0.562  |ΔEmTot|/EmTot0=0.335
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=21.05  ⟨|Circ|⟩=19.25  dir-stable=0.55
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.2097  ⟨|dEmTot|⟩=4.747  corr(net,dM)=-0.020  |Thru|~|dM|=0.757  tracks=true
+
+H1 EMPTY  frames=9  span=40.0  ../v94/runs/streams/ds1_two.fcs
+  stream t=[0.0, 40.0]  best window t=[0.0, 40.0] Δt=40.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0.47  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=5; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.461  (book frames 0/4)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 2.671→1.851  |Δ|/⟨Em⟩=0.415  |ΔEmTot|/EmTot0=0.178
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=0.7992  ⟨|Circ|⟩=0.6234  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.01187  ⟨|dEmTot|⟩=1.696  corr(net,dM)=-0.289  |Thru|~|dM|=0.779  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=9  span=40.0  ../v94/runs/streams/ds_m0.fcs
+  stream t=[0.0, 40.0]  best window t=[0.0, 40.0] Δt=40.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=9  span=80.0  ../v94/runs/streams/p1_b2.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.2614  ⟨I⟩=0.2614  ⟨O⟩=0.479  Φ/Em=0.003566  (rate 0.000357/t.u. Δt=10; min⟨⟩=0.2614; I/O=0.546; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=1.812  ⟨polar⟩=0.404  (book frames 6/9)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 111.5→54.94  |Δ|/⟨Em⟩=0.772  |ΔEmTot|/EmTot0=0.438
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=17.49  ⟨|Circ|⟩=14.87  dir-stable=0.56
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.0665  ⟨|dEmTot|⟩=6.209  corr(net,dM)=0.414  |Thru|~|dM|=0.107  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=6  span=10.0  ../v94/runs/streams/pulse_c.fcs
+  stream t=[0.0, 10.0]  best window t=[0.0, 10.0] Δt=10.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=7  span=30.0  ../v94/runs/streams/xs_hdr.fcs
+  stream t=[0.0, 30.0]  best window t=[0.0, 30.0] Δt=30.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.3124  ⟨I⟩=1.358  ⟨O⟩=0.55  Φ/Em=0.01957  (rate 0.00391/t.u. Δt=5; min⟨⟩=0.55; I/O=2.47; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=2.042  ⟨polar⟩=0.332  (book frames 4/7)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 14.05→22.94  |Δ|/⟨Em⟩=0.557  |ΔEmTot|/EmTot0=0.594
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=3.327  ⟨|Circ|⟩=4.291  dir-stable=0.57
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.05476  ⟨|dEmTot|⟩=2.228  corr(net,dM)=0.183  |Thru|~|dM|=0.433  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v95/runs/c1check_COMPOSITION.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.03885  ⟨I⟩=0.1353  ⟨O⟩=0.08355  Φ/Em=0.01868  (rate 0.00742/t.u. Δt=2.52; min⟨⟩=0.08355; I/O=1.62; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.868  ⟨polar⟩=0.792  (book frames 16/32)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→0.1867  |Δ|/⟨Em⟩=2.254  |ΔEmTot|/EmTot0=0.761
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1.17  ⟨|Circ|⟩=0.9857  dir-stable=0.61
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.02852  ⟨|dEmTot|⟩=0.1674  corr(net,dM)=-0.145  |Thru|~|dM|=-0.072  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v95/runs/c1check_J1_only.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.2162  ⟨I⟩=0.4444  ⟨O⟩=0.2933  Φ/Em=0.02651  (rate 0.0133/t.u. Δt=2; min⟨⟩=0.2933; I/O=1.52; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.782  ⟨polar⟩=0.572  (book frames 37/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→15.83  |Δ|/⟨Em⟩=1.343  |ΔEmTot|/EmTot0=2.343
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=4.65  ⟨|Circ|⟩=3.308  dir-stable=0.53
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1633  ⟨|dEmTot|⟩=0.3214  corr(net,dM)=0.077  |Thru|~|dM|=0.499  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v95/runs/c1f_doe0.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.05334  ⟨I⟩=0.1269  ⟨O⟩=0.08018  Φ/Em=0.01448  (rate 0.00688/t.u. Δt=2.11; min⟨⟩=0.08018; I/O=1.58; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.927  ⟨polar⟩=0.807  (book frames 20/39)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→2.672  |Δ|/⟨Em⟩=0.598  |ΔEmTot|/EmTot0=0.266
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1.566  ⟨|Circ|⟩=1.103  dir-stable=0.56
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.05432  ⟨|dEmTot|⟩=0.05226  corr(net,dM)=-0.008  |Thru|~|dM|=0.073  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v95/runs/c1f_doe1.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.03885  ⟨I⟩=0.1353  ⟨O⟩=0.08355  Φ/Em=0.01868  (rate 0.00742/t.u. Δt=2.52; min⟨⟩=0.08355; I/O=1.62; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.868  ⟨polar⟩=0.792  (book frames 16/32)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→0.1867  |Δ|/⟨Em⟩=2.254  |ΔEmTot|/EmTot0=0.761
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1.17  ⟨|Circ|⟩=0.9857  dir-stable=0.61
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.02852  ⟨|dEmTot|⟩=0.1674  corr(net,dM)=-0.145  |Thru|~|dM|=-0.072  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v95/runs/c1_jm0_dg0.5.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.05649  ⟨I⟩=0.1195  ⟨O⟩=0.09166  Φ/Em=0.02567  (rate 0.01/t.u. Δt=2.56; min⟨⟩=0.09166; I/O=1.3; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.842  ⟨polar⟩=0.700  (book frames 12/26)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→0.5491  |Δ|/⟨Em⟩=1.966  |ΔEmTot|/EmTot0=0.710
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1.173  ⟨|Circ|⟩=1.168  dir-stable=0.54
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.05161  ⟨|dEmTot|⟩=0.2056  corr(net,dM)=-0.258  |Thru|~|dM|=-0.083  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v95/runs/c1_jm0_dg0.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.144  ⟨I⟩=0.4289  ⟨O⟩=0.1882  Φ/Em=0.0152  (rate 0.0076/t.u. Δt=2; min⟨⟩=0.1882; I/O=2.28; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.837  ⟨polar⟩=0.514  (book frames 33/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→21.66  |Δ|/⟨Em⟩=1.771  |ΔEmTot|/EmTot0=3.665
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=5.917  ⟨|Circ|⟩=3.886  dir-stable=0.60
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1429  ⟨|dEmTot|⟩=0.4625  corr(net,dM)=0.252  |Thru|~|dM|=0.619  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v95/runs/c1_jm1_dg0.5.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.02563  ⟨I⟩=0.09014  ⟨O⟩=0.09401  Φ/Em=0.009538  (rate 0.00465/t.u. Δt=2.05; min⟨⟩=0.09014; I/O=0.959; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.855  ⟨polar⟩=0.793  (book frames 17/40)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→1.382  |Δ|/⟨Em⟩=1.300  |ΔEmTot|/EmTot0=0.554
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1.736  ⟨|Circ|⟩=1.519  dir-stable=0.62
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.05167  ⟨|dEmTot|⟩=0.2206  corr(net,dM)=-0.371  |Thru|~|dM|=0.174  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v95/runs/c1_jm1_dg0.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.2162  ⟨I⟩=0.4444  ⟨O⟩=0.2933  Φ/Em=0.02651  (rate 0.0133/t.u. Δt=2; min⟨⟩=0.2933; I/O=1.52; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.782  ⟨polar⟩=0.572  (book frames 37/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→15.83  |Δ|/⟨Em⟩=1.343  |ΔEmTot|/EmTot0=2.343
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=4.65  ⟨|Circ|⟩=3.308  dir-stable=0.53
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1633  ⟨|dEmTot|⟩=0.3214  corr(net,dM)=0.077  |Thru|~|dM|=0.499  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v95/runs/j1_jm0.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.144  ⟨I⟩=0.4289  ⟨O⟩=0.1882  Φ/Em=0.0152  (rate 0.0076/t.u. Δt=2; min⟨⟩=0.1882; I/O=2.28; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.837  ⟨polar⟩=0.514  (book frames 33/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→21.66  |Δ|/⟨Em⟩=1.771  |ΔEmTot|/EmTot0=3.665
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=5.917  ⟨|Circ|⟩=3.886  dir-stable=0.60
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1429  ⟨|dEmTot|⟩=0.4625  corr(net,dM)=0.252  |Thru|~|dM|=0.619  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v95/runs/j1_jm1.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.2162  ⟨I⟩=0.4444  ⟨O⟩=0.2933  Φ/Em=0.02651  (rate 0.0133/t.u. Δt=2; min⟨⟩=0.2933; I/O=1.52; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.782  ⟨polar⟩=0.572  (book frames 37/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→15.83  |Δ|/⟨Em⟩=1.343  |ΔEmTot|/EmTot0=2.343
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=4.65  ⟨|Circ|⟩=3.308  dir-stable=0.53
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1633  ⟨|dEmTot|⟩=0.3214  corr(net,dM)=0.077  |Thru|~|dM|=0.499  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v95/runs/q0_m0.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.207  ⟨I⟩=0.4387  ⟨O⟩=0.3162  Φ/Em=0.02461  (rate 0.0123/t.u. Δt=2; min⟨⟩=0.3162; I/O=1.39; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.850  ⟨polar⟩=0.599  (book frames 36/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→16.29  |Δ|/⟨Em⟩=1.357  |ΔEmTot|/EmTot0=3.048
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=4.368  ⟨|Circ|⟩=3.415  dir-stable=0.59
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.172  ⟨|dEmTot|⟩=0.3863  corr(net,dM)=0.180  |Thru|~|dM|=0.567  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v95/runs/q0_m1.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.2056  ⟨I⟩=0.5387  ⟨O⟩=0.2782  Φ/Em=0.01821  (rate 0.00911/t.u. Δt=2; min⟨⟩=0.2782; I/O=1.94; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.982  ⟨polar⟩=0.546  (book frames 37/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→20.07  |Δ|/⟨Em⟩=1.347  |ΔEmTot|/EmTot0=3.514
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=6.46  ⟨|Circ|⟩=5.216  dir-stable=0.66
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1967  ⟨|dEmTot|⟩=0.4429  corr(net,dM)=-0.162  |Thru|~|dM|=0.333  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v95/runs/q0_m2.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.2162  ⟨I⟩=0.4444  ⟨O⟩=0.2933  Φ/Em=0.02651  (rate 0.0133/t.u. Δt=2; min⟨⟩=0.2933; I/O=1.52; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.782  ⟨polar⟩=0.572  (book frames 37/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→15.83  |Δ|/⟨Em⟩=1.343  |ΔEmTot|/EmTot0=2.343
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=4.65  ⟨|Circ|⟩=3.308  dir-stable=0.53
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1633  ⟨|dEmTot|⟩=0.3214  corr(net,dM)=0.077  |Thru|~|dM|=0.499  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=41  span=80.0  ../v95/runs/q0_m3.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.1873  ⟨I⟩=0.4051  ⟨O⟩=0.2356  Φ/Em=0.02315  (rate 0.0116/t.u. Δt=2; min⟨⟩=0.2356; I/O=1.72; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.982  ⟨polar⟩=0.535  (book frames 34/41)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→13.82  |Δ|/⟨Em⟩=1.105  |ΔEmTot|/EmTot0=2.075
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=4.472  ⟨|Circ|⟩=2.448  dir-stable=0.61
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.1585  ⟨|dEmTot|⟩=0.2718  corr(net,dM)=-0.135  |Thru|~|dM|=0.305  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=201  span=80.0  ../v95/runs/q1_na1.0.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.04996  ⟨I⟩=0.1165  ⟨O⟩=0.07648  Φ/Em=0.00614  (rate 0.0153/t.u. Δt=0.4; min⟨⟩=0.07648; I/O=1.52; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.713  ⟨polar⟩=0.647  (book frames 166/201)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→15.83  |Δ|/⟨Em⟩=1.346  |ΔEmTot|/EmTot0=2.343
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=4.841  ⟨|Circ|⟩=3.242  dir-stable=0.51
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.1603  ⟨|dEmTot|⟩=0.07451  corr(net,dM)=0.033  |Thru|~|dM|=0.218  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=201  span=80.0  ../v95/runs/q1_na2.0.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.192  ⟨I⟩=0.386  ⟨O⟩=0.2175  Φ/Em=0.008551  (rate 0.0214/t.u. Δt=0.4; min⟨⟩=0.2175; I/O=1.77; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.766  ⟨polar⟩=0.479  (book frames 188/201)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→51.95  |Δ|/⟨Em⟩=2.096  |ΔEmTot|/EmTot0=10.652
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=8.769  ⟨|Circ|⟩=7.707  dir-stable=0.54
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.6676  ⟨|dEmTot|⟩=0.2865  corr(net,dM)=-0.063  |Thru|~|dM|=0.434  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=201  span=80.0  ../v95/runs/q1_na3.0.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.09753  ⟨I⟩=0.2228  ⟨O⟩=0.1361  Φ/Em=0.007213  (rate 0.018/t.u. Δt=0.4; min⟨⟩=0.1361; I/O=1.64; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.946  ⟨polar⟩=0.503  (book frames 186/201)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→26.96  |Δ|/⟨Em⟩=1.633  |ΔEmTot|/EmTot0=4.761
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=6.96  ⟨|Circ|⟩=4.487  dir-stable=0.67
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=0.566  ⟨|dEmTot|⟩=0.164  corr(net,dM)=0.052  |Thru|~|dM|=0.281  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=201  span=80.0  ../v95/runs/q1_na5.0.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.2431  ⟨I⟩=0.4273  ⟨O⟩=0.3009  Φ/Em=0.01104  (rate 0.0276/t.u. Δt=0.4; min⟨⟩=0.3009; I/O=1.42; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.794  ⟨polar⟩=0.437  (book frames 190/201)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→55.11  |Δ|/⟨Em⟩=2.281  |ΔEmTot|/EmTot0=11.436
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=9.22  ⟨|Circ|⟩=6.631  dir-stable=0.64
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=1.361  ⟨|dEmTot|⟩=0.3526  corr(net,dM)=0.020  |Thru|~|dM|=0.488  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=201  span=80.0  ../v95/runs/q1_na8.0.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 2/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.09844  ⟨I⟩=0.1821  ⟨O⟩=0.161  Φ/Em=0.01092  (rate 0.0273/t.u. Δt=0.4; min⟨⟩=0.161; I/O=1.13; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=0.983  ⟨polar⟩=0.579  (book frames 189/201)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 4.875→20.87  |Δ|/⟨Em⟩=1.775  |ΔEmTot|/EmTot0=3.801
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=6.121  ⟨|Circ|⟩=3.507  dir-stable=0.58
+  [PASS] Es throughput at constant M — ⟨coreThru⟩=1.085  ⟨|dEmTot|⟩=0.1862  corr(net,dM)=-0.007  |Thru|~|dM|=0.346  tracks=false
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=17  span=160.0  ../v95/runs/streams/blob_c.fcs
+  stream t=[0.0, 160.0]  best window t=[60.0, 160.0] Δt=100.0  clauses 1/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=2.004  ⟨I⟩=2.187  ⟨O⟩=2.563  Φ/Em=0.02321  (rate 0.00232/t.u. Δt=10; min⟨⟩=2.187; I/O=0.853; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.995  ⟨polar⟩=0.132  (book frames 11/11)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 117.6→69.01  |Δ|/⟨Em⟩=0.562  |ΔEmTot|/EmTot0=0.335
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=21.05  ⟨|Circ|⟩=19.25  dir-stable=0.55
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.2097  ⟨|dEmTot|⟩=4.747  corr(net,dM)=-0.020  |Thru|~|dM|=0.757  tracks=true
+
+H1 EMPTY  frames=9  span=40.0  ../v95/runs/streams/ds1_two.fcs
+  stream t=[0.0, 40.0]  best window t=[0.0, 40.0] Δt=40.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0.47  ⟨O⟩=0  Φ/Em=0  (rate 0/t.u. Δt=5; min⟨⟩=0; I/O=+Inf; heuristic)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.461  (book frames 0/4)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 2.671→1.851  |Δ|/⟨Em⟩=0.415  |ΔEmTot|/EmTot0=0.178
+  [PASS] dipole of J steady — ⟨|Jdip|⟩=0.7992  ⟨|Circ|⟩=0.6234  dir-stable=1.00
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.01187  ⟨|dEmTot|⟩=1.696  corr(net,dM)=-0.289  |Thru|~|dM|=0.779  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=9  span=40.0  ../v95/runs/streams/ds_m0.fcs
+  stream t=[0.0, 40.0]  best window t=[0.0, 40.0] Δt=40.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=9  span=80.0  ../v95/runs/streams/p1_b2.fcs
+  stream t=[0.0, 80.0]  best window t=[0.0, 80.0] Δt=80.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.2614  ⟨I⟩=0.2614  ⟨O⟩=0.479  Φ/Em=0.003566  (rate 0.000357/t.u. Δt=10; min⟨⟩=0.2614; I/O=0.546; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=1.812  ⟨polar⟩=0.404  (book frames 6/9)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 111.5→54.94  |Δ|/⟨Em⟩=0.772  |ΔEmTot|/EmTot0=0.438
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=17.49  ⟨|Circ|⟩=14.87  dir-stable=0.56
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.0665  ⟨|dEmTot|⟩=6.209  corr(net,dM)=0.414  |Thru|~|dM|=0.107  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=6  span=10.0  ../v95/runs/streams/pulse_c.fcs
+  stream t=[0.0, 10.0]  best window t=[0.0, 10.0] Δt=10.0  clauses 0/5
+  [FAIL] Φ > 0 — no live motif
+  [FAIL] I/O spatially separated — no live motif
+  [FAIL] dM/dt ≈ 0 — too few live frames
+  [FAIL] dipole of J steady — too few live frames
+  [FAIL] Es throughput at constant M — too few live frames
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 EMPTY  frames=7  span=30.0  ../v95/runs/streams/xs_hdr.fcs
+  stream t=[0.0, 30.0]  best window t=[0.0, 30.0] Δt=30.0  clauses 2/5
+  [PASS] Φ > 0 (live throughput) — ⟨Φ⟩=0.3124  ⟨I⟩=1.358  ⟨O⟩=0.55  Φ/Em=0.01957  (rate 0.00391/t.u. Δt=5; min⟨⟩=0.55; I/O=2.47; heuristic)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=2.042  ⟨polar⟩=0.332  (book frames 4/7)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 14.05→22.94  |Δ|/⟨Em⟩=0.557  |ΔEmTot|/EmTot0=0.594
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=3.327  ⟨|Circ|⟩=4.291  dir-stable=0.57
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.05476  ⟨|dEmTot|⟩=2.228  corr(net,dM)=0.183  |Thru|~|dM|=0.433  tracks=true
+  note: stream shorter than 100 t.u. — cannot inhabit
+
+H1 SUMMARY  inhabited=0  empty=135  short=124  err=0  files=259

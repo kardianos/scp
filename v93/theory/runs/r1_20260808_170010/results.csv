@@ -1,0 +1,2 @@
+name,family,cond,evap,rad,fd,fl,Em_end,Em_max,Em_mid,slope,Jx,R2f,Ee,seconds,err
+R1_S00,r1,0,0,0,0,0,148.765,0.9015,148.765,0,0,0,0,78.7,signal: terminated

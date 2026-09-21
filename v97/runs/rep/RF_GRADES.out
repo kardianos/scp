@@ -1,0 +1,30 @@
+== rf_s20260802 ==
+rough=0.000000 cond=89.717947 evap=0.000000 backs=0.297643 rad=2.281931
+  stream t=[0.0, 240.0]  best window t=[140.0, 240.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0.1587  ⟨O⟩=0.01003  Φ/Em=0  (rate 0/t.u. Δt=4; min⟨⟩=0.01003; I/O=15.8; exact)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=0.768  (book frames 0/26)
+  [PASS] dM/dt ≈ 0 (parked) — Em 4.79→4.019  |Δ|/⟨Em⟩=0.174  |ΔEmTot|/EmTot0=4.871
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=3.15  ⟨|Circ|⟩=1.816  dir-stable=0.54  (snapshot fallback)
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.2778  ⟨|dEmTot|⟩=3.375  corr(net,dM)=-0.038  |Thru|~|dM|=0.850  tracks=true
+
+
+== rf_s111 ==
+rough=0.000000 cond=169.808276 evap=0.000000 backs=0.540563 rad=4.144319
+  stream t=[0.0, 240.0]  best window t=[140.0, 240.0] Δt=100.0  clauses 1/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0.009379  ⟨I⟩=0.09054  ⟨O⟩=0.049  Φ/Em=0.002187  (rate 0.000547/t.u. Δt=4; min⟨⟩=0.049; I/O=1.85; exact)
+  [PASS] I/O spatially separated — ⟨|sep|⟩=1.319  ⟨polar⟩=0.924  (book frames 1/26)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 5.32→2.989  |Δ|/⟨Em⟩=0.543  |ΔEmTot|/EmTot0=4.200
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=2.939  ⟨|Circ|⟩=2.13  dir-stable=0.58  (snapshot fallback)
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.5179  ⟨|dEmTot|⟩=6.135  corr(net,dM)=0.490  |Thru|~|dM|=0.949  tracks=true
+
+
+== rf_s271828 ==
+rough=0.000000 cond=88.878449 evap=0.000000 backs=0.552599 rad=4.236590
+  stream t=[0.0, 240.0]  best window t=[140.0, 240.0] Δt=100.0  clauses 0/5
+  [FAIL] Φ > 0 (live throughput) — ⟨Φ⟩=0  ⟨I⟩=0.02576  ⟨O⟩=0.04747  Φ/Em=0  (rate 0/t.u. Δt=4.76; min⟨⟩=0.02576; I/O=0.543; exact)
+  [FAIL] I/O spatially separated — ⟨|sep|⟩=0.000  ⟨polar⟩=1.000  (book frames 0/22)
+  [FAIL] dM/dt ≈ 0 (parked) — Em 2.336→3.119  |Δ|/⟨Em⟩=0.301  |ΔEmTot|/EmTot0=3.860
+  [FAIL] dipole of J steady — ⟨|Jdip|⟩=1.676  ⟨|Circ|⟩=0.939  dir-stable=0.64  (snapshot fallback)
+  [FAIL] Es throughput at constant M — ⟨coreThru⟩=0.2735  ⟨|dEmTot|⟩=3.254  corr(net,dM)=0.293  |Thru|~|dM|=0.885  tracks=true
+
+

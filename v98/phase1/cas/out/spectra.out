@@ -1,0 +1,242 @@
+openServer result -2
+                       FriCAS Computer Algebra System 
+                Version: FriCAS 1.3.10 built with gcl 2.6.14
+                   Timestamp: Mon Apr  1 11:26:17 UTC 2024
+-----------------------------------------------------------------------------
+   Issue )copyright to view copyright notices.
+   Issue )summary for a summary of useful system commands.
+   Issue )quit to leave FriCAS and return to shell.
+-----------------------------------------------------------------------------
+ 
+(1) -> (1) -> (1) -> (1) -> (1) -> 
+        +0  1  1+
+        |       |
+   (1)  |1  0  1|
+        |       |
+        +1  1  0+
+
+        + 2   - 1  - 1+
+        |             |
+   (2)  |- 1   2   - 1|
+        |             |
+        +- 1  - 1   2 +
+
+           3      2
+   (3)  - t  + 6 t  - 9 t
+
+           3      2
+   (4)  - t  + 6 t  - 9 t
+
+        +0  1  0  1+
+        |          |
+        |1  0  1  0|
+   (5)  |          |
+        |0  1  0  1|
+        |          |
+        +1  0  1  0+
+
+        + 2   - 1   0   - 1+
+        |                  |
+        |- 1   2   - 1   0 |
+   (6)  |                  |
+        | 0   - 1   2   - 1|
+        |                  |
+        +- 1   0   - 1   2 +
+
+         4      3       2
+   (7)  t  - 8 t  + 20 t  - 16 t
+
+         4      3       2
+   (8)  t  - 8 t  + 20 t  - 16 t
+
+        +0  1  1  1+
+        |          |
+        |1  0  1  1|
+   (9)  |          |
+        |1  1  0  1|
+        |          |
+        +1  1  1  0+
+
+         + 3   - 1  - 1  - 1+
+         |                  |
+         |- 1   3   - 1  - 1|
+   (10)  |                  |
+         |- 1  - 1   3   - 1|
+         |                  |
+         +- 1  - 1  - 1   3 +
+
+          4       3       2
+   (11)  t  - 12 t  + 48 t  - 64 t
+
+          4       3       2
+   (12)  t  - 12 t  + 48 t  - 64 t
+
+         +0  1  1  1+
+         |          |
+         |1  0  1  0|
+   (13)  |          |
+         |1  1  0  1|
+         |          |
+         +1  0  1  0+
+
+         + 3   - 1  - 1  - 1+
+         |                  |
+         |- 1   2   - 1   0 |
+   (14)  |                  |
+         |- 1  - 1   3   - 1|
+         |                  |
+         +- 1   0   - 1   2 +
+
+          4       3       2
+   (15)  t  - 10 t  + 32 t  - 32 t
+
+          4       3       2
+   (16)  t  - 10 t  + 32 t  - 32 t
+
+         +0  1  0  0  0  1+
+         |                |
+         |1  0  1  0  0  0|
+         |                |
+         |0  1  0  1  0  0|
+   (17)  |                |
+         |0  0  1  0  1  0|
+         |                |
+         |0  0  0  1  0  1|
+         |                |
+         +1  0  0  0  1  0+
+
+         + 2   - 1   0    0    0   - 1+
+         |                            |
+         |- 1   2   - 1   0    0    0 |
+         |                            |
+         | 0   - 1   2   - 1   0    0 |
+   (18)  |                            |
+         | 0    0   - 1   2   - 1   0 |
+         |                            |
+         | 0    0    0   - 1   2   - 1|
+         |                            |
+         +- 1   0    0    0   - 1   2 +
+
+          6       5       4        3        2
+   (19)  t  - 12 t  + 54 t  - 112 t  + 105 t  - 36 t
+
+          6       5       4        3        2
+   (20)  t  - 12 t  + 54 t  - 112 t  + 105 t  - 36 t
+  Line   1: A33 := matrix([
+           .............AB
+  Error  A: Missing mate.
+  Error  B: syntax error at top level
+  Error  B: Possibly missing a ) 
+   3 error(s) parsing 
+
+  Line   1:   [0,0,0,1,1,1],
+           ...............A
+  Error  A: syntax error at top level
+  Error  A: Improper syntax.
+   2 error(s) parsing 
+
+  Line   1:   [0,0,0,1,1,1],
+           ...............A
+  Error  A: syntax error at top level
+  Error  A: Improper syntax.
+   2 error(s) parsing 
+
+  Line   1:   [0,0,0,1,1,1],
+           ...............A
+  Error  A: syntax error at top level
+  Error  A: Improper syntax.
+   2 error(s) parsing 
+
+  Line   1:   [1,1,1,0,0,0],
+           ...............A
+  Error  A: syntax error at top level
+  Error  A: Improper syntax.
+   2 error(s) parsing 
+
+  Line   1:   [1,1,1,0,0,0],
+           ...............A
+  Error  A: syntax error at top level
+  Error  A: Improper syntax.
+   2 error(s) parsing 
+
+  Line   1:   [1,1,1,0,0,0]])
+           ...............A
+  Error  A: Improper syntax.
+   1 error(s) parsing 
+
+
+         +- 1   0    0    0    0    0 +      +3  0  0  0  0  0+
+         |                            |      |                |
+         | 0   - 1   0    0    0    0 |      |0  3  0  0  0  0|
+         |                            |      |                |
+         | 0    0   - 1   0    0    0 |      |0  0  3  0  0  0|
+   (21)  |                            |A33 + |                |
+         | 0    0    0   - 1   0    0 |      |0  0  0  3  0  0|
+         |                            |      |                |
+         | 0    0    0    0   - 1   0 |      |0  0  0  0  3  0|
+         |                            |      |                |
+         + 0    0    0    0    0   - 1+      +0  0  0  0  0  3+
+
+   (22)
+      6                5          2                 4
+     t  + (6 A33 - 18)t  + (15 A33  - 90 A33 + 135)t
+   + 
+            3          2                  3
+     (20 A33  - 180 A33  + 540 A33 - 540)t
+   + 
+            4          3          2                    2
+     (15 A33  - 180 A33  + 810 A33  - 1620 A33 + 1215)t
+   + 
+           5         4          3           2                          6
+     (6 A33  - 90 A33  + 540 A33  - 1620 A33  + 2430 A33 - 1458)t + A33
+   + 
+             5          4          3           2
+     - 18 A33  + 135 A33  - 540 A33  + 1215 A33  - 1458 A33 + 729
+
+   (23)
+      6                5          2                 4
+     t  + (6 A33 - 18)t  + (15 A33  - 90 A33 + 135)t
+   + 
+            3          2                  3
+     (20 A33  - 180 A33  + 540 A33 - 540)t
+   + 
+            4          3          2                    2
+     (15 A33  - 180 A33  + 810 A33  - 1620 A33 + 1215)t
+   + 
+           5         4          3           2                          6
+     (6 A33  - 90 A33  + 540 A33  - 1620 A33  + 2430 A33 - 1458)t + A33
+   + 
+             5          4          3           2
+     - 18 A33  + 135 A33  - 540 A33  + 1215 A33  - 1458 A33 + 729
+
+   (24)  6
+
+   (25)  8
+
+   (26)  12
+
+   (27)  12
+   There are no library operations named L33 
+      Use HyperDoc Browse or issue
+                                )what op L33
+      to learn if there is any operation containing " L33 " in its 
+      name.
+ 
+   Cannot find a definition or applicable library operation named L33 
+      with argument type(s) 
+                               PositiveInteger
+                               PositiveInteger
+      
+      Perhaps you should use "@" to indicate the required return type, 
+      or "$" to specify which version of the function you need.
+
+
+   (28)  6
+
+   (29)  8
+
+   (30)  12
+
+   (31)  12
+
+   (32)  tr33

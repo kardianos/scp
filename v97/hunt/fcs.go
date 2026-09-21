@@ -58,6 +58,7 @@ type Cell struct {
 	Xload, Tag     float64
 	Fa1, Fa2, Th2  float64
 	PromoI, PromoO float64
+	PJx, PJy, PJz  float64
 }
 
 type Link struct {
@@ -71,6 +72,12 @@ type Frame struct {
 	L     float64
 	Cells []Cell
 	Links []Link
+	// HasPromo: the stream schema carries the exact per-cell door
+	// ledger (promo_i/promo_o, gross cond / evap+rad since last snap).
+	HasPromo bool
+	// HasPJ: schema carries pj_x/y/z (per-cell integrated dense-hop
+	// current since last snap — the per-cell fd; pj_meter=1).
+	HasPJ bool
 }
 
 func Open(path string) (*Stream, error) {
@@ -297,6 +304,11 @@ func (s *Stream) parseCELL(p []byte) (Frame, error) {
 	ith := colIdx(s.CellCols, "th2")
 	ipi := colIdx(s.CellCols, "promo_i")
 	ipo := colIdx(s.CellCols, "promo_o")
+	fr.HasPromo = ipi >= 0 && ipo >= 0
+	ijx := colIdx(s.CellCols, "pj_x")
+	ijy := colIdx(s.CellCols, "pj_y")
+	ijz := colIdx(s.CellCols, "pj_z")
+	fr.HasPJ = ijx >= 0 && ijy >= 0 && ijz >= 0
 	get := func(b []byte, i int) float64 {
 		if i < 0 {
 			return 0
@@ -312,6 +324,7 @@ func (s *Stream) parseCELL(p []byte) (Frame, error) {
 			Xload: get(b, ixl), Tag: get(b, itg),
 			Fa1: get(b, ifa1), Fa2: get(b, ifa2), Th2: get(b, ith),
 			PromoI: get(b, ipi), PromoO: get(b, ipo),
+			PJx: get(b, ijx), PJy: get(b, ijy), PJz: get(b, ijz),
 		}
 	}
 	return fr, nil

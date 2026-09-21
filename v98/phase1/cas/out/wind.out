@@ -1,0 +1,99 @@
+
+batch("/home/d/code/scp/v98/phase1/cas/wind.mac")
+
+read and interpret /home/d/code/scp/v98/phase1/cas/wind.mac
+ratprint:false
+fpprintprec:6
+Ew(n,W):=4*n*sin((%pi*W)/n)^2
+Es(n):=n
+E(n,W,rho):=Ew(n,W)+rho*Es(n)
+print("=== W1: closed form vs Laplacian on C_n ===")
+=== W1: closed form vs Laplacian on C_n === 
+print("  lambda_W = 4 sin^2(pi W/n)")
+  lambda_W = 4 sin^2(pi W/n) 
+print("  n*lambda_W = 4 n sin^2(pi W/n) = E_w")
+  n*lambda_W = 4 n sin^2(pi W/n) = E_w 
+print("  n=6 W=1: E_w =",Ew(6,1)," =",float(Ew(6,1))," (expect 6)")
+  n=6 W=1: E_w = 6  = 6.0  (expect 6) 
+print("  n=4 W=1: E_w =",Ew(4,1)," =",float(Ew(4,1))," (expect 8)")
+  n=4 W=1: E_w = 8  = 8.0  (expect 8) 
+print("  n=3 W=1: E_w =",Ew(3,1)," =",float(Ew(3,1))," (expect 9)")
+  n=3 W=1: E_w = 9  = 9.0  (expect 9) 
+print("=== W2: E_w -> 0 as n grows (fixed W=1) ===")
+=== W2: E_w -> 0 as n grows (fixed W=1) === 
+for n from 3 thru 16 do print("  n =",n,"  E_w =",float(Ew(n,1)))
+  n = 3   E_w = 9.0 
+  n = 4   E_w = 8.0 
+  n = 5   E_w = 6.90983 
+  n = 6   E_w = 6.0 
+  n = 7   E_w = 5.27114 
+  n = 8   E_w = 4.68629 
+  n = 9   E_w = 4.2112 
+  n = 10   E_w = 3.81966 
+  n = 11   E_w = 3.49242 
+  n = 12   E_w = 3.21539 
+  n = 13   E_w = 2.97814 
+  n = 14   E_w = 2.77287 
+  n = 15   E_w = 2.59364 
+  n = 16   E_w = 2.43585 
+print("  large-n expansion: 4 n (pi/n)^2 = 4 pi^2 / n -> 0")
+  large-n expansion: 4 n (pi/n)^2 = 4 pi^2 / n -> 0 
+print("  4 pi^2 =",float(4*%pi^2))
+  4 pi^2 = 39.4784 
+print("=== W3/W4: integer argmin of E_w + rho n, W=1, n=3..24 ===")
+=== W3/W4: integer argmin of E_w + rho n, W=1, n=3..24 === 
+ns:makelist(n,n,3,24)
+ne:makelist(2*k,k,2,12)
+scan_rho(rhos,nlist):=for rho in rhos do
+          block([best,be,vals],vals:map(lambda([n],float(E(n,1,rho))),nlist),
+                be:apply(min,vals),best:[],
+                for i thru length(nlist) do
+                    if abs(vals[i]-be) < 1.0E-9
+                        then best:endcons(nlist[i],best),
+                print("  rho =",float(rho),"  min E =",be,"  n* =",best))
+print("  -- all n >= 3 --")
+  -- all n >= 3 -- 
+scan_rho([0,0.1,0.3,0.5,1,2,4,8],ns)
+  rho = 0.0   min E = 1.63556   n* = [24] 
+  rho = 0.1   min E = 3.95774   n* = [20] 
+  rho = 0.3   min E = 6.79242   n* = [11] 
+  rho = 0.5   min E = 8.68629   n* = [8] 
+  rho = 1.0   min E = 11.9098   n* = [5] 
+  rho = 2.0   min E = 15.0   n* = [3] 
+  rho = 4.0   min E = 21.0   n* = [3] 
+  rho = 8.0   min E = 33.0   n* = [3] 
+print("  -- even n only (F-odd) --")
+  -- even n only (F-odd) -- 
+scan_rho([0,0.1,0.3,0.5,1,2,4,8],ne)
+  rho = 0.0   min E = 1.63556   n* = [24] 
+  rho = 0.1   min E = 3.95774   n* = [20] 
+  rho = 0.3   min E = 6.81539   n* = [12] 
+  rho = 0.5   min E = 8.68629   n* = [8] 
+  rho = 1.0   min E = 12.0   n* = [4, 6] 
+  rho = 2.0   min E = 16.0   n* = [4] 
+  rho = 4.0   min E = 24.0   n* = [4] 
+  rho = 8.0   min E = 40.0   n* = [4] 
+print("=== W5: at rho=1, the values (almost flat near 3..6) ===")
+=== W5: at rho=1, the values (almost flat near 3..6) === 
+for n from 3 thru 12 do
+    print("  n =",n,"  E =",float(E(n,1,1)),"  E_w =",float(Ew(n,1)),
+          "  E_s =",n)
+  n = 3   E = 12.0   E_w = 9.0   E_s = 3 
+  n = 4   E = 12.0   E_w = 8.0   E_s = 4 
+  n = 5   E = 11.9098   E_w = 6.90983   E_s = 5 
+  n = 6   E = 12.0   E_w = 6.0   E_s = 6 
+  n = 7   E = 12.2711   E_w = 5.27114   E_s = 7 
+  n = 8   E = 12.6863   E_w = 4.68629   E_s = 8 
+  n = 9   E = 13.2112   E_w = 4.2112   E_s = 9 
+  n = 10   E = 13.8197   E_w = 3.81966   E_s = 10 
+  n = 11   E = 14.4924   E_w = 3.49242   E_s = 11 
+  n = 12   E = 15.2154   E_w = 3.21539   E_s = 12 
+print("=== W6: no half-winding on C_n ===")
+=== W6: no half-winding on C_n === 
+print("  W must be integer or ψ is not single-valued on the cycle.")
+  W must be integer or ψ is not single-valued on the cycle. 
+print("  E_w(n, 1/2) is not a lock: the cycle does not close.")
+  E_w(n, 1/2) is not a lock: the cycle does not close. 
+print("DONE")
+DONE 
+                   /home/d/code/scp/v98/phase1/cas/wind.mac

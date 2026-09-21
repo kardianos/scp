@@ -1,0 +1,20 @@
+# theory/probe
+# suite=p2 kernel=fabrun T=600 seed=20260802 j=2 snap_every=5000 n=9
+# out=theory/runs/p2_T600_20260808_204313
+[ok] P2_xb03_d1             cond=2.909e+04 Em=4568 slope=+5.64/1k  fd=+0 Jx=+0.00583  p2 (746s)
+[ok] P2_xb03_d0             cond=3.006e+04 Em=4214 slope=-17.4/1k  fd=+0 Jx=+0.00863  p2 (747s)
+[ok] P2_xb06_d1             cond=4.139e+04 Em=5361 slope=+260/1k  fd=+0 Jx=-7.2e-05  p2 (662s)
+[ok] P2_xb06_d0             cond=4.673e+04 Em=3884 slope=+89.6/1k  fd=+0 Jx=-0.0261  p2 (694s)
+[ok] P2_xb10_d1             cond=4.302e+04 Em=5521 slope=+404/1k  fd=+0 Jx=-0.0517  p2 (671s)
+[ok] P2_xb10_d0             cond=6.855e+04 Em=3229 slope=+525/1k  fd=+0 Jx=+0.0159  p2 (859s)
+[ok] P2_xb15_d1             cond=4.617e+04 Em=6098 slope=+1.11e+03/1k  fd=+0 Jx=-0.0171  p2 (721s)
+[ok] P2_xb15_d0             cond=9.926e+04 Em=2229 slope=+1.07e+03/1k  fd=+0 Jx=-0.0572  p2 (1091s)
+[ok] P2_ctrl_kr0            cond=3.573e+04 Em=6258 slope=+2.62e+03/1k  fd=+0 Jx=-0.00104  p2 (646s)
+
+# done → theory/runs/p2_T600_20260808_204313
+
+# SUSTAIN VERDICT
+  GROW: 7
+  HOLD: 2
+  HOLD P2_xb03_d0 Em=4214.3 slope=-0.01738
+  HOLD P2_xb03_d1 Em=4568.4 slope=+0.005642

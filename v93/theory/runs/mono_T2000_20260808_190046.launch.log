@@ -1,0 +1,24 @@
+# theory/probe
+# suite=mono kernel=fabrun T=2000 seed=20260802 j=4 snap_every=5000 n=8
+# out=theory/runs/mono_T2000_20260808_190046
+[ok] M_qd12_kr05            cond=3.265 Em=113.2 slope=-7.93/1k  fd=+0 Jx=+0.00025  mono (2443s)
+[ok] M_qd12_kr10            cond=4.896 Em=105.4 slope=-7.11/1k  fd=+0 Jx=+0.000122  mono (2447s)
+[ok] M_qd12_kr00            cond=0 Em=148.3 slope=+6.16e-13/1k  fd=+0 Jx=-2.49e-06  mono (2451s)
+[ok] M_qd12_kr02            cond=0.8428 Em=124.8 slope=-6.95/1k  fd=+0 Jx=-1.86e-05  mono (2454s)
+[ok] M_qd36_kr00            cond=0 Em=147.7 slope=-0.43/1k  fd=+0 Jx=-2.11e-05  mono (2445s)
+[ok] M_qd36_kr02            cond=6.203 Em=132.1 slope=-4.72/1k  fd=+0 Jx=+0.000137  mono (2445s)
+[ok] M_qd36_kr05            cond=10.28 Em=122.5 slope=-6.58/1k  fd=+0 Jx=-6.52e-05  mono (2445s)
+[ok] M_qd36_kr10            cond=16.8 Em=116.3 slope=-5.75/1k  fd=+0 Jx=+5.51e-05  mono (2448s)
+
+# done → theory/runs/mono_T2000_20260808_190046
+
+# SUSTAIN VERDICT
+  HOLD: 8
+  HOLD M_qd12_kr00 Em=148.3 slope=+6.158e-16
+  HOLD M_qd12_kr02 Em=124.8 slope=-0.006946
+  HOLD M_qd12_kr05 Em=113.2 slope=-0.007929
+  HOLD M_qd12_kr10 Em=105.4 slope=-0.007114
+  HOLD M_qd36_kr00 Em=147.7 slope=-0.0004303
+  HOLD M_qd36_kr02 Em=132.1 slope=-0.004717
+  HOLD M_qd36_kr05 Em=122.5 slope=-0.006585
+  HOLD M_qd36_kr10 Em=116.3 slope=-0.005753

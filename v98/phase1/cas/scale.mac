@@ -1,0 +1,60 @@
+/* scale.mac -- fiber gradient energy has no intrinsic radius.
+
+   Continuum 3+2 toy: ψ = f(ρ/R) exp(i W φ) on the transverse plane,
+   compact support (or a scaled profile) of radius R.
+
+   Claim S1: the fiber Dirichlet energy is independent of R
+             (2-D scale invariance / Derrick in the fiber).
+   Claim S2: a space-area cost ~ R^2 then drives R → 0.
+             Gradient + area has no interior trough.
+   Claim S3: a grain-fixed core of width a, vacuum |f|→1 for ρ>a,
+             gives E_ang ~ W² log(R/a) (IR). Together with area
+             this still has no interior min if the core itself
+             can shrink; if a is an immutable grain, the min
+             sits at the grain (unique, but it is the grain).
+
+   Run: maxima --very-quiet -b scale.mac < /dev/null
+*/
+ratprint : false$
+assume(R > 0, u > 0, W > 0, a > 0)$
+
+print("=== S1: scaled profile ρ = R u, f = f(u) ===")$
+/* E_rad = ∫ (df/dρ)² ρ dρ dφ = ∫ (f'(u)/R)² (R u) R du * 2π
+         = 2π ∫ (f')² u du     independent of R
+   E_ang = ∫ (W f / ρ)² ρ dρ dφ = ∫ W² f² / (R u)² * R u * R du * 2π
+         = 2π W² ∫ f² / u du   independent of R
+*/
+print("  E_rad ~ 2 pi int_0^1 (f')^2 u du     -- no R")$
+print("  E_ang ~ 2 pi W^2 int_0^1 f^2 / u du -- no R")$
+print("  ==> S1: fiber |grad|^2 is R-invariant for any scaled profile.")$
+
+print("=== S2: add space-area Es = k R^2 ===")$
+/* E(R) = C0 + k R^2, C0 = E_rad+E_ang.  dE/dR = 2 k R > 0 for R>0.
+   No critical point except R=0. */
+E2(R) := C0 + k*R^2$
+dE2   : diff(E2(R), R)$
+print("  dE/dR =", dE2, "  (strictly positive for k>0, R>0)")$
+print("  ==> S2: no interior trough. The pinch wants R=0.")$
+
+print("=== S3: grain-fixed core, angular IR log + area ===")$
+/* E = Ccore + 2 pi W^2 log(R/a) + k R^2,  R > a.
+   BOTH extra terms increase with R. */
+assume(k > 0)$
+E3(R) := Ccore + 2*%pi*W^2*log(R/a) + k*R^2$
+dE3   : diff(E3(R), R)$
+print("  dE/dR =", dE3)$
+print("  sign: for R>0, k>0, W real, every term is >= 0.")$
+print("  2 k R > 0 and 2 pi W^2 / R > 0  =>  dE/dR > 0.")$
+crit  : solve(dE3 = 0, R)$
+print("  formal solve(dE=0):", crit, "  (imaginary -- no real R>0 root)")$
+print("  ==> S3: log(IR)+area has NO interior trough. Min is R = a+")$
+print("           (the grain). Unique, but the size is the grain,")$
+print("           not a derived composite lock.")$
+
+print("=== S4: Derrick check on a 3-D lump of unlocked field ===")$
+/* Ordinary 3-D Dirichlet energy of a scaled lump φ_R(x)=φ(x/R):
+   E3 = ∫ |∇φ|² d³x  scales as R^{1}.  dE/dR > 0?  E ~ R * I,
+   actually ∫ |∇_x φ(x/R)|² R³ d³u = ∫ |∇_u φ|² / R² * R³ = R * I.
+   So E ~ R, min at R→0: 3-D lumps shrink. This is Face C. */
+print("  E_3D(|grad|^2) ~ R   ==> shrinks.  No 3-D trough from kinetics.")$
+print("DONE")$

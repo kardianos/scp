@@ -1,0 +1,62 @@
+/* detailed_balance.mac -- emission and absorption as ONE law.
+
+   Micro law (ONE coupling A per ordered mode pair, TWO directions):
+       O(a->b) = A n_a (nu - n_b) (1 + N_w)     [spontaneous + stimulated]
+       I(b->a) = A n_b (nu - n_a) N_w           [absorption]
+   with w = eps_a - eps_b and N_w the field occupancy at w.
+
+   CLAIM 1: the SAME A gives EXACT detailed balance at a common T, with
+            Fermi n (nu = 1: cap refusal / PAULI-0) and Planck N.
+   CLAIM 2: coarse-grained this is  I = k cap x_b^p,  O = k cap x^p --
+            ONE k, ONE p, dual; fixed point x* = x_b, restoring, Phi* > 0.
+   CLAIM 3: the STIMULATED cross term is what a coherent bath adds, and it
+            pushes the fixed point ABOVE the bath load.
+
+   Run:  maxima --very-quiet -b detailed_balance.mac < /dev/null          */
+
+assume(T > 0, ea > eb)$  ratprint : false$
+
+nF(e) := 1/(exp((e-mu)/T) + 1)$     /* matter occupancy, nu = 1 exclusion */
+NP(v) := 1/(exp(v/T) - 1)$          /* field occupancy, Planck            */
+
+w : ea - eb$  na : nF(ea)$  nb : nF(eb)$  NN : NP(w)$
+
+print("=== CLAIM 1: detailed balance from a SINGLE coupling A ===")$
+bal : fullratsimp( na*(1-nb)*(1+NN) - nb*(1-na)*NN )$
+print("  O(a->b) - I(b->a) =", bal)$
+if bal = 0
+  then print("  ==> EXACT (identically 0). Emission and absorption are")
+  else print("  ==> NOT exact -- inspect.")$
+print("      time-reverses of ONE law; no second constant is introduced.")$
+
+print("=== ratio identity: the Boltzmann factor is FORCED, not assumed ===")$
+print("  [n_a(1-n_b)]/[n_b(1-n_a)] - e^(-w/T) =",
+      ratsimp( (na*(1-nb))/(nb*(1-na)) - exp(-w/T) ))$
+print("  N/(1+N)                    - e^(-w/T) =",
+      ratsimp( NN/(1+NN) - exp(-w/T) ))$
+print("  (both 0: matter-side ratio = field-side ratio at a common T)")$
+
+print("=== CLAIM 2: coarse-grained dual law (explicit p = 4) ===")$
+assume(k > 0, cap > 0, xb > 0)$
+dM : k*cap*xb^4 - k*cap*x^4$
+print("  dM/dt = I - O =", dM)$
+print("  roots:", solve(dM = 0, x), "  -> physical root x* = xb")$
+print("  d(I-O)/dx =", diff(dM, x), "  < 0 for x > 0 ==> RESTORING")$
+print("  throughput Phi* = k cap xb^4 > 0 ==> the balanced state RADIATES.")$
+print("  ==> I = O is NOT a sealed bag: it is a live cycle at finite T.")$
+
+print("=== CLAIM 3: stimulated (coherent) intake ===")$
+print("  I = k cap ( xb^4 + g x^3 xb ),  the bilinear cross term")$
+dM2 : ratsimp( k*cap*(xb^4 + g*x^3*xb) - k*cap*x^4 )$
+q   : ratsimp( ev(dM2, x = u*xb) / (k*cap*xb^4) )$
+print("  in the load ratio u = x/xb:  (I-O)/(k cap xb^4) =", q)$
+print("  balance condition:  u^4 - g u^3 - 1 = 0")$
+for gg: 0 thru 3 do
+  print("    g =", gg, "  u* =",
+        float( rhs( last( realroots(u^4 - gg*u^3 - 1, 1/10^9) ) ) ))$
+print("  g = 0 (random-phase bath) -> u* = 1 exactly: matter merely")$
+print("    thermalizes to the bath and can never exceed it.")$
+print("  g > 0 (coherent bath)     -> u* > 1: matter holds ABOVE ambient.")$
+print("  ==> PREDICTION: phase-matched intake, not more energy, is what")$
+print("      lets a structure sit above its bath. Matches Face B (random")$
+print("      intake destroys order) and the box-fill nulls (u*=1 = fill).")$

@@ -1,0 +1,7 @@
+=== face 4 probe: does load-detuning (q_detune) shear the tilt? ===
+=== amp_nat=2.0, q_detune sweep, 5 seeds (wf_on k_rad=0 baseline) ===
+q_detune   seed       speed        cos       
+1.2        111        0.003210     0.9888    
+1.2        20260802   0.001326     0.7462    
+1.2        314159     0.002428     0.8171    
+1.2        137035     0.002560     0.9952    

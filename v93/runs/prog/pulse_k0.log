@@ -1,0 +1,47 @@
+# freecell — v89 free-cell substance test (exp=pulse)
+# laws = laws_V2g VERBATIM (defaults): C=1 w1=1.65 w2=2.9 q_detune=1.2
+# gamma_res=0.25 gamma_res_m=0.1 p_gate=8 lock_floor=0.005 k_dep=1.2 k_dep_m=2 cap=2.5
+# e_s0=1 es_floor=0.05 e_cond=0 f_conv=0.25 f_evap=0.5 s_pull=0.15
+# kappa_lock=1 kappa_align=0.5 s_k=0.06 s_disp=0.3 sigma_tumble=0.01
+# comb_limit=6 rough_k=0.35 gamma_rough=0.5 mob_sym=1 mob_floor=0.004 field_J=1.8
+# quant_A0=1.15 quant_mode=2 (A0eff=1.15)
+# v91 radiance (laws_V3r candidate A): k_rad=0 p_rad=4 rad_clock=0
+# v91 cantus (coherent-channel candidate B): k_cant=0 k_tune=0 cant_tau=50 cant_seed=0 cant_grow=1
+# v91 registry (exchange-registry lane, REGISTRY.md): reg_tau=0 reg_gate=0 reg_f0=0
+# v91 identity (parcel-identity lane, IDENTITY.md): par_tau=0 par_gate=0 par_form=0 par_lo=0.002 par_hi=0.02 par_mature=400
+# v91 workfn (emergent-threshold lane, WORKFN.md): wf_on=1 wf_floor=0.01 wf_far=99
+# v91 amplitude (field-side-identity lane Phase M, AMPLITUDE.md): amp_tau=0
+# v92 amplitude Phase L lane L-1 (L0_DESIGN.md): amp_drv=0 amp_mmin=2
+# v93 UNITARY DENSE CHANNEL (v93/README.md PART II): amp_nat=0
+# v93 arg(psi) door (v93/README.md §II.7): amp_door=0
+# v93 hop schedule (RING_DNLS §A.4): hop_order=1 (0=seq, 1=strang, 2=rand)
+# QUENCH-2 apparatus: conf_r=0 conf_gap=0.3 conf_th=1.6 conf_pinw=3 spin_m=0 imp_k=0 qp_phase=0
+# HORIZON apparatus (HORIZON.md): bh_r=0 bh_k=1 bh_sep=0
+# FLOW apparatus (FLOW.md): bed_k=0 bed_tau=30
+# GEOMETRY (apparatus): cfac=1.15 k_rep=1 mob_geo=1 kappa_bond=1 freeze_geo=0
+# bath=1 bath_frac=1 jam_sweeps=800 jam_k=0.1 L=16 dt=0.02 T=24 seed=20260802 diag_every=100
+# JAM sweeps=800 max_step=1.402e-04 (tol 1.0e-04, k_end=0.0010) — witness for the settle
+# SEED pulse: amp=2 sigma=3 kx=0 (prealigned transverse)
+# INIT NC=2700 slots=25951 live=20845 phi_nom=1.7044 z_live=15.44 dbar=1.4113 sigma_d=14.79% E0=3248.269642853
+#
+# t | drift_rel | phi_nom z_live NLa NLd births deaths | dbar sigma_d% | maxstep maxbond | Em_tag ret com_dev rms conn z_tag | pair: d delta gf gb | core/far
+t=    0.00 +0.00e+00 | 1.7044 15.44  20845    0      0      0 | 1.4113 14.79 | 0.00e+00 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=7.343
+t=    2.00 -1.40e-16 | 1.7040 15.80  21329    0    727    659 | 1.4192 14.88 | 2.60e-03 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=8.120
+t=    4.00 -4.20e-16 | 1.7039 16.05  21670    0   1239   1111 | 1.4247 14.96 | 2.14e-03 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=8.488
+t=    6.00 -5.60e-16 | 1.7039 16.18  21837    0   1675   1470 | 1.4276 15.01 | 1.38e-03 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=8.890
+t=    8.00 -7.00e-16 | 1.7039 16.25  21943    0   2029   1756 | 1.4296 15.04 | 1.67e-03 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=8.985
+t=   10.00 -9.80e-16 | 1.7038 16.35  22072    0   2316   2012 | 1.4317 15.08 | 1.43e-03 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=9.327
+t=   12.00 -1.12e-15 | 1.7038 16.44  22192    0   2615   2253 | 1.4335 15.10 | 1.73e-03 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=11.140
+t=   14.00 -1.26e-15 | 1.7038 16.51  22287    0   2876   2470 | 1.4349 15.11 | 2.18e-03 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=11.267
+t=   16.00 -1.54e-15 | 1.7039 16.57  22373    0   3122   2661 | 1.4361 15.12 | 1.16e-03 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=11.946
+t=   18.00 -1.68e-15 | 1.7038 16.64  22466    0   3311   2868 | 1.4373 15.12 | 1.65e-03 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=13.512
+t=   20.00 -1.82e-15 | 1.7038 16.69  22530    0   3487   3020 | 1.4382 15.13 | 9.63e-04 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=13.505
+t=   22.00 -2.10e-15 | 1.7038 16.72  22573    0   3659   3187 | 1.4389 15.13 | 8.57e-04 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=13.500
+t=   24.00 -2.24e-15 | 1.7038 16.74  22596    0   3812   3307 | 1.4393 15.14 | 9.53e-04 0.00e+00 |   0.0000 0.0000  0.0000  0.0000 0.000  0.00 | Ee_front=13.497
+#
+# RESULT drift_rel -2.240e-15
+# RESULT births 3812 deaths 3307 beta_returns 0 beta_energy 0.000000e+00
+# RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
+# RESULT credit qcnvD=0.000000 qcnvF=0.000000
+# RESULT geometry phi_nom=1.7038 z_live=16.74 dbar=1.4393 sigma_d=0.1514
+# RESULT front_speed v=0.2339 v_over_C=0.2339 (second-half fit, n=7)

@@ -1,0 +1,74 @@
+/* srel.mac -- identities for a W=1 wrap on C_n, no imported S=A/4.
+
+   E_w(n) = 4 n sin²(π/n)           TROUGH.md, amp 1/site, complex wrap
+   ω(n)   = 2 |sin(π/n)|            wave frequency, m=0, √λ_1
+   ε(n)   = ω(n)/2π                 conversion atom at the wrap's pitch (A₀=1)
+
+   Claims:
+   I1  E_w decreases in n (already W2).
+   I2  n ε(n) = n sin(π/n)/π  increases toward 1.
+   I3  E_w/ε = 4π n sin(π/n)  increases toward 4π².  Min at n=3.
+   I4  E_w + n ε  : integer argmin.
+   I5  E_w/ε + n  : integer argmin.
+   I6  discrete ΔE_w(n) + ε(n) never zero on n=3..23 (no conservation stop).
+   I7  discrete ΔE_w(n) + 1 never zero either except possibly a sign change;
+       that is v98 ρ=1, already tabulated.
+
+   Run: maxima --very-quiet -b srel.mac < /dev/null
+*/
+ratprint : false$
+fpprintprec : 8$
+
+Ew(n) := 4*n*sin(%pi/n)^2$
+om(n) := 2*sin(%pi/n)$
+eps(n) := om(n)/(2*%pi)$
+
+print("=== I1/I2/I3: closed forms at n=3,4,6,8,12,24 ===")$
+for n in [3,4,6,8,12,24] do
+  print("  n=", n,
+        "  E_w=", float(Ew(n)),
+        "  ω=", float(om(n)),
+        "  ε=", float(eps(n)),
+        "  nε=", float(n*eps(n)),
+        "  E_w/ε=", float(Ew(n)/eps(n)))$
+
+print("=== I3: E_w/ε = 4 π n sin(π/n) is increasing ===")$
+print("  n=3:", float(4*%pi*3*sin(%pi/3)), "  n→∞:", float(4*%pi*%pi))$
+
+print("=== I4: integer argmin of E_w + n ε, n=3..24 ===")$
+ns : makelist(n, n, 3, 24)$
+vals4 : map(lambda([n], float(Ew(n) + n*eps(n))), ns)$
+be4 : apply(min, vals4)$
+best4 : []$
+for i: 1 thru length(ns) do
+  if abs(vals4[i]-be4) < 1e-9 then best4 : endcons(ns[i], best4)$
+print("  min=", be4, "  n*=", best4)$
+for n: 3 thru 12 do
+  print("    n=", n, "  E_w+nε=", float(Ew(n)+n*eps(n)))$
+
+print("=== I5: integer argmin of E_w/ε + n ===")$
+vals5 : map(lambda([n], float(Ew(n)/eps(n) + n)), ns)$
+be5 : apply(min, vals5)$
+best5 : []$
+for i: 1 thru length(ns) do
+  if abs(vals5[i]-be5) < 1e-9 then best5 : endcons(ns[i], best5)$
+print("  min=", be5, "  n*=", best5)$
+
+print("=== I6: ΔE_w + ε(n)  (conservation stop if this crosses 0) ===")$
+for n: 3 thru 16 do
+  print("  n=", n,
+        "  dEw=", float(Ew(n+1)-Ew(n)),
+        "  ε=", float(eps(n)),
+        "  dEw+ε=", float(Ew(n+1)-Ew(n)+eps(n)),
+        "  dEw+1=", float(Ew(n+1)-Ew(n)+1))$
+
+print("=== I7: sign of ΔE_w + 1 (ρ=1 discrete) ===")$
+print("  v98: ρ=1 ties even 4 and 6 in the *total* E_w+n, not in the first difference.")$
+print("  first n where ΔE_w + 1 > 0 is the stop if you walk n → n+1 paying 1.")$
+found : false$
+for n: 3 thru 23 do
+  if not found and float(Ew(n+1)-Ew(n)+1) > 0 then (
+    print("  first positive ΔE_w+1 at n=", n, "  value=", float(Ew(n+1)-Ew(n)+1)),
+    found : true)$
+
+print("DONE")$

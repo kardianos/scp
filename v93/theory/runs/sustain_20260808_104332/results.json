@@ -1,0 +1,175 @@
+[
+  {
+    "arm": {
+      "Name": "S00_uni_base",
+      "Family": "sust",
+      "Desc": "unitary linear + law qd; quiet; baseline hold",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=80",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=1.2",
+        "wf_on=1",
+        "k_rad=0",
+        "noise_amp=0",
+        "p1_meter=1"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -1.864e-14,
+      "Cond": 0,
+      "Evap": 0,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 0,
+      "QcnvD": 0,
+      "QcnvF": 0.203812,
+      "Fd": 1.081755,
+      "Fl": 0,
+      "Sp": -0.006914398,
+      "Gm": 1.970885,
+      "EmTag": 111.71042,
+      "BlobSpeed": 0,
+      "BlobCos": 0,
+      "FrontV": 0,
+      "HasP1": true,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 148.76487999999983,
+      "EeTot": 0,
+      "EmMax": 2.17283,
+      "PR": 225.51731297046294,
+      "FTag": 0.7509191013362838,
+      "JAbs": 0,
+      "Jx": 0,
+      "R2f": 0,
+      "JdAbs": 0.3760112384478936,
+      "NCells": 2700,
+      "NLinks": 21246,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 40,
+        "EmTot": 148.7649,
+        "EmMax": 2.1542,
+        "SumEe": 0,
+        "NHot": 76
+      },
+      {
+        "T": 80,
+        "EmTot": 148.7649,
+        "EmMax": 2.1728,
+        "SumEe": 0,
+        "NHot": 77
+      }
+    ],
+    "seconds": 93.587141521
+  },
+  {
+    "arm": {
+      "Name": "S03_qd0_melt",
+      "Family": "sust",
+      "Desc": "q_detune=0 — no self-trap",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=80",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=0",
+        "wf_on=1",
+        "k_rad=0",
+        "noise_amp=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": 7.233e-15,
+      "Cond": 0,
+      "Evap": 0,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 0,
+      "QcnvD": 0,
+      "QcnvF": 0,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 60.23495,
+      "BlobSpeed": 0,
+      "BlobCos": 0,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 148.76494000000014,
+      "EeTot": 0,
+      "EmMax": 0.66922,
+      "PR": 982.0536178317489,
+      "FTag": 0.4049004422681844,
+      "JAbs": 0,
+      "Jx": 0,
+      "R2f": 0,
+      "JdAbs": 0.11506767810377726,
+      "NCells": 2700,
+      "NLinks": 21280,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 40,
+        "EmTot": 148.7649,
+        "EmMax": 1.5557,
+        "SumEe": 0,
+        "NHot": 24
+      },
+      {
+        "T": 80,
+        "EmTot": 148.7649,
+        "EmMax": 0.6692,
+        "SumEe": 0,
+        "NHot": 10
+      }
+    ],
+    "seconds": 87.573877076
+  }
+]

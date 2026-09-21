@@ -1,0 +1,8173 @@
+[
+  {
+    "arm": {
+      "Name": "G01_nowf_kx",
+      "Family": "genesis",
+      "Desc": "pulse wind wf_on=0 long — C1 extended",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=pulse",
+        "amp=3",
+        "sigma=3",
+        "kx=1.2",
+        "wf_on=0",
+        "k_rad=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -5.19e-14,
+      "Cond": 1032.651657,
+      "Evap": 4.776999,
+      "Rough": 343.134649,
+      "Rad": 0,
+      "Backs": 45.37978,
+      "QcnvD": 1405.351283,
+      "QcnvF": 2491.073562,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 0,
+      "BlobSpeed": 0,
+      "BlobCos": 0,
+      "FrontV": -0.0003,
+      "HasP1": false,
+      "HasBlob": false
+    },
+    "prog": {
+      "EmTot": 650.132889999999,
+      "EeTot": 92.28449000000012,
+      "EmMax": 1.18829,
+      "PR": 1427.8200770057483,
+      "FTag": 0,
+      "JAbs": 0.05480015183061214,
+      "Jx": 0.0001977445995567186,
+      "R2f": 0.017014133643515717,
+      "JdAbs": 0.3599557768625623,
+      "NCells": 2700,
+      "NLinks": 20198,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 100,
+        "EmTot": 612.5619,
+        "EmMax": 1.8057,
+        "SumEe": 155.1399,
+        "NHot": 371
+      },
+      {
+        "T": 200,
+        "EmTot": 638.5396,
+        "EmMax": 1.638,
+        "SumEe": 119.8647,
+        "NHot": 430
+      },
+      {
+        "T": 300,
+        "EmTot": 638.1213,
+        "EmMax": 1.5054,
+        "SumEe": 113.9016,
+        "NHot": 405
+      },
+      {
+        "T": 400,
+        "EmTot": 629.1133,
+        "EmMax": 1.4138,
+        "SumEe": 110.3126,
+        "NHot": 374
+      },
+      {
+        "T": 500,
+        "EmTot": 638.8301,
+        "EmMax": 1.5643,
+        "SumEe": 105.1717,
+        "NHot": 405
+      },
+      {
+        "T": 600,
+        "EmTot": 640.2709,
+        "EmMax": 1.6397,
+        "SumEe": 103.9998,
+        "NHot": 402
+      },
+      {
+        "T": 700,
+        "EmTot": 632.3842,
+        "EmMax": 1.5257,
+        "SumEe": 101.5289,
+        "NHot": 375
+      },
+      {
+        "T": 800,
+        "EmTot": 643.2037,
+        "EmMax": 1.5109,
+        "SumEe": 99.7909,
+        "NHot": 392
+      },
+      {
+        "T": 900,
+        "EmTot": 634.0883,
+        "EmMax": 1.2886,
+        "SumEe": 100.1182,
+        "NHot": 392
+      },
+      {
+        "T": 1000,
+        "EmTot": 628.1837,
+        "EmMax": 1.247,
+        "SumEe": 101.0582,
+        "NHot": 374
+      },
+      {
+        "T": 1100,
+        "EmTot": 639.045,
+        "EmMax": 1.3913,
+        "SumEe": 94.7002,
+        "NHot": 390
+      },
+      {
+        "T": 1200,
+        "EmTot": 634.7945,
+        "EmMax": 1.3789,
+        "SumEe": 97.4966,
+        "NHot": 390
+      },
+      {
+        "T": 1300,
+        "EmTot": 627.4215,
+        "EmMax": 1.1603,
+        "SumEe": 99.74,
+        "NHot": 371
+      },
+      {
+        "T": 1400,
+        "EmTot": 626.7424,
+        "EmMax": 1.2316,
+        "SumEe": 99.5245,
+        "NHot": 387
+      },
+      {
+        "T": 1500,
+        "EmTot": 639.3675,
+        "EmMax": 1.2408,
+        "SumEe": 97.8218,
+        "NHot": 363
+      },
+      {
+        "T": 1600,
+        "EmTot": 643.1672,
+        "EmMax": 1.3491,
+        "SumEe": 97.2978,
+        "NHot": 410
+      },
+      {
+        "T": 1700,
+        "EmTot": 625.159,
+        "EmMax": 1.3328,
+        "SumEe": 98.8851,
+        "NHot": 356
+      },
+      {
+        "T": 1800,
+        "EmTot": 639.5034,
+        "EmMax": 1.2772,
+        "SumEe": 97.8487,
+        "NHot": 379
+      },
+      {
+        "T": 1900,
+        "EmTot": 634.2599,
+        "EmMax": 1.2534,
+        "SumEe": 98.1562,
+        "NHot": 383
+      },
+      {
+        "T": 2000,
+        "EmTot": 625.3451,
+        "EmMax": 1.1953,
+        "SumEe": 99.797,
+        "NHot": 356
+      },
+      {
+        "T": 2100,
+        "EmTot": 630.1733,
+        "EmMax": 1.2215,
+        "SumEe": 96.8036,
+        "NHot": 340
+      },
+      {
+        "T": 2200,
+        "EmTot": 626.65,
+        "EmMax": 1.141,
+        "SumEe": 99.1371,
+        "NHot": 335
+      },
+      {
+        "T": 2300,
+        "EmTot": 628.1383,
+        "EmMax": 1.1059,
+        "SumEe": 100.3351,
+        "NHot": 359
+      },
+      {
+        "T": 2400,
+        "EmTot": 634.7744,
+        "EmMax": 1.1533,
+        "SumEe": 98.3978,
+        "NHot": 360
+      },
+      {
+        "T": 2500,
+        "EmTot": 623.6346,
+        "EmMax": 1.3439,
+        "SumEe": 95.38,
+        "NHot": 363
+      },
+      {
+        "T": 2600,
+        "EmTot": 630.1398,
+        "EmMax": 1.314,
+        "SumEe": 95.8141,
+        "NHot": 357
+      },
+      {
+        "T": 2700,
+        "EmTot": 634.5506,
+        "EmMax": 1.2515,
+        "SumEe": 96.0803,
+        "NHot": 368
+      },
+      {
+        "T": 2800,
+        "EmTot": 638.4396,
+        "EmMax": 1.2601,
+        "SumEe": 95.4476,
+        "NHot": 376
+      },
+      {
+        "T": 2900,
+        "EmTot": 633.3355,
+        "EmMax": 1.295,
+        "SumEe": 93.4855,
+        "NHot": 362
+      },
+      {
+        "T": 3000,
+        "EmTot": 650.1331,
+        "EmMax": 1.1883,
+        "SumEe": 92.2847,
+        "NHot": 392
+      }
+    ],
+    "seconds": 3438.587549762
+  },
+  {
+    "arm": {
+      "Name": "G02_nowf_k0",
+      "Family": "genesis",
+      "Desc": "pulse standing wf_on=0 long — C2 extended",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=pulse",
+        "amp=3",
+        "sigma=3",
+        "kx=0",
+        "wf_on=0",
+        "k_rad=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -5.448e-14,
+      "Cond": 1082.488631,
+      "Evap": 1.474544,
+      "Rough": 409.494541,
+      "Rad": 0,
+      "Backs": 53.604663,
+      "QcnvD": 1410.043983,
+      "QcnvF": 2495.253839,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 0,
+      "BlobSpeed": 0,
+      "BlobCos": 0,
+      "FrontV": 0.0002,
+      "HasP1": false,
+      "HasBlob": false
+    },
+    "prog": {
+      "EmTot": 637.6151300000002,
+      "EeTot": 97.28020000000004,
+      "EmMax": 1.30124,
+      "PR": 1430.4313945323538,
+      "FTag": 0,
+      "JAbs": 0.05726612124082537,
+      "Jx": -0.00027588256365451464,
+      "R2f": 0.0070838141814952805,
+      "JdAbs": 0.3458747142252934,
+      "NCells": 2700,
+      "NLinks": 20096,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 100,
+        "EmTot": 616.4716,
+        "EmMax": 1.8347,
+        "SumEe": 153.4777,
+        "NHot": 390
+      },
+      {
+        "T": 200,
+        "EmTot": 641.8115,
+        "EmMax": 1.9208,
+        "SumEe": 125.5541,
+        "NHot": 426
+      },
+      {
+        "T": 300,
+        "EmTot": 638.3193,
+        "EmMax": 2.0001,
+        "SumEe": 118.6843,
+        "NHot": 428
+      },
+      {
+        "T": 400,
+        "EmTot": 631.3281,
+        "EmMax": 1.8755,
+        "SumEe": 118.0145,
+        "NHot": 402
+      },
+      {
+        "T": 500,
+        "EmTot": 637.6834,
+        "EmMax": 1.8106,
+        "SumEe": 109.5267,
+        "NHot": 399
+      },
+      {
+        "T": 600,
+        "EmTot": 635.4207,
+        "EmMax": 1.6554,
+        "SumEe": 107.961,
+        "NHot": 389
+      },
+      {
+        "T": 700,
+        "EmTot": 625.8325,
+        "EmMax": 1.5377,
+        "SumEe": 111.2496,
+        "NHot": 386
+      },
+      {
+        "T": 800,
+        "EmTot": 624.703,
+        "EmMax": 1.4965,
+        "SumEe": 104.1753,
+        "NHot": 370
+      },
+      {
+        "T": 900,
+        "EmTot": 630.7098,
+        "EmMax": 1.4732,
+        "SumEe": 101.669,
+        "NHot": 378
+      },
+      {
+        "T": 1000,
+        "EmTot": 632.7628,
+        "EmMax": 1.3342,
+        "SumEe": 103.6547,
+        "NHot": 368
+      },
+      {
+        "T": 1100,
+        "EmTot": 639.0489,
+        "EmMax": 1.3559,
+        "SumEe": 102.0377,
+        "NHot": 384
+      },
+      {
+        "T": 1200,
+        "EmTot": 637.0781,
+        "EmMax": 1.3031,
+        "SumEe": 101.0178,
+        "NHot": 400
+      },
+      {
+        "T": 1300,
+        "EmTot": 633.5154,
+        "EmMax": 1.6258,
+        "SumEe": 100.6381,
+        "NHot": 365
+      },
+      {
+        "T": 1400,
+        "EmTot": 639.4667,
+        "EmMax": 1.2982,
+        "SumEe": 99.296,
+        "NHot": 378
+      },
+      {
+        "T": 1500,
+        "EmTot": 626.6959,
+        "EmMax": 1.2922,
+        "SumEe": 103.6403,
+        "NHot": 358
+      },
+      {
+        "T": 1600,
+        "EmTot": 631.493,
+        "EmMax": 1.2457,
+        "SumEe": 102.6129,
+        "NHot": 369
+      },
+      {
+        "T": 1700,
+        "EmTot": 628.5313,
+        "EmMax": 1.2828,
+        "SumEe": 103.4821,
+        "NHot": 379
+      },
+      {
+        "T": 1800,
+        "EmTot": 631.6569,
+        "EmMax": 1.2918,
+        "SumEe": 103.5817,
+        "NHot": 388
+      },
+      {
+        "T": 1900,
+        "EmTot": 622.3316,
+        "EmMax": 1.2956,
+        "SumEe": 102.0023,
+        "NHot": 336
+      },
+      {
+        "T": 2000,
+        "EmTot": 623.2739,
+        "EmMax": 1.1583,
+        "SumEe": 98.5404,
+        "NHot": 354
+      },
+      {
+        "T": 2100,
+        "EmTot": 623.8397,
+        "EmMax": 1.3536,
+        "SumEe": 99.5632,
+        "NHot": 336
+      },
+      {
+        "T": 2200,
+        "EmTot": 620.9014,
+        "EmMax": 1.3027,
+        "SumEe": 98.0642,
+        "NHot": 330
+      },
+      {
+        "T": 2300,
+        "EmTot": 625.0591,
+        "EmMax": 1.3504,
+        "SumEe": 101.1985,
+        "NHot": 355
+      },
+      {
+        "T": 2400,
+        "EmTot": 630.7838,
+        "EmMax": 1.3668,
+        "SumEe": 97.5855,
+        "NHot": 334
+      },
+      {
+        "T": 2500,
+        "EmTot": 633.1673,
+        "EmMax": 1.4497,
+        "SumEe": 98.5939,
+        "NHot": 357
+      },
+      {
+        "T": 2600,
+        "EmTot": 636.7833,
+        "EmMax": 1.4219,
+        "SumEe": 96.7298,
+        "NHot": 355
+      },
+      {
+        "T": 2700,
+        "EmTot": 639.0338,
+        "EmMax": 1.2725,
+        "SumEe": 94.2645,
+        "NHot": 389
+      },
+      {
+        "T": 2800,
+        "EmTot": 635.6216,
+        "EmMax": 1.2443,
+        "SumEe": 93.1733,
+        "NHot": 364
+      },
+      {
+        "T": 2900,
+        "EmTot": 632.7656,
+        "EmMax": 1.3517,
+        "SumEe": 95.5519,
+        "NHot": 350
+      },
+      {
+        "T": 3000,
+        "EmTot": 637.6151,
+        "EmMax": 1.3012,
+        "SumEe": 97.2803,
+        "NHot": 370
+      }
+    ],
+    "seconds": 3416.026874505
+  },
+  {
+    "arm": {
+      "Name": "G03_wf_kx",
+      "Family": "genesis",
+      "Desc": "pulse wind wf_on=1 long — expect no birth",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=pulse",
+        "amp=3",
+        "sigma=3",
+        "kx=1.2",
+        "wf_on=1",
+        "k_rad=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": 6.714e-12,
+      "Cond": 0,
+      "Evap": 0,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 0,
+      "QcnvD": 0,
+      "QcnvF": 137.977509,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 0,
+      "BlobSpeed": 0,
+      "BlobCos": 0,
+      "FrontV": -0,
+      "HasP1": false,
+      "HasBlob": false
+    },
+    "prog": {
+      "EmTot": 0,
+      "EeTot": 822.4043200000013,
+      "EmMax": 0,
+      "PR": 0,
+      "FTag": 0,
+      "JAbs": 0.48130402496120334,
+      "Jx": 0.002225104169885667,
+      "R2f": 0.012155910630155673,
+      "JdAbs": 0,
+      "NCells": 2700,
+      "NLinks": 21447,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 100,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 200,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 300,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 400,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 500,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 600,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 700,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 800,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 900,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 1000,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 1100,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 1200,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 1300,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 1400,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 1500,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 1600,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 1700,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 1800,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 1900,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 2000,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 2100,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 2200,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 2300,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 2400,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 2500,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 2600,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 2700,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 2800,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 2900,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 3000,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      }
+    ],
+    "seconds": 2061.453109833
+  },
+  {
+    "arm": {
+      "Name": "G04_nowf_kx_rad",
+      "Family": "genesis",
+      "Desc": "pulse wind wf_on=0 + radiance — growth vs tax",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=pulse",
+        "amp=3",
+        "sigma=3",
+        "kx=1.2",
+        "wf_on=0",
+        "k_rad=0.05",
+        "p_rad=4"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -1.801e-13,
+      "Cond": 30897.780125,
+      "Evap": 4.776999,
+      "Rough": 11.118384,
+      "Rad": 34923.37884,
+      "Backs": 4557.296638,
+      "QcnvD": 979.616767,
+      "QcnvF": 1824.19879,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 0,
+      "BlobSpeed": 0,
+      "BlobCos": 0,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": false
+    },
+    "prog": {
+      "EmTot": 438.70417000000117,
+      "EeTot": 306.60191999999984,
+      "EmMax": 1.11636,
+      "PR": 1461.307754223263,
+      "FTag": 0,
+      "JAbs": 0.18364330273813162,
+      "Jx": 0.0019655356243064113,
+      "R2f": 0.01966001997296228,
+      "JdAbs": 0.23550440627971345,
+      "NCells": 2700,
+      "NLinks": 20470,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 100,
+        "EmTot": 488.7714,
+        "EmMax": 1.3102,
+        "SumEe": 279.9323,
+        "NHot": 208
+      },
+      {
+        "T": 200,
+        "EmTot": 425.369,
+        "EmMax": 1.4311,
+        "SumEe": 313.9785,
+        "NHot": 85
+      },
+      {
+        "T": 300,
+        "EmTot": 405.6165,
+        "EmMax": 1.1158,
+        "SumEe": 320.2367,
+        "NHot": 42
+      },
+      {
+        "T": 400,
+        "EmTot": 409.8211,
+        "EmMax": 1.0787,
+        "SumEe": 317.2781,
+        "NHot": 49
+      },
+      {
+        "T": 500,
+        "EmTot": 409.5628,
+        "EmMax": 1.0241,
+        "SumEe": 315.0949,
+        "NHot": 48
+      },
+      {
+        "T": 600,
+        "EmTot": 410.4796,
+        "EmMax": 0.9789,
+        "SumEe": 317.3202,
+        "NHot": 45
+      },
+      {
+        "T": 700,
+        "EmTot": 418.0031,
+        "EmMax": 1.1014,
+        "SumEe": 316.2304,
+        "NHot": 68
+      },
+      {
+        "T": 800,
+        "EmTot": 411.6082,
+        "EmMax": 1.0878,
+        "SumEe": 314.1193,
+        "NHot": 47
+      },
+      {
+        "T": 900,
+        "EmTot": 423.5835,
+        "EmMax": 0.9313,
+        "SumEe": 311.5815,
+        "NHot": 55
+      },
+      {
+        "T": 1000,
+        "EmTot": 414.0266,
+        "EmMax": 0.9375,
+        "SumEe": 310.5646,
+        "NHot": 41
+      },
+      {
+        "T": 1100,
+        "EmTot": 420.6114,
+        "EmMax": 1.0702,
+        "SumEe": 308.6993,
+        "NHot": 46
+      },
+      {
+        "T": 1200,
+        "EmTot": 415.0532,
+        "EmMax": 1.0833,
+        "SumEe": 320.9496,
+        "NHot": 45
+      },
+      {
+        "T": 1300,
+        "EmTot": 427.1463,
+        "EmMax": 1.1758,
+        "SumEe": 308.3843,
+        "NHot": 59
+      },
+      {
+        "T": 1400,
+        "EmTot": 424.8025,
+        "EmMax": 0.9826,
+        "SumEe": 308.8241,
+        "NHot": 47
+      },
+      {
+        "T": 1500,
+        "EmTot": 425.4807,
+        "EmMax": 1.0292,
+        "SumEe": 311.7875,
+        "NHot": 46
+      },
+      {
+        "T": 1600,
+        "EmTot": 433.9971,
+        "EmMax": 1.2078,
+        "SumEe": 304.8657,
+        "NHot": 66
+      },
+      {
+        "T": 1700,
+        "EmTot": 434.8139,
+        "EmMax": 1.0406,
+        "SumEe": 295.5808,
+        "NHot": 48
+      },
+      {
+        "T": 1800,
+        "EmTot": 434.0661,
+        "EmMax": 1.04,
+        "SumEe": 308.6014,
+        "NHot": 65
+      },
+      {
+        "T": 1900,
+        "EmTot": 432.9446,
+        "EmMax": 1.0668,
+        "SumEe": 302.2863,
+        "NHot": 61
+      },
+      {
+        "T": 2000,
+        "EmTot": 439.6373,
+        "EmMax": 0.9506,
+        "SumEe": 300.4336,
+        "NHot": 60
+      },
+      {
+        "T": 2100,
+        "EmTot": 443.8799,
+        "EmMax": 1.0867,
+        "SumEe": 300.7369,
+        "NHot": 62
+      },
+      {
+        "T": 2200,
+        "EmTot": 440.2079,
+        "EmMax": 1.1112,
+        "SumEe": 297.473,
+        "NHot": 58
+      },
+      {
+        "T": 2300,
+        "EmTot": 444.8927,
+        "EmMax": 1.5314,
+        "SumEe": 297.4226,
+        "NHot": 71
+      },
+      {
+        "T": 2400,
+        "EmTot": 437.7803,
+        "EmMax": 1.1277,
+        "SumEe": 300.9719,
+        "NHot": 64
+      },
+      {
+        "T": 2500,
+        "EmTot": 435.7811,
+        "EmMax": 0.9942,
+        "SumEe": 310.0987,
+        "NHot": 61
+      },
+      {
+        "T": 2600,
+        "EmTot": 449.0616,
+        "EmMax": 1.217,
+        "SumEe": 298.2241,
+        "NHot": 62
+      },
+      {
+        "T": 2700,
+        "EmTot": 448.506,
+        "EmMax": 1.0176,
+        "SumEe": 300.7414,
+        "NHot": 61
+      },
+      {
+        "T": 2800,
+        "EmTot": 444.9536,
+        "EmMax": 1.1976,
+        "SumEe": 303.2113,
+        "NHot": 69
+      },
+      {
+        "T": 2900,
+        "EmTot": 440.4184,
+        "EmMax": 1.0685,
+        "SumEe": 311.1867,
+        "NHot": 75
+      },
+      {
+        "T": 3000,
+        "EmTot": 438.7042,
+        "EmMax": 1.1164,
+        "SumEe": 306.6019,
+        "NHot": 74
+      }
+    ],
+    "seconds": 3503.068152403
+  },
+  {
+    "arm": {
+      "Name": "G05_nowf_k0_rad",
+      "Family": "genesis",
+      "Desc": "standing + rad control for G04",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=pulse",
+        "amp=3",
+        "sigma=3",
+        "kx=0",
+        "wf_on=0",
+        "k_rad=0.05",
+        "p_rad=4"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -1.837e-13,
+      "Cond": 30966.460217,
+      "Evap": 1.366675,
+      "Rough": 15.959049,
+      "Rad": 34994.266293,
+      "Backs": 4566.729394,
+      "QcnvD": 1003.175715,
+      "QcnvF": 1872.451838,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 0,
+      "BlobSpeed": 0,
+      "BlobCos": 0,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": false
+    },
+    "prog": {
+      "EmTot": 442.5881999999997,
+      "EeTot": 300.80686000000026,
+      "EmMax": 1.15777,
+      "PR": 1498.2209025379298,
+      "FTag": 0,
+      "JAbs": 0.177995994857301,
+      "Jx": 0.00271926554969416,
+      "R2f": 0.02234281596597572,
+      "JdAbs": 0.23879658033482354,
+      "NCells": 2700,
+      "NLinks": 20445,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 0,
+        "EmMax": 0,
+        "SumEe": 822.4045,
+        "NHot": 0
+      },
+      {
+        "T": 100,
+        "EmTot": 463.1066,
+        "EmMax": 1.6327,
+        "SumEe": 302.0784,
+        "NHot": 181
+      },
+      {
+        "T": 200,
+        "EmTot": 433.9883,
+        "EmMax": 1.3965,
+        "SumEe": 307.0149,
+        "NHot": 103
+      },
+      {
+        "T": 300,
+        "EmTot": 417.5787,
+        "EmMax": 1.0677,
+        "SumEe": 315.4496,
+        "NHot": 75
+      },
+      {
+        "T": 400,
+        "EmTot": 410.06,
+        "EmMax": 1.1632,
+        "SumEe": 318.6547,
+        "NHot": 58
+      },
+      {
+        "T": 500,
+        "EmTot": 415.6548,
+        "EmMax": 0.8225,
+        "SumEe": 312.694,
+        "NHot": 56
+      },
+      {
+        "T": 600,
+        "EmTot": 416.1909,
+        "EmMax": 1.1319,
+        "SumEe": 314.3343,
+        "NHot": 58
+      },
+      {
+        "T": 700,
+        "EmTot": 429.4293,
+        "EmMax": 1.0269,
+        "SumEe": 307.1416,
+        "NHot": 50
+      },
+      {
+        "T": 800,
+        "EmTot": 416.9954,
+        "EmMax": 1.0931,
+        "SumEe": 313.1573,
+        "NHot": 48
+      },
+      {
+        "T": 900,
+        "EmTot": 425.9135,
+        "EmMax": 1.0561,
+        "SumEe": 312.7343,
+        "NHot": 62
+      },
+      {
+        "T": 1000,
+        "EmTot": 426.8524,
+        "EmMax": 1.2401,
+        "SumEe": 310.755,
+        "NHot": 61
+      },
+      {
+        "T": 1100,
+        "EmTot": 427.9561,
+        "EmMax": 1.0506,
+        "SumEe": 307.8552,
+        "NHot": 75
+      },
+      {
+        "T": 1200,
+        "EmTot": 431.6426,
+        "EmMax": 1.3653,
+        "SumEe": 303.1698,
+        "NHot": 61
+      },
+      {
+        "T": 1300,
+        "EmTot": 429.8575,
+        "EmMax": 1.2076,
+        "SumEe": 306.938,
+        "NHot": 61
+      },
+      {
+        "T": 1400,
+        "EmTot": 428.4879,
+        "EmMax": 1.1554,
+        "SumEe": 307.0297,
+        "NHot": 55
+      },
+      {
+        "T": 1500,
+        "EmTot": 434.9413,
+        "EmMax": 0.9434,
+        "SumEe": 300.6532,
+        "NHot": 57
+      },
+      {
+        "T": 1600,
+        "EmTot": 437.6787,
+        "EmMax": 1.0565,
+        "SumEe": 295.6449,
+        "NHot": 64
+      },
+      {
+        "T": 1700,
+        "EmTot": 423.852,
+        "EmMax": 1.0399,
+        "SumEe": 308.8853,
+        "NHot": 62
+      },
+      {
+        "T": 1800,
+        "EmTot": 435.0993,
+        "EmMax": 1.026,
+        "SumEe": 310.9119,
+        "NHot": 60
+      },
+      {
+        "T": 1900,
+        "EmTot": 432.9083,
+        "EmMax": 1.0847,
+        "SumEe": 308.5726,
+        "NHot": 58
+      },
+      {
+        "T": 2000,
+        "EmTot": 429.4387,
+        "EmMax": 1.3182,
+        "SumEe": 313.2828,
+        "NHot": 59
+      },
+      {
+        "T": 2100,
+        "EmTot": 432.5559,
+        "EmMax": 1.3257,
+        "SumEe": 314.9872,
+        "NHot": 56
+      },
+      {
+        "T": 2200,
+        "EmTot": 432.6089,
+        "EmMax": 1.2938,
+        "SumEe": 306.8946,
+        "NHot": 48
+      },
+      {
+        "T": 2300,
+        "EmTot": 439.4651,
+        "EmMax": 1.4492,
+        "SumEe": 300.4334,
+        "NHot": 63
+      },
+      {
+        "T": 2400,
+        "EmTot": 437.2275,
+        "EmMax": 1.2813,
+        "SumEe": 308.7234,
+        "NHot": 68
+      },
+      {
+        "T": 2500,
+        "EmTot": 440.2349,
+        "EmMax": 1.2121,
+        "SumEe": 300.44,
+        "NHot": 57
+      },
+      {
+        "T": 2600,
+        "EmTot": 435.6612,
+        "EmMax": 0.9656,
+        "SumEe": 307.2829,
+        "NHot": 60
+      },
+      {
+        "T": 2700,
+        "EmTot": 452.7094,
+        "EmMax": 1.0605,
+        "SumEe": 292.6039,
+        "NHot": 67
+      },
+      {
+        "T": 2800,
+        "EmTot": 446.7951,
+        "EmMax": 1.4807,
+        "SumEe": 298.9645,
+        "NHot": 68
+      },
+      {
+        "T": 2900,
+        "EmTot": 443.8345,
+        "EmMax": 1.4109,
+        "SumEe": 297.8959,
+        "NHot": 52
+      },
+      {
+        "T": 3000,
+        "EmTot": 442.5881,
+        "EmMax": 1.1578,
+        "SumEe": 300.8069,
+        "NHot": 70
+      }
+    ],
+    "seconds": 3452.177284964
+  },
+  {
+    "arm": {
+      "Name": "R01_ring_uni",
+      "Family": "sust",
+      "Desc": "vacuum C6 ring seed_mw unitary long",
+      "Args": [
+        "exp=ring",
+        "ring_n=6",
+        "bath=0",
+        "L=16",
+        "dt=0.02",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "seed_mw=2",
+        "amp_nat=2",
+        "amp_logate=1",
+        "hop_order=1",
+        "k_rad=0",
+        "wf_on=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": 1.059e-12,
+      "Cond": 0,
+      "Evap": 0,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 0,
+      "QcnvD": 0,
+      "QcnvF": 0,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 0,
+      "BlobSpeed": 0,
+      "BlobCos": 0,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": false
+    },
+    "prog": {
+      "EmTot": 4.875,
+      "EeTot": 0,
+      "EmMax": 0.88484,
+      "PR": 5.984073692976003,
+      "FTag": 1,
+      "JAbs": 0,
+      "Jx": 0,
+      "R2f": 0,
+      "JdAbs": 1.5284404378778291,
+      "NCells": 6,
+      "NLinks": 2,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 4.875,
+        "EmMax": 0.8125,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 100,
+        "EmTot": 4.875,
+        "EmMax": 0.8129,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 200,
+        "EmTot": 4.875,
+        "EmMax": 0.8129,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 300,
+        "EmTot": 4.875,
+        "EmMax": 0.8129,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 400,
+        "EmTot": 4.875,
+        "EmMax": 0.8129,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 500,
+        "EmTot": 4.875,
+        "EmMax": 0.8129,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 600,
+        "EmTot": 4.875,
+        "EmMax": 0.8129,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 700,
+        "EmTot": 4.875,
+        "EmMax": 0.8129,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 800,
+        "EmTot": 4.875,
+        "EmMax": 0.8129,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 900,
+        "EmTot": 4.875,
+        "EmMax": 0.8129,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 1000,
+        "EmTot": 4.875,
+        "EmMax": 0.8129,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 1100,
+        "EmTot": 4.875,
+        "EmMax": 0.8129,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 1200,
+        "EmTot": 4.875,
+        "EmMax": 0.8895,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 1300,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 1400,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 1500,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 1600,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 1700,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 1800,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 1900,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 2000,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 2100,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 2200,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 2300,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 2400,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 2500,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 2600,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 2700,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 2800,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 2900,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 3000,
+        "EmTot": 4.875,
+        "EmMax": 0.8848,
+        "SumEe": 0,
+        "NHot": 6
+      }
+    ],
+    "seconds": 0.868684508
+  },
+  {
+    "arm": {
+      "Name": "R02_ring_bath",
+      "Family": "sust",
+      "Desc": "ring in bath — contact dephasing long",
+      "Args": [
+        "exp=ring",
+        "ring_n=6",
+        "bath=1",
+        "L=16",
+        "dt=0.02",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "seed_mw=2",
+        "amp_nat=2",
+        "amp_logate=1",
+        "hop_order=1",
+        "k_rad=0",
+        "wf_on=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -2.329e-14,
+      "Cond": 0,
+      "Evap": 0,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 0,
+      "QcnvD": 0,
+      "QcnvF": 0,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 0,
+      "BlobSpeed": 0,
+      "BlobCos": 0,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": false
+    },
+    "prog": {
+      "EmTot": 4.875079999999991,
+      "EeTot": 0,
+      "EmMax": 1.54293,
+      "PR": 9.948428572734077,
+      "FTag": 0.0012184415435233906,
+      "JAbs": 0,
+      "Jx": 0,
+      "R2f": 0,
+      "JdAbs": 0.003585590534638084,
+      "NCells": 2651,
+      "NLinks": 21090,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 4.875,
+        "EmMax": 0.8125,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 100,
+        "EmTot": 4.875,
+        "EmMax": 1.8787,
+        "SumEe": 0,
+        "NHot": 2
+      },
+      {
+        "T": 200,
+        "EmTot": 4.875,
+        "EmMax": 1.4676,
+        "SumEe": 0,
+        "NHot": 3
+      },
+      {
+        "T": 300,
+        "EmTot": 4.875,
+        "EmMax": 1.7187,
+        "SumEe": 0,
+        "NHot": 2
+      },
+      {
+        "T": 400,
+        "EmTot": 4.875,
+        "EmMax": 1.6792,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 500,
+        "EmTot": 4.875,
+        "EmMax": 1.6018,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 600,
+        "EmTot": 4.875,
+        "EmMax": 1.6039,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 700,
+        "EmTot": 4.875,
+        "EmMax": 1.6111,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 800,
+        "EmTot": 4.875,
+        "EmMax": 1.6098,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 900,
+        "EmTot": 4.875,
+        "EmMax": 1.6109,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 1000,
+        "EmTot": 4.875,
+        "EmMax": 1.609,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 1100,
+        "EmTot": 4.875,
+        "EmMax": 1.6076,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 1200,
+        "EmTot": 4.875,
+        "EmMax": 1.6085,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 1300,
+        "EmTot": 4.875,
+        "EmMax": 1.6074,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 1400,
+        "EmTot": 4.875,
+        "EmMax": 1.6036,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 1500,
+        "EmTot": 4.875,
+        "EmMax": 1.5837,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 1600,
+        "EmTot": 4.875,
+        "EmMax": 1.5711,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 1700,
+        "EmTot": 4.875,
+        "EmMax": 1.5687,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 1800,
+        "EmTot": 4.875,
+        "EmMax": 1.5635,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 1900,
+        "EmTot": 4.875,
+        "EmMax": 1.5593,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 2000,
+        "EmTot": 4.875,
+        "EmMax": 1.559,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 2100,
+        "EmTot": 4.875,
+        "EmMax": 1.5538,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 2200,
+        "EmTot": 4.875,
+        "EmMax": 1.5489,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 2300,
+        "EmTot": 4.875,
+        "EmMax": 1.5482,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 2400,
+        "EmTot": 4.875,
+        "EmMax": 1.5436,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 2500,
+        "EmTot": 4.875,
+        "EmMax": 1.5415,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 2600,
+        "EmTot": 4.875,
+        "EmMax": 1.5424,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 2700,
+        "EmTot": 4.875,
+        "EmMax": 1.5429,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 2800,
+        "EmTot": 4.875,
+        "EmMax": 1.5426,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 2900,
+        "EmTot": 4.875,
+        "EmMax": 1.5435,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 3000,
+        "EmTot": 4.875,
+        "EmMax": 1.5429,
+        "SumEe": 0,
+        "NHot": 1
+      }
+    ],
+    "seconds": 3118.321213871
+  },
+  {
+    "arm": {
+      "Name": "S00_uni_base",
+      "Family": "sust",
+      "Desc": "unitary linear + law qd; quiet; baseline hold",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=1.2",
+        "wf_on=1",
+        "k_rad=0",
+        "noise_amp=0",
+        "p1_meter=1"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -6.855e-13,
+      "Cond": 0,
+      "Evap": 0.466828,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 0.060891,
+      "QcnvD": 33.465607,
+      "QcnvF": 0.425947,
+      "Fd": 2.841635,
+      "Fl": 0,
+      "Sp": -0.0918244,
+      "Gm": -3.296439,
+      "EmTag": 66.87842,
+      "BlobSpeed": 0.000192,
+      "BlobCos": -0.4509,
+      "FrontV": 0,
+      "HasP1": true,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 148.29807999999994,
+      "EeTot": 0.40584999999999977,
+      "EmMax": 1.93222,
+      "PR": 297.2303818544094,
+      "FTag": 0.4509725277630029,
+      "JAbs": 0.00024212154476672328,
+      "Jx": 2.2347292692832514e-7,
+      "R2f": 0.0072035361347170855,
+      "JdAbs": 0.18712125028098253,
+      "NCells": 2700,
+      "NLinks": 21665,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 148.7649,
+        "EmMax": 2.6395,
+        "SumEe": 0,
+        "NHot": 80
+      },
+      {
+        "T": 200,
+        "EmTot": 148.5351,
+        "EmMax": 2.4118,
+        "SumEe": 0.1999,
+        "NHot": 77
+      },
+      {
+        "T": 300,
+        "EmTot": 148.5351,
+        "EmMax": 2.4958,
+        "SumEe": 0.1999,
+        "NHot": 74
+      },
+      {
+        "T": 400,
+        "EmTot": 148.2981,
+        "EmMax": 2.4151,
+        "SumEe": 0.4059,
+        "NHot": 69
+      },
+      {
+        "T": 500,
+        "EmTot": 148.2981,
+        "EmMax": 2.1057,
+        "SumEe": 0.4059,
+        "NHot": 69
+      },
+      {
+        "T": 600,
+        "EmTot": 148.2981,
+        "EmMax": 2.3896,
+        "SumEe": 0.4059,
+        "NHot": 64
+      },
+      {
+        "T": 700,
+        "EmTot": 148.2981,
+        "EmMax": 2.1267,
+        "SumEe": 0.4059,
+        "NHot": 60
+      },
+      {
+        "T": 800,
+        "EmTot": 148.2981,
+        "EmMax": 2.0109,
+        "SumEe": 0.4059,
+        "NHot": 61
+      },
+      {
+        "T": 900,
+        "EmTot": 148.2981,
+        "EmMax": 2.0836,
+        "SumEe": 0.4059,
+        "NHot": 58
+      },
+      {
+        "T": 1000,
+        "EmTot": 148.2981,
+        "EmMax": 1.9657,
+        "SumEe": 0.4059,
+        "NHot": 59
+      },
+      {
+        "T": 1100,
+        "EmTot": 148.2981,
+        "EmMax": 1.934,
+        "SumEe": 0.4059,
+        "NHot": 55
+      },
+      {
+        "T": 1200,
+        "EmTot": 148.2981,
+        "EmMax": 1.9457,
+        "SumEe": 0.4059,
+        "NHot": 50
+      },
+      {
+        "T": 1300,
+        "EmTot": 148.2981,
+        "EmMax": 2.0057,
+        "SumEe": 0.4059,
+        "NHot": 52
+      },
+      {
+        "T": 1400,
+        "EmTot": 148.2981,
+        "EmMax": 2.0241,
+        "SumEe": 0.4059,
+        "NHot": 51
+      },
+      {
+        "T": 1500,
+        "EmTot": 148.2981,
+        "EmMax": 2.0608,
+        "SumEe": 0.4059,
+        "NHot": 53
+      },
+      {
+        "T": 1600,
+        "EmTot": 148.2981,
+        "EmMax": 1.9566,
+        "SumEe": 0.4059,
+        "NHot": 53
+      },
+      {
+        "T": 1700,
+        "EmTot": 148.2981,
+        "EmMax": 1.959,
+        "SumEe": 0.4059,
+        "NHot": 53
+      },
+      {
+        "T": 1800,
+        "EmTot": 148.2981,
+        "EmMax": 2.1304,
+        "SumEe": 0.4059,
+        "NHot": 56
+      },
+      {
+        "T": 1900,
+        "EmTot": 148.2981,
+        "EmMax": 1.9866,
+        "SumEe": 0.4059,
+        "NHot": 57
+      },
+      {
+        "T": 2000,
+        "EmTot": 148.2981,
+        "EmMax": 2.0845,
+        "SumEe": 0.4059,
+        "NHot": 53
+      },
+      {
+        "T": 2100,
+        "EmTot": 148.2981,
+        "EmMax": 2.0046,
+        "SumEe": 0.4059,
+        "NHot": 53
+      },
+      {
+        "T": 2200,
+        "EmTot": 148.2981,
+        "EmMax": 2.0956,
+        "SumEe": 0.4059,
+        "NHot": 52
+      },
+      {
+        "T": 2300,
+        "EmTot": 148.2981,
+        "EmMax": 2.0526,
+        "SumEe": 0.4059,
+        "NHot": 46
+      },
+      {
+        "T": 2400,
+        "EmTot": 148.2981,
+        "EmMax": 1.8762,
+        "SumEe": 0.4059,
+        "NHot": 44
+      },
+      {
+        "T": 2500,
+        "EmTot": 148.2981,
+        "EmMax": 1.8784,
+        "SumEe": 0.4059,
+        "NHot": 47
+      },
+      {
+        "T": 2600,
+        "EmTot": 148.2981,
+        "EmMax": 1.9445,
+        "SumEe": 0.4059,
+        "NHot": 52
+      },
+      {
+        "T": 2700,
+        "EmTot": 148.2981,
+        "EmMax": 1.9877,
+        "SumEe": 0.4059,
+        "NHot": 54
+      },
+      {
+        "T": 2800,
+        "EmTot": 148.2981,
+        "EmMax": 1.8791,
+        "SumEe": 0.4059,
+        "NHot": 51
+      },
+      {
+        "T": 2900,
+        "EmTot": 148.2981,
+        "EmMax": 1.8948,
+        "SumEe": 0.4059,
+        "NHot": 51
+      },
+      {
+        "T": 3000,
+        "EmTot": 148.2981,
+        "EmMax": 1.9322,
+        "SumEe": 0.4059,
+        "NHot": 50
+      }
+    ],
+    "seconds": 3472.900832832
+  },
+  {
+    "arm": {
+      "Name": "S00b_uni_base_s111",
+      "Family": "sust",
+      "Desc": "S00 seed robustness",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=111",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=1.2",
+        "wf_on=1",
+        "k_rad=0",
+        "noise_amp=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -6.886e-13,
+      "Cond": 0,
+      "Evap": 0,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 0,
+      "QcnvD": 0,
+      "QcnvF": 0.177294,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 68.38155,
+      "BlobSpeed": 0.000195,
+      "BlobCos": 0.66,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 146.8487699999999,
+      "EeTot": 0,
+      "EmMax": 1.81583,
+      "PR": 288.14848575587996,
+      "FTag": 0.4656600119973776,
+      "JAbs": 0,
+      "Jx": 0,
+      "R2f": 0,
+      "JdAbs": 0.17511124521087468,
+      "NCells": 2663,
+      "NLinks": 20958,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 146.8487,
+        "EmMax": 0.8947,
+        "SumEe": 0,
+        "NHot": 51
+      },
+      {
+        "T": 100,
+        "EmTot": 146.8487,
+        "EmMax": 2.1755,
+        "SumEe": 0,
+        "NHot": 78
+      },
+      {
+        "T": 200,
+        "EmTot": 146.8487,
+        "EmMax": 2.338,
+        "SumEe": 0,
+        "NHot": 72
+      },
+      {
+        "T": 300,
+        "EmTot": 146.8487,
+        "EmMax": 2.126,
+        "SumEe": 0,
+        "NHot": 67
+      },
+      {
+        "T": 400,
+        "EmTot": 146.8487,
+        "EmMax": 2.3231,
+        "SumEe": 0,
+        "NHot": 63
+      },
+      {
+        "T": 500,
+        "EmTot": 146.8487,
+        "EmMax": 1.9389,
+        "SumEe": 0,
+        "NHot": 60
+      },
+      {
+        "T": 600,
+        "EmTot": 146.8487,
+        "EmMax": 2.5125,
+        "SumEe": 0,
+        "NHot": 61
+      },
+      {
+        "T": 700,
+        "EmTot": 146.8487,
+        "EmMax": 2.1182,
+        "SumEe": 0,
+        "NHot": 56
+      },
+      {
+        "T": 800,
+        "EmTot": 146.8487,
+        "EmMax": 2.0345,
+        "SumEe": 0,
+        "NHot": 55
+      },
+      {
+        "T": 900,
+        "EmTot": 146.8487,
+        "EmMax": 2.3224,
+        "SumEe": 0,
+        "NHot": 52
+      },
+      {
+        "T": 1000,
+        "EmTot": 146.8487,
+        "EmMax": 2.3083,
+        "SumEe": 0,
+        "NHot": 52
+      },
+      {
+        "T": 1100,
+        "EmTot": 146.8487,
+        "EmMax": 1.9602,
+        "SumEe": 0,
+        "NHot": 51
+      },
+      {
+        "T": 1200,
+        "EmTot": 146.8487,
+        "EmMax": 1.9969,
+        "SumEe": 0,
+        "NHot": 51
+      },
+      {
+        "T": 1300,
+        "EmTot": 146.8487,
+        "EmMax": 2.1463,
+        "SumEe": 0,
+        "NHot": 52
+      },
+      {
+        "T": 1400,
+        "EmTot": 146.8487,
+        "EmMax": 2.0183,
+        "SumEe": 0,
+        "NHot": 49
+      },
+      {
+        "T": 1500,
+        "EmTot": 146.8487,
+        "EmMax": 2.0049,
+        "SumEe": 0,
+        "NHot": 55
+      },
+      {
+        "T": 1600,
+        "EmTot": 146.8487,
+        "EmMax": 1.9574,
+        "SumEe": 0,
+        "NHot": 52
+      },
+      {
+        "T": 1700,
+        "EmTot": 146.8487,
+        "EmMax": 2.375,
+        "SumEe": 0,
+        "NHot": 50
+      },
+      {
+        "T": 1800,
+        "EmTot": 146.8487,
+        "EmMax": 2.1793,
+        "SumEe": 0,
+        "NHot": 50
+      },
+      {
+        "T": 1900,
+        "EmTot": 146.8487,
+        "EmMax": 2.0042,
+        "SumEe": 0,
+        "NHot": 54
+      },
+      {
+        "T": 2000,
+        "EmTot": 146.8487,
+        "EmMax": 1.9556,
+        "SumEe": 0,
+        "NHot": 54
+      },
+      {
+        "T": 2100,
+        "EmTot": 146.8487,
+        "EmMax": 1.9341,
+        "SumEe": 0,
+        "NHot": 52
+      },
+      {
+        "T": 2200,
+        "EmTot": 146.8487,
+        "EmMax": 1.9473,
+        "SumEe": 0,
+        "NHot": 53
+      },
+      {
+        "T": 2300,
+        "EmTot": 146.8487,
+        "EmMax": 1.9157,
+        "SumEe": 0,
+        "NHot": 53
+      },
+      {
+        "T": 2400,
+        "EmTot": 146.8487,
+        "EmMax": 1.8943,
+        "SumEe": 0,
+        "NHot": 51
+      },
+      {
+        "T": 2500,
+        "EmTot": 146.8487,
+        "EmMax": 1.9936,
+        "SumEe": 0,
+        "NHot": 55
+      },
+      {
+        "T": 2600,
+        "EmTot": 146.8487,
+        "EmMax": 1.9222,
+        "SumEe": 0,
+        "NHot": 49
+      },
+      {
+        "T": 2700,
+        "EmTot": 146.8487,
+        "EmMax": 2.0058,
+        "SumEe": 0,
+        "NHot": 53
+      },
+      {
+        "T": 2800,
+        "EmTot": 146.8487,
+        "EmMax": 1.9161,
+        "SumEe": 0,
+        "NHot": 53
+      },
+      {
+        "T": 2900,
+        "EmTot": 146.8487,
+        "EmMax": 1.8823,
+        "SumEe": 0,
+        "NHot": 50
+      },
+      {
+        "T": 3000,
+        "EmTot": 146.8487,
+        "EmMax": 1.8158,
+        "SumEe": 0,
+        "NHot": 56
+      }
+    ],
+    "seconds": 3210.515934706
+  },
+  {
+    "arm": {
+      "Name": "S01_additive",
+      "Family": "sust",
+      "Desc": "additive want (no unitary)",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=0",
+        "q_detune=1.2",
+        "wf_on=1",
+        "k_rad=0",
+        "noise_amp=0",
+        "p1_meter=1"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -5.465e-15,
+      "Cond": 0.192712,
+      "Evap": 0,
+      "Rough": 8.324457,
+      "Rad": 0,
+      "Backs": 1.085799,
+      "QcnvD": 429.892707,
+      "QcnvF": 2728.033141,
+      "Fd": -3.432709,
+      "Fl": -20.2444,
+      "Sp": -0.03252212,
+      "Gm": 4.568711,
+      "EmTag": 54.16128,
+      "BlobSpeed": 0.000125,
+      "BlobCos": 0.2341,
+      "FrontV": 0,
+      "HasP1": true,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 77.57184999999981,
+      "EeTot": 7.045889999999978,
+      "EmMax": 0.52484,
+      "PR": 503.9278035454376,
+      "FTag": 0.44239411590673794,
+      "JAbs": 0.004262852270667415,
+      "Jx": -0.00003129778533465887,
+      "R2f": 0.006440420380847557,
+      "JdAbs": 0.07608104643697593,
+      "NCells": 2700,
+      "NLinks": 21497,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 105.037,
+        "EmMax": 1.7624,
+        "SumEe": 1.1767,
+        "NHot": 40
+      },
+      {
+        "T": 200,
+        "EmTot": 98.3908,
+        "EmMax": 1.3423,
+        "SumEe": 3.0586,
+        "NHot": 46
+      },
+      {
+        "T": 300,
+        "EmTot": 95.2787,
+        "EmMax": 1.579,
+        "SumEe": 3.9961,
+        "NHot": 41
+      },
+      {
+        "T": 400,
+        "EmTot": 94.5239,
+        "EmMax": 1.2953,
+        "SumEe": 5.0353,
+        "NHot": 40
+      },
+      {
+        "T": 500,
+        "EmTot": 90.1227,
+        "EmMax": 1.473,
+        "SumEe": 5.0353,
+        "NHot": 37
+      },
+      {
+        "T": 600,
+        "EmTot": 89.5981,
+        "EmMax": 1.3787,
+        "SumEe": 5.0353,
+        "NHot": 31
+      },
+      {
+        "T": 700,
+        "EmTot": 88.6262,
+        "EmMax": 1.2368,
+        "SumEe": 5.0353,
+        "NHot": 33
+      },
+      {
+        "T": 800,
+        "EmTot": 86.766,
+        "EmMax": 1.1312,
+        "SumEe": 5.0353,
+        "NHot": 34
+      },
+      {
+        "T": 900,
+        "EmTot": 86.3246,
+        "EmMax": 1.0791,
+        "SumEe": 5.0353,
+        "NHot": 30
+      },
+      {
+        "T": 1000,
+        "EmTot": 86.0485,
+        "EmMax": 0.7299,
+        "SumEe": 5.0353,
+        "NHot": 33
+      },
+      {
+        "T": 1100,
+        "EmTot": 84.9314,
+        "EmMax": 0.7263,
+        "SumEe": 5.0353,
+        "NHot": 25
+      },
+      {
+        "T": 1200,
+        "EmTot": 85.2406,
+        "EmMax": 1.029,
+        "SumEe": 5.0353,
+        "NHot": 28
+      },
+      {
+        "T": 1300,
+        "EmTot": 86.9839,
+        "EmMax": 1.4333,
+        "SumEe": 6.0283,
+        "NHot": 28
+      },
+      {
+        "T": 1400,
+        "EmTot": 84.6409,
+        "EmMax": 1.3534,
+        "SumEe": 6.0283,
+        "NHot": 26
+      },
+      {
+        "T": 1500,
+        "EmTot": 85.0421,
+        "EmMax": 1.136,
+        "SumEe": 6.0283,
+        "NHot": 23
+      },
+      {
+        "T": 1600,
+        "EmTot": 82.9876,
+        "EmMax": 1.4665,
+        "SumEe": 6.0283,
+        "NHot": 17
+      },
+      {
+        "T": 1700,
+        "EmTot": 82.9669,
+        "EmMax": 1.2679,
+        "SumEe": 6.0283,
+        "NHot": 14
+      },
+      {
+        "T": 1800,
+        "EmTot": 82.0463,
+        "EmMax": 1.0511,
+        "SumEe": 6.3384,
+        "NHot": 14
+      },
+      {
+        "T": 1900,
+        "EmTot": 80.7765,
+        "EmMax": 0.91,
+        "SumEe": 6.3384,
+        "NHot": 9
+      },
+      {
+        "T": 2000,
+        "EmTot": 78.4472,
+        "EmMax": 0.8697,
+        "SumEe": 6.3384,
+        "NHot": 4
+      },
+      {
+        "T": 2100,
+        "EmTot": 79.2962,
+        "EmMax": 0.6559,
+        "SumEe": 6.3384,
+        "NHot": 8
+      },
+      {
+        "T": 2200,
+        "EmTot": 76.6039,
+        "EmMax": 0.6646,
+        "SumEe": 7.0459,
+        "NHot": 8
+      },
+      {
+        "T": 2300,
+        "EmTot": 76.1341,
+        "EmMax": 0.6549,
+        "SumEe": 7.0459,
+        "NHot": 3
+      },
+      {
+        "T": 2400,
+        "EmTot": 75.1809,
+        "EmMax": 0.6165,
+        "SumEe": 7.0459,
+        "NHot": 6
+      },
+      {
+        "T": 2500,
+        "EmTot": 77.828,
+        "EmMax": 0.5878,
+        "SumEe": 7.0459,
+        "NHot": 4
+      },
+      {
+        "T": 2600,
+        "EmTot": 77.4469,
+        "EmMax": 0.6438,
+        "SumEe": 7.0459,
+        "NHot": 6
+      },
+      {
+        "T": 2700,
+        "EmTot": 78.8261,
+        "EmMax": 0.5615,
+        "SumEe": 7.0459,
+        "NHot": 6
+      },
+      {
+        "T": 2800,
+        "EmTot": 79.5057,
+        "EmMax": 0.5377,
+        "SumEe": 7.0459,
+        "NHot": 2
+      },
+      {
+        "T": 2900,
+        "EmTot": 75.803,
+        "EmMax": 0.5037,
+        "SumEe": 7.0459,
+        "NHot": 1
+      },
+      {
+        "T": 3000,
+        "EmTot": 77.572,
+        "EmMax": 0.5248,
+        "SumEe": 7.0459,
+        "NHot": 4
+      }
+    ],
+    "seconds": 3615.903911765
+  },
+  {
+    "arm": {
+      "Name": "S02_uni_gated",
+      "Family": "sust",
+      "Desc": "unitary gated τ (amp_logate=0)",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=0",
+        "q_detune=1.2",
+        "wf_on=1",
+        "k_rad=0",
+        "noise_amp=0",
+        "p1_meter=1"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -4.438e-13,
+      "Cond": 0,
+      "Evap": 0,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 0,
+      "QcnvD": 0,
+      "QcnvF": 0,
+      "Fd": 4.507442,
+      "Fl": 0,
+      "Sp": -0.112196,
+      "Gm": 5.328446,
+      "EmTag": 55.83007,
+      "BlobSpeed": 0.000053,
+      "BlobCos": 0.6269,
+      "FrontV": 0,
+      "HasP1": true,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 148.76495999999983,
+      "EeTot": 0,
+      "EmMax": 0.3429,
+      "PR": 1720.8946554590034,
+      "FTag": 0.3752905926234249,
+      "JAbs": 0,
+      "Jx": 0,
+      "R2f": 0,
+      "JdAbs": 0.08702483849396675,
+      "NCells": 2700,
+      "NLinks": 21636,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 148.7649,
+        "EmMax": 0.8588,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 200,
+        "EmTot": 148.7649,
+        "EmMax": 0.8392,
+        "SumEe": 0,
+        "NHot": 42
+      },
+      {
+        "T": 300,
+        "EmTot": 148.7649,
+        "EmMax": 0.7597,
+        "SumEe": 0,
+        "NHot": 35
+      },
+      {
+        "T": 400,
+        "EmTot": 148.7649,
+        "EmMax": 0.785,
+        "SumEe": 0,
+        "NHot": 35
+      },
+      {
+        "T": 500,
+        "EmTot": 148.7649,
+        "EmMax": 0.7425,
+        "SumEe": 0,
+        "NHot": 23
+      },
+      {
+        "T": 600,
+        "EmTot": 148.7649,
+        "EmMax": 0.6949,
+        "SumEe": 0,
+        "NHot": 21
+      },
+      {
+        "T": 700,
+        "EmTot": 148.7649,
+        "EmMax": 0.7565,
+        "SumEe": 0,
+        "NHot": 17
+      },
+      {
+        "T": 800,
+        "EmTot": 148.7649,
+        "EmMax": 0.6533,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 900,
+        "EmTot": 148.7649,
+        "EmMax": 0.6535,
+        "SumEe": 0,
+        "NHot": 10
+      },
+      {
+        "T": 1000,
+        "EmTot": 148.7649,
+        "EmMax": 0.6345,
+        "SumEe": 0,
+        "NHot": 8
+      },
+      {
+        "T": 1100,
+        "EmTot": 148.7649,
+        "EmMax": 0.6212,
+        "SumEe": 0,
+        "NHot": 5
+      },
+      {
+        "T": 1200,
+        "EmTot": 148.7649,
+        "EmMax": 0.5182,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 1300,
+        "EmTot": 148.7649,
+        "EmMax": 0.6297,
+        "SumEe": 0,
+        "NHot": 2
+      },
+      {
+        "T": 1400,
+        "EmTot": 148.7649,
+        "EmMax": 0.5944,
+        "SumEe": 0,
+        "NHot": 3
+      },
+      {
+        "T": 1500,
+        "EmTot": 148.7649,
+        "EmMax": 0.5056,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 1600,
+        "EmTot": 148.7649,
+        "EmMax": 0.4864,
+        "SumEe": 0,
+        "NHot": 0
+      },
+      {
+        "T": 1700,
+        "EmTot": 148.7649,
+        "EmMax": 0.4771,
+        "SumEe": 0,
+        "NHot": 0
+      },
+      {
+        "T": 1800,
+        "EmTot": 148.7649,
+        "EmMax": 0.4345,
+        "SumEe": 0,
+        "NHot": 0
+      },
+      {
+        "T": 1900,
+        "EmTot": 148.7649,
+        "EmMax": 0.5205,
+        "SumEe": 0,
+        "NHot": 1
+      },
+      {
+        "T": 2000,
+        "EmTot": 148.7649,
+        "EmMax": 0.4809,
+        "SumEe": 0,
+        "NHot": 0
+      },
+      {
+        "T": 2100,
+        "EmTot": 148.7649,
+        "EmMax": 0.3875,
+        "SumEe": 0,
+        "NHot": 0
+      },
+      {
+        "T": 2200,
+        "EmTot": 148.7649,
+        "EmMax": 0.4529,
+        "SumEe": 0,
+        "NHot": 0
+      },
+      {
+        "T": 2300,
+        "EmTot": 148.7649,
+        "EmMax": 0.3885,
+        "SumEe": 0,
+        "NHot": 0
+      },
+      {
+        "T": 2400,
+        "EmTot": 148.7649,
+        "EmMax": 0.4243,
+        "SumEe": 0,
+        "NHot": 0
+      },
+      {
+        "T": 2500,
+        "EmTot": 148.7649,
+        "EmMax": 0.3673,
+        "SumEe": 0,
+        "NHot": 0
+      },
+      {
+        "T": 2600,
+        "EmTot": 148.7649,
+        "EmMax": 0.3572,
+        "SumEe": 0,
+        "NHot": 0
+      },
+      {
+        "T": 2700,
+        "EmTot": 148.7649,
+        "EmMax": 0.4061,
+        "SumEe": 0,
+        "NHot": 0
+      },
+      {
+        "T": 2800,
+        "EmTot": 148.7649,
+        "EmMax": 0.362,
+        "SumEe": 0,
+        "NHot": 0
+      },
+      {
+        "T": 2900,
+        "EmTot": 148.7649,
+        "EmMax": 0.3301,
+        "SumEe": 0,
+        "NHot": 0
+      },
+      {
+        "T": 3000,
+        "EmTot": 148.7649,
+        "EmMax": 0.3429,
+        "SumEe": 0,
+        "NHot": 0
+      }
+    ],
+    "seconds": 3449.385644392
+  },
+  {
+    "arm": {
+      "Name": "S03_qd0_melt",
+      "Family": "sust",
+      "Desc": "q_detune=0 — no self-trap",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=0",
+        "wf_on=1",
+        "k_rad=0",
+        "noise_amp=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": 2.335e-13,
+      "Cond": 0,
+      "Evap": 0,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 0,
+      "QcnvD": 0,
+      "QcnvF": 0,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 36.63504,
+      "BlobSpeed": 0.00031,
+      "BlobCos": -0.3698,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 148.76473999999973,
+      "EeTot": 0,
+      "EmMax": 0.79969,
+      "PR": 899.7873292692193,
+      "FTag": 0.24626117721175064,
+      "JAbs": 0,
+      "Jx": 0,
+      "R2f": 0,
+      "JdAbs": 0.0919262751257645,
+      "NCells": 2700,
+      "NLinks": 21560,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 148.7649,
+        "EmMax": 0.9942,
+        "SumEe": 0,
+        "NHot": 12
+      },
+      {
+        "T": 200,
+        "EmTot": 148.7649,
+        "EmMax": 0.7222,
+        "SumEe": 0,
+        "NHot": 4
+      },
+      {
+        "T": 300,
+        "EmTot": 148.7649,
+        "EmMax": 0.7473,
+        "SumEe": 0,
+        "NHot": 5
+      },
+      {
+        "T": 400,
+        "EmTot": 148.7649,
+        "EmMax": 0.8539,
+        "SumEe": 0,
+        "NHot": 5
+      },
+      {
+        "T": 500,
+        "EmTot": 148.7649,
+        "EmMax": 0.9628,
+        "SumEe": 0,
+        "NHot": 6
+      },
+      {
+        "T": 600,
+        "EmTot": 148.7649,
+        "EmMax": 0.8997,
+        "SumEe": 0,
+        "NHot": 9
+      },
+      {
+        "T": 700,
+        "EmTot": 148.7649,
+        "EmMax": 0.9286,
+        "SumEe": 0,
+        "NHot": 8
+      },
+      {
+        "T": 800,
+        "EmTot": 148.7649,
+        "EmMax": 1.0337,
+        "SumEe": 0,
+        "NHot": 15
+      },
+      {
+        "T": 900,
+        "EmTot": 148.7649,
+        "EmMax": 0.8368,
+        "SumEe": 0,
+        "NHot": 12
+      },
+      {
+        "T": 1000,
+        "EmTot": 148.7649,
+        "EmMax": 1.1966,
+        "SumEe": 0,
+        "NHot": 15
+      },
+      {
+        "T": 1100,
+        "EmTot": 148.7649,
+        "EmMax": 0.6436,
+        "SumEe": 0,
+        "NHot": 12
+      },
+      {
+        "T": 1200,
+        "EmTot": 148.7649,
+        "EmMax": 1.2137,
+        "SumEe": 0,
+        "NHot": 15
+      },
+      {
+        "T": 1300,
+        "EmTot": 148.7649,
+        "EmMax": 1.3494,
+        "SumEe": 0,
+        "NHot": 23
+      },
+      {
+        "T": 1400,
+        "EmTot": 148.7649,
+        "EmMax": 1.474,
+        "SumEe": 0,
+        "NHot": 17
+      },
+      {
+        "T": 1500,
+        "EmTot": 148.7649,
+        "EmMax": 1.253,
+        "SumEe": 0,
+        "NHot": 14
+      },
+      {
+        "T": 1600,
+        "EmTot": 148.7649,
+        "EmMax": 1.1415,
+        "SumEe": 0,
+        "NHot": 18
+      },
+      {
+        "T": 1700,
+        "EmTot": 148.7649,
+        "EmMax": 0.8606,
+        "SumEe": 0,
+        "NHot": 19
+      },
+      {
+        "T": 1800,
+        "EmTot": 148.7649,
+        "EmMax": 1.243,
+        "SumEe": 0,
+        "NHot": 16
+      },
+      {
+        "T": 1900,
+        "EmTot": 148.7649,
+        "EmMax": 1.3654,
+        "SumEe": 0,
+        "NHot": 14
+      },
+      {
+        "T": 2000,
+        "EmTot": 148.7649,
+        "EmMax": 0.8681,
+        "SumEe": 0,
+        "NHot": 18
+      },
+      {
+        "T": 2100,
+        "EmTot": 148.7649,
+        "EmMax": 1.0629,
+        "SumEe": 0,
+        "NHot": 20
+      },
+      {
+        "T": 2200,
+        "EmTot": 148.7649,
+        "EmMax": 0.9438,
+        "SumEe": 0,
+        "NHot": 18
+      },
+      {
+        "T": 2300,
+        "EmTot": 148.7649,
+        "EmMax": 0.8762,
+        "SumEe": 0,
+        "NHot": 14
+      },
+      {
+        "T": 2400,
+        "EmTot": 148.7649,
+        "EmMax": 0.7698,
+        "SumEe": 0,
+        "NHot": 12
+      },
+      {
+        "T": 2500,
+        "EmTot": 148.7649,
+        "EmMax": 0.8086,
+        "SumEe": 0,
+        "NHot": 22
+      },
+      {
+        "T": 2600,
+        "EmTot": 148.7649,
+        "EmMax": 0.9141,
+        "SumEe": 0,
+        "NHot": 15
+      },
+      {
+        "T": 2700,
+        "EmTot": 148.7649,
+        "EmMax": 0.9478,
+        "SumEe": 0,
+        "NHot": 14
+      },
+      {
+        "T": 2800,
+        "EmTot": 148.7649,
+        "EmMax": 0.8192,
+        "SumEe": 0,
+        "NHot": 11
+      },
+      {
+        "T": 2900,
+        "EmTot": 148.7649,
+        "EmMax": 0.8386,
+        "SumEe": 0,
+        "NHot": 14
+      },
+      {
+        "T": 3000,
+        "EmTot": 148.7649,
+        "EmMax": 0.7997,
+        "SumEe": 0,
+        "NHot": 10
+      }
+    ],
+    "seconds": 3358.325677676
+  },
+  {
+    "arm": {
+      "Name": "S04_qd36_deep",
+      "Family": "sust",
+      "Desc": "deep self-trap qd=3.6",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=3.6",
+        "wf_on=1",
+        "k_rad=0",
+        "noise_amp=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -6.392e-13,
+      "Cond": 0,
+      "Evap": 1.332098,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 0.173752,
+      "QcnvD": 43.929897,
+      "QcnvF": 0.38756,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 85.28965,
+      "BlobSpeed": 0.00009,
+      "BlobCos": -0.1414,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 147.43305,
+      "EeTot": 1.1583000000000003,
+      "EmMax": 2.50993,
+      "PR": 304.6058288873168,
+      "FTag": 0.578497765595977,
+      "JAbs": 0.0008747692346352883,
+      "Jx": 0.000004491956772376383,
+      "R2f": 0.041985812684618075,
+      "JdAbs": 0.22497380227877806,
+      "NCells": 2700,
+      "NLinks": 21634,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 148.7649,
+        "EmMax": 2.1048,
+        "SumEe": 0,
+        "NHot": 78
+      },
+      {
+        "T": 200,
+        "EmTot": 148.6529,
+        "EmMax": 2.4197,
+        "SumEe": 0.0974,
+        "NHot": 74
+      },
+      {
+        "T": 300,
+        "EmTot": 148.6529,
+        "EmMax": 2.555,
+        "SumEe": 0.0974,
+        "NHot": 76
+      },
+      {
+        "T": 400,
+        "EmTot": 148.5435,
+        "EmMax": 2.1634,
+        "SumEe": 0.1926,
+        "NHot": 85
+      },
+      {
+        "T": 500,
+        "EmTot": 148.4357,
+        "EmMax": 2.7516,
+        "SumEe": 0.2863,
+        "NHot": 79
+      },
+      {
+        "T": 600,
+        "EmTot": 148.2159,
+        "EmMax": 2.4563,
+        "SumEe": 0.4774,
+        "NHot": 79
+      },
+      {
+        "T": 700,
+        "EmTot": 148.1078,
+        "EmMax": 2.5775,
+        "SumEe": 0.5714,
+        "NHot": 77
+      },
+      {
+        "T": 800,
+        "EmTot": 148.1078,
+        "EmMax": 2.5646,
+        "SumEe": 0.5714,
+        "NHot": 76
+      },
+      {
+        "T": 900,
+        "EmTot": 147.9948,
+        "EmMax": 2.4414,
+        "SumEe": 0.6697,
+        "NHot": 78
+      },
+      {
+        "T": 1000,
+        "EmTot": 147.9948,
+        "EmMax": 2.4846,
+        "SumEe": 0.6697,
+        "NHot": 73
+      },
+      {
+        "T": 1100,
+        "EmTot": 147.9948,
+        "EmMax": 2.4839,
+        "SumEe": 0.6697,
+        "NHot": 74
+      },
+      {
+        "T": 1200,
+        "EmTot": 147.9948,
+        "EmMax": 2.4281,
+        "SumEe": 0.6697,
+        "NHot": 74
+      },
+      {
+        "T": 1300,
+        "EmTot": 147.8836,
+        "EmMax": 2.4922,
+        "SumEe": 0.7664,
+        "NHot": 73
+      },
+      {
+        "T": 1400,
+        "EmTot": 147.8836,
+        "EmMax": 2.4319,
+        "SumEe": 0.7664,
+        "NHot": 69
+      },
+      {
+        "T": 1500,
+        "EmTot": 147.8836,
+        "EmMax": 2.4993,
+        "SumEe": 0.7664,
+        "NHot": 67
+      },
+      {
+        "T": 1600,
+        "EmTot": 147.657,
+        "EmMax": 2.4543,
+        "SumEe": 0.9634,
+        "NHot": 67
+      },
+      {
+        "T": 1700,
+        "EmTot": 147.657,
+        "EmMax": 2.4068,
+        "SumEe": 0.9634,
+        "NHot": 58
+      },
+      {
+        "T": 1800,
+        "EmTot": 147.657,
+        "EmMax": 2.4623,
+        "SumEe": 0.9634,
+        "NHot": 60
+      },
+      {
+        "T": 1900,
+        "EmTot": 147.657,
+        "EmMax": 2.515,
+        "SumEe": 0.9634,
+        "NHot": 63
+      },
+      {
+        "T": 2000,
+        "EmTot": 147.657,
+        "EmMax": 2.5147,
+        "SumEe": 0.9634,
+        "NHot": 59
+      },
+      {
+        "T": 2100,
+        "EmTot": 147.657,
+        "EmMax": 2.4626,
+        "SumEe": 0.9634,
+        "NHot": 55
+      },
+      {
+        "T": 2200,
+        "EmTot": 147.657,
+        "EmMax": 2.4396,
+        "SumEe": 0.9634,
+        "NHot": 53
+      },
+      {
+        "T": 2300,
+        "EmTot": 147.657,
+        "EmMax": 2.4322,
+        "SumEe": 0.9634,
+        "NHot": 59
+      },
+      {
+        "T": 2400,
+        "EmTot": 147.657,
+        "EmMax": 2.3374,
+        "SumEe": 0.9634,
+        "NHot": 58
+      },
+      {
+        "T": 2500,
+        "EmTot": 147.657,
+        "EmMax": 2.5101,
+        "SumEe": 0.9634,
+        "NHot": 58
+      },
+      {
+        "T": 2600,
+        "EmTot": 147.657,
+        "EmMax": 2.4941,
+        "SumEe": 0.9634,
+        "NHot": 53
+      },
+      {
+        "T": 2700,
+        "EmTot": 147.657,
+        "EmMax": 2.554,
+        "SumEe": 0.9634,
+        "NHot": 53
+      },
+      {
+        "T": 2800,
+        "EmTot": 147.657,
+        "EmMax": 2.5967,
+        "SumEe": 0.9634,
+        "NHot": 52
+      },
+      {
+        "T": 2900,
+        "EmTot": 147.4328,
+        "EmMax": 2.4504,
+        "SumEe": 1.1583,
+        "NHot": 52
+      },
+      {
+        "T": 3000,
+        "EmTot": 147.4328,
+        "EmMax": 2.5099,
+        "SumEe": 1.1583,
+        "NHot": 51
+      }
+    ],
+    "seconds": 3275.606549988
+  },
+  {
+    "arm": {
+      "Name": "S05_rad",
+      "Family": "sust",
+      "Desc": "V3a radiance tax k_rad=0.05",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=1.2",
+        "wf_on=1",
+        "k_rad=0.05",
+        "p_rad=4",
+        "noise_amp=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -6.054e-13,
+      "Cond": 3.265359,
+      "Evap": 0,
+      "Rough": 0,
+      "Rad": 42.588417,
+      "Backs": 5.555011,
+      "QcnvD": 1558.153033,
+      "QcnvF": 22.705957,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 31.44078,
+      "BlobSpeed": 0.00023,
+      "BlobCos": -0.8521,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 109.93158999999987,
+      "EeTot": 33.76815000000003,
+      "EmMax": 0.89036,
+      "PR": 489.264864901316,
+      "FTag": 0.28600495999375625,
+      "JAbs": 0.020005238620949647,
+      "Jx": -0.00005505803686914201,
+      "R2f": 0.006713173596832167,
+      "JdAbs": 0.0907400641332455,
+      "NCells": 2700,
+      "NLinks": 21686,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 145.2698,
+        "EmMax": 1.9778,
+        "SumEe": 3.0392,
+        "NHot": 76
+      },
+      {
+        "T": 200,
+        "EmTot": 139.6903,
+        "EmMax": 1.8222,
+        "SumEe": 7.891,
+        "NHot": 72
+      },
+      {
+        "T": 300,
+        "EmTot": 136.5135,
+        "EmMax": 1.5996,
+        "SumEe": 10.6534,
+        "NHot": 66
+      },
+      {
+        "T": 400,
+        "EmTot": 133.7815,
+        "EmMax": 1.6365,
+        "SumEe": 13.0291,
+        "NHot": 66
+      },
+      {
+        "T": 500,
+        "EmTot": 130.6982,
+        "EmMax": 1.6495,
+        "SumEe": 15.7102,
+        "NHot": 57
+      },
+      {
+        "T": 600,
+        "EmTot": 129.6323,
+        "EmMax": 1.844,
+        "SumEe": 16.637,
+        "NHot": 54
+      },
+      {
+        "T": 700,
+        "EmTot": 126.0942,
+        "EmMax": 1.8751,
+        "SumEe": 19.7137,
+        "NHot": 50
+      },
+      {
+        "T": 800,
+        "EmTot": 123.351,
+        "EmMax": 1.8894,
+        "SumEe": 22.0991,
+        "NHot": 48
+      },
+      {
+        "T": 900,
+        "EmTot": 122.0279,
+        "EmMax": 1.4288,
+        "SumEe": 23.2496,
+        "NHot": 43
+      },
+      {
+        "T": 1000,
+        "EmTot": 121.1793,
+        "EmMax": 1.3374,
+        "SumEe": 23.9875,
+        "NHot": 42
+      },
+      {
+        "T": 1100,
+        "EmTot": 118.8728,
+        "EmMax": 1.3255,
+        "SumEe": 25.9931,
+        "NHot": 40
+      },
+      {
+        "T": 1200,
+        "EmTot": 118.8728,
+        "EmMax": 1.3127,
+        "SumEe": 25.9931,
+        "NHot": 45
+      },
+      {
+        "T": 1300,
+        "EmTot": 117.5332,
+        "EmMax": 1.6391,
+        "SumEe": 27.158,
+        "NHot": 38
+      },
+      {
+        "T": 1400,
+        "EmTot": 117.2094,
+        "EmMax": 1.7041,
+        "SumEe": 27.4396,
+        "NHot": 30
+      },
+      {
+        "T": 1500,
+        "EmTot": 116.3071,
+        "EmMax": 1.2125,
+        "SumEe": 28.2242,
+        "NHot": 32
+      },
+      {
+        "T": 1600,
+        "EmTot": 114.9268,
+        "EmMax": 1.3366,
+        "SumEe": 29.4245,
+        "NHot": 33
+      },
+      {
+        "T": 1700,
+        "EmTot": 114.57,
+        "EmMax": 1.4206,
+        "SumEe": 29.7347,
+        "NHot": 32
+      },
+      {
+        "T": 1800,
+        "EmTot": 113.5341,
+        "EmMax": 1.3072,
+        "SumEe": 30.6355,
+        "NHot": 28
+      },
+      {
+        "T": 1900,
+        "EmTot": 113.1547,
+        "EmMax": 1.2277,
+        "SumEe": 30.9654,
+        "NHot": 28
+      },
+      {
+        "T": 2000,
+        "EmTot": 113.1547,
+        "EmMax": 1.3063,
+        "SumEe": 30.9654,
+        "NHot": 26
+      },
+      {
+        "T": 2100,
+        "EmTot": 112.108,
+        "EmMax": 0.9381,
+        "SumEe": 31.8756,
+        "NHot": 30
+      },
+      {
+        "T": 2200,
+        "EmTot": 112.108,
+        "EmMax": 0.9593,
+        "SumEe": 31.8756,
+        "NHot": 26
+      },
+      {
+        "T": 2300,
+        "EmTot": 112.108,
+        "EmMax": 1.0184,
+        "SumEe": 31.8756,
+        "NHot": 31
+      },
+      {
+        "T": 2400,
+        "EmTot": 111.7559,
+        "EmMax": 1.0007,
+        "SumEe": 32.1818,
+        "NHot": 30
+      },
+      {
+        "T": 2500,
+        "EmTot": 111.014,
+        "EmMax": 1.0128,
+        "SumEe": 32.8269,
+        "NHot": 30
+      },
+      {
+        "T": 2600,
+        "EmTot": 111.014,
+        "EmMax": 1.0048,
+        "SumEe": 32.8269,
+        "NHot": 28
+      },
+      {
+        "T": 2700,
+        "EmTot": 110.6483,
+        "EmMax": 1.0188,
+        "SumEe": 33.1449,
+        "NHot": 26
+      },
+      {
+        "T": 2800,
+        "EmTot": 109.9317,
+        "EmMax": 0.9337,
+        "SumEe": 33.768,
+        "NHot": 27
+      },
+      {
+        "T": 2900,
+        "EmTot": 109.9317,
+        "EmMax": 0.896,
+        "SumEe": 33.768,
+        "NHot": 27
+      },
+      {
+        "T": 3000,
+        "EmTot": 109.9317,
+        "EmMax": 0.8904,
+        "SumEe": 33.768,
+        "NHot": 25
+      }
+    ],
+    "seconds": 3297.01486525
+  },
+  {
+    "arm": {
+      "Name": "S06_deep_rad",
+      "Family": "sust",
+      "Desc": "deep trap + radiance",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=3.6",
+        "wf_on=1",
+        "k_rad=0.05",
+        "p_rad=4",
+        "noise_amp=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -6.014e-13,
+      "Cond": 11.039713,
+      "Evap": 0.571832,
+      "Rough": 0,
+      "Rad": 41.169144,
+      "Backs": 5.444475,
+      "QcnvD": 958.025599,
+      "QcnvF": 22.347607,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 59.75905,
+      "BlobSpeed": 0.000086,
+      "BlobCos": 0.0283,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 119.71967999999991,
+      "EeTot": 25.25716000000002,
+      "EmMax": 1.11154,
+      "PR": 408.40113495947094,
+      "FTag": 0.499158283750842,
+      "JAbs": 0.015547669726830693,
+      "Jx": 0.0001498846198016349,
+      "R2f": 0.01309839943159092,
+      "JdAbs": 0.1636493185397645,
+      "NCells": 2700,
+      "NLinks": 21740,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 146.7545,
+        "EmMax": 3.1968,
+        "SumEe": 1.7482,
+        "NHot": 72
+      },
+      {
+        "T": 200,
+        "EmTot": 142.1106,
+        "EmMax": 2.2371,
+        "SumEe": 5.7864,
+        "NHot": 81
+      },
+      {
+        "T": 300,
+        "EmTot": 140.3251,
+        "EmMax": 1.9778,
+        "SumEe": 7.339,
+        "NHot": 68
+      },
+      {
+        "T": 400,
+        "EmTot": 138.0712,
+        "EmMax": 1.6752,
+        "SumEe": 9.2989,
+        "NHot": 72
+      },
+      {
+        "T": 500,
+        "EmTot": 136.2952,
+        "EmMax": 1.6548,
+        "SumEe": 10.8432,
+        "NHot": 63
+      },
+      {
+        "T": 600,
+        "EmTot": 134.3235,
+        "EmMax": 1.4846,
+        "SumEe": 12.5578,
+        "NHot": 68
+      },
+      {
+        "T": 700,
+        "EmTot": 132.2408,
+        "EmMax": 1.6732,
+        "SumEe": 14.3688,
+        "NHot": 66
+      },
+      {
+        "T": 800,
+        "EmTot": 130.8134,
+        "EmMax": 1.5121,
+        "SumEe": 15.61,
+        "NHot": 60
+      },
+      {
+        "T": 900,
+        "EmTot": 129.8407,
+        "EmMax": 1.3321,
+        "SumEe": 16.4559,
+        "NHot": 56
+      },
+      {
+        "T": 1000,
+        "EmTot": 129.4279,
+        "EmMax": 1.4981,
+        "SumEe": 16.8148,
+        "NHot": 57
+      },
+      {
+        "T": 1100,
+        "EmTot": 128.2676,
+        "EmMax": 1.5003,
+        "SumEe": 17.8237,
+        "NHot": 60
+      },
+      {
+        "T": 1200,
+        "EmTot": 127.3081,
+        "EmMax": 1.5552,
+        "SumEe": 18.6581,
+        "NHot": 56
+      },
+      {
+        "T": 1300,
+        "EmTot": 126.6139,
+        "EmMax": 1.5499,
+        "SumEe": 19.2617,
+        "NHot": 51
+      },
+      {
+        "T": 1400,
+        "EmTot": 126.3782,
+        "EmMax": 1.1484,
+        "SumEe": 19.4667,
+        "NHot": 54
+      },
+      {
+        "T": 1500,
+        "EmTot": 125.417,
+        "EmMax": 1.1211,
+        "SumEe": 20.3025,
+        "NHot": 56
+      },
+      {
+        "T": 1600,
+        "EmTot": 125.417,
+        "EmMax": 1.1258,
+        "SumEe": 20.3025,
+        "NHot": 49
+      },
+      {
+        "T": 1700,
+        "EmTot": 124.3694,
+        "EmMax": 1.2298,
+        "SumEe": 21.2135,
+        "NHot": 45
+      },
+      {
+        "T": 1800,
+        "EmTot": 123.4776,
+        "EmMax": 1.2513,
+        "SumEe": 21.989,
+        "NHot": 44
+      },
+      {
+        "T": 1900,
+        "EmTot": 123.0685,
+        "EmMax": 1.2853,
+        "SumEe": 22.3447,
+        "NHot": 46
+      },
+      {
+        "T": 2000,
+        "EmTot": 122.4896,
+        "EmMax": 1.2731,
+        "SumEe": 22.8481,
+        "NHot": 45
+      },
+      {
+        "T": 2100,
+        "EmTot": 122.0459,
+        "EmMax": 1.2227,
+        "SumEe": 23.2339,
+        "NHot": 44
+      },
+      {
+        "T": 2200,
+        "EmTot": 121.5718,
+        "EmMax": 1.2268,
+        "SumEe": 23.6462,
+        "NHot": 42
+      },
+      {
+        "T": 2300,
+        "EmTot": 121.2644,
+        "EmMax": 1.0496,
+        "SumEe": 23.9135,
+        "NHot": 45
+      },
+      {
+        "T": 2400,
+        "EmTot": 121.0035,
+        "EmMax": 1.2112,
+        "SumEe": 24.1403,
+        "NHot": 41
+      },
+      {
+        "T": 2500,
+        "EmTot": 121.0035,
+        "EmMax": 1.1145,
+        "SumEe": 24.1403,
+        "NHot": 38
+      },
+      {
+        "T": 2600,
+        "EmTot": 120.5951,
+        "EmMax": 1.2035,
+        "SumEe": 24.4955,
+        "NHot": 38
+      },
+      {
+        "T": 2700,
+        "EmTot": 120.3447,
+        "EmMax": 1.0007,
+        "SumEe": 24.7132,
+        "NHot": 42
+      },
+      {
+        "T": 2800,
+        "EmTot": 120.1257,
+        "EmMax": 1.013,
+        "SumEe": 24.9037,
+        "NHot": 43
+      },
+      {
+        "T": 2900,
+        "EmTot": 119.9093,
+        "EmMax": 1.1783,
+        "SumEe": 25.0919,
+        "NHot": 43
+      },
+      {
+        "T": 3000,
+        "EmTot": 119.7196,
+        "EmMax": 1.1115,
+        "SumEe": 25.2568,
+        "NHot": 40
+      }
+    ],
+    "seconds": 3294.876300531
+  },
+  {
+    "arm": {
+      "Name": "S07_noise",
+      "Family": "sust",
+      "Desc": "isotropic field noise intake wf_on=1",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=1.2",
+        "wf_on=1",
+        "k_rad=0",
+        "noise_amp=1.5",
+        "p1_meter=1"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -4.693e-12,
+      "Cond": 7170.124835,
+      "Evap": 6056.584052,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 789.989224,
+      "QcnvD": 1024.546379,
+      "QcnvF": 275.440189,
+      "Fd": 52.57948,
+      "Fl": 0,
+      "Sp": -0.5463016,
+      "Gm": -14.90455,
+      "EmTag": 556.01157,
+      "BlobSpeed": 0.000159,
+      "BlobCos": -0.5379,
+      "FrontV": 0,
+      "HasP1": true,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 2337.729339999999,
+      "EeTot": 155.14450999999977,
+      "EmMax": 3.41241,
+      "PR": 1348.6469448907133,
+      "FTag": 0.23784258959593688,
+      "JAbs": 0.08991196191122242,
+      "Jx": 0.0011899559474705854,
+      "R2f": 0.028684949535355053,
+      "JdAbs": 1.3504490949856915,
+      "NCells": 2700,
+      "NLinks": 18325,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 2058.6743,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 2176.6384,
+        "EmMax": 3.6768,
+        "SumEe": 295.3061,
+        "NHot": 1451
+      },
+      {
+        "T": 200,
+        "EmTot": 2313.5898,
+        "EmMax": 3.7086,
+        "SumEe": 176.2179,
+        "NHot": 1395
+      },
+      {
+        "T": 300,
+        "EmTot": 2320.8195,
+        "EmMax": 3.6454,
+        "SumEe": 169.9263,
+        "NHot": 1380
+      },
+      {
+        "T": 400,
+        "EmTot": 2327.2827,
+        "EmMax": 3.8681,
+        "SumEe": 164.2522,
+        "NHot": 1374
+      },
+      {
+        "T": 500,
+        "EmTot": 2327.305,
+        "EmMax": 4.0788,
+        "SumEe": 164.2328,
+        "NHot": 1359
+      },
+      {
+        "T": 600,
+        "EmTot": 2334.0142,
+        "EmMax": 3.4628,
+        "SumEe": 158.3987,
+        "NHot": 1367
+      },
+      {
+        "T": 700,
+        "EmTot": 2337.4541,
+        "EmMax": 3.8139,
+        "SumEe": 155.4075,
+        "NHot": 1381
+      },
+      {
+        "T": 800,
+        "EmTot": 2339.8749,
+        "EmMax": 3.611,
+        "SumEe": 153.3024,
+        "NHot": 1386
+      },
+      {
+        "T": 900,
+        "EmTot": 2331.3907,
+        "EmMax": 3.2684,
+        "SumEe": 160.68,
+        "NHot": 1369
+      },
+      {
+        "T": 1000,
+        "EmTot": 2335.7476,
+        "EmMax": 3.4655,
+        "SumEe": 156.8914,
+        "NHot": 1403
+      },
+      {
+        "T": 1100,
+        "EmTot": 2338.2566,
+        "EmMax": 3.4253,
+        "SumEe": 154.7097,
+        "NHot": 1381
+      },
+      {
+        "T": 1200,
+        "EmTot": 2342.0006,
+        "EmMax": 3.5196,
+        "SumEe": 151.454,
+        "NHot": 1389
+      },
+      {
+        "T": 1300,
+        "EmTot": 2343.2877,
+        "EmMax": 4.0634,
+        "SumEe": 150.3348,
+        "NHot": 1398
+      },
+      {
+        "T": 1400,
+        "EmTot": 2342.1294,
+        "EmMax": 3.8813,
+        "SumEe": 151.342,
+        "NHot": 1388
+      },
+      {
+        "T": 1500,
+        "EmTot": 2345.6509,
+        "EmMax": 3.6746,
+        "SumEe": 148.2664,
+        "NHot": 1371
+      },
+      {
+        "T": 1600,
+        "EmTot": 2343.7609,
+        "EmMax": 3.4726,
+        "SumEe": 149.9099,
+        "NHot": 1391
+      },
+      {
+        "T": 1700,
+        "EmTot": 2336.8362,
+        "EmMax": 3.4313,
+        "SumEe": 155.9314,
+        "NHot": 1404
+      },
+      {
+        "T": 1800,
+        "EmTot": 2338.4946,
+        "EmMax": 3.4373,
+        "SumEe": 154.4893,
+        "NHot": 1390
+      },
+      {
+        "T": 1900,
+        "EmTot": 2337.5962,
+        "EmMax": 3.541,
+        "SumEe": 155.2705,
+        "NHot": 1394
+      },
+      {
+        "T": 2000,
+        "EmTot": 2348.3769,
+        "EmMax": 3.3723,
+        "SumEe": 145.896,
+        "NHot": 1390
+      },
+      {
+        "T": 2100,
+        "EmTot": 2343.946,
+        "EmMax": 3.7769,
+        "SumEe": 149.7385,
+        "NHot": 1379
+      },
+      {
+        "T": 2200,
+        "EmTot": 2345.7865,
+        "EmMax": 3.4131,
+        "SumEe": 148.138,
+        "NHot": 1388
+      },
+      {
+        "T": 2300,
+        "EmTot": 2347.4388,
+        "EmMax": 3.5201,
+        "SumEe": 146.7012,
+        "NHot": 1395
+      },
+      {
+        "T": 2400,
+        "EmTot": 2341.5334,
+        "EmMax": 3.4191,
+        "SumEe": 151.8364,
+        "NHot": 1381
+      },
+      {
+        "T": 2500,
+        "EmTot": 2335.9326,
+        "EmMax": 4.1268,
+        "SumEe": 156.7066,
+        "NHot": 1374
+      },
+      {
+        "T": 2600,
+        "EmTot": 2340.8028,
+        "EmMax": 3.73,
+        "SumEe": 152.4717,
+        "NHot": 1392
+      },
+      {
+        "T": 2700,
+        "EmTot": 2344.1487,
+        "EmMax": 3.6347,
+        "SumEe": 149.5622,
+        "NHot": 1387
+      },
+      {
+        "T": 2800,
+        "EmTot": 2341.7918,
+        "EmMax": 3.2399,
+        "SumEe": 151.6117,
+        "NHot": 1377
+      },
+      {
+        "T": 2900,
+        "EmTot": 2340.0805,
+        "EmMax": 3.5287,
+        "SumEe": 153.0998,
+        "NHot": 1389
+      },
+      {
+        "T": 3000,
+        "EmTot": 2337.7293,
+        "EmMax": 3.4124,
+        "SumEe": 155.1443,
+        "NHot": 1388
+      }
+    ],
+    "seconds": 3360.693936642
+  },
+  {
+    "arm": {
+      "Name": "S08_noise_rad",
+      "Family": "sust",
+      "Desc": "noise intake + radiance tax",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=1.2",
+        "wf_on=1",
+        "k_rad=0.05",
+        "p_rad=4",
+        "noise_amp=1.5"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -4.955e-12,
+      "Cond": 20323.510632,
+      "Evap": 2122.517685,
+      "Rough": 0,
+      "Rad": 19190.87586,
+      "Backs": 2780.007854,
+      "QcnvD": 791.695643,
+      "QcnvF": 421.706145,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 530.19722,
+      "BlobSpeed": 0.000099,
+      "BlobCos": -0.4991,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 2207.408500000005,
+      "EeTot": 268.54919999999987,
+      "EmMax": 2.97314,
+      "PR": 1558.8132613800851,
+      "FTag": 0.24018985611408059,
+      "JAbs": 0.15716352478037285,
+      "Jx": -0.0008724516389588483,
+      "R2f": 0.029513224292127997,
+      "JdAbs": 1.2403751277366555,
+      "NCells": 2700,
+      "NLinks": 18481,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 2058.6743,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 2084.128,
+        "EmMax": 3.0727,
+        "SumEe": 375.7499,
+        "NHot": 1469
+      },
+      {
+        "T": 200,
+        "EmTot": 2180.5073,
+        "EmMax": 2.9952,
+        "SumEe": 291.9418,
+        "NHot": 1496
+      },
+      {
+        "T": 300,
+        "EmTot": 2188.0196,
+        "EmMax": 3.2796,
+        "SumEe": 285.4094,
+        "NHot": 1496
+      },
+      {
+        "T": 400,
+        "EmTot": 2205.2581,
+        "EmMax": 3.7081,
+        "SumEe": 270.4194,
+        "NHot": 1523
+      },
+      {
+        "T": 500,
+        "EmTot": 2201.7703,
+        "EmMax": 2.8993,
+        "SumEe": 273.4523,
+        "NHot": 1521
+      },
+      {
+        "T": 600,
+        "EmTot": 2202.6401,
+        "EmMax": 2.9188,
+        "SumEe": 272.6959,
+        "NHot": 1532
+      },
+      {
+        "T": 700,
+        "EmTot": 2208.8275,
+        "EmMax": 3.0498,
+        "SumEe": 267.3156,
+        "NHot": 1526
+      },
+      {
+        "T": 800,
+        "EmTot": 2203.5076,
+        "EmMax": 2.718,
+        "SumEe": 271.9415,
+        "NHot": 1508
+      },
+      {
+        "T": 900,
+        "EmTot": 2209.9874,
+        "EmMax": 3.012,
+        "SumEe": 266.307,
+        "NHot": 1543
+      },
+      {
+        "T": 1000,
+        "EmTot": 2210.1742,
+        "EmMax": 2.7248,
+        "SumEe": 266.1445,
+        "NHot": 1528
+      },
+      {
+        "T": 1100,
+        "EmTot": 2208.1258,
+        "EmMax": 3.1682,
+        "SumEe": 267.9257,
+        "NHot": 1515
+      },
+      {
+        "T": 1200,
+        "EmTot": 2197.0074,
+        "EmMax": 2.967,
+        "SumEe": 277.5939,
+        "NHot": 1529
+      },
+      {
+        "T": 1300,
+        "EmTot": 2213.6151,
+        "EmMax": 3.3571,
+        "SumEe": 263.1524,
+        "NHot": 1528
+      },
+      {
+        "T": 1400,
+        "EmTot": 2202.8532,
+        "EmMax": 3.033,
+        "SumEe": 272.5106,
+        "NHot": 1516
+      },
+      {
+        "T": 1500,
+        "EmTot": 2200.4757,
+        "EmMax": 3.15,
+        "SumEe": 274.578,
+        "NHot": 1504
+      },
+      {
+        "T": 1600,
+        "EmTot": 2202.0277,
+        "EmMax": 2.9068,
+        "SumEe": 273.2284,
+        "NHot": 1533
+      },
+      {
+        "T": 1700,
+        "EmTot": 2200.8975,
+        "EmMax": 3.1342,
+        "SumEe": 274.2113,
+        "NHot": 1526
+      },
+      {
+        "T": 1800,
+        "EmTot": 2202.2267,
+        "EmMax": 2.9015,
+        "SumEe": 273.0554,
+        "NHot": 1534
+      },
+      {
+        "T": 1900,
+        "EmTot": 2206.2404,
+        "EmMax": 2.8513,
+        "SumEe": 269.5652,
+        "NHot": 1510
+      },
+      {
+        "T": 2000,
+        "EmTot": 2209.4013,
+        "EmMax": 3.0112,
+        "SumEe": 266.8166,
+        "NHot": 1532
+      },
+      {
+        "T": 2100,
+        "EmTot": 2211.8467,
+        "EmMax": 3.1142,
+        "SumEe": 264.6901,
+        "NHot": 1526
+      },
+      {
+        "T": 2200,
+        "EmTot": 2202.7834,
+        "EmMax": 2.9349,
+        "SumEe": 272.5713,
+        "NHot": 1513
+      },
+      {
+        "T": 2300,
+        "EmTot": 2200.4239,
+        "EmMax": 2.8298,
+        "SumEe": 274.623,
+        "NHot": 1533
+      },
+      {
+        "T": 2400,
+        "EmTot": 2214.2005,
+        "EmMax": 2.8383,
+        "SumEe": 262.6434,
+        "NHot": 1528
+      },
+      {
+        "T": 2500,
+        "EmTot": 2205.0824,
+        "EmMax": 2.9059,
+        "SumEe": 270.5722,
+        "NHot": 1531
+      },
+      {
+        "T": 2600,
+        "EmTot": 2203.3006,
+        "EmMax": 3.0364,
+        "SumEe": 272.1216,
+        "NHot": 1546
+      },
+      {
+        "T": 2700,
+        "EmTot": 2207.4491,
+        "EmMax": 2.7222,
+        "SumEe": 268.5142,
+        "NHot": 1535
+      },
+      {
+        "T": 2800,
+        "EmTot": 2196.2359,
+        "EmMax": 2.9202,
+        "SumEe": 278.2648,
+        "NHot": 1524
+      },
+      {
+        "T": 2900,
+        "EmTot": 2204.9145,
+        "EmMax": 3.0887,
+        "SumEe": 270.7182,
+        "NHot": 1506
+      },
+      {
+        "T": 3000,
+        "EmTot": 2207.4086,
+        "EmMax": 2.9731,
+        "SumEe": 268.5494,
+        "NHot": 1553
+      }
+    ],
+    "seconds": 3200.632817797
+  },
+  {
+    "arm": {
+      "Name": "S09_noise_deep",
+      "Family": "sust",
+      "Desc": "noise + deep trap",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=3.6",
+        "wf_on=1",
+        "k_rad=0",
+        "noise_amp=1.5"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -4.558e-12,
+      "Cond": 5103.819356,
+      "Evap": 3642.186584,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 475.067815,
+      "QcnvD": 696.498452,
+      "QcnvF": 109.524759,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 574.86688,
+      "BlobSpeed": 0.000258,
+      "BlobCos": -0.3719,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 2366.508190000003,
+      "EeTot": 121.97378000000008,
+      "EmMax": 5.66429,
+      "PR": 1247.9829826924056,
+      "FTag": 0.24291772258772512,
+      "JAbs": 0.07163603378171879,
+      "Jx": -0.0003622881159834813,
+      "R2f": 0.01107404725340177,
+      "JdAbs": 1.3489370548179778,
+      "NCells": 2700,
+      "NLinks": 18361,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 2058.6743,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 1910.316,
+        "EmMax": 3.5513,
+        "SumEe": 526.7994,
+        "NHot": 1437
+      },
+      {
+        "T": 200,
+        "EmTot": 2325.9114,
+        "EmMax": 4.4231,
+        "SumEe": 165.3809,
+        "NHot": 1453
+      },
+      {
+        "T": 300,
+        "EmTot": 2363.2889,
+        "EmMax": 4.7584,
+        "SumEe": 132.6984,
+        "NHot": 1390
+      },
+      {
+        "T": 400,
+        "EmTot": 2366.7615,
+        "EmMax": 6.0621,
+        "SumEe": 129.3785,
+        "NHot": 1343
+      },
+      {
+        "T": 500,
+        "EmTot": 2362.6503,
+        "EmMax": 6.2353,
+        "SumEe": 132.6243,
+        "NHot": 1291
+      },
+      {
+        "T": 600,
+        "EmTot": 2363.5066,
+        "EmMax": 5.6079,
+        "SumEe": 131.5035,
+        "NHot": 1293
+      },
+      {
+        "T": 700,
+        "EmTot": 2359.5576,
+        "EmMax": 6.08,
+        "SumEe": 134.5242,
+        "NHot": 1286
+      },
+      {
+        "T": 800,
+        "EmTot": 2359.1633,
+        "EmMax": 6.0878,
+        "SumEe": 134.5445,
+        "NHot": 1269
+      },
+      {
+        "T": 900,
+        "EmTot": 2353.9057,
+        "EmMax": 6.6286,
+        "SumEe": 138.7004,
+        "NHot": 1292
+      },
+      {
+        "T": 1000,
+        "EmTot": 2362.1427,
+        "EmMax": 5.259,
+        "SumEe": 131.1948,
+        "NHot": 1304
+      },
+      {
+        "T": 1100,
+        "EmTot": 2358.5468,
+        "EmMax": 5.9977,
+        "SumEe": 134.0276,
+        "NHot": 1291
+      },
+      {
+        "T": 1200,
+        "EmTot": 2357.0475,
+        "EmMax": 5.1705,
+        "SumEe": 134.9811,
+        "NHot": 1300
+      },
+      {
+        "T": 1300,
+        "EmTot": 2358.4628,
+        "EmMax": 5.2621,
+        "SumEe": 133.4043,
+        "NHot": 1304
+      },
+      {
+        "T": 1400,
+        "EmTot": 2360.7374,
+        "EmMax": 5.048,
+        "SumEe": 131.1544,
+        "NHot": 1330
+      },
+      {
+        "T": 1500,
+        "EmTot": 2367.352,
+        "EmMax": 5.3846,
+        "SumEe": 125.1657,
+        "NHot": 1313
+      },
+      {
+        "T": 1600,
+        "EmTot": 2364.4646,
+        "EmMax": 5.3558,
+        "SumEe": 127.4498,
+        "NHot": 1310
+      },
+      {
+        "T": 1700,
+        "EmTot": 2363.4035,
+        "EmMax": 5.6709,
+        "SumEe": 128.0507,
+        "NHot": 1311
+      },
+      {
+        "T": 1800,
+        "EmTot": 2356.7949,
+        "EmMax": 5.5544,
+        "SumEe": 133.3936,
+        "NHot": 1303
+      },
+      {
+        "T": 1900,
+        "EmTot": 2357.2455,
+        "EmMax": 5.5591,
+        "SumEe": 132.6645,
+        "NHot": 1294
+      },
+      {
+        "T": 2000,
+        "EmTot": 2361.6046,
+        "EmMax": 5.3478,
+        "SumEe": 128.5459,
+        "NHot": 1316
+      },
+      {
+        "T": 2100,
+        "EmTot": 2359.117,
+        "EmMax": 5.767,
+        "SumEe": 130.48,
+        "NHot": 1314
+      },
+      {
+        "T": 2200,
+        "EmTot": 2359.1579,
+        "EmMax": 5.8255,
+        "SumEe": 130.1656,
+        "NHot": 1300
+      },
+      {
+        "T": 2300,
+        "EmTot": 2363.0841,
+        "EmMax": 5.3495,
+        "SumEe": 126.5208,
+        "NHot": 1300
+      },
+      {
+        "T": 2400,
+        "EmTot": 2360.5396,
+        "EmMax": 4.7474,
+        "SumEe": 128.4337,
+        "NHot": 1307
+      },
+      {
+        "T": 2500,
+        "EmTot": 2354.8661,
+        "EmMax": 5.7466,
+        "SumEe": 133.1167,
+        "NHot": 1304
+      },
+      {
+        "T": 2600,
+        "EmTot": 2359.3721,
+        "EmMax": 5.9026,
+        "SumEe": 128.9442,
+        "NHot": 1332
+      },
+      {
+        "T": 2700,
+        "EmTot": 2364.1197,
+        "EmMax": 6.3804,
+        "SumEe": 124.6458,
+        "NHot": 1323
+      },
+      {
+        "T": 2800,
+        "EmTot": 2362.707,
+        "EmMax": 5.938,
+        "SumEe": 125.6423,
+        "NHot": 1348
+      },
+      {
+        "T": 2900,
+        "EmTot": 2363.7515,
+        "EmMax": 6.7164,
+        "SumEe": 124.5566,
+        "NHot": 1329
+      },
+      {
+        "T": 3000,
+        "EmTot": 2366.5084,
+        "EmMax": 5.6643,
+        "SumEe": 121.9737,
+        "NHot": 1329
+      }
+    ],
+    "seconds": 3224.2461849
+  },
+  {
+    "arm": {
+      "Name": "S10_nowf_quiet",
+      "Family": "sust",
+      "Desc": "wf_on=0 no field — open door, no intake fuel",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=1.2",
+        "wf_on=0",
+        "k_rad=0",
+        "noise_amp=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -6.855e-13,
+      "Cond": 0,
+      "Evap": 0.466828,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 0.060891,
+      "QcnvD": 52.673671,
+      "QcnvF": 0.425947,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 66.87842,
+      "BlobSpeed": 0.000192,
+      "BlobCos": -0.4509,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 148.29807999999994,
+      "EeTot": 0.40584999999999977,
+      "EmMax": 1.93222,
+      "PR": 297.2303818544094,
+      "FTag": 0.4509725277630029,
+      "JAbs": 0.00024212154476672588,
+      "Jx": 2.2347292692831947e-7,
+      "R2f": 0.0072035361347170855,
+      "JdAbs": 0.18712125028098325,
+      "NCells": 2700,
+      "NLinks": 21665,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 148.7649,
+        "EmMax": 2.6395,
+        "SumEe": 0,
+        "NHot": 80
+      },
+      {
+        "T": 200,
+        "EmTot": 148.5351,
+        "EmMax": 2.4118,
+        "SumEe": 0.1999,
+        "NHot": 77
+      },
+      {
+        "T": 300,
+        "EmTot": 148.5351,
+        "EmMax": 2.4958,
+        "SumEe": 0.1999,
+        "NHot": 74
+      },
+      {
+        "T": 400,
+        "EmTot": 148.2981,
+        "EmMax": 2.4151,
+        "SumEe": 0.4059,
+        "NHot": 69
+      },
+      {
+        "T": 500,
+        "EmTot": 148.2981,
+        "EmMax": 2.1057,
+        "SumEe": 0.4059,
+        "NHot": 69
+      },
+      {
+        "T": 600,
+        "EmTot": 148.2981,
+        "EmMax": 2.3896,
+        "SumEe": 0.4059,
+        "NHot": 64
+      },
+      {
+        "T": 700,
+        "EmTot": 148.2981,
+        "EmMax": 2.1267,
+        "SumEe": 0.4059,
+        "NHot": 60
+      },
+      {
+        "T": 800,
+        "EmTot": 148.2981,
+        "EmMax": 2.0109,
+        "SumEe": 0.4059,
+        "NHot": 61
+      },
+      {
+        "T": 900,
+        "EmTot": 148.2981,
+        "EmMax": 2.0836,
+        "SumEe": 0.4059,
+        "NHot": 58
+      },
+      {
+        "T": 1000,
+        "EmTot": 148.2981,
+        "EmMax": 1.9657,
+        "SumEe": 0.4059,
+        "NHot": 59
+      },
+      {
+        "T": 1100,
+        "EmTot": 148.2981,
+        "EmMax": 1.934,
+        "SumEe": 0.4059,
+        "NHot": 55
+      },
+      {
+        "T": 1200,
+        "EmTot": 148.2981,
+        "EmMax": 1.9457,
+        "SumEe": 0.4059,
+        "NHot": 50
+      },
+      {
+        "T": 1300,
+        "EmTot": 148.2981,
+        "EmMax": 2.0057,
+        "SumEe": 0.4059,
+        "NHot": 52
+      },
+      {
+        "T": 1400,
+        "EmTot": 148.2981,
+        "EmMax": 2.0241,
+        "SumEe": 0.4059,
+        "NHot": 51
+      },
+      {
+        "T": 1500,
+        "EmTot": 148.2981,
+        "EmMax": 2.0608,
+        "SumEe": 0.4059,
+        "NHot": 53
+      },
+      {
+        "T": 1600,
+        "EmTot": 148.2981,
+        "EmMax": 1.9566,
+        "SumEe": 0.4059,
+        "NHot": 53
+      },
+      {
+        "T": 1700,
+        "EmTot": 148.2981,
+        "EmMax": 1.959,
+        "SumEe": 0.4059,
+        "NHot": 53
+      },
+      {
+        "T": 1800,
+        "EmTot": 148.2981,
+        "EmMax": 2.1304,
+        "SumEe": 0.4059,
+        "NHot": 56
+      },
+      {
+        "T": 1900,
+        "EmTot": 148.2981,
+        "EmMax": 1.9866,
+        "SumEe": 0.4059,
+        "NHot": 57
+      },
+      {
+        "T": 2000,
+        "EmTot": 148.2981,
+        "EmMax": 2.0845,
+        "SumEe": 0.4059,
+        "NHot": 53
+      },
+      {
+        "T": 2100,
+        "EmTot": 148.2981,
+        "EmMax": 2.0046,
+        "SumEe": 0.4059,
+        "NHot": 53
+      },
+      {
+        "T": 2200,
+        "EmTot": 148.2981,
+        "EmMax": 2.0956,
+        "SumEe": 0.4059,
+        "NHot": 52
+      },
+      {
+        "T": 2300,
+        "EmTot": 148.2981,
+        "EmMax": 2.0526,
+        "SumEe": 0.4059,
+        "NHot": 46
+      },
+      {
+        "T": 2400,
+        "EmTot": 148.2981,
+        "EmMax": 1.8762,
+        "SumEe": 0.4059,
+        "NHot": 44
+      },
+      {
+        "T": 2500,
+        "EmTot": 148.2981,
+        "EmMax": 1.8784,
+        "SumEe": 0.4059,
+        "NHot": 47
+      },
+      {
+        "T": 2600,
+        "EmTot": 148.2981,
+        "EmMax": 1.9445,
+        "SumEe": 0.4059,
+        "NHot": 52
+      },
+      {
+        "T": 2700,
+        "EmTot": 148.2981,
+        "EmMax": 1.9877,
+        "SumEe": 0.4059,
+        "NHot": 54
+      },
+      {
+        "T": 2800,
+        "EmTot": 148.2981,
+        "EmMax": 1.8791,
+        "SumEe": 0.4059,
+        "NHot": 51
+      },
+      {
+        "T": 2900,
+        "EmTot": 148.2981,
+        "EmMax": 1.8948,
+        "SumEe": 0.4059,
+        "NHot": 51
+      },
+      {
+        "T": 3000,
+        "EmTot": 148.2981,
+        "EmMax": 1.9322,
+        "SumEe": 0.4059,
+        "NHot": 50
+      }
+    ],
+    "seconds": 3358.735600205
+  },
+  {
+    "arm": {
+      "Name": "S11_nowf_noise",
+      "Family": "sust",
+      "Desc": "wf_on=0 + noise — open door with fuel (C5-class)",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=1.2",
+        "wf_on=0",
+        "k_rad=0",
+        "noise_amp=1.5",
+        "p1_meter=1"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -4.709e-12,
+      "Cond": 6944.900628,
+      "Evap": 5796.398187,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 756.051937,
+      "QcnvD": 1018.116699,
+      "QcnvF": 264.004611,
+      "Fd": 227.4064,
+      "Fl": 0,
+      "Sp": -1.04771,
+      "Gm": -64.41872,
+      "EmTag": 552.07659,
+      "BlobSpeed": 0.000162,
+      "BlobCos": 0.8607,
+      "FrontV": 0,
+      "HasP1": true,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 2338.844369999999,
+      "EeTot": 154.11988999999994,
+      "EmMax": 3.31928,
+      "PR": 1340.5274375108243,
+      "FTag": 0.2360467447434307,
+      "JAbs": 0.08982873868856447,
+      "Jx": 0.00003614190911405865,
+      "R2f": 0.017496797923782705,
+      "JdAbs": 1.3382623929209612,
+      "NCells": 2700,
+      "NLinks": 18310,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 2058.6743,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 2306.4967,
+        "EmMax": 3.8368,
+        "SumEe": 182.3252,
+        "NHot": 1547
+      },
+      {
+        "T": 200,
+        "EmTot": 2352.6303,
+        "EmMax": 3.421,
+        "SumEe": 142.209,
+        "NHot": 1446
+      },
+      {
+        "T": 300,
+        "EmTot": 2346.0383,
+        "EmMax": 3.443,
+        "SumEe": 147.9411,
+        "NHot": 1420
+      },
+      {
+        "T": 400,
+        "EmTot": 2346.0497,
+        "EmMax": 3.3557,
+        "SumEe": 147.9312,
+        "NHot": 1385
+      },
+      {
+        "T": 500,
+        "EmTot": 2343.9027,
+        "EmMax": 3.2186,
+        "SumEe": 149.7983,
+        "NHot": 1381
+      },
+      {
+        "T": 600,
+        "EmTot": 2345.4425,
+        "EmMax": 3.2876,
+        "SumEe": 148.4593,
+        "NHot": 1386
+      },
+      {
+        "T": 700,
+        "EmTot": 2336.5395,
+        "EmMax": 3.4013,
+        "SumEe": 156.201,
+        "NHot": 1383
+      },
+      {
+        "T": 800,
+        "EmTot": 2345.945,
+        "EmMax": 3.3522,
+        "SumEe": 148.0223,
+        "NHot": 1382
+      },
+      {
+        "T": 900,
+        "EmTot": 2344.3596,
+        "EmMax": 3.5181,
+        "SumEe": 149.4009,
+        "NHot": 1381
+      },
+      {
+        "T": 1000,
+        "EmTot": 2339.6713,
+        "EmMax": 3.2505,
+        "SumEe": 153.4777,
+        "NHot": 1396
+      },
+      {
+        "T": 1100,
+        "EmTot": 2349.1435,
+        "EmMax": 3.3902,
+        "SumEe": 145.241,
+        "NHot": 1383
+      },
+      {
+        "T": 1200,
+        "EmTot": 2338.836,
+        "EmMax": 3.88,
+        "SumEe": 154.2041,
+        "NHot": 1387
+      },
+      {
+        "T": 1300,
+        "EmTot": 2344.5183,
+        "EmMax": 3.6981,
+        "SumEe": 149.2352,
+        "NHot": 1383
+      },
+      {
+        "T": 1400,
+        "EmTot": 2347.2239,
+        "EmMax": 3.4166,
+        "SumEe": 146.8825,
+        "NHot": 1377
+      },
+      {
+        "T": 1500,
+        "EmTot": 2344.8393,
+        "EmMax": 3.1865,
+        "SumEe": 148.9561,
+        "NHot": 1380
+      },
+      {
+        "T": 1600,
+        "EmTot": 2342.2504,
+        "EmMax": 3.7727,
+        "SumEe": 151.2073,
+        "NHot": 1368
+      },
+      {
+        "T": 1700,
+        "EmTot": 2341.3606,
+        "EmMax": 3.2351,
+        "SumEe": 151.981,
+        "NHot": 1384
+      },
+      {
+        "T": 1800,
+        "EmTot": 2343.787,
+        "EmMax": 3.4079,
+        "SumEe": 149.8711,
+        "NHot": 1386
+      },
+      {
+        "T": 1900,
+        "EmTot": 2341.7039,
+        "EmMax": 3.4968,
+        "SumEe": 151.6825,
+        "NHot": 1385
+      },
+      {
+        "T": 2000,
+        "EmTot": 2339.2038,
+        "EmMax": 3.4946,
+        "SumEe": 153.8362,
+        "NHot": 1382
+      },
+      {
+        "T": 2100,
+        "EmTot": 2336.3466,
+        "EmMax": 3.4309,
+        "SumEe": 156.3206,
+        "NHot": 1383
+      },
+      {
+        "T": 2200,
+        "EmTot": 2340.0082,
+        "EmMax": 3.5025,
+        "SumEe": 153.1079,
+        "NHot": 1386
+      },
+      {
+        "T": 2300,
+        "EmTot": 2341.0673,
+        "EmMax": 3.5803,
+        "SumEe": 152.187,
+        "NHot": 1380
+      },
+      {
+        "T": 2400,
+        "EmTot": 2335.0475,
+        "EmMax": 3.5152,
+        "SumEe": 157.4215,
+        "NHot": 1372
+      },
+      {
+        "T": 2500,
+        "EmTot": 2339.4607,
+        "EmMax": 3.5427,
+        "SumEe": 153.584,
+        "NHot": 1373
+      },
+      {
+        "T": 2600,
+        "EmTot": 2334.7175,
+        "EmMax": 3.7042,
+        "SumEe": 157.7086,
+        "NHot": 1378
+      },
+      {
+        "T": 2700,
+        "EmTot": 2337.2315,
+        "EmMax": 3.4053,
+        "SumEe": 155.5224,
+        "NHot": 1385
+      },
+      {
+        "T": 2800,
+        "EmTot": 2341.0672,
+        "EmMax": 3.3656,
+        "SumEe": 152.187,
+        "NHot": 1389
+      },
+      {
+        "T": 2900,
+        "EmTot": 2343.7173,
+        "EmMax": 3.2662,
+        "SumEe": 149.8826,
+        "NHot": 1377
+      },
+      {
+        "T": 3000,
+        "EmTot": 2338.8444,
+        "EmMax": 3.3193,
+        "SumEe": 154.1199,
+        "NHot": 1379
+      }
+    ],
+    "seconds": 3371.138049589
+  },
+  {
+    "arm": {
+      "Name": "S11b_nowf_noise_s111",
+      "Family": "sust",
+      "Desc": "S11 seed robustness",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=111",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=1.2",
+        "wf_on=0",
+        "k_rad=0",
+        "noise_amp=1.5",
+        "p1_meter=1"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -4.624e-12,
+      "Cond": 6362.047705,
+      "Evap": 5182.894259,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 676.029686,
+      "QcnvD": 1022.109944,
+      "QcnvF": 256.710948,
+      "Fd": -627.2261,
+      "Fl": 0,
+      "Sp": 0.803771,
+      "Gm": 38.39345,
+      "EmTag": 508.5987,
+      "BlobSpeed": 0.000088,
+      "BlobCos": -0.5069,
+      "FrontV": 0,
+      "HasP1": true,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 2279.9771100000053,
+      "EeTot": 142.06267000000017,
+      "EmMax": 3.56432,
+      "PR": 1319.044301749207,
+      "FTag": 0.22307184917308193,
+      "JAbs": 0.0835433136846346,
+      "Jx": -0.00046536757180661145,
+      "R2f": 0.015599568373277743,
+      "JdAbs": 1.346087432540463,
+      "NCells": 2663,
+      "NLinks": 17908,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 146.8487,
+        "EmMax": 0.8947,
+        "SumEe": 1997.2458,
+        "NHot": 51
+      },
+      {
+        "T": 100,
+        "EmTot": 2241.6784,
+        "EmMax": 3.5186,
+        "SumEe": 175.4485,
+        "NHot": 1518
+      },
+      {
+        "T": 200,
+        "EmTot": 2288.5603,
+        "EmMax": 3.5144,
+        "SumEe": 134.6816,
+        "NHot": 1424
+      },
+      {
+        "T": 300,
+        "EmTot": 2278.4303,
+        "EmMax": 3.4266,
+        "SumEe": 143.4551,
+        "NHot": 1385
+      },
+      {
+        "T": 400,
+        "EmTot": 2273.8944,
+        "EmMax": 3.7282,
+        "SumEe": 147.3993,
+        "NHot": 1360
+      },
+      {
+        "T": 500,
+        "EmTot": 2279.2856,
+        "EmMax": 4.396,
+        "SumEe": 142.7114,
+        "NHot": 1344
+      },
+      {
+        "T": 600,
+        "EmTot": 2275.3164,
+        "EmMax": 4.089,
+        "SumEe": 146.1364,
+        "NHot": 1348
+      },
+      {
+        "T": 700,
+        "EmTot": 2275.0184,
+        "EmMax": 3.2691,
+        "SumEe": 146.3955,
+        "NHot": 1335
+      },
+      {
+        "T": 800,
+        "EmTot": 2278.7766,
+        "EmMax": 3.551,
+        "SumEe": 143.1275,
+        "NHot": 1357
+      },
+      {
+        "T": 900,
+        "EmTot": 2280.0973,
+        "EmMax": 3.2862,
+        "SumEe": 141.9791,
+        "NHot": 1352
+      },
+      {
+        "T": 1000,
+        "EmTot": 2278.3683,
+        "EmMax": 3.5407,
+        "SumEe": 143.4826,
+        "NHot": 1349
+      },
+      {
+        "T": 1100,
+        "EmTot": 2276.5195,
+        "EmMax": 3.6012,
+        "SumEe": 145.0902,
+        "NHot": 1352
+      },
+      {
+        "T": 1200,
+        "EmTot": 2285.1689,
+        "EmMax": 3.3047,
+        "SumEe": 137.569,
+        "NHot": 1347
+      },
+      {
+        "T": 1300,
+        "EmTot": 2282.488,
+        "EmMax": 3.4675,
+        "SumEe": 139.8854,
+        "NHot": 1366
+      },
+      {
+        "T": 1400,
+        "EmTot": 2277.2455,
+        "EmMax": 3.3019,
+        "SumEe": 144.4441,
+        "NHot": 1335
+      },
+      {
+        "T": 1500,
+        "EmTot": 2277.9109,
+        "EmMax": 3.3087,
+        "SumEe": 143.8655,
+        "NHot": 1354
+      },
+      {
+        "T": 1600,
+        "EmTot": 2276.5576,
+        "EmMax": 3.322,
+        "SumEe": 145.0423,
+        "NHot": 1366
+      },
+      {
+        "T": 1700,
+        "EmTot": 2277.2806,
+        "EmMax": 3.655,
+        "SumEe": 144.4135,
+        "NHot": 1352
+      },
+      {
+        "T": 1800,
+        "EmTot": 2274.4522,
+        "EmMax": 3.3063,
+        "SumEe": 146.873,
+        "NHot": 1346
+      },
+      {
+        "T": 1900,
+        "EmTot": 2276.2394,
+        "EmMax": 3.354,
+        "SumEe": 145.319,
+        "NHot": 1347
+      },
+      {
+        "T": 2000,
+        "EmTot": 2272.0319,
+        "EmMax": 3.4361,
+        "SumEe": 148.9777,
+        "NHot": 1333
+      },
+      {
+        "T": 2100,
+        "EmTot": 2272.8385,
+        "EmMax": 3.2101,
+        "SumEe": 148.2763,
+        "NHot": 1338
+      },
+      {
+        "T": 2200,
+        "EmTot": 2278.0703,
+        "EmMax": 3.7361,
+        "SumEe": 143.7269,
+        "NHot": 1358
+      },
+      {
+        "T": 2300,
+        "EmTot": 2276.2272,
+        "EmMax": 3.7725,
+        "SumEe": 145.3237,
+        "NHot": 1342
+      },
+      {
+        "T": 2400,
+        "EmTot": 2269.2506,
+        "EmMax": 3.5879,
+        "SumEe": 151.3903,
+        "NHot": 1351
+      },
+      {
+        "T": 2500,
+        "EmTot": 2274.8561,
+        "EmMax": 3.6114,
+        "SumEe": 146.5159,
+        "NHot": 1349
+      },
+      {
+        "T": 2600,
+        "EmTot": 2271.0411,
+        "EmMax": 3.3117,
+        "SumEe": 149.8333,
+        "NHot": 1344
+      },
+      {
+        "T": 2700,
+        "EmTot": 2276.5165,
+        "EmMax": 3.4565,
+        "SumEe": 145.072,
+        "NHot": 1342
+      },
+      {
+        "T": 2800,
+        "EmTot": 2275.4878,
+        "EmMax": 3.5051,
+        "SumEe": 145.9666,
+        "NHot": 1363
+      },
+      {
+        "T": 2900,
+        "EmTot": 2277.8085,
+        "EmMax": 3.3698,
+        "SumEe": 143.9486,
+        "NHot": 1346
+      },
+      {
+        "T": 3000,
+        "EmTot": 2279.9773,
+        "EmMax": 3.5643,
+        "SumEe": 142.0627,
+        "NHot": 1363
+      }
+    ],
+    "seconds": 3229.834576273
+  },
+  {
+    "arm": {
+      "Name": "S12_nowf_noise_rad",
+      "Family": "sust",
+      "Desc": "wf_on=0 + noise + radiance — metabolic balance probe",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=1.2",
+        "wf_on=0",
+        "k_rad=0.05",
+        "p_rad=4",
+        "noise_amp=1.5"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -4.99e-12,
+      "Cond": 20134.569149,
+      "Evap": 1982.855483,
+      "Rough": 0,
+      "Rad": 19114.642183,
+      "Backs": 2751.847522,
+      "QcnvD": 812.968917,
+      "QcnvF": 413.106505,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 508.416,
+      "BlobSpeed": 0.000129,
+      "BlobCos": 0.5229,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 2205.9520900000052,
+      "EeTot": 269.75530999999927,
+      "EmMax": 3.2045,
+      "PR": 1556.3285034035723,
+      "FTag": 0.23047465187695843,
+      "JAbs": 0.15867451158443546,
+      "Jx": -0.0019000607090058196,
+      "R2f": 0.0056938119296242855,
+      "JdAbs": 1.2173049867095123,
+      "NCells": 2700,
+      "NLinks": 18455,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 2058.6743,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 2225.7225,
+        "EmMax": 2.9333,
+        "SumEe": 252.5636,
+        "NHot": 1553
+      },
+      {
+        "T": 200,
+        "EmTot": 2219.8367,
+        "EmMax": 3.3266,
+        "SumEe": 257.6817,
+        "NHot": 1530
+      },
+      {
+        "T": 300,
+        "EmTot": 2213.9165,
+        "EmMax": 3.0089,
+        "SumEe": 262.8297,
+        "NHot": 1537
+      },
+      {
+        "T": 400,
+        "EmTot": 2215.7119,
+        "EmMax": 3.0206,
+        "SumEe": 261.2685,
+        "NHot": 1518
+      },
+      {
+        "T": 500,
+        "EmTot": 2209.746,
+        "EmMax": 3.034,
+        "SumEe": 266.4563,
+        "NHot": 1513
+      },
+      {
+        "T": 600,
+        "EmTot": 2208.0427,
+        "EmMax": 3.2412,
+        "SumEe": 267.9373,
+        "NHot": 1535
+      },
+      {
+        "T": 700,
+        "EmTot": 2204.1573,
+        "EmMax": 3.2452,
+        "SumEe": 271.3159,
+        "NHot": 1527
+      },
+      {
+        "T": 800,
+        "EmTot": 2209.9712,
+        "EmMax": 2.8762,
+        "SumEe": 266.2604,
+        "NHot": 1534
+      },
+      {
+        "T": 900,
+        "EmTot": 2218.0447,
+        "EmMax": 3.0421,
+        "SumEe": 259.24,
+        "NHot": 1538
+      },
+      {
+        "T": 1000,
+        "EmTot": 2202.7368,
+        "EmMax": 2.9745,
+        "SumEe": 272.5511,
+        "NHot": 1538
+      },
+      {
+        "T": 1100,
+        "EmTot": 2208.0741,
+        "EmMax": 2.9409,
+        "SumEe": 267.91,
+        "NHot": 1536
+      },
+      {
+        "T": 1200,
+        "EmTot": 2207.9674,
+        "EmMax": 2.7238,
+        "SumEe": 268.0029,
+        "NHot": 1526
+      },
+      {
+        "T": 1300,
+        "EmTot": 2202.5643,
+        "EmMax": 2.9412,
+        "SumEe": 272.7012,
+        "NHot": 1530
+      },
+      {
+        "T": 1400,
+        "EmTot": 2197.1997,
+        "EmMax": 3.3019,
+        "SumEe": 277.3661,
+        "NHot": 1540
+      },
+      {
+        "T": 1500,
+        "EmTot": 2206.9265,
+        "EmMax": 2.8589,
+        "SumEe": 268.908,
+        "NHot": 1521
+      },
+      {
+        "T": 1600,
+        "EmTot": 2204.1821,
+        "EmMax": 2.9519,
+        "SumEe": 271.2944,
+        "NHot": 1517
+      },
+      {
+        "T": 1700,
+        "EmTot": 2205.2781,
+        "EmMax": 2.8204,
+        "SumEe": 270.3413,
+        "NHot": 1528
+      },
+      {
+        "T": 1800,
+        "EmTot": 2200.2641,
+        "EmMax": 3.1194,
+        "SumEe": 274.7013,
+        "NHot": 1504
+      },
+      {
+        "T": 1900,
+        "EmTot": 2203.2259,
+        "EmMax": 3.2299,
+        "SumEe": 272.1258,
+        "NHot": 1506
+      },
+      {
+        "T": 2000,
+        "EmTot": 2206.1705,
+        "EmMax": 2.7886,
+        "SumEe": 269.5654,
+        "NHot": 1530
+      },
+      {
+        "T": 2100,
+        "EmTot": 2209.242,
+        "EmMax": 3.0296,
+        "SumEe": 266.8945,
+        "NHot": 1531
+      },
+      {
+        "T": 2200,
+        "EmTot": 2212.3797,
+        "EmMax": 2.9045,
+        "SumEe": 264.1661,
+        "NHot": 1546
+      },
+      {
+        "T": 2300,
+        "EmTot": 2212.7548,
+        "EmMax": 2.8339,
+        "SumEe": 263.8399,
+        "NHot": 1525
+      },
+      {
+        "T": 2400,
+        "EmTot": 2214.5146,
+        "EmMax": 2.9864,
+        "SumEe": 262.3096,
+        "NHot": 1544
+      },
+      {
+        "T": 2500,
+        "EmTot": 2201.4331,
+        "EmMax": 2.8507,
+        "SumEe": 273.6848,
+        "NHot": 1527
+      },
+      {
+        "T": 2600,
+        "EmTot": 2201.2657,
+        "EmMax": 2.9633,
+        "SumEe": 273.8304,
+        "NHot": 1520
+      },
+      {
+        "T": 2700,
+        "EmTot": 2211.0215,
+        "EmMax": 2.8718,
+        "SumEe": 265.3471,
+        "NHot": 1531
+      },
+      {
+        "T": 2800,
+        "EmTot": 2207.3663,
+        "EmMax": 2.9391,
+        "SumEe": 268.5255,
+        "NHot": 1543
+      },
+      {
+        "T": 2900,
+        "EmTot": 2204.6659,
+        "EmMax": 3.2244,
+        "SumEe": 270.8737,
+        "NHot": 1532
+      },
+      {
+        "T": 3000,
+        "EmTot": 2205.9521,
+        "EmMax": 3.2045,
+        "SumEe": 269.7553,
+        "NHot": 1534
+      }
+    ],
+    "seconds": 3194.966996513
+  },
+  {
+    "arm": {
+      "Name": "S13_nowf_deep_noise",
+      "Family": "sust",
+      "Desc": "wf_on=0 + deep + noise",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=3.6",
+        "wf_on=0",
+        "k_rad=0",
+        "noise_amp=1.5"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -4.611e-12,
+      "Cond": 4893.653888,
+      "Evap": 3410.989339,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 444.911653,
+      "QcnvD": 726.314238,
+      "QcnvF": 80.598828,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 544.83537,
+      "BlobSpeed": 0.000137,
+      "BlobCos": 0.244,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 2359.9792000000034,
+      "EeTot": 131.0980999999998,
+      "EmMax": 6.02552,
+      "PR": 1216.9698486602254,
+      "FTag": 0.2308645474502484,
+      "JAbs": 0.07594295028209232,
+      "Jx": 0.00012321962447887254,
+      "R2f": 0.021852632975054586,
+      "JdAbs": 1.3260893079208744,
+      "NCells": 2700,
+      "NLinks": 18392,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 2058.6743,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 2242.3917,
+        "EmMax": 3.6345,
+        "SumEe": 238.0902,
+        "NHot": 1640
+      },
+      {
+        "T": 200,
+        "EmTot": 2381.6582,
+        "EmMax": 4.5692,
+        "SumEe": 116.9614,
+        "NHot": 1496
+      },
+      {
+        "T": 300,
+        "EmTot": 2385.9282,
+        "EmMax": 4.1322,
+        "SumEe": 113.1445,
+        "NHot": 1421
+      },
+      {
+        "T": 400,
+        "EmTot": 2383.5324,
+        "EmMax": 4.5419,
+        "SumEe": 115.0568,
+        "NHot": 1395
+      },
+      {
+        "T": 500,
+        "EmTot": 2381.2945,
+        "EmMax": 4.9596,
+        "SumEe": 116.9131,
+        "NHot": 1372
+      },
+      {
+        "T": 600,
+        "EmTot": 2378.9868,
+        "EmMax": 4.6838,
+        "SumEe": 118.7622,
+        "NHot": 1373
+      },
+      {
+        "T": 700,
+        "EmTot": 2376.3767,
+        "EmMax": 4.8155,
+        "SumEe": 120.8661,
+        "NHot": 1331
+      },
+      {
+        "T": 800,
+        "EmTot": 2371.267,
+        "EmMax": 5.1723,
+        "SumEe": 125.213,
+        "NHot": 1333
+      },
+      {
+        "T": 900,
+        "EmTot": 2373.1458,
+        "EmMax": 5.1964,
+        "SumEe": 123.4324,
+        "NHot": 1336
+      },
+      {
+        "T": 1000,
+        "EmTot": 2369.5963,
+        "EmMax": 5.4379,
+        "SumEe": 126.3559,
+        "NHot": 1327
+      },
+      {
+        "T": 1100,
+        "EmTot": 2366.9886,
+        "EmMax": 5.0297,
+        "SumEe": 128.4176,
+        "NHot": 1322
+      },
+      {
+        "T": 1200,
+        "EmTot": 2367.6897,
+        "EmMax": 6.0368,
+        "SumEe": 127.6776,
+        "NHot": 1330
+      },
+      {
+        "T": 1300,
+        "EmTot": 2367.6212,
+        "EmMax": 6.0923,
+        "SumEe": 127.5701,
+        "NHot": 1314
+      },
+      {
+        "T": 1400,
+        "EmTot": 2365.768,
+        "EmMax": 6.3672,
+        "SumEe": 129.0027,
+        "NHot": 1307
+      },
+      {
+        "T": 1500,
+        "EmTot": 2367.0705,
+        "EmMax": 6.2682,
+        "SumEe": 127.6398,
+        "NHot": 1315
+      },
+      {
+        "T": 1600,
+        "EmTot": 2370.6328,
+        "EmMax": 5.8974,
+        "SumEe": 124.388,
+        "NHot": 1294
+      },
+      {
+        "T": 1700,
+        "EmTot": 2363.9693,
+        "EmMax": 6.4758,
+        "SumEe": 129.9842,
+        "NHot": 1310
+      },
+      {
+        "T": 1800,
+        "EmTot": 2363.0684,
+        "EmMax": 5.0438,
+        "SumEe": 130.5554,
+        "NHot": 1302
+      },
+      {
+        "T": 1900,
+        "EmTot": 2366.7469,
+        "EmMax": 6.5157,
+        "SumEe": 127.1684,
+        "NHot": 1317
+      },
+      {
+        "T": 2000,
+        "EmTot": 2367.5208,
+        "EmMax": 5.7058,
+        "SumEe": 126.3083,
+        "NHot": 1324
+      },
+      {
+        "T": 2100,
+        "EmTot": 2367.4799,
+        "EmMax": 4.6926,
+        "SumEe": 126.1815,
+        "NHot": 1320
+      },
+      {
+        "T": 2200,
+        "EmTot": 2364.2324,
+        "EmMax": 4.8746,
+        "SumEe": 128.8518,
+        "NHot": 1325
+      },
+      {
+        "T": 2300,
+        "EmTot": 2364.558,
+        "EmMax": 4.4571,
+        "SumEe": 128.4421,
+        "NHot": 1312
+      },
+      {
+        "T": 2400,
+        "EmTot": 2368.2355,
+        "EmMax": 5.557,
+        "SumEe": 125.0341,
+        "NHot": 1313
+      },
+      {
+        "T": 2500,
+        "EmTot": 2368.4353,
+        "EmMax": 5.1441,
+        "SumEe": 124.6896,
+        "NHot": 1311
+      },
+      {
+        "T": 2600,
+        "EmTot": 2366.0273,
+        "EmMax": 5.5458,
+        "SumEe": 126.5907,
+        "NHot": 1304
+      },
+      {
+        "T": 2700,
+        "EmTot": 2360.2376,
+        "EmMax": 5.5007,
+        "SumEe": 131.4245,
+        "NHot": 1331
+      },
+      {
+        "T": 2800,
+        "EmTot": 2360.5455,
+        "EmMax": 4.9973,
+        "SumEe": 130.9005,
+        "NHot": 1325
+      },
+      {
+        "T": 2900,
+        "EmTot": 2364.5937,
+        "EmMax": 4.8961,
+        "SumEe": 127.2058,
+        "NHot": 1306
+      },
+      {
+        "T": 3000,
+        "EmTot": 2359.9792,
+        "EmMax": 6.0255,
+        "SumEe": 131.0981,
+        "NHot": 1304
+      }
+    ],
+    "seconds": 3336.667980394
+  },
+  {
+    "arm": {
+      "Name": "S14_kx_tilt",
+      "Family": "sust",
+      "Desc": "dense phase wind kx on blob (progressive matter)",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=1.2",
+        "wf_on=1",
+        "k_rad=0",
+        "noise_amp=0",
+        "kx=1.1",
+        "p1_meter=1"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -7.016e-13,
+      "Cond": 0,
+      "Evap": 1.054869,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 0.137592,
+      "QcnvD": 81.311552,
+      "QcnvF": 0.303303,
+      "Fd": 650.1901,
+      "Fl": 0,
+      "Sp": 0.3597333,
+      "Gm": 1.138255,
+      "EmTag": 48.98666,
+      "BlobSpeed": 0.00045,
+      "BlobCos": -0.9817,
+      "FrontV": 0,
+      "HasP1": true,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 147.70990999999998,
+      "EeTot": 0.9173900000000003,
+      "EmMax": 1.83571,
+      "PR": 371.0219927430101,
+      "FTag": 0.3316407138830427,
+      "JAbs": 0.000543890703266062,
+      "Jx": 0.000005204028840450444,
+      "R2f": 0.019012823952657517,
+      "JdAbs": 0.13818596105038586,
+      "NCells": 2700,
+      "NLinks": 21624,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 147.7101,
+        "EmMax": 2.056,
+        "SumEe": 0.9173,
+        "NHot": 68
+      },
+      {
+        "T": 200,
+        "EmTot": 147.7101,
+        "EmMax": 1.9309,
+        "SumEe": 0.9173,
+        "NHot": 61
+      },
+      {
+        "T": 300,
+        "EmTot": 147.7101,
+        "EmMax": 1.9368,
+        "SumEe": 0.9173,
+        "NHot": 59
+      },
+      {
+        "T": 400,
+        "EmTot": 147.7101,
+        "EmMax": 1.9558,
+        "SumEe": 0.9173,
+        "NHot": 55
+      },
+      {
+        "T": 500,
+        "EmTot": 147.7101,
+        "EmMax": 1.8566,
+        "SumEe": 0.9173,
+        "NHot": 56
+      },
+      {
+        "T": 600,
+        "EmTot": 147.7101,
+        "EmMax": 1.8374,
+        "SumEe": 0.9173,
+        "NHot": 54
+      },
+      {
+        "T": 700,
+        "EmTot": 147.7101,
+        "EmMax": 1.8326,
+        "SumEe": 0.9173,
+        "NHot": 64
+      },
+      {
+        "T": 800,
+        "EmTot": 147.7101,
+        "EmMax": 2.009,
+        "SumEe": 0.9173,
+        "NHot": 55
+      },
+      {
+        "T": 900,
+        "EmTot": 147.7101,
+        "EmMax": 1.8751,
+        "SumEe": 0.9173,
+        "NHot": 54
+      },
+      {
+        "T": 1000,
+        "EmTot": 147.7101,
+        "EmMax": 1.7704,
+        "SumEe": 0.9173,
+        "NHot": 53
+      },
+      {
+        "T": 1100,
+        "EmTot": 147.7101,
+        "EmMax": 1.6994,
+        "SumEe": 0.9173,
+        "NHot": 52
+      },
+      {
+        "T": 1200,
+        "EmTot": 147.7101,
+        "EmMax": 1.8066,
+        "SumEe": 0.9173,
+        "NHot": 58
+      },
+      {
+        "T": 1300,
+        "EmTot": 147.7101,
+        "EmMax": 1.791,
+        "SumEe": 0.9173,
+        "NHot": 62
+      },
+      {
+        "T": 1400,
+        "EmTot": 147.7101,
+        "EmMax": 1.8597,
+        "SumEe": 0.9173,
+        "NHot": 59
+      },
+      {
+        "T": 1500,
+        "EmTot": 147.7101,
+        "EmMax": 1.8523,
+        "SumEe": 0.9173,
+        "NHot": 53
+      },
+      {
+        "T": 1600,
+        "EmTot": 147.7101,
+        "EmMax": 1.7237,
+        "SumEe": 0.9173,
+        "NHot": 56
+      },
+      {
+        "T": 1700,
+        "EmTot": 147.7101,
+        "EmMax": 1.7723,
+        "SumEe": 0.9173,
+        "NHot": 56
+      },
+      {
+        "T": 1800,
+        "EmTot": 147.7101,
+        "EmMax": 1.7419,
+        "SumEe": 0.9173,
+        "NHot": 56
+      },
+      {
+        "T": 1900,
+        "EmTot": 147.7101,
+        "EmMax": 1.8547,
+        "SumEe": 0.9173,
+        "NHot": 58
+      },
+      {
+        "T": 2000,
+        "EmTot": 147.7101,
+        "EmMax": 1.8412,
+        "SumEe": 0.9173,
+        "NHot": 56
+      },
+      {
+        "T": 2100,
+        "EmTot": 147.7101,
+        "EmMax": 1.7779,
+        "SumEe": 0.9173,
+        "NHot": 55
+      },
+      {
+        "T": 2200,
+        "EmTot": 147.7101,
+        "EmMax": 1.798,
+        "SumEe": 0.9173,
+        "NHot": 56
+      },
+      {
+        "T": 2300,
+        "EmTot": 147.7101,
+        "EmMax": 1.7829,
+        "SumEe": 0.9173,
+        "NHot": 58
+      },
+      {
+        "T": 2400,
+        "EmTot": 147.7101,
+        "EmMax": 1.7422,
+        "SumEe": 0.9173,
+        "NHot": 62
+      },
+      {
+        "T": 2500,
+        "EmTot": 147.7101,
+        "EmMax": 1.7564,
+        "SumEe": 0.9173,
+        "NHot": 55
+      },
+      {
+        "T": 2600,
+        "EmTot": 147.7101,
+        "EmMax": 1.7879,
+        "SumEe": 0.9173,
+        "NHot": 57
+      },
+      {
+        "T": 2700,
+        "EmTot": 147.7101,
+        "EmMax": 1.7456,
+        "SumEe": 0.9173,
+        "NHot": 61
+      },
+      {
+        "T": 2800,
+        "EmTot": 147.7101,
+        "EmMax": 1.6951,
+        "SumEe": 0.9173,
+        "NHot": 63
+      },
+      {
+        "T": 2900,
+        "EmTot": 147.7101,
+        "EmMax": 1.7195,
+        "SumEe": 0.9173,
+        "NHot": 55
+      },
+      {
+        "T": 3000,
+        "EmTot": 147.7101,
+        "EmMax": 1.8357,
+        "SumEe": 0.9173,
+        "NHot": 56
+      }
+    ],
+    "seconds": 3540.730305958
+  },
+  {
+    "arm": {
+      "Name": "S15_kx_noise",
+      "Family": "sust",
+      "Desc": "dense kx + field noise",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=1.2",
+        "wf_on=1",
+        "k_rad=0",
+        "noise_amp=1.5",
+        "kx=1.1",
+        "p1_meter=1"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -5.256e-12,
+      "Cond": 10145.204669,
+      "Evap": 9494.467055,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 1238.408746,
+      "QcnvD": 969.157603,
+      "QcnvF": 266.789215,
+      "Fd": 801.7408,
+      "Fl": 0,
+      "Sp": 0.8677008,
+      "Gm": -53.16756,
+      "EmTag": 554.1609,
+      "BlobSpeed": 0.000132,
+      "BlobCos": 0.6244,
+      "FrontV": 0,
+      "HasP1": true,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 2316.8515900000034,
+      "EeTot": 169.52784999999997,
+      "EmMax": 3.80866,
+      "PR": 1316.0038183507224,
+      "FTag": 0.23918707714895077,
+      "JAbs": 0.09893600837309396,
+      "Jx": 0.0005454447659040447,
+      "R2f": 0.02398317751282617,
+      "JdAbs": 1.3504045137434595,
+      "NCells": 2700,
+      "NLinks": 18332,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 2058.6743,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 2221.1059,
+        "EmMax": 4.9477,
+        "SumEe": 256.3143,
+        "NHot": 1329
+      },
+      {
+        "T": 200,
+        "EmTot": 2287.0898,
+        "EmMax": 4.3923,
+        "SumEe": 198.5444,
+        "NHot": 1340
+      },
+      {
+        "T": 300,
+        "EmTot": 2286.8088,
+        "EmMax": 4.5842,
+        "SumEe": 198.3581,
+        "NHot": 1331
+      },
+      {
+        "T": 400,
+        "EmTot": 2279.0594,
+        "EmMax": 4.2031,
+        "SumEe": 204.8099,
+        "NHot": 1321
+      },
+      {
+        "T": 500,
+        "EmTot": 2287.3034,
+        "EmMax": 4.2134,
+        "SumEe": 197.1777,
+        "NHot": 1340
+      },
+      {
+        "T": 600,
+        "EmTot": 2284.6109,
+        "EmMax": 4.3969,
+        "SumEe": 199.384,
+        "NHot": 1328
+      },
+      {
+        "T": 700,
+        "EmTot": 2287.5344,
+        "EmMax": 4.2348,
+        "SumEe": 196.6226,
+        "NHot": 1333
+      },
+      {
+        "T": 800,
+        "EmTot": 2282.9639,
+        "EmMax": 4.6517,
+        "SumEe": 200.5125,
+        "NHot": 1325
+      },
+      {
+        "T": 900,
+        "EmTot": 2296.0099,
+        "EmMax": 3.9848,
+        "SumEe": 188.9338,
+        "NHot": 1345
+      },
+      {
+        "T": 1000,
+        "EmTot": 2291.6337,
+        "EmMax": 4.0926,
+        "SumEe": 192.6265,
+        "NHot": 1345
+      },
+      {
+        "T": 1100,
+        "EmTot": 2282.9856,
+        "EmMax": 4.0344,
+        "SumEe": 200.0695,
+        "NHot": 1334
+      },
+      {
+        "T": 1200,
+        "EmTot": 2293.2847,
+        "EmMax": 4.2171,
+        "SumEe": 191.0035,
+        "NHot": 1327
+      },
+      {
+        "T": 1300,
+        "EmTot": 2288.3023,
+        "EmMax": 3.4257,
+        "SumEe": 195.1901,
+        "NHot": 1331
+      },
+      {
+        "T": 1400,
+        "EmTot": 2295.1757,
+        "EmMax": 4.0495,
+        "SumEe": 189.1733,
+        "NHot": 1331
+      },
+      {
+        "T": 1500,
+        "EmTot": 2284.8519,
+        "EmMax": 4.1184,
+        "SumEe": 198.0513,
+        "NHot": 1345
+      },
+      {
+        "T": 1600,
+        "EmTot": 2297.1238,
+        "EmMax": 4.3865,
+        "SumEe": 187.3392,
+        "NHot": 1346
+      },
+      {
+        "T": 1700,
+        "EmTot": 2299.1144,
+        "EmMax": 3.8403,
+        "SumEe": 185.58,
+        "NHot": 1347
+      },
+      {
+        "T": 1800,
+        "EmTot": 2296.3064,
+        "EmMax": 4.0603,
+        "SumEe": 187.9569,
+        "NHot": 1341
+      },
+      {
+        "T": 1900,
+        "EmTot": 2296.843,
+        "EmMax": 4.1867,
+        "SumEe": 187.4341,
+        "NHot": 1351
+      },
+      {
+        "T": 2000,
+        "EmTot": 2298.6572,
+        "EmMax": 3.6222,
+        "SumEe": 185.8363,
+        "NHot": 1349
+      },
+      {
+        "T": 2100,
+        "EmTot": 2302.8767,
+        "EmMax": 4.2144,
+        "SumEe": 182.1671,
+        "NHot": 1343
+      },
+      {
+        "T": 2200,
+        "EmTot": 2311.0163,
+        "EmMax": 3.9999,
+        "SumEe": 174.9734,
+        "NHot": 1341
+      },
+      {
+        "T": 2300,
+        "EmTot": 2298.3948,
+        "EmMax": 4.0312,
+        "SumEe": 185.8143,
+        "NHot": 1357
+      },
+      {
+        "T": 2400,
+        "EmTot": 2307.2073,
+        "EmMax": 3.8415,
+        "SumEe": 178.1033,
+        "NHot": 1357
+      },
+      {
+        "T": 2500,
+        "EmTot": 2302.8044,
+        "EmMax": 3.7141,
+        "SumEe": 181.8818,
+        "NHot": 1343
+      },
+      {
+        "T": 2600,
+        "EmTot": 2314.5582,
+        "EmMax": 3.8291,
+        "SumEe": 171.6611,
+        "NHot": 1351
+      },
+      {
+        "T": 2700,
+        "EmTot": 2311.3394,
+        "EmMax": 3.8225,
+        "SumEe": 174.4454,
+        "NHot": 1354
+      },
+      {
+        "T": 2800,
+        "EmTot": 2311.5137,
+        "EmMax": 3.9005,
+        "SumEe": 174.2524,
+        "NHot": 1346
+      },
+      {
+        "T": 2900,
+        "EmTot": 2315.1,
+        "EmMax": 3.6539,
+        "SumEe": 171.1108,
+        "NHot": 1368
+      },
+      {
+        "T": 3000,
+        "EmTot": 2316.8517,
+        "EmMax": 3.8087,
+        "SumEe": 169.528,
+        "NHot": 1364
+      }
+    ],
+    "seconds": 3368.685536999
+  },
+  {
+    "arm": {
+      "Name": "S16_seed_mw",
+      "Family": "sust",
+      "Desc": "matter winding seed_mw=2 on blob",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=1.2",
+        "wf_on=1",
+        "k_rad=0",
+        "noise_amp=0",
+        "seed_mw=2"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -6.828e-13,
+      "Cond": 0,
+      "Evap": 0.697165,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 0.090935,
+      "QcnvD": 49.653692,
+      "QcnvF": 0.219463,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 67.2354,
+      "BlobSpeed": 0.000049,
+      "BlobCos": 0.7907,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 148.06774000000016,
+      "EeTot": 0.6063999999999983,
+      "EmMax": 1.90195,
+      "PR": 298.0391789522476,
+      "FTag": 0.4540852045151757,
+      "JAbs": 0.00036731072394549213,
+      "Jx": -0.0000025193394543989978,
+      "R2f": 0.008204726221788458,
+      "JdAbs": 0.16887440900968784,
+      "NCells": 2700,
+      "NLinks": 21620,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 148.5435,
+        "EmMax": 2.4044,
+        "SumEe": 0.1925,
+        "NHot": 82
+      },
+      {
+        "T": 200,
+        "EmTot": 148.3073,
+        "EmMax": 2.263,
+        "SumEe": 0.398,
+        "NHot": 78
+      },
+      {
+        "T": 300,
+        "EmTot": 148.3073,
+        "EmMax": 2.4986,
+        "SumEe": 0.398,
+        "NHot": 75
+      },
+      {
+        "T": 400,
+        "EmTot": 148.3073,
+        "EmMax": 2.4408,
+        "SumEe": 0.398,
+        "NHot": 71
+      },
+      {
+        "T": 500,
+        "EmTot": 148.3073,
+        "EmMax": 2.3194,
+        "SumEe": 0.398,
+        "NHot": 69
+      },
+      {
+        "T": 600,
+        "EmTot": 148.0678,
+        "EmMax": 2.231,
+        "SumEe": 0.6062,
+        "NHot": 65
+      },
+      {
+        "T": 700,
+        "EmTot": 148.0678,
+        "EmMax": 2.0118,
+        "SumEe": 0.6062,
+        "NHot": 60
+      },
+      {
+        "T": 800,
+        "EmTot": 148.0678,
+        "EmMax": 1.9894,
+        "SumEe": 0.6062,
+        "NHot": 59
+      },
+      {
+        "T": 900,
+        "EmTot": 148.0678,
+        "EmMax": 2.0412,
+        "SumEe": 0.6062,
+        "NHot": 61
+      },
+      {
+        "T": 1000,
+        "EmTot": 148.0678,
+        "EmMax": 1.9918,
+        "SumEe": 0.6062,
+        "NHot": 56
+      },
+      {
+        "T": 1100,
+        "EmTot": 148.0678,
+        "EmMax": 2.2154,
+        "SumEe": 0.6062,
+        "NHot": 57
+      },
+      {
+        "T": 1200,
+        "EmTot": 148.0678,
+        "EmMax": 2.3609,
+        "SumEe": 0.6062,
+        "NHot": 59
+      },
+      {
+        "T": 1300,
+        "EmTot": 148.0678,
+        "EmMax": 2.2369,
+        "SumEe": 0.6062,
+        "NHot": 55
+      },
+      {
+        "T": 1400,
+        "EmTot": 148.0678,
+        "EmMax": 1.9422,
+        "SumEe": 0.6062,
+        "NHot": 55
+      },
+      {
+        "T": 1500,
+        "EmTot": 148.0678,
+        "EmMax": 1.8803,
+        "SumEe": 0.6062,
+        "NHot": 58
+      },
+      {
+        "T": 1600,
+        "EmTot": 148.0678,
+        "EmMax": 1.8973,
+        "SumEe": 0.6062,
+        "NHot": 52
+      },
+      {
+        "T": 1700,
+        "EmTot": 148.0678,
+        "EmMax": 2.0444,
+        "SumEe": 0.6062,
+        "NHot": 53
+      },
+      {
+        "T": 1800,
+        "EmTot": 148.0678,
+        "EmMax": 2.1407,
+        "SumEe": 0.6062,
+        "NHot": 58
+      },
+      {
+        "T": 1900,
+        "EmTot": 148.0678,
+        "EmMax": 2.1644,
+        "SumEe": 0.6062,
+        "NHot": 58
+      },
+      {
+        "T": 2000,
+        "EmTot": 148.0678,
+        "EmMax": 2.0081,
+        "SumEe": 0.6062,
+        "NHot": 59
+      },
+      {
+        "T": 2100,
+        "EmTot": 148.0678,
+        "EmMax": 1.948,
+        "SumEe": 0.6062,
+        "NHot": 60
+      },
+      {
+        "T": 2200,
+        "EmTot": 148.0678,
+        "EmMax": 1.9419,
+        "SumEe": 0.6062,
+        "NHot": 57
+      },
+      {
+        "T": 2300,
+        "EmTot": 148.0678,
+        "EmMax": 1.9933,
+        "SumEe": 0.6062,
+        "NHot": 54
+      },
+      {
+        "T": 2400,
+        "EmTot": 148.0678,
+        "EmMax": 2.0314,
+        "SumEe": 0.6062,
+        "NHot": 53
+      },
+      {
+        "T": 2500,
+        "EmTot": 148.0678,
+        "EmMax": 1.9497,
+        "SumEe": 0.6062,
+        "NHot": 56
+      },
+      {
+        "T": 2600,
+        "EmTot": 148.0678,
+        "EmMax": 2.1488,
+        "SumEe": 0.6062,
+        "NHot": 50
+      },
+      {
+        "T": 2700,
+        "EmTot": 148.0678,
+        "EmMax": 1.9526,
+        "SumEe": 0.6062,
+        "NHot": 46
+      },
+      {
+        "T": 2800,
+        "EmTot": 148.0678,
+        "EmMax": 1.9163,
+        "SumEe": 0.6062,
+        "NHot": 48
+      },
+      {
+        "T": 2900,
+        "EmTot": 148.0678,
+        "EmMax": 1.8908,
+        "SumEe": 0.6062,
+        "NHot": 54
+      },
+      {
+        "T": 3000,
+        "EmTot": 148.0678,
+        "EmMax": 1.902,
+        "SumEe": 0.6062,
+        "NHot": 51
+      }
+    ],
+    "seconds": 3438.624412765
+  },
+  {
+    "arm": {
+      "Name": "S17_add_noise",
+      "Family": "sust",
+      "Desc": "additive + noise",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=0",
+        "q_detune=1.2",
+        "wf_on=1",
+        "k_rad=0",
+        "noise_amp=1.5",
+        "p1_meter=1"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -6.866e-14,
+      "Cond": 8761.841355,
+      "Evap": 239.059111,
+      "Rough": 7650.209884,
+      "Rad": 0,
+      "Backs": 1029.035086,
+      "QcnvD": 980.252486,
+      "QcnvF": 1959.591667,
+      "Fd": 485.6229,
+      "Fl": -49.34062,
+      "Sp": -0.4090779,
+      "Gm": 34.48874,
+      "EmTag": 587.54122,
+      "BlobSpeed": 0.000125,
+      "BlobCos": 0.6976,
+      "FrontV": 0,
+      "HasP1": true,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 2156.6811200000006,
+      "EeTot": 157.06702999999973,
+      "EmMax": 2.29832,
+      "PR": 1896.7743425091448,
+      "FTag": 0.25368849150958406,
+      "JAbs": 0.09488038641163801,
+      "Jx": -0.0009663327445991357,
+      "R2f": 0.020363592211044838,
+      "JdAbs": 1.083318649041773,
+      "NCells": 2700,
+      "NLinks": 18419,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 2058.6743,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 1778.6893,
+        "EmMax": 2.4302,
+        "SumEe": 593.8221,
+        "NHot": 1376
+      },
+      {
+        "T": 200,
+        "EmTot": 2150.8879,
+        "EmMax": 2.4239,
+        "SumEe": 246.7541,
+        "NHot": 1568
+      },
+      {
+        "T": 300,
+        "EmTot": 2206.0593,
+        "EmMax": 2.4241,
+        "SumEe": 184.4808,
+        "NHot": 1598
+      },
+      {
+        "T": 400,
+        "EmTot": 2204.1967,
+        "EmMax": 2.3914,
+        "SumEe": 170.7263,
+        "NHot": 1603
+      },
+      {
+        "T": 500,
+        "EmTot": 2194.4834,
+        "EmMax": 2.4177,
+        "SumEe": 169.4347,
+        "NHot": 1602
+      },
+      {
+        "T": 600,
+        "EmTot": 2184.6679,
+        "EmMax": 2.394,
+        "SumEe": 167.7939,
+        "NHot": 1599
+      },
+      {
+        "T": 700,
+        "EmTot": 2188.66,
+        "EmMax": 2.4189,
+        "SumEe": 163.6295,
+        "NHot": 1625
+      },
+      {
+        "T": 800,
+        "EmTot": 2168.8613,
+        "EmMax": 2.4106,
+        "SumEe": 170.5448,
+        "NHot": 1650
+      },
+      {
+        "T": 900,
+        "EmTot": 2165.5473,
+        "EmMax": 2.4321,
+        "SumEe": 166.4998,
+        "NHot": 1599
+      },
+      {
+        "T": 1000,
+        "EmTot": 2172.2578,
+        "EmMax": 2.3847,
+        "SumEe": 167.1117,
+        "NHot": 1656
+      },
+      {
+        "T": 1100,
+        "EmTot": 2173.8124,
+        "EmMax": 2.428,
+        "SumEe": 159.5576,
+        "NHot": 1656
+      },
+      {
+        "T": 1200,
+        "EmTot": 2159.9401,
+        "EmMax": 2.42,
+        "SumEe": 160.7858,
+        "NHot": 1666
+      },
+      {
+        "T": 1300,
+        "EmTot": 2161.3252,
+        "EmMax": 2.3355,
+        "SumEe": 165.0916,
+        "NHot": 1701
+      },
+      {
+        "T": 1400,
+        "EmTot": 2160.8334,
+        "EmMax": 2.3956,
+        "SumEe": 154.0261,
+        "NHot": 1702
+      },
+      {
+        "T": 1500,
+        "EmTot": 2166.6429,
+        "EmMax": 2.3973,
+        "SumEe": 155.4622,
+        "NHot": 1719
+      },
+      {
+        "T": 1600,
+        "EmTot": 2153.3078,
+        "EmMax": 2.3813,
+        "SumEe": 163.4472,
+        "NHot": 1735
+      },
+      {
+        "T": 1700,
+        "EmTot": 2160.848,
+        "EmMax": 2.3648,
+        "SumEe": 162.4772,
+        "NHot": 1718
+      },
+      {
+        "T": 1800,
+        "EmTot": 2162.6995,
+        "EmMax": 2.3784,
+        "SumEe": 159.7347,
+        "NHot": 1732
+      },
+      {
+        "T": 1900,
+        "EmTot": 2150.8928,
+        "EmMax": 2.3529,
+        "SumEe": 159.9705,
+        "NHot": 1754
+      },
+      {
+        "T": 2000,
+        "EmTot": 2151.8326,
+        "EmMax": 2.3565,
+        "SumEe": 161.4814,
+        "NHot": 1772
+      },
+      {
+        "T": 2100,
+        "EmTot": 2151.2609,
+        "EmMax": 2.2694,
+        "SumEe": 162.9206,
+        "NHot": 1771
+      },
+      {
+        "T": 2200,
+        "EmTot": 2153.5844,
+        "EmMax": 2.3626,
+        "SumEe": 158.6618,
+        "NHot": 1732
+      },
+      {
+        "T": 2300,
+        "EmTot": 2150.7983,
+        "EmMax": 2.4086,
+        "SumEe": 162.7491,
+        "NHot": 1750
+      },
+      {
+        "T": 2400,
+        "EmTot": 2150.1466,
+        "EmMax": 2.2949,
+        "SumEe": 157.5306,
+        "NHot": 1758
+      },
+      {
+        "T": 2500,
+        "EmTot": 2145.7017,
+        "EmMax": 2.3451,
+        "SumEe": 161.3971,
+        "NHot": 1725
+      },
+      {
+        "T": 2600,
+        "EmTot": 2148.3328,
+        "EmMax": 2.3195,
+        "SumEe": 163.9364,
+        "NHot": 1743
+      },
+      {
+        "T": 2700,
+        "EmTot": 2144.0289,
+        "EmMax": 2.2521,
+        "SumEe": 161.806,
+        "NHot": 1736
+      },
+      {
+        "T": 2800,
+        "EmTot": 2148.6341,
+        "EmMax": 2.4212,
+        "SumEe": 162.9113,
+        "NHot": 1735
+      },
+      {
+        "T": 2900,
+        "EmTot": 2138.6115,
+        "EmMax": 2.3061,
+        "SumEe": 165.3038,
+        "NHot": 1723
+      },
+      {
+        "T": 3000,
+        "EmTot": 2156.6811,
+        "EmMax": 2.2983,
+        "SumEe": 157.0669,
+        "NHot": 1744
+      }
+    ],
+    "seconds": 3474.891687502
+  },
+  {
+    "arm": {
+      "Name": "S18_v3a_quiet",
+      "Family": "sust",
+      "Desc": "uni + rad + workfn quiet (adopted law, no fuel)",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=1.2",
+        "wf_on=1",
+        "k_rad=0.05",
+        "p_rad=4",
+        "noise_amp=0"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -6.054e-13,
+      "Cond": 3.265359,
+      "Evap": 0,
+      "Rough": 0,
+      "Rad": 42.588417,
+      "Backs": 5.555011,
+      "QcnvD": 1558.153033,
+      "QcnvF": 22.705957,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 31.44078,
+      "BlobSpeed": 0.00023,
+      "BlobCos": -0.8521,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 109.93158999999987,
+      "EeTot": 33.76815000000003,
+      "EmMax": 0.89036,
+      "PR": 489.264864901316,
+      "FTag": 0.28600495999375625,
+      "JAbs": 0.020005238620949484,
+      "Jx": -0.00005505803686914107,
+      "R2f": 0.006713173596832167,
+      "JdAbs": 0.09074006413324484,
+      "NCells": 2700,
+      "NLinks": 21686,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 145.2698,
+        "EmMax": 1.9778,
+        "SumEe": 3.0392,
+        "NHot": 76
+      },
+      {
+        "T": 200,
+        "EmTot": 139.6903,
+        "EmMax": 1.8222,
+        "SumEe": 7.891,
+        "NHot": 72
+      },
+      {
+        "T": 300,
+        "EmTot": 136.5135,
+        "EmMax": 1.5996,
+        "SumEe": 10.6534,
+        "NHot": 66
+      },
+      {
+        "T": 400,
+        "EmTot": 133.7815,
+        "EmMax": 1.6365,
+        "SumEe": 13.0291,
+        "NHot": 66
+      },
+      {
+        "T": 500,
+        "EmTot": 130.6982,
+        "EmMax": 1.6495,
+        "SumEe": 15.7102,
+        "NHot": 57
+      },
+      {
+        "T": 600,
+        "EmTot": 129.6323,
+        "EmMax": 1.844,
+        "SumEe": 16.637,
+        "NHot": 54
+      },
+      {
+        "T": 700,
+        "EmTot": 126.0942,
+        "EmMax": 1.8751,
+        "SumEe": 19.7137,
+        "NHot": 50
+      },
+      {
+        "T": 800,
+        "EmTot": 123.351,
+        "EmMax": 1.8894,
+        "SumEe": 22.0991,
+        "NHot": 48
+      },
+      {
+        "T": 900,
+        "EmTot": 122.0279,
+        "EmMax": 1.4288,
+        "SumEe": 23.2496,
+        "NHot": 43
+      },
+      {
+        "T": 1000,
+        "EmTot": 121.1793,
+        "EmMax": 1.3374,
+        "SumEe": 23.9875,
+        "NHot": 42
+      },
+      {
+        "T": 1100,
+        "EmTot": 118.8728,
+        "EmMax": 1.3255,
+        "SumEe": 25.9931,
+        "NHot": 40
+      },
+      {
+        "T": 1200,
+        "EmTot": 118.8728,
+        "EmMax": 1.3127,
+        "SumEe": 25.9931,
+        "NHot": 45
+      },
+      {
+        "T": 1300,
+        "EmTot": 117.5332,
+        "EmMax": 1.6391,
+        "SumEe": 27.158,
+        "NHot": 38
+      },
+      {
+        "T": 1400,
+        "EmTot": 117.2094,
+        "EmMax": 1.7041,
+        "SumEe": 27.4396,
+        "NHot": 30
+      },
+      {
+        "T": 1500,
+        "EmTot": 116.3071,
+        "EmMax": 1.2125,
+        "SumEe": 28.2242,
+        "NHot": 32
+      },
+      {
+        "T": 1600,
+        "EmTot": 114.9268,
+        "EmMax": 1.3366,
+        "SumEe": 29.4245,
+        "NHot": 33
+      },
+      {
+        "T": 1700,
+        "EmTot": 114.57,
+        "EmMax": 1.4206,
+        "SumEe": 29.7347,
+        "NHot": 32
+      },
+      {
+        "T": 1800,
+        "EmTot": 113.5341,
+        "EmMax": 1.3072,
+        "SumEe": 30.6355,
+        "NHot": 28
+      },
+      {
+        "T": 1900,
+        "EmTot": 113.1547,
+        "EmMax": 1.2277,
+        "SumEe": 30.9654,
+        "NHot": 28
+      },
+      {
+        "T": 2000,
+        "EmTot": 113.1547,
+        "EmMax": 1.3063,
+        "SumEe": 30.9654,
+        "NHot": 26
+      },
+      {
+        "T": 2100,
+        "EmTot": 112.108,
+        "EmMax": 0.9381,
+        "SumEe": 31.8756,
+        "NHot": 30
+      },
+      {
+        "T": 2200,
+        "EmTot": 112.108,
+        "EmMax": 0.9593,
+        "SumEe": 31.8756,
+        "NHot": 26
+      },
+      {
+        "T": 2300,
+        "EmTot": 112.108,
+        "EmMax": 1.0184,
+        "SumEe": 31.8756,
+        "NHot": 31
+      },
+      {
+        "T": 2400,
+        "EmTot": 111.7559,
+        "EmMax": 1.0007,
+        "SumEe": 32.1818,
+        "NHot": 30
+      },
+      {
+        "T": 2500,
+        "EmTot": 111.014,
+        "EmMax": 1.0128,
+        "SumEe": 32.8269,
+        "NHot": 30
+      },
+      {
+        "T": 2600,
+        "EmTot": 111.014,
+        "EmMax": 1.0048,
+        "SumEe": 32.8269,
+        "NHot": 28
+      },
+      {
+        "T": 2700,
+        "EmTot": 110.6483,
+        "EmMax": 1.0188,
+        "SumEe": 33.1449,
+        "NHot": 26
+      },
+      {
+        "T": 2800,
+        "EmTot": 109.9317,
+        "EmMax": 0.9337,
+        "SumEe": 33.768,
+        "NHot": 27
+      },
+      {
+        "T": 2900,
+        "EmTot": 109.9317,
+        "EmMax": 0.896,
+        "SumEe": 33.768,
+        "NHot": 27
+      },
+      {
+        "T": 3000,
+        "EmTot": 109.9317,
+        "EmMax": 0.8904,
+        "SumEe": 33.768,
+        "NHot": 25
+      }
+    ],
+    "seconds": 3381.626908408
+  },
+  {
+    "arm": {
+      "Name": "S19_v3a_noise",
+      "Family": "sust",
+      "Desc": "uni + rad + workfn + noise (adopted law + fuel)",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=3000",
+        "seed=20260802",
+        "diag_every=1000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "kx=0",
+        "amp_nat=2",
+        "amp_logate=1",
+        "q_detune=1.2",
+        "wf_on=1",
+        "k_rad=0.05",
+        "p_rad=4",
+        "noise_amp=1.5",
+        "p1_meter=1"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": -4.955e-12,
+      "Cond": 20323.510632,
+      "Evap": 2122.517685,
+      "Rough": 0,
+      "Rad": 19190.87586,
+      "Backs": 2780.007854,
+      "QcnvD": 791.695643,
+      "QcnvF": 421.706145,
+      "Fd": 0.3591974,
+      "Fl": 0,
+      "Sp": 0.5036572,
+      "Gm": 22.78622,
+      "EmTag": 530.19722,
+      "BlobSpeed": 0.000099,
+      "BlobCos": -0.4991,
+      "FrontV": 0,
+      "HasP1": true,
+      "HasBlob": true
+    },
+    "prog": {
+      "EmTot": 2207.408500000005,
+      "EeTot": 268.54919999999987,
+      "EmMax": 2.97314,
+      "PR": 1558.8132613800851,
+      "FTag": 0.24018985611408059,
+      "JAbs": 0.15716352478037332,
+      "Jx": -0.0008724516389588447,
+      "R2f": 0.029513224292127997,
+      "JdAbs": 1.2403751277366473,
+      "NCells": 2700,
+      "NLinks": 18481,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 2058.6743,
+        "NHot": 58
+      },
+      {
+        "T": 100,
+        "EmTot": 2084.128,
+        "EmMax": 3.0727,
+        "SumEe": 375.7499,
+        "NHot": 1469
+      },
+      {
+        "T": 200,
+        "EmTot": 2180.5073,
+        "EmMax": 2.9952,
+        "SumEe": 291.9418,
+        "NHot": 1496
+      },
+      {
+        "T": 300,
+        "EmTot": 2188.0196,
+        "EmMax": 3.2796,
+        "SumEe": 285.4094,
+        "NHot": 1496
+      },
+      {
+        "T": 400,
+        "EmTot": 2205.2581,
+        "EmMax": 3.7081,
+        "SumEe": 270.4194,
+        "NHot": 1523
+      },
+      {
+        "T": 500,
+        "EmTot": 2201.7703,
+        "EmMax": 2.8993,
+        "SumEe": 273.4523,
+        "NHot": 1521
+      },
+      {
+        "T": 600,
+        "EmTot": 2202.6401,
+        "EmMax": 2.9188,
+        "SumEe": 272.6959,
+        "NHot": 1532
+      },
+      {
+        "T": 700,
+        "EmTot": 2208.8275,
+        "EmMax": 3.0498,
+        "SumEe": 267.3156,
+        "NHot": 1526
+      },
+      {
+        "T": 800,
+        "EmTot": 2203.5076,
+        "EmMax": 2.718,
+        "SumEe": 271.9415,
+        "NHot": 1508
+      },
+      {
+        "T": 900,
+        "EmTot": 2209.9874,
+        "EmMax": 3.012,
+        "SumEe": 266.307,
+        "NHot": 1543
+      },
+      {
+        "T": 1000,
+        "EmTot": 2210.1742,
+        "EmMax": 2.7248,
+        "SumEe": 266.1445,
+        "NHot": 1528
+      },
+      {
+        "T": 1100,
+        "EmTot": 2208.1258,
+        "EmMax": 3.1682,
+        "SumEe": 267.9257,
+        "NHot": 1515
+      },
+      {
+        "T": 1200,
+        "EmTot": 2197.0074,
+        "EmMax": 2.967,
+        "SumEe": 277.5939,
+        "NHot": 1529
+      },
+      {
+        "T": 1300,
+        "EmTot": 2213.6151,
+        "EmMax": 3.3571,
+        "SumEe": 263.1524,
+        "NHot": 1528
+      },
+      {
+        "T": 1400,
+        "EmTot": 2202.8532,
+        "EmMax": 3.033,
+        "SumEe": 272.5106,
+        "NHot": 1516
+      },
+      {
+        "T": 1500,
+        "EmTot": 2200.4757,
+        "EmMax": 3.15,
+        "SumEe": 274.578,
+        "NHot": 1504
+      },
+      {
+        "T": 1600,
+        "EmTot": 2202.0277,
+        "EmMax": 2.9068,
+        "SumEe": 273.2284,
+        "NHot": 1533
+      },
+      {
+        "T": 1700,
+        "EmTot": 2200.8975,
+        "EmMax": 3.1342,
+        "SumEe": 274.2113,
+        "NHot": 1526
+      },
+      {
+        "T": 1800,
+        "EmTot": 2202.2267,
+        "EmMax": 2.9015,
+        "SumEe": 273.0554,
+        "NHot": 1534
+      },
+      {
+        "T": 1900,
+        "EmTot": 2206.2404,
+        "EmMax": 2.8513,
+        "SumEe": 269.5652,
+        "NHot": 1510
+      },
+      {
+        "T": 2000,
+        "EmTot": 2209.4013,
+        "EmMax": 3.0112,
+        "SumEe": 266.8166,
+        "NHot": 1532
+      },
+      {
+        "T": 2100,
+        "EmTot": 2211.8467,
+        "EmMax": 3.1142,
+        "SumEe": 264.6901,
+        "NHot": 1526
+      },
+      {
+        "T": 2200,
+        "EmTot": 2202.7834,
+        "EmMax": 2.9349,
+        "SumEe": 272.5713,
+        "NHot": 1513
+      },
+      {
+        "T": 2300,
+        "EmTot": 2200.4239,
+        "EmMax": 2.8298,
+        "SumEe": 274.623,
+        "NHot": 1533
+      },
+      {
+        "T": 2400,
+        "EmTot": 2214.2005,
+        "EmMax": 2.8383,
+        "SumEe": 262.6434,
+        "NHot": 1528
+      },
+      {
+        "T": 2500,
+        "EmTot": 2205.0824,
+        "EmMax": 2.9059,
+        "SumEe": 270.5722,
+        "NHot": 1531
+      },
+      {
+        "T": 2600,
+        "EmTot": 2203.3006,
+        "EmMax": 3.0364,
+        "SumEe": 272.1216,
+        "NHot": 1546
+      },
+      {
+        "T": 2700,
+        "EmTot": 2207.4491,
+        "EmMax": 2.7222,
+        "SumEe": 268.5142,
+        "NHot": 1535
+      },
+      {
+        "T": 2800,
+        "EmTot": 2196.2359,
+        "EmMax": 2.9202,
+        "SumEe": 278.2648,
+        "NHot": 1524
+      },
+      {
+        "T": 2900,
+        "EmTot": 2204.9145,
+        "EmMax": 3.0887,
+        "SumEe": 270.7182,
+        "NHot": 1506
+      },
+      {
+        "T": 3000,
+        "EmTot": 2207.4086,
+        "EmMax": 2.9731,
+        "SumEe": 268.5494,
+        "NHot": 1553
+      }
+    ],
+    "seconds": 3399.442032104
+  }
+]

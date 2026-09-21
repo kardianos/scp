@@ -284,7 +284,16 @@ func (s *Sim) Run() {
 	fprintf(s.Out, "# v94 door_avg (face-3 rev Y.4): door_avg=%.6g\n", P.DoorAvg)
 	fprintf(s.Out, "# v94 chi_load (face-3 §III): chi_load=%.6g\n", P.ChiLoad)
 	fprintf(s.Out, "# v95 J-metric (FLOW law mirrored): j_metric=%.6g j_tau=%.6g j_rel=%.6g\n", P.JMetric, P.JTau, P.JRel)
-	fprintf(s.Out, "# v97 promo leads (oriented door): promo=%d (0=off 1=slot 2=space-leg 3=close)\n", P.Promo)
+	if P.Promo != 0 {
+		// Go-only knob (C has no promo): print the header only when
+		// live, so promo=0 logs stay byte-equal to the C kernel —
+		// the unconditional line broke the 6 C==Go parity bars from
+		// the leads commit until 2026-08-13 (BATTERY_pre_edit.log).
+		fprintf(s.Out, "# v97 promo leads (oriented door): promo=%d (0=off 1=slot 2=space-leg 3=close)\n", P.Promo)
+	}
+	if P.PatternOnly != 0 {
+		fprintf(s.Out, "# v99 Tact 1 (pattern_only): pattern_only=%d (1=Es+fa, 2=+wrap-gate)\n", P.PatternOnly)
+	}
 	fprintf(s.Out, "# v93 hop schedule (RING_DNLS §A.4): hop_order=%d (0=seq, 1=strang, 2=rand)\n",
 		P.HopOrder)
 	fprintf(s.Out, "# QUENCH-2 apparatus: conf_r=%.6g conf_gap=%.6g conf_th=%.6g conf_pinw=%.6g spin_m=%d imp_k=%.6g qp_phase=%.6g\n",
@@ -580,15 +589,6 @@ func (s *Sim) Run() {
 				s.th2[j] = math.Mod(s.th2[i]-we*d/P.C+8.0*TwoPi, TwoPi)
 			}
 		}
-		if P.Kx != 0 && P.Exp == "ring" {
-			// MOTION #31: e3b-style tilt ON a bound object (drive
-			// detunes the bonds by design; pre-registered null)
-			for k := 0; k < nvo; k++ {
-				i := baseI + k
-				s.th2[i] = math.Mod(s.th2[i]-P.Kx*s.wr(s.px[i]-cx0)+8.0*TwoPi, TwoPi)
-			}
-			fprintf(s.Out, "# SEED ring tilt: kx=%.6g applied on top of the chain\n", P.Kx)
-		}
 		if P.SeedMw != 0 && P.Exp == "ring" {
 			// v93 ring-retention face: seed a MATTER azimuthal winding
 			// m*phi ON THE CLOSED RING (topological support: |psi|>0
@@ -599,6 +599,20 @@ func (s *Sim) Run() {
 			}
 			fprintf(s.Out, "# SEED ring winding: seed_mw=%.6g (th2 = m*phi on the cycle; overrides chain lock)\n",
 				P.SeedMw)
+		}
+		if P.Kx != 0 && P.Exp == "ring" {
+			// MOTION #31: e3b-style tilt ON a bound object (drive
+			// detunes the bonds by design; pre-registered null).
+			// v97 (user-authorized 2026-08-13): applied AFTER seed_mw
+			// so the tilt COMPOSES with the winding (th2 = m*phi −
+			// kx*x — the helix seed A5_RING needed). kx-only and
+			// seed_mw-only seeds are byte-unchanged; kx+seed_mw was
+			// previously a silent no-op (rg2d ≡ rg2c).
+			for k := 0; k < nvo; k++ {
+				i := baseI + k
+				s.th2[i] = math.Mod(s.th2[i]-P.Kx*s.wr(s.px[i]-cx0)+8.0*TwoPi, TwoPi)
+			}
+			fprintf(s.Out, "# SEED ring tilt: kx=%.6g applied on top of the chain/winding\n", P.Kx)
 		}
 		fprintf(s.Out, "# SEED %s: n=%d x=%.4f d*=%.6f d_edge=%.6f edges=%d\n",
 			P.Exp, nvo, x, ds, de, s.trussN)
@@ -1337,10 +1351,13 @@ func (s *Sim) Run() {
 			nt, P.TagR)
 	}
 
+	// v99 Tact 1: fold any seeded Em tank into fa before clocks start.
+	s.absorbEm()
+
 	// v91 cantus init: holdings memory starts AT the seeded part;
 	// cant_seed=1 arms tagged object voices at full amplitude
 	for i := 0; i < s.NC; i++ {
-		s.cxl[i] = s.Em[i] / P.Cap
+		s.cxl[i] = s.holdings(i) / P.Cap
 	}
 
 	// initial radii + topology + ledger

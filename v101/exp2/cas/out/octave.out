@@ -1,0 +1,16 @@
+G2A 1:1 2.000000 pi
+G2A octave_odd 1.000000 pi
+G2A octave_even 2.000000 pi
+G2A psi_odd 2.000000 pi
+G2A psi_even 4.000000 pi
+G2A PASS
+METER gradient rel 8.284e-08
+G2B E 7.432761 grad 9.924e-11 rel 4.649e-08
+G2B CLEAN
+CONTROL w=1/3 E 1.510164 nonvacuum 2 grad 9.977e-11
+CONTROL CLEAN
+CHAIN vacuum E 0.000000 grad 0.000e+00 hot 0.0000 step_ratio inf loc True
+CHAIN odd E 1.601130 grad 9.344e-11 hot 0.0025 step_ratio 191.500 loc True
+CHAIN closure E 6.225890 grad 9.823e-11 hot 0.0100 step_ratio 185.226 loc True
+G2C loc True cost_rel 0.1624 odd_half False
+EXP2 FAIL

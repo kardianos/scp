@@ -1,0 +1,76 @@
+[
+  {
+    "arm": {
+      "Name": "R1_S00",
+      "Family": "r1",
+      "Desc": "endurance clone S00 uni+qd1.2 quiet",
+      "Args": [
+        "L=16",
+        "dt=0.02",
+        "bath=1",
+        "T=10000",
+        "seed=20260802",
+        "diag_every=2000",
+        "hop_order=1",
+        "exp=blob",
+        "amp=0.8",
+        "sigma=2.5",
+        "amp_nat=2",
+        "amp_logate=1",
+        "wf_on=1",
+        "k_rad=0",
+        "noise_amp=0",
+        "kx=0",
+        "q_detune=1.2",
+        "p1_meter=1"
+      ],
+      "Snap": true
+    },
+    "log": {
+      "Drift": 0,
+      "Cond": 0,
+      "Evap": 0,
+      "Rough": 0,
+      "Rad": 0,
+      "Backs": 0,
+      "QcnvD": 0,
+      "QcnvF": 0,
+      "Fd": 0,
+      "Fl": 0,
+      "Sp": 0,
+      "Gm": 0,
+      "EmTag": 0,
+      "BlobSpeed": 0,
+      "BlobCos": 0,
+      "FrontV": 0,
+      "HasP1": false,
+      "HasBlob": false
+    },
+    "prog": {
+      "EmTot": 148.76505000000034,
+      "EeTot": 0,
+      "EmMax": 0.90151,
+      "PR": 455.60413029013716,
+      "FTag": 0.8902646824640571,
+      "JAbs": 0,
+      "Jx": 0,
+      "R2f": 0,
+      "JdAbs": 0,
+      "NCells": 2700,
+      "NLinks": 19341,
+      "OK": true,
+      "Note": ""
+    },
+    "series": [
+      {
+        "T": 0,
+        "EmTot": 148.7649,
+        "EmMax": 0.9015,
+        "SumEe": 0,
+        "NHot": 58
+      }
+    ],
+    "seconds": 78.687398692,
+    "err": "signal: terminated"
+  }
+]

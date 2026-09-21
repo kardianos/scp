@@ -1,0 +1,25 @@
+# theory/probe
+# suite=r1 kernel=fabrun T=10000 seed=20260802 j=4 snap_every=10000 n=8
+# out=theory/runs/R1_T10000_20260808_172409
+[ok] R1_S04                 cond=0.06825 Em=147.3 slope=-1.57e-13/1k  fd=+0 Jx=-6.39e-06  r1 (11854s)
+[ok] R1_S16                 cond=0 Em=148.1 slope=+3.92e-13/1k  fd=+0 Jx=-3.84e-06  r1 (12051s)
+[ok] R1_S14                 cond=0 Em=147.7 slope=-2.35e-13/1k  fd=+741 Jx=-4.47e-06  r1 (12408s)
+[ok] R1_S00                 cond=0 Em=148.3 slope=+0/1k  fd=+90.8 Jx=+1.28e-06  r1 (12471s)
+[ok] R1_S00_s111            cond=0 Em=146.8 slope=+0/1k  fd=+0 Jx=+0  r1 (10961s)
+[ok] R1_S00_rad             cond=3.265 Em=105.4 slope=-0.537/1k  fd=+0 Jx=+8.41e-05  r1 (11336s)
+[ok] R1_S04_rad             cond=11.15 Em=113.9 slope=-0.723/1k  fd=+0 Jx=-1.94e-05  r1 (11279s)
+[ok] R1_S00_amp12           cond=4.6 Em=206.7 slope=-0.0331/1k  fd=+0 Jx=-7.7e-05  r1 (11281s)
+
+# done → theory/runs/R1_T10000_20260808_172409
+
+# SUSTAIN VERDICT
+  HOLD: 8
+  HOLD R1_S00 Em=148.3 slope=+0
+  HOLD R1_S00_amp12 Em=206.7 slope=-3.307e-05
+  HOLD R1_S00_rad Em=105.4 slope=-0.0005374
+  HOLD R1_S00_s111 Em=146.8 slope=+0
+  HOLD R1_S04 Em=147.3 slope=-1.568e-16
+  HOLD R1_S04_rad Em=113.9 slope=-0.0007233
+  HOLD R1_S14 Em=147.7 slope=-2.351e-16
+  HOLD R1_S16 Em=148.1 slope=+3.919e-16
+EXIT=0
