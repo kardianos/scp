@@ -74,6 +74,18 @@ in `phase1/PREREG.md`.
 - **The two physics misses are real:** the transport threshold, and
   ξ's drift with g/Δ.
 
+**Law step** (2026-10-07; `law/DECIDE.md`): **ending C.**
+
+- The current table does not host the lock.
+  - Space has no pitch, so a field pair resonates with it and decays.
+  - g has no counterpart: the table's conversion is a rate law.
+  - Even borrowing the retired dense rung, 3-D transport is about 10×
+    too fast.
+- The lock needs four new law statements (S1–S4). Each is the user's
+  ruling, and a law-table change.
+- The two defective Phase 1 bars were re-registered on new cases, and
+  both passed.
+
 ## What is carried
 
 - `v89/PRINCIPLE.md`, in full. Where the kernel and the principle

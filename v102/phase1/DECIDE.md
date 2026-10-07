@@ -171,6 +171,11 @@ regression item. The fringe loci carry over exactly.
 
 ## 5. What would move past this page
 
+*Update, same day:* item 1 was done as a new experiment on new
+cases, and both bars passed (`../law/DECIDE.md` Part R). Item 3 was
+examined in `../law/`, which ended at C.
+
+
 1. **Re-register the two defective bars, as a new experiment.**
    - P1: compare with multiplicity, inside the lock phase.
    - P6(c): compare against the coherent single-slit sum.

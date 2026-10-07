@@ -1,0 +1,8 @@
+# R-P1'  n=6 ring, levels with multiplicity (S^z = 0 sector)
+  t/D=0.05: J_eff=0.017629  max miss over 12 levels=1.196e-02  S_ground=0.0000  PASS
+  t/D=0.15: J_eff=0.014201  max miss over 12 levels=4.881e-02  S_ground=0.0000  PASS
+R-P1' PASS
+
+# R-P6c'  new slit geometry
+  eraser vs coherent single-slit sum: max rel diff = 5.32e-16  PASS  (bar 1e-10)
+  reported, not gated: both-open vs coherent sum (scattering between slits) = 3.67e-04

@@ -1,0 +1,30 @@
+# t (reading T-a: the fiber inherits the 3-D field transport)
+  t = field_J * w_hat = 1.8 * 1/2 = 0.900   (rate units)
+
+# Delta readings (rate units); the lock needs Delta > 0 and t/Delta < t_c ~ 0.16-0.26
+  full cell (2 quanta): e = 2.6725, load x = 0.1957, pitch = 1.3363;  pair release = 2.4207
+  R-a  space quantum at bare dense rung w2; field at bare w1 Delta = -0.4000   no lock (Delta <= 0: converted ground state)
+  R-b  space at bare w2; field loaded at the R6 ceiling      Delta = +0.4793   t/Delta = 1.88  ->  OUTSIDE the lock phase
+  R-b' space at self-loaded w2; field loaded                 Delta = -0.0249   no lock (Delta <= 0: converted ground state)
+  R-c  space has no pitch (v89 sec 2; kernel Es is a continuum): a pair always finds a
+       resonant space state -> Delta = 0 and real decay at the golden-rule rate; no stationary lock
+
+# For the lock to exist under R-b, the fiber transport must satisfy t < t_c * Delta:
+  t_c = 0.16: t < 0.0767  i.e. field_J*w_hat must be 12x smaller than the 3-D value
+  t_c = 0.19: t < 0.0911  i.e. field_J*w_hat must be 10x smaller than the 3-D value
+  t_c = 0.26: t < 0.1246  i.e. field_J*w_hat must be 7x smaller than the 3-D value
+
+# g: the table's conversion is a rate law (f_conv = 0.25 of the excess per step, k_dep = 1.2,
+#    atoms at the source's pitch, credit lapsing at two atoms; freecell.c:2740).  It moves
+#    energy, not amplitude: there is no coherent pair-to-space coupling constant to read.
+
+# T-b (added after the first computation): v98 sec 1 read as t = 0 inside a lock
+  R-a  space quantum at bare dense rung w2; field at bare w1 Delta = -0.4000   no lock (Delta <= 0)
+  R-b  space at bare w2; field loaded at the R6 ceiling      Delta = +0.4793   inside the lock phase (t/Delta = 0)
+  R-b' space at self-loaded w2; field loaded                 Delta = -0.0249   no lock (Delta <= 0)
+  R-c  no pitch: resonant decay, no stationary lock, whatever t is
+
+# Which Delta reading matches the current representation?  v99 sec 1 retired the dense
+#  fluid; under pattern_only (v99 KERNEL.md) conversion is field <-> space, and space (Es)
+#  carries no pitch: the kernel's load x uses Ee/Em + flight, never Es.  That is R-c.
+#  R-a/R-b/R-b' borrow the retired dense rung w2 for the space quantum.
