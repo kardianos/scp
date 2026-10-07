@@ -1,0 +1,41 @@
+# H  field hop symmetry (v97 freecell.c pass F)
+H1 closed form z_i'=cos z_i - i sin z_j, self-rot = e^(-i ang) z : max err 0.0e+00
+H2 commutes with global phase                                 : max err 9.9e-16
+H3 linear (superposition)                                     : max err 8.9e-16
+H4 pairwise |z|^2 conserved                                    : max err 6.2e-15
+H  verdict: one complex amplitude per cell, linear U(1)-covariant hop.
+   Real dof per cell = 2. No SU(2) can act on C^1. Field sector is abelian and free.
+
+# X  transmuted size vs coupling, O(4) lattice (family 215, exact asymptotic)
+ beta    xi=1/m_lat   dln(xi)/dln(beta)   note
+ 1.000        0.5436       2.64            strong coupling, formula not valid
+ 2.000         8.895       5.78            
+ 3.000         168.1       8.92            
+ 3.142         256.2       9.37            beta = pi
+ 4.000          3368      12.07            
+ 6.283     3.503e+06      19.24            beta = 2 pi
+X  xi(2 pi)/xi(2) = 3.94e+05   (a factor pi in normalization)
+X  at beta=2 pi a 1% change in beta moves xi by 21%
+
+# W  winding sector on a U(1) ring, bond weight exp(K cos d), d in (-pi, pi]
+#    dF(n) = -ln[Z_{W=1}/Z_{W=0}]; Villain/Gaussian estimate 2 pi^2 K_eff / n
+ K= 2.0  xi_1D =   2.78   (pi^2 xi =   27.4)
+    n     dF(n)    2pi^2 Keff/n
+     4    5.9344     6.8566
+     8    3.2131     3.4283
+    16    1.6362     1.7141
+    32    0.8167     0.8571
+    64    0.4073     0.4285
+   128    0.2038     0.2143
+   256    0.1025     0.1071
+ K= 8.0  xi_1D =  14.93   (pi^2 xi =  147.4)
+    n     dF(n)    2pi^2 Keff/n
+     4   27.1359    36.8506
+     8   17.2979    18.4253
+    16    9.0918     9.2126
+    32    4.5908     4.6063
+    64    2.2994     2.3032
+   128    1.1498     1.1516
+   256    0.5748     0.5758
+W  verdict: dF falls monotonically with n; the wrap is distinguishable (dF > 1)
+   only below ~ pi^2 xi. A generated xi is a ceiling on the lock, not a line.

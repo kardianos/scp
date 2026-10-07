@@ -24,6 +24,13 @@ subsystem (the door). Do not import \(S = \delta A/4\).
 **Phase 1 executed the same day and closed.** The selector does not
 force unique size. Details: `PHASE1.md`, `phase1/DECIDE.md`.
 
+**Reopen feasibility (2026-10-07):** a generated gap (dimensional
+transmutation) as the selector was assessed and not opened. The
+fiber is U(1), where a generated scale caps a wrap and does not
+select one. `reopen/FEASIBILITY.md`; options C, A, B, and A+B
+in `reopen/OPTIONS.md` (A+B is the only coherent option and does
+not select ring size).
+
 ---
 
 ## The one-sentence thesis
