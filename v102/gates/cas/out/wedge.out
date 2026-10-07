@@ -1,0 +1,34 @@
+# W1  invariant conversion operators
+ SO(2) about the link  : invariant linear forms 0, invariant bilinear pair forms 2
+      M = [[-1.0, 0.0], [0.0, -1.0]]  delta-like (symmetric), reflection-even
+      M = [[-0.0, -1.0], [1.0, 0.0]]  epsilon (antisymmetric), reflection-odd
+ SU(2) (R1)            : invariant linear forms 0, invariant bilinear pair forms 1
+      M = [[0.0, -0.581207], [0.581207, 0.0]]  epsilon (antisymmetric), reflection-odd
+ on-site singlet b1 b2 - b2 b1 for bosons: max |entry| = 0.0e+00
+ on-site delta pair b1 b1 + b2 b2:          max |entry| = 3.46
+
+# W2  two-site Schwinger spaces: A^+A and B^+B against S_i.S_j
+  N  S     A+A = a + b S.S          resid      B+B = a + b S.S          resid
+  1  0.5    +0.5000  -2.0000 S.S    2.2e-16      +1.5000  +2.0000 S.S    4.4e-16
+  2  1.0    +2.0000  -2.0000 S.S    4.4e-16      +4.0000  +2.0000 S.S    1.3e-15
+  3  1.5    +4.5000  -2.0000 S.S    3.6e-15      +7.5000  +2.0000 S.S    5.3e-15
+  4  2.0    +8.0000  -2.0000 S.S    5.3e-15     +12.0000  +2.0000 S.S    7.1e-15
+  -(g^2/Delta) A+A  = const + (g^2/Delta) * |b_A| S.S   -> antiferromagnetic when Delta > 0
+  -(t^2/U)    B+B  = const - (t^2/U)     * |b_B| S.S   -> ferromagnetic (the E1 competitor)
+
+# M   microscopic ring: N0 = 2 per cell, scalar space mode per link, transport 0 at the ceiling
+ n=4: spin-1 Heisenberg ring, (E2-E0)/(E1-E0) over distinct levels = 3.00000
+    g/Delta   dim    E1-E0      J_eff=(E1-E0)/gapHeis   ratio(E2-E0)/(E1-E0)   rel.miss   <space> in ground   S_tot(ground)
+     0.05      376    0.004905       0.004905              2.98088         6.37e-03    0.0472          0.000
+     0.10      376    0.018652       0.018652              2.93214         2.26e-02    0.1626          0.000
+     0.20      376    0.064694       0.064694              2.80792         6.40e-02    0.4333          0.000
+     0.40      376    0.194130       0.194130              2.61631         1.28e-01    0.8084          0.000
+     0.10      376    0.001535       0.001535              1.49885         5.00e-01    3.9179          0.000  (Delta<0 control)
+ n=6: spin-1 Heisenberg ring, (E2-E0)/(E1-E0) over distinct levels = 2.99143
+    g/Delta   dim    E1-E0      J_eff=(E1-E0)/gapHeis   ratio(E2-E0)/(E1-E0)   rel.miss   <space> in ground   S_tot(ground)
+     0.05     7283    0.003536       0.004906              2.99115         9.37e-05    0.0691          0.000
+     0.10     7283    0.013455       0.018671              2.99012         4.37e-04    0.2383          0.000
+     0.20     7283    0.046730       0.064847              2.98553         1.97e-03    0.6370          0.000
+     0.40     7283    0.140519       0.194995              2.97248         6.33e-03    1.1916          0.000
+     0.10     7283    0.001153       0.001601              1.00152         6.65e-01    5.8802          0.000  (Delta<0 control)
+ J_eff predicted at second order: |b_A| g^2/Delta with |b_A| from W2 (N=2).

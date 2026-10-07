@@ -1,0 +1,19 @@
+# P2 instrument validation (effective chain, spin-1/2 end cells)
+  L_bulk= 40 chi= 64  E0=-56.666225371  gap1=0.437767  E(Sz=2)-E0=0.941535  ratio=2.1508   [753s]
+  L_bulk= 60 chi= 64  E0=-84.695906043  gap1=0.424720  E(Sz=2)-E0=0.886181  ratio=2.0865   [1447s]
+  L_bulk= 80 chi= 64  E0=-112.725586715  gap1=0.419204  E(Sz=2)-E0=0.861785  ratio=2.0558   [3066s]
+P2a energy per bulk bond (E0(80)-E0(60))/20 = -1.401484   literature -1.401484   miss 3.4e-08  (bar 1e-4)
+P2b gap(L) = D_inf + a/(L+1)^2 fit: D_inf = 0.41317   literature 0.41050   miss 0.65%  (bar 2%)
+    chi convergence: see p3_eff (L=48, chi=48) for the same window
+P2c xi from |<S_i.S_i+r>| sqrt(r) ~ e^(-r/xi), r in [6,24]: xi = 6.137   literature 6.03   miss 1.78%  (bar 5%)
+    r   <S.S>
+     2  +7.508157e-01
+     6  +2.528367e-01
+    10  +1.042695e-01
+    14  +4.610297e-02
+    18  +2.113341e-02
+    22  +9.889760e-03
+    26  +4.683137e-03
+    30  +2.232421e-03
+P4b(open chain) (E(Sz=2)-E0)/(2 gap1) = 1.0754, 1.0433, 1.0279   (bar >= 0.98)
+done [3066s]

@@ -1,0 +1,19 @@
+# P1 microscopic ring vs spin-1 Heisenberg ring (S^z = 0 sectors) [    0s]
+  n=4 cmax=4 t/D=0.0  dim=   1366  J_eff=0.013006 (2g^2/D=0.0200)  max miss over 8 levels=4.34e-01  S_ground=0.0000  <space>_ground=0.1626  MISS  [   15s]
+  n=4 cmax=4 t/D=0.1  dim=   1366  J_eff=0.012649 (2g^2/D=0.0200)  max miss over 8 levels=3.49e-01  S_ground=0.0000  <space>_ground=0.1776  MISS  [   35s]
+  n=4 cmax=4 t/D=0.2  dim=   1366  J_eff=0.012835 (2g^2/D=0.0200)  max miss over 8 levels=5.83e-01  S_ground=3.0000  <space>_ground=0.8644  MISS  [   50s]
+  n=6 cmax=2 t/D=0.0  dim=  58362  J_eff=0.017774 (2g^2/D=0.0200)  max miss over 8 levels=1.91e-02  S_ground=0.0000  <space>_ground=0.2291  PASS  [   96s]
+  n=6 cmax=2 t/D=0.1  dim=  58362  J_eff=0.016809 (2g^2/D=0.0200)  max miss over 8 levels=1.81e-02  S_ground=0.0000  <space>_ground=0.2514  PASS  [  208s]
+  n=6 cmax=2 t/D=0.2  dim=  58362  J_eff=0.003504 (2g^2/D=0.0200)  max miss over 8 levels=2.34e-01  S_ground=5.0000  <space>_ground=0.9802  MISS  [  297s]
+P1 MISS
+
+# P4a lowest level with a real space quantum, n=6 g/D=0.1 t/D=0.1 [  297s]
+  first level with <space> > 0.5: index 141, E - E0 = 0.54653  (Delta = 1)
+  magnon gap on this ring = 0.011953;  ratio to 2*gap = 22.9  PASS
+
+# P4b effective spin-1 rings: second line? [  534s]
+   n   Delta_n     lowest S=0 exc   /(2 Delta_n)   lowest S=2   /(2 Delta_n)
+    8  0.593555    2.685418       2.2621        1.740396   1.4661   ok  [  534s]
+   10  0.524808    2.248460       2.1422        1.497079   1.4263   ok  [  535s]
+   12  0.484196    1.880781       1.9422        1.340128   1.3839   ok  [  577s]
+P4b(rings) PASS

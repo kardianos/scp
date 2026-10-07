@@ -1,0 +1,13 @@
+# G-two instrument: energy per quantum vs occupation N (units g^2/Delta)
+  N   S     n   E0_Heis/n     e(N) per quantum    gapped? (integer S, Haldane)
+  1  0.5   6     -0.46713        -1.43426          no (LSM)
+  2  1.0   6     -1.43624        -2.43624          yes
+  3  1.5   6     -2.89881        -3.43254          no (LSM)
+  4  2.0   6     -4.86078        -4.43039          yes
+  1  0.5   8     -0.45639        -1.41277          no (LSM)
+  2  1.0   8     -1.41712        -2.41712          yes
+  3  1.5   8     -2.86626        -3.41084          no (LSM)
+  4  2.0   8     -4.81523        -4.40762          yes
+  e(N) falls monotonically with N: the conversion bond hoards quanta.
+  With no ceiling the occupation runs away; with a ceiling N_c, every cell sits at N_c.
+  A gapped lock needs N_c even (S integer): N_c = 2 -> xi ~ 6.03, N_c = 4 -> xi ~ 50 (literature).

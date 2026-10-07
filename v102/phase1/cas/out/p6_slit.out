@@ -1,0 +1,7 @@
+# P6 slit calculator  (lattice 140x161, slits at y=68,92, half-width 3)
+  scalar: interference fraction V_scalar = 0.9936
+P6a two-component vs scalar: max|I_T - I_S|/max I_S = 4.18e-16  (bar 1e-10)
+P6b polarizers: interference fraction V_pol = 5.21e-16  (bar < 0.01)
+P6c eraser: V_eraser = 1.000000   V_scalar = 0.993607   |diff| = 6.39e-03  (bar 1e-10 as registered)
+    identity check: eraser = coherent sum of the single-slit fields, max rel diff = 4.17e-16
+    both-open field vs sum of single-slit fields (multiple scattering between slits): 3.21e-03
