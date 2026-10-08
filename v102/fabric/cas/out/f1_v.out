@@ -1,0 +1,6 @@
+# F1 reading V (effective, no real link states) against the S-law, g/Delta = 0.1, J_h2 = 0.009231
+  n=6 hole=False cmax=None: micro dim 1831 vs V dim 141 (V removes 1690 space-carrying states); E0 micro -0.133744 V -0.133650 (diff +9.37e-05 = +0.010 J); lowest 30 excitations: max |diff| = 8.80e-05 = 0.0095 J, relative to the first gap 0.0129  [0s]
+  n=8 hole=False cmax=3: micro dim 21827 vs V dim 1107 (V removes 20720 space-carrying states); E0 micro -0.176521 V -0.176822 (diff -3.01e-04 = -0.033 J); lowest 30 excitations: max |diff| = 2.70e-04 = 0.0292 J, relative to the first gap 0.0486  [2s]
+  n=6 hole=True cmax=None: micro dim 928 vs V dim 96 (V removes 832 space-carrying states); E0 micro -0.130928 V -0.130783 (diff +1.45e-04 = +0.016 J); lowest 30 excitations: max |diff| = 1.75e-04 = 0.0190 J, relative to the first gap 0.0161  [2s]
+  n=8 hole=True cmax=3: micro dim 12273 vs V dim 750 (V removes 11523 space-carrying states); E0 micro -0.173921 V -0.174198 (diff -2.77e-04 = -0.030 J); lowest 30 excitations: max |diff| = 2.91e-04 = 0.0315 J, relative to the first gap 0.0347  [3s]
+done [3s]

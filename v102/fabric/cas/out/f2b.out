@@ -1,0 +1,10 @@
+# F2(b) sudden starts on effective rings (reading V), g/Delta = 0.1; Delta_inf = 0.4357 J
+  n= 8 neel  : <H> - E0 =   3.410 J  = 0.978 lock quanta per cell  (mean spacing between quanta 1.02 cells)  [2s]
+  n= 8 jones1: <H> - E0 =   9.864 J  = 2.830 lock quanta per cell  (mean spacing between quanta 0.35 cells)  [2s]
+  n= 8 jones2: <H> - E0 =  13.931 J  = 3.997 lock quanta per cell  (mean spacing between quanta 0.25 cells)  [2s]
+  n= 8 jones3: <H> - E0 =   8.391 J  = 2.407 lock quanta per cell  (mean spacing between quanta 0.42 cells)  [2s]
+  n=10 neel  : <H> - E0 =   4.188 J  = 0.961 lock quanta per cell  (mean spacing between quanta 1.04 cells)  [6s]
+  n=10 jones1: <H> - E0 =  11.294 J  = 2.592 lock quanta per cell  (mean spacing between quanta 0.39 cells)  [6s]
+  n=10 jones2: <H> - E0 =  13.549 J  = 3.110 lock quanta per cell  (mean spacing between quanta 0.32 cells)  [6s]
+  n=10 jones3: <H> - E0 =  10.966 J  = 2.517 lock quanta per cell  (mean spacing between quanta 0.40 cells)  [6s]
+done [6s]

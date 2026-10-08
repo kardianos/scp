@@ -1,0 +1,12 @@
+# F4(a) one hole on effective rings, g/Delta = 0.1, J = 0.009231
+  n= 6 (2S^z=1 dim 96): ring without hole: gap 0.7376 J.  With the hole: ground S = 0.5; levels (E-E0 in J, S): 0.0000(S=0.5)  1.1746(S=1.5)  2.0671(S=0.5)  2.1225(S=0.5)  2.4775(S=1.5)  3.0958(S=2.5)  3.1408(S=1.5)  3.1438(S=1.5);  approx one-magnon threshold 0.7376 J  [0s]
+        S^z profile by distance from the hole (sum over both sides): -0.1575 +0.8826 -0.6255 +0.4004;  total +0.5000
+  n= 8 (2S^z=1 dim 750): ring without hole: gap 0.6077 J.  With the hole: ground S = 0.5; levels (E-E0 in J, S): 0.0000(S=0.5)  0.9189(S=1.5)  1.6485(S=0.5)  1.6984(S=0.5)  2.0329(S=1.5)  2.4194(S=1.5)  2.4254(S=2.5)  2.4293(S=0.5);  approx one-magnon threshold 0.6077 J  [1s]
+        S^z profile by distance from the hole (sum over both sides): -0.1514 +0.8279 -0.5925 +0.7005 -0.2846;  total +0.5000
+  n=10 (2S^z=1 dim 6046): ring without hole: gap 0.5385 J.  With the hole: ground S = 0.5; levels (E-E0 in J, S): 0.0000(S=0.5)  0.7751(S=1.5)  1.3237(S=0.5)  1.4230(S=0.5)  1.6930(S=1.5)  2.0252(S=1.5)  2.0302(S=2.5)  2.0637(S=0.5);  approx one-magnon threshold 0.5385 J  [2s]
+        S^z profile by distance from the hole (sum over both sides): -0.1477 +0.7999 -0.5698 +0.6432 -0.5229 +0.2973;  total +0.5000
+  n=12 (2S^z=1 dim 49721): ring without hole: gap 0.4982 J.  With the hole: ground S = 0.5; levels (E-E0 in J, S): 0.0000(S=0.5)  0.6850(S=1.5)  1.1019(S=0.5)  1.2245(S=0.5)  1.4443(S=1.5)  1.7230(S=1.5)  1.7724(S=2.5)  1.8069(S=0.5);  approx one-magnon threshold 0.4982 J  [14s]
+        S^z profile by distance from the hole (sum over both sides): -0.1458 +0.7857 -0.5547 +0.6080 -0.4890 +0.5273 -0.2316;  total +0.5000
+  n=14 (2S^z=1 dim 414584): ring without hole: gap 0.4736 J.  With the hole: ground S = 0.5; levels (E-E0 in J, S): 0.0000(S=0.5)  0.6248(S=1.5)  0.9465(S=0.5)  1.0792(S=0.5)  1.2599(S=1.5)  1.4977(S=1.5)  1.5932(S=2.5)  1.6271(S=0.5);  approx one-magnon threshold 0.4736 J  [327s]
+        S^z profile by distance from the hole (sum over both sides): -0.1448 +0.7794 -0.5451 +0.5857 -0.4645 +0.4822 -0.4179 +0.2249;  total +0.5000
+done [327s]

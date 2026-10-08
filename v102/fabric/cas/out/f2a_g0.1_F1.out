@@ -1,0 +1,8 @@
+  S^z blocks: 10; largest channel block 202; cross-sector V 0.0e+00
+# E5 cooling by light scattering: n=4 ring, g/Delta=0.1, X1 + F1; t_out=0.9, t_s=0.06, eps_res=0.22748; ring dim 376 (all S^z), depleted dim 194  [0s]
+  ring: E0=-0.091490  first gaps: 0.00950 0.00950 0.00950 0.02765 0.02765 0.02765 0.02765  spin manifold top (level 80) = 0.09149, level 81 = 0.43624
+# F2(a) one photon on the n = 4 lock in its ground state: g/Delta = 0.1, F1; one-quantum gap 0.00950; levels classed 'one' = 3, 'more' = 77, 'space' = 295
+  cold delta=0.005        : ground=1.0000e+00  one=0.0000e+00  more=0.0000e+00  space=0.0000e+00  destroyed=4.4409e-17  (one / not-ground = 0.000)  [34s]
+  resonant eps_res+-0.05  : ground=8.6869e-01  one=7.5286e-03  more=2.6064e-03  space=1.5136e-04  destroyed=1.2102e-01  (one / not-ground = 0.057)  [81s]
+  broadband               : ground=9.9274e-01  one=6.4382e-04  more=2.2291e-04  space=3.7642e-05  destroyed=6.3604e-03  (one / not-ground = 0.089)  [237s]
+done [237s]

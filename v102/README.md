@@ -137,6 +137,28 @@ way, the cooling requirement was about emptying the fiber of its lock
 quanta, not about making a lock. `options/DECIDE.md` §12 sets out
 which results that touches.
 
+**Fabric step** (2026-10-08; `fabric/DECIDE.md`): **ending B.** The
+user's two ideas were pursued toward "a firm proton or neutron from the
+underlying fabric, not cellular clumping".
+
+- **Both ideas work.**
+  - Reading V (the link holds no energy) reproduces the S-law's low
+    spectrum to 0.03 J.
+  - Under Q (count lock quanta), one resonant photon makes exactly one
+    lock quantum 12–28% of the time.
+- **The fabric hosts one firm spin-½ object: a hole (one open slot).**
+  Its size is set by the fabric (decay length 5.8 grains, the same at
+  two lengths), and it has a gap.
+- **It falls down in four places:**
+  1. **There is no neutron.** At its ceiling a fiber holds an even
+     number of quanta, so spin ½ needs an open slot. If charge is the
+     deficit, no neutral spin-½ object exists.
+  2. **It is pinned at t = 0.** It walks only if transport is allowed
+     inside the lock (0 < t ≲ 9 J).
+  3. **It forms only if space leaves the boundary link,** which V
+     forbids.
+  4. **It has no excited ladder.**
+
 ## What is carried
 
 - `v89/PRINCIPLE.md`, in full. Where the kernel and the principle
