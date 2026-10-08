@@ -1,0 +1,5 @@
+# E8 static g/Delta=0.05 (g=0.02397)
+  clusters: J=0.002373 = 0.9902 x 2g^2/Delta;  K/J=-0.0053;  max|r3|/J=0.0150;  J_end/J=2.061;  min separation to converted levels=0.2274;  min overlap eigenvalue=0.9583  (Haldane phase of the bilinear-biquadratic chain: -1 < K/J < 1)
+  n=6 exact ring: S=0.000  <sum c>/n=0.0119  J_fit=0.002371  gap/J=0.7274  L1 miss=0.93%  K1(static) PASS  [5s]
+  hold (neel, T=100/J=42171): max<c_l>=0.0311  field fraction min=0.9689  2nd-half mean=0.9784  K1(hold >= 0.85) PASS  [255s]
+done [255s]

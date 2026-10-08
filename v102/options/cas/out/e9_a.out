@@ -1,0 +1,9 @@
+# E9(a) Z1 coalescence (X1 between full cells; every cell keeps 2 quanta, R6 local law over its links)
+  4-ring (exact): E0 = -0.091490  per cell -0.022872  gap 0.009505
+  cube (exact S-law, sum c <= 3, dim 51387): E0 = -0.245139  per cell -0.030642  S_ground 0.000  first gap (S^z=0 sector) 0.007110
+  coalescence energy E(cube) - 2 E(4-ring) = -0.062159  (joining is favoured)  [18s]
+  leading order (spin-1 Heisenberg, units of J): 4-ring           E0 = -6.00000  per cell -1.50000  gap 1.00000  [18s]
+  leading order (spin-1 Heisenberg, units of J): cube             E0 = -15.57833  per cell -1.94729  gap 0.78173  [19s]
+  leading order (spin-1 Heisenberg, units of J): 6-ring           E0 = -8.61742  per cell -1.43624  gap 0.72063  [19s]
+  leading order (spin-1 Heisenberg, units of J): hexagonal prism  E0 = -22.86878  per cell -1.90573  gap 0.55584  [27s]
+done [27s]

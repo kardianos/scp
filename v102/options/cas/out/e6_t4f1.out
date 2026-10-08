@@ -1,0 +1,10 @@
+# E6(a') F1 along the fiber x transport rule, n = 4, caps 2, S^z = 0, g/Delta = 0.1
+  t_s=0.00 T0 (t=0)  : dim=   118  S=0.000  <sum c>/n=0.0452  ground weight with T4 open=0.0000  J_fit=0.009043  L1 miss=5.10%  [0s]
+  t_s=0.00 T4 (t=0.9): dim=   118  S=0.000  <sum c>/n=0.0452  ground weight with T4 open=0.0000  J_fit=0.009043  L1 miss=5.10%  [0s]
+  t_s=0.03 T0 (t=0)  : dim=   714  S=0.000  <sum c>/n=0.0468  ground weight with T4 open=0.0020  J_fit=0.009137  L1 miss=5.46%  [0s]
+  t_s=0.03 T4 (t=0.9): dim=  1386  S=0.000  <sum c>/n=0.5483  ground weight with T4 open=1.0000  J_fit=0.000454  L1 miss=99.81%  [1s]
+  t_s=0.06 T0 (t=0)  : dim=   714  S=0.000  <sum c>/n=0.0527  ground weight with T4 open=0.0101  J_fit=0.009464  L1 miss=6.99%  [1s]
+  t_s=0.06 T4 (t=0.9): dim=  1386  S=0.000  <sum c>/n=0.5496  ground weight with T4 open=1.0000  J_fit=0.001185  L1 miss=100.00%  [2s]
+  t_s=0.12 T0 (t=0)  : dim=   714  S=0.000  <sum c>/n=0.6820  ground weight with T4 open=0.7856  J_fit=0.015896  L1 miss=225.33%  [2s]
+  t_s=0.12 T4 (t=0.9): dim=  1386  S=0.000  <sum c>/n=0.5584  ground weight with T4 open=0.9994  J_fit=0.003948  L1 miss=100.00%  [2s]
+done [2s]

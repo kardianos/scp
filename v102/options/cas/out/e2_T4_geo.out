@@ -1,0 +1,9 @@
+# E2 rule=T4 ceil=geo: dim=7410  states with ring field outside the ring: 7292  hermitian(no CAP)=nan  [6s]
+  t=   0.0: survival(no quantum absorbed)=1.000000  P(quantum outside ring+o)=0.000000  P(o occupied)=0.000000  ring field (normalized, /8)=1.000000
+  t=  50.0: survival(no quantum absorbed)=0.014246  P(quantum outside ring+o)=0.012747  P(o occupied)=0.001402  ring field (normalized, /8)=0.875848
+  t= 100.0: survival(no quantum absorbed)=0.003188  P(quantum outside ring+o)=0.002737  P(o occupied)=0.001126  ring field (normalized, /8)=0.848518
+  t= 150.0: survival(no quantum absorbed)=0.001752  P(quantum outside ring+o)=0.001611  P(o occupied)=0.000315  ring field (normalized, /8)=0.862567
+  t= 200.0: survival(no quantum absorbed)=0.001035  P(quantum outside ring+o)=0.000982  P(o occupied)=0.000347  ring field (normalized, /8)=0.839361
+  t= 250.0: survival(no quantum absorbed)=0.000812  P(quantum outside ring+o)=0.000792  P(o occupied)=0.000280  ring field (normalized, /8)=0.835051
+  t= 300.0: survival(no quantum absorbed)=0.000669  P(quantum outside ring+o)=0.000661  P(o occupied)=0.000139  ring field (normalized, /8)=0.850450
+  RESULT E2 rule=T4 ceil=geo: escaped by T=300 (absorbed + in lead) = 0.999993  retained = 0.000007  first-escape rate ~ 2.437e-02/time  [8s]

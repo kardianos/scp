@@ -1,0 +1,5 @@
+# L1 post-registration convergence check: n=8 without truncation (S^z=0), g/Delta=0.1
+  cmax=None dim= 30654 E0=-0.1769419 J_fit=0.009167 max miss=3.269e-02 S0=0.0000
+  cmax=   4 dim= 27611 E0=-0.1769196 J_fit=0.009162 max miss=3.226e-02 S0=0.0000
+  cmax=   3 dim= 21827 E0=-0.1765207 J_fit=0.009086 max miss=2.885e-02 S0=0.0000
+  cmax=   2 dim= 13283 E0=-0.1721506 J_fit=0.008507 max miss=1.796e-02 S0=0.0000

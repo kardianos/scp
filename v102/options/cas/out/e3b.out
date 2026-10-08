@@ -1,0 +1,15 @@
+# E3b free light: two photons on an open chain of 24 cells, t = 0.9, packets at 6 (pol 1, rightward) and 17 (pol 2, leftward)
+  rule=T2 ceil=lock: dim=  576  initial weight on forbidden states 2.73e-07  P(passed)=0.9945  P(adjacent at end)=0.0000  overlap with the start=0.0000  [0s]
+  rule=T2 ceil=geo : dim=  574  initial weight on forbidden states 2.73e-07  P(passed)=0.9945  P(adjacent at end)=0.0000  overlap with the start=0.0000  [0s]
+  rule=T2 ceil=held: dim=  576  initial weight on forbidden states 2.73e-07  P(passed)=0.9945  P(adjacent at end)=0.0000  overlap with the start=0.0000  [0s]
+  rule=T4 ceil=lock: dim=  576  initial weight on forbidden states 2.73e-07  P(passed)=0.9945  P(adjacent at end)=0.0000  overlap with the start=0.0000  [1s]
+  rule=T4 ceil=geo : dim=  552  initial weight on forbidden states 2.73e-07  P(passed)=0.0000  P(adjacent at end)=0.0001  overlap with the start=0.0002  [1s]
+  rule=T4 ceil=held: dim=  552  initial weight on forbidden states 2.73e-07  P(passed)=0.0000  P(adjacent at end)=0.0000  overlap with the start=0.0000  [1s]
+  two photons started on neighbouring cells 11, 12 (pol 1, pol 2), no packet:
+    rule=T2 ceil=lock: states reachable from the adjacent pair = 576
+    rule=T2 ceil=geo : states reachable from the adjacent pair = 574
+    rule=T2 ceil=held: states reachable from the adjacent pair = 576
+    rule=T4 ceil=lock: states reachable from the adjacent pair = 576
+    rule=T4 ceil=geo : states reachable from the adjacent pair = 231
+    rule=T4 ceil=held: states reachable from the adjacent pair = 1  (frozen: the pair never moves)
+done [1s]

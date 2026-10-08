@@ -1,0 +1,40 @@
+# L5(a) space transport vs the S1 oscillator; one bond, g/Delta = 0.1, g sqrt(lambda_max) = 0.11741, Delta = 0.47931
+  lead            t_s     t_s/Delta  band bottom - pair   bound weight Z_b   late survival   (T)
+  1-D             0.0000   0.00      +0.4793             0.9490            0.9034        (2400)
+  1-D             0.0479   0.10      +0.3834             0.9477            0.8982        (12518)
+  1-D             0.0959   0.20      +0.2876             0.9434            0.8900        (6259)
+  1-D             0.1438   0.30      +0.1917             0.9340            0.8723        (4173)
+  1-D             0.1917   0.40      +0.0959             0.9127            0.8330        (3130)
+  1-D             0.2157   0.45      +0.0479             0.8895            0.7912        (2782)
+  1-D             0.2397   0.50      +0.0000             0.8356            0.6982        (2504)
+  1-D             0.2636   0.55      -0.0479             0.4095            0.1565        (2276)
+  1-D             0.2876   0.60      -0.0959             0.0000            0.0000        (2086)
+
+  reading t_s = s_k = 0.06 (s_k is a diffusive conductance, not an amplitude; this is a reading)
+  1-D fiber lead        : band bottom - pair = +0.3593   Z_b = 0.9470   late survival = 0.8967
+  tree, z_l = 12.6      : band bottom - pair = +0.0713   Z_b = 0.8975   late survival = 0.8055
+  lattice edge estimate z_l t_s = 0.7536 vs Delta = 0.4793: band bottom - pair = -0.2743 (band reaches the pair: decays)
+  condition: the lock keeps a bound field state iff the space band's lower edge stays above the pair, i.e. half-bandwidth < Delta = 0.4793
+
+# L5(b) t > 0 margin under the S-law, n = 6 ring, general basis, S^z = 0, g/Delta = 0.1  [  175s]
+  sum c <= 2: dim = 58362  [  175s]
+    t/Delta = 0.00 (t = 0.0000): E0 = -0.131719  S_ground = 0.000  lock (S=0)  [  182s]
+    t/Delta = 0.05 (t = 0.0240): E0 = -0.133203  S_ground = 0.000  lock (S=0)  [  194s]
+    t/Delta = 0.10 (t = 0.0479): E0 = -0.138123  S_ground = 0.000  lock (S=0)  [  203s]
+    t/Delta = 0.12 (t = 0.0575): E0 = -0.141426  S_ground = 0.000  lock (S=0)  [  213s]
+    t/Delta = 0.14 (t = 0.0671): E0 = -0.145888  S_ground = 0.000  lock (S=0)  [  222s]
+    t/Delta = 0.16 (t = 0.0767): E0 = -0.152211  S_ground = 0.000  lock (S=0)  [  232s]
+    t/Delta = 0.18 (t = 0.0863): E0 = -0.175202  S_ground = 4.000  NOT the lock  [  251s]
+    t/Delta = 0.20 (t = 0.0959): E0 = -0.243965  S_ground = 4.000  NOT the lock  [  265s]
+    t/Delta = 0.25 (t = 0.1198): E0 = -0.447239  S_ground = 4.000  NOT the lock  [  279s]
+  sum c <= 3: dim = 132362  [  280s]
+    t/Delta = 0.00 (t = 0.0000): E0 = -0.133636  S_ground = 0.000  lock (S=0)  [  291s]
+    t/Delta = 0.05 (t = 0.0240): E0 = -0.135246  S_ground = 0.000  lock (S=0)  [  320s]
+    t/Delta = 0.10 (t = 0.0479): E0 = -0.140640  S_ground = 0.000  lock (S=0)  [  350s]
+    t/Delta = 0.12 (t = 0.0575): E0 = -0.144316  S_ground = 0.000  lock (S=0)  [  380s]
+    t/Delta = 0.14 (t = 0.0671): E0 = -0.149373  S_ground = 0.000  lock (S=0)  [  414s]
+    t/Delta = 0.16 (t = 0.0767): E0 = -0.156795  S_ground = 0.000  lock (S=0)  [  444s]
+    t/Delta = 0.18 (t = 0.0863): E0 = -0.175897  S_ground = 3.000  NOT the lock  [  489s]
+    t/Delta = 0.20 (t = 0.0959): E0 = -0.243965  S_ground = 4.000  NOT the lock  [  531s]
+    t/Delta = 0.25 (t = 0.1198): E0 = -0.447239  S_ground = 4.000  NOT the lock  [  565s]
+done [  565s]

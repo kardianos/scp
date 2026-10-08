@@ -1,0 +1,6 @@
+# E4(a) S-law two-cell clusters at caps (z, z), g/Delta = 0.1 (g = 0.04793)
+  z=2 (spin 1.0): Delta_z=0.47931  sep to converted=0.38458  J_bilinear=0.009318 (= 0.972 x 2g^2/Delta_z)  max non-bilinear residual=1.75e-04 (0.019 J)  levels: -0.02822 -0.01846 +0.00000
+  z=3 (spin 1.5): Delta_z=0.78781  sep to converted=0.76551  J_bilinear=0.005727 (= 0.982 x 2g^2/Delta_z)  max non-bilinear residual=2.91e-05 (0.005 J)  levels: -0.03442 -0.02864 -0.01712 +0.00000
+  z=4 (spin 2.0): Delta_z=1.00184  sep to converted=0.97805  J_bilinear=0.004516 (= 0.985 x 2g^2/Delta_z)  max non-bilinear residual=2.12e-05 (0.005 J)  levels: -0.04519 -0.04065 -0.03159 -0.01802 +0.00000
+  z=6 (spin 3.0): Delta_z=1.28670  sep to converted=1.24351  J_bilinear=0.003519 (= 0.986 x 2g^2/Delta_z)  max non-bilinear residual=1.81e-05 (0.005 J)  levels: -0.07393 -0.07040 -0.06334 -0.05277 -0.03867 -0.02108 +0.00000
+done [0s]

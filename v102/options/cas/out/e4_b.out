@@ -1,0 +1,5 @@
+
+# E4(b) open spin-S Heisenberg chains, J = 1, gap E(Sz=1) - E(Sz=0)  [0s]
+  S=1.5 ends=None L_bulk=  8 chi=48: gap=0.207329  gap*L=1.6586  [60s]
+  S=1.5 ends=None L_bulk= 16 chi=48: gap=0.085414  gap*L=1.3666  [688s]
+# (stopped during S = 3/2, L = 32 before commit; the L = 8 and 16 rows are the reported result)

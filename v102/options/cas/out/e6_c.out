@@ -1,0 +1,12 @@
+# E6(c) F2 rate-law space flow: a jump c_l at rate gamma per link; ring ground states, g/Delta = 0.1
+  readings: gamma = s_k = 0.06; gamma = s_k*s_disp = 0.018
+  n=4: <sum c>=0.1808  J=0.009043  gamma=0.06: first-jump rate 1.085e-02, lifetime 92.2 = 0.834/J
+  n=4: <sum c>=0.1808  J=0.009043  gamma=0.018: first-jump rate 3.255e-03, lifetime 307.2 = 2.778/J
+        one jump on link 0: system energy changes by -2.2901 (diagonal part); the quantum leaving carries Omega = 2.9; unaccounted = +0.6099 per jump (= 1.27 Delta)
+  n=6: <sum c>=0.2640  J=0.009151  gamma=0.06: first-jump rate 1.584e-02, lifetime 63.1 = 0.578/J
+  n=6: <sum c>=0.2640  J=0.009151  gamma=0.018: first-jump rate 4.752e-03, lifetime 210.5 = 1.926/J
+        one jump on link 0: system energy changes by -2.2085 (diagonal part); the quantum leaving carries Omega = 2.9; unaccounted = +0.6915 per jump (= 1.44 Delta)
+  n=8: <sum c>=0.3432  J=0.009086  gamma=0.06: first-jump rate 2.059e-02, lifetime 48.6 = 0.441/J
+  n=8: <sum c>=0.3432  J=0.009086  gamma=0.018: first-jump rate 6.178e-03, lifetime 161.9 = 1.471/J
+        one jump on link 0: system energy changes by -2.1338 (diagonal part); the quantum leaving carries Omega = 2.9; unaccounted = +0.7662 per jump (= 1.60 Delta)
+done [3s]

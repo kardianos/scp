@@ -1,0 +1,8 @@
+# E6(a) F1 along the fiber: n = 6, caps 2, sum c <= 3, S^z = 0, g/Delta = 0.1; on-ring space band half-width 2 t_s vs Delta = 0.4793
+  T0 (t=0)   t_s=0.00 (2t_s/Delta=0.000): dim=   1603  E0=-0.133636  S=0.000  <sum c>/n=0.0437  J_fit=0.009126  gap/J=0.744  L1 miss=3.18%  K1 PASS  [1s]
+  T0 (t=0)   t_s=0.03 (2t_s/Delta=0.125): dim=  54706  E0=-0.134715  S=0.000  <sum c>/n=0.0449  J_fit=0.009209  gap/J=0.745  L1 miss=3.32%  K1 PASS  [6s]
+  T0 (t=0)   t_s=0.06 (2t_s/Delta=0.250): dim=  54706  E0=-0.138188  S=0.000  <sum c>/n=0.0491  J_fit=0.009478  gap/J=0.748  L1 miss=3.79%  K1 PASS  [10s]
+  T0 (t=0)   t_s=0.12 (2t_s/Delta=0.501): dim=  54706  E0=-0.160789  S=0.000  <sum c>/n=0.1200  J_fit=0.008416  gap/J=1.017  L1 miss=41.18%  K1 FAIL  [14s]
+  T0 (t=0)   t_s=0.24 (2t_s/Delta=1.001): dim=  54706  E0=-0.674616  S=0.000  <sum c>/n=0.4103  J_fit=0.002828  gap/J=1.027  L1 miss=84.12%  K1 FAIL  [20s]
+  T4 (t=0.9) t_s=0.00 (2t_s/Delta=0.000): dim=   1603  E0=-0.133636  S=0.000  <sum c>/n=0.0437  J_fit=0.009126  gap/J=0.744  L1 miss=3.18%  K1 PASS  [20s]
+# (stopped after the T4 t_s = 0 row; the T4 x F1 combination was run on n = 4: e6_t4f1.py -> out/e6_t4f1.out)

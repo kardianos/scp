@@ -1,0 +1,11 @@
+# E8 margin g/Delta=0.5: n=6, sum c <= 2, general basis, S^z = 0
+  t/Delta=0.05: S_ground=0.000 lock  [18s]
+  t/Delta=0.10: S_ground=0.000 lock  [35s]
+  t/Delta=0.15: S_ground=0.000 lock  [52s]
+  t/Delta=0.18: S_ground=0.000 lock  [68s]
+  t/Delta=0.20: S_ground=0.000 lock  [82s]
+  t/Delta=0.25: S_ground=0.000 lock  [98s]
+  t/Delta=0.30: S_ground=0.000 lock  [112s]
+  t/Delta=0.40: S_ground=0.000 lock  [127s]
+  t/Delta=0.50: S_ground=4.000 NOT the lock  [144s]
+done [144s]

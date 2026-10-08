@@ -1,0 +1,19 @@
+# L7 size: E0(n) of S-law rings, g/Delta = 0.1 (energies relative to n E_f(2))
+  n= 3 cmax=None dim=     29  E0 = -0.0553996  E0/n = -0.0184665  [0s]
+  n= 4 cmax=None dim=    118  E0 = -0.0914900  E0/n = -0.0228725  [0s]
+  n= 5 cmax=None dim=    452  E0 = -0.1057469  E0/n = -0.0211494  [0s]
+  n= 6 cmax=None dim=   1831  E0 = -0.1337439  E0/n = -0.0222906  [5s]
+  n= 7 cmax=None dim=   7436  E0 = -0.1518028  E0/n = -0.0216861  [6s]
+  n= 8 cmax=None dim=  30654  E0 = -0.1769419  E0/n = -0.0221177  [10s]
+  n= 9 cmax=   3 dim=  79210  E0 = -0.1960058  E0/n = -0.0217784  [23s]
+  n=10 cmax=   3 dim= 284353  E0 = -0.2194114  E0/n = -0.0219411  [65s]
+  truncation scale at n=8: E0(sum c<=3) - E0(exact) = +4.21e-04
+  second difference E0(n+1) + E0(n-1) - 2 E0(n):
+   n=4:+2.18e-02  n=5:-1.37e-02  n=6:+9.94e-03  n=7:-7.08e-03  n=8:+6.08e-03  n=9:-4.34e-03
+  fission energy E0(a) + E0(b) - E0(a+b)  (> 0: the joined ring is lower):
+   N= 6: 3+3:+0.02294
+   N= 7: 3+4:+0.00491
+   N= 8: 3+5:+0.01580  4+4:-0.00604
+   N= 9: 3+6:+0.00686  4+5:-0.00123
+   N=10: 3+7:+0.01221  4+6:-0.00582  5+5:+0.00792
+  E0/n is not monotone over n = 3..10; even n: -0.022872 -0.022291 -0.022118 -0.021941; odd n: -0.018467 -0.021149 -0.021686 -0.021778

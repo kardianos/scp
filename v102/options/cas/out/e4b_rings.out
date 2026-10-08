@@ -1,0 +1,12 @@
+# E4(b) exact spin-S Heisenberg rings, J = 1
+  S=1.0 n=4: E0=-6.000000  gap=1.000000  gap*n=4.0000  [0s]
+  S=1.0 n=6: E0=-8.617423  gap=0.720627  gap*n=4.3238  [0s]
+  S=1.0 n=8: E0=-11.336956  gap=0.593555  gap*n=4.7484  [0s]
+  S=1.5 n=4: E0=-12.000000  gap=1.000000  gap*n=4.0000  [0s]
+  S=1.5 n=6: E0=-17.392845  gap=0.705489  gap*n=4.2329  [0s]
+  S=1.5 n=8: E0=-22.930042  gap=0.558609  gap*n=4.4689  [0s]
+  S=2.0 n=4: E0=-20.000000  gap=1.000000  gap*n=4.0000  [0s]
+  S=2.0 n=6: E0=-29.164693  gap=0.697295  gap*n=4.1838  [1s]
+  S=2.0 n=8: E0=-38.521869  gap=0.545569  gap*n=4.3646  [2s]
+  literature (open/periodic chains, n -> infinity): Delta_1 = 0.4105 J; S = 3/2 gapless; Delta_2 = 0.0876-0.0892 J (xi ~ 49); Delta_3 ~ 0.010 J (xi ~ 640)
+done [2s]

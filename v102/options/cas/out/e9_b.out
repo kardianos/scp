@@ -1,0 +1,5 @@
+# E9(b) Z2 frame twist on one link: A_l -> b_i^T eps U(theta) b_j; all S^z (the twist breaks S^z)
+  n=4: E0(theta = 0, pi/4, pi/2, pi) = -0.091490 -0.090889 -0.089223 -0.085900;  per cell: -0.022872 -0.022722 -0.022306 -0.021475;  cost of theta = pi: +0.005589  [0s]
+  n=6: E0(theta = 0, pi/4, pi/2, pi) = -0.133744 -0.133422 -0.132553 -0.130968;  per cell: -0.022291 -0.022237 -0.022092 -0.021828;  cost of theta = pi: +0.002775  [4s]
+  n=8: E0(theta = 0, pi/4, pi/2, pi) = -0.176521 -0.176328 -0.175818 -0.174948;  per cell: -0.022065 -0.022041 -0.021977 -0.021868;  cost of theta = pi: +0.001573  [114s]
+done [114s]

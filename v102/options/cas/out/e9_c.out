@@ -1,0 +1,19 @@
+# E9(c) Z3 energy per quantum (absolute: sum E_f(N_i) + conversion energy, over the number of quanta)
+  ring  n= 4: quanta  8  E/quantum = 1.324823  [0s]
+  ring  n= 5: quanta 10  E/quantum = 1.325685  [0s]
+  ring  n= 6: quanta 12  E/quantum = 1.325114  [4s]
+  ring  n= 7: quanta 14  E/quantum = 1.325416  [5s]
+  ring  n= 8: quanta 16  E/quantum = 1.325201  [12s]
+  ring  n= 9: quanta 18  E/quantum = 1.325370  [31s]
+  ring  n=10: quanta 20  E/quantum = 1.325289  [112s]
+  open  n= 3: quanta  4  E/quantum = 1.385301  [113s]
+  open  n= 4: quanta  6  E/quantum = 1.365575  [113s]
+  open  n= 5: quanta  8  E/quantum = 1.355518  [113s]
+  open  n= 6: quanta 10  E/quantum = 1.349472  [114s]
+  open  n= 7: quanta 12  E/quantum = 1.345440  [124s]
+  open  n= 8: quanta 14  E/quantum = 1.342559  [126s]
+  open  n= 9: quanta 16  E/quantum = 1.340450  [133s]
+  open  n=10: quanta 18  E/quantum = 1.338788  [157s]
+  a lone full cell, no conversion: E_f(2)/2 = 1.336259
+  free light at its band bottom, t = 0.9: 1-D E_f(1) - 2t = -0.337827;  cubic lattice E_f(1) - 6t = -3.937827
+done [157s]

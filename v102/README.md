@@ -58,6 +58,7 @@ of the link exchange. Those were the gates.
 | | ruling, after the gates | closes |
 |---|---|---|
 | R6 | **The occupancy ceiling of a lock is one quantum per link end** (user, 2026-10-07: "That's okay, can you continue with that modification?"). | `DECIDE.md` §2's open sentence. With it, W4's ceiling exists, `N = 2` on the ring, and an end cell of an open chain (degree 1) holds one quantum. |
+| R7 | **S1–S4 of `law/DECIDE.md`** (user, 2026-10-07: "Sure, follow those rabbit trail S1-S4 and try to make a lock work."). A link's space mode is a discrete oscillator at `Ω = w2`. Conversion is a coherent pair amplitude `g`. Transport inside a lock is zero. | `law/DECIDE.md` ending C. The lock is tested under this "S-law" in `lock/` (`lock/PREREG.md`). The rulings change the theory, not the code: no kernel implements S1–S3, so no battery has run. |
 
 Phase 1 is opened under R1, R2, R5, and R6: `PHASE1.md`, with gates
 in `phase1/PREREG.md`.
@@ -85,6 +86,56 @@ in `phase1/PREREG.md`.
   ruling, and a law-table change.
 - The two defective Phase 1 bars were re-registered on new cases, and
   both passed.
+
+**Lock step under R7** (2026-10-07; `lock/DECIDE.md`): **ending A,
+in a model.** Under S1–S4 (the "S-law"), a fiber ring at its ceiling
+is a working lock:
+
+- **It holds its field.** Over 100/J, from every unlocked start, space
+  stays at or below 0.103 per link. With space refused a pitch, the same
+  ring converts at the golden-rule rate.
+- **Its quantum walks only by conversion.** It moves at rate
+  J ∝ g², and the field never travels.
+- **Its quantum is massive and single.** Δ_∞ = 0.436 J, there is one
+  line, and space-carrying states sit 32× higher.
+
+Costs: transport must stay under t/Δ ≈ 0.16–0.18, and the space
+band's half-width under Δ. The lock cannot cool itself. `g` is
+unset. Size sits on the smallest even cycle. No kernel or battery
+carries any of it.
+
+**Options step** (2026-10-08; `options/DECIDE.md`): **a measurement,
+no ruling.** Each open question was given 3–5 options. Each option was
+tested alone and in combination, and the bundles were scored by a rule
+fixed in advance.
+
+- **The lock needs one label: which cells are in it.**
+  - The geometric ceiling leaks the lock, or makes spin z/2 cells.
+  - The dynamic ceiling freezes adjacent free light.
+- **Given the label, t = 0 on lock links is the robust transport
+  rule.** The local "frozen at ceiling" rule is identical alone, but
+  collapses under any space flow on lock links.
+- **A lock forms only through boundary conversion, and only from light
+  colder than its gap:** about 10⁸ photons at g/Δ = 0.1. Resonant light
+  heats it or destroys it.
+- **The lock is metastable.** Per quantum it sits far above free light.
+- **Touching locks merge.**
+- **Space may flow on a lock only coherently,** with 2t_s < 0.2275.
+  Rate-law flow creates energy.
+- **The door spares a lock that carries no space deficit.** Removing
+  the door costs 10 bars.
+- **The g window is g/Δ ≤ 0.1,** with the table's `s_k` reading on its
+  edge.
+- **No size is selected.**
+
+Best bundle: **B-label-cool** (T0, C-lock, X1, no space flow on lock
+links, door exempt). It needs one label.
+
+The user then noted that "cold" is a layer mismatch: the fiber and its
+links are what energy is made of, and they cannot be hot. Read that
+way, the cooling requirement was about emptying the fiber of its lock
+quanta, not about making a lock. `options/DECIDE.md` §12 sets out
+which results that touches.
 
 ## What is carried
 

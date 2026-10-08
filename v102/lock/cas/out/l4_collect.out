@@ -1,0 +1,13 @@
+# L4(a) effective-chain gap, chi = 64; chain [cap1] + [cap2]*L + [cap1]
+  heis  L_bulk= 24  E0=-34.24248094  gap/J=0.467439
+  heis  L_bulk= 32  E0=-45.45435311  gap/J=0.448584
+  heis  L_bulk= 48  E0=-67.87809764  gap/J=0.430980
+  heis: Delta_inf/J = 0.41904  (fit residual max 1.4e-03; J = 1.000000)
+  slaw  L_bulk= 24  E0=-60.55058517  gap/J=0.495087
+  slaw  L_bulk= 32  E0=-79.58759079  gap/J=0.471341
+  slaw  L_bulk= 48  E0=-117.66160247  gap/J=0.450580
+  slaw: Delta_inf/J = 0.43570  (fit residual max 1.3e-03; J = 0.009231)
+  Heisenberg reference vs literature 0.4105: miss 2.08% (P2 at L = 40, 60, 80 gave 0.41317)
+  ratio S-law/Heisenberg at equal L: L=24:1.0591  L=32:1.0507  L=48:1.0455
+  S-law Delta_inf/J_h2 = 0.43570; vs 0.4105: +6.14%; vs the same-procedure Heisenberg 0.41904: +3.98%
+L4(a) PASS  (bar Delta_inf/J_h2 > 0.2)

@@ -1,0 +1,9 @@
+# E1 transport inside the ring: n = 6, caps 2, sum c <= 3, S^z = 0, g/Delta = 0.1, Delta = 0.47931
+  K1 bars: S_ground = 0, <sum c>/n <= 0.1, L1 miss < 5%
+  T0        rule=T2 t=0.0000 (t/Delta=0.000): dim=   1603  E0=-0.133636  S_ground=0.000  <sum c>=0.2623 (/n 0.0437)  sum<(N_i-2)^2>=0.5638  J_fit=0.009126  gap=0.006786 (=0.744 J)  L1 max miss=3.18%  K1 PASS  [8s]
+  T1 0.05D  rule=T2 t=0.0240 (t/Delta=0.050): dim= 141242  E0=-0.135246  S_ground=0.000  <sum c>=0.2728 (/n 0.0455)  sum<(N_i-2)^2>=0.5927  J_fit=0.009019  gap=0.006675 (=0.740 J)  L1 max miss=2.70%  K1 PASS  [38s]
+  T1 0.10D  rule=T2 t=0.0479 (t/Delta=0.100): dim= 141242  E0=-0.140640  S_ground=0.000  <sum c>=0.3106 (/n 0.0518)  sum<(N_i-2)^2>=0.6984  J_fit=0.008541  gap=0.006228 (=0.729 J)  L1 max miss=4.07%  K1 PASS  [78s]
+  T2        rule=T2 t=0.9000 (t/Delta=1.878): dim= 141242  E0=-8.296913  S_ground=4.000  <sum c>=1.9994 (/n 0.3332)  sum<(N_i-2)^2>=5.0298  J_fit=0.000212  gap=0.000171 (=0.807 J)  L1 max miss=62.55%  K1 FAIL  [115s]
+  T3        rule=T3 t=0.9000 (t/Delta=1.878): dim= 120472  E0=-1.109297  S_ground=0.000  <sum c>=2.9531 (/n 0.4922)  sum<(N_i-2)^2>=9.8118  J_fit=0.000376  gap=0.000866 (=2.306 J)  L1 max miss=219.94%  K1 FAIL  [1099s]
+  T4        rule=T4 t=0.9000 (t/Delta=1.878): dim=   1603  E0=-0.133636  S_ground=0.000  <sum c>=0.2623 (/n 0.0437)  sum<(N_i-2)^2>=0.5638  J_fit=0.009126  gap=0.006786 (=0.744 J)  L1 max miss=3.18%  K1 PASS  [1118s]
+done [1118s]

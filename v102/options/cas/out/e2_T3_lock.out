@@ -1,0 +1,9 @@
+# E2 rule=T3 ceil=lock: dim=238740  states with ring field outside the ring: 237370  hermitian(no CAP)=nan  [89s]
+  t=   0.0: survival(no quantum absorbed)=1.000000  P(quantum outside ring+o)=0.000000  P(o occupied)=0.000000  ring field (normalized, /8)=1.000000
+  t=  50.0: survival(no quantum absorbed)=0.213889  P(quantum outside ring+o)=0.160336  P(o occupied)=0.074595  ring field (normalized, /8)=0.856245
+  t= 100.0: survival(no quantum absorbed)=0.027208  P(quantum outside ring+o)=0.023916  P(o occupied)=0.008118  ring field (normalized, /8)=0.845675
+  t= 150.0: survival(no quantum absorbed)=0.012417  P(quantum outside ring+o)=0.011357  P(o occupied)=0.003828  ring field (normalized, /8)=0.836958
+  t= 200.0: survival(no quantum absorbed)=0.008220  P(quantum outside ring+o)=0.007558  P(o occupied)=0.002533  ring field (normalized, /8)=0.835633
+  t= 250.0: survival(no quantum absorbed)=0.006414  P(quantum outside ring+o)=0.005910  P(o occupied)=0.001891  ring field (normalized, /8)=0.836700
+  t= 300.0: survival(no quantum absorbed)=0.005743  P(quantum outside ring+o)=0.005333  P(o occupied)=0.001829  ring field (normalized, /8)=0.830588
+  RESULT E2 rule=T3 ceil=lock: escaped by T=300 (absorbed + in lead) = 0.999590  retained = 0.000410  first-escape rate ~ 1.720e-02/time  [290s]

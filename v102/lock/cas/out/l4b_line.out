@@ -1,0 +1,5 @@
+# L4(b) one line, n = 8, sum c <= 3, g/Delta = 0.1
+  gap Delta_8 = 0.005549;  lowest S^z=2: 0.016263 = 1.4655 x 2 Delta_8;  lowest non-triplet S=0 excitation: 0.024014 = 2.1639 x 2 Delta_8
+  levels below 2 Delta_8 in S^z = 0: 2;  their max <sum c> = 0.3432 (bar < 0.5)
+L4(b) PASS
+  report: n = 6 (exact, S^z = 0): first level with <sum c> > 0.5 is index 141 of 1831, E - E0 = 0.43672 = 0.911 Delta = 32.0 x 2 Delta_6 (spin-manifold S^z=0 states: 141)  [49s]

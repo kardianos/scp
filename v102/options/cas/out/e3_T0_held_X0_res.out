@@ -1,0 +1,9 @@
+# E3 rule=T0 ceil=held X0 res: dim=7526  states with ring field outside the ring: 0  hermitian(no CAP)=0.0  [10s]
+  R7 ground-state weight on states this ceiling forbids: 3.480e-03 (dropped, renormalized)
+  photon: k0=1.4441  kinetic eps=+0.2275  speed toward o=1.786  T=39.2
+  RESULT E3 rule=T0 ceil=held X0 res: norm=1.000000  reflected(ring intact)=1.000000  captured(9 quanta in ring+o)=0.000000  ring field lost=0.000000  ring ground fidelity in reflected part=0.995293  ring energy above E0 in reflected part=+1.908e-03  [12s]
+    t=   0.0: P(o occ)=0.00000  <c_boundary>=0.00000  P(9 in core)=0.00000  <N ring>=7.65107
+    t=   9.8: P(o occ)=0.00522  <c_boundary>=0.00000  P(9 in core)=0.00522  <N ring>=7.65776
+    t=  19.6: P(o occ)=0.26619  <c_boundary>=0.00000  P(9 in core)=0.26619  <N ring>=7.66905
+    t=  29.4: P(o occ)=0.00004  <c_boundary>=0.00000  P(9 in core)=0.00004  <N ring>=7.67060
+    t=  39.2: P(o occ)=0.00000  <c_boundary>=0.00000  P(9 in core)=0.00000  <N ring>=7.66306

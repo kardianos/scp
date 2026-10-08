@@ -1,0 +1,18 @@
+# E7(a) D0 on a lock cell: the door's arithmetic
+  work function open (space deficit >= wf_floor): econd = 0: halves the cell's field in 3 steps = 0.060 time units = 5.48e-04/J (the lock exchanges once per 1/J = 110 time units)
+  work function closed (no deficit): econd = wf_far = 99: Ee = 2.6725 <= econd: the door does not fire. The lock is exempt without a label.
+
+# E7(c) detection under D2: absorption of a lone photon at a screen cell
+  g/Delta=0.1 m=1 F0  : eps_res=-0.0243  band-averaged absorption=0.0000  peak=0.0000 at eps=-0.0240  FWHM=0.0100  absorption at the band bottom=5.55e-17
+  g/Delta=0.1 m=1 F1  : eps_res=-0.0243  band-averaged absorption=0.0039  peak=0.0723 at eps=-0.0250  FWHM=0.2139  absorption at the band bottom=1.67e-16
+  g/Delta=0.1 m=1 R-c : eps_res=-0.0243  band-averaged absorption=0.0035  peak=0.0051 at eps=-0.0110  FWHM=2.6815  absorption at the band bottom=7.92e-05
+  g/Delta=0.1 m=2 F0  : eps_res=+0.2275  band-averaged absorption=0.0000  peak=0.0000 at eps=+0.2289  FWHM=0.0160  absorption at the band bottom=3.70e-17
+  g/Delta=0.1 m=2 F1  : eps_res=+0.2275  band-averaged absorption=0.0072  peak=0.1330 at eps=+0.2299  FWHM=0.2159  absorption at the band bottom=3.70e-17
+  g/Delta=0.1 m=2 R-c : eps_res=+0.2275  band-averaged absorption=0.0069  peak=0.0100 at eps=+0.1019  FWHM=2.6655  absorption at the band bottom=2.22e-16
+  g/Delta=0.2 m=1 F0  : eps_res=-0.0243  band-averaged absorption=0.0000  peak=0.0000 at eps=-0.0250  FWHM=0.0420  absorption at the band bottom=0.00e+00
+  g/Delta=0.2 m=1 F1  : eps_res=-0.0243  band-averaged absorption=0.0107  peak=0.1894 at eps=-0.0250  FWHM=0.2239  absorption at the band bottom=-1.11e-16
+  g/Delta=0.2 m=1 R-c : eps_res=-0.0243  band-averaged absorption=0.0138  peak=0.0196 at eps=-0.0110  FWHM=2.7205  absorption at the band bottom=3.25e-04
+  g/Delta=0.2 m=2 F0  : eps_res=+0.2275  band-averaged absorption=0.0000  peak=0.0000 at eps=+0.2319  FWHM=0.0620  absorption at the band bottom=-3.70e-17
+  g/Delta=0.2 m=2 F1  : eps_res=+0.2275  band-averaged absorption=0.0170  peak=0.2978 at eps=+0.2399  FWHM=0.2249  absorption at the band bottom=1.48e-16
+  g/Delta=0.2 m=2 R-c : eps_res=+0.2275  band-averaged absorption=0.0270  peak=0.0383 at eps=+0.1009  FWHM=2.7225  absorption at the band bottom=7.40e-17
+done [3s]
