@@ -54,6 +54,9 @@ static int      lq_M, lq_n, lq_nlab, lq_nm, lq_muof[4];
 static double   lq_P[4][4];
 static int      lq_mlab[4][2];
 static double   lq_Ef1, lq_Ef2, lq_hb, lq_Om, lq_Dl, lq_g, lq_J0, lq_t;
+/* v102/bind: the (1,1) link's pricing (lockq_p11: 0 none, 1 core, 2 singlet
+ * core, 3 field branch, 4 space branch), as lo.py P11; lq_p11c its coefficient */
+static double   lq_p11c;
 static LqLoc    lq_loc[2];
 static LqTwo    lq_two[LQ_NMAX];
 static int     *lq_cell;         /* chain site -> kernel cell */
@@ -151,8 +154,10 @@ static void lq_two_build(LqTwo *T, const LqLoc *A, const LqLoc *B)
     for (int a = 0; a < dA; a++)
         for (int b = 0; b < dB; b++) {
             int ni = A->N[a], nj = B->N[b], col = a * dB + b;
-            if (!(ni == 1 && nj == 1)) {
-                double c = -lq_g * lq_g / lq_dtype(ni, nj);
+            int n11 = (ni == 1 && nj == 1);
+            if (n11 && P.lockq_p11 == 1) X[(size_t)col * dd + col] += lq_p11c;
+            if (!n11 || P.lockq_p11 >= 2) {
+                double c = n11 ? lq_p11c : -lq_g * lq_g / lq_dtype(ni, nj);
                 for (int r = 0; r < lq_M; r++) for (int m = 0; m < lq_M; m++)
                     for (int s = 0; s < lq_M; s++) for (int n = 0; n < lq_M; n++) {
                         double w = lq_P[r][s] * lq_P[m][n];
@@ -707,6 +712,16 @@ static void lq_install(double cx, double cy, double cz)
             lq_P[a][b] = eps2[a / 2][b / 2] * eps2[a % 2][b % 2];
         for (int a = 0; a < 4; a++) { lq_mlab[a][0] = mw[a][0]; lq_mlab[a][1] = mw[a][1]; }
         lq_nlab = 3;
+    }
+    if (P.lockq_p11 < 0 || P.lockq_p11 > 4) { printf("# CONFIG ERROR: lockq_p11 must be 0 .. 4\n"); exit(1); }
+    if (P.lockq_p11) {
+        double c2 = 0, d11 = lq_Om - 2.0 * lq_Ef1;
+        for (int a = 0; a < lq_M; a++) for (int b = 0; b < lq_M; b++) c2 += lq_P[a][b] * lq_P[a][b];
+        double root = sqrt(d11 * d11 / 4 + lq_g * lq_g * c2);
+        lq_p11c = P.lockq_p11 == 1 ? 1.0 : P.lockq_p11 == 2 ? 1.0 / c2
+                : P.lockq_p11 == 3 ? (d11 / 2 + root) / c2 : (d11 / 2 - root) / c2;
+        printf("# LOCKQ p11=%d: the (1,1) link priced, coefficient %.15f (Delta11=%.15f |P|^2=%g)\n",
+               P.lockq_p11, lq_p11c, d11, c2);
     }
     if (P.fmodes > 1 && P.fmodes != lq_M) {
         printf("# CONFIG ERROR: with fmodes > 1, lockq_M must equal fmodes\n");

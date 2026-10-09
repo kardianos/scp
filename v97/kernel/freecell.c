@@ -398,7 +398,7 @@ typedef struct {
     int  snap_comp;                 /* 1 = compress CELL/LINK chunks (CMPD) */
     /* v102 K2a lockq (v102/kernel/K2a_PREREG.md): an exact quantum lock
      * fenced inside the classical kernel; lockq = 0 is byte-inert */
-    int    lockq, lockq_M, lockq_n, lockq_every, lockq_force, lockq_fmode;
+    int    lockq, lockq_M, lockq_n, lockq_every, lockq_force, lockq_fmode, lockq_p11;
     double lockq_t, lockq_g, lockq_rate, lockq_dx;
     unsigned long lockq_seed;
     /* v102 K2b (v102/kernel/K2b_PREREG.md): complex field modes per cell
@@ -450,7 +450,7 @@ static void cfg_defaults(void)
     P.j_rel = 0;           /* v95 J-metric: healing off */
     P.hop_order = 1;   /* v93 face A: Strang symmetric is the adopted default (L1-A re-run passes: fd +285/+300/+272, seed-robust +x; battery ALL GREEN 87 -- pass U is skipped at amp_nat=0). hop_order=0 reproduces all prior amp_nat>0 sequential-sweep results. */
     P.pattern_only = 0;
-    P.lockq = 0; P.lockq_M = 2; P.lockq_n = 8; P.lockq_every = 1; P.lockq_force = 0; P.lockq_fmode = 0;
+    P.lockq = 0; P.lockq_M = 2; P.lockq_n = 8; P.lockq_every = 1; P.lockq_force = 0; P.lockq_fmode = 0; P.lockq_p11 = 0;
     P.lockq_t = 0.1; P.lockq_g = 0.1; P.lockq_rate = 1.0; P.lockq_dx = 0; P.lockq_seed = 1;
     P.fmodes = 1; P.fseed_mode = 0;
     P.qatom_every = 200;
@@ -679,6 +679,7 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "lockq_every")) P.lockq_every = atoi(v);
     else if (!strcmp(k, "lockq_force")) P.lockq_force = atoi(v);
     else if (!strcmp(k, "lockq_fmode")) P.lockq_fmode = atoi(v);
+    else if (!strcmp(k, "lockq_p11")) P.lockq_p11 = atoi(v);
     else if (!strcmp(k, "lockq_t")) P.lockq_t = atof(v);
     else if (!strcmp(k, "lockq_g")) P.lockq_g = atof(v);
     else if (!strcmp(k, "lockq_rate")) P.lockq_rate = atof(v);

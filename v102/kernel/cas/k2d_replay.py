@@ -22,7 +22,9 @@ txt = open(sys.argv[1]).read()
 lo.P11 = sys.argv[2] if len(sys.argv) > 2 else 'zero'
 m = re.search(r'# LOCKQ v102 K2a: M=(\d+) n=(\d+) g/Delta=(\S+) t/J0=(\S+)', txt)
 M, n, tJ0 = int(m.group(1)), int(m.group(2)), float(m.group(4))
-ev = [(float(a), int(b), int(c)) for a, b, c in re.findall(r'# LQ event t=(\S+) site=(\d+) cell=\d+ o=\d+ nu=(\d+)', txt)]
+# an event fires after its lock step's evolution, at t + dt_L; the line prints the step's start t
+dtL = float(re.search(r' dt=(\S+)', txt).group(1))*int(re.search(r'# LOCKQ v102 K2a: .* every=(\d+)', txt).group(1))
+ev = [(float(a) + dtL, int(b), int(c)) for a, b, c in re.findall(r'# LQ event t=(\S+) site=(\d+) cell=\d+ o=\d+ nu=(\d+)', txt)]
 diag = re.findall(r'# LQ t=(\S+) tL=(\S+) E_lock=\S+ Ex/J0=(\S+) Nh=(\d+).*?\| nh: ([^|]+)\| sz: ([^|\n]+)(?:\| iz: ([^\n]+))?', txt)
 P = GM.P_W if M == 4 else GM.P_2
 g = 0.1*GM.DELTA; J0 = 2*g*g/GM.DELTA; t = tJ0*J0
@@ -56,8 +58,11 @@ def jump(psi, basis, tgt, site, nu):
     x = np.zeros(len(b), complex)
     for c, a in out.items(): x[pos[c]] += a
     return x/np.linalg.norm(x), nt, b
+nbr = []                                   # hole density on the new hole's neighbours, just before each event
 for (te, site, nu) in ev:
     if te > tnow: psi = expm_multiply(-1j*(te - tnow)*sect(tgt)[0], psi); tnow = te
+    pp = np.abs(psi)**2
+    nbr.append(sum(float(pp@(locs[s].N[(basis//strides[s]) % dims[s]] == 1)) for s in (site - 1, site + 1) if locs[s].kind == 'mob'))
     psi, tgt, basis = jump(psi, basis, tgt, site, nu)
 tL = float(diag[-1][1]) if diag else tnow
 if tL > tnow: psi = expm_multiply(-1j*(tL - tnow)*sect(tgt)[0], psi)
@@ -80,6 +85,8 @@ if Nh >= 1:
         ds = (basis//strides[s]) % dims[s]; dt = (basis//strides[s + 1]) % dims[s + 1]
         adjp += float(p@((locs[s].N[ds] == 1) & (locs[s + 1].N[dt] == 1)))
     Bm = (Ex - E0 - Nh*(E1 - E0))/J0
+    print(f"  events (site, nu, hole density on its neighbours): " + " ".join(f"({si},{nu},{x:.2f})" for (te, si, nu), x in zip(ev, nbr))
+          + f"; next to an end: {sum(1 for (te, si, nu) in ev if si in (1, n - 2))}")
     line = f"  final: N_h={Nh}, nh = " + " ".join(f"{x:.3f}" for x in nh) + f"; adjacency {adjp:.3f}; mean B {Bm:+.3f} J0"
     if Nh >= 2:
         if H.shape[0] <= 4000:
