@@ -57,6 +57,10 @@ static double   lq_Ef1, lq_Ef2, lq_hb, lq_Om, lq_Dl, lq_g, lq_J0, lq_t;
 /* v102/bind: the (1,1) link's pricing (lockq_p11: 0 none, 1 core, 2 singlet
  * core, 3 field branch, 4 space branch), as lo.py P11; lq_p11c its coefficient */
 static double   lq_p11c;
+/* v102 K2e: lockq_proj projects each jump onto the allowed subspace of the
+ * (1,1) constraint (p11 = 2: no conversion singlet on any (1,1) link; p11 = 1:
+ * no (1,1) link at all), by alternating projections; lq_projmax = most sweeps */
+static long     lq_projmax;
 static LqLoc    lq_loc[2];
 static LqTwo    lq_two[LQ_NMAX];
 static int     *lq_cell;         /* chain site -> kernel cell */
@@ -473,6 +477,51 @@ static double lq_energy_kernel(void)
 }
 
 /* lq_phi[nu] <- J_nu,i psi in the next sector (unnormalized); returns |J psi|^2 */
+/* apply (1 - Pi_l) to phi on link l; returns the squared norm removed */
+static double lq_proj_link(const LqSec *X, double complex *phi, int l)
+{
+    const LqLoc *A = lq_locof(l), *B = lq_locof(l + 1);
+    double c2 = 0, rem = 0;
+    int cmp[4], d1A[4], d1B[4];
+    for (int r = 0; r < lq_M; r++) for (int q = 0; q < lq_M; q++) c2 += lq_P[r][q] * lq_P[r][q];
+    for (int r = 0; r < lq_M; r++) {
+        int o[4] = {0, 0, 0, 0};
+        cmp[r] = -1;
+        for (int q = 0; q < lq_M; q++) if (lq_P[r][q] != 0) cmp[r] = q;
+        o[r] = 1; d1A[r] = lq_find(A, o); d1B[r] = lq_find(B, o);
+    }
+    double cn = 1.0 / sqrt(c2);
+    for (long k = 0; k < X->D; k++) {
+        int64_t c = X->basis[k];
+        int da = lq_digit(c, l), db = lq_digit(c, l + 1);
+        if (A->N[da] != 1 || B->N[db] != 1) continue;
+        if (P.lockq_p11 == 1) { rem += creal(phi[k] * conj(phi[k])); phi[k] = 0; continue; }
+        if (da != d1A[0] || db != d1B[cmp[0]]) continue;          /* the group's representative: (0, cmp(0)) */
+        long row[4];
+        double complex a = 0;
+        for (int r = 0; r < lq_M; r++) {
+            row[r] = lq_bsearch(X, c + (int64_t)(d1A[r] - da) * lq_stride[l] + (int64_t)(d1B[cmp[r]] - db) * lq_stride[l + 1]);
+            if (row[r] < 0) { fprintf(stderr, "FATAL lockq: singlet partner outside the sector\n"); exit(3); }
+            a += lq_P[r][cmp[r]] * cn * phi[row[r]];
+        }
+        for (int r = 0; r < lq_M; r++) phi[row[r]] -= lq_P[r][cmp[r]] * cn * a;
+        rem += creal(a * conj(a));
+    }
+    return rem;
+}
+
+static void lq_proj(const LqSec *X, double complex *phi)
+{
+    double n2 = creal(lq_dot(X->D, phi, phi));
+    long sw;
+    for (sw = 1; sw <= 200; sw++) {
+        double rem = 0;
+        for (int l = 0; l + 1 < lq_n; l++) rem += lq_proj_link(X, phi, l);
+        if (rem <= 1e-30 * n2) break;
+    }
+    if (sw > lq_projmax) lq_projmax = sw;
+}
+
 static double lq_map(int i, int nu)
 {
     const LqLoc *L = lq_locof(i);
@@ -493,6 +542,7 @@ static double lq_map(int i, int nu)
             phi[row] += lq_P[mu][nu] * amp * lq_psi[k];
         }
     }
+    if (P.lockq_proj) lq_proj(X, phi);
     return creal(lq_dot(X->D, phi, phi)) / creal(lq_dot(lq_cur.D, lq_psi, lq_psi));
 }
 
@@ -506,6 +556,7 @@ static void lq_fire(int i, int o, int nu)
     double Eb = lq_energy_kernel();
     double jj = lq_map(i, nu);
     if (jj <= 0) { fprintf(stderr, "FATAL lockq: zero jump\n"); exit(3); }
+    if (o < 0 && P.lockq_proj) printf("# LOCKQ seeded jump weight (projected) %.15f\n", jj);
     int otgt[3] = {lq_cur.tgt[0], lq_cur.tgt[1], lq_cur.tgt[2]}, oNh = lq_cur.Nh;
     LqSec old = lq_cur;
     lq_cur = lq_nxt[nu];
@@ -673,6 +724,7 @@ static void lq_result(void)
         printf("# RESULT lockq_modes events_by_mode=%ld,%ld,%ld,%ld check_violations=%ld final_charges=(%d,%d) Nh=%d\n",
                lq_evmode[0], lq_evmode[1], lq_evmode[2], lq_evmode[3], lq_chkviol,
                lq_cur.tgt[0], lq_nlab == 3 ? lq_cur.tgt[1] : 0, lq_cur.Nh);
+    if (P.lockq_proj) printf("# RESULT lockq_proj max_sweeps=%ld\n", lq_projmax);
     lq_diag();
 }
 
@@ -714,6 +766,8 @@ static void lq_install(double cx, double cy, double cz)
         lq_nlab = 3;
     }
     if (P.lockq_p11 < 0 || P.lockq_p11 > 4) { printf("# CONFIG ERROR: lockq_p11 must be 0 .. 4\n"); exit(1); }
+    if (P.lockq_proj && P.lockq_p11 != 1 && P.lockq_p11 != 2) { printf("# CONFIG ERROR: lockq_proj needs lockq_p11 = 1 or 2\n"); exit(1); }
+    if (P.lockq_proj) printf("# LOCKQ proj=1: each jump is projected onto the allowed subspace of the (1,1) constraint\n");
     if (P.lockq_p11) {
         double c2 = 0, d11 = lq_Om - 2.0 * lq_Ef1;
         for (int a = 0; a < lq_M; a++) for (int b = 0; b < lq_M; b++) c2 += lq_P[a][b] * lq_P[a][b];
@@ -810,8 +864,10 @@ static void lq_install(double cx, double cy, double cz)
            lq_cur.D, lq_Egs, lq_Egs / lq_J0, lq_energy_kernel());
     printf("# LOCKQ resonance: photon pitch %.6f +- %.6f on the E_f part (vacuum w1=%g); the exact window is per jump\n",
            lq_Om - (lq_Ef2 - lq_Ef1), 2 * P.s_k, P.w1);
-    if (P.lockq_force >= 1 && P.lockq_force <= lq_n - 2) {
-        int fm = P.lockq_fmode;
+    for (int sj = 0; sj < 2; sj++) {
+    int fsite = sj == 0 ? P.lockq_force : P.lockq_force2;
+    if (fsite >= 1 && fsite <= lq_n - 2) {
+        int fm = sj == 0 ? P.lockq_fmode : P.lockq_fmode2;
         if (fm < 0 || fm >= lq_M) { printf("# CONFIG ERROR: lockq_fmode must be 0 .. lockq_M-1\n"); exit(1); }
         if (fm >= lq_nm) {   /* a seeded jump may use any lock mode, even with a one-mode field */
             int nm0 = lq_nm;
@@ -819,13 +875,14 @@ static void lq_install(double cx, double cy, double cz)
             for (int nu = nm0; nu < lq_nm; nu++)
                 for (int mu = 0; mu < lq_M; mu++) if (lq_P[mu][nu] != 0) lq_muof[nu] = mu;
             lq_next_build(); lq_scratch();
-            lq_fire(P.lockq_force, -1, fm);
+            lq_fire(fsite, -1, fm);
             for (int nu = nm0; nu < lq_nm; nu++) { lq_sec_free(&lq_nxt[nu]); free(lq_phi[nu]); lq_phi[nu] = NULL; }
             lq_nm = nm0;
             lq_scratch();
-        } else lq_fire(P.lockq_force, -1, fm);
+        } else lq_fire(fsite, -1, fm);
         printf("# LOCKQ seeded jump at site %d, photon mode %d: sector dim %ld, E_lock %.12f (kernel), <H>/J0 %.12f\n",
-               P.lockq_force, fm, lq_cur.D, lq_energy_kernel(), lq_expect(&lq_cur, lq_psi, lq_w) / lq_J0);
+               fsite, fm, lq_cur.D, lq_energy_kernel(), lq_expect(&lq_cur, lq_psi, lq_w) / lq_J0);
+    }
     }
     lq_diag();
 }

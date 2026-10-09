@@ -1,0 +1,8 @@
+# K2e convergence of M2_b_s3.out: M=2 n=10 events=6
+  event site=2 nu=0 t=0.0200: candidates' sweeps (200 rule) max 2, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 0.0e+00, max|<x200|x-x200>|/|x|^2 1.7e-18, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  event site=4 nu=0 t=0.1000: candidates' sweeps (200 rule) max 27, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 5.2e-31, max|<x200|x-x200>|/|x|^2 6.6e-17, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  event site=7 nu=1 t=1.7800: candidates' sweeps (200 rule) max 41, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 1.6e-30, max|<x200|x-x200>|/|x|^2 1.0e-16, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  event site=1 nu=1 t=1.9200: candidates' sweeps (200 rule) max 41, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 2.1e-30, max|<x200|x-x200>|/|x|^2 9.1e-17, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  event site=3 nu=0 t=8.0000: candidates' sweeps (200 rule) max 82, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 4.7e-29, max|<x200|x-x200>|/|x|^2 2.7e-16, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  event site=6 nu=0 t=17.7200: candidates' sweeps (200 rule) max 141, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 5.6e-30, max|<x200|x-x200>|/|x|^2 1.0e-16, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  worst: sweeps 141, rate weight change 0.0e+00, residual singlet weight 4.7e-29, fired-state distance 0.0e+00

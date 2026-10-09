@@ -1,0 +1,8 @@
+bath: byte-identical (K2d binary vs K2e binary)
+blob: byte-identical (K2d binary vs K2e binary)
+slit: byte-identical (K2d binary vs K2e binary)
+pulse: byte-identical (K2d binary vs K2e binary)
+d3p2: byte-identical (K2d binary vs K2e binary)
+d3p0: byte-identical (K2d binary vs K2e binary)
+battery bar table vs k2d_battery.out: identical
+run logs: 70 of 71 byte-identical vs K2d's runs; p2lc.log differs only in ms_sync/ms_async (wall-clock)

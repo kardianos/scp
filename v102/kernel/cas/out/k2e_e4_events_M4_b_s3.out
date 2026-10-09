@@ -1,0 +1,5 @@
+# K2e convergence of M4_b_s3.out: M=4 n=7 events=3
+  event site=1 nu=2 t=0.0200: candidates' sweeps (200 rule) max 2, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 3.5e-34, max|<x200|x-x200>|/|x|^2 5.6e-17, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  event site=3 nu=0 t=1.8200: candidates' sweeps (200 rule) max 14, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 7.1e-33, max|<x200|x-x200>|/|x|^2 4.9e-17, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  event site=2 nu=0 t=8.0800: candidates' sweeps (200 rule) max 18, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 4.1e-32, max|<x200|x-x200>|/|x|^2 5.3e-17, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  worst: sweeps 18, rate weight change 0.0e+00, residual singlet weight 4.1e-32, fired-state distance 0.0e+00

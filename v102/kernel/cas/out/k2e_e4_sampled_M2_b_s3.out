@@ -1,0 +1,44 @@
+# K2e convergence of M2_b_s3.out: M=2 n=10 events=6 tL=20.0 sampling every 0.5
+  event site=2 nu=0 t=0.0200: candidates' sweeps (200 rule) max 2, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 0.0e+00, max|<x200|x-x200>|/|x|^2 1.7e-18, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  event site=4 nu=0 t=0.1000: candidates' sweeps (200 rule) max 27, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 5.2e-31, max|<x200|x-x200>|/|x|^2 6.6e-17, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  sample t=0.5000 (N_h=2): candidates' sweeps (200 rule) max 38, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 2.7e-30, max|<x200|x-x200>|/|x|^2 1.2e-16, unconverged candidates 0
+  sample t=1.0000 (N_h=2): candidates' sweeps (200 rule) max 39, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 1.8e-30, max|<x200|x-x200>|/|x|^2 1.1e-16, unconverged candidates 0
+  sample t=1.5000 (N_h=2): candidates' sweeps (200 rule) max 40, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 3.3e-30, max|<x200|x-x200>|/|x|^2 1.0e-16, unconverged candidates 0
+  event site=7 nu=1 t=1.7800: candidates' sweeps (200 rule) max 41, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 1.6e-30, max|<x200|x-x200>|/|x|^2 9.2e-17, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  event site=1 nu=1 t=1.9200: candidates' sweeps (200 rule) max 41, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 2.1e-30, max|<x200|x-x200>|/|x|^2 8.7e-17, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  sample t=2.0000 (N_h=4): candidates' sweeps (200 rule) max 81, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 6.3e-29, max|<x200|x-x200>|/|x|^2 1.5e-16, unconverged candidates 0
+  sample t=2.5000 (N_h=4): candidates' sweeps (200 rule) max 81, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 6.2e-29, max|<x200|x-x200>|/|x|^2 3.2e-16, unconverged candidates 0
+  sample t=3.0000 (N_h=4): candidates' sweeps (200 rule) max 81, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 6.2e-29, max|<x200|x-x200>|/|x|^2 2.8e-16, unconverged candidates 0
+  sample t=3.5000 (N_h=4): candidates' sweeps (200 rule) max 81, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 6.1e-29, max|<x200|x-x200>|/|x|^2 2.7e-16, unconverged candidates 0
+  sample t=4.0000 (N_h=4): candidates' sweeps (200 rule) max 81, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 6.9e-29, max|<x200|x-x200>|/|x|^2 2.8e-16, unconverged candidates 0
+  sample t=4.5000 (N_h=4): candidates' sweeps (200 rule) max 81, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 6.0e-29, max|<x200|x-x200>|/|x|^2 2.7e-16, unconverged candidates 0
+  sample t=5.0000 (N_h=4): candidates' sweeps (200 rule) max 81, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 6.6e-29, max|<x200|x-x200>|/|x|^2 2.5e-16, unconverged candidates 0
+  sample t=5.5000 (N_h=4): candidates' sweeps (200 rule) max 81, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 7.0e-29, max|<x200|x-x200>|/|x|^2 1.3e-16, unconverged candidates 0
+  sample t=6.0000 (N_h=4): candidates' sweeps (200 rule) max 81, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 6.7e-29, max|<x200|x-x200>|/|x|^2 2.5e-16, unconverged candidates 0
+  sample t=6.5000 (N_h=4): candidates' sweeps (200 rule) max 81, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 6.1e-29, max|<x200|x-x200>|/|x|^2 2.8e-16, unconverged candidates 0
+  sample t=7.0000 (N_h=4): candidates' sweeps (200 rule) max 82, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 6.5e-29, max|<x200|x-x200>|/|x|^2 2.1e-16, unconverged candidates 0
+  sample t=7.5000 (N_h=4): candidates' sweeps (200 rule) max 82, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 8.0e-29, max|<x200|x-x200>|/|x|^2 2.4e-16, unconverged candidates 0
+  sample t=8.0000 (N_h=4): candidates' sweeps (200 rule) max 82, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 4.7e-29, max|<x200|x-x200>|/|x|^2 2.7e-16, unconverged candidates 0
+  event site=3 nu=0 t=8.0000: candidates' sweeps (200 rule) max 82, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 4.7e-29, max|<x200|x-x200>|/|x|^2 2.7e-16, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  sample t=8.5000 (N_h=5): candidates' sweeps (200 rule) max 137, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 7.9e-30, max|<x200|x-x200>|/|x|^2 1.3e-16, unconverged candidates 0
+  sample t=9.0000 (N_h=5): candidates' sweeps (200 rule) max 137, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 9.2e-30, max|<x200|x-x200>|/|x|^2 9.4e-17, unconverged candidates 0
+  sample t=9.5000 (N_h=5): candidates' sweeps (200 rule) max 137, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 7.1e-30, max|<x200|x-x200>|/|x|^2 1.0e-16, unconverged candidates 0
+  sample t=10.0000 (N_h=5): candidates' sweeps (200 rule) max 138, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 5.4e-30, max|<x200|x-x200>|/|x|^2 1.2e-16, unconverged candidates 0
+  sample t=10.5000 (N_h=5): candidates' sweeps (200 rule) max 138, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 6.0e-30, max|<x200|x-x200>|/|x|^2 9.8e-17, unconverged candidates 0
+  sample t=11.0000 (N_h=5): candidates' sweeps (200 rule) max 138, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 4.6e-30, max|<x200|x-x200>|/|x|^2 9.6e-17, unconverged candidates 0
+  sample t=11.5000 (N_h=5): candidates' sweeps (200 rule) max 138, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 4.5e-30, max|<x200|x-x200>|/|x|^2 7.1e-17, unconverged candidates 0
+  sample t=12.0000 (N_h=5): candidates' sweeps (200 rule) max 139, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 4.8e-30, max|<x200|x-x200>|/|x|^2 8.6e-17, unconverged candidates 0
+  sample t=12.5000 (N_h=5): candidates' sweeps (200 rule) max 139, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 5.1e-30, max|<x200|x-x200>|/|x|^2 7.7e-17, unconverged candidates 0
+  sample t=13.0000 (N_h=5): candidates' sweeps (200 rule) max 139, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 4.4e-30, max|<x200|x-x200>|/|x|^2 1.4e-16, unconverged candidates 0
+  sample t=13.5000 (N_h=5): candidates' sweeps (200 rule) max 139, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 5.1e-30, max|<x200|x-x200>|/|x|^2 1.1e-16, unconverged candidates 0
+  sample t=14.0000 (N_h=5): candidates' sweeps (200 rule) max 140, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 6.1e-30, max|<x200|x-x200>|/|x|^2 1.0e-16, unconverged candidates 0
+  sample t=14.5000 (N_h=5): candidates' sweeps (200 rule) max 140, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 4.8e-30, max|<x200|x-x200>|/|x|^2 8.3e-17, unconverged candidates 0
+  sample t=15.0000 (N_h=5): candidates' sweeps (200 rule) max 140, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 5.6e-30, max|<x200|x-x200>|/|x|^2 7.2e-17, unconverged candidates 0
+  sample t=15.5000 (N_h=5): candidates' sweeps (200 rule) max 140, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 6.6e-30, max|<x200|x-x200>|/|x|^2 7.2e-17, unconverged candidates 0
+  sample t=16.0000 (N_h=5): candidates' sweeps (200 rule) max 140, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 5.1e-30, max|<x200|x-x200>|/|x|^2 8.5e-17, unconverged candidates 0
+  sample t=16.5000 (N_h=5): candidates' sweeps (200 rule) max 140, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 6.0e-30, max|<x200|x-x200>|/|x|^2 1.3e-16, unconverged candidates 0
+  sample t=17.0000 (N_h=5): candidates' sweeps (200 rule) max 141, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 7.0e-30, max|<x200|x-x200>|/|x|^2 9.5e-17, unconverged candidates 0
+  sample t=17.5000 (N_h=5): candidates' sweeps (200 rule) max 141, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 8.1e-30, max|<x200|x-x200>|/|x|^2 8.3e-17, unconverged candidates 0
+  event site=6 nu=0 t=17.7200: candidates' sweeps (200 rule) max 141, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 5.6e-30, max|<x200|x-x200>|/|x|^2 8.5e-17, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  sample t=18.0000 (N_h=6): candidates' sweeps (200 rule) max 201, max|w200-wdeep|/wdeep 3.7e-16, max residual singlet weight 7.7e-27, max|<x200|x-x200>|/|x|^2 8.5e-15, unconverged candidates 10
+# stopped by hand at this point (the remaining samples at N_h = 6 were slow); see ../../K2e_DECIDE.md E4
