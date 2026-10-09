@@ -1,0 +1,12 @@
+# chains (leading order, energies in J0 = 2 g^2/Delta)
+  W no hole L_bulk=8: gap (the (1,1) member of the first multiplet) = 1.59804 J0;  target sums +1.000/+1.000
+  W no hole L_bulk=12: gap (the (1,1) member of the first multiplet) = 1.47873 J0;  target sums +1.000/+1.000
+  W no hole L_bulk=16: gap (the (1,1) member of the first multiplet) = 1.43365 J0;  target sums +1.000/+1.000
+  W gap extrapolated D + a/(L+1)^2: D = 1.36943 J0  (gapped)
+  W hole L_bulk=8: hole S^z -0.0930, neighbours +0.6760; S^z decay length nan (fit d=2..2); I^z decay length nan; max |S^z - I^z| profile 0.0e+00;  E(3,3) - E(1,1) = 1.88250;  no-hole gap 1.59804
+  W hole L_bulk=12: hole S^z -0.0913, neighbours +0.6607; S^z decay length 2.849 (fit d=2..4); I^z decay length 2.849; max |S^z - I^z| profile 1.0e-05;  E(3,3) - E(1,1) = 1.65895;  no-hole gap 1.47873
+  W hole L_bulk=16: hole S^z -0.0909, neighbours +0.6576; S^z decay length 2.554 (fit d=2..6); I^z decay length 2.554; max |S^z - I^z| profile 1.0e-05;  no-hole gap 1.43365
+  W N2: two longest L_bulk=12,16: own fit ranges 2.849 -> 2.554 (10.3%); common range d=2..4: 2.849 -> 2.947 (3.4%)
+
+  3+2 no hole L_bulk=40: gap 0.44131 J0
+  3+2 static hole L_bulk=40: decay length 6.074;  E(3/2)-E(1/2) = 0.49076 (no-hole gap 0.44131)

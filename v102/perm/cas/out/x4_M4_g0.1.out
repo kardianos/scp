@@ -1,0 +1,7 @@
+# X4 formation under S: M=4, g/Delta=0.1, n=4; ring ground -0.134207 (sector dim 616)
+  photon mode 0 (charges (np.int64(1), np.int64(1))): channels 2068, P2 dim 257; hole made per resonant photon = 0.0561  [32s]
+  photon mode 1 (charges (np.int64(1), np.int64(-1))): channels 2068, P2 dim 257; hole made per resonant photon = 0.0561  [63s]
+  photon mode 2 (charges (np.int64(-1), np.int64(1))): channels 2068, P2 dim 257; hole made per resonant photon = 0.0561  [99s]
+  photon mode 3 (charges (np.int64(-1), np.int64(-1))): channels 2068, P2 dim 257; hole made per resonant photon = 0.0561  [137s]
+  polarization average: 0.0561
+done [137s]

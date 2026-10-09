@@ -1,0 +1,43 @@
+# TeNPy chains, leading order, energies in J0
+  W L_bulk=16: gap 1.41069 J0 (trunc 1.3e-05)
+  W L_bulk=24: gap 1.36476 J0 (trunc 1.3e-05)
+  W L_bulk=32: gap 1.34714 J0 (trunc 1.6e-05)
+  W L_bulk=24: the (1,0) member gives 1.36476 J0 (same multiplet?)
+  W gap extrapolated: 1.32450 J0  K: PASS (> 0.1 J)
+  W hole L_bulk=16: hole -0.0907, neighbours +0.6564; decay length own range 2.558 (d=2..6), common d=2..6 2.558; max|Sz-Iz| 1.0e-05; trunc 4.5e-06
+  W hole L_bulk=24: hole -0.0906, neighbours +0.6556; decay length own range 2.365 (d=2..10), common d=2..6 2.599; max|Sz-Iz| 1.0e-05; trunc 4.7e-06;  E(3/2,3/2)-E(1/2,1/2) = 1.42899 vs gap 1.36476 -> above
+  W hole L_bulk=32: hole -0.0906, neighbours +0.6556; decay length own range 2.299 (d=2..14), common d=2..6 2.600; max|Sz-Iz| 1.0e-05; trunc 4.7e-06;  E(3/2,3/2)-E(1/2,1/2) = 1.38689 vs gap 1.34714 -> above
+  W N2 (own range): 2.365 -> 2.299  change 2.8%  (PASS)
+  W N2 (common d=2..6): 2.599 -> 2.600  change 0.0%  (PASS)
+
+  3+2 L_bulk=24: no-hole gap 0.47864 J0
+  3+2 L_bulk=40: no-hole gap 0.44130 J0
+  conditional profile t=0.1 L_bulk=24: -0.154 +0.423 -0.274 +0.263 -0.194 +0.174 -0.135 +0.116; decay length 5.220
+  3+2 mobile hole t=0.1 J0 L_bulk=24: C(0..4) -0.154 +0.847 -0.549 +0.525 -0.387; decay length 5.143; trunc 3.7e-07;  E(3/2)-E(1/2) = 0.51232 vs gap 0.47864 -> above
+  conditional profile t=0.1 L_bulk=40: -0.154 +0.423 -0.274 +0.263 -0.194 +0.175 -0.136 +0.119; decay length 5.380
+  3+2 mobile hole t=0.1 J0 L_bulk=40: C(0..4) -0.154 +0.845 -0.548 +0.525 -0.388; decay length 5.318; trunc 4.4e-07
+  N2 under T (t=0.1), raw C(d) as registered: 5.143 -> 5.318  change 3.4%  (PASS)
+  N2 under T (t=0.1), conditional profile: 5.220 -> 5.380  change 3.1%  (PASS)
+  conditional profile t=1.0 L_bulk=24: -0.017 +0.186 -0.052 +0.111 -0.052 +0.072 -0.042 +0.048; decay length 8.219
+  3+2 mobile hole t=1.0 J0 L_bulk=24: C(0..4) -0.017 +0.372 -0.103 +0.221 -0.104; decay length 6.903; trunc 9.7e-07;  E(3/2)-E(1/2) = 0.54261 vs gap 0.47864 -> above
+  conditional profile t=1.0 L_bulk=40: -0.016 +0.182 -0.050 +0.109 -0.052 +0.072 -0.042 +0.048; decay length 6.441
+  3+2 mobile hole t=1.0 J0 L_bulk=40: C(0..4) -0.016 +0.363 -0.100 +0.218 -0.103; decay length 5.712; trunc 9.9e-07;  E(3/2)-E(1/2) = 0.47430 vs gap 0.44130 -> above
+  N2 under T (t=1.0), raw C(d) as registered: 6.903 -> 5.712  change 17.3%  (MISS)
+  N2 under T (t=1.0), conditional profile: 8.219 -> 6.441  change 21.6%  (MISS)
+  conditional profile t=3.0 L_bulk=24: +0.069 +0.084 +0.028 +0.047 +0.007 +0.027 -0.000 +0.016; decay length 3.588
+  3+2 mobile hole t=3.0 J0 L_bulk=24: C(0..4) +0.069 +0.167 +0.056 +0.093 +0.015; decay length 3.293; trunc 2.2e-06;  E(3/2)-E(1/2) = 0.52780 vs gap 0.47864 -> above
+  conditional profile t=3.0 L_bulk=40: +0.068 +0.081 +0.028 +0.046 +0.008 +0.026 +0.000 +0.016; decay length 6.443
+  3+2 mobile hole t=3.0 J0 L_bulk=40: C(0..4) +0.068 +0.163 +0.055 +0.091 +0.015; decay length 5.688; trunc 2.4e-06;  E(3/2)-E(1/2) = 0.46858 vs gap 0.44130 -> above
+  N2 under T (t=3.0), raw C(d) as registered: 3.293 -> 5.688  change 72.7%  (MISS)
+  N2 under T (t=3.0), conditional profile: 3.588 -> 6.443  change 79.6%  (MISS)
+
+# range-free size: the radius holding 90% of the hole's spin-1/2 (the cumulative moment stays >= 0.45 from there on)
+  W static hole L_bulk=16: r90 = 5
+  W static hole L_bulk=24: r90 = 5
+  W static hole L_bulk=32: r90 = 5
+  3+2 mobile hole t=0.1 L_bulk=24: r90 = 9
+  3+2 mobile hole t=0.1 L_bulk=40: r90 = 11
+  3+2 mobile hole t=1.0 L_bulk=24: r90 = 7
+  3+2 mobile hole t=1.0 L_bulk=40: r90 = 7
+  3+2 mobile hole t=3.0 L_bulk=24: r90 = 5
+  3+2 mobile hole t=3.0 L_bulk=40: r90 = 7

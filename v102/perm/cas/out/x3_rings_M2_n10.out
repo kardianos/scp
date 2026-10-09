@@ -1,0 +1,14 @@
+# X3 rings: M=2 n=10, one mobile hole, leading order, units J0 = 0.009586
+  t= 0.0 J0: ground -24.42764 J0 in 1/2; own-multiplet levels (E-E0): 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000;  band width of 10 positional states W = 0.00000 J0
+           lowest 3/2: +0.7526 J0   (threshold hole + one quantum: +0.5248 J0;  above)
+           [1200s]
+  t= 0.1 J0: ground -24.48724 J0 in 1/2; own-multiplet levels (E-E0): 0.0000 0.0035 0.0035 0.0195 0.0195 0.0536 0.0536 0.0935 0.0935 0.1118;  band width of 10 positional states W = 0.11182 J0
+           lowest 3/2: +0.7133 J0   (threshold hole + one quantum: +0.5248 J0;  above)
+           [2197s]
+  t= 1.0 J0: ground -25.99792 J0 in 1/2; own-multiplet levels (E-E0): 0.0000 0.0000 0.1914 0.1914 0.4074 0.4074 0.6913 1.0122 1.0122;  band width of 10 positional states W = nan J0
+           lowest 3/2: +0.7337 J0   (threshold hole + one quantum: +0.5248 J0;  above)
+           [2429s]
+  t= 3.0 J0: ground -30.89520 J0 in 1/2; own-multiplet levels (E-E0): 0.0000 0.0000 0.1235 0.1235 1.0570 1.0570 1.2690 1.2690;  band width of 10 positional states W = nan J0
+           lowest 3/2: +0.5555 J0   (threshold hole + one quantum: +0.5248 J0;  above)
+           [2858s]
+done [2858s]

@@ -1,0 +1,22 @@
+# X3 rings: M=4 n=6, one mobile hole, leading order, units J0 = 0.009586
+  t= 0.0 J0: ground -20.51293 J0 in (1/2,1/2); own-multiplet levels (E-E0): 0.0000 0.0000 0.0000 0.0000 0.0000 0.0000;  band width of 6 positional states W = 0.00000 J0
+           lowest (3/2,1/2): +1.9917 J0   (threshold hole + one quantum: +1.5276 J0;  above)
+           lowest (1/2,3/2): +1.9917 J0   (threshold hole + one quantum: +1.5276 J0;  above)
+           lowest (3/2,3/2): +1.9917 J0   (threshold hole + one quantum: +1.5276 J0;  above)
+           [354s]
+  t= 0.1 J0: ground -20.73466 J0 in (1/2,1/2); own-multiplet levels (E-E0): 0.0000 0.1126 0.1126 0.3083 0.3083 0.3879;  band width of 6 positional states W = 0.38794 J0
+           lowest (3/2,1/2): +1.9457 J0   (threshold hole + one quantum: +1.5276 J0;  above)
+           lowest (1/2,3/2): +1.9457 J0   (threshold hole + one quantum: +1.5276 J0;  above)
+           lowest (3/2,3/2): +1.9457 J0   (threshold hole + one quantum: +1.5276 J0;  above)
+           [866s]
+  t= 1.0 J0: ground -23.56207 J0 in (1/2,1/2); own-multiplet levels (E-E0): 0.0000 1.4337 1.4337 1.8117 2.1033 2.1033 2.5695;  band width of 6 positional states W = 2.10331 J0
+           lowest (3/2,1/2): +1.8530 J0   (threshold hole + one quantum: +1.5276 J0;  above)
+           lowest (1/2,3/2): +1.8530 J0   (threshold hole + one quantum: +1.5276 J0;  above)
+           lowest (3/2,3/2): +1.8530 J0   (threshold hole + one quantum: +1.5276 J0;  above)
+           [1346s]
+  t= 3.0 J0: ground -30.83895 J0 in (1/2,1/2); own-multiplet levels (E-E0): 0.0000 2.6716 2.6716 2.8859 3.0402 3.0402;  band width of 6 positional states W = 3.04016 J0
+           lowest (3/2,1/2): +1.7845 J0   (threshold hole + one quantum: +1.5276 J0;  above)
+           lowest (1/2,3/2): +1.7845 J0   (threshold hole + one quantum: +1.5276 J0;  above)
+           lowest (3/2,3/2): +1.7845 J0   (threshold hole + one quantum: +1.5276 J0;  above)
+           [1818s]
+done [1818s]

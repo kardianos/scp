@@ -1,0 +1,12 @@
+# X5 two holes, binding B = E2 + E0 - 2 E1 (J = J_h2 = 0.009231)
+  (a) 3+2 n=8 t=0: E0=+21.203629 E1=+19.995884  [9s]
+      separation 1: E2=+18.756401  B = -3.4382 J  (dim 7700)  [10s]
+      separation 2: E2=+18.787660  B = -0.0519 J  (dim 7263)  [11s]
+      separation 3: E2=+18.785632  B = -0.2715 J  (dim 7295)  [13s]
+      separation 4: E2=+18.787926  B = -0.0231 J  (dim 7294)  [14s]
+  (b) 3+2 n=6 t=J, holes free: B = -20.3722 J  (two-hole dim 67746)  [122s]
+  (c) W n=4 t=0: E0=+10.562744 E1=+9.359249  [125s]
+      separation 1: B = -5.2400 J  (dim 246)  [125s]
+      separation 2: B = -0.1318 J  (dim 228)  [125s]
+  (d) W n=4 t=J, holes free: B = -16.4991 J  (dim 2868)  [148s]
+done [148s]

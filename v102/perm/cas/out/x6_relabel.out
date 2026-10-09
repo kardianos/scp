@@ -1,0 +1,6 @@
+# X6 P1: 3+2 hole ring n=8: lowest levels 2S^z=+1: [-0.1741979  -0.16571562 -0.15898085 -0.1585205  -0.15543292 -0.1518648 ]; 2S^z=-1: [-0.1741979  -0.16571562 -0.15898085 -0.1585205  -0.15543292 -0.1518648 ]; max diff 3.9e-16; profiles mirror: max |p(+)+p(-)| = 1.3e-14
+# X6 P3: W ring n=4 no hole: sectors (2, 0) vs (0, 2): max |diff| of the lowest 8 = 4.0e-16
+# X6 P3: W ring n=4 no hole: sectors (4, 0) vs (0, 4): max |diff| of the lowest 8 = 6.4e-16
+# X6 P3: W ring n=4 one hole: sectors (3, 1) vs (1, 3): max |diff| of the lowest 8 = 3.1e-16
+# X6 P3: W ring n=4 one hole: sectors (5, 1) vs (1, 5): max |diff| of the lowest 8 = 2.2e-16
+done [30s]
