@@ -220,6 +220,24 @@ the attraction**:
   pair.
 - **Next: K2a,** a C module `lockq` in `v97/kernel`, off by default.
 
+**Kernel step, K2a** (2026-10-08; `kernel/K2a_PREREG.md`,
+`kernel/K2a_DECIDE.md`): **Go (K2b).**
+
+- **Off, it is byte-inert:** the battery on both kernels is ALL GREEN
+  (87 bars) and identical, and kernel stdout is byte-identical.
+- **On, it matches the Python lock model** (`lo.py`) to every printed
+  digit, for the ground energies and for 20 000 steps of hole and spin
+  dynamics.
+- **Light makes holes**, one atom per event, at the golden-rule rate
+  onto the space band. The ledger closes at the kernel's own floor
+  (drift ≤ 3.5e-15).
+- **One gate failed as first written:** a hole formed beside another
+  in W shifts the space quantum out of the band. The window now uses
+  the exact energy change of each jump.
+- **The kernel's light is one mode,** so every hole it makes has the
+  same charges, and the all-singlet nucleus cannot form. That is K2b's
+  job: four field modes per cell.
+
 ## What is carried
 
 - `v89/PRINCIPLE.md`, in full. Where the kernel and the principle

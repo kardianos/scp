@@ -396,6 +396,11 @@ typedef struct {
     char snap_dir[256];
     char snap_file[256];            /* FCS v3 single-stream output */
     int  snap_comp;                 /* 1 = compress CELL/LINK chunks (CMPD) */
+    /* v102 K2a lockq (v102/kernel/K2a_PREREG.md): an exact quantum lock
+     * fenced inside the classical kernel; lockq = 0 is byte-inert */
+    int    lockq, lockq_M, lockq_n, lockq_every, lockq_force;
+    double lockq_t, lockq_g, lockq_rate, lockq_dx;
+    unsigned long lockq_seed;
 } Cfg;
 
 static Cfg P;
@@ -442,6 +447,8 @@ static void cfg_defaults(void)
     P.j_rel = 0;           /* v95 J-metric: healing off */
     P.hop_order = 1;   /* v93 face A: Strang symmetric is the adopted default (L1-A re-run passes: fd +285/+300/+272, seed-robust +x; battery ALL GREEN 87 -- pass U is skipped at amp_nat=0). hop_order=0 reproduces all prior amp_nat>0 sequential-sweep results. */
     P.pattern_only = 0;
+    P.lockq = 0; P.lockq_M = 2; P.lockq_n = 8; P.lockq_every = 1; P.lockq_force = 0;
+    P.lockq_t = 0.1; P.lockq_g = 0.1; P.lockq_rate = 1.0; P.lockq_dx = 0; P.lockq_seed = 1;
     P.qatom_every = 200;
     /* freecell geometry */
     P.cfac = 1.15; P.k_rep = 1.0; P.mob_geo = 1.0; P.kappa_bond = 1.0;
@@ -662,6 +669,16 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "snap_dir")) { strncpy(P.snap_dir, v, 255); P.snap_dir[255] = 0; }
     else if (!strcmp(k, "snap_file")) { strncpy(P.snap_file, v, 255); P.snap_file[255] = 0; }
     else if (!strcmp(k, "snap_comp")) P.snap_comp = atoi(v);
+    else if (!strcmp(k, "lockq")) P.lockq = atoi(v);
+    else if (!strcmp(k, "lockq_M")) P.lockq_M = atoi(v);
+    else if (!strcmp(k, "lockq_n")) P.lockq_n = atoi(v);
+    else if (!strcmp(k, "lockq_every")) P.lockq_every = atoi(v);
+    else if (!strcmp(k, "lockq_force")) P.lockq_force = atoi(v);
+    else if (!strcmp(k, "lockq_t")) P.lockq_t = atof(v);
+    else if (!strcmp(k, "lockq_g")) P.lockq_g = atof(v);
+    else if (!strcmp(k, "lockq_rate")) P.lockq_rate = atof(v);
+    else if (!strcmp(k, "lockq_dx")) P.lockq_dx = atof(v);
+    else if (!strcmp(k, "lockq_seed")) P.lockq_seed = strtoul(v, NULL, 10);
     else fprintf(stderr, "# WARN unknown key %s\n", k);
 }
 
@@ -1317,6 +1334,8 @@ static int slot_new(int i, int j)
 /* candidate refresh: births, dying transitions, rule-α frees, live d/u.
  * Canonical order everywhere (cells ascending, neighbours sorted). */
 static int nbuf[512];
+#include "lockq.c"
+
 static void topo_refresh(void)
 {
     bins_build();
@@ -1398,6 +1417,7 @@ static void topo_refresh(void)
         }
         sA[s] = A;
     }
+    if (P.lockq) for (int s = 0; s < NSLOT; s++) if (sst[s] != S_FREE) sA[s] = lq_fence(s, sA[s]);
     /* CSR, canonical (slots visited in index order after per-cell sort) */
     for (int i = 0; i <= NC; i++) cls_[i] = 0;
     for (int s = 0; s < NSLOT; s++) {
@@ -1600,6 +1620,7 @@ static void step(void)
             if (a2 > 0) A = M_PI * a2;
             else if (d < fabs(ri - rj)) { double rm = ri < rj ? ri : rj; A = M_PI * rm * rm; }
         }
+        if (P.lockq) A = lq_fence(s, A);   /* v102 K2a: the lock's links carry nothing */
         sA[s] = A;
         swant[2*s] = swant[2*s+1] = 0;
         shau_[s] = 0;
@@ -2498,6 +2519,7 @@ static void step(void)
     }
     bh_nin = 0;
     for (int i = 0; i < NC; i++) {
+        if (P.lockq && lq_skip(i)) continue;   /* v102 K2a: lock cells have no classical door */
         if (P.bh_r > 0) {
             double hdx = wr(px_[i] - 0.5 * P.L), hdy = wr(py_[i] - 0.5 * P.L);
             double hdz = wr(pz_[i] - 0.5 * P.L);
@@ -3166,6 +3188,10 @@ static double total_energy(void)
     }
     {
         double y = Eh_total - comp, t = s + y;
+        comp = (t - s) - y; s = t;
+    }
+    if (P.lockq) {
+        double y = lq_energy_kernel() - comp, t = s + y;   /* v102 K2a: the lock's ledger */
         comp = (t - s) - y; s = t;
     }
     return s;
@@ -4692,6 +4718,7 @@ int main(int argc, char **argv)
         printf("# SEED cantus: sgg=1 on %d tagged-pair slots\n", nseed);
     }
     for (int i = 0; i < NC; i++) { fxb[i] = fyb[i] = fzb[i] = 0; }
+    if (P.lockq) lq_install(cx0, cy0, cz0);   /* v102 K2a: seed the lock before the ledger */
     E0_total = total_energy();
     births = deaths = beta_returns = 0; beta_energy = 0;
     {
@@ -4739,6 +4766,7 @@ int main(int argc, char **argv)
                    P.shear_eps, sim_t);
         }
         if (st % P.diag_every == 0 || st == steps) {
+            if (P.lockq) lq_diag();
             double Etot = total_energy();
             double drift = (Etot - E0_total) / (E0_total != 0 ? E0_total : 1);
             double phi, zl, dbar, sig, mld; int nla, nld;
@@ -4979,6 +5007,7 @@ int main(int argc, char **argv)
             bed_map_dump();
         if (st == steps) break;
         step();
+        if (P.lockq) lq_step();
         if (!strcmp(P.exp, "slit")) {
             double tn = (st + 1) * P.dt;
             if (tn >= P.slit_t0 && tn <= P.slit_t1) {
@@ -5018,6 +5047,7 @@ int main(int argc, char **argv)
     {
         double Etot = total_energy();
         printf("#\n# RESULT drift_rel %.3e\n", (Etot - E0_total) / (E0_total != 0 ? E0_total : 1));
+        if (P.lockq) lq_result();
         printf("# RESULT births %ld deaths %ld beta_returns %ld beta_energy %.6e\n",
                births, deaths, beta_returns, beta_energy);
         printf("# RESULT conv rough=%.6f cond=%.6f evap=%.6f backs=%.6f rad=%.6f\n",

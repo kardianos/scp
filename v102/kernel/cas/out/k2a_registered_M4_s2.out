@@ -1,0 +1,12 @@
+# LOCKQ v102 K2a: M=4 n=6 g/Delta=0.1 t/J0=0.1 rate=1 every=1 seed=2 dx=0
+# LOCKQ S-law: Ef1=1.462173444685073 Ef2=2.672518771615148 Omega=2.9 Delta=0.479309346139852 g=0.047930934613985 J0=0.009586186922797 t=9.586187e-04 hbar=0.183028184555680
+# LOCKQ chain cells: 1821 308 1689 2329 588 2643 | fenced slots 115 | removed classical 11.622520436 (in-flight moved 0.000000000)
+# LOCKQ ground: sector dim 8272 E_gs=-0.194846709992833 (rate) = -20.325778285156 J0 ; lock energy 2.456160498415 (kernel)
+# LOCKQ resonance: photon pitch 1.689655 +- 0.120000 (vacuum w1=1.65)
+# LQ WARN firing probability per lock step 0.215 > 0.1 (lock step too coarse)
+# LQ event t=0.0000 site=1 cell=308 o=93 w1e_o=1.650000 eps=0.301996505 dE_lock=-0.212669204 space_out=0.514665709 delta_exact=-0.088052 Nh=1
+# LQ event t=0.2600 site=3 cell=2329 o=1699 w1e_o=1.650000 eps=0.301996505 dE_lock=-0.221915214 space_out=0.523911718 delta_exact=-0.037535 Nh=2
+# LQ event t=0.7800 site=2 cell=1689 o=571 w1e_o=1.650000 eps=0.301996505 dE_lock=-0.206962591 space_out=0.508959095 delta_exact=-0.119231 Nh=3
+# LQ event t=1.5600 site=4 cell=588 o=1425 w1e_o=1.650000 eps=0.301996505 dE_lock=-0.208899783 space_out=0.510896288 delta_exact=-0.108647 Nh=4
+# RESULT drift_rel -3.602e-15
+# RESULT lockq events=4 Nh=4 window_viol=0 max|delta_exact|=0.119231 Pmax_step=0.2154 atoms_in=1.207986018 space_out=2.058432810 lock_gain=-0.850446792 kerr_max=1.5e-17 tL=20.000000
