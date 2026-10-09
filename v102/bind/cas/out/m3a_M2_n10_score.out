@@ -1,0 +1,9 @@
+# M3a P1 yield: 3+2 ring n=10, p11=score, t=0.1 J0; E0=-24.094130 E1=-24.487236 J0 (two-hole dim 191070)
+  bound levels (B < -0.05 J0): 15; B = -0.152 -0.146 -0.146 -0.146 -0.146 -0.146 -0.143 -0.143 -0.140 -0.140 -0.122 -0.122; mean distance 3.53 3.07 3.07 3.29 3.29 2.99 3.00 3.00 3.00 3.00 4.90 4.90
+  lowest unbound B: +0.0220
+  d=1: bound weight 0.0000  (kept levels 0.000);  mean B of the jump state +64.608 J0;  delta of the event -0.6539 (OUT of window)
+  d=2: bound weight 0.0011  (kept levels 0.818);  mean B of the jump state +0.375 J0;  delta of the event -0.0382 (in window)
+  d=3: bound weight 0.6624  (kept levels 0.944);  mean B of the jump state +0.118 J0;  delta of the event -0.0357 (in window)
+  d=4: bound weight 0.0013  (kept levels 0.963);  mean B of the jump state +0.423 J0;  delta of the event -0.0386 (in window)
+  d=5: bound weight 0.6309  (kept levels 0.959);  mean B of the jump state +0.142 J0;  delta of the event -0.0360 (in window)
+done [146s]

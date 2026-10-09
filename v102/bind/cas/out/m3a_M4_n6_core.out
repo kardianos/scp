@@ -1,0 +1,7 @@
+# M3a P1 yield: W ring n=6, p11=core, t=0.1 J0; E0=-20.034608 E1=-20.734655 J0 (two-hole dim 124080)
+  bound levels (B < -0.05 J0): 3; B = -0.784 -0.691 -0.691; mean distance 2.89 2.96 2.96
+  lowest unbound B: +0.2427
+  d=1: bound weight 0.0000  (kept levels 0.000);  mean B of the jump state +107.470 J0;  delta of the event -1.0599 (OUT of window)
+  d=2: bound weight 0.0119  (kept levels 0.976);  mean B of the jump state +0.779 J0;  delta of the event -0.0371 (in window)
+  d=3: bound weight 0.5185  (kept levels 0.991);  mean B of the jump state +0.120 J0;  delta of the event -0.0308 (in window)
+done [109s]

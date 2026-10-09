@@ -258,6 +258,50 @@ the attraction**:
   - pairing needs a sink, and the only one known (cold-light capture)
     takes about 10¹⁰ photons per pair.
 
+**Bind step** (2026-10-09; `bind/PREREG.md`, `bind/DECIDE.md`):
+**ending S.** A measurement in models; it rules nothing.
+
+- **Energetically, the lock forces a size: pairs (N\* = 2).** Under
+  zero, core and upper, in both fabrics and at two lengths, the second
+  hole binds (−0.13 J0 in 3+2, −0.50 J0 in W, ⟨d⟩ ≈ 3), the third is
+  free and the fourth makes a second pair. Score (now R12) gives the
+  same, its second length run as a labelled supplement.
+- **The binding parks in the formation space quantum (P1).** A
+  complementary hole formed at d = 3 is born into the pair with weight
+  0.66 (3+2) or 0.52 (W), inside the window. P2–P4 are closed or cost
+  about 10¹⁰ photons.
+- No field-reading ground state holds an adjacent pair, so the (1,1)
+  pricing matters only for what formation can make.
+- Lower (the space branch) clumps at d = 1 and violates V.
+
+**Kernel step, K2d** (2026-10-09; `kernel/K2d_PREREG.md`,
+`kernel/K2d_DECIDE.md`): **Go.**
+
+- The five (1,1) pricings of `bind/` (zero, core, score, upper, lower)
+  are kernel options (`lockq_p11`). They are byte-inert at the default
+  (battery 87 ALL GREEN) and match `lo.py` to 1e-11.
+- In bright light, zero, upper and lower fill the lock with adjacent
+  holes, far from bound.
+- Core and score (with K2a's mean-energy window) keep holes apart. The
+  3+2 lock jams at three holes, and a complementary pair at d = 3 is
+  born bound (weight 0.51 under score).
+
+**Kernel step, K2e** (2026-10-09, under R12; `kernel/K2e_PREREG.md`,
+`kernel/K2e_DECIDE.md`): **Go.**
+
+- `lockq_proj` projects each jump onto R12's allowed subspace, so only
+  the singlet part of an adjacent jump is refused. It is byte-inert at
+  the default (battery 87 ALL GREEN) and matches an independent
+  projector at every printed digit.
+- **Under R12 exact, light builds blocks.** Holes form beside holes in
+  the allowed channels. Bright 3+2 ends with 6 of 8 sites holed, mean
+  B = +15 to +17 J0; W ends at +4.5 to +12 J0. Nothing is bound.
+- K2d's born-bound pairs came from the mean-energy window, not from
+  R12.
+- Formation sees adjacency only through the lock energy it costs, about
+  3.6 J0 per N = 1 neighbour, inside a ±12.5 J0 window. It cannot see
+  binding (0.13–0.50 J0).
+
 ## What is carried
 
 - `v89/PRINCIPLE.md`, in full. Where the kernel and the principle

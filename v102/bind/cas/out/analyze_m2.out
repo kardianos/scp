@@ -1,0 +1,40 @@
+
+=== 3+2: bars bound b <= -0.05, free b >= -0.02 (longer length); W1 = 0.112, gap = 0.44 J0 ===
+  zero  n_bulk=26: N=2: B=-0.130 b=-0.130 <d>=2.99 adj=0.00 tr=2e-05  N=3: B=-0.146 b=-0.016 <d>=4.02 adj=0.00 tr=2e-05  N=4: B=-0.259 b=-0.114 <d>=7.06 adj=0.00 tr=2e-05  N=5: B=-0.293 b=-0.034 <d>=6.00 adj=0.00 tr=3e-06  N=6: B=-0.397 b=-0.103 <d>=7.03 adj=0.00 tr=6e-06
+  zero  n_bulk=42: N=2: B=-0.129 b=-0.129 <d>=2.99 adj=0.00 tr=2e-05  N=3: B=-0.129 b=+0.000 <d>=8.70 adj=0.00 tr=2e-05  N=4: B=-0.257 b=-0.128 <d>=13.44 adj=0.00 tr=2e-05  N=5: B=-0.273 b=-0.017 <d>=12.56 adj=0.00 tr=2e-05  N=6: B=-0.388 b=-0.115 <d>=11.85 adj=0.00 tr=3e-05
+  core  n_bulk=26: N=2: B=-0.129 b=-0.129 <d>=2.99 adj=0.00 tr=2e-05  N=3: B=-0.126 b=+0.003 <d>=5.73 adj=0.00 tr=1e-05  N=4: B=-0.257 b=-0.131 <d>=8.32 adj=0.00 tr=2e-05  N=5: B=-0.270 b=-0.013 <d>=9.01 adj=0.00 tr=1e-05  N=6: B=-0.386 b=-0.117 <d>=8.66 adj=0.00 tr=2e-05
+  core  n_bulk=42: N=2: B=-0.129 b=-0.129 <d>=2.99 adj=0.00 tr=2e-05  N=3: B=-0.129 b=-0.000 <d>=8.76 adj=0.00 tr=2e-05  N=4: B=-0.256 b=-0.127 <d>=13.20 adj=0.00 tr=1e-05  N=5: B=-0.271 b=-0.015 <d>=11.29 adj=0.00 tr=2e-05  N=6: B=-0.276 b=-0.005 <d>=13.89 adj=0.00 tr=3e-05
+  score n_bulk=26: N=2: B=-0.129 b=-0.129 <d>=2.99 adj=0.00 tr=2e-05  N=3: B=-0.145 b=-0.016 <d>=4.04 adj=0.00 tr=5e-07  N=4: B=-0.258 b=-0.113 <d>=7.96 adj=0.00 tr=2e-05  N=5: B=-0.269 b=-0.011 <d>=8.58 adj=0.00 tr=4e-05  N=6: B=-0.387 b=-0.117 <d>=8.95 adj=0.00 tr=2e-05
+  score n_bulk=42: N=2: B=-0.129 b=-0.129 <d>=2.99 adj=0.00 tr=2e-05  N=3: B=-0.129 b=-0.001 <d>=7.93 adj=0.00 tr=2e-05  N=4: B=-0.257 b=-0.127 <d>=13.91 adj=0.00 tr=2e-05  N=5: B=-0.273 b=-0.016 <d>=12.50 adj=0.00 tr=2e-05  N=6: B=-0.275 b=-0.002 <d>=11.11 adj=0.00 tr=2e-05
+  upper n_bulk=26: N=2: B=-0.130 b=-0.130 <d>=2.99 adj=0.00 tr=2e-05  N=3: B=-0.145 b=-0.016 <d>=4.03 adj=0.00 tr=2e-05  N=4: B=-0.261 b=-0.116 <d>=5.22 adj=0.00 tr=2e-05  N=5: B=-0.293 b=-0.032 <d>=6.00 adj=0.00 tr=3e-06  N=6: B=-0.397 b=-0.103 <d>=7.03 adj=0.00 tr=6e-06
+  upper n_bulk=42: N=2: B=-0.129 b=-0.129 <d>=2.99 adj=0.00 tr=2e-05  N=3: B=-0.127 b=+0.002 <d>=11.54 adj=0.00 tr=2e-05  N=4: B=-0.257 b=-0.129 <d>=13.46 adj=0.00 tr=2e-05  N=5: B=-0.273 b=-0.016 <d>=12.69 adj=0.00 tr=2e-05  N=6: B=-0.398 b=-0.125 <d>=7.02 adj=0.00 tr=7e-06
+  lower n_bulk=26: N=2: B=+4.249 b=+4.249 <d>=1.00 adj=1.00 tr=2e-06  N=3: B=+4.198 b=-0.051 <d>=4.00 adj=0.33 tr=9e-08  N=4: B=+5.572 b=+1.375 <d>=10.30 adj=0.33 tr=3e-06  N=5: B=+6.108 b=+0.536 <d>=6.00 adj=0.30 tr=1e-08  N=6: B=+6.896 b=+0.787 <d>=13.00 adj=0.20 tr=2e-06
+  lower n_bulk=42: N=2: B=+4.248 b=+4.248 <d>=1.00 adj=1.00 tr=2e-06  N=3: B=+4.248 b=-0.000 <d>=13.78 adj=0.33 tr=3e-06  N=4: B=+5.572 b=+1.324 <d>=17.64 adj=0.33 tr=2e-06  N=5: B=+6.113 b=+0.541 <d>=17.20 adj=0.30 tr=2e-06  N=6: B=+9.821 b=+3.708 <d>=17.03 adj=0.20 tr=2e-06
+  --- verdicts (3+2) ---
+  zero : N=2 bound (d-change 0%), N=3 free (d-change 116%), N=4 bound (d-change 90%), N=5 free (d-change 109%), N=6 bound (d-change 69%)  => N* = 2, size forced (i): True; P3 open at [6], P4 open at []
+  core : N=2 bound (d-change 0%), N=3 free (d-change 53%), N=4 bound (d-change 59%), N=5 free (d-change 25%), N=6 free (d-change 60%)  => N* = 2, size forced (i): True; P3 open at [], P4 open at []
+  score: N=2 bound (d-change 0%), N=3 free (d-change 96%), N=4 bound (d-change 75%), N=5 free (d-change 46%), N=6 free (d-change 24%)  => N* = 2, size forced (i): True; P3 open at [], P4 open at []
+  upper: N=2 bound (d-change 0%), N=3 free (d-change 186%), N=4 bound (d-change 158%), N=5 free (d-change 111%), N=6 bound (d-change 0%)  => N* = 2, size forced (i): True; P3 open at [6], P4 open at []
+  lower: N=2 free (d-change 0%), N=3 free (d-change 244%), N=4 free (d-change 71%), N=5 free (d-change 187%), N=6 free (d-change 31%)  => N* = 1; P3 open at [], P4 open at []
+  multiplets zero n_bulk=26: N=2: E(2)-E(min)=+0.1334; N=3: E(3)-E(min)=+0.1594; N=4: E(2)-E(min)=+0.1167; N=5: E(3)-E(min)=+0.1579; N=6: E(2)-E(min)=+0.1016
+  multiplets upper n_bulk=26: N=2: E(2)-E(min)=+0.1333; N=3: E(3)-E(min)=+0.1589; N=4: E(2)-E(min)=+0.1181; N=5: E(3)-E(min)=+0.1578; N=6: E(2)-E(min)=+0.1016
+
+=== W: bars bound b <= -0.1, free b >= -0.03 (longer length); W1 = 0.388, gap = 1.32 J0 ===
+  zero  n_bulk=18: N=2: B=-0.504 b=-0.504 <d>=3.06 adj=0.00 tr=5e-04  N=3: B=-0.534 b=-0.029 <d>=4.53 adj=0.00 tr=4e-04  N=4: B=-1.005 b=-0.471 <d>=6.60 adj=0.00 tr=5e-04  N=5: B=-1.030 b=-0.025 <d>=6.53 adj=0.00 tr=4e-04  N=6: B=-1.404 b=-0.374 <d>=6.80 adj=0.00 tr=3e-04
+  zero  n_bulk=26: N=2: B=-0.503 b=-0.503 <d>=3.06 adj=0.00 tr=6e-04  N=3: B=-0.497 b=+0.005 <d>=8.62 adj=0.00 tr=5e-04  N=4: B=-1.005 b=-0.508 <d>=8.24 adj=0.00 tr=6e-04  N=5: B=-1.033 b=-0.028 <d>=9.24 adj=0.00 tr=5e-04
+  core  n_bulk=18: N=2: B=-0.500 b=-0.500 <d>=3.08 adj=0.00 tr=5e-04  N=3: B=-0.526 b=-0.026 <d>=4.61 adj=0.00 tr=4e-04  N=4: B=-0.994 b=-0.468 <d>=6.41 adj=0.00 tr=5e-04  N=5: B=-1.014 b=-0.020 <d>=6.55 adj=0.00 tr=2e-04  N=6: B=-1.379 b=-0.365 <d>=6.83 adj=0.00 tr=2e-04
+  core  n_bulk=26: N=2: B=-0.499 b=-0.499 <d>=3.08 adj=0.00 tr=5e-04  N=3: B=-0.498 b=+0.001 <d>=6.92 adj=0.00 tr=8e-04  N=4: B=-0.998 b=-0.500 <d>=8.60 adj=0.00 tr=5e-04  N=5: B=-1.026 b=-0.028 <d>=8.85 adj=0.00 tr=5e-04
+  score n_bulk=18: N=2: B=-0.503 b=-0.503 <d>=3.07 adj=0.00 tr=6e-04  N=3: B=-0.531 b=-0.028 <d>=4.58 adj=0.00 tr=5e-04  N=4: B=-1.000 b=-0.470 <d>=6.21 adj=0.00 tr=4e-04  N=5: B=-1.023 b=-0.023 <d>=6.54 adj=0.00 tr=3e-04
+  score n_bulk=26: N=2: B=-0.501 b=-0.501 <d>=3.07 adj=0.00 tr=6e-04  N=3: B=-0.496 b=+0.005 <d>=7.44 adj=0.00 tr=5e-04  N=4: B=-1.001 b=-0.506 <d>=8.44 adj=0.00 tr=6e-04  N=5: B=-1.030 b=-0.028 <d>=8.92 adj=0.00 tr=5e-04
+  upper n_bulk=18: N=2: B=-0.502 b=-0.502 <d>=3.07 adj=0.00 tr=5e-04  N=3: B=-0.531 b=-0.029 <d>=4.56 adj=0.00 tr=5e-04  N=4: B=-1.002 b=-0.470 <d>=6.38 adj=0.00 tr=5e-04  N=5: B=-1.025 b=-0.024 <d>=6.54 adj=0.00 tr=3e-04  N=6: B=-1.396 b=-0.370 <d>=6.82 adj=0.00 tr=2e-04
+  upper n_bulk=26: N=2: B=-0.501 b=-0.501 <d>=3.07 adj=0.00 tr=6e-04  N=3: B=-0.507 b=-0.006 <d>=6.75 adj=0.00 tr=7e-04  N=4: B=-1.002 b=-0.495 <d>=8.58 adj=0.00 tr=6e-04  N=5: B=-1.030 b=-0.028 <d>=9.22 adj=0.00 tr=5e-04
+  lower n_bulk=18: N=2: B=+3.413 b=+3.413 <d>=1.01 adj=0.99 tr=2e-04  N=3: B=+3.372 b=-0.042 <d>=5.34 adj=0.33 tr=8e-05  N=4: B=+4.554 b=+1.182 <d>=6.88 adj=0.33 tr=2e-04  N=5: B=+4.512 b=-0.041 <d>=8.60 adj=0.20 tr=7e-05  N=6: B=+5.167 b=+0.655 <d>=6.33 adj=0.20 tr=8e-05
+  lower n_bulk=26: N=2: B=+3.412 b=+3.412 <d>=1.01 adj=0.99 tr=9e-05  N=3: B=+3.412 b=-0.000 <d>=9.06 adj=0.33 tr=1e-04  N=4: B=+4.814 b=+1.402 <d>=8.17 adj=0.33 tr=3e-05  N=5: B=+4.748 b=-0.066 <d>=10.40 adj=0.20 tr=2e-04
+  --- verdicts (W) ---
+  zero : N=2 bound (d-change 0%), N=3 free (d-change 90%), N=4 bound (d-change 25%), N=5 free (d-change 42%), N=6 bound*  => N* = 2, size forced (i): True; P3 open at [], P4 open at []
+  core : N=2 bound (d-change 0%), N=3 free (d-change 50%), N=4 bound (d-change 34%), N=5 free (d-change 35%), N=6 bound*  => N* = 2, size forced (i): True; P3 open at [], P4 open at []
+  score: N=2 bound (d-change 0%), N=3 free (d-change 63%), N=4 bound (d-change 36%), N=5 free (d-change 36%)  => N* = 2, size forced (i): True; P3 open at [], P4 open at []
+  upper: N=2 bound (d-change 0%), N=3 free (d-change 48%), N=4 bound (d-change 35%), N=5 free (d-change 41%), N=6 bound*  => N* = 2, size forced (i): True; P3 open at [], P4 open at []
+  lower: N=2 free (d-change 0%), N=3 free (d-change 70%), N=4 free (d-change 19%), N=5 marginal (d-change 21%), N=6 free*  => N* = 1; P3 open at [], P4 open at []
+  multiplets zero n_bulk=18: N=2: E(2,0)-E(min)=+0.5310 E(0,2)-E(min)=+0.5310; N=3: E(3,1)-E(min)=+0.6110 E(1,3)-E(min)=+0.6110; N=4: E(2,0)-E(min)=+0.5273 E(0,2)-E(min)=+0.5262; N=5: E(3,1)-E(min)=+0.6648 E(1,3)-E(min)=+0.6648; N=6: E(2,0)-E(min)=? E(0,2)-E(min)=?
+  multiplets upper n_bulk=18: N=2: E(2,0)-E(min)=+0.5288 E(0,2)-E(min)=+0.5288; N=3: E(3,1)-E(min)=+0.6092 E(1,3)-E(min)=+0.6093; N=4: E(2,0)-E(min)=+0.5262 E(0,2)-E(min)=+0.5262; N=5: E(3,1)-E(min)=+0.6648 E(1,3)-E(min)=+0.6648; N=6: E(2,0)-E(min)=? E(0,2)-E(min)=?

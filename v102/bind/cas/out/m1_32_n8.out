@@ -1,0 +1,41 @@
+# M1: the (1,1) link, exact S-law (cmax=3) against lo pricings; 3+2 ring n=8, pinned holes; B in J0
+  exact: E0 = 21.203629430, E1 = 19.995884083  [6s]
+  d=1 sector (0,): exact ground B = -3.3108 (shared-link space 0.468, total space 0.731)  [70s]
+      lo zero : B = +1.7102   overlap with exact levels: [B=+2.183: 0.367, link 0.11], [B=-3.311: 0.212, link 0.47], [B=+30.200: 0.139, link 0.00], [B=-1.354: 0.025, link 0.50]  (sum over the levels kept 1.000)
+      lo core : B = +106.0270   overlap with exact levels: [B=+2.183: 0.367, link 0.11], [B=-3.311: 0.212, link 0.47], [B=+30.200: 0.139, link 0.00], [B=-1.354: 0.025, link 0.50]  (sum over the levels kept 1.000)
+      lo score: B = +3.1147   overlap with exact levels: [B=+2.183: 0.589, link 0.11], [B=+30.200: 0.099, link 0.00], [B=+55.504: 0.033, link 0.09], [B=-3.311: 0.030, link 0.47]  (sum over the levels kept 1.000)
+      lo upper: B = +2.5643   overlap with exact levels: [B=+2.183: 0.526, link 0.11], [B=+30.200: 0.126, link 0.00], [B=-3.311: 0.096, link 0.47], [B=+55.504: 0.025, link 0.09]  (sum over the levels kept 1.000)
+      lo lower: B = -3.8122   overlap with exact levels: [B=-3.311: 0.388, link 0.47], [B=+11.129: 0.251, link 0.42], [B=+30.200: 0.080, link 0.00], [B=+2.183: 0.032, link 0.11]  (sum over the levels kept 1.000)
+      lowest exact levels (B, shared-link space): (-3.31,0.47) (-2.91,0.49) (-1.86,0.50) (-1.71,0.50) (-1.64,0.48) (-1.35,0.50) (-1.08,0.48) (-0.94,0.46) (-0.93,0.51) (-0.58,0.50) (-0.50,0.46) (-0.50,0.50) (-0.27,0.50) (-0.10,0.49) (-0.07,0.50) (+0.00,0.47)
+  d=1 sector (2,): exact ground B = -2.9125 (shared-link space 0.487, total space 0.735)  [110s]
+      lo zero : B = +2.4982   overlap with exact levels: [B=+2.995: 0.369, link 0.10], [B=-2.912: 0.164, link 0.49], [B=+30.948: 0.132, link 0.00], [B=-1.636: 0.071, link 0.48]  (sum over the levels kept 1.000)
+      lo core : B = +106.8149   overlap with exact levels: [B=+2.995: 0.369, link 0.10], [B=-2.912: 0.164, link 0.49], [B=+30.948: 0.132, link 0.00], [B=-1.636: 0.071, link 0.48]  (sum over the levels kept 1.000)
+      lo score: B = +3.9748   overlap with exact levels: [B=+2.995: 0.608, link 0.10], [B=+30.948: 0.090, link 0.00], [B=-1.636: 0.020, link 0.48], [B=-2.912: 0.018, link 0.49]  (sum over the levels kept 1.000)
+      lo upper: B = +3.4021   overlap with exact levels: [B=+2.995: 0.543, link 0.10], [B=+30.948: 0.118, link 0.00], [B=-2.912: 0.064, link 0.49], [B=-1.636: 0.048, link 0.48]  (sum over the levels kept 1.000)
+      lo lower: B = -3.2790   overlap with exact levels: [B=-2.912: 0.377, link 0.49], [B=+11.327: 0.259, link 0.43], [B=+30.948: 0.065, link 0.00], [B=+2.995: 0.028, link 0.10]  (sum over the levels kept 1.000)
+      lowest exact levels (B, shared-link space): (-2.91,0.49) (-1.86,0.50) (-1.71,0.50) (-1.64,0.48) (-1.08,0.48) (-0.94,0.46) (-0.93,0.51) (-0.50,0.46) (-0.50,0.50) (-0.27,0.50) (-0.10,0.49) (-0.07,0.50) (+0.03,0.49) (+0.03,0.49) (+0.13,0.49) (+0.29,0.49)
+  d=2 sector (0,): exact ground B = -0.0500  [162s]
+      lo zero : B = -0.0079
+      lo core : B = -0.0079
+      lo score: B = -0.0079
+      lo upper: B = -0.0079
+      lo lower: B = -0.0079
+  d=2 sector (2,): exact ground B = -0.0500  [196s]
+      lo zero : B = -0.0079
+      lo core : B = -0.0079
+      lo score: B = -0.0079
+      lo upper: B = -0.0079
+      lo lower: B = -0.0079
+  d=3 sector (0,): exact ground B = -0.2615  [254s]
+      lo zero : B = -0.2641
+      lo core : B = -0.2641
+      lo score: B = -0.2641
+      lo upper: B = -0.2641
+      lo lower: B = -0.2641
+  d=3 sector (2,): exact ground B = +0.2884  [289s]
+      lo zero : B = +0.3003
+      lo core : B = +0.3003
+      lo score: B = +0.3003
+      lo upper: B = +0.3003
+      lo lower: B = +0.3003
+done [289s]
