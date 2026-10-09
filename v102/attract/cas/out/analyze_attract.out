@@ -1,0 +1,62 @@
+# gaps (J0): W {16: 1.410692645600001, 24: 1.3647583010999966, 32: 1.347139514099993};  3+2 {24: 0.47864192610000345, 40: 0.44129850900000633}
+
+# B1 / A1 (W): the moving W hole
+  t=0.1 L_bulk=16: trunc 4.5e-05; C(0..4) -0.077 +0.603 -0.219 +0.234 -0.099; decay (registered) 2.463; conditional decay 2.508; r90 5;  E(3,3)-E(1,1)-gap = +0.0546;  E(3,1)-E(1,1)-gap = +0.0655
+  t=0.1 L_bulk=24: trunc 4.7e-05; C(0..4) -0.076 +0.600 -0.219 +0.235 -0.102; decay (registered) 2.066; conditional decay 2.077; r90 5;  E(3,3)-E(1,1)-gap = +0.0241;  E(3,1)-E(1,1)-gap = +0.0384
+   N2 (moving W hole, t=0.1): 2.463 -> 2.066  change 16.1%  (MISS)
+   ladder (3,3) at t=0.1: margins {16: 0.0545925027999985, 24: 0.024090421300016374}; extrapolated -0.0021  -> not bound
+   ladder (3,1) at t=0.1: margins {16: 0.0654856578000036, 24: 0.03839340660000801}; extrapolated +0.0151  -> not bound
+  t=1.0 L_bulk=16: trunc 4.9e-05; C(0..4) -0.009 +0.325 +0.044 +0.098 +0.010; decay (registered) 2.489; conditional decay 2.619; r90 3;  E(3,3)-E(1,1)-gap = +0.0421;  E(3,1)-E(1,1)-gap = +0.0768
+  t=1.0 L_bulk=24: trunc 4.6e-05; C(0..4) -0.009 +0.321 +0.044 +0.098 +0.011; decay (registered) 1.347; conditional decay 1.391; r90 3;  E(3,3)-E(1,1)-gap = +0.0403;  E(3,1)-E(1,1)-gap = +0.0720
+   N2 (moving W hole, t=1.0): 2.489 -> 1.347  change 45.9%  (MISS)
+   ladder (3,3) at t=1.0: margins {16: 0.042087812399991265, 24: 0.040253798000009056}; extrapolated +0.0387  -> not bound
+   ladder (3,1) at t=1.0: margins {16: 0.07682984049998964, 24: 0.07199693590000322}; extrapolated +0.0678  -> not bound
+  t=3.0 L_bulk=16: trunc 8.8e-05; C(0..4) +0.018 +0.201 +0.109 +0.083 +0.042; decay (registered) 1.963; conditional decay 2.050; r90 4;  E(3,3)-E(1,1)-gap = -0.0141;  E(3,1)-E(1,1)-gap = +0.0217
+  t=3.0 L_bulk=24: trunc 8.3e-05; C(0..4) +0.018 +0.197 +0.107 +0.083 +0.043; decay (registered) 1.633; conditional decay 1.699; r90 5;  E(3,3)-E(1,1)-gap = -0.0005;  E(3,1)-E(1,1)-gap = +0.0496
+   N2 (moving W hole, t=3.0): 1.963 -> 1.633  change 16.8%  (MISS)
+   ladder (3,3) at t=3.0: margins {16: -0.014144024699994873, 24: -0.0005228492999975742}; extrapolated +0.0112  -> not bound
+   ladder (3,1) at t=3.0: margins {16: 0.021670291300004862, 24: 0.0495808615000044}; extrapolated +0.0736  -> not bound
+
+# A1 (3+2): ladder from transport
+  t=0.1: margins {24: +0.0337}; extrapolated +nan -> not bound
+  t=1.0: margins {24: +0.0640, 40: +0.0330}; extrapolated +0.0147 -> not bound
+  t=3.0: margins {24: +0.0492, 40: +0.0273}; extrapolated +0.0143 -> not bound
+  t=5.0: margins {24: +0.0005, 40: +0.0078}; extrapolated +0.0120 -> not bound
+  t=7.0: margins {24: -0.1676, 40: -0.1068}; extrapolated -0.0708 -> BOUND
+
+# A2 (3+2, all orders): ladder from the fourth-order terms (energies in the bulk J)
+  g/Delta=0.1: margins {24: +0.0966, 40: +0.0514}; extrapolated +0.0247 -> not bound
+  g/Delta=0.2: margins {24: +0.0958, 40: +0.0492}; extrapolated +0.0216 -> not bound
+  g/Delta=0.3: margins {24: +0.0879, 40: +0.0432}; extrapolated +0.0167 -> not bound
+
+# A3 (3+2): two holes
+  static pair d=2:  S^z=0: E(d)-E(10) = +0.0050 J0  S^z=1: E(d)-E(10) = +0.0050 J0
+  static pair d=3:  S^z=0: E(d)-E(10) = -0.1883 J0  S^z=1: E(d)-E(10) = +0.1679 J0
+  static pair d=4:  S^z=0: E(d)-E(10) = -0.0132 J0  S^z=1: E(d)-E(10) = -0.0132 J0
+  static pair d=5:  S^z=0: E(d)-E(10) = -0.1243 J0  S^z=1: E(d)-E(10) = +0.1126 J0
+  static pair d=6:  S^z=0: E(d)-E(10) = -0.0119 J0  S^z=1: E(d)-E(10) = -0.0119 J0
+  mobile pair t=0.1 L_bulk=24 2S^z=0: B = -0.1297 J0;  pair distance: mean 2.99, peak 3 (P(peak) 0.958)
+  mobile pair t=0.1 L_bulk=24 2S^z=2: B = +0.0037 J0;  pair distance: mean 9.70, peak 10 (P(peak) 0.207)
+  mobile pair t=0.1 L_bulk=40 2S^z=0: B = -0.1289 J0;  pair distance: mean 2.99, peak 3 (P(peak) 0.959)
+  mobile pair t=0.1 L_bulk=40 2S^z=2: B = +0.0011 J0;  pair distance: mean 13.75, peak 14 (P(peak) 0.137)
+  mobile pair t=1.0 L_bulk=24 2S^z=0: B = -0.0725 J0;  pair distance: mean 6.89, peak 5 (P(peak) 0.135)
+  mobile pair t=1.0 L_bulk=24 2S^z=2: B = +0.0264 J0;  pair distance: mean 9.36, peak 8 (P(peak) 0.113)
+  mobile pair t=1.0 L_bulk=40 2S^z=0: B = -0.0641 J0;  pair distance: mean 7.97, peak 7 (P(peak) 0.119)
+  mobile pair t=1.0 L_bulk=40 2S^z=2: B = +0.0070 J0;  pair distance: mean 13.88, peak 12 (P(peak) 0.073)
+
+# A3 (W): two holes, static pairs, sectors (2S^z, 2I^z)
+  d=2:  0,0: E(d)-E(10) = -0.0439  2,0: E(d)-E(10) = -0.0439  2,2: E(d)-E(10) = -0.0433
+  d=3:  0,0: E(d)-E(10) = -0.7500  2,0: E(d)-E(10) = +0.1797  2,2: E(d)-E(10) = +0.1806
+  d=4:  0,0: E(d)-E(10) = -0.0694  2,0: E(d)-E(10) = -0.0694  2,2: E(d)-E(10) = -0.0688
+  d=6:  0,0: E(d)-E(10) = -0.0427  2,0: E(d)-E(10) = -0.0427  2,2: E(d)-E(10) = -0.0423
+  (a level in (0,0) absent from (2,0) and (2,2) is (S,I) = (0,0); in (2,0) absent from (2,2) is (1,0); (2,2) is (1,1))
+  W mobile pair t=0.1 L_bulk=16 sector 0,0: B = -0.5044 J0; mean pair distance 3.06
+  W mobile pair t=0.1 L_bulk=16 sector 2,0: B = +0.0266 J0; mean pair distance 6.66
+  W mobile pair t=0.1 L_bulk=16 sector 2,2: B = +0.0090 J0; mean pair distance 6.54
+  W mobile pair t=0.1 L_bulk=24 sector 0,0: B = -0.5026 J0; mean pair distance 3.06
+  W mobile pair t=0.1 L_bulk=24 sector 2,0: B = +0.0225 J0; mean pair distance 7.71
+  W mobile pair t=0.1 L_bulk=24 sector 2,2: B = +0.0004 J0; mean pair distance 7.70
+
+# A4 (W): (3/2,1/2) against (3/2,3/2), static hole
+  L_bulk=24: E(3,1)-E(1,1) = 1.42899; E(3,3)-E(1,1) = 1.42899; gap 1.36476
+  L_bulk=32: E(3,1)-E(1,1) = 1.38689; E(3,3)-E(1,1) = 1.38689; gap 1.34714
