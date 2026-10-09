@@ -23,8 +23,10 @@ lo.P11 = sys.argv[2] if len(sys.argv) > 2 else 'zero'
 PROJ = len(sys.argv) > 3 and sys.argv[3] == 'proj'      # K2e: project each jump (singlet core / core)
 m = re.search(r'# LOCKQ v102 K2a: M=(\d+) n=(\d+) g/Delta=(\S+) t/J0=(\S+)', txt)
 M, n, tJ0 = int(m.group(1)), int(m.group(2)), float(m.group(4))
-# an event fires after its lock step's evolution, at t + dt_L; the line prints the step's start t
-dtL = float(re.search(r' dt=(\S+)', txt).group(1))*int(re.search(r'# LOCKQ v102 K2a: .* every=(\d+)', txt).group(1))
+# an event fires after its lock step's evolution, at the end of the kernel step in which the lock
+# step runs: t + dt, where the line prints that kernel step's start t (lq_step runs after step()).
+# For lockq_every = 1 this is t + dt_L, as K2d wrote it; for lockq_every > 1 it is still t + dt.
+dtL = float(re.search(r' dt=(\S+)', txt).group(1))
 ev = [(float(a) + dtL, int(b), int(c)) for a, b, c in re.findall(r'# LQ event t=(\S+) site=(\d+) cell=\d+ o=\d+ nu=(\d+)', txt)]
 # seeded jumps (lockq_force, lockq_force2) are applied at install, t = 0, before any evolution
 ev = [(0.0, int(b), int(c)) for b, c in re.findall(r'# LOCKQ seeded jump at site (\d+), photon mode (\d+):', txt)] + ev

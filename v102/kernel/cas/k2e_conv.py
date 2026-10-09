@@ -24,7 +24,7 @@ txt = open(sys.argv[1]).read()
 lo.P11 = 'score'
 m = re.search(r'# LOCKQ v102 K2a: M=(\d+) n=(\d+) g/Delta=(\S+) t/J0=(\S+)', txt)
 M, n, tJ0 = int(m.group(1)), int(m.group(2)), float(m.group(4))
-dtL = float(re.search(r' dt=(\S+)', txt).group(1))*int(re.search(r'# LOCKQ v102 K2a: .* every=(\d+)', txt).group(1))
+dtL = float(re.search(r' dt=(\S+)', txt).group(1))     # events fire at the end of their kernel step: t + dt
 ev = [(float(a) + dtL, int(b), int(c)) for a, b, c in re.findall(r'# LQ event t=(\S+) site=(\d+) cell=\d+ o=\d+ nu=(\d+)', txt)]
 P = GM.P_W if M == 4 else GM.P_2
 g = 0.1*GM.DELTA; J0 = 2*g*g/GM.DELTA; t = tJ0*J0
