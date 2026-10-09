@@ -1,0 +1,17 @@
+# K1-3 capture by cold light: 3+2 n=6 ring, two mobile holes, t=0.1 J0, delta=0.0005  (two-hole sector dims: [915, 1050, 915])  [0s]
+  two-hole levels (S^z = 0 sector, E - E0 in J0): 0.000(S=0) 0.000(S=0) 0.001(S=0) 0.310(S=1) 0.329(S=1) 0.329(S=1) 0.335(S=1) 0.335(S=1) 0.356(S=1) 0.792(S=1) 0.792(S=1) 0.825(S=1)
+  mean pair distance of the lowest levels: 2.99 2.99 2.99 2.08 2.03 2.03 2.01 2.01 2.00 2.97
+  flow out of the kept levels (heating above level 40): max 6.00e-10
+  no-hole ring gap 0.721 J0; start = S^z=0 level 8 at 0.356 J0 (S=1, mean distance 2.00)
+  the bound-pair band: S^z=0 levels [0, 1, 2] (E - E0 < 0.05 J0, mean distance > 2.9)
+    N = 2^0: bound-pair population 0.0000
+    N = 2^5: bound-pair population 0.0000
+    N = 2^10: bound-pair population 0.0000
+    N = 2^15: bound-pair population 0.0000
+    N = 2^20: bound-pair population 0.0000
+    N = 2^25: bound-pair population 0.0003
+    N = 2^30: bound-pair population 0.0671
+    N = 2^35: bound-pair population 0.9288
+    N = 2^40: bound-pair population 1.0000
+  photons to bound-pair population >= 0.9: <= 3.44e+10;  per-photon probability that the bound pair is excited: 0.00e+00
+done [424s]

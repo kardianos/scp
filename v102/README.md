@@ -59,6 +59,11 @@ of the link exchange. Those were the gates.
 |---|---|---|
 | R6 | **The occupancy ceiling of a lock is one quantum per link end** (user, 2026-10-07: "That's okay, can you continue with that modification?"). | `DECIDE.md` §2's open sentence. With it, W4's ceiling exists, `N = 2` on the ring, and an end cell of an open chain (degree 1) holds one quantum. |
 | R7 | **S1–S4 of `law/DECIDE.md`** (user, 2026-10-07: "Sure, follow those rabbit trail S1-S4 and try to make a lock work."). A link's space mode is a discrete oscillator at `Ω = w2`. Conversion is a coherent pair amplitude `g`. Transport inside a lock is zero. | `law/DECIDE.md` ending C. The lock is tested under this "S-law" in `lock/` (`lock/PREREG.md`). The rulings change the theory, not the code: no kernel implements S1–S3, so no battery has run. |
+| R8 | **The 3+4 widening (W)** (user, 2026-10-08: "Allow the law change for 1."). Each field quantum carries spin ½ × isospin ½, four modes per cell. Conversion pairs a quantum across a link into a singlet in both (P = ε ⊗ ε). Charge is read as `I^z + ½` on an open slot. | `perm/DECIDE.md` §7.1. R1's single Jones doublet becomes two doublets. The theory changes, not the code: no kernel step is authorized. Decisions 2–3 (transport and space at the lock) are settled by test in `attract/`. |
+| R9 | **T-floor** (user, 2026-10-08: "accept decisions 2+3"). Transport inside a lock is allowed with amplitude t < t_max, where t_max lies between 0.1 and 1 J0 (`attract/DECIDE.md` §2). Transport may not empty a lock cell. **Working value t = 0.1 J0** (9.6e-4 in rate units), the largest t at which every gate passed. | `options/` T0 (t = 0 by label). The hole walks; hole pairs cannot collapse into fiber cuts. |
+| R10 | **S-boundary** (user, same). Space may leave a lock only through a link with one end outside the lock, at the table's `s_k`. | A limited exception to reading V. It is the formation route: light makes an open slot. |
+| D11 | **The working regime is small t; the ladder is deferred** (delegated to me: "Make the best decision yourself here"). At t = 0.1 J0 the nucleon is firm, walks, forms, and binds into a nucleus. The only ladder found needs t ≈ 7 J0, where pairs unbind and the nucleon deforms. v98 puts unique size first. A ladder at small t stays an open search. | `attract/DECIDE.md` §7.2. |
+| K | **Kernel step authorized** (user, same: "(3) approved"): put R8 + R9 + R10 into a real simulation. Plan: `kernel/PLAN.md`. | v97's "do not edit the kernel" no longer applies to this step. The ratchet still applies: full battery, new behaviour off by default. |
 
 Phase 1 is opened under R1, R2, R5, and R6: `PHASE1.md`, with gates
 in `phase1/PREREG.md`.
@@ -158,6 +163,62 @@ underlying fabric, not cellular clumping".
   3. **It forms only if space leaves the boundary link,** which V
      forbids.
   4. **It has no excited ladder.**
+
+**Permutation step** (2026-10-08; `perm/DECIDE.md`): **a measurement, no
+ruling.** The re-reading (charge as isospin, I, or v98's 3+4 widening,
+W) and the decisions (hole transport, T; space leaving the boundary
+link, S) were tested in all 12 combinations. The long chains used
+TeNPy, a dependency the user approved.
+
+- **One cell reaches the Full tier: W + T + S.**
+  - The widened fiber is a lock (gap 1.32 J0, three times 3+2's).
+  - Its open slot is a firm (½, ½) quartet: p and n, both spin ½, one
+    object of one size (2.3 grains, stable 24 → 32).
+  - It walks under T, and light makes it under S (≈ 5% per resonant
+    photon).
+  - The moving W hole's size is carried from the static one.
+- **I alone trades spin for p/n.** Every I cell fails.
+- **No cell has an excited ladder,** and no cell has a nucleus: two
+  holes convert, or under T collapse into a fiber cut.
+- **T at t ≳ J0** keeps a length-independent cloud that fails the
+  registered size fit; at 3 J0 it is a Nagaoka precursor.
+- **T + S together** fills a lit fiber with holes, and pairs of them cut
+  it.
+
+**Attraction step** (2026-10-08; `attract/DECIDE.md`): R8 (the 3+4
+widening) is ruled by the user. Decisions 2–3 were settled by the
+registered tests:
+
+- **T-floor:** transport inside a lock is allowed with t < t_max,
+  where t_max lies between 0.1 and 1 J0, and it may not empty a lock
+  cell. Without the floor, holes collapse into fiber cuts.
+- **S-boundary.**
+
+Item 4 reaches **ending LN**, with **the fiber's own correlations as
+the attraction**:
+
+- **A nucleus.** Two open slots bind into a pair of fixed size
+  (about 3 grains) in the all-singlet channel: W (S, I) = (0, 0) with
+  B = −0.50 J0, 3+2 S = 0 with B = −0.13 J0, at t = 0.1 J0. Every other
+  channel is free.
+- **A ladder.** A bound (3/2, 3/2) or S = 3/2 level appears only at
+  t ≈ 7 J0 (spin polaron). There the pairs unbind.
+- The two never coexist. The fourth-order terms at larger g give no
+  ladder.
+
+**Kernel step, K1** (2026-10-08; `kernel/PLAN.md`, `kernel/K1_DECIDE.md`):
+**Go.**
+
+- **Formation is one quantum jump.** It matches the exact absorption
+  with fidelity 1.0000 in both fabrics, because the space band is far
+  wider than the lock's internal spread. The kernel can implement it as
+  an event.
+- **A closed lock never binds two holes:** the binding energy has
+  nowhere to go.
+- **Cold light captures them** (radiative capture): light colder than
+  about 0.2 J0 brings the pair to 100%, but at about 10¹⁰ photons per
+  pair.
+- **Next: K2a,** a C module `lockq` in `v97/kernel`, off by default.
 
 ## What is carried
 

@@ -1,0 +1,31 @@
+# X4 formation under S: M=4, g/Delta=0.1, n=4; ring ground -0.134207 (sector dim 616)
+    flux check: sum of space-lead flux 0.617187 vs absorption 0.617187
+    K1-1(a) classical fidelity of the jump populations with the exact ones: 1.0000  (PASS: bar 0.9)
+    jump state by depleted-lock level (E - E_min in J0: weight jump / exact): 0.000: 1.000/1.000
+    weight in the depleted lock's ground multiplet (the dressed nucleon at rest): jump 1.0000, exact 1.0000
+    K1-1(b) the jump's lock sector carries the photon's charges (np.int64(1), np.int64(1)): by construction of V (lock sector z -> qtot); PASS
+    K1-1(c) energy: incoming +0.093275 (lock -0.134207 + photon kinetic +0.2275); mean P2 energy +0.089684; the leaving space quantum carries the difference by construction (ledger closes to rounding)
+  photon mode 0 (charges (np.int64(1), np.int64(1))): channels 2068, P2 dim 257; hole made per resonant photon = 0.0561  [3s]
+    flux check: sum of space-lead flux 0.617187 vs absorption 0.617187
+    K1-1(a) classical fidelity of the jump populations with the exact ones: 1.0000  (PASS: bar 0.9)
+    jump state by depleted-lock level (E - E_min in J0: weight jump / exact): 0.000: 1.000/1.000
+    weight in the depleted lock's ground multiplet (the dressed nucleon at rest): jump 1.0000, exact 1.0000
+    K1-1(b) the jump's lock sector carries the photon's charges (np.int64(1), np.int64(-1)): by construction of V (lock sector z -> qtot); PASS
+    K1-1(c) energy: incoming +0.093275 (lock -0.134207 + photon kinetic +0.2275); mean P2 energy +0.089684; the leaving space quantum carries the difference by construction (ledger closes to rounding)
+  photon mode 1 (charges (np.int64(1), np.int64(-1))): channels 2068, P2 dim 257; hole made per resonant photon = 0.0561  [6s]
+    flux check: sum of space-lead flux 0.617187 vs absorption 0.617187
+    K1-1(a) classical fidelity of the jump populations with the exact ones: 1.0000  (PASS: bar 0.9)
+    jump state by depleted-lock level (E - E_min in J0: weight jump / exact): 0.000: 1.000/1.000
+    weight in the depleted lock's ground multiplet (the dressed nucleon at rest): jump 1.0000, exact 1.0000
+    K1-1(b) the jump's lock sector carries the photon's charges (np.int64(-1), np.int64(1)): by construction of V (lock sector z -> qtot); PASS
+    K1-1(c) energy: incoming +0.093275 (lock -0.134207 + photon kinetic +0.2275); mean P2 energy +0.089684; the leaving space quantum carries the difference by construction (ledger closes to rounding)
+  photon mode 2 (charges (np.int64(-1), np.int64(1))): channels 2068, P2 dim 257; hole made per resonant photon = 0.0561  [8s]
+    flux check: sum of space-lead flux 0.617187 vs absorption 0.617187
+    K1-1(a) classical fidelity of the jump populations with the exact ones: 1.0000  (PASS: bar 0.9)
+    jump state by depleted-lock level (E - E_min in J0: weight jump / exact): 0.000: 1.000/1.000
+    weight in the depleted lock's ground multiplet (the dressed nucleon at rest): jump 1.0000, exact 1.0000
+    K1-1(b) the jump's lock sector carries the photon's charges (np.int64(-1), np.int64(-1)): by construction of V (lock sector z -> qtot); PASS
+    K1-1(c) energy: incoming +0.093275 (lock -0.134207 + photon kinetic +0.2275); mean P2 energy +0.089684; the leaving space quantum carries the difference by construction (ledger closes to rounding)
+  photon mode 3 (charges (np.int64(-1), np.int64(-1))): channels 2068, P2 dim 257; hole made per resonant photon = 0.0561  [11s]
+  polarization average: 0.0561
+done [11s]

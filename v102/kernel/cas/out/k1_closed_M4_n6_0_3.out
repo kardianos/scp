@@ -1,0 +1,6 @@
+# K1-2 M=4 n=6 jumps at 0,3 (modes 0,3): two-hole sector (np.int64(0), np.int64(0), 2) dim 124080
+  two-hole levels (E - E0 in J0): 0.000 0.097 0.097 1.016 1.121 1.141 1.176 1.180
+  initial weights on those levels: 0.1625 0.1070 0.2471 0.0090 0.0000 0.0056 0.0000 0.0000
+  energy of the jump state above the bound pair: 0.909 J0
+  bound-pair weight in time: t=0 0.1625, mean 0.1625, max 0.1625, norm drift 6.4e-12
+  K1-2 gate (time-mean <= t0 + 0.05): PASS  [323s]
