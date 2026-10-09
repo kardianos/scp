@@ -10,12 +10,13 @@ bulk, T-floor t = tJ0 * J0).
   K2b B5: the same with photon mode nu (default 0).
 
 usage: k2a_ab.py M n tJ0 [s tL [nu]]"""
-import sys
+import sys, os
 import numpy as np
 from scipy.sparse.linalg import eigsh, expm_multiply
 here = __file__.rsplit('/', 1)[0]
 sys.path.insert(0, here + '/../../perm/cas')
 import graphm as GM, lo
+lo.P11 = os.environ.get('P11', 'zero')     # K2d: the (1,1) link pricing (default: the original)
 
 M, n, tJ0 = int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3])
 P = GM.P_W if M == 4 else GM.P_2
