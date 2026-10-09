@@ -4,8 +4,10 @@ Run with ~/.venvs/scp-tenpy/bin/python.
 
 Charges per local state: 2S^z (, 2I^z for W) (, N_hole for mobile sites).
 The sector is fixed by the initial product state, so no penalties.
-usage: tp_chain.py M mode L_bulk target t_over_J0 chi [sweeps]
-  mode: nohole | hole | mob ; target: comma list 2S^z[,2I^z]
+usage: tp_chain.py M mode L_bulk target t_over_J0 chi [sweeps [p11]]
+  mode: nohole | hole | mob | mobK (K >= 2 mobile holes on L_bulk + K sites);
+  target: comma list 2S^z[,2I^z]; p11: the (1,1) link pricing of lo.py
+  (zero | core | upper | lower; default zero)
 Prints E/J0, the S^z (and I^z) profile, and for mob the hole density and
 the hole-centred correlation C(d)."""
 import sys, time, warnings
@@ -65,12 +67,12 @@ def run(M, mode, Lb, target, tJ, chi, sweeps=20):
     elif mode.startswith('pair'):
         dd = int(mode[4:]); kinds = ['end'] + ['full']*(Lb + 2) + ['end']
         c0 = len(kinds)//2 - dd//2; kinds[c0] = 'hole'; kinds[c0 + dd] = 'hole'
-    elif mode == 'mob2':
-        kinds = ['end'] + ['mob']*(Lb + 2) + ['end']; nholes = 2
+    elif mode.startswith('mob') and mode != 'mob':
+        nholes = int(mode[3:]); kinds = ['end'] + ['mob']*(Lb + nholes) + ['end']
     else:
         kinds = ['end'] + ['mob']*(Lb + 1) + ['end']; nholes = 1
     locs = [lo.Local(M, k) for k in kinds]
-    mobile = mode in ('mob', 'mob2')
+    mobile = mode.startswith('mob')
     model = Chain(locs, P, g, tJ*J0, J0, mobile)
     sites = model.lat.mps_sites()
     # product state in the target sector (greedy, as lo_dmrg.py)
@@ -80,7 +82,7 @@ def run(M, mode, Lb, target, tJ, chi, sweeps=20):
         cost = np.abs(Lc.lab - w[None, :]).sum(1) + (0 if Lc.kind != 'mob' else 10*(Lc.N != 2))
         init.append(int(np.argmin(cost)))
     if mobile:
-        spots = [L//2] if nholes == 1 else [L//3, (2*L)//3]
+        spots = [L//2] if nholes == 1 else [(k + 1)*L//(nholes + 1) for k in range(nholes)]
         for mid in spots: init[mid] = [k for k in range(locs[mid].d) if locs[mid].N[k] == 1][0]
     def tot(init): return np.sum([locs[i].lab[init[i]] for i in range(L)], 0)
     for _ in range(4*L):
@@ -111,7 +113,7 @@ def run(M, mode, Lb, target, tJ, chi, sweeps=20):
             row = psi.correlation_function('nh', 'Sz', sites1=[i], sites2=list(range(L)))[0]
             for j in range(L): C[abs(j - i)] += row[j]
         out['nh'] = nh; out['C'] = C
-        if nholes == 2:
+        if nholes >= 2:
             Pr = np.zeros(L)
             for i in idx:
                 js = [j for j in idx if j > i]
@@ -127,14 +129,15 @@ if __name__ == '__main__':
     target = tuple(int(x) for x in sys.argv[4].split(','))
     tJ, chi = float(sys.argv[5]), int(sys.argv[6])
     sw = int(sys.argv[7]) if len(sys.argv) > 7 else 20
+    if len(sys.argv) > 8: lo.P11 = sys.argv[8]
     out, locs = run(M, mode, Lb, target, tJ, chi, sw)
-    line = f"M={M} mode={mode} Lb={Lb} target={target} t/J0={tJ} chi={chi} tenpy E/J0={out['E']:.10f} sumSz={out['Sz'].sum():.5f} trunc={out['trunc']:.1e}"
+    line = f"M={M} mode={mode} Lb={Lb} target={target} t/J0={tJ} chi={chi} p11={lo.P11} tenpy E/J0={out['E']:.10f} sumSz={out['Sz'].sum():.5f} trunc={out['trunc']:.1e}"
     if M == 4: line += f" sumIz={out['Iz'].sum():.5f}"
-    if mode in ('mob', 'mob2'): line += f" holes={out['nh'].sum():.5f}"
+    if mode.startswith('mob'): line += f" holes={out['nh'].sum():.5f}"
     print(line + f" [{time.time()-t0:.0f}s]")
     print("Sz " + " ".join(f"{x:+.5f}" for x in out['Sz']))
     if M == 4: print("Iz " + " ".join(f"{x:+.5f}" for x in out['Iz']))
-    if mode in ('mob', 'mob2'):
+    if mode.startswith('mob'):
         print("nh " + " ".join(f"{x:+.5f}" for x in out['nh']))
         print("C " + " ".join(f"{x:+.5f}" for x in out['C']))
     if 'Pr' in out:

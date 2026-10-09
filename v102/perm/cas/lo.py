@@ -9,6 +9,12 @@ written as sum_{(rho mu),(sigma nu)} P[rho,sigma] P[mu,nu] E^i_{rho mu} E^j_{sig
 with E_{rho mu} = b^+_rho b_mu (it keeps each cell's N), and Delta_type the
 first-conversion cost of the pair: (2,2) -> Delta, (2,1)/(1,2) -> 0.2275,
 (1,1) -> -0.0243 (not perturbative; never used with one hole).
+The (1,1) link (two adjacent N = 1 cells) is priced by P11 (../../bind/):
+'zero' (default, the original: no term), 'core' (penalty P11_CORE on every
+(1,1) configuration), 'score' (penalty P11_CORE on the singlet pair only, via
+(P11_CORE/|P|^2) A^+A), 'upper' / 'lower' (the link's exact two-level hybrid of
+the singlet pair and one space quantum, field-like / space-like branch:
+E = D11/2 +- sqrt(D11^2/4 + g^2 |P|^2), applied as (E/|P|^2) A^+A).
 Hop (T, T2 rule, mob sites only): t sum_mu (b^+_j mu b_i mu + h.c.), N = 2 -> 1
 and 1 -> 2 (the hole moves); b on N = 1 is truncated (one hole).
 
@@ -63,18 +69,33 @@ class Local:
         self.Iz = np.diag(self.lab[:, 1]/2.0) if M == 4 else None
         self.nh = np.diag((self.N == 1).astype(float)) if kind == 'mob' else None
 
-def link_terms(Li, Lj, P, g):
+P11 = 'zero'
+P11_CORE = 1.0          # rate units (about 104 J0): a hard core
+
+def p11_coef(P, g, branch):
+    """Coefficient of A^+A on a (1,1) link: the exact branch energy / |P|^2."""
+    c2 = float((P*P).sum()); d = DELTA_T[(1, 1)]
+    root = np.sqrt(d*d/4 + g*g*c2)
+    return (d/2 + root)/c2 if branch == 'upper' else (d/2 - root)/c2
+
+def link_terms(Li, Lj, P, g, p11=None):
     """List of (coef, op_i, op_j) for the exchange on a link, by type blocks."""
     M = P.shape[0]
+    p11 = P11 if p11 is None else p11
     out = []
     for ni in (2, 1):
         if ni not in Li.N: continue
         for nj in (2, 1):
             if nj not in Lj.N: continue
-            if ni == 1 and nj == 1: continue
             if Li.kind == 'end' and ni == 2: continue
             if Lj.kind == 'end' and nj == 2: continue
-            c = -g*g/DELTA_T[(ni, nj)]
+            if ni == 1 and nj == 1:
+                if p11 == 'zero': continue
+                if p11 == 'core':
+                    out.append((P11_CORE, Li.P[1], Lj.P[1])); continue
+                c = P11_CORE/float((P*P).sum()) if p11 == 'score' else p11_coef(P, g, p11)
+            else:
+                c = -g*g/DELTA_T[(ni, nj)]
             for (r, m) in itertools.product(range(M), repeat=2):
                 for (s, n) in itertools.product(range(M), repeat=2):
                     w = P[r, s]*P[m, n]
