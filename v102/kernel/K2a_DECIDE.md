@@ -181,3 +181,19 @@ under 3+2, S^z = +½.
 K2b: widen the kernel field to four complex modes (`fa3`…`fa8`, or an
 equivalent layout), empty by default. Its gate is the battery at
 defaults, byte-identical.
+
+---
+
+## Correction, 2026-10-08 (found in K2b; `K2b_DECIDE.md` §B4)
+
+**A latent heap overflow in the committed K2a code.**
+
+- `lq_rawA` was sized by `NSLOT`, the slot table's high-water mark,
+  instead of its capacity `NLMAX`. A new slot touching the lock, above
+  the install-time high-water mark, was written past the end.
+- It crashed one K2b run. In K2a it could have corrupted memory
+  silently.
+- **K2a's recorded results stand.** All 12 G4 configurations, rerun
+  with the fixed binary, give event lines and results identical to
+  `cas/out/k2a_g4_*.out`.
+- G1 is unaffected: the fence runs only when `lockq=1`.

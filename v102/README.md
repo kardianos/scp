@@ -238,6 +238,25 @@ the attraction**:
   same charges, and the all-singlet nucleus cannot form. That is K2b's
   job: four field modes per cell.
 
+**Kernel step, K2b** (2026-10-08; `kernel/K2b_PREREG.md`,
+`kernel/K2b_DECIDE.md`): **Go, and stop before K3.**
+
+- **The kernel field now carries 1, 2 or 4 complex modes** (`fmodes`),
+  mode-blind.
+  - Off, it is byte-inert: battery 87 ALL GREEN and identical.
+  - Four modes with an equal split are byte-identical to one mode,
+    step for step, and permuting the modes changes nothing.
+- **Light in mode ν makes holes carrying ν's charges,** checked in the
+  kernel on every event, with the ledger at 3.6e-15. Under mixed light
+  the lock reaches the nucleus's zero-charge two-hole sector.
+- **Two bugs were found and fixed,** one a latent overflow in K2a's
+  code. K2a's recorded results stand.
+- **Two walls before K3:**
+  - bright light makes adjacent holes, which the rulings leave unpriced
+    (perm §5: they bind by converting, or merge);
+  - pairing needs a sink, and the only one known (cold-light capture)
+    takes about 10¹⁰ photons per pair.
+
 ## What is carried
 
 - `v89/PRINCIPLE.md`, in full. Where the kernel and the principle

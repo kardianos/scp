@@ -398,9 +398,12 @@ typedef struct {
     int  snap_comp;                 /* 1 = compress CELL/LINK chunks (CMPD) */
     /* v102 K2a lockq (v102/kernel/K2a_PREREG.md): an exact quantum lock
      * fenced inside the classical kernel; lockq = 0 is byte-inert */
-    int    lockq, lockq_M, lockq_n, lockq_every, lockq_force;
+    int    lockq, lockq_M, lockq_n, lockq_every, lockq_force, lockq_fmode;
     double lockq_t, lockq_g, lockq_rate, lockq_dx;
     unsigned long lockq_seed;
+    /* v102 K2b (v102/kernel/K2b_PREREG.md): complex field modes per cell
+     * (1 = today's field; 2 = 3+2 spin; 4 = W spin x isospin), mode-blind */
+    int    fmodes, fseed_mode;
 } Cfg;
 
 static Cfg P;
@@ -447,8 +450,9 @@ static void cfg_defaults(void)
     P.j_rel = 0;           /* v95 J-metric: healing off */
     P.hop_order = 1;   /* v93 face A: Strang symmetric is the adopted default (L1-A re-run passes: fd +285/+300/+272, seed-robust +x; battery ALL GREEN 87 -- pass U is skipped at amp_nat=0). hop_order=0 reproduces all prior amp_nat>0 sequential-sweep results. */
     P.pattern_only = 0;
-    P.lockq = 0; P.lockq_M = 2; P.lockq_n = 8; P.lockq_every = 1; P.lockq_force = 0;
+    P.lockq = 0; P.lockq_M = 2; P.lockq_n = 8; P.lockq_every = 1; P.lockq_force = 0; P.lockq_fmode = 0;
     P.lockq_t = 0.1; P.lockq_g = 0.1; P.lockq_rate = 1.0; P.lockq_dx = 0; P.lockq_seed = 1;
+    P.fmodes = 1; P.fseed_mode = 0;
     P.qatom_every = 200;
     /* freecell geometry */
     P.cfac = 1.15; P.k_rep = 1.0; P.mob_geo = 1.0; P.kappa_bond = 1.0;
@@ -674,11 +678,14 @@ static void set_kv(const char *k, const char *v)
     else if (!strcmp(k, "lockq_n")) P.lockq_n = atoi(v);
     else if (!strcmp(k, "lockq_every")) P.lockq_every = atoi(v);
     else if (!strcmp(k, "lockq_force")) P.lockq_force = atoi(v);
+    else if (!strcmp(k, "lockq_fmode")) P.lockq_fmode = atoi(v);
     else if (!strcmp(k, "lockq_t")) P.lockq_t = atof(v);
     else if (!strcmp(k, "lockq_g")) P.lockq_g = atof(v);
     else if (!strcmp(k, "lockq_rate")) P.lockq_rate = atof(v);
     else if (!strcmp(k, "lockq_dx")) P.lockq_dx = atof(v);
     else if (!strcmp(k, "lockq_seed")) P.lockq_seed = strtoul(v, NULL, 10);
+    else if (!strcmp(k, "fmodes")) P.fmodes = atoi(v);
+    else if (!strcmp(k, "fseed_mode")) P.fseed_mode = atoi(v);
     else fprintf(stderr, "# WARN unknown key %s\n", k);
 }
 
@@ -791,6 +798,10 @@ static double *th2, *cbeta;
 static double *w1e, *w2e;
 static double *Es, *Em, *Ee;
 static double *fa1, *fa2;
+/* v102 K2b: field modes nu = 1 .. fmodes-1 (mode 0 is fa1 + i fa2);
+ * allocated only when fmodes > 1 */
+static double *fxr, *fxi;
+static int fx_cap = 0;
 static double *flload;
 static double *qcnvD, *qcnvF;
 static double *roughq;
@@ -1021,9 +1032,45 @@ static void qatom_diag(int fd, double w, double e, int ci, double em)
     }
 }
 
+/* v102 K2b helpers (fmodes > 1 only) */
+static double *fxr_(int nu) { return fxr + (size_t)(nu - 1) * fx_cap; }
+static double *fxi_(int nu) { return fxi + (size_t)(nu - 1) * fx_cap; }
+static double fx_mode_e(int nu, int i)
+{
+    if (nu == 0) return fa1[i]*fa1[i] + fa2[i]*fa2[i];
+    double a = fxr_(nu)[i], b = fxi_(nu)[i];
+    return a*a + b*b;
+}
+static double fx_cell_e(int i)   /* pairwise: exact for an equal split */
+{
+    if (P.fmodes == 2) return fx_mode_e(0, i) + fx_mode_e(1, i);
+    return (fx_mode_e(0, i) + fx_mode_e(1, i)) + (fx_mode_e(2, i) + fx_mode_e(3, i));
+}
+static void fx_scale(int i, double fac)
+{
+    for (int nu = 1; nu < P.fmodes; nu++) { fxr_(nu)[i] *= fac; fxi_(nu)[i] *= fac; }
+}
+
 static void field_inject(int i, double dE)   /* cellfab.c:2711 verbatim */
 {
     if (dE <= 0) return;
+    if (P.fmodes > 1) {
+        /* v102 K2b: mode-blind emission. A lit cell keeps its mode
+         * content; an empty cell gets sqrt(dE/F) at th2 in every mode
+         * (classical matter carries no spin or isospin). */
+        double e = fx_cell_e(i);
+        if (e > 1e-20) {
+            double fac = sqrt((e + dE) / e);
+            fa1[i] *= fac; fa2[i] *= fac; fx_scale(i, fac);
+        } else {
+            double a = sqrt(dE / P.fmodes);
+            double c = a * lut_cos(th2[i]), sn = a * lut_sin(th2[i]);
+            fa1[i] = c; fa2[i] = sn;
+            for (int nu = 1; nu < P.fmodes; nu++) { fxr_(nu)[i] = c; fxi_(nu)[i] = sn; }
+        }
+        Ee[i] = e + dE;
+        return;
+    }
     double e = fa1[i]*fa1[i] + fa2[i]*fa2[i];
     if (P.amp_door > 0) {
         /* v93 symmetric reverse door (§II.7): the evaporated matter click
@@ -1081,7 +1128,7 @@ static void pattern_cond(int i, double d1, double dsp)
         if (d1 <= 0) return;
         if (Ee[i] > 0) {
             double fac = sqrt((Ee[i] - d1) / Ee[i]);
-            fa1[i] *= fac; fa2[i] *= fac;
+            fa1[i] *= fac; fa2[i] *= fac; if (P.fmodes > 1) fx_scale(i, fac);
         }
         Ee[i] -= d1;
         Es[i] += d1;
@@ -1102,7 +1149,7 @@ static void pattern_evap(int i, double d2)
     if (d2 <= 0) return;
     if (Ee[i] > 0) {
         double fac = sqrt((Ee[i] - d2) / Ee[i]);
-        fa1[i] *= fac; fa2[i] *= fac;
+        fa1[i] *= fac; fa2[i] *= fac; if (P.fmodes > 1) fx_scale(i, fac);
     }
     Ee[i] -= d2;
     Es[i] += d2;
@@ -1185,6 +1232,11 @@ static void alloc_all(int nc)
     w1e = malloc(nc * sizeof(double)); w2e = malloc(nc * sizeof(double));
     Es = malloc(nc * sizeof(double)); Em = calloc(nc, sizeof(double)); Ee = calloc(nc, sizeof(double));
     fa1 = calloc(nc, sizeof(double)); fa2 = calloc(nc, sizeof(double));
+    if (P.fmodes > 1) {   /* v102 K2b */
+        fx_cap = nc;
+        fxr = calloc((size_t)(P.fmodes - 1) * nc, sizeof(double));
+        fxi = calloc((size_t)(P.fmodes - 1) * nc, sizeof(double));
+    }
     flload = calloc(nc, sizeof(double));
     qcnvD = calloc(nc, sizeof(double)); qcnvF = calloc(nc, sizeof(double));
     roughq = calloc(nc, sizeof(double));
@@ -2434,6 +2486,13 @@ static void step(void)
         double a1 = fa1[i], a2 = fa2[i];
         fa1[i] = cc * a1 + ss * a2;
         fa2[i] = -ss * a1 + cc * a2;
+        if (P.fmodes > 1)   /* v102 K2b: every mode precesses at the cell pitch */
+            for (int nu = 1; nu < P.fmodes; nu++) {
+                double *xr = fxr_(nu), *xi = fxi_(nu);
+                double b1 = xr[i], b2 = xi[i];
+                xr[i] = cc * b1 + ss * b2;
+                xi[i] = -ss * b1 + cc * b2;
+            }
     }
     for (int i = 0; i < NC; i++) {
         double sacc = 0;
@@ -2457,20 +2516,33 @@ static void step(void)
             double tau = P.field_J * w / sqrt(si * sj) * dt;
             double cc, ss;
             sincos(tau, &ss, &cc);
+            double ej_old = (P.fmodes > 1 && P.p1_meter) ? fx_cell_e(j) : 0;
             double a1i = fa1[i], a2i = fa2[i], a1j = fa1[j], a2j = fa2[j];
             fa1[i] = cc * a1i + ss * a2j;
             fa2[i] = cc * a2i - ss * a1j;
             fa1[j] = cc * a1j + ss * a2i;
             fa2[j] = cc * a2j - ss * a1i;
+            if (P.fmodes > 1)   /* v102 K2b: the same hop on every mode */
+                for (int nu = 1; nu < P.fmodes; nu++) {
+                    double *xr = fxr_(nu), *xi = fxi_(nu);
+                    double b1i = xr[i], b2i = xi[i], b1j = xr[j], b2j = xi[j];
+                    xr[i] = cc * b1i + ss * b2j;
+                    xi[i] = cc * b2i - ss * b1j;
+                    xr[j] = cc * b1j + ss * b2i;
+                    xi[j] = cc * b2j - ss * b1i;
+                }
             if (P.p1_meter) {
                 /* P1 site 5: field hop — energy the rotation moved into j
                  * (pairwise-conserved), displacement i -> j */
                 double mj = (fa1[j]*fa1[j] + fa2[j]*fa2[j]) - (a1j*a1j + a2j*a2j);
+                if (P.fmodes > 1) mj = fx_cell_e(j) - ej_old;
                 double m = mj * sd[s];
                 p1fd[0] += m * sux[s]; p1fd[1] += m * suy[s]; p1fd[2] += m * suz[s];
             }
         }
     }
+    if (P.fmodes > 1) for (int i = 0; i < NC; i++) Ee[i] = fx_cell_e(i);   /* v102 K2b */
+    else
     for (int i = 0; i < NC; i++)
         Ee[i] = fa1[i]*fa1[i] + fa2[i]*fa2[i];
 
@@ -2782,7 +2854,7 @@ static void step(void)
                     if (avail < 0) avail = 0;
                     if (dsp > avail) dsp = avail;
                     double fac = Ee[i] > 0 ? sqrt((Ee[i] - d1) / Ee[i]) : 0;
-                    fa1[i] *= fac; fa2[i] *= fac;
+                    fa1[i] *= fac; fa2[i] *= fac; if (P.fmodes > 1) fx_scale(i, fac);
                     Ee[i] -= d1;
                     Es[i] -= dsp;
                     Em[i] += d1 + dsp;
@@ -2908,6 +2980,7 @@ static void step(void)
                             double fac = sqrt((Ee[i] - field_take) / Ee[i]);
                             fa1[i] *= fac;
                             fa2[i] *= fac;
+                            if (P.fmodes > 1) fx_scale(i, fac);
                             Ee[i] -= field_take;
                         }
                         if (bsi > 0) {
@@ -3906,6 +3979,18 @@ int main(int argc, char **argv)
         printf("# CONFIG ERROR: par_gate and reg_gate both set — refusing to run law arms with two gates\n");
         exit(1);
     }
+    if (P.fmodes != 1 && P.fmodes != 2 && P.fmodes != 4) {
+        printf("# CONFIG ERROR: fmodes must be 1, 2 or 4\n");
+        exit(1);
+    }
+    if (P.fmodes > 1 && (P.amp_door > 0 || P.qp_phase > 0 || P.door_g > 0 || P.bath_xb > 0 || P.bh_r > 0)) {
+        printf("# CONFIG ERROR: fmodes > 1 is mode-blind only without amp_door, qp_phase, door_g, bath_xb, bh_r\n");
+        exit(1);
+    }
+    if (P.fmodes > 1 && (P.fseed_mode < -1 || P.fseed_mode >= P.fmodes)) {
+        printf("# CONFIG ERROR: fseed_mode must be -1 or 0 .. fmodes-1\n");
+        exit(1);
+    }
     printf("# GEOMETRY (apparatus): cfac=%g k_rep=%g mob_geo=%g kappa_bond=%g freeze_geo=%d\n",
            P.cfac, P.k_rep, P.mob_geo, P.kappa_bond, P.freeze_geo);
     printf("# bath=%d bath_frac=%g jam_sweeps=%d jam_k=%g L=%g dt=%g T=%g seed=%lu diag_every=%d\n",
@@ -4718,6 +4803,23 @@ int main(int argc, char **argv)
         printf("# SEED cantus: sgg=1 on %d tagged-pair slots\n", nseed);
     }
     for (int i = 0; i < NC; i++) { fxb[i] = fyb[i] = fzb[i] = 0; }
+    if (P.fmodes > 1) {
+        /* v102 K2b: place the seeded light (every seed writes mode 0) */
+        int nm = P.fseed_mode;
+        for (int i = 0; i < NC; i++) {
+            if (nm > 0) {
+                fxr_(nm)[i] = fa1[i]; fxi_(nm)[i] = fa2[i];
+                fa1[i] = fa2[i] = 0;
+            } else if (nm < 0) {
+                double f = 1.0 / sqrt((double)P.fmodes);   /* 0.5 exactly at F = 4 */
+                double a = fa1[i] * f, b = fa2[i] * f;
+                fa1[i] = a; fa2[i] = b;
+                for (int nu = 1; nu < P.fmodes; nu++) { fxr_(nu)[i] = a; fxi_(nu)[i] = b; }
+            }
+            Ee[i] = fx_cell_e(i);
+        }
+        printf("# FMODES v102 K2b: fmodes=%d fseed_mode=%d (mode-blind field)\n", P.fmodes, P.fseed_mode);
+    }
     if (P.lockq) lq_install(cx0, cy0, cz0);   /* v102 K2a: seed the lock before the ledger */
     E0_total = total_energy();
     births = deaths = beta_returns = 0; beta_energy = 0;
@@ -5048,6 +5150,11 @@ int main(int argc, char **argv)
         double Etot = total_energy();
         printf("#\n# RESULT drift_rel %.3e\n", (Etot - E0_total) / (E0_total != 0 ? E0_total : 1));
         if (P.lockq) lq_result();
+        if (P.fmodes > 1) {   /* v102 K2b: field energy by mode */
+            double em[4] = {0, 0, 0, 0};
+            for (int ii = 0; ii < NC; ii++) for (int nu = 0; nu < P.fmodes; nu++) em[nu] += fx_mode_e(nu, ii);
+            printf("# RESULT fmodes energy_by_mode=%.12e,%.12e,%.12e,%.12e\n", em[0], em[1], em[2], em[3]);
+        }
         printf("# RESULT births %ld deaths %ld beta_returns %ld beta_energy %.6e\n",
                births, deaths, beta_returns, beta_energy);
         printf("# RESULT conv rough=%.6f cond=%.6f evap=%.6f backs=%.6f rad=%.6f\n",

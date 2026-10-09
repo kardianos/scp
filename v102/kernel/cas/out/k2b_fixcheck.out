@@ -1,0 +1,7 @@
+# K2b fix check: AddressSanitizer (-O1 -g -fsanitize=address), exp=pulse amp 4 sigma 3 T=20
+asan_F1_M2: 0 sanitizer errors; events=6 Nh=6; RESULT drift_rel -3.242e-15
+asan_F1_M4: 0 sanitizer errors; events=4 Nh=4; RESULT drift_rel -3.362e-15
+asan_F2_m1: 0 sanitizer errors; events=6 Nh=6; RESULT drift_rel -3.242e-15
+asan_F4_m0_s2: 0 sanitizer errors; events=2 Nh=2; RESULT drift_rel -3.482e-15
+asan_F4_mm1: 0 sanitizer errors; events=3 Nh=3; RESULT drift_rel -3.602e-15
+# K2a G4 configurations rerun with the fixed binary: LQ event + RESULT lines identical to k2a_g4_*.out for all 12

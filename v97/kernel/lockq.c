@@ -23,7 +23,13 @@
  * credited to the neighbour's Es with the exact energy balance.  The
  * golden-rule rate and the band window use the exact energy change of
  * each candidate jump (K2a_DECIDE.md §G5); events are drawn as a
- * Poisson process inside each lock step. */
+ * Poisson process inside each lock step.
+ *
+ * K2b (v102/kernel/K2b_PREREG.md): with fmodes = F > 1 the kernel field
+ * carries F complex modes and lockq_M = F.  A photon in mode nu makes
+ * the jump J_nu = sum_mu P[mu,nu] b_i mu; atoms are counted per mode,
+ * and the event takes its atom from mode nu.  At F = 1 only nu = 0
+ * exists and the module is K2a's. */
 #include <complex.h>
 
 #define LQ_NMAX 16
@@ -44,7 +50,7 @@ typedef struct {                 /* a charge sector: basis + column-sparse H */
     int64_t *basis; long *cp; int *ri; double *hv;
 } LqSec;
 
-static int      lq_M, lq_n, lq_nlab, lq_mu0;
+static int      lq_M, lq_n, lq_nlab, lq_nm, lq_muof[4];
 static double   lq_P[4][4];
 static int      lq_mlab[4][2];
 static double   lq_Ef1, lq_Ef2, lq_hb, lq_Om, lq_Dl, lq_g, lq_J0, lq_t;
@@ -55,10 +61,10 @@ static int     *lq_site;         /* kernel cell -> chain site, or -1 */
 static double  *lq_rawA;         /* lens area of fenced slots, before the fence */
 static int      lq_dim[LQ_NMAX];
 static int64_t  lq_stride[LQ_NMAX];
-static LqSec    lq_cur, lq_nxt;  /* the state's sector, and the sector one jump away */
-static double complex *lq_psi, *lq_V, *lq_w, *lq_phi, *lq_phw;
+static LqSec    lq_cur, lq_nxt[4];   /* the state's sector, and the sector one jump (photon mode nu) away */
+static double complex *lq_psi, *lq_V, *lq_w, *lq_phi[4], *lq_phw;
 static double   lq_Egs, lq_time, lq_kerr;
-static long     lq_events, lq_winviol, lq_steps, lq_maxper;
+static long     lq_events, lq_winviol, lq_steps, lq_maxper, lq_chkviol, lq_evmode[4];
 static double   lq_Rmax, lq_Ein, lq_Eout, lq_dxmax;
 static uint64_t lq_rng;
 
@@ -365,23 +371,30 @@ static int lq_lanczos(const double complex *v0, int m, double *a, double *b)
 /* scratch sized to the current and next sectors */
 static void lq_scratch(void)
 {
-    free(lq_V); free(lq_w); free(lq_phi); free(lq_phw);
+    free(lq_V); free(lq_w); free(lq_phw);
     lq_V = malloc((size_t)LQ_KMAX * lq_cur.D * sizeof(double complex));
     lq_w = malloc((size_t)lq_cur.D * sizeof(double complex));
-    long Dn = lq_nxt.D > 0 ? lq_nxt.D : 1;
-    lq_phi = malloc((size_t)Dn * sizeof(double complex));
-    lq_phw = malloc((size_t)Dn * sizeof(double complex));
+    long Dmax = 1;
+    for (int nu = 0; nu < lq_nm; nu++) {
+        free(lq_phi[nu]);
+        long Dn = lq_nxt[nu].D > 0 ? lq_nxt[nu].D : 1;
+        lq_phi[nu] = malloc((size_t)Dn * sizeof(double complex));
+        if (Dn > Dmax) Dmax = Dn;
+    }
+    lq_phw = malloc((size_t)Dmax * sizeof(double complex));
 }
 
-/* the sector one jump (photon mode 0) away from the current one */
+/* the sectors one jump (photon mode nu) away from the current one */
 static void lq_next_build(void)
 {
-    if (lq_cur.Nh >= lq_n - 2) { lq_sec_free(&lq_nxt); return; }
-    int tgt[3];
-    for (int q = 0; q < 3; q++) tgt[q] = lq_cur.tgt[q];
-    for (int q = 0; q < lq_nlab - 1; q++) tgt[q] -= lq_mlab[lq_mu0][q];
-    tgt[lq_nlab - 1] += 1;
-    lq_sec_build(&lq_nxt, tgt, lq_cur.Nh + 1);
+    for (int nu = 0; nu < lq_nm; nu++) {
+        if (lq_cur.Nh >= lq_n - 2) { lq_sec_free(&lq_nxt[nu]); continue; }
+        int tgt[3];
+        for (int q = 0; q < 3; q++) tgt[q] = lq_cur.tgt[q];
+        for (int q = 0; q < lq_nlab - 1; q++) tgt[q] -= lq_mlab[lq_muof[nu]][q];
+        tgt[lq_nlab - 1] += 1;
+        lq_sec_build(&lq_nxt[nu], tgt, lq_cur.Nh + 1);
+    }
 }
 
 /* the current sector's ground state into lq_psi (restarted Lanczos) */
@@ -454,61 +467,84 @@ static double lq_energy_kernel(void)
     return lq_hb * (lq_efsum(lq_cur.Nh) + lq_expect(&lq_cur, lq_psi, lq_w));
 }
 
-/* lq_phi <- J_i psi in the next sector (unnormalized); returns |J_i psi|^2 */
-static double lq_map(int i)
+/* lq_phi[nu] <- J_nu,i psi in the next sector (unnormalized); returns |J psi|^2 */
+static double lq_map(int i, int nu)
 {
     const LqLoc *L = lq_locof(i);
-    for (long k = 0; k < lq_nxt.D; k++) lq_phi[k] = 0;
+    const LqSec *X = &lq_nxt[nu];
+    double complex *phi = lq_phi[nu];
+    for (long k = 0; k < X->D; k++) phi[k] = 0;
     for (long k = 0; k < lq_cur.D; k++) {
         if (lq_psi[k] == 0) continue;
         int dg = lq_digit(lq_cur.basis[k], i);
         if (L->N[dg] != 2) continue;
         for (int mu = 0; mu < lq_M; mu++) {
-            if (lq_P[mu][0] == 0) continue;
+            if (lq_P[mu][nu] == 0) continue;
             double amp;
             int d2 = lq_bop(L, dg, mu, -1, &amp);
             if (d2 < 0) continue;
-            long row = lq_bsearch(&lq_nxt, lq_cur.basis[k] + (int64_t)(d2 - dg) * lq_stride[i]);
+            long row = lq_bsearch(X, lq_cur.basis[k] + (int64_t)(d2 - dg) * lq_stride[i]);
             if (row < 0) { fprintf(stderr, "FATAL lockq: jump leaves the target sector\n"); exit(3); }
-            lq_phi[row] += lq_P[mu][0] * amp * lq_psi[k];
+            phi[row] += lq_P[mu][nu] * amp * lq_psi[k];
         }
     }
-    return creal(lq_dot(lq_nxt.D, lq_phi, lq_phi)) / creal(lq_dot(lq_cur.D, lq_psi, lq_psi));
+    return creal(lq_dot(X->D, phi, phi)) / creal(lq_dot(lq_cur.D, lq_psi, lq_psi));
 }
+
+/* the energy of photon mode nu in kernel cell o (F = 1: the whole field) */
+static double lq_mode_e(int nu, int o) { return P.fmodes > 1 ? fx_mode_e(nu, o) : Ee[o]; }
 
 /* the jump at bulk site i: the state moves to the next sector.  o is the
  * kernel neighbour that gave the atom (or -1 for a seeded jump) */
-static void lq_fire(int i, int o)
+static void lq_fire(int i, int o, int nu)
 {
     double Eb = lq_energy_kernel();
-    double jj = lq_map(i);
+    double jj = lq_map(i, nu);
     if (jj <= 0) { fprintf(stderr, "FATAL lockq: zero jump\n"); exit(3); }
+    int otgt[3] = {lq_cur.tgt[0], lq_cur.tgt[1], lq_cur.tgt[2]}, oNh = lq_cur.Nh;
     LqSec old = lq_cur;
-    lq_cur = lq_nxt;
-    lq_nxt = old; lq_nxt.basis = NULL; lq_nxt.cp = NULL; lq_nxt.ri = NULL; lq_nxt.hv = NULL;
+    lq_cur = lq_nxt[nu];
+    lq_nxt[nu].basis = NULL; lq_nxt[nu].cp = NULL; lq_nxt[nu].ri = NULL; lq_nxt[nu].hv = NULL; lq_nxt[nu].D = 0;
     lq_sec_free(&old);
     free(lq_psi);
-    lq_psi = lq_phi; lq_phi = NULL;
+    lq_psi = lq_phi[nu]; lq_phi[nu] = NULL;
     double nr = lq_nrm(lq_cur.D, lq_psi);
     for (long k = 0; k < lq_cur.D; k++) lq_psi[k] /= nr;
-    lq_nxt.D = 0;
     lq_next_build();
     lq_scratch();
     double Ea = lq_energy_kernel();
+    /* in-kernel bookkeeping check: the lock moves by mode nu's charges */
+    int bad = lq_cur.Nh != oNh + 1;
+    for (int q = 0; q < lq_nlab - 1; q++) if (lq_cur.tgt[q] - otgt[q] != -lq_mlab[lq_muof[nu]][q]) bad = 1;
     if (o >= 0) {
         double eps = A0eff * w1e[o] / TWO_PI;
-        double ee = Ee[o], fac = sqrt((ee - eps) / ee);
-        fa1[o] *= fac; fa2[o] *= fac;
-        Ee[o] = ee - eps;
+        double em0 = lq_mode_e(nu, o);
+        if (P.fmodes > 1) {
+            double fac = sqrt((em0 - eps) / em0);
+            if (nu == 0) { fa1[o] *= fac; fa2[o] *= fac; }
+            else { fxr_(nu)[o] *= fac; fxi_(nu)[o] *= fac; }
+            Ee[o] -= eps;
+            if (fabs(em0 - lq_mode_e(nu, o) - eps) > 1e-12 * eps) bad = 1;
+        } else {
+            double ee = Ee[o], fac = sqrt((ee - eps) / ee);
+            fa1[o] *= fac; fa2[o] *= fac;
+            Ee[o] = ee - eps;
+        }
         Es[o] += eps - (Ea - Eb);
         double dx = w1e[o] - (Ea - Eb) / lq_hb - lq_Om;
         if (fabs(dx) >= 2 * P.s_k) lq_winviol++;
         if (fabs(dx) > lq_dxmax) lq_dxmax = fabs(dx);
         lq_Ein += eps; lq_Eout += eps - (Ea - Eb);
-        lq_events++;
-        printf("# LQ event t=%.4f site=%d cell=%d o=%d w1e_o=%.6f eps=%.9f dE_lock=%.9f space_out=%.9f delta_exact=%+.6f Nh=%d\n",
-               sim_t, i, lq_cell[i], o, w1e[o], eps, Ea - Eb, eps - (Ea - Eb), dx, lq_cur.Nh);
+        lq_events++; lq_evmode[nu]++;
+        if (P.fmodes > 1)
+            printf("# LQ event t=%.4f site=%d cell=%d o=%d nu=%d w1e_o=%.6f eps=%.9f dE_lock=%.9f space_out=%.9f delta_exact=%+.6f Nh=%d charges=(%d,%d)\n",
+                   sim_t, i, lq_cell[i], o, nu, w1e[o], eps, Ea - Eb, eps - (Ea - Eb), dx, lq_cur.Nh,
+                   lq_cur.tgt[0], lq_nlab == 3 ? lq_cur.tgt[1] : 0);
+        else
+            printf("# LQ event t=%.4f site=%d cell=%d o=%d w1e_o=%.6f eps=%.9f dE_lock=%.9f space_out=%.9f delta_exact=%+.6f Nh=%d\n",
+                   sim_t, i, lq_cell[i], o, w1e[o], eps, Ea - Eb, eps - (Ea - Eb), dx, lq_cur.Nh);
     }
+    if (bad) lq_chkviol++;
 }
 
 /* fence: called wherever the kernel sets a slot's lens area */
@@ -533,43 +569,47 @@ static void lq_step(void)
     lq_evolve(dtL, 0);
     lq_time += dtL; lq_steps++;
     if (P.lockq_rate <= 0) return;
-    static int ci[LQ_CMAX], co[LQ_CMAX];
+    static int ci[LQ_CMAX], co[LQ_CMAX], cn[LQ_CMAX];
     static double cr_[LQ_CMAX];
     double band = 2 * P.s_k, rem = dtL;
     long nper = 0;
     for (;;) {
-        if (lq_nxt.D == 0) break;
+        if (lq_cur.Nh >= lq_n - 2) break;
         double Ex = lq_expect(&lq_cur, lq_psi, lq_w);
         int nc = 0;
         double R = 0;
         for (int i = 1; i < lq_n - 1; i++) {
-            int c = lq_cell[i], lit = 0;
-            for (int q = cls_[c]; q < cls_[c + 1] && !lit; q++) {
-                int s = clidx[q];
-                if (sst[s] == S_FREE || lq_rawA[s] <= 0) continue;
-                int o = sli[s] == c ? slj[s] : sli[s];
-                if (lq_site[o] >= 0) continue;
-                double eps = A0eff * w1e[o] / TWO_PI;
-                if (eps > 0 && Ee[o] >= eps) lit = 1;
-            }
-            if (!lit) continue;
-            double jj = lq_map(i);
-            if (jj <= 0) continue;
-            double dE = (lq_Ef1 - lq_Ef2) + lq_expect(&lq_nxt, lq_phi, lq_phw) - Ex;   /* rate units */
-            for (int q = cls_[c]; q < cls_[c + 1]; q++) {
-                int s = clidx[q];
-                if (sst[s] == S_FREE || lq_rawA[s] <= 0) continue;
-                int o = sli[s] == c ? slj[s] : sli[s];
-                if (lq_site[o] >= 0) continue;
-                double eps = A0eff * w1e[o] / TWO_PI;
-                if (eps <= 0) continue;
-                double na = floor(Ee[o] / eps);
-                if (na < 1) continue;
-                double del = w1e[o] - dE - lq_Om;
-                if (fabs(del) >= band) continue;
-                double G = lq_g * lq_g * sqrt(band * band - del * del) / (P.s_k * P.s_k);
-                double r = P.lockq_rate * G * jj * na;
-                if (nc < LQ_CMAX) { ci[nc] = i; co[nc] = o; cr_[nc] = r; nc++; R += r; }
+            int c = lq_cell[i];
+            for (int nu = 0; nu < lq_nm; nu++) {
+                if (lq_nxt[nu].D == 0) continue;
+                int lit = 0;
+                for (int q = cls_[c]; q < cls_[c + 1] && !lit; q++) {
+                    int s = clidx[q];
+                    if (sst[s] == S_FREE || lq_rawA[s] <= 0) continue;
+                    int o = sli[s] == c ? slj[s] : sli[s];
+                    if (lq_site[o] >= 0) continue;
+                    double eps = A0eff * w1e[o] / TWO_PI;
+                    if (eps > 0 && lq_mode_e(nu, o) >= eps) lit = 1;
+                }
+                if (!lit) continue;
+                double jj = lq_map(i, nu);
+                if (jj <= 0) continue;
+                double dE = (lq_Ef1 - lq_Ef2) + lq_expect(&lq_nxt[nu], lq_phi[nu], lq_phw) - Ex;   /* rate units */
+                for (int q = cls_[c]; q < cls_[c + 1]; q++) {
+                    int s = clidx[q];
+                    if (sst[s] == S_FREE || lq_rawA[s] <= 0) continue;
+                    int o = sli[s] == c ? slj[s] : sli[s];
+                    if (lq_site[o] >= 0) continue;
+                    double eps = A0eff * w1e[o] / TWO_PI;
+                    if (eps <= 0) continue;
+                    double na = floor(lq_mode_e(nu, o) / eps);
+                    if (na < 1) continue;
+                    double del = w1e[o] - dE - lq_Om;
+                    if (fabs(del) >= band) continue;
+                    double G = lq_g * lq_g * sqrt(band * band - del * del) / (P.s_k * P.s_k);
+                    double r = P.lockq_rate * G * jj * na;
+                    if (nc < LQ_CMAX) { ci[nc] = i; co[nc] = o; cn[nc] = nu; cr_[nc] = r; nc++; R += r; }
+                }
             }
         }
         if (nper == 0 && R * dtL > lq_Rmax) lq_Rmax = R * dtL;
@@ -580,7 +620,7 @@ static void lq_step(void)
         double u = lq_rand() * R, acc = 0;
         int k = 0;
         for (k = 0; k < nc - 1; k++) { acc += cr_[k]; if (u < acc) break; }
-        lq_fire(ci[k], co[k]);
+        lq_fire(ci[k], co[k], cn[k]);
         nper++;
     }
     if (nper > lq_maxper) lq_maxper = nper;
@@ -624,6 +664,10 @@ static void lq_result(void)
     if (!P.lockq) return;
     printf("# RESULT lockq events=%ld Nh=%d window_viol=%ld max|delta_exact|=%.6f max_expected_per_step=%.4f max_events_per_step=%ld atoms_in=%.9f space_out=%.9f lock_gain=%.9f kerr_max=%.1e tL=%.6f\n",
            lq_events, lq_cur.Nh, lq_winviol, lq_dxmax, lq_Rmax, lq_maxper, lq_Ein, lq_Eout, lq_Ein - lq_Eout, lq_kerr, lq_time);
+    if (P.fmodes > 1)
+        printf("# RESULT lockq_modes events_by_mode=%ld,%ld,%ld,%ld check_violations=%ld final_charges=(%d,%d) Nh=%d\n",
+               lq_evmode[0], lq_evmode[1], lq_evmode[2], lq_evmode[3], lq_chkviol,
+               lq_cur.tgt[0], lq_nlab == 3 ? lq_cur.tgt[1] : 0, lq_cur.Nh);
     lq_diag();
 }
 
@@ -664,10 +708,17 @@ static void lq_install(double cx, double cy, double cz)
         for (int a = 0; a < 4; a++) { lq_mlab[a][0] = mw[a][0]; lq_mlab[a][1] = mw[a][1]; }
         lq_nlab = 3;
     }
-    lq_mu0 = -1;
-    for (int mu = 0; mu < lq_M; mu++) if (lq_P[mu][0] != 0) {
-        if (lq_mu0 >= 0) { printf("# CONFIG ERROR: lockq photon mode couples to two lock modes\n"); exit(1); }
-        lq_mu0 = mu;
+    if (P.fmodes > 1 && P.fmodes != lq_M) {
+        printf("# CONFIG ERROR: with fmodes > 1, lockq_M must equal fmodes\n");
+        exit(1);
+    }
+    lq_nm = P.fmodes > 1 ? P.fmodes : 1;
+    for (int nu = 0; nu < lq_nm; nu++) {
+        lq_muof[nu] = -1;
+        for (int mu = 0; mu < lq_M; mu++) if (lq_P[mu][nu] != 0) {
+            if (lq_muof[nu] >= 0) { printf("# CONFIG ERROR: lockq photon mode couples to two lock modes\n"); exit(1); }
+            lq_muof[nu] = mu;
+        }
     }
     lq_loc_build(&lq_loc[0], 0);
     lq_loc_build(&lq_loc[1], 1);
@@ -708,9 +759,10 @@ static void lq_install(double cx, double cy, double cz)
         int c = lq_cell[k];
         removed += Ee[c] + Em[c];
         Ee[c] = Em[c] = 0; fa1[c] = fa2[c] = 0;
+        if (P.fmodes > 1) for (int nu = 1; nu < P.fmodes; nu++) { fxr_(nu)[c] = 0; fxi_(nu)[c] = 0; }   /* K2b: every mode */
         pin[c] = 1;
     }
-    lq_rawA = calloc(NSLOT, sizeof(double));
+    lq_rawA = calloc(NLMAX, sizeof(double));   /* the slot table's capacity: NSLOT is only its high-water mark */
     int nfence = 0;
     for (int s = 0; s < NSLOT; s++) {
         if (sst[s] == S_FREE) continue;
@@ -744,9 +796,21 @@ static void lq_install(double cx, double cy, double cz)
     printf("# LOCKQ resonance: photon pitch %.6f +- %.6f on the E_f part (vacuum w1=%g); the exact window is per jump\n",
            lq_Om - (lq_Ef2 - lq_Ef1), 2 * P.s_k, P.w1);
     if (P.lockq_force >= 1 && P.lockq_force <= lq_n - 2) {
-        lq_fire(P.lockq_force, -1);
-        printf("# LOCKQ seeded jump at site %d: sector dim %ld, E_lock %.12f (kernel), <H>/J0 %.12f\n",
-               P.lockq_force, lq_cur.D, lq_energy_kernel(), lq_expect(&lq_cur, lq_psi, lq_w) / lq_J0);
+        int fm = P.lockq_fmode;
+        if (fm < 0 || fm >= lq_M) { printf("# CONFIG ERROR: lockq_fmode must be 0 .. lockq_M-1\n"); exit(1); }
+        if (fm >= lq_nm) {   /* a seeded jump may use any lock mode, even with a one-mode field */
+            int nm0 = lq_nm;
+            lq_nm = fm + 1;
+            for (int nu = nm0; nu < lq_nm; nu++)
+                for (int mu = 0; mu < lq_M; mu++) if (lq_P[mu][nu] != 0) lq_muof[nu] = mu;
+            lq_next_build(); lq_scratch();
+            lq_fire(P.lockq_force, -1, fm);
+            for (int nu = nm0; nu < lq_nm; nu++) { lq_sec_free(&lq_nxt[nu]); free(lq_phi[nu]); lq_phi[nu] = NULL; }
+            lq_nm = nm0;
+            lq_scratch();
+        } else lq_fire(P.lockq_force, -1, fm);
+        printf("# LOCKQ seeded jump at site %d, photon mode %d: sector dim %ld, E_lock %.12f (kernel), <H>/J0 %.12f\n",
+               P.lockq_force, fm, lq_cur.D, lq_energy_kernel(), lq_expect(&lq_cur, lq_psi, lq_w) / lq_J0);
     }
     lq_diag();
 }

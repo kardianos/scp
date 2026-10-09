@@ -1,0 +1,8 @@
+# FMODES v102 K2b: fmodes=4 fseed_mode=3 (mode-blind field)
+# RESULT drift_rel -4.854e-16
+# RESULT fmodes energy_by_mode=0.000000000000e+00,0.000000000000e+00,0.000000000000e+00,1.105709616526e+02
+# RESULT births 3464 deaths 3035 beta_returns 0 beta_energy 0.000000e+00
+# RESULT conv rough=0.000000 cond=0.000000 evap=0.000000 backs=0.000000 rad=0.000000
+# RESULT credit qcnvD=0.000000 qcnvF=0.000000
+# RESULT geometry phi_nom=1.7043 z_live=16.70 dbar=1.4384 sigma_d=0.1512
+# RESULT front_speed v=0.4108 v_over_C=0.4108 (second-half fit, n=256)

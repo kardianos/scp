@@ -7,8 +7,9 @@ bulk, T-floor t = tJ0 * J0).
   G3: a seeded jump (photon mode 0) at bulk site s on that ground state,
       then exact evolution to time tL; the hole-density, S^z (and I^z)
       profiles.
+  K2b B5: the same with photon mode nu (default 0).
 
-usage: k2a_ab.py M n tJ0 [s tL]"""
+usage: k2a_ab.py M n tJ0 [s tL [nu]]"""
 import sys
 import numpy as np
 from scipy.sparse.linalg import eigsh, expm_multiply
@@ -31,9 +32,10 @@ print(f"# K2a A/B M={M} n={n} t={tJ0} J0: sector {z0} dim {len(b0)}")
 print(f"G2 E_gs/J0 = {w[0]/J0:.12f}   (next level {w[1]/J0:.6f})")
 if len(sys.argv) > 5:
     s, tL = int(sys.argv[4]), float(sys.argv[5])
+    nu = int(sys.argv[6]) if len(sys.argv) > 6 else 0
     g0 = v[:, 0]
     L = locs[s]
-    mu0 = [mu for mu in range(M) if P[mu, 0] != 0][0]
+    mu0 = [mu for mu in range(M) if P[mu, nu] != 0][0]
     dig = (b0//strides[s]) % dims[s]
     out = {}
     for kk, c in enumerate(b0):
@@ -41,7 +43,7 @@ if len(sys.argv) > 5:
         if L.N[dig[kk]] != 2 or occ[mu0] == 0: continue
         o2 = list(occ); o2[mu0] -= 1; kd = L.idx[tuple(o2)]
         c2 = c + (kd - dig[kk])*strides[s]
-        out[c2] = out.get(c2, 0.0) + P[mu0, 0]*np.sqrt(occ[mu0])*g0[kk]
+        out[c2] = out.get(c2, 0.0) + P[mu0, nu]*np.sqrt(occ[mu0])*g0[kk]
     lab_mu = np.array(GM.MODES_W[mu0]) if M == 4 else np.array([1 if mu0 == 0 else -1])
     tgt = tuple(-lab_mu) + (1,)
     H1, b1, _, _ = lo.sector(locs, T, tgt, lf)
@@ -57,7 +59,7 @@ if len(sys.argv) > 5:
         sz.append(float(p@(Ls.lab[d, 0]/2.0)))
         if M == 4: iz.append(float(p@(Ls.lab[d, 1]/2.0)))
     E1 = float(np.real(np.vdot(vt, H1@vt)))
-    print(f"G3 jump at site {s} -> sector {tgt} dim {len(b1)}; <H>/J0 = {E1/J0:.12f} at tL = {tL}")
+    print(f"G3 jump at site {s}, photon mode {nu} -> sector {tuple(int(x) for x in tgt)} dim {len(b1)}; <H>/J0 = {E1/J0:.12f} at tL = {tL}")
     print("G3 nh: " + " ".join(f"{x:.10f}" for x in nh))
     print("G3 sz: " + " ".join(f"{x:+.10f}" for x in sz))
     if M == 4: print("G3 iz: " + " ".join(f"{x:+.10f}" for x in iz))
