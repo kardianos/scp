@@ -1,0 +1,19 @@
+A_M2_b_s1.out: w1e=1.65 Ef1=1.462173444685073 Ef2=2.672518771615148 Omega=2.9
+  check, last event (site 1 mode 1): computed delta -0.089927, printed -0.089927
+  final state, every next jump:
+  site 1 mode 0: weight before projection 0.0001, after 3.650e-23, delta -0.1285 (OUT of the window)
+  site 1 mode 1: weight before projection 0.0001, after 7.300e-23, delta -0.1285 (OUT of the window)
+  site 2 mode 0: weight before projection 0.0072, after 3.566e-23, delta -0.1282 (OUT of the window)
+  site 2 mode 1: weight before projection 0.0129, after 7.104e-23, delta -0.1284 (OUT of the window)
+  site 3 mode 0: weight before projection 0.1745, after 5.446e-22, delta -0.1285 (OUT of the window)
+  site 3 mode 1: weight before projection 0.2342, after 1.089e-21, delta -0.1285 (OUT of the window)
+  site 4 mode 0: weight before projection 0.1735, after 1.712e-21, delta -0.1285 (OUT of the window)
+  site 4 mode 1: weight before projection 0.3887, after 3.424e-21, delta -0.1285 (OUT of the window)
+  site 5 mode 0: weight before projection 0.1779, after 7.640e-23, delta -0.1285 (OUT of the window)
+  site 5 mode 1: weight before projection 0.6635, after 1.528e-22, delta -0.1285 (OUT of the window)
+  site 6 mode 0: weight before projection 0.0598, after 1.127e-22, delta -0.1285 (OUT of the window)
+  site 6 mode 1: weight before projection 0.1041, after 2.255e-22, delta -0.1285 (OUT of the window)
+  site 7 mode 0: weight before projection 0.0011, after 1.500e-22, delta -0.1284 (OUT of the window)
+  site 7 mode 1: weight before projection 0.0024, after 2.997e-22, delta -0.1285 (OUT of the window)
+  site 8 mode 0: weight before projection 0.0000, after 3.317e-23, delta -0.1284 (OUT of the window)
+  site 8 mode 1: weight before projection 0.0000, after 6.625e-23, delta -0.1285 (OUT of the window)

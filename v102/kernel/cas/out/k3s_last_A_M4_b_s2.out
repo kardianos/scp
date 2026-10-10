@@ -1,0 +1,23 @@
+A_M4_b_s2.out: w1e=1.65 Ef1=1.462173444685073 Ef2=2.672518771615148 Omega=2.9
+  check, last event (site 3 mode 1): computed delta -0.050637, printed -0.050637
+  final state, every next jump:
+  site 1 mode 0: weight before projection 0.0220, after 4.578e-03, delta -0.1486 (OUT of the window)
+  site 1 mode 1: weight before projection 0.0168, after 4.715e-03, delta -0.1487 (OUT of the window)
+  site 1 mode 2: weight before projection 0.0236, after 4.794e-03, delta -0.1459 (OUT of the window)
+  site 1 mode 3: weight before projection 0.0124, after 5.282e-03, delta -0.1517 (OUT of the window)
+  site 2 mode 0: weight before projection 0.3188, after 1.352e-02, delta -0.1323 (OUT of the window)
+  site 2 mode 1: weight before projection 0.4192, after 1.542e-02, delta -0.1315 (OUT of the window)
+  site 2 mode 2: weight before projection 0.7623, after 1.977e-02, delta -0.1308 (OUT of the window)
+  site 2 mode 3: weight before projection 0.4137, after 1.543e-02, delta -0.1323 (OUT of the window)
+  site 3 mode 0: weight before projection 0.0027, after 9.847e-04, delta -0.1560 (OUT of the window)
+  site 3 mode 1: weight before projection 0.0039, after 1.026e-03, delta -0.1545 (OUT of the window)
+  site 3 mode 2: weight before projection 0.0034, after 9.425e-04, delta -0.1597 (OUT of the window)
+  site 3 mode 3: weight before projection 0.0019, after 1.015e-03, delta -0.1584 (OUT of the window)
+  site 4 mode 0: weight before projection 0.0076, after 2.283e-03, delta -0.1578 (OUT of the window)
+  site 4 mode 1: weight before projection 0.0096, after 2.072e-03, delta -0.1564 (OUT of the window)
+  site 4 mode 2: weight before projection 0.0066, after 1.997e-03, delta -0.1612 (OUT of the window)
+  site 4 mode 3: weight before projection 0.0054, after 2.168e-03, delta -0.1592 (OUT of the window)
+  site 5 mode 0: weight before projection 0.3857, after 2.239e-02, delta -0.1353 (OUT of the window)
+  site 5 mode 1: weight before projection 0.8036, after 2.292e-02, delta -0.1351 (OUT of the window)
+  site 5 mode 2: weight before projection 0.3959, after 2.151e-02, delta -0.1356 (OUT of the window)
+  site 5 mode 3: weight before projection 0.3848, after 2.458e-02, delta -0.1356 (OUT of the window)

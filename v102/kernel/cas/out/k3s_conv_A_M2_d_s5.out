@@ -1,0 +1,8 @@
+# K2e convergence of A_M2_d_s5.out: M=2 n=10 events=6 tL=2000.0 sampling every 0.0
+  event site=5 nu=1 t=0.4000: candidates' sweeps (200 rule) max 2, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 0.0e+00, max|<x200|x-x200>|/|x|^2 3.8e-17, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  event site=6 nu=0 t=0.4000: candidates' sweeps (200 rule) max 2, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 0.0e+00, max|<x200|x-x200>|/|x|^2 2.3e-17, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  event site=4 nu=1 t=1.6000: candidates' sweeps (200 rule) max 30, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 6.4e-31, max|<x200|x-x200>|/|x|^2 1.6e-16, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  event site=7 nu=0 t=88.8000: candidates' sweeps (200 rule) max 60, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 7.8e-31, max|<x200|x-x200>|/|x|^2 4.9e-16, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  event site=2 nu=0 t=652.4000: candidates' sweeps (200 rule) max 117, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 1.2e-29, max|<x200|x-x200>|/|x|^2 4.5e-16, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  event site=3 nu=0 t=687.0000: candidates' sweeps (200 rule) max 141, max|w200-wdeep|/wdeep 0.0e+00, max residual singlet weight 1.2e-29, max|<x200|x-x200>|/|x|^2 1.5e-16, unconverged candidates 0; fired jump: further sweeps 0, |x200 - xdeep| 0.0e+00
+  worst: sweeps 141, rate weight change 0.0e+00, residual singlet weight 1.2e-29, max|<x200|x-x200>|/|x|^2 4.9e-16, unconverged candidates 0, fired-state distance 0.0e+00

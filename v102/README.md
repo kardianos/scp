@@ -302,6 +302,28 @@ the attraction**:
   3.6 J0 per N = 1 neighbour, inside a ±12.5 J0 window. It cannot see
   binding (0.13–0.50 J0).
 
+**Kernel step, K3** (2026-10-09, under R12; `kernel/K3_PREREG.md`,
+`kernel/K3_DECIDE.md`): **Go.** 26 registered runs, T = 2000; every bar
+passes.
+
+- **Light fills the lock with unbound blocks.**
+  - Bright 3+2 always ends at seven holes in eight bulk sites, because
+    the eighth is refused by R12 and by the window.
+  - Bright W ends at three or four, by the order the holes formed.
+  - Dim light is light-limited: W makes one hole, beside the end.
+  - No run has any weight on bound levels.
+- **A single hole walks in the 3+2 bulk** (D = 0.63) and is pinned
+  beside an end. In W n = 7, which has no bulk, it is pinned.
+- **A seeded bound 3+2 pair holds** for 2000 t.u. (bound weight 0.64,
+  ⟨d⟩ = 3.0). W n = 7 has no bound two-hole level.
+- **The size the energetics force (pairs) never forms from light.**
+  Formation sees adjacency but not binding, and a closed lock cannot
+  relax. The candidates (a reverse boundary event, core in place of
+  R12) each need a ruling.
+- **A seeding defect:** the lock's xorshift draw, started from seeds 1–5,
+  makes each run's first event non-random. Part A was re-run with
+  well-mixed seeds as a labelled supplement; the picture stands.
+
 ## What is carried
 
 - `v89/PRINCIPLE.md`, in full. Where the kernel and the principle
