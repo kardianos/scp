@@ -1,0 +1,13 @@
+lanczos: 190 steps, converged 1
+# vx model=lo M=2 n=8 geom=ring vac=mobile vsite=-1 t=0 J0 sector=(1,0) cmax=-1 pen=0 gr=0.1  D=6000  J0=0.0095861869  [basis 0.0s]
+E 0 -0.188492578405 rate  -19.66293584 J0  rel 0.00000000 J0  resid 6.3e-13
+E 1 -0.188492578405 rate  -19.66293584 J0  rel 0.00000000 J0  resid 8.3e-19
+E 2 -0.188492578405 rate  -19.66293584 J0  rel 0.00000000 J0  resid 8.6e-18
+E 3 -0.188492578405 rate  -19.66293584 J0  rel 0.00000000 J0  resid 2.2e-18
+E 4 -0.179927989882 rate  -18.76950568 J0  rel 0.89343016 J0  resid 5.1e-18
+E 5 -0.179927989882 rate  -18.76950568 J0  rel 0.89343016 J0  resid 7.0e-17
+E 6 -0.179927989882 rate  -18.76950568 J0  rel 0.89343016 J0  resid 7.7e-20
+E 7 -0.172414634018 rate  -17.98573671 J0  rel 1.67719913 J0  resid 1.8e-16
+E 8 -0.172414634018 rate  -17.98573671 J0  rel 1.67719913 J0  resid 6.7e-18
+state 0 E -19.66293584 J0  <S2> 0.750000  <I2> 0.000000
+# steps 190  [24.2s]

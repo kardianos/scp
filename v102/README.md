@@ -324,6 +324,32 @@ passes.
   makes each run's first event non-random. Part A was re-run with
   well-mixed seeds as a labelled supplement; the picture stands.
 
+**Vacancy step** (2026-10-10; `vacancy/PREREG.md`, `vacancy/DECIDE.md`):
+the user's direction "proceed with this 'particle as vacancy' idea",
+tested by full-combination designs (a, b, c, ab, ac, bc, abc) with a new
+C exact-diagonalization tool (`vacancy/cas/vx.c`). A measurement; it
+rules nothing.
+
+- **Q1, ending V: the particle is the vacancy.** Of seven candidates
+  (vacancy, background, ripple and their combinations) it scores 7 of
+  the 8 registered nucleon criteria; the next best scores 4. It beats
+  "the lock with an open slot" on size: the lock's extent is a label,
+  and the vacancy's size is fixed by the fabric.
+- **Q2, ending P: its size is the background's correlation length.**
+  - Static: 0.990 (3+2 LO), 1.002 (3+2 AO), 1.087 (W, ξ_bg = 2.12).
+  - Moving W: 0.988.
+  - As g/Δ moves ξ_bg by 16%, the size follows it to within 2%.
+  - Misses: the moving 3+2 vacancy is 12% tighter, and the two W
+    ring-scale checks fail on an ill-conditioned fit.
+- **Q3, ending h: no Higgs-like line in 3+2.** The ripple is never
+  spin 0. In W the spin-0, isospin-0 two-ripple state sits at its
+  threshold to within 1% at leading order. Only the all-orders rings
+  (n ≤ 6) put it about 10% below.
+- **Q4: the background is converted space,** one quantum per link, to
+  0.96–0.997 per cell at leading order. R6's ceiling is that statement.
+- **Still open: the background is placed.** How space and field gather
+  into it is the next question.
+
 ## What is carried
 
 - `v89/PRINCIPLE.md`, in full. Where the kernel and the principle

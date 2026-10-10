@@ -1,0 +1,6 @@
+lanczos: 190 steps, converged 1
+# vx model=ao M=2 n=8 geom=ring vac=none vsite=-1 t=0 J0 sector=(2,0) cmax=3 pen=0 gr=0.1  D=19288  J0=0.0095861869  [basis 0.1s]
+E 0 -0.170971962744 rate  -17.83524191 J0  rel 0.00000000 J0  resid 4.3e-17
+E 1 -0.160257342744 rate  -16.71752742 J0  rel 1.11771449 J0  resid 3.6e-11
+state 0 E -17.83524191 J0  <S2> 2.000000  <I2> 0.000000
+# steps 190  [79.6s]

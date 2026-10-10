@@ -1,0 +1,7 @@
+# vx model=lo M=2 n=8 geom=ring vac=none vsite=-1 t=0 J0 sector=(0,0) cmax=-1 pen=1 gr=0.1  D=1107  J0=0.0095861869  [basis 0.0s]
+E 0 -0.185367675481 rate  -19.33695608 J0  rel 0.00000000 J0  resid 3.3e-17
+E 1 -0.159624751901 rate  -16.65153759 J0  rel 2.68541849 J0  resid 1.4e-11
+E 2 -0.158253586794 rate  -16.50850208 J0  rel 2.82845399 J0  resid 2.0e-11
+state 0 E -19.33695608 J0  <S2> 0.000000  <I2> 0.000000
+state 1 E -16.65153759 J0  <S2> -0.000000  <I2> 0.000000
+# steps 170  [0.6s]

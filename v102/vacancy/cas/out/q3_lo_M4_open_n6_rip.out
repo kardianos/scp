@@ -1,0 +1,5 @@
+# vx model=lo M=4 n=6 geom=open vac=none vsite=-1 t=0 J0 sector=(2,2) cmax=-1 pen=0 gr=0.1  D=6078  J0=0.0095861869  [basis 0.0s]
+E 0 -0.175733452975 rate  -18.33194516 J0  rel 0.00000000 J0  resid 5.1e-18
+E 1 -0.164504608325 rate  -17.16058842 J0  rel 1.17135674 J0  resid 1.5e-12
+state 0 E -18.33194516 J0  <S2> 2.000000  <I2> 2.000000
+# steps 50  [0.1s]

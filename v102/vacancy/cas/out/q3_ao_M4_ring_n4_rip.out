@@ -1,0 +1,5 @@
+# vx model=ao M=4 n=4 geom=ring vac=none vsite=-1 t=0 J0 sector=(2,2) cmax=-1 pen=0 gr=0.1  D=864  J0=0.0095861869  [basis 0.0s]
+E 0 -0.108256205119 rate  -11.29293701 J0  rel 0.00000000 J0  resid 2.3e-15
+E 1 -0.090448134604 rate  -9.43525672 J0  rel 1.85768029 J0  resid 1.5e-11
+state 0 E -11.29293701 J0  <S2> 2.000000  <I2> 2.000000
+# steps 80  [0.1s]

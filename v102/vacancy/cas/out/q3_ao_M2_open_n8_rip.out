@@ -1,0 +1,5 @@
+# vx model=ao M=2 n=8 geom=open vac=none vsite=-1 t=0 J0 sector=(2,0) cmax=-1 pen=0 gr=0.1  D=6828  J0=0.0095861869  [basis 0.0s]
+E 0 -0.156159457499 rate  -16.29004929 J0  rel 0.00000000 J0  resid 7.3e-16
+E 1 -0.148274285607 rate  -15.46749368 J0  rel 0.82255562 J0  resid 6.1e-11
+state 0 E -16.29004929 J0  <S2> 2.000000  <I2> 0.000000
+# steps 200  [1.4s]

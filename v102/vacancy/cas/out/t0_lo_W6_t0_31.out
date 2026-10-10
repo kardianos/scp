@@ -1,0 +1,6 @@
+lanczos: 60 steps, converged 1
+# vx model=lo M=4 n=6 geom=ring vac=mobile vsite=-1 t=0 J0 sector=(3,1) cmax=-1 pen=0 gr=0.1  D=78480  J0=0.0095861869  [basis 0.4s]
+E 0 -0.177548396158 rate  -18.52127416 J0  rel 0.00000000 J0  resid 1.1e-18
+E 1 -0.164924330964 rate  -17.20437253 J0  rel 1.31690163 J0  resid 5.7e-11
+state 0 E -18.52127416 J0  <S2> 3.750000  <I2> 1.991588
+# steps 60  [20.6s]

@@ -1,0 +1,16 @@
+  LO W n=6 mobile t=0: E0 (J0)                                   got -20.512926  recorded -20.512930  ok
+  LO W n=6 t=0: lowest (3/2,1/2) - E0, via sector (3,1) (J0)     got +1.991652  recorded +1.991700  ok
+  LO W n=6 mobile t=0.1: E0 (J0)                                 got -20.734655  recorded -20.734660  ok
+  LO W n=6 t=0.1: band width (J0)                                got +0.387936  recorded +0.387940  ok
+  LO 3+2 n=8 mobile t=0: E0 (J0)                                 got -19.662936  recorded -19.662940  ok
+  LO 3+2 n=8 mobile t=0.1: E0 (J0)                               got -19.727150  recorded -19.727150  ok
+  LO 3+2 n=8 t=0.1: band width (J0)                              got +0.122585  recorded +0.122580  ok
+  AO 3+2 n=4 sector 0: level 0 (rate)                            got -0.091490  recorded -0.091490  ok
+  AO 3+2 n=4 sector 0: level 1                                   got -0.081985  recorded -0.081985  ok
+  AO 3+2 n=4 sector 0: level 2                                   got -0.063837  recorded -0.063837  ok
+  AO W n=4 sector (0,0): level 0                                 got -0.127331  recorded -0.127331  ok
+  AO W n=4 sector (0,0): level 1                                 got -0.108256  recorded -0.108256  ok
+  AO 3+2 n=8 sum c<=3: Delta_8 (rate)                            got +0.005549  recorded +0.005549  ok
+  AO 3+2 n=8: lowest S=0 excitation (J0)                         got +2.505056  recorded +2.505063  ok
+  AO 3+2 n=8: ratio to 2 Delta_8                                 got 2.16389  recorded 2.1639  ok
+T0: PASS (every recorded value reproduced to its printed digits)

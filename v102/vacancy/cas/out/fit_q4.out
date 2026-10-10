@@ -1,0 +1,41 @@
+# Q4: |CS> = prod_l A^+_l |0> (one converted space quantum per link)
+  q2r_ao_M2_n8_static                      cs mode 1 overlap^2 0.49582054 per-cell 0.916042 (weight of |CS> inside the basis 1.000000, terms 191)
+                                           space per link: mean 0.04972  max 0.06642;  <N> 0.8672 1.8874 1.9111 1.9137 1.9128 1.9137 1.9111 1.8874
+  q2r_ao_M4_n6_static                      cs mode 3 overlap^2 0.47412958 per-cell 0.883045 (weight of |CS> inside the basis 1.000000, terms 1789)
+                                           space per link: mean 0.06869  max 0.08299;  <N> 0.8340 1.8508 1.8769 1.8862 1.8769 1.8508
+  q2r_lo_M2_n8_static                      cs mode 1 overlap^2 0.73132927 per-cell 0.961644 (weight of |CS> inside the basis 1.000000, terms 191)
+  q2r_lo_M4_n6_static                      cs mode 3 overlap^2 0.70991975 per-cell 0.944499 (weight of |CS> inside the basis 1.000000, terms 1789)
+  q3_ao_M2_open_n6_e0                      cs mode -1 overlap^2 0.68978105 per-cell 0.939980 (weight of |CS> inside the basis 1.000000, terms 32)
+                                           space per link: mean 0.06515  max 0.09574;  <N> 0.9043 1.8591 1.9109 1.9109 1.8591 0.9043
+  q3_ao_M2_open_n8_e0                      cs mode -1 overlap^2 0.60635590 per-cell 0.939379 (weight of |CS> inside the basis 1.000000, terms 128)
+                                           space per link: mean 0.05890  max 0.09567;  <N> 0.9043 1.8593 1.9113 1.9128 1.9128 1.9113 1.8593 0.9043
+  q3_ao_M2_ring_n4_e0                      cs mode -1 overlap^2 0.79331316 per-cell 0.943759 (weight of |CS> inside the basis 1.000000, terms 15)
+                                           space per link: mean 0.04521  max 0.04521;  <N> 1.9096 1.9096 1.9096 1.9096
+  q3_ao_M2_ring_n6_e0                      cs mode -1 overlap^2 0.65913130 per-cell 0.932886 (weight of |CS> inside the basis 1.000000, terms 63)
+                                           space per link: mean 0.04400  max 0.04400;  <N> 1.9120 1.9120 1.9120 1.9120 1.9120 1.9120
+  q3_ao_M2_ring_n8_e0                      cs mode -1 overlap^2 0.56173316 per-cell 0.930446 (weight of |CS> inside the basis 1.000000, terms 255)
+                                           space per link: mean 0.04364  max 0.04364;  <N> 1.9127 1.9127 1.9127 1.9127 1.9127 1.9127 1.9127 1.9127
+  q3_ao_M4_open_n5_e0                      cs mode -1 overlap^2 0.64167837 per-cell 0.915089 (weight of |CS> inside the basis 1.000000, terms 256)
+                                           space per link: mean 0.10336  max 0.14226;  <N> 0.8577 1.7933 1.8711 1.7933 0.8577
+  q3_ao_M4_open_n6_e0                      cs mode -1 overlap^2 0.59505252 per-cell 0.917119 (weight of |CS> inside the basis 1.000000, terms 1024)
+                                           space per link: mean 0.09433  max 0.14197;  <N> 0.8580 1.7944 1.8759 1.8759 1.7944 0.8580
+  q3_ao_M4_ring_n4_e0                      cs mode -1 overlap^2 0.67583300 per-cell 0.906692 (weight of |CS> inside the basis 1.000000, terms 250)
+                                           space per link: mean 0.06299  max 0.06299;  <N> 1.8740 1.8740 1.8740 1.8740
+  q3_ao_M4_ring_n6_e0                      cs mode -1 overlap^2 0.55201978 per-cell 0.905717 (weight of |CS> inside the basis 1.000000, terms 4090)
+                                           space per link: mean 0.05993  max 0.05993;  <N> 1.8801 1.8801 1.8801 1.8801 1.8801 1.8801
+  q3_lo_M2_open_n10_e0                     cs mode -1 overlap^2 0.87790480 per-cell 0.987063 (weight of |CS> inside the basis 1.000000, terms 512)
+  q3_lo_M2_open_n12_e0                     cs mode -1 overlap^2 0.83639829 per-cell 0.985223 (weight of |CS> inside the basis 1.000000, terms 2048)
+  q3_lo_M2_open_n14_e0                     cs mode -1 overlap^2 0.79650509 per-cell 0.983880 (weight of |CS> inside the basis 1.000000, terms 8192)
+  q3_lo_M2_open_n8_e0                      cs mode -1 overlap^2 0.92042886 per-cell 0.989689 (weight of |CS> inside the basis 1.000000, terms 128)
+  q3_lo_M2_ring_n10_e0                     cs mode -1 overlap^2 0.74607514 per-cell 0.971132 (weight of |CS> inside the basis 1.000000, terms 1023)
+  q3_lo_M2_ring_n12_e0                     cs mode -1 overlap^2 0.71092601 per-cell 0.971968 (weight of |CS> inside the basis 1.000000, terms 4095)
+  q3_lo_M2_ring_n14_e0                     cs mode -1 overlap^2 0.68046895 per-cell 0.972877 (weight of |CS> inside the basis 1.000000, terms 16383)
+  q3_lo_M2_ring_n6_e0                      cs mode -1 overlap^2 0.85646133 per-cell 0.974506 (weight of |CS> inside the basis 1.000000, terms 63)
+  q3_lo_M2_ring_n8_e0                      cs mode -1 overlap^2 0.79116208 per-cell 0.971143 (weight of |CS> inside the basis 1.000000, terms 255)
+  q3_lo_M4_open_n5_e0                      cs mode -1 overlap^2 0.98397546 per-cell 0.996774 (weight of |CS> inside the basis 1.000000, terms 256)
+  q3_lo_M4_open_n6_e0                      cs mode -1 overlap^2 0.96534102 per-cell 0.994138 (weight of |CS> inside the basis 1.000000, terms 1024)
+  q3_lo_M4_open_n7_e0                      cs mode -1 overlap^2 0.94576995 per-cell 0.992067 (weight of |CS> inside the basis 1.000000, terms 4096)
+  q3_lo_M4_open_n8_e0                      cs mode -1 overlap^2 0.92567375 per-cell 0.990392 (weight of |CS> inside the basis 1.000000, terms 16384)
+  q3_lo_M4_ring_n4_e0                      cs mode -1 overlap^2 0.87500000 per-cell 0.967168 (weight of |CS> inside the basis 1.000000, terms 250)
+  q3_lo_M4_ring_n6_e0                      cs mode -1 overlap^2 0.78780710 per-cell 0.961029 (weight of |CS> inside the basis 1.000000, terms 4090)
+  q3_lo_M4_ring_n8_e0                      cs mode -1 overlap^2 0.77824543 per-cell 0.969147 (weight of |CS> inside the basis 1.000000, terms 65530)

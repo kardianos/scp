@@ -1,0 +1,11 @@
+# vx model=ao M=2 n=6 geom=ring vac=none vsite=-1 t=0 J0 sector=(0,0) cmax=-1 pen=0 gr=0.1  D=1831  J0=0.0095861869  [basis 0.0s]
+E 0 -0.133743886543 rate  -13.95172946 J0  rel 0.00000000 J0  resid 4.8e-12
+E 1 -0.126923252171 rate  -13.24022296 J0  rel 0.71150651 J0  resid 6.3e-11
+state 0 E -13.95172946 J0  <S2> 0.000000  <I2> 0.000000
+state 0 profile Sz +0.000000 +0.000000 -0.000000 -0.000000 +0.000000 -0.000000
+state 0 profile vac 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000
+state 0 profile N 1.912006 1.912006 1.912006 1.912006 1.912006 1.912006
+state 0 link c 0.043997 0.043997 0.043997 0.043997 0.043997 0.043997
+state 0 corr SzSz +0.63056587 -0.44715415 +0.26275693 -0.26177143
+state 0 cs mode -1 overlap^2 0.65913130 per-cell 0.932886 (weight of |CS> inside the basis 1.000000, terms 63)
+# steps 120  [0.2s]
