@@ -1,0 +1,17 @@
+lat=cubic L=2 rules=bc: DB states=32472 max|colsum-1|=4.441e-16 missing_targets=0  PASS
+lat=cubic L=2 rules=abc: DB states=18312 max|colsum-1|=4.441e-16 missing_targets=0  PASS
+lat=cubic L=2 rules=ac: DB states=567576 max|colsum-1|=1.221e-15 missing_targets=0  PASS
+lat=square L1=2 L2=4 rules=c: DB states=125492 max|colsum-1|=0.000e+00 missing_targets=0  PASS
+lat=square L1=2 L2=4 rules=ac: DB states=81388 max|colsum-1|=0.000e+00 missing_targets=0  PASS
+lat=square L1=2 L2=4 rules=bc: DB states=2528 max|colsum-1|=0.000e+00 missing_targets=0  PASS
+lat=square L1=2 L2=4 rules=abc: DB states=976 max|colsum-1|=0.000e+00 missing_targets=0  PASS
+lat=square L=4 rules=bc: DB states=639232 max|colsum-1|=0.000e+00 missing_targets=0  PASS
+lat=square L=4 rules=abc: DB states=98784 max|colsum-1|=0.000e+00 missing_targets=0  PASS
+lat=kagome L1=1 L2=2 rules=none: DB states=6254 max|colsum-1|=4.441e-16 missing_targets=0  PASS
+lat=kagome L1=1 L2=2 rules=a: DB states=4802 max|colsum-1|=4.441e-16 missing_targets=0  PASS
+lat=kagome L1=1 L2=2 rules=b: DB states=324 max|colsum-1|=0.000e+00 missing_targets=0  PASS
+lat=kagome L1=1 L2=2 rules=ab: DB states=196 max|colsum-1|=0.000e+00 missing_targets=0  PASS
+lat=kagome L=2 rules=b: DB states=24288 max|colsum-1|=0.000e+00 missing_targets=0  PASS
+lat=kagome L=2 rules=ab: DB states=7488 max|colsum-1|=0.000e+00 missing_targets=0  PASS
+# recheck of the one MC fail, independent seeds, 4x sweeps
+T0 bins=16 chi2/dof=1.077 zmax=2.51 forbidden_hits=0 ledger_viol=0 acc_hop=0.833 acc_flip=0.000 acc_qhop=0.000  PASS

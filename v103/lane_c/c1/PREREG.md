@@ -173,8 +173,28 @@ separations, and whether the voids are confined.
   here.
 - **E4's sign is read only at short range.** Its long-range sign
   follows from E2 if the system is a Coulomb gas.
-- **Sweep counts:** written here after T0 and before production:
-  (pending).
+- **Sweep counts** (fixed after T0's timing, before production):
+  - every run: 8 seeds × 10⁶ sweeps, after 10⁴ warm-up sweeps;
+  - a sweep is N attempted moves;
+  - one 3-D sweep takes about 0.25 ms.
+- **T0 outcome, recorded before production.**
+  - All lattice and Green's-function gates pass: links N·z/2, the
+    2-colouring as registered, residuals ≤ 1.4e-13.
+  - Gate 1 (Monte Carlo against enumeration) passes in 17 of 18 cases.
+    The one fail is cubic 2 × 2 × 2 under bc: χ²/dof = 1.84,
+    max |z| = 3.74.
+  - It was not passed by rerunning. A stronger exact gate was added
+    (gate 1b):
+    - build the sampler's full transition matrix on every enumerable
+      state space;
+    - check that the uniform measure is stationary, i.e. every column
+      sums to 1.
+  - Gate 1b passes on all 15 cases it can hold, the failing one
+    included, to ≤ 1.2e-15, with no missing targets.
+  - The sampler is therefore exact, and the fail was statistical. The
+    case was then rerun with independent seeds and 4× the sweeps:
+    χ²/dof = 1.08, max |z| = 2.51.
+  - Both results are kept: `cas/out/t0.out` and `cas/out/t0_db.out`.
 
 ## 7. Reproduce
 

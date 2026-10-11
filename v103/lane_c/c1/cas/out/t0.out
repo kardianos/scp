@@ -1,0 +1,88 @@
+# chain lat=square L=2,4,4 N=8 NL=16 Z=4 dim=2 bipartite=1 rules=c (a=0 b=0 c=1) CAP=2 q=2 D=2
+LATTICE links=16 expect=16 selfcheck=ok
+EXACT states=125492
+T0 bins=36 chi2/dof=1.231 zmax=4.14 forbidden_hits=0 ledger_viol=0 acc_hop=0.000 acc_flip=0.261 acc_qhop=0.537  PASS
+# chain lat=square L=2,4,4 N=8 NL=16 Z=4 dim=2 bipartite=1 rules=ac (a=1 b=0 c=1) CAP=1 q=2 D=2
+LATTICE links=16 expect=16 selfcheck=ok
+EXACT states=81388
+T0 bins=36 chi2/dof=1.100 zmax=2.33 forbidden_hits=0 ledger_viol=0 acc_hop=0.000 acc_flip=0.274 acc_qhop=0.581  PASS
+# chain lat=square L=2,4,4 N=8 NL=16 Z=4 dim=2 bipartite=1 rules=bc (a=0 b=1 c=1) CAP=2 q=2 D=2
+LATTICE links=16 expect=16 selfcheck=ok
+EXACT states=2528
+T0 bins=16 chi2/dof=0.675 zmax=1.76 forbidden_hits=0 ledger_viol=0 acc_hop=0.750 acc_flip=0.000 acc_qhop=0.000  PASS
+# chain lat=square L=2,4,4 N=8 NL=16 Z=4 dim=2 bipartite=1 rules=abc (a=1 b=1 c=1) CAP=1 q=2 D=2
+LATTICE links=16 expect=16 selfcheck=ok
+EXACT states=976
+T0 bins=16 chi2/dof=1.252 zmax=2.21 forbidden_hits=0 ledger_viol=0 acc_hop=0.750 acc_flip=0.000 acc_qhop=0.000  PASS
+# chain lat=square L=4,4,4 N=16 NL=32 Z=4 dim=2 bipartite=1 rules=bc (a=0 b=1 c=1) CAP=2 q=2 D=2
+LATTICE links=32 expect=32 selfcheck=ok
+EXACT states=639232
+T0 bins=64 chi2/dof=1.360 zmax=4.13 forbidden_hits=0 ledger_viol=0 acc_hop=0.750 acc_flip=0.000 acc_qhop=0.000  PASS
+# chain lat=square L=4,4,4 N=16 NL=32 Z=4 dim=2 bipartite=1 rules=abc (a=1 b=1 c=1) CAP=1 q=2 D=2
+LATTICE links=32 expect=32 selfcheck=ok
+EXACT states=98784
+T0 bins=64 chi2/dof=0.934 zmax=2.57 forbidden_hits=0 ledger_viol=0 acc_hop=0.750 acc_flip=0.000 acc_qhop=0.000  PASS
+# chain lat=kagome L=1,2,4 N=6 NL=12 Z=4 dim=2 bipartite=0 rules=none (a=0 b=0 c=0) CAP=2 q=2 D=2
+LATTICE links=12 expect=12 selfcheck=ok
+EXACT states=6254
+T0 bins=21 chi2/dof=1.172 zmax=2.44 forbidden_hits=0 ledger_viol=0 acc_hop=0.000 acc_flip=0.245 acc_qhop=0.490  PASS
+# chain lat=kagome L=1,2,4 N=6 NL=12 Z=4 dim=2 bipartite=0 rules=a (a=1 b=0 c=0) CAP=1 q=2 D=2
+LATTICE links=12 expect=12 selfcheck=ok
+EXACT states=4802
+T0 bins=21 chi2/dof=0.940 zmax=1.66 forbidden_hits=0 ledger_viol=0 acc_hop=0.000 acc_flip=0.256 acc_qhop=0.539  PASS
+# chain lat=kagome L=1,2,4 N=6 NL=12 Z=4 dim=2 bipartite=0 rules=b (a=0 b=1 c=0) CAP=2 q=2 D=2
+LATTICE links=12 expect=12 selfcheck=ok
+EXACT states=324
+T0 bins=21 chi2/dof=1.384 zmax=2.55 forbidden_hits=0 ledger_viol=0 acc_hop=0.707 acc_flip=0.000 acc_qhop=0.000  PASS
+# chain lat=kagome L=1,2,4 N=6 NL=12 Z=4 dim=2 bipartite=0 rules=ab (a=1 b=1 c=0) CAP=1 q=2 D=2
+LATTICE links=12 expect=12 selfcheck=ok
+EXACT states=196
+T0 bins=21 chi2/dof=0.964 zmax=2.27 forbidden_hits=0 ledger_viol=0 acc_hop=0.719 acc_flip=0.000 acc_qhop=0.000  PASS
+# chain lat=kagome L=2,2,2 N=12 NL=24 Z=4 dim=2 bipartite=0 rules=a (a=1 b=0 c=0) CAP=1 q=2 D=2
+LATTICE links=24 expect=24 selfcheck=ok
+EXACT states=14438700
+T0 bins=78 chi2/dof=1.293 zmax=3.26 forbidden_hits=0 ledger_viol=0 acc_hop=0.000 acc_flip=0.286 acc_qhop=0.572  PASS
+# chain lat=kagome L=2,2,2 N=12 NL=24 Z=4 dim=2 bipartite=0 rules=b (a=0 b=1 c=0) CAP=2 q=2 D=2
+LATTICE links=24 expect=24 selfcheck=ok
+EXACT states=24288
+T0 bins=78 chi2/dof=0.657 zmax=2.41 forbidden_hits=0 ledger_viol=0 acc_hop=0.727 acc_flip=0.000 acc_qhop=0.000  PASS
+# chain lat=kagome L=2,2,2 N=12 NL=24 Z=4 dim=2 bipartite=0 rules=ab (a=1 b=1 c=0) CAP=1 q=2 D=2
+LATTICE links=24 expect=24 selfcheck=ok
+EXACT states=7488
+T0 bins=78 chi2/dof=1.001 zmax=2.56 forbidden_hits=0 ledger_viol=0 acc_hop=0.733 acc_flip=0.000 acc_qhop=0.000  PASS
+# chain lat=cubic L=2,2,2 N=8 NL=24 Z=6 dim=3 bipartite=1 rules=ac (a=1 b=0 c=1) CAP=1 q=2 D=2
+LATTICE links=24 expect=24 selfcheck=ok
+EXACT states=567576
+T0 bins=36 chi2/dof=1.040 zmax=2.45 forbidden_hits=0 ledger_viol=0 acc_hop=0.000 acc_flip=0.203 acc_qhop=0.496  PASS
+# chain lat=cubic L=2,2,2 N=8 NL=24 Z=6 dim=3 bipartite=1 rules=bc (a=0 b=1 c=1) CAP=2 q=2 D=2
+LATTICE links=24 expect=24 selfcheck=ok
+EXACT states=32472
+T0 bins=16 chi2/dof=1.843 zmax=3.74 forbidden_hits=0 ledger_viol=0 acc_hop=0.833 acc_flip=0.000 acc_qhop=0.000  FAIL
+# chain lat=cubic L=2,2,2 N=8 NL=24 Z=6 dim=3 bipartite=1 rules=abc (a=1 b=1 c=1) CAP=1 q=2 D=2
+LATTICE links=24 expect=24 selfcheck=ok
+EXACT states=18312
+T0 bins=16 chi2/dof=1.362 zmax=3.52 forbidden_hits=0 ledger_viol=0 acc_hop=0.833 acc_flip=0.000 acc_qhop=0.000  PASS
+# chain lat=pyro L=1,1,1 N=16 NL=48 Z=6 dim=3 bipartite=0 rules=b (a=0 b=1 c=0) CAP=2 q=2 D=2
+LATTICE links=48 expect=48 selfcheck=ok
+EXACT states=82119968
+T0 bins=136 chi2/dof=1.010 zmax=2.88 forbidden_hits=0 ledger_viol=0 acc_hop=0.812 acc_flip=0.000 acc_qhop=0.000  PASS
+# chain lat=pyro L=1,1,1 N=16 NL=48 Z=6 dim=3 bipartite=0 rules=ab (a=1 b=1 c=0) CAP=1 q=2 D=2
+LATTICE links=48 expect=48 selfcheck=ok
+EXACT states=25417616
+T0 bins=136 chi2/dof=0.858 zmax=3.11 forbidden_hits=0 ledger_viol=0 acc_hop=0.815 acc_flip=0.000 acc_qhop=0.000  PASS
+# not enumerable here (listed, not run): square 4x4 b-off; kagome 2x2 none; cubic 2x2x2 c; pyrochlore b-off
+# chain lat=ring L=128,128,128 N=128 NL=128 Z=2 dim=1 bipartite=1 rules=bc (a=0 b=1 c=1) CAP=2 q=2 D=2
+LATTICE links=128 expect=128 selfcheck=ok
+GREEN NS=65 residual_max=1.011e-13
+# chain lat=square L=32,32,32 N=1024 NL=2048 Z=4 dim=2 bipartite=1 rules=bc (a=0 b=1 c=1) CAP=2 q=2 D=2
+LATTICE links=2048 expect=2048 selfcheck=ok
+GREEN NS=135 residual_max=1.319e-13
+# chain lat=kagome L=18,18,18 N=972 NL=1944 Z=4 dim=2 bipartite=0 rules=b (a=0 b=1 c=0) CAP=2 q=2 D=2
+LATTICE links=1944 expect=1944 selfcheck=ok
+GREEN NS=116 residual_max=1.058e-13
+# chain lat=cubic L=12,12,12 N=1728 NL=5184 Z=6 dim=3 bipartite=1 rules=bc (a=0 b=1 c=1) CAP=2 q=2 D=2
+LATTICE links=5184 expect=5184 selfcheck=ok
+GREEN NS=67 residual_max=9.984e-14
+# chain lat=pyro L=5,5,5 N=2000 NL=6000 Z=6 dim=3 bipartite=0 rules=b (a=0 b=1 c=0) CAP=2 q=2 D=2
+LATTICE links=6000 expect=6000 selfcheck=ok
+GREEN NS=77 residual_max=9.378e-14
