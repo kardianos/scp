@@ -1,0 +1,24 @@
+threads=1
+T0 1 hard-core bosons = free fermions (L=4..10, all n, phi=0 and 1.3): PASS
+T0 2 free bosons E0 = -2tN cos(phi/L) (L=5, N=1..8): PASS
+T0 6 spectral lowest pole vs dense: max |dE| 1.99e-13, max |dweight| 9.68e-14: PASS
+T0 3-5 Hermiticity max 5.24e-15, SU(2) [H,S+] max 4.50e-16, Lanczos vs full ED max |dE| 2.84e-13: PASS
+T0 PASS
+threads=4
+T0 1 hard-core bosons = free fermions (L=4..10, all n, phi=0 and 1.3): PASS
+T0 2 free bosons E0 = -2tN cos(phi/L) (L=5, N=1..8): PASS
+T0 6 spectral lowest pole vs dense: max |dE| 1.56e-13, max |dweight| 4.52e-14: PASS
+T0 3-5 Hermiticity max 2.99e-15, SU(2) [H,S+] max 4.50e-16, Lanczos vs full ED max |dE| 2.70e-13: PASS
+T0 PASS
+threads=8
+T0 1 hard-core bosons = free fermions (L=4..10, all n, phi=0 and 1.3): PASS
+T0 2 free bosons E0 = -2tN cos(phi/L) (L=5, N=1..8): PASS
+T0 6 spectral lowest pole vs dense: max |dE| 2.13e-13, max |dweight| 2.51e-14: PASS
+T0 3-5 Hermiticity max 4.01e-15, SU(2) [H,S+] max 4.50e-16, Lanczos vs full ED max |dE| 2.98e-13: PASS
+T0 PASS
+threads=16
+T0 1 hard-core bosons = free fermions (L=4..10, all n, phi=0 and 1.3): PASS
+T0 2 free bosons E0 = -2tN cos(phi/L) (L=5, N=1..8): PASS
+T0 6 spectral lowest pole vs dense: max |dE| 8.53e-14, max |dweight| 4.73e-14: PASS
+T0 3-5 Hermiticity max 3.07e-15, SU(2) [H,S+] max 4.50e-16, Lanczos vs full ED max |dE| 2.98e-13: PASS
+T0 PASS
