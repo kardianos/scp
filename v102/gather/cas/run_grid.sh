@@ -8,8 +8,8 @@ cd "$(dirname "$0")"
 export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1
 jobs=$(mktemp)
 add() { local name=$1; shift; grep -q '^CHECK' out/$name.out 2>/dev/null && return; echo "$name $*" >> $jobs; }
-for r in none a b c ab ac bc abc; do add g_M4_$r M=4 n=5 k=3 rules=$r exp=all ntraj=100; done
-for r in none a b ab; do add gs_M4_$r M=4 n=5 k=3 rules=$r exp=vac side=1 ntraj=100; done
+for r in none a b c ab ac bc abc; do add g_M4_$r M=4 n=5 k=3 rules=$r exp=all ntraj=100 ntd=12 Td=1000; done
+for r in none a b ab; do add gs_M4_$r M=4 n=5 k=3 rules=$r exp=vac side=1 ntraj=100 ntd=12 Td=1000; done
 for r in none a b c ab ac bc abc; do add g_M2_$r M=2 n=6 k=4 rules=$r exp=all ntraj=200; done
 for r in none a b ab; do add gs_M2_$r M=2 n=6 k=4 rules=$r exp=vac side=1 ntraj=200; done
 echo "# $(wc -l < $jobs) jobs  $(date +%T)"

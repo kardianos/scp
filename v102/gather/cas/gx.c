@@ -21,6 +21,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <time.h>
+#include <complex.h>
 
 extern void dsyevd_(const char *jobz, const char *uplo, const int *n, double *a, const int *lda, double *w,
                     double *work, const int *lwork, int *iwork, const int *liwork, int *info);
@@ -47,7 +48,8 @@ static int M = 2, n = 6, kL = 4, ra = 0, rb = 0, rc = 0, side = 0;
 static double gr = 0.1, tin_J0 = 0.1, tL = 0.9, sk = 0.06, tin;
 static char exp_[16] = "static";
 static double nu = 0, Tmax = 5000, Rmin = 1e-12, Tdark = 1e9;
-static int ntraj = 200, Amax = 100;
+static int ntraj = 200, Amax = 100, ntraj_dense = 0;
+static double Tdense = 0;
 static uint64_t seed0 = 1;
 static double ns_env = 0, nL_env = 0;
 
@@ -120,6 +122,7 @@ typedef struct {
     int ncl; int *cl0, *clof;
     Ent **cache; int *ncache;     /* per eigenstate (single-state clusters) */
     double *obs;                  /* per eigenstate: cached observables (NOBS each), NaN if not yet */
+    double *Gam; int gready;      /* per eigenstate: decay width into the dark continua (sharp golden rule) */
 } Sec;
 static Sec *secs; static int nsec;
 static int *secmap; static int SW;
@@ -441,7 +444,7 @@ static void kernels(void)
             double eps = 2 * tL * cos(th);              /* side formation: light in at eps */
             sf += w * rhoS(dE + EF[1] + eps - OMEGA);
             double del = 2 * sk * cos(th);              /* side a: space in at del */
-            sa += w * rhoL(OMEGA + del + dE - EF[1]);
+            sa += w * rhoL(OMEGA + del - dE - EF[1]);   /* table variable = E_tgt - E_src */
         }
         Kf[k] = 2 * M_PI * G * G * sf; Ka[k] = 2 * M_PI * G * G * sa;
     }
@@ -452,20 +455,37 @@ static double kint(const double *K, double dE)
     int k = (int)u; double f = u - k; return K[k] * (1 - f) + K[k + 1] * f;
 }
 #define EDGE 1e-9
-/* rate factor; dE = E_src - E_tgt (chain energy released) */
-static double fac(int type, double dE)
+/* the semicircle band sqrt(a^2 - w^2) convolved with a Lorentzian of half-width g:
+   int sqrt(a^2-w^2) (g/pi)/((x-w)^2+g^2) dw = Im sqrt((x+ig)^2 - a^2) - g  (branch Im >= 0).
+   g = 0: the sharp band; a transition within EDGE of a band edge has zero density of states (exact edge
+   coincidences of the two-cell light region otherwise give round-off rates ~1e-8). */
+static double semiL(double x, double a, double g)
 {
-    double e, x;
+    if (g <= 0) { if (fabs(x) >= a - EDGE) return 0; return sqrt(a * a - x * x); }
+    double complex zz = x + I * g;
+    double complex s = csqrt(zz * zz - a * a);
+    if (cimag(s) < 0) s = -s;
+    double r = cimag(s) - g;
+    return r > 0 ? r : 0;
+}
+/* rate factor; dE = E_src - E_tgt (chain energy released); gam = (Gamma_src + Gamma_tgt)/2 */
+static double fac(int type, double dE, double gam)
+{
     switch (type) {
-    /* a transition within EDGE of a band edge has zero density of states (exact edge coincidences of the
-       two-cell light region otherwise give round-off rates ~1e-8) */
-    case LOUT: e = dE - EF[1]; if (fabs(e) >= 2 * tL - EDGE) return 0; x = 4 * tL * tL - e * e; return (1 + nL_env) * sqrt(x);
-    case LIN:  e = -dE - EF[1]; if (fabs(e) >= 2 * tL - EDGE) return 0; x = 4 * tL * tL - e * e; return nL_env * sqrt(x);
-    case SOUT: e = dE - OMEGA; if (fabs(e) >= 2 * sk - EDGE) return 0; x = 4 * sk * sk - e * e; return (1 + ns_env) * G * G * sqrt(x) / (sk * sk);
-    case SIN:  e = -dE - OMEGA; if (fabs(e) >= 2 * sk - EDGE) return 0; x = 4 * sk * sk - e * e; return ns_env * G * G * sqrt(x) / (sk * sk);
+    case LOUT: return (1 + nL_env) * semiL(dE - EF[1], 2 * tL, gam);
+    case LIN:  return nL_env * semiL(-dE - EF[1], 2 * tL, gam);
+    case SOUT: return (1 + ns_env) * G * G / (sk * sk) * semiL(dE - OMEGA, 2 * sk, gam);
+    case SIN:  return ns_env * G * G / (sk * sk) * semiL(-dE - OMEGA, 2 * sk, gam);
     case SFORM: return nL_env * (1 + ns_env) * kint(Kf, dE);
     case SA:    return ns_env * (1 + nL_env) * kint(Ka, -dE);
     }
+    return 0;
+}
+/* the dark, sharp rate of a spontaneous event (for the widths) */
+static double fsharp(int type, double dE)
+{
+    if (type == LOUT) return semiL(dE - EF[1], 2 * tL, 0);
+    if (type == SOUT) return G * G / (sk * sk) * semiL(dE - OMEGA, 2 * sk, 0);
     return 0;
 }
 
@@ -485,18 +505,52 @@ static void events_init(void)
 }
 
 static double compl_max = 0, clus_max = 0;
-static double *vbuf, *cbuf; static long vcap = 0;
-static void ensure_buf(long D) { if (D > vcap) { vcap = D; vbuf = realloc(vbuf, sizeof(double) * D); cbuf = realloc(cbuf, sizeof(double) * D); } }
+static double *vbuf, *cbuf, *fbuf; static long vcap = 0;
+static void ensure_buf(long D) { if (D > vcap) { vcap = D; vbuf = realloc(vbuf, sizeof(double) * D); cbuf = realloc(cbuf, sizeof(double) * D); fbuf = realloc(fbuf, sizeof(double) * D); } }
+
+/* widths: Gamma_k = sum over spontaneous events (light out at the lead, space out where allowed) of the
+   sharp dark golden-rule rates; computed per sector by dgemm, once per rule set */
+static void sec_gamma(int s)
+{
+    Sec *S = &secs[s];
+    if (S->gready) return;
+    sec_ready(s);
+    S->Gam = calloc(S->D, sizeof(double));
+    int Ds = (int)S->D;
+    for (int e = 0; e < M + n - 1; e++) {
+        int type = e < M ? LOUT : SOUT, idx = e < M ? e : e - M;
+        int ts = target_sector(s, type, idx);
+        if (ts < 0) continue;
+        sec_ready(ts);
+        Sec *T = &secs[ts];
+        int Dt = (int)T->D;
+        double *V = malloc(sizeof(double) * (size_t)Dt * Ds), *C = malloc(sizeof(double) * (size_t)Dt * Ds);
+        int any = 0;
+        for (int k = 0; k < Ds; k++) any |= apply_op(s, type, idx, S->U + (size_t)k * Ds, V + (size_t)k * Dt, ts);
+        if (any) {
+            double one = 1, zero = 0;
+            dgemm_("T", "N", &Dt, &Ds, &Dt, &one, T->U, &Dt, V, &Dt, &zero, C, &Dt);
+            for (int k = 0; k < Ds; k++) {
+                double g = 0;
+                for (int q = 0; q < Dt; q++) { double c = C[q + (size_t)k * Dt]; if (c != 0) g += c * c * fsharp(type, S->E[k] - T->E[q]); }
+                S->Gam[k] += g;
+            }
+        }
+        free(V); free(C);
+    }
+    S->gready = 1;
+}
 
 /* compute the entries from (s, psi) with energy E; returns count, list malloc'd */
-static int compute_entries(int s, const double *psi, double E, Ent **outp)
+static void sec_gamma(int s);
+static int compute_entries(int s, const double *psi, double E, double gsrc, Ent **outp)
 {
     int cap_e = 64, ne = 0; Ent *L = malloc(sizeof(Ent) * cap_e);
     for (int e = 0; e < nev; e++) {
         int type = evt[e], idx = evi[e];
         int ts = target_sector(s, type, idx);
         if (ts < 0) continue;
-        sec_ready(ts);
+        sec_ready(ts); sec_gamma(ts);
         Sec *T = &secs[ts];
         ensure_buf(T->D);
         if (!apply_op(s, type, idx, psi, vbuf, ts)) continue;
@@ -511,12 +565,13 @@ static int compute_entries(int s, const double *psi, double E, Ent **outp)
             if (w < 1e-20 * vn) continue;          /* numerical zero */
             double r = 0, rsum = 0;
             for (int k = k0; k < k1; k++) {
-                double f = fac(type, E - T->E[k]);
+                double f = fac(type, E - T->E[k], 0.5 * (gsrc + T->Gam[k]));
+                fbuf[k - k0] = f;
                 r += cbuf[k] * cbuf[k] * f;
+                rsum += cbuf[k] * cbuf[k] * fac(type, E - T->E[k0], 0.5 * (gsrc + T->Gam[k]));
             }
             if (r <= 0) continue;
-            /* cluster rate at its first energy vs the sum of its eigen rates */
-            rsum = w * fac(type, E - T->E[k0]);
+            /* rsum: the same with every member at the cluster's first energy (tests the clustering) */
             if (w > 1e-12 * vn) {
                 double d = fabs(rsum - r) / r;
                 if (d > clus_max) clus_max = d;
@@ -527,7 +582,7 @@ static int compute_entries(int s, const double *psi, double E, Ent **outp)
             if (ne == cap_e) { cap_e *= 2; L = realloc(L, sizeof(Ent) * cap_e); }
             Ent *en = &L[ne++];
             en->type = type; en->idx = idx; en->tsec = ts; en->tcl = c; en->rate = r; en->coef = NULL;
-            if (k1 - k0 > 1) { en->coef = malloc(sizeof(double) * (k1 - k0)); for (int k = k0; k < k1; k++) en->coef[k - k0] = cbuf[k]; }
+            if (k1 - k0 > 1) { en->coef = malloc(sizeof(double) * (k1 - k0)); for (int k = k0; k < k1; k++) en->coef[k - k0] = cbuf[k] * sqrt(fbuf[k - k0]); }
         }
     }
     *outp = L; return ne;
@@ -542,7 +597,8 @@ static double urand(void) { return ((xnext() >> 11) + 0.5) * (1.0 / 900719925474
 static void rseed(uint64_t s) { uint64_t x = s * 0x2545F4914F6CDD1DULL + 12345; for (int i = 0; i < 4; i++) rs[i] = splitmix64(&x); }
 
 /* ---------------- KMC ---------------- */
-typedef struct { int sec, cl, ncoef; double coef[64]; } State;
+typedef struct { int sec, cl, ncoef; double *coef; } State;   /* coef: capacity gDmax */
+static long gDmax = 0;
 
 static void state_vec(const State *st, double *psi)
 {
@@ -565,14 +621,18 @@ static void state_obs(const State *st, double *o)
     if (st->ncoef == 1) memcpy(S->obs + (long)k0 * NOBS, o, sizeof(double) * NOBS);
 }
 
+#define CACHE_MAX 20000000L   /* cached entries per process (~0.8 GB); past it, rates are recomputed */
+static long cached_entries = 0;
 static Ent *get_entries(const State *st, int *ne, int *owned)
 {
     Sec *S = &secs[st->sec];
     int k0 = S->cl0[st->cl];
     if (st->ncoef == 1 && S->ncache[k0] >= 0) { *ne = S->ncache[k0]; *owned = 0; return S->cache[k0]; }
     ensure_psi(S->D); state_vec(st, psibuf);
-    Ent *L; int c = compute_entries(st->sec, psibuf, state_E(st), &L);
-    if (st->ncoef == 1) { S->cache[k0] = L; S->ncache[k0] = c; *owned = 0; }
+    sec_gamma(st->sec);
+    double gsrc = 0; for (int a = 0; a < st->ncoef; a++) gsrc += st->coef[a] * st->coef[a] * S->Gam[k0 + a];
+    Ent *L; int c = compute_entries(st->sec, psibuf, state_E(st), gsrc, &L);
+    if (st->ncoef == 1 && cached_entries + c <= CACHE_MAX) { S->cache[k0] = L; S->ncache[k0] = c; cached_entries += c; *owned = 0; }
     else *owned = 1;
     *ne = c; return L;
 }
@@ -595,7 +655,6 @@ static void start_from(int s, const double *psi0, State *st)
         if (u < acc) { pick = c; break; }
     }
     st->sec = s; st->cl = pick; st->ncoef = S->cl0[pick + 1] - S->cl0[pick];
-    if (st->ncoef > 64) { fprintf(stderr, "cluster too large %d\n", st->ncoef); exit(1); }
     double nr = 0; for (int a = 0; a < st->ncoef; a++) { st->coef[a] = cbuf[S->cl0[pick] + a]; nr += st->coef[a] * st->coef[a]; }
     nr = sqrt(nr); for (int a = 0; a < st->ncoef; a++) st->coef[a] /= nr;
 }
@@ -609,7 +668,8 @@ typedef struct {
 static double ledger_max = 0;
 static void run_traj(const State *st0, int dense, TrajOut *R)
 {
-    State st = *st0;
+    double *bufA = malloc(sizeof(double) * gDmax), *bufB = malloc(sizeof(double) * gDmax);
+    State st = *st0; st.coef = bufA; memcpy(bufA, st0->coef, sizeof(double) * st0->ncoef);
     memset(R, 0, sizeof(*R)); R->t_refill = -1;
     double t = 0, Tend = dense ? Tmax : 1e300;
     int relax = 0;
@@ -648,7 +708,7 @@ static void run_traj(const State *st0, int dense, TrajOut *R)
         /* jump */
         Sec *T = &secs[en->tsec];
         State ns; ns.sec = en->tsec; ns.cl = en->tcl; ns.ncoef = T->cl0[en->tcl + 1] - T->cl0[en->tcl];
-        if (ns.ncoef > 64) { fprintf(stderr, "cluster too large %d\n", ns.ncoef); exit(1); }
+        ns.coef = (st.coef == bufA) ? bufB : bufA;
         if (ns.ncoef == 1) ns.coef[0] = 1;
         else { double nr = 0; for (int a = 0; a < ns.ncoef; a++) { ns.coef[a] = en->coef[a]; nr += ns.coef[a] * ns.coef[a]; } nr = sqrt(nr); for (int a = 0; a < ns.ncoef; a++) ns.coef[a] /= nr; }
         if (owned) free_entries(L, ne);
@@ -664,6 +724,7 @@ static void run_traj(const State *st0, int dense, TrajOut *R)
     if (dense) for (int q = 0; q < NOBS; q++) R->obs_avg[q] /= (Tmax / 2);
     else memcpy(R->obs_avg, o, sizeof(o));
     R->t = t; R->Nend = secs[st.sec].N;
+    free(bufA); free(bufB);
 }
 
 /* ---------------- start vectors ---------------- */
@@ -771,22 +832,28 @@ static void cache_clear(void)
         if (!S->ready) continue;
         for (long k = 0; k < S->D; k++) if (S->ncache[k] >= 0) { free_entries(S->cache[k], S->ncache[k]); S->cache[k] = NULL; S->ncache[k] = -1; }
     }
+    cached_entries = 0;
 }
 
 static void run_set(const char *tag, int s0, const double *psi0, const char *e, double v, int dense)
 {
     cache_clear();
     set_env(e, v); nu = v; events_init();
-    TrajOut *R = calloc(ntraj, sizeof(TrajOut));
+    TrajOut *R = calloc(ntraj > ntraj_dense ? ntraj : ntraj_dense, sizeof(TrajOut));
+    double *stbuf = malloc(sizeof(double) * gDmax);
     clock_t c0 = clock();
-    for (int r = 0; r < ntraj; r++) {
+    int nt = (dense && ntraj_dense > 0) ? ntraj_dense : ntraj;
+    double Tsave = Tmax; if (dense && Tdense > 0) Tmax = Tdense;
+    for (int r = 0; r < nt; r++) {
         rseed(seed0 * 1000003ULL + r);
-        State st; start_from(s0, psi0, &st);
+        State st; st.coef = stbuf; start_from(s0, psi0, &st);
         run_traj(&st, dense, &R[r]);
     }
-    summarize(tag, R, ntraj, dense);
+    summarize(tag, R, nt, dense);
+    if (dense) printf("  T=%g\n", Tmax);
+    Tmax = Tsave;
     printf("  cpu=%.1fs\n", (double)(clock() - c0) / CLOCKS_PER_SEC);
-    free(R);
+    free(R); free(stbuf);
 }
 
 static void static_report(void)
@@ -801,7 +868,8 @@ static void static_report(void)
     for (long k = 0; k < S->D && k < 8; k++) {
         double o[NOBS];
         observe(Lsec, S->U + k * S->D, o);
-        Ent *L; int ne = compute_entries(Lsec, S->U + k * S->D, S->E[k], &L);
+        sec_gamma(Lsec);
+        Ent *L; int ne = compute_entries(Lsec, S->U + k * S->D, S->E[k], S->Gam[k], &L);
         double rt = 0; for (int i = 0; i < ne; i++) rt += L[i].rate;
         free_entries(L, ne);
         printf("  k=%ld E=%.10f w_lock=%.6f F=%.6f nsat=%.4f Nlight=%.4f rate_out=%.6e\n", k, S->E[k], o[0], o[1], o[2], o[3], rt);
@@ -809,7 +877,7 @@ static void static_report(void)
     {
         double o[NOBS];
         observe(Lsec, S->U + kb * S->D, o);
-        Ent *L; int ne = compute_entries(Lsec, S->U + kb * S->D, S->E[kb], &L);
+        Ent *L; int ne = compute_entries(Lsec, S->U + kb * S->D, S->E[kb], S->Gam[kb], &L);
         double rt = 0; for (int i = 0; i < ne; i++) rt += L[i].rate;
         free_entries(L, ne);
         printf("  maxF k=%ld E=%.10f w_lock=%.6f F=%.6f rate_out=%.6e  (E-E0=%.6e J0)\n", kb, S->E[kb], o[0], o[1], rt, (S->E[kb] - S->E[0]) / J0);
@@ -821,6 +889,10 @@ static void static_report(void)
     for (long x = 0; x < S->D; x++) { double hv = 0; for (long y = 0; y < S->D; y++) hv += H[x + y * S->D] * L0[y]; e += L0[x] * hv; }
     for (long x = 0; x < S->D; x++) { double hv = 0; for (long y = 0; y < S->D; y++) hv += H[x + y * S->D] * L0[y]; r += (hv - e * L0[x]) * (hv - e * L0[x]); }
     printf("  L0: <H>=%.12f residual=%.3e\n", e, sqrt(r));
+    sec_gamma(Lsec);
+    { double gl = 0, gmax = 0; Sec *T = &secs[Lsec];
+      for (long k = 0; k < T->D; k++) { double c = 0; for (long x = 0; x < T->D; x++) c += L0[x] * T->U[x + k * T->D]; gl += c * c * T->Gam[k]; if (T->Gam[k] > gmax) gmax = T->Gam[k]; }
+      printf("  widths: <L0|Gamma|L0>=%.6e  max Gamma in sector=%.6e  Gamma(k=0)=%.6e\n", gl, gmax, T->Gam[0]); }
     free(H);
 }
 
@@ -843,6 +915,8 @@ static void parse(int argc, char **argv)
         else if (!strcmp(k, "ntraj")) ntraj = atoi(v);
         else if (!strcmp(k, "Amax")) Amax = atoi(v);
         else if (!strcmp(k, "T")) Tmax = atof(v);
+        else if (!strcmp(k, "ntd")) ntraj_dense = atoi(v);
+        else if (!strcmp(k, "Td")) Tdense = atof(v);
         else if (!strcmp(k, "seed")) seed0 = strtoull(v, NULL, 10);
         else if (!strcmp(k, "resid")) check_resid = atoi(v);
         else { fprintf(stderr, "unknown key %s\n", k); exit(1); }
@@ -879,6 +953,7 @@ int main(int argc, char **argv)
     printf("# gx M=%d n=%d k=%d rules=%s%s%s%s side=%d g/D=%g tin=%g J0 tL=%g sk=%g exp=%s nsec=%d J0=%.10f\n",
            M, n, kL, ra ? "a" : "", rb ? "b" : "", rc ? "c" : "", (ra || rb || rc) ? "" : "none", side, gr, tin_J0, tL, sk, exp_, nsec, J0);
     long Dmax = 0; for (int s = 0; s < nsec; s++) if (secs[s].D > Dmax) Dmax = secs[s].D;
+    gDmax = Dmax;
     printf("# caps:"); for (int i = 0; i < n; i++) printf(" %d", cap[i]); printf("  Dmax=%ld\n", Dmax);
     fflush(stdout);
 
@@ -895,8 +970,20 @@ int main(int argc, char **argv)
         /* completeness over a sweep of entries from every eigenstate of the lock sector, in env SL dense with side */
         set_env("SL", 1.0); nu = 1; events_init();
         Sec *S = &secs[Lsec];
-        for (long k = 0; k < S->D; k++) { Ent *L; int ne = compute_entries(Lsec, S->U + k * S->D, S->E[k], &L); free_entries(L, ne); }
+        sec_gamma(Lsec);
+        for (long k = 0; k < S->D; k++) { Ent *L; int ne = compute_entries(Lsec, S->U + k * S->D, S->E[k], S->Gam[k], &L); free_entries(L, ne); }
         printf("T0 completeness_max=%.3e cluster_rate_max=%.3e\n", compl_max, clus_max);
+        /* the broadened band against direct quadrature */
+        { double worst = 0; double xs[6] = {-2.5, -1.7, -0.3, 0.0, 1.1, 3.0}, gs[4] = {1e-3, 0.05, 0.5, 2.0};
+          for (int i = 0; i < 6; i++) for (int j = 0; j < 4; j++) {
+              double a = 1.8, x = xs[i], g = gs[j], sum = 0; int Q = 2000000;
+              for (int q = 0; q < Q; q++) { double th = (q + 0.5) * M_PI / Q, w = a * cos(th), sn = a * sin(th);
+                  sum += sn * sn * (g / M_PI) / ((x - w) * (x - w) + g * g) * (M_PI / Q); }
+              double d = fabs(sum - semiL(x, a, g)) / fmax(sum, 1e-300); if (d > worst) worst = d; }
+          printf("T0 semicircle*Lorentzian closed form vs quadrature: max rel diff %.3e\n", worst); }
+        /* side kernels: formation from f and side a into f are one double integral, Kf(x) = Ka(x) */
+        { double mx = 0, dk = 0; for (int q = 0; q < KN; q++) { mx = fmax(mx, Kf[q]); dk = fmax(dk, fabs(Kf[q] - Ka[q])); }
+          printf("T0 side kernels max|Kf-Ka|/max Kf = %.3e (max Kf = %.6e at g^2 = %.6e)\n", dk / mx, mx, G * G); }
         double EfL = 0; for (int i = 0; i < kL; i++) EfL += EF[(i == 0 || i == kL - 1) ? 1 : 2];
         printf("T0 lock E0(c-off,b-off restricted) - sum E_f = %.12f rate  (%.8f J0)\n", EL0 - EfL, (EL0 - EfL) / J0);
         return 0;

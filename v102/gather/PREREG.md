@@ -266,6 +266,41 @@ particle has a finite life in a space environment?
   - Rates depend on the environment, so the per-eigenstate rate cache
     is cleared at every environment change. A smoke test caught this:
     the first run's empty-light rates were reused under L.
+- **Deviation, 2026-10-10/11: the event window is lifetime-broadened.**
+  - The first grid launch used the sharp window above. Its first
+    finished runs (3+2 none and a: X1, X2 dark; W X1 S) showed that no
+    a-event ever fired from the empty Λ. The cause is a model artifact,
+    not physics.
+    - The two light cells have a discrete spectrum. One quantum sits at
+      E_f(1) ± t_L.
+    - So every event that leaves a light quantum in them lands at
+      δ = 0.024 ± 0.9, outside the ±0.12 space band.
+    - In the world, those cells are open to the lead. Their levels are
+      a continuum, with widths about t_L.
+  - That grid was stopped. Its partial outputs are kept, unread for any
+    verdict, in `cas/out/superseded_sharp/`.
+  - **Fix.** Each eigenstate k gets a width Γ_k: its own sharp,
+    dark-environment rate into the light lead and the space band. Every
+    event then uses the band convolved with a Lorentzian of half-width
+    (Γ_src + Γ_tgt)/2. This has a closed form,
+    ∫ √(a² − ω²) L_γ(x − ω) dω = Im √((x + iγ)² − a²) − γ.
+    Its consequences:
+    - it is sharp when both widths vanish, as for the placed lock and
+      for vacancy states with the light cells empty;
+    - side events keep their two-continuum kernels;
+    - post-jump vectors carry √(rate) weights within a cluster.
+  - **New gate (T0-7):** the closed form matches direct quadrature, and
+    ⟨L0|Γ|L0⟩ = 0.
+  - Everything registered above runs unchanged on the broadened window.
+  - **Cost.** Broadened tails give every target eigenstate a rate. A
+    W c-on dense-light trajectory then visits thousands of new states,
+    at about 50 ms each; one probe process used 10 GB and about 260 s
+    per trajectory. So:
+    - W dense runs use 12 trajectories at T = 1000, averaged over
+      [500, 1000], instead of 100 at T = 5000;
+    - 3+2 keeps the registered counts;
+    - cached rate lists are capped at 2e7 entries per process. Past the
+      cap, rates are recomputed, which changes speed, not results.
 - **What I expect, written before running.**
   - Under c off, an empty Λ cannot fill from outside. Its interior is
     reachable only by member-link events (R10 forbids them) or by
