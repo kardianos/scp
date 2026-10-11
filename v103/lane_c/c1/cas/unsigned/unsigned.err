@@ -1,0 +1,5 @@
+bc 2d: max |G_null - G_tool| over shells = 4.43e-11
+abc 2d: max |G_null - G_tool| over shells = 4.43e-11
+bc 3d: max |G_null - G_tool| over shells = 2.26e-11
+abc 3d: max |G_null - G_tool| over shells = 2.26e-11
+EXIT 0
