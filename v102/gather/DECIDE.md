@@ -280,10 +280,49 @@ needing a ruling before it could enter the law:
 
 | | candidate | what it would do |
 |---|---|---|
-| d | **conversion marks the link** | a link made by a space conversion stays converted, so its quanta hop at t_in, until formation unconverts it. The label is then written by the event, not placed. This is v98 §1 ("locked field cannot travel as itself") read per link |
+| d | **conversion marks the link** (withdrawn under R13: see the addendum) | a link made by a space conversion stays converted, so its quanta hop at t_in, until formation unconverts it. The label is then written by the event, not placed. This is v98 §1 ("locked field cannot travel as itself") read per link |
 | e | **edge membership by contact** | a cell with N ≥ 1 belongs if a neighbour is a saturated member, so the open edge holds by its converted link. G4 (light stays free) is the test it must pass |
 | f | **an internal relaxation channel for the lock** | a refilled or scrambled lock has no way down to L0 (§6). Something that keeps every N_i must carry its internal gap away, or the background's state is set by its history |
 
 d with a is the combination that could, in principle, grow a background
 link by link from a wall: each arrival converts one more link and sends
 its partner out as light.
+
+## Addendum, 2026-10-11: read under R13 (no label)
+
+After this decision the user ruled: "Any encoding by label is an
+instant fail intrinsically. If the setup of quanta cannot survive
+without label, then it is dead." It is recorded as R13 in
+`../README.md`. What it does to this step:
+
+- **The c-off arm (none, a, b, ab) holds only because of a placed
+  label, Λ.** Its G2–G4 passes and a's refills (§3, §6) are therefore
+  void as evidence that anything survives. They describe a dead
+  object.
+- **The label-free arm (c, ac, bc, abc) is the whole verdict.** All
+  four die: the lock unzips from its open edge into light in
+  13–22 t.u., and nothing gathers. In these models, a finite piece of
+  background cannot exist without a label.
+- **The edge is what dies, not the interior.**
+  - Under c the saturated interior keeps t_in. Only the unsaturated
+    end cell travels.
+  - The whole 3+2 lock's binding is 0.083. The light band's half-width
+    is 1.8. So the lock sits inside the light continuum as a
+    resonance, not below it as a bound state.
+  - Nothing label-free in this model moves it out of the band, and the
+    constants may not be scanned to do so.
+- **Candidate d, as "Then" words it, is withdrawn.** It stores
+  "converted" on the link, which is a label. Only a version that reads
+  conversion from the field state itself would be admissible. e and f
+  are rules on the field state, so R13 admits them.
+- **The vacancy step's ring results** (`../vacancy/DECIDE.md`) may
+  survive this. On a closed, saturated ring with isolated vacancies,
+  c's membership is every saturated cell, which is the set the label
+  named. So those results should carry over without a label, but that
+  needs a check, not an assumption. Its open-chain results placed
+  their edges, and they do not carry over as they stand.
+
+**What remains possible:** a background with no edge. The medium
+itself, converted, closed or unbounded, has nowhere to evaporate from.
+No test yet asks whether such a medium survives coupling to light and
+space, with a vacancy in it.
