@@ -82,6 +82,12 @@ come from `cas/tab.go` (Go).
    - Like excesses: B_ee = E(2L+2) − 2E(2L+1) + E(2L), under a off only.
    - E is the lowest energy (c on) or the free energy −t ln Z (c off).
      B < 0 means the pair is together.
+   - **Amended before any registered run:** under c off, B is measured
+     against counting: B − B_count, with F_count = −t ln D_sector.
+     Without that, two gaps that do not interact still show the entropy
+     of exclusion and of indistinguishability, ln[2L/(L − 1)] ≈ ln 2,
+     as a fake repulsion. Under c on, the raw B stands, because the
+     Pauli cost of hard-core gaps is physical.
 3. **Pair shape**, against counting.
    - Each pair is conditioned on its minimal composition:
      - gg: exactly two gaps and no excess, in the 2L−2 state;
@@ -163,6 +169,15 @@ Every bar must hold at both L = 12 and L = 16.
   unit). The matched d forms follow from U. The temperature of the
   random process is t, the only energy unit.
 - **Unlike pairs** (gap with excess) are reported, not scored (§3).
+- **Shakedown runs, disclosed.**
+  - Gate size, L = 8: (a1 b1 c1 d0) and (a0 b0 c0 d1).
+  - Registered size L = 12, for timing only: (a0 b0 c1 d0) and
+    (a0 b1 c1 d0). These two are rerun identically in the grid. The
+    tool is deterministic, and nothing was changed after them.
+  - At L = 8, (a1 b1 c1 d0) gave B_gg = −4t exactly, as expected.
+  - At L = 12, (a0 b1 c1 d0) showed that the minimal composition can
+    be a small part of the state (W_min = 1.3 %). W_min is reported for
+    every pair.
 
 ## 7. Reproduce
 

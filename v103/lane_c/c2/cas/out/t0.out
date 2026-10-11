@@ -1,0 +1,48 @@
+T0.5 L=8 cap=3 N=14 D=784 brute=784 sumP=784 PASS
+T0.5 L=8 cap=3 N=15 D=1016 brute=1016 sumP=1016 PASS
+T0.5 L=8 cap=3 N=16 D=1107 brute=1107 sumP=1107 PASS
+T0.5 L=8 cap=3 N=17 D=1016 brute=1016 sumP=1016 PASS
+T0.5 L=8 cap=3 N=18 D=784 brute=784 sumP=784 PASS
+T0.5 L=8 cap=2 N=14 D=28 brute=28 sumP=28 PASS
+T0.5 L=8 cap=2 N=15 D=8 brute=8 sumP=8 PASS
+T0.5 L=8 cap=2 N=16 D=1 brute=1 sumP=1 PASS
+T0.5 L=8 cap=2 N=17 D=0 brute=0 sumP=0 PASS
+T0.5 L=8 cap=2 N=18 D=0 brute=0 sumP=0 PASS
+T0.5 L=12 cap=3 N=22 D=58278 brute=58278 sumP=58278 PASS
+T0.5 L=12 cap=3 N=23 D=69576 brute=69576 sumP=69576 PASS
+T0.5 L=12 cap=3 N=24 D=73789 brute=73789 sumP=73789 PASS
+T0.5 L=12 cap=3 N=25 D=69576 brute=69576 sumP=69576 PASS
+T0.5 L=12 cap=3 N=26 D=58278 brute=58278 sumP=58278 PASS
+T0.5 L=12 cap=2 N=22 D=66 brute=66 sumP=66 PASS
+T0.5 L=12 cap=2 N=23 D=12 brute=12 sumP=12 PASS
+T0.5 L=12 cap=2 N=24 D=1 brute=1 sumP=1 PASS
+T0.5 L=12 cap=2 N=25 D=0 brute=0 sumP=0 PASS
+T0.5 L=12 cap=2 N=26 D=0 brute=0 sumP=0 PASS
+T0.1/2 set a=0 b=0 c=0 d=0 herm=1.3e-15 moment_viol=0 elements=35392 PASS
+T0.1/2 set a=0 b=0 c=0 d=1 herm=1.0e-14 moment_viol=0 elements=35392 PASS
+T0.1/2 set a=0 b=0 c=1 d=0 herm=5.2e-15 moment_viol=0 elements=35392 PASS
+T0.4 set a=0 b=0 c=1 d=0 dense_vs_lanczos dE=1.2e-14 dw=2.8e-16 PASS
+T0.1/2 set a=0 b=0 c=1 d=1 herm=2.1e-15 moment_viol=0 elements=35392 PASS
+T0.4 set a=0 b=0 c=1 d=1 dense_vs_lanczos dE=5.0e-14 dw=7.6e-16 PASS
+T0.1/2 set a=0 b=1 c=0 d=0 herm=1.3e-15 moment_viol=0 elements=29120 PASS
+T0.1/2 set a=0 b=1 c=0 d=1 herm=2.4e-15 moment_viol=0 elements=29120 PASS
+T0.1/2 set a=0 b=1 c=1 d=0 herm=1.4e-15 moment_viol=0 elements=29120 PASS
+T0.4 set a=0 b=1 c=1 d=0 dense_vs_lanczos dE=3.2e-14 dw=4.2e-16 PASS
+T0.1/2 set a=0 b=1 c=1 d=1 herm=1.1e-15 moment_viol=0 elements=29120 PASS
+T0.4 set a=0 b=1 c=1 d=1 dense_vs_lanczos dE=7.1e-14 dw=5.1e-16 PASS
+T0.1/2 set a=1 b=0 c=0 d=0 herm=4.2e-16 moment_viol=0 elements=112 PASS
+T0.1/2 set a=1 b=0 c=0 d=1 herm=4.2e-17 moment_viol=0 elements=112 PASS
+T0.1/2 set a=1 b=0 c=1 d=0 herm=2.4e-17 moment_viol=0 elements=112 PASS
+T0.4 set a=1 b=0 c=1 d=0 dense_vs_lanczos dE=1.3e-15 dw=3.3e-16 PASS
+T0.1/2 set a=1 b=0 c=1 d=1 herm=4.0e-16 moment_viol=0 elements=112 PASS
+T0.4 set a=1 b=0 c=1 d=1 dense_vs_lanczos dE=1.3e-15 dw=1.8e-16 PASS
+T0.1/2 set a=1 b=1 c=0 d=0 herm=1.9e-16 moment_viol=0 elements=16 PASS
+T0.1/2 set a=1 b=1 c=0 d=1 herm=9.9e-17 moment_viol=0 elements=16 PASS
+T0.1/2 set a=1 b=1 c=1 d=0 herm=2.0e-16 moment_viol=0 elements=16 PASS
+T0.4 set a=1 b=1 c=1 d=0 dense_vs_lanczos dE=9.9e-32 dw=8.3e-17 PASS
+T0.1/2 set a=1 b=1 c=1 d=1 herm=3.7e-16 moment_viol=0 elements=16 PASS
+T0.4 set a=1 b=1 c=1 d=1 dense_vs_lanczos dE=0.0e+00 dw=8.3e-17 PASS
+T0.3 L=8 one gap E=-2.000000000000 exact=-2.000000000000  two gaps E=-3.391036260090 exact=-3.391036260090 PASS
+T0.3 L=12 one gap E=-2.000000000000 exact=-2.000000000000  two gaps E=-3.727406610313 exact=-3.727406610313 PASS
+T0.3 L=16 one gap E=-2.000000000000 exact=-2.000000000000  two gaps E=-3.846282243226 exact=-3.846282243226 PASS
+T0 PASS (0 fails)
