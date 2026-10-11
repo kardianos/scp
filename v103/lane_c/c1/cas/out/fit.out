@@ -1,0 +1,116 @@
+## c1 E2: pair potential fits (r >= 2)
+
+| rules | d | lattice | bins | chi2 F0 / F1 / F2 | beta (se) | best m | verdict |
+|---|---|---|---|---|---|---|---|
+| none | 2d | kagome | 113 | 191.5 / 173.9 / 173.9 | 0.01813 (0.0043) | 0 | short (no significant G term) |
+| none | 3d | pyro | 74 | 66.4 / 62.3 / 62.3 | -0.1017 (0.05) | 0 | short (no significant G term) |
+| a | 2d | kagome | 113 | 158.5 / 153.9 / 152.0 | 0.01139 (0.0054) | 0.4 | short (no significant G term) |
+| a | 3d | pyro | 74 | 104.7 / 102.1 / 101.6 | -0.09195 (0.057) | 0.4 | short (no significant G term) |
+| b | 2d | kagome | 113 | 123.5 / 123.5 / 123.1 | -0.0001304 (0.0049) | 1 | short (no significant G term) |
+| b | 3d | pyro | 74 | 96.2 / 96.1 / 94.7 | 0.01696 (0.047) | 2 | short (no significant G term) |
+| c | 2d | square | 132 | 243.6 / 243.2 / 241.4 | 0.002837 (0.0049) | 0.7 | short (no significant G term) |
+| c | 3d | cubic | 63 | 107.8 / 106.9 / 99.7 | 0.06232 (0.065) | 2 | short (no significant G term) |
+| ab | 2d | kagome | 113 | 228.3 / 227.2 / 200.6 | -0.004757 (0.0047) | 2 | short (screened, xi=0.50) |
+| ab | 3d | pyro | 74 | 114.9 / 113.8 / 112.1 | -0.05801 (0.055) | 2 | short (no significant G term) |
+| ac | 2d | square | 132 | 217.5 / 207.3 / 205.0 | 0.01738 (0.0054) | 0.5 | short (no significant G term) |
+| ac | 3d | cubic | 63 | 97.5 / 96.8 / 96.8 | -0.04183 (0.051) | 0 | short (no significant G term) |
+| bc | 2d | square | 60 | 89765.2 / 84.6 / 84.6 | -1.429 (0.0048) | 0 | LONG (Coulomb on this lattice) |
+| bc | 3d | cubic | 28 | 1151.6 / 22.7 / 21.3 | -2.438 (0.073) | 0.2 | LONG (Coulomb on this lattice) |
+| abc | 2d | square | 60 | 248542.2 / 123.4 / 123.4 | -2.097 (0.0042) | 0 | LONG (Coulomb on this lattice) |
+| abc | 3d | cubic | 28 | 1669.4 / 25.0 / 25.0 | -2.895 (0.071) | 0 | LONG (Coulomb on this lattice) |
+
+## c1 E2: V(r) at selected shells (3-D)
+
+- none (pyro): r=0.00 V=0.6166±0.0196; r=1.00 V=-0.0424±0.0047; r=1.73 V=0.0072±0.0046; r=2.00 V=-0.0042±0.0040; r=2.24 V=-0.0042±0.0029; r=2.65 V=-0.0012±0.0029; r=3.32 V=0.0047±0.0046; r=4.58 V=-0.0007±0.0016; r=5.66 V=0.0019±0.0037; r=6.56 V=-0.0009±0.0019; r=7.28 V=0.0016±0.0022; r=8.06 V=-0.0064±0.0024; r=8.72 V=0.0010±0.0047; r=9.43 V=0.0005±0.0049; r=10.39 V=0.0028±0.0063;
+- a (pyro): r=0.00 V=0.7194±0.0108; r=1.00 V=-0.0414±0.0050; r=1.73 V=0.0028±0.0050; r=2.00 V=0.0006±0.0047; r=2.24 V=-0.0022±0.0049; r=2.65 V=-0.0064±0.0030; r=3.32 V=-0.0046±0.0041; r=4.58 V=0.0022±0.0030; r=5.66 V=0.0065±0.0045; r=6.56 V=-0.0017±0.0014; r=7.28 V=0.0042±0.0033; r=8.06 V=0.0049±0.0044; r=8.72 V=-0.0004±0.0045; r=9.43 V=-0.0044±0.0040; r=10.39 V=0.0077±0.0050;
+- b (pyro): r=0.00 V=0.6719±0.0172; r=1.00 V=-0.0537±0.0084; r=1.73 V=0.0018±0.0045; r=2.00 V=-0.0053±0.0029; r=2.24 V=0.0039±0.0034; r=2.65 V=0.0007±0.0026; r=3.32 V=-0.0019±0.0038; r=4.58 V=0.0014±0.0028; r=5.66 V=0.0028±0.0062; r=6.56 V=-0.0003±0.0015; r=7.28 V=-0.0022±0.0016; r=8.06 V=-0.0021±0.0037; r=8.72 V=-0.0025±0.0032; r=9.43 V=-0.0060±0.0030; r=10.39 V=0.0083±0.0072;
+- c (cubic): r=0.00 V=0.6266±0.0068; r=1.00 V=-0.0702±0.0089; r=1.41 V=0.0170±0.0041; r=1.73 V=-0.0075±0.0035; r=2.00 V=0.0159±0.0048; r=2.24 V=-0.0049±0.0032; r=3.00 V=-0.0011±0.0019; r=4.24 V=-0.0030±0.0016; r=5.20 V=-0.0002±0.0029; r=6.08 V=-0.0030±0.0032; r=6.78 V=0.0008±0.0032; r=7.48 V=0.0005±0.0035; r=8.37 V=-0.0007±0.0034; r=9.38 V=-0.0066±0.0052;
+- ab (pyro): r=0.00 V=0.8554±0.0121; r=1.00 V=-0.0752±0.0076; r=1.73 V=0.0181±0.0040; r=2.00 V=-0.0062±0.0039; r=2.24 V=-0.0045±0.0044; r=2.65 V=-0.0026±0.0046; r=3.32 V=-0.0047±0.0053; r=4.58 V=0.0032±0.0027; r=5.66 V=-0.0021±0.0054; r=6.56 V=-0.0006±0.0020; r=7.28 V=-0.0002±0.0026; r=8.06 V=0.0000±0.0025; r=8.72 V=-0.0059±0.0037; r=9.43 V=-0.0031±0.0058; r=10.39 V=-0.0008±0.0068;
+- ac (cubic): r=0.00 V=0.7536±0.0093; r=1.00 V=-0.0613±0.0050; r=1.41 V=0.0111±0.0031; r=1.73 V=-0.0018±0.0066; r=2.00 V=0.0124±0.0050; r=2.24 V=-0.0043±0.0014; r=3.00 V=0.0020±0.0018; r=4.24 V=-0.0023±0.0020; r=5.20 V=-0.0016±0.0035; r=6.08 V=0.0004±0.0028; r=6.78 V=-0.0026±0.0029; r=7.48 V=0.0020±0.0022; r=8.37 V=0.0059±0.0026; r=9.38 V=-0.0087±0.0093;
+- bc (cubic): r=1.00 V=-0.1586±0.0031; r=1.73 V=-0.0604±0.0034; r=2.24 V=-0.0449±0.0021; r=3.00 V=-0.0200±0.0013; r=3.32 V=-0.0160±0.0022; r=3.61 V=-0.0075±0.0036; r=4.58 V=-0.0028±0.0014; r=6.56 V=0.0077±0.0024; r=8.06 V=0.0122±0.0015;
+- abc (cubic): r=1.00 V=-0.1954±0.0019; r=1.73 V=-0.0707±0.0026; r=2.24 V=-0.0490±0.0018; r=3.00 V=-0.0249±0.0017; r=3.32 V=-0.0206±0.0027; r=3.61 V=-0.0160±0.0026; r=4.58 V=0.0004±0.0020; r=6.56 V=0.0118±0.0021; r=8.06 V=0.0147±0.0019;
+
+## c1 E4: sign at the two nearest allowed shells
+
+| rules | d | g_same (r: g ± se) | g_opp (r: g ± se) | verdict |
+|---|---|---|---|---|
+| none | 2d | 0.00: 0.5573 ± 0.0032; 1.00: 1.0630 ± 0.0028;  |  | none |
+| none | 3d | 0.00: 0.5395 ± 0.0042; 1.00: 1.0429 ± 0.0016;  |  | none |
+| a | 2d | 0.00: 0.4779 ± 0.0014; 1.00: 1.0689 ± 0.0023;  |  | none |
+| a | 3d | 0.00: 0.4808 ± 0.0036; 1.00: 1.0474 ± 0.0025;  |  | none |
+| b | 2d | 0.00: 0.5603 ± 0.0031; 1.00: 1.0772 ± 0.0024;  |  | none |
+| b | 3d | 0.00: 0.5175 ± 0.0026; 1.00: 1.0653 ± 0.0027;  |  | none |
+| c | 2d | 0.00: 0.5511 ± 0.0027; 1.41: 0.9707 ± 0.0022;  | 1.00: 1.0917 ± 0.0017; 2.24: 1.0076 ± 0.0017;  | none |
+| c | 3d | 0.00: 0.5288 ± 0.0040; 1.41: 0.9844 ± 0.0016;  | 1.00: 1.0644 ± 0.0020; 1.73: 1.0047 ± 0.0014;  | none |
+| ab | 2d | 0.00: 0.4179 ± 0.0029; 1.00: 1.1505 ± 0.0025;  |  | none |
+| ab | 3d | 0.00: 0.4346 ± 0.0013; 1.00: 1.0726 ± 0.0026;  |  | none |
+| ac | 2d | 0.00: 0.4671 ± 0.0012; 1.41: 0.9740 ± 0.0027;  | 1.00: 1.0846 ± 0.0027; 2.24: 1.0019 ± 0.0015;  | none |
+| ac | 3d | 0.00: 0.4789 ± 0.0037; 1.41: 0.9859 ± 0.0009;  | 1.00: 1.0631 ± 0.0034; 1.73: 1.0051 ± 0.0023;  | none |
+| bc | 2d | 0.00: 0.3644 ± 0.0016; 1.41: 0.6821 ± 0.0017;  | 1.00: 1.6225 ± 0.0020; 2.24: 1.3332 ± 0.0013;  | signed |
+| bc | 3d | 0.00: 0.4661 ± 0.0044; 1.41: 0.9144 ± 0.0015;  | 1.00: 1.1760 ± 0.0023; 1.73: 1.0591 ± 0.0010;  | signed |
+| abc | 2d | 0.00: 0.2378 ± 0.0014; 1.41: 0.5743 ± 0.0019;  | 1.00: 1.9536 ± 0.0040; 2.24: 1.5103 ± 0.0014;  | signed |
+| abc | 3d | 0.00: 0.3823 ± 0.0035; 1.41: 0.8939 ± 0.0019;  | 1.00: 1.2201 ± 0.0025; 1.73: 1.0766 ± 0.0013;  | signed |
+
+## c1 1-D control (ring, E2)
+
+- c: mean separation 31.98 (ring N=128; independent ~32), P(r<=1)=0.0270, bins visited 65
+- ac: mean separation 32.09 (ring N=128; independent ~32), P(r<=1)=0.0240, bins visited 65
+- bc: mean separation 32.00 (ring N=128; independent ~32), P(r<=1)=0.0312, bins visited 32
+- abc: mean separation 1.00 (ring N=128; independent ~32), P(r<=1)=1.0000, bins visited 1
+
+## c1 anemia (b off): unbonded quanta per cell vs distance to nearest void (3-D, E2)
+
+- none (pyro): r=0.00 0.2491±0.0003; r=1.00 0.6062±0.0003; r=1.73 0.5724±0.0002; r=2.00 0.5742±0.0002; r=2.24 0.5759±0.0003; r=2.65 0.5756±0.0002; r=2.83 0.5759±0.0003; r=3.00 0.5755±0.0001;
+- a (pyro): r=0.00 0.2372±0.0004; r=1.00 0.6382±0.0002; r=1.73 0.6001±0.0002; r=2.00 0.6018±0.0002; r=2.24 0.6029±0.0002; r=2.65 0.6033±0.0001; r=2.83 0.6027±0.0002; r=3.00 0.6030±0.0002;
+- c (cubic): r=0.00 0.2434±0.0004; r=1.00 0.6128±0.0002; r=1.41 0.5551±0.0002; r=1.73 0.5726±0.0002; r=2.00 0.5614±0.0003; r=2.24 0.5707±0.0002; r=2.45 0.5665±0.0001; r=2.83 0.5669±0.0002;
+- ac (cubic): r=0.00 0.2301±0.0004; r=1.00 0.6452±0.0003; r=1.41 0.5842±0.0002; r=1.73 0.6002±0.0003; r=2.00 0.5902±0.0003; r=2.24 0.5986±0.0001; r=2.45 0.5952±0.0001; r=2.83 0.5959±0.0002;
+
+## checks
+
+- none 2d E2: LEDGER violations=0; ACC hop=0.0000 flip=0.2965 qhop=0.5608
+- none 2d E4: LEDGER violations=0; ACC hop=0.0000 flip=0.2962 qhop=0.5600
+- none 3d E2: LEDGER violations=0; ACC hop=0.0000 flip=0.2214 qhop=0.4807
+- none 3d E4: LEDGER violations=0; ACC hop=0.0000 flip=0.2213 qhop=0.4802
+- a 2d E2: LEDGER violations=0; ACC hop=0.0000 flip=0.3175 qhop=0.6124
+- a 2d E4: LEDGER violations=0; ACC hop=0.0000 flip=0.3171 qhop=0.6113
+- a 3d E2: LEDGER violations=0; ACC hop=0.0000 flip=0.2327 qhop=0.5105
+- a 3d E4: LEDGER violations=0; ACC hop=0.0000 flip=0.2326 qhop=0.5101
+- b 2d E2: LEDGER violations=0; ACC hop=0.7497 flip=0.0000 qhop=0.0000
+- b 2d E4: LEDGER violations=0; ACC hop=0.7491 flip=0.0000 qhop=0.0000
+- b 3d E2: LEDGER violations=0; ACC hop=0.8332 flip=0.0000 qhop=0.0000
+- b 3d E4: LEDGER violations=0; ACC hop=0.8328 flip=0.0000 qhop=0.0000
+- c 1d E2: LEDGER violations=0; ACC hop=0.0000 flip=0.4537 qhop=0.7209
+- c 1d E4: LEDGER violations=0; ACC hop=0.0000 flip=0.4506 qhop=0.7115
+- c 2d E2: LEDGER violations=0; ACC hop=0.0000 flip=0.2983 qhop=0.5705
+- c 2d E4: LEDGER violations=0; ACC hop=0.0000 flip=0.2980 qhop=0.5696
+- c 3d E2: LEDGER violations=0; ACC hop=0.0000 flip=0.2223 qhop=0.4867
+- c 3d E4: LEDGER violations=0; ACC hop=0.0000 flip=0.2222 qhop=0.4862
+- ab 2d E2: LEDGER violations=0; ACC hop=0.7498 flip=0.0000 qhop=0.0000
+- ab 2d E4: LEDGER violations=0; ACC hop=0.7493 flip=0.0000 qhop=0.0000
+- ab 3d E2: LEDGER violations=0; ACC hop=0.8332 flip=0.0000 qhop=0.0000
+- ab 3d E4: LEDGER violations=0; ACC hop=0.8329 flip=0.0000 qhop=0.0000
+- ac 1d E2: LEDGER violations=0; ACC hop=0.0000 flip=0.4948 qhop=0.8275
+- ac 1d E4: LEDGER violations=0; ACC hop=0.0000 flip=0.4896 qhop=0.8157
+- ac 2d E2: LEDGER violations=0; ACC hop=0.0000 flip=0.3192 qhop=0.6208
+- ac 2d E4: LEDGER violations=0; ACC hop=0.0000 flip=0.3189 qhop=0.6198
+- ac 3d E2: LEDGER violations=0; ACC hop=0.0000 flip=0.2338 qhop=0.5169
+- ac 3d E4: LEDGER violations=0; ACC hop=0.0000 flip=0.2336 qhop=0.5164
+- bc 1d E2: LEDGER violations=0; ACC hop=0.5000 flip=0.0000 qhop=0.0000
+- bc 1d E4: LEDGER violations=0; ACC hop=0.4996 flip=0.0000 qhop=0.0000
+- bc 2d E2: LEDGER violations=0; ACC hop=0.7500 flip=0.0000 qhop=0.0000
+- bc 2d E4: LEDGER violations=0; ACC hop=0.7496 flip=0.0000 qhop=0.0000
+- bc 3d E2: LEDGER violations=0; ACC hop=0.8333 flip=0.0000 qhop=0.0000
+- bc 3d E4: LEDGER violations=0; ACC hop=0.8330 flip=0.0000 qhop=0.0000
+- abc 1d E2: LEDGER violations=0; ACC hop=0.5000 flip=0.0000 qhop=0.0000
+- abc 1d E4: LEDGER violations=0; ACC hop=0.4961 flip=0.0000 qhop=0.0000
+- abc 2d E2: LEDGER violations=0; ACC hop=0.7500 flip=0.0000 qhop=0.0000
+- abc 2d E4: LEDGER violations=0; ACC hop=0.7498 flip=0.0000 qhop=0.0000
+- abc 3d E2: LEDGER violations=0; ACC hop=0.8333 flip=0.0000 qhop=0.0000
+- abc 3d E4: LEDGER violations=0; ACC hop=0.8330 flip=0.0000 qhop=0.0000
+
+## Ending (PREREG §5)
+
+- bc: long range in 2-D and 3-D; E4 sign 3-D: signed, 2-D: signed
+- abc: long range in 2-D and 3-D; E4 sign 3-D: signed, 2-D: signed
+
+**Ending: E**
