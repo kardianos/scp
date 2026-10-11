@@ -2,6 +2,7 @@
 // (../PREREG.md §5) from the gx outputs in out/.
 //
 //	go run tab.go            # all tables + bars + ending
+//	go run tab.go s7         # the 3+2 n = 7 supplement (labelled, not scored)
 package main
 
 import (
@@ -115,7 +116,10 @@ func parse(path string) *File {
 	return out
 }
 
-func get(fab, r string) *File { return parse(fmt.Sprintf("out/g_%s_%s.out", fab, r)) }
+// gpre and spre name the grid and side-variant outputs (g/gs, or s7/s7s).
+var gpre, spre = "g", "gs"
+
+func get(fab, r string) *File { return parse(fmt.Sprintf("out/%s_%s_%s.out", gpre, fab, r)) }
 
 type Bars struct {
 	G1, G2, G3, G4, G6 bool
@@ -170,6 +174,11 @@ func yn(v bool) string {
 func main() {
 	fabs := []string{"M2", "M4"}
 	names := map[string]string{"M2": "3+2 (n = 6, Λ = 4)", "M4": "W (n = 5, Λ = 3)"}
+	if len(os.Args) > 1 && os.Args[1] == "s7" {
+		gpre, spre = "s7", "s7s"
+		fabs = []string{"M2"}
+		names["M2"] = "3+2 supplement (n = 7, Λ = 5; labelled, not scored)"
+	}
 	for _, fab := range fabs {
 		fmt.Printf("\n## %s\n", names[fab])
 		fmt.Printf("\n### X4 static (lock sector)\n\n| rules | L0 residual | max-F state: F, w_lock, rate out | lowest state: w_lock, rate out |\n|---|---|---|---|\n")
@@ -225,7 +234,7 @@ func main() {
 		}
 		fmt.Printf("\n### X5 side variant (c off)\n\n| rules | run | w_lock | final | P(refilled at end) | t_first(w≥0.9) | side a | side form | S in/out |\n|---|---|---|---|---|---|---|---|---|\n")
 		for _, r := range []string{"none", "a", "b", "ab"} {
-			f := parse(fmt.Sprintf("out/gs_%s_%s.out", fab, r))
+			f := parse(fmt.Sprintf("out/%s_%s_%s.out", spre, fab, r))
 			if f == nil {
 				continue
 			}
@@ -240,6 +249,14 @@ func main() {
 				fmt.Printf("- %s: %s\n", r, f.Check)
 			}
 		}
+	}
+	if gpre == "s7" {
+		fmt.Printf("\n## Bars, 3+2 n = 7 (not scored)\n\n| rules | G1 G2 G3 G4 | G6 |\n|---|---|---|\n")
+		for _, r := range rules {
+			b := bars(get("M2", r), r)
+			fmt.Printf("| %s | %s %s %s %s | %s |\n", r, yn(b.G1), yn(b.G2), yn(b.G3), yn(b.G4), yn(b.G6))
+		}
+		return
 	}
 	fmt.Printf("\n## Bars (PREREG §5)\n\n| rules | 3+2: G1 G2 G3 G4 | W: G1 G2 G3 G4 | G6 | gathers in both |\n|---|---|---|---|---|\n")
 	ending := "N"

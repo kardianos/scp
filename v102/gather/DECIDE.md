@@ -175,8 +175,29 @@ and not c.
 ## 8. The 3+2 supplement (n = 7, Λ = 0 … 4)
 
 Registered in `PREREG.md` §2, to run only once the main grid had
-finished. Labelled, not scored. **Running at the time of writing**; see
-below.
+finished. Labelled, not scored.
+- **Counts.** The supplement's counts were not registered. It used the
+  main grid's 3+2 dilute count (200), and W's disclosed dense rule
+  (12 trajectories at T = 1000), because its largest sector (6405) is
+  at W's scale. Script: `cas/run_supp7.sh`. Tables: `go run tab.go s7`.
+- **T0.** It passes for all eight rule sets. The lock energy less Σ E_f
+  is −0.106222549798, equal to vx.c's LO open chain of 5 cells in
+  every digit. Every output's `CHECK` line has ledger 0 and
+  completeness ≤ 2.1e-14.
+
+**It repeats the n = 6 picture exactly:**
+
+| | n = 7 |
+|---|---|
+| bars | identical to n = 6: c-off sets ✘ ✔ ✔ ✔, c-on sets ✘ ✘ ✘ ✔ |
+| X1 | nothing gathers: the largest mean end w_lock is 0.0005 |
+| X2 under c | the lock unzips in the dark. All 8 quanta leave as light, in a mean 30.6 t.u. (c, ac) or 32.8 t.u. (bc, abc), against 22.4 t.u. at n = 6 |
+| X2 under c off | dark survival 1.000. b's S-dense lock keeps its count (0.993), with F/w 0.51 |
+| X5 | a refills the end vacancy every time (F/w 0.30 dilute, 0.17 dense). In the side variant, it refills the bulk vacancy every time (F/w 0.32 dilute, 0.25 dense; ab 0.02, 0.17) |
+| X3 | light is free (1.000) |
+
+The lock is one cell longer, and only its evaporation time grows. No
+verdict moves with size.
 
 ## 9. What the gather step says
 

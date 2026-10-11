@@ -1,0 +1,165 @@
+# gx M=2 n=7 k=5 rules=ab side=0 g/D=0.1 tin=0.1 J0 tL=0.9 sk=0.06 exp=all nsec=91 J0=0.0095861869
+# caps: 1 2 2 2 1 2 2  Dmax=3705
+start_restricted sector=(8,0,0) dim=26 E=10.835680654418 leak=0.000e+00 gap=1.085191e-02
+STATIC lock sector (8,0,0) D=3705
+  k=0 E=8.9636595989 w_lock=0.000000 F=0.000000 nsat=1.0000 Nlight=2.0000 rate_out=8.225216e-01
+  k=1 E=8.9636595989 w_lock=0.000000 F=0.000000 nsat=1.0000 Nlight=2.0000 rate_out=8.225216e-01
+  k=2 E=8.9636595989 w_lock=0.000000 F=0.000000 nsat=1.0000 Nlight=2.0000 rate_out=8.225216e-01
+  k=3 E=8.9732457859 w_lock=0.000000 F=0.000000 nsat=1.0000 Nlight=2.0000 rate_out=8.225216e-01
+  k=4 E=8.9828319728 w_lock=0.000000 F=0.000000 nsat=1.0000 Nlight=2.0000 rate_out=8.225216e-01
+  k=5 E=8.9828319728 w_lock=0.000000 F=0.000000 nsat=1.0000 Nlight=2.0000 rate_out=8.225216e-01
+  k=6 E=8.9828319728 w_lock=0.000000 F=0.000000 nsat=1.0000 Nlight=2.0000 rate_out=8.225216e-01
+  k=7 E=8.9828319728 w_lock=0.000000 F=0.000000 nsat=1.0000 Nlight=2.0000 rate_out=8.225216e-01
+  maxF k=1187 E=10.8356806544 w_lock=1.000000 F=1.000000 rate_out=0.000000e+00  (E-E0=1.952832e+02 J0)
+  L0: <H>=10.835680654418 residual=1.413e-14
+  widths: <L0|Gamma|L0>=0.000000e+00  max Gamma in sector=3.063151e+00  Gamma(k=0)=1.474160e+00
+RUN X1_S_dilute ntraj=200 dense=0
+  w_lock  mean=0.000000 se=0.000000 final=0.000000
+  F       mean=0.000000 se=0.000000 final=0.000000
+  nsat    mean=0.000000 se=0.000000 final=0.000000
+  Nlight  mean=0.000000 se=0.000000 final=0.000000
+  P(w_lock>=0.9)=0.0000 P(final w_lock>=0.9)=0.0000 F/w_lock(w>=0.5)=-1.000000 (n=0)
+  P(both light out)=0.0000 P(any space out)=0.3700 P(quanta left in chain)=1.0000 P(ended dark-stable)=1.0000
+  mean t=3.50679e+10 arrivals=100.000  t_first(w_lock>=0.9)=-1 (n=0)
+  events/traj: light_out=198.150 light_in=0.000 space_out=0.425 space_in=100.000 side_form=0.000 side_a=0.000
+  cpu=20.1s
+RUN X1_S_dense ntraj=12 dense=1
+  w_lock  mean=0.000000 se=0.000000 final=0.000000
+  F       mean=0.000000 se=0.000000 final=0.000000
+  nsat    mean=0.000000 se=0.000000 final=0.000000
+  Nlight  mean=0.014248 se=0.005026 final=0.000000
+  P(w_lock>=0.9)=0.0000 P(final w_lock>=0.9)=0.0000 F/w_lock(w>=0.5)=-1.000000 (n=0)
+  P(both light out)=0.0000 P(any space out)=0.2500 P(quanta left in chain)=0.9167 P(ended dark-stable)=0.0000
+  mean t=1000 arrivals=4.333  t_first(w_lock>=0.9)=-1 (n=0)
+  events/traj: light_out=7.250 light_in=0.000 space_out=0.250 space_in=4.333 side_form=0.000 side_a=0.000
+  T=1000
+  cpu=0.1s
+RUN X1_L_dilute ntraj=200 dense=0
+  w_lock  mean=0.000000 se=0.000000 final=0.000000
+  F       mean=0.000000 se=0.000000 final=0.000000
+  nsat    mean=0.000000 se=0.000000 final=0.000000
+  Nlight  mean=0.000000 se=0.000000 final=0.000000
+  P(w_lock>=0.9)=0.0000 P(final w_lock>=0.9)=0.0000 F/w_lock(w>=0.5)=-1.000000 (n=0)
+  P(both light out)=0.0000 P(any space out)=0.0000 P(quanta left in chain)=0.0000 P(ended dark-stable)=1.0000
+  mean t=4.09401e+07 arrivals=100.000  t_first(w_lock>=0.9)=-1 (n=0)
+  events/traj: light_out=100.000 light_in=100.000 space_out=0.000 space_in=0.000 side_form=0.000 side_a=0.000
+  cpu=0.0s
+RUN X1_L_dense ntraj=12 dense=1
+  w_lock  mean=0.000000 se=0.000000 final=0.000000
+  F       mean=0.000000 se=0.000000 final=0.000000
+  nsat    mean=0.000000 se=0.000000 final=0.000000
+  Nlight  mean=1.814875 se=0.017644 final=1.250000
+  P(w_lock>=0.9)=0.0000 P(final w_lock>=0.9)=0.0000 F/w_lock(w>=0.5)=-1.000000 (n=0)
+  P(both light out)=0.0000 P(any space out)=0.5833 P(quanta left in chain)=0.7500 P(ended dark-stable)=0.0000
+  mean t=1000 arrivals=1431.250  t_first(w_lock>=0.9)=-1 (n=0)
+  events/traj: light_out=1427.833 light_in=1431.250 space_out=1.083 space_in=0.000 side_form=0.000 side_a=0.000
+  T=1000
+  cpu=3.4s
+RUN X1_SL_dilute ntraj=200 dense=0
+  w_lock  mean=0.000000 se=0.000000 final=0.000000
+  F       mean=0.000000 se=0.000000 final=0.000000
+  nsat    mean=0.000000 se=0.000000 final=0.000000
+  Nlight  mean=0.000000 se=0.000000 final=0.000000
+  P(w_lock>=0.9)=0.0000 P(final w_lock>=0.9)=0.0000 F/w_lock(w>=0.5)=-1.000000 (n=0)
+  P(both light out)=0.0000 P(any space out)=0.0000 P(quanta left in chain)=0.1100 P(ended dark-stable)=1.0000
+  mean t=4.08828e+07 arrivals=100.000  t_first(w_lock>=0.9)=-1 (n=0)
+  events/traj: light_out=100.155 light_in=99.735 space_out=0.000 space_in=0.265 side_form=0.000 side_a=0.000
+  cpu=1.0s
+RUN X1_SL_dense ntraj=12 dense=1
+  w_lock  mean=0.000000 se=0.000000 final=0.000000
+  F       mean=0.000000 se=0.000000 final=0.000000
+  nsat    mean=0.124916 se=0.014285 final=0.082632
+  Nlight  mean=1.822243 se=0.020071 final=2.000000
+  P(w_lock>=0.9)=0.0000 P(final w_lock>=0.9)=0.0000 F/w_lock(w>=0.5)=-1.000000 (n=0)
+  P(both light out)=0.0000 P(any space out)=1.0000 P(quanta left in chain)=1.0000 P(ended dark-stable)=0.0000
+  mean t=1000 arrivals=1426.583  t_first(w_lock>=0.9)=-1 (n=0)
+  events/traj: light_out=1422.250 light_in=1421.667 space_out=3.250 space_in=4.917 side_form=0.000 side_a=0.000
+  T=1000
+  cpu=97.8s
+RUN X2_dark ntraj=200 dense=0
+  w_lock  mean=1.000000 se=0.000000 final=1.000000
+  F       mean=1.000000 se=0.000000 final=1.000000
+  nsat    mean=4.000000 se=0.000000 final=4.000000
+  Nlight  mean=0.000000 se=0.000000 final=0.000000
+  P(w_lock>=0.9)=1.0000 P(final w_lock>=0.9)=1.0000 F/w_lock(w>=0.5)=1.000000 (n=200)
+  P(both light out)=0.0000 P(any space out)=0.0000 P(quanta left in chain)=1.0000 P(ended dark-stable)=1.0000
+  mean t=0 arrivals=0.000  t_first(w_lock>=0.9)=0 (n=200)
+  events/traj: light_out=0.000 light_in=0.000 space_out=0.000 space_in=0.000 side_form=0.000 side_a=0.000
+  cpu=3.5s
+RUN X2_S_dense ntraj=12 dense=1
+  w_lock  mean=0.992454 se=0.001530 final=1.000000
+  F       mean=0.505505 se=0.121990 final=0.333333
+  nsat    mean=4.000000 se=0.000000 final=4.000000
+  Nlight  mean=0.010527 se=0.001913 final=0.000000
+  P(w_lock>=0.9)=1.0000 P(final w_lock>=0.9)=1.0000 F/w_lock(w>=0.5)=0.509369 (n=12)
+  P(both light out)=0.0000 P(any space out)=0.1667 P(quanta left in chain)=1.0000 P(ended dark-stable)=0.0000
+  mean t=1000 arrivals=3.000  t_first(w_lock>=0.9)=0 (n=12)
+  events/traj: light_out=5.667 light_in=0.000 space_out=0.167 space_in=3.000 side_form=0.000 side_a=0.000
+  T=1000
+  cpu=272.3s
+RUN X2_SL_dense ntraj=12 dense=1
+  w_lock  mean=0.114339 se=0.009461 final=0.000000
+  F       mean=0.000715 se=0.000305 final=0.000000
+  nsat    mean=4.006229 se=0.064359 final=4.132832
+  Nlight  mean=1.812357 se=0.016460 final=2.500000
+  P(w_lock>=0.9)=0.0000 P(final w_lock>=0.9)=0.0000 F/w_lock(w>=0.5)=-1.000000 (n=0)
+  P(both light out)=0.0000 P(any space out)=0.9167 P(quanta left in chain)=1.0000 P(ended dark-stable)=0.0000
+  mean t=1000 arrivals=1426.417  t_first(w_lock>=0.9)=0 (n=12)
+  events/traj: light_out=1422.250 light_in=1422.083 space_out=3.083 space_in=4.333 side_form=0.000 side_a=0.000
+  T=1000
+  cpu=740.9s
+RUN X3_dark ntraj=200 dense=0
+  w_lock  mean=0.000000 se=0.000000 final=0.000000
+  F       mean=0.000000 se=0.000000 final=0.000000
+  nsat    mean=0.000000 se=0.000000 final=0.000000
+  Nlight  mean=0.000000 se=0.000000 final=0.000000
+  P(w_lock>=0.9)=0.0000 P(final w_lock>=0.9)=0.0000 F/w_lock(w>=0.5)=-1.000000 (n=0)
+  P(both light out)=1.0000 P(any space out)=0.0000 P(quanta left in chain)=0.0000 P(ended dark-stable)=1.0000
+  mean t=2.89903 arrivals=0.000  t_first(w_lock>=0.9)=-1 (n=0)
+  events/traj: light_out=2.000 light_in=0.000 space_out=0.000 space_in=0.000 side_form=0.000 side_a=0.000
+  cpu=0.0s
+start_restricted sector=(7,1,0) dim=13 E=9.402965613888 leak=0.000e+00 gap=1.448003e-02
+start_restricted sector=(7,1,0) dim=54 E=9.622812509275 leak=0.000e+00 gap=2.240857e-02
+RUN X5e_S_dilute ntraj=200 dense=0
+  w_lock  mean=1.000000 se=0.000000 final=1.000000
+  F       mean=0.015000 se=0.008595 final=0.015000
+  nsat    mean=4.000000 se=0.000000 final=4.000000
+  Nlight  mean=0.000000 se=0.000000 final=0.000000
+  P(w_lock>=0.9)=1.0000 P(final w_lock>=0.9)=1.0000 F/w_lock(w>=0.5)=0.015000 (n=200)
+  P(both light out)=0.0000 P(any space out)=0.3650 P(quanta left in chain)=1.0000 P(ended dark-stable)=1.0000
+  mean t=3.5066e+10 arrivals=100.000  t_first(w_lock>=0.9)=3.9314e+08 (n=200)
+  events/traj: light_out=198.140 light_in=0.000 space_out=0.430 space_in=100.000 side_form=0.000 side_a=0.000
+  cpu=185.3s
+RUN X5e_S_dense ntraj=12 dense=1
+  w_lock  mean=0.910324 se=0.079273 final=0.916667
+  F       mean=0.282120 se=0.121895 final=0.250000
+  nsat    mean=3.916667 se=0.079786 final=3.916667
+  Nlight  mean=0.014226 se=0.005020 final=0.000000
+  P(w_lock>=0.9)=0.9167 P(final w_lock>=0.9)=0.9167 F/w_lock(w>=0.5)=0.309539 (n=11)
+  P(both light out)=0.0000 P(any space out)=0.2500 P(quanta left in chain)=1.0000 P(ended dark-stable)=0.0000
+  mean t=1000 arrivals=4.333  t_first(w_lock>=0.9)=293.501 (n=11)
+  events/traj: light_out=7.250 light_in=0.000 space_out=0.250 space_in=4.333 side_form=0.000 side_a=0.000
+  T=1000
+  cpu=7.4s
+RUN X5b_S_dilute ntraj=200 dense=0
+  w_lock  mean=0.000000 se=0.000000 final=0.000000
+  F       mean=0.000000 se=0.000000 final=0.000000
+  nsat    mean=2.996780 se=0.003212 final=2.996780
+  Nlight  mean=0.000000 se=0.000000 final=0.000000
+  P(w_lock>=0.9)=0.0000 P(final w_lock>=0.9)=0.0000 F/w_lock(w>=0.5)=-1.000000 (n=0)
+  P(both light out)=0.0000 P(any space out)=0.3000 P(quanta left in chain)=1.0000 P(ended dark-stable)=1.0000
+  mean t=3.53215e+10 arrivals=100.000  t_first(w_lock>=0.9)=-1 (n=0)
+  events/traj: light_out=199.315 light_in=0.000 space_out=0.345 space_in=100.000 side_form=0.000 side_a=0.000
+  cpu=159.8s
+RUN X5b_S_dense ntraj=12 dense=1
+  w_lock  mean=0.000000 se=0.000000 final=0.000000
+  F       mean=0.000000 se=0.000000 final=0.000000
+  nsat    mean=3.000000 se=0.000000 final=3.000000
+  Nlight  mean=0.010544 se=0.001910 final=0.000000
+  P(w_lock>=0.9)=0.0000 P(final w_lock>=0.9)=0.0000 F/w_lock(w>=0.5)=-1.000000 (n=0)
+  P(both light out)=0.0000 P(any space out)=0.1667 P(quanta left in chain)=1.0000 P(ended dark-stable)=0.0000
+  mean t=1000 arrivals=3.000  t_first(w_lock>=0.9)=-1 (n=0)
+  events/traj: light_out=5.667 light_in=0.000 space_out=0.167 space_in=3.000 side_form=0.000 side_a=0.000
+  T=1000
+  cpu=1.6s
+CHECK ledger_max=0.000e+00 completeness_max=7.198e-15 cluster_rate_max=1.631e-12 maxasym=0.000e+00
