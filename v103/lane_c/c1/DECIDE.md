@@ -152,3 +152,56 @@ The anemia is local. It does not carry the void's influence outward.
 - **The sign as charge.** Use lane a's tools to ask whether a
   sublattice-charged void also carries spin ½ and a wave, which would
   make it a charged quantum particle.
+
+## Addendum (2026-10-11, post-hoc, not registered): is there an unsigned part?
+
+**Prompt** (the user, after reading the ending): "two things going
+on, a signed electric charge, and a void-void interaction which can
+only be expressed through 1/r², and is thus without a sign".
+
+**Test.** The four-void runs hold same-sublattice and
+opposite-sublattice pairs together. Fit both pair potentials jointly
+on shells r ≥ 2 as
+
+  V = α_type + β_s·s·Ĝ(r) + β_u·Ĝ(r), with s = +1 for same and −1 for
+  opposite.
+
+- β_s is the signed (charge) part.
+- β_u is a long-range part that does not care about sign.
+
+Four charges in a box screen one another, so a pure two-sign Coulomb
+gas shows a small β_u by itself. The null is that gas: two + and two −
+charges on the same lattice, with weight exp(−κ Σ q_i q_j Ĝ), κ taken
+from the two-void fit, and analysed identically. The null's Ĝ equals the
+tool's to ≤ 4.4e-11.
+
+- Tool: `cas/unsigned/unsigned.go` (Go).
+- Output: `cas/unsigned/unsigned.out`.
+
+| rules | d | data β_s | null β_s | data β_u − null β_u |
+|---|---|---|---|---|
+| bc | 2-D | +1.345 ± 0.003 | +1.331 ± 0.002 | +0.013 ± 0.003 |
+| abc | 2-D | +1.880 ± 0.003 | +1.880 ± 0.002 | +0.011 ± 0.003 |
+| bc | 3-D | +2.475 ± 0.033 | +2.404 ± 0.022 | +0.010 ± 0.040 |
+| abc | 3-D | +3.003 ± 0.029 | +2.847 ± 0.022 | +0.048 ± 0.036 |
+
+**Reading.**
+- **The long-range law is all sign.**
+  - In 3-D the unsigned part is zero within 1.3σ, which bounds it at
+    about 4 % of the signed coupling.
+  - In 2-D the residual is under 1 % of the signed coupling. It is
+    repulsive (β_u > 0), and it sits inside the misfit of the 2-D joint
+    fits themselves (χ²/dof 3.0 and 7.5).
+- **No set shows an unsigned long-range attraction.**
+- **In this static medium the unsigned channel is only the anemia,**
+  which heals within one cell (§3).
+- **Why.** The medium's density has a preferred level, so a deficit
+  heals over the inverse of that stiffness. In this version's
+  dictionary, that stiffness is the breathing gap.
+
+**Then, refined.** For an unsigned long-range part, c2 must remove the
+level's stiffness or give the medium inertia. Those are the two
+known-physics routes to "like sources attract": scalar exchange and the
+Bjerknes or Lagally flow force. c2 should also keep the chain
+constraint as a third candidate, so the signed and unsigned parts can be
+measured in one medium.
