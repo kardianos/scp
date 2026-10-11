@@ -344,7 +344,8 @@ rules nothing.
 - **Q3, ending h: no Higgs-like line in 3+2.** The ripple is never
   spin 0. In W the spin-0, isospin-0 two-ripple state sits at its
   threshold to within 1% at leading order. Only the all-orders rings
-  (n ≤ 6) put it about 10% below.
+  put it below (R = 0.90, 0.89, 0.91 at n = 4, 6, 8), with a margin that
+  shrinks from n = 6 to 8; a weak line is not excluded.
 - **Q4: the background is converted space,** one quantum per link, to
   0.96–0.997 per cell at leading order. R6's ceiling is that statement.
 - **Still open: the background is placed.** How space and field gather

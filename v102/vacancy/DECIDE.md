@@ -58,11 +58,20 @@ below two free ripples. Every ε_s state was checked: ⟨S²⟩ = ⟨I²⟩ = 0 
 | W AO open | L_bulk = 3, 4 | 1.235, 1.091 | no line |
 
 **Supplement (labelled, not registered; `cas/run_q3s.sh`):** the next
-size in two W cells. **Still running at this commit; it will be added
-when it finishes.**
-- AO W ring n = 8 (D = 1.26e7, full closure): Δ₈ = 1.3526 J0, so the
-  two-ripple threshold is 2.705 J0. The spin-0 run is in progress.
-- LO W open L_bulk = 7: queued.
+size in two W cells (`cas/out/fit_q3s.out`):
+
+| cell | size | Δ | ε_s | R | the cell's sequence |
+|---|---|---|---|---|---|
+| W AO ring | n = 8 (D = 1.26e7, full closure) | 1.3526 | 2.4735 | **0.914** | 0.899, 0.890, 0.914 |
+| W LO open | L_bulk = 7 (D = 5.2e6) | 1.6523 | 3.5809 | **1.084** | 1.26, 1.11, 1.135, 1.10, 1.084 |
+
+- **The AO ring stays below the threshold.** It still reads as a line
+  by the registered rule. But its margin 1 − R went 0.101, 0.110, 0.086
+  for n = 4, 6, 8. From 6 to 8 that shrinks about as 1/n (0.110 × 6/8 =
+  0.083), the way a finite-size attraction shift would. It does not
+  settle the question.
+- **The LO open chain approaches 1 from above,** as two ripples in a box
+  do.
 
 **Reading.**
 - **3+2: the spin-0 ripple falls apart.** In every cell it sits 1.46–2.26
@@ -80,8 +89,9 @@ when it finishes.**
   rings. The open chains at all orders do not show it. In one
   dimension any attraction binds two particles, so a weak line is
   possible. These sizes cannot separate a weak line from a finite-size
-  shift. The registered rule reads the AO ring as a line, and the
-  ending is h.
+  shift; the n = 8 supplement (R = 0.914, margin shrinking from n = 6)
+  does not separate them either. The registered rule reads the AO ring
+  as a line, and the ending is h.
 - **The ripple itself is not spin 0.** It is a triplet (3+2) or the
   15-fold (1, 1) ⊕ (1, 0) ⊕ (0, 1) (W): ⟨S²⟩ = 2 in every cell, and
   ⟨I²⟩ = 2 in W. A Higgs-like scalar could only be a pair of ripples.
@@ -233,8 +243,8 @@ S-boundary (R10). Sources: the records and §1–§3.
 
 ## 7. Limits
 
-- Exact sizes are small: W rings up to n = 8 at leading order and n = 6
-  at all orders. The W Higgs question sits at R ≈ 1, where finite-size
+- Exact sizes are small: W rings up to n = 8 (n = 6 registered at all
+  orders; n = 8 as a supplement). The W Higgs question sits at R ≈ 1, where finite-size
   shifts of a few percent decide the verdict.
 - ξ_bg and ℓ_vac use different fit forms (Ornstein–Zernike for the bulk
   correlation, a pure exponential for the vacancy's cloud). That is the
