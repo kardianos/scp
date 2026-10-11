@@ -205,3 +205,9 @@ known-physics routes to "like sources attract": scalar exchange and the
 Bjerknes or Lagally flow force. c2 should also keep the chain
 constraint as a third candidate, so the signed and unsigned parts can be
 measured in one medium.
+
+**Frame, user, same day (R14 in `../../README.md`).** The medium is
+"something with gaps", not "something in something". This medium sits
+on a fixed lattice of slots, which is a container, so the result above
+carries that caveat. c2 counts distance through the medium's own bonds,
+and asks no ether-frame question (where drawn medium goes, drag).

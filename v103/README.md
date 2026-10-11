@@ -39,7 +39,8 @@ its head.
 | W, Z | massive gauge bosons | field the medium holds at bay (Meissner-like) |
 | light | the photon | field the medium lets through. **Light is not matter** |
 | a collision | breaking a thing open | disrupting the medium. Voids form above the cost of one void |
-| gravity | curvature from mass-energy | lane c: field deficit as mass, with chains re-forming over geometric distance, or a steady draw |
+| space, the stage | a container that holds fields and particles | **none.** The medium is not in anything. "Where" is counted through the medium, so a gap is missing where (R14) |
+| gravity | curvature from mass-energy | lane c: field deficit as mass, with chains re-forming over geometric distance. The medium closes over its gaps. Nothing is drawn off to somewhere else, because there is no elsewhere |
 | classical vs quantum | a size or decoherence boundary | lane b: the bulk medium (large occupation) against unit deficits |
 
 **Relaxed in field is not relaxed in energy.** In the Higgs hat, the
@@ -134,6 +135,25 @@ Order: c1, then a1 and b1, which share one tool.
 10. **Ratchet.** v103's tools are new code. Any change to the v97
     kernel would run the full battery.
 11. **Commits carry no Co-Authored-By footer.**
+12. **R14: something with gaps, not something in something** (user,
+    2026-10-11).
+    - The user's words, verbatim: "The trick is in this frame the
+      medium isn't somewhere, it isn't en ether. In fact, it is the
+      opposite of the ether. I think we can construct around this. ...
+      Ether had particles rolling around in an ether "something in
+      something" we propose "something with gaps" which is our key
+      out."
+    - **There is no container.** Distance, volume and neighbourhood are
+      counted through the medium itself.
+    - **A gap is not an empty slot in a space.** It is medium that is
+      not there.
+    - **Ether-frame questions are not asked,** and no model may build
+      them in: where drawn medium goes, drag of a body through the
+      medium, motion relative to the medium. A gap moves by the medium
+      re-forming, not by pushing through it.
+    - **c1, a1 and b1 were built on fixed lattices of slots.** That is a
+      container, so their results carry this caveat. From c2 on, a
+      lane's geometry is the medium's own.
 
 **Open, not yet ruled by the user:** whether v102's R5 ("integer
 winding is retired as the lock") binds v103. **Default:** winding is
@@ -145,7 +165,9 @@ that lane's PREREG.
 
 ## Method
 
-- **Media are standard lattice quantum models.** Bosonic
+- **Media began as standard lattice quantum models (c1, a1, b1).**
+  Under R14 a fixed lattice is a container. Later steps count
+  geometry through the medium's own bonds. Bosonic
   Hubbard-type cells, with caps and modes as each lane registers them,
   and constrained bond ("chain") models.
 - **Numerics are standard.**
