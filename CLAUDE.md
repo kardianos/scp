@@ -2,7 +2,30 @@
 
 ---
 
-# CURRENT VERSION: v99 — READ THIS FIRST
+# CURRENT VERSION: v103 — THE INVERSION (stuff is void) — READ THIS FIRST
+
+**FRAME (R14, user 2026-10-11): "something with gaps", NOT "something
+in something".**
+- The medium is not in anything, so it is not an ether. "The medium
+  isn't somewhere."
+- "Where" is counted through the medium. A particle is a gap: medium
+  that is not there.
+- Never raise ether-frame questions: where drawn medium goes, drag,
+  motion relative to the medium.
+- Never build a container (fixed slots or cells) into a model.
+
+**Read `v103/FRAME.md` first.** A SessionStart hook re-injects it after
+every compaction. The user said training pulls back to the ether frame,
+so this must be actively retained. Then read `v103/README.md`, the
+charter: three lanes (a survival, b quantum/classical, c gravity), with
+rules R13 (no label), R14, light is not matter, and no edge.
+
+v100–v102 are evidence below v103. `v102/README.md` holds the rulings
+R1–R13.
+
+---
+
+# EARLIER ENTRY POINT: v99 (superseded by v103 above; kept as record)
 
 **v99 IS THE ACTIVE PROGRAMME (opened 2026-08-19, user-authorized:
 relative-entropy lock as the size selector, representation split

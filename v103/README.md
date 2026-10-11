@@ -8,6 +8,10 @@ and ruling R13 ("Any encoding by label is an instant fail
 intrinsically. If the setup of quanta cannot survive without label,
 then it is dead.").
 
+**Read `FRAME.md` first.** The frame is R14: something with gaps,
+not something in something. A SessionStart hook re-injects the card
+after every compaction.
+
 **This document is the plan.** Each lane step is gated by its own
 `PREREG.md`, written before any of its runs. A result is claimed only
 in that step's `DECIDE.md`. No kernel, law-table or `v97/fab` change.
