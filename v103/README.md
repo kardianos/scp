@@ -119,12 +119,14 @@ Order: c1, then a1 and b1, which share one tool.
 | **c1** chains, voids | **E** (charge-like) | Chain conservation on a bipartite fabric gives Coulomb's law (log in 2-D, 1/r in 3-D), signed by sublattice. The unsigned long-range part is zero (post-hoc addendum: ≤ 4 % in 3-D) | container, caveated |
 | **b1** where classical begins | **C** (complementary) | A phase-coherent bulk smears a missing quantum (β = −1). A whole void needs a locked bulk with no phase (g1 = 0). Stiffness moves part-way and never escapes | container, caveated |
 | **c2** a sign, and something without one (16 sets, 1-D) | **U** by the bars, read as like-with-like | A flat level makes gaps cluster with gaps and excesses with excesses, while unlike pairs repel: surface tension at contact. Tweaked links with inertia give exact fracton/Mach structure (a lone gap is frozen, pairs only breathe), binding −4t, contact range. Nothing reaches beyond contact in 1-D | gap frame (cells never empty, distance in quanta) |
-| **a1** the void as a quantum particle | running | the last sector (L = 8, two planes with exchange) | container, caveated |
+| **a1** the void as a quantum particle | **P(2)** (registered P(3); the A6 bar defect is disclosed) | The void is a sharp wave in 6 of 8 sets. The antiparticle needs headroom. Spin ½ needs saturation, two planes and exchange (abc, whose voids pair by −7.3t). Headroom and saturation exclude each other. The breathing line is never below the continuum. Exclusion fails because a cell can empty; under R14 it would be structural | container, caveated |
 
 **Next:**
 - **c3:** tweaked links in 2-D, to see whether mobility binding reaches.
 - **The 3-D geometry gate** (R14).
 - **b2,** in the gap frame.
+- **a2,** in the gap frame: can one medium carry the antiparticle and
+  spin ½ at once?
 
 ## Rules
 

@@ -1,0 +1,10 @@
+A1 model L=6 M=1 C=2 nb=2 Jx=0 U=0
+MEDIUM D=1 E=0.000000000000 resid=0.00e+00 gap=inf S2=0.000000 fluct=0.000000
+VOID band: k0 E=-4.000000000 Z=1.000000; k1 E=-2.000000000 Z=1.000000; k2 E=2.000000000 Z=1.000000; k3 E=4.000000000 Z=1.000000; k4 E=2.000000000 Z=1.000000; k5 E=-2.000000000 Z=1.000000;
+VOID W=8.000000000 Zmin=1.000000 kmin=0 conv=0.00e+00
+VOID S2=0.000000 (medium S2=0.000000)
+AB E1(0)-E0(0)=-4.000000000000 E1(pi)-E0(pi)=-3.464101615138 dAB=5.358984e-01 resid=1.7e-15,0.0e+00,2.4e-15
+EXCESS none (cap = filling)
+BREATH none (the saturated medium cannot breathe: O|G> = 0)
+TWOVOID D=21 E=-7.139905502607 resid=7.1e-15 bind=0.860094497 Pdouble=0.032403
+CHECK medium_resid=0.0e+00 void_resid=1.7e-15 spectral_conv=0.0e+00,0.0e+00
