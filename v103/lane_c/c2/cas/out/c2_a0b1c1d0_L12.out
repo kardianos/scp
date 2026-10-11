@@ -1,0 +1,15 @@
+C2 L=12 a=0 b=1 c=1 d=0 cap=3
+SECTOR N=22 D=58278 E=-53.298173482969 mdim=6 nsec=6 gapnext=4.720e-02 resid=1.4e-13 trunc=0
+SECTOR N=23 D=69576 E=-61.657660454571 mdim=12 nsec=12 gapnext=6.880e+00 resid=1.2e-13 trunc=0
+SECTOR N=24 D=73789 E=-70.888267866536 mdim=1 nsec=1 gapnext=1.231e+00 resid=1.2e-13 trunc=0
+SECTOR N=25 D=69576 E=-68.027088286565 mdim=12 nsec=12 gapnext=8.004e+00 resid=1.6e-13 trunc=0
+SECTOR N=26 D=58278 E=-65.593923275484 mdim=6 nsec=6 gapnext=9.507e-03 resid=1.9e-13 trunc=0
+BIND gg=-0.871120440362 ee=-0.428014568889
+PAIR gg Wmin=0.012797493 meanD=7.325909 meanDref=4.545455 rho=1.611700
+PROFILE gg D=0:p=0.000000e+00,pref=1.818182e-01,V=inf D=2:p=7.896633e-02,pref=1.818182e-01,V=0.833986 D=4:p=0.000000e+00,pref=1.818182e-01,V=inf D=6:p=5.105900e-01,pref=1.818182e-01,V=-1.032560 D=8:p=0.000000e+00,pref=1.818182e-01,V=inf D=10:p=4.104437e-01,pref=9.090909e-02,V=-1.507379
+PAIR ee Wmin=0.019483697 meanD=7.544502 meanDref=4.545455 rho=1.659791
+PROFILE ee D=0:p=0.000000e+00,pref=1.818182e-01,V=inf D=2:p=6.003576e-02,pref=1.818182e-01,V=1.108067 D=4:p=0.000000e+00,pref=1.818182e-01,V=inf D=6:p=4.938029e-01,pref=1.818182e-01,V=-0.999129 D=8:p=0.000000e+00,pref=1.818182e-01,V=inf D=10:p=4.461614e-01,pref=9.090909e-02,V=-1.590821
+PAIR ge Wmin=0.001696001 meanD=10.000000 meanDref=4.545455 rho=2.200000
+PROFILE ge D=0:p=0.000000e+00,pref=1.818182e-01,V=inf D=2:p=0.000000e+00,pref=1.818182e-01,V=inf D=4:p=0.000000e+00,pref=1.818182e-01,V=inf D=6:p=0.000000e+00,pref=1.818182e-01,V=inf D=8:p=0.000000e+00,pref=1.818182e-01,V=inf D=10:p=1.000000e+00,pref=9.090909e-02,V=-2.397895
+MACH iso=0 iso_frag=5736 pairmove=0 adjpair_frag=4812 join=0 farpair_frag=4839
+CHECK maxresid=1.9e-13 trunc=0 moment_viol=0

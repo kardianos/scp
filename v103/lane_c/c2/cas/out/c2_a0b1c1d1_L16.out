@@ -1,0 +1,15 @@
+C2 L=16 a=0 b=1 c=1 d=1 cap=3
+SECTOR N=30 D=4343160 E=-71.109738908614 mdim=8 nsec=8 gapnext=5.515e-03 resid=5.1e-12 trunc=0
+SECTOR N=31 D=4969152 E=-78.173655946650 mdim=16 nsec=16 gapnext=4.306e+00 resid=6.4e-13 trunc=0
+SECTOR N=32 D=5196627 E=-85.988433972275 mdim=1 nsec=1 gapnext=6.794e-01 resid=2.3e-12 trunc=0
+SECTOR N=33 D=4969152 E=-84.569014319863 mdim=16 nsec=16 gapnext=4.842e+00 resid=3.6e-13 trunc=0
+SECTOR N=34 D=4343160 E=-83.730873229005 mdim=8 nsec=8 gapnext=8.141e-04 resid=3.6e-13 trunc=0
+BIND gg=-0.750860987588 ee=-0.581278561555
+PAIR gg Wmin=0.001103544 meanD=10.867645 meanDref=6.533333 rho=1.663415
+PROFILE gg D=0:p=0.000000e+00,pref=1.333333e-01,V=inf D=2:p=1.240887e-02,pref=1.333333e-01,V=2.374441 D=4:p=0.000000e+00,pref=1.333333e-01,V=inf D=6:p=1.346443e-01,pref=1.333333e-01,V=-0.009784 D=8:p=0.000000e+00,pref=1.333333e-01,V=inf D=10:p=4.765735e-01,pref=1.333333e-01,V=-1.273770 D=12:p=0.000000e+00,pref=1.333333e-01,V=inf D=14:p=3.763733e-01,pref=6.666667e-02,V=-1.730876
+PAIR ee Wmin=0.002058107 meanD=10.481253 meanDref=6.533333 rho=1.604273
+PROFILE ee D=0:p=4.176316e-03,pref=1.333333e-01,V=3.463423 D=2:p=0.000000e+00,pref=1.333333e-01,V=inf D=4:p=4.573390e-02,pref=1.333333e-01,V=1.070012 D=6:p=0.000000e+00,pref=1.333333e-01,V=inf D=8:p=2.756899e-01,pref=1.333333e-01,V=-0.726424 D=10:p=0.000000e+00,pref=1.333333e-01,V=inf D=12:p=6.743999e-01,pref=1.333333e-01,V=-1.620971 D=14:p=0.000000e+00,pref=6.666667e-02,V=inf
+PAIR ge Wmin=0.000041672 meanD=14.000000 meanDref=6.533333 rho=2.142857
+PROFILE ge D=0:p=0.000000e+00,pref=1.333333e-01,V=inf D=2:p=0.000000e+00,pref=1.333333e-01,V=inf D=4:p=0.000000e+00,pref=1.333333e-01,V=inf D=6:p=0.000000e+00,pref=1.333333e-01,V=inf D=8:p=0.000000e+00,pref=1.333333e-01,V=inf D=10:p=0.000000e+00,pref=1.333333e-01,V=inf D=12:p=0.000000e+00,pref=1.333333e-01,V=inf D=14:p=1.000000e+00,pref=6.666667e-02,V=-2.708050
+MACH iso=0 iso_frag=308721 pairmove=0 adjpair_frag=270500 join=0 farpair_frag=270695
+CHECK maxresid=5.1e-12 trunc=0 moment_viol=0

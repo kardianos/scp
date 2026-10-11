@@ -1,0 +1,15 @@
+C2 L=12 a=1 b=1 c=1 d=0 cap=2
+SECTOR N=22 D=66 E=0.000000000000 mdim=12 nsec=6 gapnext=4.000e+00 resid=0.0e+00 trunc=0
+SECTOR N=23 D=12 E=2.000000000000 mdim=12 nsec=12 gapnext=inf resid=0.0e+00 trunc=0
+SECTOR N=24 D=1 E=0.000000000000 mdim=1 nsec=1 gapnext=inf resid=0.0e+00 trunc=0
+SECTOR N=25 D=0 E=nan mdim=0 nsec=0 gapnext=inf resid=0.0e+00 trunc=0
+SECTOR N=26 D=0 E=nan mdim=0 nsec=0 gapnext=inf resid=0.0e+00 trunc=0
+BIND gg=-4.000000000000 ee=nan
+PAIR gg Wmin=1.000000000 meanD=2.000000 meanDref=4.545455 rho=0.440000
+PROFILE gg D=0:p=5.000000e-01,pref=1.818182e-01,V=-1.011601 D=2:p=0.000000e+00,pref=1.818182e-01,V=inf D=4:p=5.000000e-01,pref=1.818182e-01,V=-1.011601 D=6:p=0.000000e+00,pref=1.818182e-01,V=inf D=8:p=0.000000e+00,pref=1.818182e-01,V=inf D=10:p=0.000000e+00,pref=9.090909e-02,V=inf
+PAIR ee Wmin=0.000000000 meanD=0.000000 meanDref=0.000000 rho=nan
+PROFILE ee D=0:p=0.000000e+00,pref=0.000000e+00,V=inf D=2:p=0.000000e+00,pref=0.000000e+00,V=inf D=4:p=0.000000e+00,pref=0.000000e+00,V=inf D=6:p=0.000000e+00,pref=0.000000e+00,V=inf D=8:p=0.000000e+00,pref=0.000000e+00,V=inf D=10:p=0.000000e+00,pref=0.000000e+00,V=inf
+PAIR ge Wmin=0.000000000 meanD=0.000000 meanDref=0.000000 rho=nan
+PROFILE ge D=0:p=0.000000e+00,pref=0.000000e+00,V=inf D=2:p=0.000000e+00,pref=0.000000e+00,V=inf D=4:p=0.000000e+00,pref=0.000000e+00,V=inf D=6:p=0.000000e+00,pref=0.000000e+00,V=inf D=8:p=0.000000e+00,pref=0.000000e+00,V=inf D=10:p=0.000000e+00,pref=0.000000e+00,V=inf
+MACH iso=0 iso_frag=1 pairmove=0 adjpair_frag=2 join=0 farpair_frag=1
+CHECK maxresid=0.0e+00 trunc=0 moment_viol=0
