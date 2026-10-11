@@ -1,0 +1,43 @@
+# gx M=4 n=5 k=3 rules=none side=0 g/D=0.1 tin=0.1 J0 tL=0.9 sk=0.06 exp=all nsec=285 J0=0.0095861869
+# caps: 1 2 1 2 2  Dmax=2000
+start_restricted sector=(4,0,0) dim=20 E=5.495873833691 leak=0.000e+00 gap=4.039673e-02
+STATIC lock sector (4,0,0) D=576
+  k=0 E=3.6665529903 w_lock=0.000000 F=0.000000 nsat=0.0000 Nlight=2.0000 rate_out=1.474160e+00
+  k=1 E=3.6665529903 w_lock=0.000000 F=0.000000 nsat=0.0000 Nlight=2.0000 rate_out=1.474160e+00
+  k=2 E=3.6665529903 w_lock=0.000000 F=0.000000 nsat=0.0000 Nlight=2.0000 rate_out=1.474160e+00
+  k=3 E=3.6665529903 w_lock=0.000000 F=0.000000 nsat=0.0000 Nlight=2.0000 rate_out=1.474160e+00
+  k=4 E=3.6665529903 w_lock=0.000000 F=0.000000 nsat=0.0000 Nlight=2.0000 rate_out=1.474160e+00
+  k=5 E=3.6665529903 w_lock=0.000000 F=0.000000 nsat=0.0000 Nlight=2.0000 rate_out=1.474160e+00
+  k=6 E=3.6665529903 w_lock=0.000000 F=0.000000 nsat=0.0000 Nlight=2.0000 rate_out=1.474160e+00
+  k=7 E=3.6665529903 w_lock=0.000000 F=0.000000 nsat=0.0000 Nlight=2.0000 rate_out=1.474160e+00
+  maxF k=224 E=5.4958738337 w_lock=1.000000 F=1.000000 rate_out=0.000000e+00  (E-E0=1.908288e+02 J0)
+  L0: <H>=5.495873833691 residual=3.456e-15
+RUN X1_S_dilute ntraj=100 dense=0
+  w_lock  mean=0.000000 se=0.000000 final=0.000000
+  F       mean=0.000000 se=0.000000 final=0.000000
+  nsat    mean=0.000000 se=0.000000 final=0.000000
+  Nlight  mean=0.000000 se=0.000000 final=0.000000
+  P(w_lock>=0.9)=0.0000 P(final w_lock>=0.9)=0.0000 F/w_lock(w>=0.5)=-1.000000 (n=0)
+  P(both light out)=0.0000 P(any space out)=0.0000 P(quanta left in chain)=0.0000 P(ended dark-stable)=1.0000
+  mean t=0 arrivals=0.000  t_first(w_lock>=0.9)=-1 (n=0)
+  events/traj: light_out=0.000 light_in=0.000 space_out=0.000 space_in=0.000 side_form=0.000 side_a=0.000
+  cpu=0.0s
+RUN X1_S_dense ntraj=100 dense=1
+  w_lock  mean=0.000000 se=0.000000 final=0.000000
+  F       mean=0.000000 se=0.000000 final=0.000000
+  nsat    mean=0.000000 se=0.000000 final=0.000000
+  Nlight  mean=0.000000 se=0.000000 final=0.000000
+  P(w_lock>=0.9)=0.0000 P(final w_lock>=0.9)=0.0000 F/w_lock(w>=0.5)=-1.000000 (n=0)
+  P(both light out)=0.0000 P(any space out)=0.0000 P(quanta left in chain)=0.0000 P(ended dark-stable)=1.0000
+  mean t=5000 arrivals=0.000  t_first(w_lock>=0.9)=-1 (n=0)
+  events/traj: light_out=0.000 light_in=0.000 space_out=0.000 space_in=0.000 side_form=0.000 side_a=0.000
+  cpu=0.0s
+RUN X1_L_dilute ntraj=100 dense=0
+  w_lock  mean=0.000000 se=0.000000 final=0.000000
+  F       mean=0.000000 se=0.000000 final=0.000000
+  nsat    mean=0.000000 se=0.000000 final=0.000000
+  Nlight  mean=0.000000 se=0.000000 final=0.000000
+  P(w_lock>=0.9)=0.0000 P(final w_lock>=0.9)=0.0000 F/w_lock(w>=0.5)=-1.000000 (n=0)
+  P(both light out)=0.0000 P(any space out)=0.0000 P(quanta left in chain)=0.0000 P(ended dark-stable)=1.0000
+  mean t=1.62452e+07 arrivals=100.000  t_first(w_lock>=0.9)=-1 (n=0)
+  events/traj: light_out=100.000 light_in=100.000 space_out=0.000 space_in=0.000 side_form=0.000 side_a=0.000

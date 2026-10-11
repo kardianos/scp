@@ -351,6 +351,40 @@ rules nothing.
 - **Still open: the background is placed.** How space and field gather
   into it is the next question.
 
+**Gather step** (2026-10-11; `gather/PREREG.md`, `gather/DECIDE.md`):
+how the background gathers from field and space. Three candidates were
+tested in all eight combinations, in both fabrics, with a new C tool
+(`gather/cas/gx.c`):
+- a, the reverse boundary event;
+- b, conversion in an unlabelled fiber;
+- c, membership by saturation (no label).
+
+The tool is an exact leading-order chain with golden-rule events. Its
+event window is lifetime-broadened, a deviation disclosed before any
+verdict. This is a measurement; it rules nothing.
+
+- **Ending N: nothing gathers.** The best X1 run reaches w_lock 0.004
+  against a bar of 0.5.
+  - a seeds one quantum at the lock's edge and stops: the interior is
+    unreachable.
+  - b turns each space quantum into two light quanta that leave
+    (≈ 199 out per 100 in).
+  - ac and bc do the same at the wall.
+- **Without a label the lock does not hold.** Under c, its open end
+  cell is unsaturated, so it travels as light. The whole lock unzips
+  into light in 13–22 t.u., and adding a does not stop it.
+- **With a label it holds** in the dark and in space, and a refills its
+  vacancies: at the 1-D end every time, and in the bulk once side links
+  exist. So the vacancy has a finite life in space. But the refilled
+  lock is almost never in its ground state (F/w 0–0.32), and nothing in
+  the model relaxes it. Bright light defeats every lock.
+- **What is missing:** converted field that stays put by itself. The
+  binding (g²/Δ ≈ 0.005–0.010) is about 1/400 of the light bandwidth.
+  Next-step candidates, each needing a ruling:
+  - d, conversion marks the link;
+  - e, edge membership by contact;
+  - f, an internal relaxation channel.
+
 ## What is carried
 
 - `v89/PRINCIPLE.md`, in full. Where the kernel and the principle

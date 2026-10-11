@@ -621,7 +621,7 @@ static void state_obs(const State *st, double *o)
     if (st->ncoef == 1) memcpy(S->obs + (long)k0 * NOBS, o, sizeof(double) * NOBS);
 }
 
-#define CACHE_MAX 20000000L   /* cached entries per process (~0.8 GB); past it, rates are recomputed */
+static long CACHE_MAX = 20000000L;   /* cached entries per process (key cache=); past it, rates are recomputed (speed only) */
 static long cached_entries = 0;
 static Ent *get_entries(const State *st, int *ne, int *owned)
 {
@@ -916,6 +916,7 @@ static void parse(int argc, char **argv)
         else if (!strcmp(k, "Amax")) Amax = atoi(v);
         else if (!strcmp(k, "T")) Tmax = atof(v);
         else if (!strcmp(k, "ntd")) ntraj_dense = atoi(v);
+        else if (!strcmp(k, "cache")) CACHE_MAX = atol(v);
         else if (!strcmp(k, "Td")) Tdense = atof(v);
         else if (!strcmp(k, "seed")) seed0 = strtoull(v, NULL, 10);
         else if (!strcmp(k, "resid")) check_resid = atoi(v);

@@ -1,0 +1,20 @@
+# gx M=4 n=5 k=3 rules=c side=0 g/D=0.1 tin=0.1 J0 tL=0.9 sk=0.06 exp=t0 nsec=385 J0=0.0095861869
+# caps: 1 2 2 2 2  Dmax=4728
+start_restricted sector=(4,0,0) dim=20 E=5.495873833691 leak=1.356e-03 gap=4.039673e-02
+T0 maxasym=0.000e+00 resid_max=1.604e-14
+STATIC lock sector (4,0,0) D=732
+  k=0 E=0.9860209931 w_lock=0.000052 F=0.000000 nsat=0.0607 Nlight=1.9867 rate_out=9.047383e-01
+  k=1 E=0.9957415499 w_lock=0.000044 F=0.000000 nsat=0.0516 Nlight=1.9965 rate_out=9.107131e-01
+  k=2 E=1.0014730300 w_lock=0.000037 F=0.000026 nsat=0.0452 Nlight=2.0033 rate_out=9.149475e-01
+  k=3 E=1.1570806455 w_lock=0.000087 F=0.000000 nsat=0.0799 Nlight=1.9819 rate_out=8.824606e-01
+  k=4 E=1.1570806455 w_lock=0.000087 F=0.000000 nsat=0.0799 Nlight=1.9819 rate_out=8.824606e-01
+  k=5 E=1.1572781162 w_lock=0.000088 F=0.000000 nsat=0.0799 Nlight=1.9825 rate_out=8.818404e-01
+  k=6 E=1.1572781162 w_lock=0.000088 F=0.000000 nsat=0.0799 Nlight=1.9825 rate_out=8.818402e-01
+  k=7 E=1.1695415877 w_lock=0.000074 F=0.000000 nsat=0.0667 Nlight=1.9952 rate_out=8.909617e-01
+  maxF k=262 E=4.9251629301 w_lock=0.181110 F=0.176070 rate_out=5.871409e-01  (E-E0=4.109185e+02 J0)
+  L0: <H>=5.495873833691 residual=9.000e-01
+  widths: <L0|Gamma|L0>=1.123401e+00  max Gamma in sector=2.142777e+00  Gamma(k=0)=1.526777e+00
+T0 completeness_max=3.681e-15 cluster_rate_max=1.968e-12
+T0 semicircle*Lorentzian closed form vs quadrature: max rel diff 1.129e-13
+T0 side kernels max|Kf-Ka|/max Kf = 1.335e-03 (max Kf = 5.104701e-03 at g^2 = 2.297374e-03)
+T0 lock E0(c-off,b-off restricted) - sum E_f = -0.100991827294 rate  (-10.53514063 J0)

@@ -7,6 +7,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"math"
 	"os"
 	"regexp"
 	"strconv"
@@ -36,7 +37,15 @@ var rules = []string{"none", "a", "b", "c", "ab", "ac", "bc", "abc"}
 
 func num(s string) float64 { v, _ := strconv.ParseFloat(s, 64); return v }
 
-var kv = regexp.MustCompile(`([A-Za-z_()>=.0-9/]+)=(-?[0-9.eE+-]+)`)
+func rx(s, pat string) float64 {
+	m := regexp.MustCompile(pat).FindStringSubmatch(s)
+	if m == nil {
+		return math.NaN()
+	}
+	return num(m[1])
+}
+
+var kv = regexp.MustCompile(`([A-Za-z_0-9/]+)=(-?[0-9.eE+-]+)`)
 
 func parse(path string) *File {
 	f, err := os.Open(path)
@@ -86,22 +95,19 @@ func parse(path string) *File {
 				}
 			default:
 				if strings.HasPrefix(t, "P(w_lock") {
-					cur.P09 = m["P(w_lock>=0.9)"]
-					cur.PF09 = m["P(final w_lock>=0.9)"]
-					cur.FRel = m["F/w_lock(w>=0.5)"]
-					cur.NFRel = int(m["(n"])
-					if i := strings.Index(t, "(n="); i >= 0 {
-						v, _ := strconv.Atoi(strings.TrimSuffix(t[i+3:], ")"))
-						cur.NFRel = v
-					}
+					cur.P09 = rx(t, `^P\(w_lock>=0\.9\)=([-0-9.eE+]+)`)
+					cur.PF09 = rx(t, `P\(final w_lock>=0\.9\)=([-0-9.eE+]+)`)
+					cur.FRel = rx(t, `F/w_lock\(w>=0\.5\)=([-0-9.eE+]+)`)
+					cur.NFRel = int(rx(t, `\(n=([0-9]+)\)`))
 				} else if strings.HasPrefix(t, "P(both") {
-					cur.PBoth = m["P(both light out)"]
-					cur.PSpace = m["P(any space out)"]
-					cur.PLeft = m["P(quanta left in chain)"]
-					cur.PDark = m["P(ended dark-stable)"]
+					cur.PBoth = rx(t, `P\(both light out\)=([-0-9.eE+]+)`)
+					cur.PSpace = rx(t, `P\(any space out\)=([-0-9.eE+]+)`)
+					cur.PLeft = rx(t, `P\(quanta left in chain\)=([-0-9.eE+]+)`)
+					cur.PDark = rx(t, `P\(ended dark-stable\)=([-0-9.eE+]+)`)
 				} else if strings.HasPrefix(t, "mean t") {
-					cur.T, cur.Arr = m["t"], m["arrivals"]
-					cur.TFirst = m["t_first(w_lock>=0.9)"]
+					cur.T = rx(t, `mean t=([-0-9.eE+]+)`)
+					cur.Arr = rx(t, `arrivals=([-0-9.eE+]+)`)
+					cur.TFirst = rx(t, `t_first\(w_lock>=0\.9\)=([-0-9.eE+]+)`)
 				}
 			}
 		}
@@ -111,7 +117,10 @@ func parse(path string) *File {
 
 func get(fab, r string) *File { return parse(fmt.Sprintf("out/g_%s_%s.out", fab, r)) }
 
-type Bars struct{ G1, G2, G3, G4, G6 bool; G1where string }
+type Bars struct {
+	G1, G2, G3, G4, G6 bool
+	G1where            string
+}
 
 func bars(f *File, r string) (b Bars) {
 	if f == nil {
