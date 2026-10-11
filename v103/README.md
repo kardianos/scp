@@ -112,6 +112,20 @@ Later steps already named:
 
 Order: c1, then a1 and b1, which share one tool.
 
+## Status (2026-10-11)
+
+| step | ending | one line | frame |
+|---|---|---|---|
+| **c1** chains, voids | **E** (charge-like) | Chain conservation on a bipartite fabric gives Coulomb's law (log in 2-D, 1/r in 3-D), signed by sublattice. The unsigned long-range part is zero (post-hoc addendum: ≤ 4 % in 3-D) | container, caveated |
+| **b1** where classical begins | **C** (complementary) | A phase-coherent bulk smears a missing quantum (β = −1). A whole void needs a locked bulk with no phase (g1 = 0). Stiffness moves part-way and never escapes | container, caveated |
+| **c2** a sign, and something without one (16 sets, 1-D) | **U** by the bars, read as like-with-like | A flat level makes gaps cluster with gaps and excesses with excesses, while unlike pairs repel: surface tension at contact. Tweaked links with inertia give exact fracton/Mach structure (a lone gap is frozen, pairs only breathe), binding −4t, contact range. Nothing reaches beyond contact in 1-D | gap frame (cells never empty, distance in quanta) |
+| **a1** the void as a quantum particle | running | the last sector (L = 8, two planes with exchange) | container, caveated |
+
+**Next:**
+- **c3:** tweaked links in 2-D, to see whether mobility binding reaches.
+- **The 3-D geometry gate** (R14).
+- **b2,** in the gap frame.
+
 ## Rules
 
 1. **R13: no label.** Whether a quantum belongs to the medium, or
