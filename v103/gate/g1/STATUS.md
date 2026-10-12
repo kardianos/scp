@@ -3,13 +3,22 @@
 **Read `../../FRAME.md` first** (R14: something with gaps, not
 something in something). Then `PREREG.md`.
 
-## State: REGISTERED, NOT RUN (2026-10-11, commit ca18259)
+## State: GRID RUNNING (started 2026-10-11 20:25:12)
+
+- T0: **PASS** (20:23–20:25; `cas/out/t0.out`). Note that T0.3a passed
+  with little margin: TV 0.0095 against a bar of 0.01.
+- Grid: `run_g1.sh` PID 860749, `xargs` PID 860755, 12 `geo3d`
+  processes at a time. Progress: `cas/out/run.log`. Finished when
+  `cas/out/run.done` exists.
+
+The user, 2026-10-11, after registration: "go ahead and run it".
+Registered at commit ca18259.
 
 The user, 2026-10-11: "Set it up, register it, note the current status
 of the run so any additional agent will find the status, commit (no
 coauthor) and push. Do not yet run."
 
-**Do not start T0 or the grid without the user's explicit go-ahead.**
+**The user gave the go-ahead on 2026-10-11.** T0 runs first; the grid starts only after `T0 PASS`.
 
 | item | state |
 |---|---|

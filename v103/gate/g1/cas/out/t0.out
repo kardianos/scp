@@ -1,0 +1,55 @@
+T0.1 invariants (six distinct contacts, no self contact, adjacency consistent, one piece) violations=0 PASS
+T0.2 local dE = full dE: tested=61279 mismatches=0 PASS
+T0.3a detailed balance N=8 (105 alike states, uniform target): states=105 TV=0.00951 PASS
+T0.3b N=9 set=none E(types)=0 0 0 0 T_test=1 exact=0.6716 0.1679 0.1511 0.0093 mc=0.6713 0.1680 0.1515 0.0092 TV=0.00046
+T0.3b N=9 set=c E(types)=60 58 60 54 T_test=1.5 exact=0.3411 0.3235 0.0767 0.2587 mc=0.3428 0.3227 0.0771 0.2573 TV=0.00210
+T0.3b N=9 set=b E(types)=108 108 108 108 T_test=1 exact=0.6716 0.1679 0.1511 0.0093 mc=0.6718 0.1682 0.1508 0.0092 TV=0.00037
+T0.3b N=9 set=bc E(types)=168 166 168 162 T_test=1.5 exact=0.3411 0.3235 0.0767 0.2587 mc=0.3382 0.3238 0.0765 0.2616 TV=0.00321
+T0.3b N=9 set=a E(types)=6228 6756 6544 7776 T_test=387 exact=0.8594 0.0549 0.0855 0.0002 mc=0.8594 0.0547 0.0857 0.0002 TV=0.00022
+T0.3b N=9 set=ac E(types)=6288 6814 6604 7830 T_test=385.5 exact=0.8597 0.0549 0.0852 0.0002 mc=0.8600 0.0549 0.0849 0.0002 TV=0.00032
+T0.3b N=9 set=ab E(types)=6336 6864 6652 7884 T_test=387 exact=0.8594 0.0549 0.0855 0.0002 mc=0.8588 0.0555 0.0855 0.0002 TV=0.00063
+T0.3b N=9 set=abc E(types)=6396 6922 6712 7938 T_test=385.5 exact=0.8597 0.0549 0.0852 0.0002 mc=0.8591 0.0551 0.0856 0.0002 TV=0.00055
+T0.3b detailed balance N=9, all sets: max TV=0.00321 PASS
+T0.4 flat L=6: sum(s-4)^2=0 sum(q-4)^2=0 triangles=0 meand=4.520930233 (exact 4.520930233) diam=9 (exact 9) lam2=1.000000000000 (exact 1.000000000000) PASS
+T0.4 flat L=8: sum(s-4)^2=0 sum(q-4)^2=0 triangles=0 meand=6.011741683 (exact 6.011741683) diam=12 (exact 12) lam2=0.585786437627 (exact 0.585786437627) PASS
+T0.4 flat L=10: sum(s-4)^2=0 sum(q-4)^2=0 triangles=0 meand=7.507507508 (exact 7.507507508) diam=15 (exact 15) lam2=0.381966011250 (exact 0.381966011250) PASS
+T0.4 flat L=12: sum(s-4)^2=0 sum(q-4)^2=0 triangles=0 meand=9.005211349 (exact 9.005211349) diam=18 (exact 18) lam2=0.267949192431 (exact 0.267949192431) PASS
+T0.4 flat L=16: sum(s-4)^2=0 sum(q-4)^2=0 triangles=0 meand=12.002930403 (exact 12.002930403) diam=24 (exact 24) lam2=0.152240934977 (exact 0.152240934977) PASS
+T0.4 flat readings 12->16: d_H=3.0035 d_s=3.0532
+T0.5 triangular 2-D L=6: sum(s-4)^2=0 sum(q-4)^2=0 triangles=72 (2L^2=72) PASS
+T0.5 triangular 2-D L=8: sum(s-4)^2=0 sum(q-4)^2=0 triangles=128 (2L^2=128) PASS
+T0.5 instruments on the 2-D medium (N=1764, 4096): d_H=2.0009 d_s=2.0025 PASS
+T0.5 random six-contact medium N=1728: meand=4.5166 diam=7 lam2=1.550485
+T0.5 random six-contact medium N=4096: meand=5.0594 diam=7 lam2=1.543763
+T0.5 instruments on the random medium: d_H=7.6046 d_s=397.3216 (must read far from 3) PASS
+GAP attempts=1 valid=15 dE_chosen=0 dE_min=0 w_chosen=0.0666667
+EXCESS attempts=1 triples=3712 dE_chosen=0 dE_min=0 w_chosen=0.000269397
+T0.6 set=none gap: valid pairings=15 (expect 15) local!=full=0; excess: triples=3712 local!=full=0; medium intact=1; after gap ok=1 after excess ok=1 PASS
+GAP attempts=1 valid=15 dE_chosen=0 dE_min=0 w_chosen=0.885172
+EXCESS attempts=1 triples=3712 dE_chosen=0 dE_min=0 w_chosen=0.00103927
+T0.6 set=c gap: valid pairings=15 (expect 15) local!=full=0; excess: triples=3712 local!=full=0; medium intact=1; after gap ok=1 after excess ok=1 PASS
+GAP attempts=1 valid=15 dE_chosen=288 dE_min=288 w_chosen=0.0666667
+EXCESS attempts=1 triples=3712 dE_chosen=192 dE_min=192 w_chosen=0.0208333
+T0.6 set=b gap: valid pairings=15 (expect 15) local!=full=0; excess: triples=3712 local!=full=0; medium intact=1; after gap ok=1 after excess ok=1 PASS
+GAP attempts=1 valid=15 dE_chosen=288 dE_min=288 w_chosen=0.885172
+EXCESS attempts=1 triples=3712 dE_chosen=198 dE_min=198 w_chosen=0.0208333
+T0.6 set=bc gap: valid pairings=15 (expect 15) local!=full=0; excess: triples=3712 local!=full=0; medium intact=1; after gap ok=1 after excess ok=1 PASS
+GAP attempts=1 valid=15 dE_chosen=144 dE_min=144 w_chosen=0.0666667
+EXCESS attempts=1 triples=3712 dE_chosen=76 dE_min=76 w_chosen=0.0208298
+T0.6 set=a gap: valid pairings=15 (expect 15) local!=full=0; excess: triples=3712 local!=full=0; medium intact=1; after gap ok=1 after excess ok=1 PASS
+GAP attempts=1 valid=15 dE_chosen=144 dE_min=144 w_chosen=0.885172
+EXCESS attempts=1 triples=3712 dE_chosen=80 dE_min=80 w_chosen=0.0206443
+T0.6 set=ac gap: valid pairings=15 (expect 15) local!=full=0; excess: triples=3712 local!=full=0; medium intact=1; after gap ok=1 after excess ok=1 PASS
+GAP attempts=1 valid=15 dE_chosen=432 dE_min=432 w_chosen=0.0666667
+EXCESS attempts=1 triples=3712 dE_chosen=288 dE_min=288 w_chosen=0.0104167
+T0.6 set=ab gap: valid pairings=15 (expect 15) local!=full=0; excess: triples=3712 local!=full=0; medium intact=1; after gap ok=1 after excess ok=1 PASS
+GAP attempts=1 valid=15 dE_chosen=432 dE_min=432 w_chosen=0.885172
+EXCESS attempts=1 triples=3712 dE_chosen=292 dE_min=292 w_chosen=0.0183499
+T0.6 set=abc gap: valid pairings=15 (expect 15) local!=full=0; excess: triples=3712 local!=full=0; medium intact=1; after gap ok=1 after excess ok=1 PASS
+T0.7 N=216 flat: lanczos=1.000000000000 dense=1.000000000000 PASS
+T0.7 N=216 melted: lanczos=1.656023169729 dense=1.656023169729 PASS
+T0.7 N=512 melted: lanczos=1.625300805979 dense=1.625300805979 PASS
+T0.8 L=6: n=L^3-1=215 flat with zero energy at (1,4,10): meand=6.6449 diam=12
+T0.8 L=8: n=L^3-1=511 flat with zero energy at (1,4,10): meand=14.0510 diam=27
+T0.8 PASS
+T0 PASS
