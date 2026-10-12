@@ -100,5 +100,8 @@ See `README.md` for the status table and the step DECIDE files.
   - A missing quantum, closed over by the medium, is a readable
     defect.
   - Gap and excess both make less where.
-  - Next steps (not registered): c3, a2 and g2; see
-    `gate/g1/DECIDE.md` "Then".
+- **c3, two defects in g1's medium (`lane_c/c3/`), is registered and
+  NOT RUN, NOT COMPILED** (user, 2026-10-12: "do NOT run yet"). It
+  covers GG, XX and GX in all eight sets: the sign test as an
+  interaction, the shared less-where, and whether a gap and an excess
+  heal. State: `lane_c/c3/STATUS.md`. a2 and g2 are not registered.
