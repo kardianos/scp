@@ -135,6 +135,36 @@ is the one predicted before running:
    spin-½ voids bound well beyond their bandwidth, is left for a later
    lane-a step.
 
+## Dimension note (2026-10-11, after the decision)
+
+The user asked whether this was 3-D. **It was not: a1 ran on 1-D rings.**
+Several of the five properties are not 1-D properties, so P(2) is the
+1-D reading only.
+- **A4 spin ½.** A ring has no rotations. What a1 measured is a doublet
+  (S² = 3/4), not a sign flip under a 2π turn. Spin as rotation, and
+  its link to statistics, need 3-D.
+- **A2 exclusion (and the deferred A3).** In 1-D, hard-core bosons and
+  fermions are equivalent, and quanta cannot pass one another, so
+  exchange is not defined. A2 tested occupation only.
+- **A1 wave.** On a long 1-D ring, an interacting medium's quasiparticle
+  weight goes to zero. A void in a spin medium splits into a spin part
+  and a charge part. So abc's spin-½ void at L = 6, 8 is likely a
+  short-ring object in 1-D. In 3-D it can stay whole.
+- **A6 and the void pairs.** In 1-D any net attraction binds. In 3-D
+  binding needs a threshold. So abc's −7.3t pair is the generous case,
+  and A6's failure, which happened even where binding is easiest, is
+  the robust case.
+- **The medium.** R6's n̄ = 2 is the ring value: two links per cell. A
+  3-D medium has more links per cell, and its spin medium can order,
+  where a 1-D one cannot.
+- **Carried over to any dimension:** the per-cell facts. The excess
+  needs headroom, and saturation forbids it.
+
+A 3-D lane-a step needs the 3-D geometry gate first (R14: a fixed 3-D
+grid would be a container). Exact enumeration cannot reach 3-D: the
+smallest periodic cube without doubled bonds has 27 cells, about 10¹²
+states at n̄ = 2.
+
 ## Limits
 
 - **Rings of 6 and 8 cells.** Values near bars, such as c's Z = 0.55 and
