@@ -119,12 +119,14 @@ Order: c1, then a1 and b1, which share one tool.
 | **c1** chains, voids | **E** (charge-like) | Chain conservation on a bipartite fabric gives Coulomb's law (log in 2-D, 1/r in 3-D), signed by sublattice. The unsigned long-range part is zero (post-hoc addendum: ≤ 4 % in 3-D) | container, caveated |
 | **b1** where classical begins (1-D rings) | **C** (complementary) | A phase-coherent bulk smears a missing quantum (β = −1). A whole void needs a locked bulk with no phase (g1 = 0). Stiffness moves part-way and never escapes | container, caveated |
 | **c2** a sign, and something without one (16 sets, 1-D) | **U** by the bars, read as like-with-like | A flat level makes gaps cluster with gaps and excesses with excesses, while unlike pairs repel: surface tension at contact. Tweaked links with inertia give exact fracton/Mach structure (a lone gap is frozen, pairs only breathe), binding −4t, contact range. Nothing reaches beyond contact in 1-D | gap frame (cells never empty, distance in quanta) |
+| **g1** the 3-D geometry gate (8 sets; quanta and contacts only, no container) | **registered, NOT RUN** (user: "Do not yet run") | Can a medium of bare quanta hold three dimensions by its own local rules (flat squares, octahedral link, no triangles), and what does a gap do there? Run status: `gate/g1/STATUS.md` | gap frame (the places are the quanta) |
 | **a1** the void as a quantum particle (1-D rings; spin, exclusion, sharpness and binding are dimension-dependent, see its dimension note) | **P(2)** (registered P(3); the A6 bar defect is disclosed) | The void is a sharp wave in 6 of 8 sets. The antiparticle needs headroom. Spin ½ needs saturation, two planes and exchange (abc, whose voids pair by −7.3t). Headroom and saturation exclude each other. The breathing line is never below the continuum. Exclusion fails because a cell can empty; under R14 it would be structural | container, caveated |
 
 **Next:**
 - **c3:** tweaked links in 2-D, to see whether mobility binding reaches.
-- **The 3-D geometry gate** (R14). It gates every 3-D step, including
-  a 3-D rerun of lane a.
+- **The 3-D geometry gate, g1** (R14). It gates every 3-D step,
+  including a 3-D rerun of lane a. **Registered 2026-10-11, not run**;
+  see `gate/g1/STATUS.md` before doing anything with it.
 - **b2,** in the gap frame.
 - **a2,** in the gap frame: can one medium carry the antiparticle and
   spin ½ at once?
@@ -205,6 +207,8 @@ that lane's PREREG.
 - `lane_a/a1/`, `lane_b/b1/`, `lane_c/c1/`, and so on: each step has
   `PREREG.md`, `DECIDE.md` and `cas/`, which holds code, scripts and
   outputs.
+- `gate/g1/`: the 3-D geometry gate, which gates all three lanes in
+  3-D. It has `PREREG.md`, `STATUS.md` and `cas/`.
 - `tools/`: code shared between lanes.
 
 ## What not to do

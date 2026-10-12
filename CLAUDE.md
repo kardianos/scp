@@ -23,6 +23,13 @@ rules R13 (no label), R14, light is not matter, and no edge.
 v100–v102 are evidence below v103. `v102/README.md` holds the rulings
 R1–R13.
 
+**Run status (2026-10-11):**
+- g1, the 3-D geometry gate, is **REGISTERED, NOT RUN**. The user said
+  "Do not yet run".
+- The state, and how to run it once the user says go, are in
+  `v103/gate/g1/STATUS.md`.
+- c1, b1, c2 and a1 are decided. a1, b1 and c2 ran on 1-D rings.
+
 ---
 
 # EARLIER ENTRY POINT: v99 (superseded by v103 above; kept as record)

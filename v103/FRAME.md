@@ -82,10 +82,20 @@ The user, verbatim (2026-10-11):
 
 ## Where the work stands
 
-See `README.md`: status, lanes a, b and c, and the step DECIDE files.
-- **c1 (container frame, caveated):** chains plus conservation on a
-  bipartite slot lattice give a signed Coulomb law. The unsigned
-  long-range part is zero.
+See `README.md` for the status table and the step DECIDE files.
+
+- **Decided (1-D or container, caveated):**
+  - c1 E: Coulomb law, signed by sublattice;
+  - b1 C;
+  - c2 U by the bars, read as like-with-like;
+  - a1 P(2).
+  - a1, b1 and c2 ran on 1-D rings, and c1, a1 and b1 on containers.
+    Spin, exchange, sharpness, binding and 1/r need three dimensions.
 - **The user's reading:** two things are going on. One is a signed
   charge. The other is an unsigned gap–gap interaction through 1/r².
-- **c2:** build that test in the gap frame.
+- **Now: g1, the 3-D geometry gate, `gate/g1/`. REGISTERED, NOT RUN.**
+  The user said "Do not yet run". Read `gate/g1/STATUS.md` for the run
+  state, and do not start it without the user's go.
+  - The medium is bare quanta and contacts only.
+  - A gap is a missing quantum that the medium closes over, read from
+    the medium's own shape.
