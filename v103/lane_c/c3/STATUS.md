@@ -5,6 +5,8 @@ something in something). Then `PREREG.md`.
 
 ## State: REGISTERED, NOT RUN, NOT COMPILED (2026-10-12)
 
+Registered at commit 6f9b110.
+
 The user, 2026-10-12: "Setup the next combintorial step, and commit (no
 coauthor) and push, but do NOT run yet. I have another process running,
 so you can read and write, but do not run anything, not even a smoke
