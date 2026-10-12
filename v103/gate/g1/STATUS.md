@@ -3,13 +3,20 @@
 **Read `../../FRAME.md` first** (R14: something with gaps, not
 something in something). Then `PREREG.md`.
 
-## State: GRID RUNNING (started 2026-10-11 20:25:12)
+## State: DONE — decided 2026-10-11 (ending G)
 
-- T0: **PASS** (20:23–20:25; `cas/out/t0.out`). Note that T0.3a passed
-  with little margin: TV 0.0095 against a bar of 0.01.
-- Grid: `run_g1.sh` PID 860749, `xargs` PID 860755, 12 `geo3d`
-  processes at a time. Progress: `cas/out/run.log`. Finished when
-  `cas/out/run.done` exists.
+- **T0:** PASS (20:23–20:25). T0.3a passed with little margin: TV
+  0.0095 against a bar of 0.01.
+- **Grid:** 40/40 runs, 20:25–22:09. No errors; every CHECK passed.
+- **Tables:** `cas/out/tab.out` (registered) and `cas/out/posthoc.out`
+  (post-hoc, labelled).
+- **Decision:** `DECIDE.md`. Ending G in six sets (a, ac, b, bc, ab,
+  abc), all crystals with contact-range defects. Nothing assembles.
+  Both the gap and the excess make less where, and the gap's reach
+  scales with the medium's size.
+- **Next** (DECIDE "Then"): c3 (3-D) two gaps in the abc crystal; a2
+  (3-D) coherent gap motion; g2, the dislocation-mobile nematic. None
+  of these is started, and none is registered.
 
 The user, 2026-10-11, after registration: "go ahead and run it".
 Registered at commit ca18259.

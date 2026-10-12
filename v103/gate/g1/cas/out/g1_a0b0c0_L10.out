@@ -1,0 +1,514 @@
+RUN set=none L=10 N=1000 seed=10000031 T=1 eq=2000 meas=2000 every=100 melt=2000 anneal=300
+FLAT E=0
+RIGID flips=150000 min_dE=0 at_min=150000 dE_le0=150000
+STAGE sec=M stage=eq sweeps=2000 T=1 acc=0.99250617
+SAMPLE sec=M k=1 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02000000 sqdef=11672 meand=4.184666667 diam=6 pieces=1 lam2=1.5133238562 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=1 nC=1 ecc=0 greenit=32 mmean=4.184666667
+PROF sec=M k=1 r=0 n=1 sqd=24 mis=6 dm=4.198198198 gf=0.207309021909
+PROF sec=M k=1 r=1 n=6 sqd=116 mis=30 dm=4.194027361 gf=0.040809021909
+PROF sec=M k=1 r=2 n=30 sqd=577 mis=148 dm=4.184084084 gf=0.00770902190902
+PROF sec=M k=1 r=3 n=131 sqd=2377 mis=609 dm=4.181991151 gf=0.000877466627499
+PROF sec=M k=1 r=4 n=434 sqd=6102 mis=1567 dm=4.182749570 gf=-0.000733334564113
+PROF sec=M k=1 r=5 n=389 sqd=2472 mis=639 dm=4.187344156 gf=-0.00120045139499
+PROF sec=M k=1 r=6 n=9 sqd=4 mis=1 dm=4.194527861 gf=-0.00145990504016
+SAMPLE sec=M k=2 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01700000 sqdef=11680 meand=4.185683684 diam=6 pieces=1 lam2=1.55267245676 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=2 nC=1 ecc=0 greenit=31 mmean=4.185683684
+PROF sec=M k=2 r=0 n=1 sqd=22 mis=6 dm=4.190190190 gf=0.207625306776
+PROF sec=M k=2 r=1 n=6 sqd=114 mis=30 dm=4.194027361 gf=0.0411253067758
+PROF sec=M k=2 r=2 n=29 sqd=556 mis=143 dm=4.188326257 gf=0.00775966792239
+PROF sec=M k=2 r=3 n=136 sqd=2462 mis=633 dm=4.184868692 gf=0.000818545459531
+PROF sec=M k=2 r=4 n=436 sqd=5990 mis=1541 dm=4.184712235 gf=-0.000724659906953
+PROF sec=M k=2 r=5 n=382 sqd=2528 mis=645 dm=4.186422024 gf=-0.00120417796636
+PROF sec=M k=2 r=6 n=10 sqd=8 mis=2 dm=4.197797798 gf=-0.00147819970955
+SAMPLE sec=M k=3 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02200000 sqdef=11732 meand=4.182186186 diam=6 pieces=1 lam2=1.58619186625 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=3 nC=1 ecc=0 greenit=31 mmean=4.182186186
+PROF sec=M k=3 r=0 n=1 sqd=22 mis=6 dm=4.207207207 gf=0.20796309052
+PROF sec=M k=3 r=1 n=6 sqd=116 mis=30 dm=4.188188188 gf=0.0414630905199
+PROF sec=M k=3 r=2 n=29 sqd=554 mis=140 dm=4.175140658 gf=0.00811612060002
+PROF sec=M k=3 r=3 n=129 sqd=2395 mis=612 dm=4.177751395 gf=0.00082863159753
+PROF sec=M k=3 r=4 n=434 sqd=6153 mis=1573 dm=4.181990747 gf=-0.000737797675003
+PROF sec=M k=3 r=5 n=390 sqd=2492 mis=639 dm=4.184143117 gf=-0.00118706769195
+PROF sec=M k=3 r=6 n=11 sqd=0 mis=0 dm=4.185549186 gf=-0.00144018330088
+SAMPLE sec=M k=4 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02000000 sqdef=11680 meand=4.180196196 diam=6 pieces=1 lam2=1.56634428356 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=4 nC=1 ecc=0 greenit=31 mmean=4.180196196
+PROF sec=M k=4 r=0 n=1 sqd=24 mis=6 dm=4.188188188 gf=0.207743921995
+PROF sec=M k=4 r=1 n=6 sqd=116 mis=30 dm=4.180013347 gf=0.0412439219947
+PROF sec=M k=4 r=2 n=30 sqd=555 mis=143 dm=4.180714047 gf=0.00814392199466
+PROF sec=M k=4 r=3 n=130 sqd=2371 mis=609 dm=4.179564180 gf=0.000825174907992
+PROF sec=M k=4 r=4 n=443 sqd=6218 mis=1598 dm=4.178804086 gf=-0.000754985935619
+PROF sec=M k=4 r=5 n=384 sqd=2396 mis=614 dm=4.181903257 gf=-0.00120769011281
+PROF sec=M k=4 r=6 n=6 sqd=0 mis=0 dm=4.183683684 gf=-0.00143101317401
+SAMPLE sec=M k=5 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02400000 sqdef=11712 meand=4.183705706 diam=6 pieces=1 lam2=1.55795515862 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=5 nC=1 ecc=0 greenit=31 mmean=4.183705706
+PROF sec=M k=5 r=0 n=1 sqd=22 mis=6 dm=4.198198198 gf=0.207934319341
+PROF sec=M k=5 r=1 n=6 sqd=116 mis=30 dm=4.191191191 gf=0.0414343193411
+PROF sec=M k=5 r=2 n=29 sqd=560 mis=142 dm=4.185392289 gf=0.00801346363578
+PROF sec=M k=5 r=3 n=131 sqd=2406 mis=614 dm=4.183305443 gf=0.000848950510841
+PROF sec=M k=5 r=4 n=434 sqd=6069 mis=1558 dm=4.183630635 gf=-0.000733091261386
+PROF sec=M k=5 r=5 n=393 sqd=2539 mis=650 dm=4.183791934 gf=-0.00120478505633
+PROF sec=M k=5 r=6 n=6 sqd=0 mis=0 dm=4.174174174 gf=-0.00141684386122
+SAMPLE sec=M k=6 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01700000 sqdef=11708 meand=4.179721722 diam=6 pieces=1 lam2=1.58971149889 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=6 nC=1 ecc=0 greenit=31 mmean=4.179721722
+PROF sec=M k=6 r=0 n=1 sqd=24 mis=6 dm=4.152152152 gf=0.207013630397
+PROF sec=M k=6 r=1 n=6 sqd=120 mis=30 dm=4.170337004 gf=0.0405136303966
+PROF sec=M k=6 r=2 n=30 sqd=582 mis=148 dm=4.180447114 gf=0.00741363039665
+PROF sec=M k=6 r=3 n=141 sqd=2564 mis=656 dm=4.178959101 gf=0.000720890259181
+PROF sec=M k=6 r=4 n=456 sqd=6337 mis=1625 dm=4.180015542 gf=-0.000751574911534
+PROF sec=M k=6 r=5 n=361 sqd=2081 mis=535 dm=4.179620063 gf=-0.00117550697895
+PROF sec=M k=6 r=6 n=5 sqd=0 mis=0 dm=4.194194194 gf=-0.00141473443187
+SAMPLE sec=M k=7 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02000000 sqdef=11652 meand=4.187727728 diam=6 pieces=1 lam2=1.56845115517 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=7 nC=1 ecc=0 greenit=31 mmean=4.187727728
+PROF sec=M k=7 r=0 n=1 sqd=24 mis=6 dm=4.155155155 gf=0.207030585947
+PROF sec=M k=7 r=1 n=6 sqd=116 mis=30 dm=4.170503837 gf=0.0405305859471
+PROF sec=M k=7 r=2 n=30 sqd=576 mis=148 dm=4.182248916 gf=0.00743058594706
+PROF sec=M k=7 r=3 n=140 sqd=2542 mis=652 dm=4.184713285 gf=0.000741969966977
+PROF sec=M k=7 r=4 n=458 sqd=6219 mis=1598 dm=4.185917358 gf=-0.000738822053101
+PROF sec=M k=7 r=5 n=357 sqd=2171 mis=565 dm=4.191564113 gf=-0.00119592757248
+PROF sec=M k=7 r=6 n=8 sqd=4 mis=1 dm=4.210460460 gf=-0.00146010396542
+SAMPLE sec=M k=8 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01400000 sqdef=11704 meand=4.178578579 diam=6 pieces=1 lam2=1.59946946131 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=8 nC=1 ecc=0 greenit=31 mmean=4.178578579
+PROF sec=M k=8 r=0 n=1 sqd=22 mis=6 dm=4.168168168 gf=0.207658406797
+PROF sec=M k=8 r=1 n=6 sqd=116 mis=30 dm=4.173673674 gf=0.0411584067966
+PROF sec=M k=8 r=2 n=29 sqd=556 mis=142 dm=4.174726451 gf=0.00780350746822
+PROF sec=M k=8 r=3 n=135 sqd=2463 mis=637 dm=4.178652727 gf=0.000749619724195
+PROF sec=M k=8 r=4 n=453 sqd=6248 mis=1598 dm=4.178816786 gf=-0.000740223434219
+PROF sec=M k=8 r=5 n=373 sqd=2299 mis=587 dm=4.178612929 gf=-0.00118603029725
+PROF sec=M k=8 r=6 n=3 sqd=0 mis=0 dm=4.185518852 gf=-0.00146623678222
+SAMPLE sec=M k=9 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01700000 sqdef=11696 meand=4.180986987 diam=6 pieces=1 lam2=1.49424973 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=9 nC=1 ecc=0 greenit=32 mmean=4.180986987
+PROF sec=M k=9 r=0 n=1 sqd=22 mis=6 dm=4.223223223 gf=0.208172830118
+PROF sec=M k=9 r=1 n=6 sqd=110 mis=30 dm=4.210877544 gf=0.041672830118
+PROF sec=M k=9 r=2 n=29 sqd=544 mis=141 dm=4.188982086 gf=0.00829611551773
+PROF sec=M k=9 r=3 n=127 sqd=2270 mis=580 dm=4.179502337 gf=0.00102072886806
+PROF sec=M k=9 r=4 n=419 sqd=6031 mis=1545 dm=4.178718098 gf=-0.000743475814085
+PROF sec=M k=9 r=5 n=410 sqd=2719 mis=698 dm=4.182504456 gf=-0.00123168825229
+PROF sec=M k=9 r=6 n=8 sqd=0 mis=0 dm=4.188938939 gf=-0.00149014719284
+SAMPLE sec=M k=10 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02100000 sqdef=11640 meand=4.181261261 diam=6 pieces=1 lam2=1.59471490751 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=10 nC=1 ecc=0 greenit=31 mmean=4.181261261
+PROF sec=M k=10 r=0 n=1 sqd=22 mis=6 dm=4.182182182 gf=0.207828458723
+PROF sec=M k=10 r=1 n=6 sqd=118 mis=30 dm=4.179512846 gf=0.0413284587232
+PROF sec=M k=10 r=2 n=29 sqd=552 mis=141 dm=4.174174174 gf=0.00798012718842
+PROF sec=M k=10 r=3 n=132 sqd=2421 mis=625 dm=4.177146844 gf=0.000798132223441
+PROF sec=M k=10 r=4 n=453 sqd=6221 mis=1605 dm=4.181430879 gf=-0.000741598765172
+PROF sec=M k=10 r=5 n=368 sqd=2302 mis=592 dm=4.183058058 gf=-0.00119678017044
+PROF sec=M k=10 r=6 n=11 sqd=4 mis=1 dm=4.183092183 gf=-0.00147427360674
+SAMPLE sec=M k=11 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01900000 sqdef=11692 meand=4.183111111 diam=6 pieces=1 lam2=1.57368596426 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=11 nC=1 ecc=0 greenit=31 mmean=4.183111111
+PROF sec=M k=11 r=0 n=1 sqd=24 mis=6 dm=4.214214214 gf=0.207792974575
+PROF sec=M k=11 r=1 n=6 sqd=116 mis=30 dm=4.207374041 gf=0.0412929745747
+PROF sec=M k=11 r=2 n=30 sqd=558 mis=144 dm=4.192659326 gf=0.00819297457473
+PROF sec=M k=11 r=3 n=125 sqd=2262 mis=584 dm=4.184528529 gf=0.000907305351467
+PROF sec=M k=11 r=4 n=431 sqd=6101 mis=1562 dm=4.182665264 gf=-0.00073536441978
+PROF sec=M k=11 r=5 n=397 sqd=2631 mis=674 dm=4.181960298 gf=-0.00121740232793
+PROF sec=M k=11 r=6 n=10 sqd=0 mis=0 dm=4.183983984 gf=-0.0014502439085
+SAMPLE sec=M k=12 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01900000 sqdef=11728 meand=4.178724725 diam=6 pieces=1 lam2=1.59692328272 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=12 nC=1 ecc=0 greenit=31 mmean=4.178724725
+PROF sec=M k=12 r=0 n=1 sqd=24 mis=6 dm=4.154154154 gf=0.206914922203
+PROF sec=M k=12 r=1 n=6 sqd=118 mis=30 dm=4.166499833 gf=0.0404149222028
+PROF sec=M k=12 r=2 n=30 sqd=582 mis=149 dm=4.177444111 gf=0.00731492220283
+PROF sec=M k=12 r=3 n=140 sqd=2574 mis=658 dm=4.179257829 gf=0.000708013573988
+PROF sec=M k=12 r=4 n=458 sqd=6299 mis=1610 dm=4.177349839 gf=-0.000739793949839
+PROF sec=M k=12 r=5 n=358 sqd=2127 mis=546 dm=4.180216529 gf=-0.00117084604008
+PROF sec=M k=12 r=6 n=7 sqd=4 mis=1 dm=4.201201201 gf=-0.00142650149844
+SAMPLE sec=M k=13 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02400000 sqdef=11648 meand=4.186048048 diam=6 pieces=1 lam2=1.52944785676 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=13 nC=1 ecc=0 greenit=32 mmean=4.186048048
+PROF sec=M k=13 r=0 n=1 sqd=22 mis=6 dm=4.203203203 gf=0.20779396883
+PROF sec=M k=13 r=1 n=6 sqd=118 mis=30 dm=4.185685686 gf=0.0412939688303
+PROF sec=M k=13 r=2 n=29 sqd=556 mis=142 dm=4.180974078 gf=0.00794674097793
+PROF sec=M k=13 r=3 n=133 sqd=2370 mis=610 dm=4.182287551 gf=0.000895428048769
+PROF sec=M k=13 r=4 n=434 sqd=5995 mis=1546 dm=4.185189798 gf=-0.000729708200053
+PROF sec=M k=13 r=5 n=382 sqd=2583 mis=665 dm=4.188313968 gf=-0.00122057683917
+PROF sec=M k=13 r=6 n=15 sqd=4 mis=1 dm=4.195328662 gf=-0.00147676595155
+SAMPLE sec=M k=14 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02300000 sqdef=11732 meand=4.181297297 diam=6 pieces=1 lam2=1.56202212488 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=14 nC=1 ecc=0 greenit=31 mmean=4.181297297
+PROF sec=M k=14 r=0 n=1 sqd=24 mis=6 dm=4.213213213 gf=0.207268382228
+PROF sec=M k=14 r=1 n=6 sqd=116 mis=30 dm=4.197197197 gf=0.0407683822279
+PROF sec=M k=14 r=2 n=30 sqd=578 mis=148 dm=4.188121455 gf=0.00766838222786
+PROF sec=M k=14 r=3 n=134 sqd=2403 mis=615 dm=4.177969014 gf=0.000893837962006
+PROF sec=M k=14 r=4 n=422 sqd=5928 mis=1512 dm=4.178901650 gf=-0.000719719208048
+PROF sec=M k=14 r=5 n=389 sqd=2673 mis=686 dm=4.183618065 gf=-0.0012124754963
+PROF sec=M k=14 r=6 n=18 sqd=10 mis=3 dm=4.193638083 gf=-0.00146277530457
+SAMPLE sec=M k=15 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01600000 sqdef=11752 meand=4.180264264 diam=6 pieces=1 lam2=1.54721418917 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=15 nC=1 ecc=0 greenit=32 mmean=4.180264264
+PROF sec=M k=15 r=0 n=1 sqd=24 mis=6 dm=4.183183183 gf=0.207152126355
+PROF sec=M k=15 r=1 n=6 sqd=118 mis=30 dm=4.182182182 gf=0.0406521263552
+PROF sec=M k=15 r=2 n=30 sqd=574 mis=148 dm=4.182949616 gf=0.0075521263552
+PROF sec=M k=15 r=3 n=135 sqd=2458 mis=626 dm=4.180773366 gf=0.000804369022187
+PROF sec=M k=15 r=4 n=445 sqd=6143 mis=1570 dm=4.180486104 gf=-0.000730541393665
+PROF sec=M k=15 r=5 n=370 sqd=2427 mis=618 dm=4.179295512 gf=-0.00119511427901
+PROF sec=M k=15 r=6 n=13 sqd=8 mis=2 dm=4.187649188 gf=-0.00145656074782
+SAMPLE sec=M k=16 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02500000 sqdef=11632 meand=4.183663664 diam=6 pieces=1 lam2=1.55749530101 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=16 nC=1 ecc=0 greenit=32 mmean=4.183663664
+PROF sec=M k=16 r=0 n=1 sqd=24 mis=6 dm=4.163163163 gf=0.206994944719
+PROF sec=M k=16 r=1 n=6 sqd=116 mis=30 dm=4.176843510 gf=0.0404949447186
+PROF sec=M k=16 r=2 n=30 sqd=576 mis=149 dm=4.183316650 gf=0.00739494471858
+PROF sec=M k=16 r=3 n=139 sqd=2517 mis=649 dm=4.182369420 gf=0.000762906852606
+PROF sec=M k=16 r=4 n=451 sqd=6166 mis=1592 dm=4.182692670 gf=-0.00073368377571
+PROF sec=M k=16 r=5 n=366 sqd=2229 mis=573 dm=4.184933567 gf=-0.00119310511391
+PROF sec=M k=16 r=6 n=7 sqd=4 mis=1 dm=4.215787216 gf=-0.00146987893752
+SAMPLE sec=M k=17 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01900000 sqdef=11700 meand=4.182260260 diam=6 pieces=1 lam2=1.58536037908 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=17 nC=1 ecc=0 greenit=31 mmean=4.182260260
+PROF sec=M k=17 r=0 n=1 sqd=24 mis=6 dm=4.170170170 gf=0.207124533603
+PROF sec=M k=17 r=1 n=6 sqd=118 mis=30 dm=4.176009343 gf=0.0406245336032
+PROF sec=M k=17 r=2 n=30 sqd=578 mis=148 dm=4.177677678 gf=0.00752453360321
+PROF sec=M k=17 r=3 n=139 sqd=2502 mis=642 dm=4.180288202 gf=0.000814677616551
+PROF sec=M k=17 r=4 n=443 sqd=6171 mis=1579 dm=4.181149547 gf=-0.000743689361429
+PROF sec=M k=17 r=5 n=375 sqd=2307 mis=595 dm=4.184771438 gf=-0.00120516942372
+PROF sec=M k=17 r=6 n=6 sqd=0 mis=0 dm=4.184184184 gf=-0.00140916850172
+SAMPLE sec=M k=18 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01700000 sqdef=11716 meand=4.182484484 diam=6 pieces=1 lam2=1.51718158736 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=18 nC=1 ecc=0 greenit=32 mmean=4.182484484
+PROF sec=M k=18 r=0 n=1 sqd=24 mis=6 dm=4.154154154 gf=0.207097075148
+PROF sec=M k=18 r=1 n=6 sqd=114 mis=30 dm=4.178511845 gf=0.0405970751482
+PROF sec=M k=18 r=2 n=30 sqd=580 mis=148 dm=4.186219553 gf=0.00749707514824
+PROF sec=M k=18 r=3 n=138 sqd=2535 mis=649 dm=4.184648417 gf=0.00074845107848
+PROF sec=M k=18 r=4 n=463 sqd=6326 mis=1620 dm=4.182567016 gf=-0.000745622972218
+PROF sec=M k=18 r=5 n=354 sqd=2137 mis=547 dm=4.181588368 gf=-0.00119234586807
+PROF sec=M k=18 r=6 n=8 sqd=0 mis=0 dm=4.172547548 gf=-0.00144551948538
+SAMPLE sec=M k=19 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01900000 sqdef=11664 meand=4.182404404 diam=6 pieces=1 lam2=1.57937934926 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=19 nC=1 ecc=0 greenit=31 mmean=4.182404404
+PROF sec=M k=19 r=0 n=1 sqd=24 mis=6 dm=4.160160160 gf=0.206946044152
+PROF sec=M k=19 r=1 n=6 sqd=116 mis=30 dm=4.173340007 gf=0.0404460441516
+PROF sec=M k=19 r=2 n=30 sqd=582 mis=149 dm=4.179279279 gf=0.00734604415157
+PROF sec=M k=19 r=3 n=141 sqd=2557 mis=656 dm=4.180705528 gf=0.00075171263711
+PROF sec=M k=19 r=4 n=452 sqd=6115 mis=1571 dm=4.181579810 gf=-0.000729564743543
+PROF sec=M k=19 r=5 n=361 sqd=2270 mis=588 dm=4.184328373 gf=-0.00120029565902
+PROF sec=M k=19 r=6 n=9 sqd=0 mis=0 dm=4.192192192 gf=-0.00143612427243
+SAMPLE sec=M k=20 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02300000 sqdef=11696 meand=4.182468468 diam=6 pieces=1 lam2=1.55976609786 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+CENTRE sec=M k=20 nC=1 ecc=0 greenit=31 mmean=4.182468468
+PROF sec=M k=20 r=0 n=1 sqd=22 mis=6 dm=4.228228228 gf=0.207930223015
+PROF sec=M k=20 r=1 n=6 sqd=106 mis=30 dm=4.203703704 gf=0.0414302230154
+PROF sec=M k=20 r=2 n=29 sqd=546 mis=141 dm=4.190984088 gf=0.00808958328479
+PROF sec=M k=20 r=3 n=128 sqd=2297 mis=590 dm=4.184770708 gf=0.000917765925425
+PROF sec=M k=20 r=4 n=418 sqd=6028 mis=1545 dm=4.182886236 gf=-0.000718696455948
+PROF sec=M k=20 r=5 n=404 sqd=2689 mis=686 dm=4.180185136 gf=-0.00120699300259
+PROF sec=M k=20 r=6 n=14 sqd=8 mis=2 dm=4.184827685 gf=-0.00146737308482
+STAGE sec=M stage=meas sweeps=2000 T=1 acc=0.99240233
+SPHERE sec=M r=0 S=1.000000
+SPHERE sec=M r=1 S=6.000000
+SPHERE sec=M r=2 S=29.574800
+SPHERE sec=M r=3 S=135.667300
+SPHERE sec=M r=4 S=441.317300
+SPHERE sec=M r=5 S=377.874600
+SPHERE sec=M r=6 S=8.566000
+CHECK sec=M ok=1
+GAP attempts=1 valid=15 dE_chosen=0 dE_min=0 w_chosen=0.0666667
+STAGE sec=G stage=eq sweeps=2000 T=1 acc=0.99252486
+SAMPLE sec=G k=1 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02102102 sqdef=11652 meand=4.186178162 diam=6 pieces=1 lam2=1.54164947257 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=1 nC=999 ecc=6 greenit=-1 mmean=4.186178162
+PROF sec=G k=1 r=0 n=999 sqd=11652 mis=2997 dm=4.186178162 gf=-nan
+SAMPLE sec=G k=2 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01901902 sqdef=11672 meand=4.181943467 diam=6 pieces=1 lam2=1.54960756532 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=2 nC=2 ecc=5 greenit=32 mmean=4.181943467
+PROF sec=G k=2 r=0 n=2 sqd=48 mis=12 dm=4.133266533 gf=0.102916261915
+PROF sec=G k=2 r=1 n=12 sqd=240 mis=60 dm=4.153891116 gf=0.0197497620819
+PROF sec=G k=2 r=2 n=60 sqd=1134 mis=291 dm=4.168770875 gf=0.00331666231545
+PROF sec=G k=2 r=3 n=251 sqd=4297 mis=1104 dm=4.180089262 gf=-7.43250316865e-05
+PROF sec=G k=2 r=4 n=557 sqd=5662 mis=1455 dm=4.183933396 gf=-0.000874379207499
+PROF sec=G k=2 r=5 n=117 sqd=291 mis=75 dm=4.186912286 gf=-0.0011636291129
+SAMPLE sec=G k=3 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01601602 sqdef=11744 meand=4.177670657 diam=6 pieces=1 lam2=1.53371693027 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=3 nC=3 ecc=5 greenit=31 mmean=4.177670657
+PROF sec=G k=3 r=0 n=3 sqd=72 mis=18 dm=4.148296593 gf=0.0688299781966
+PROF sec=G k=3 r=1 n=18 sqd=348 mis=89 dm=4.164272990 gf=0.0134412561413
+PROF sec=G k=3 r=2 n=86 sqd=1587 mis=406 dm=4.175269143 gf=0.00218538215153
+PROF sec=G k=3 r=3 n=328 sqd=5199 mis=1328 dm=4.176597097 gf=-0.000289948198454
+PROF sec=G k=3 r=4 n=503 sqd=4440 mis=1131 dm=4.179105726 gf=-0.000933403713072
+PROF sec=G k=3 r=5 n=61 sqd=98 mis=25 dm=4.180393574 gf=-0.00117656284255
+SAMPLE sec=G k=4 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02302302 sqdef=11708 meand=4.177443977 diam=6 pieces=1 lam2=1.56013343525 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=4 nC=3 ecc=5 greenit=31 mmean=4.177443977
+PROF sec=G k=4 r=0 n=3 sqd=72 mis=18 dm=4.134936540 gf=0.0682385152193
+PROF sec=G k=4 r=1 n=18 sqd=352 mis=90 dm=4.161099978 gf=0.012849793164
+PROF sec=G k=4 r=2 n=89 sqd=1688 mis=430 dm=4.173977168 gf=0.00194516637297
+PROF sec=G k=4 r=3 n=354 sqd=5505 mis=1408 dm=4.177787779 gf=-0.000316769120325
+PROF sec=G k=4 r=4 n=490 sqd=4040 mis=1037 dm=4.178399656 gf=-0.000907723261587
+PROF sec=G k=4 r=5 n=45 sqd=51 mis=14 dm=4.180561122 gf=-0.0011602436229
+SAMPLE sec=G k=5 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02702703 sqdef=11708 meand=4.182390808 diam=6 pieces=1 lam2=1.55891416691 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=5 nC=999 ecc=6 greenit=-1 mmean=4.182390808
+PROF sec=G k=5 r=0 n=999 sqd=11708 mis=2997 dm=4.182390808 gf=-nan
+SAMPLE sec=G k=6 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01801802 sqdef=11664 meand=4.180061825 diam=6 pieces=1 lam2=1.51821011793 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=6 nC=1 ecc=5 greenit=32 mmean=4.180061825
+PROF sec=G k=6 r=0 n=1 sqd=24 mis=6 dm=4.150300601 gf=0.206856015733
+PROF sec=G k=6 r=1 n=6 sqd=118 mis=30 dm=4.166833667 gf=0.0403561825668
+PROF sec=G k=6 r=2 n=30 sqd=588 mis=150 dm=4.174682699 gf=0.00725641613372
+PROF sec=G k=6 r=3 n=140 sqd=2558 mis=654 dm=4.176796450 gf=0.000740113987736
+PROF sec=G k=6 r=4 n=454 sqd=6202 mis=1597 dm=4.178709843 gf=-0.000735116744441
+PROF sec=G k=6 r=5 n=368 sqd=2174 mis=560 dm=4.183707088 gf=-0.00118630041156
+SAMPLE sec=G k=7 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01501502 sqdef=11672 meand=4.179506159 diam=6 pieces=1 lam2=1.55245924153 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=7 nC=1 ecc=5 greenit=31 mmean=4.179506159
+PROF sec=G k=7 r=0 n=1 sqd=24 mis=6 dm=4.134268537 gf=0.20691574304
+PROF sec=G k=7 r=1 n=6 sqd=118 mis=30 dm=4.160320641 gf=0.0404159098735
+PROF sec=G k=7 r=2 n=30 sqd=582 mis=149 dm=4.174014696 gf=0.00731614344036
+PROF sec=G k=7 r=3 n=140 sqd=2554 mis=654 dm=4.177361867 gf=0.000702168600459
+PROF sec=G k=7 r=4 n=470 sqd=6427 mis=1652 dm=4.178729800 gf=-0.00075590289937
+PROF sec=G k=7 r=5 n=352 sqd=1967 mis=506 dm=4.182319184 gf=-0.0011702407581
+SAMPLE sec=G k=8 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01601602 sqdef=11676 meand=4.183361718 diam=6 pieces=1 lam2=1.56746564121 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=8 nC=1 ecc=5 greenit=31 mmean=4.183361718
+PROF sec=G k=8 r=0 n=1 sqd=24 mis=6 dm=4.112224449 gf=0.206655560813
+PROF sec=G k=8 r=1 n=6 sqd=118 mis=30 dm=4.160320641 gf=0.0401557276469
+PROF sec=G k=8 r=2 n=30 sqd=594 mis=150 dm=4.181329325 gf=0.00705596121382
+PROF sec=G k=8 r=3 n=148 sqd=2706 mis=697 dm=4.184030223 gf=0.000612341991062
+PROF sec=G k=8 r=4 n=476 sqd=6403 mis=1647 dm=4.184297166 gf=-0.000755876127455
+PROF sec=G k=8 r=5 n=338 sqd=1831 mis=467 dm=4.182551494 gf=-0.0011541371039
+SAMPLE sec=G k=9 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02302302 sqdef=11668 meand=4.182908359 diam=6 pieces=1 lam2=1.55838781003 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=9 nC=999 ecc=6 greenit=-1 mmean=4.182908359
+PROF sec=G k=9 r=0 n=999 sqd=11668 mis=2997 dm=4.182908359 gf=-nan
+SAMPLE sec=G k=10 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02002002 sqdef=11664 meand=4.184450984 diam=6 pieces=1 lam2=1.53222978751 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=10 nC=2 ecc=5 greenit=32 mmean=4.184450984
+PROF sec=G k=10 r=0 n=2 sqd=48 mis=12 dm=4.138276553 gf=0.103635357379
+PROF sec=G k=10 r=1 n=12 sqd=234 mis=59 dm=4.165664663 gf=0.0204688575456
+PROF sec=G k=10 r=2 n=58 sqd=1122 mis=286 dm=4.185698984 gf=0.0033579271825
+PROF sec=G k=10 r=3 n=253 sqd=4209 mis=1080 dm=4.186535126 gf=-2.91657105902e-05
+PROF sec=G k=10 r=4 n=542 sqd=5636 mis=1453 dm=4.183627402 gf=-0.000890225423788
+PROF sec=G k=10 r=5 n=132 sqd=415 mis=107 dm=4.185697152 gf=-0.00119527028346
+SAMPLE sec=G k=11 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02102102 sqdef=11708 meand=4.181664631 diam=6 pieces=1 lam2=1.54292928865 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=11 nC=999 ecc=6 greenit=-1 mmean=4.181664631
+PROF sec=G k=11 r=0 n=999 sqd=11708 mis=2997 dm=4.181664631 gf=-nan
+SAMPLE sec=G k=12 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01201201 sqdef=11684 meand=4.178806061 diam=6 pieces=1 lam2=1.58242016504 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=12 nC=1 ecc=5 greenit=31 mmean=4.178806061
+PROF sec=G k=12 r=0 n=1 sqd=20 mis=6 dm=4.169338677 gf=0.208108032469
+PROF sec=G k=12 r=1 n=6 sqd=116 mis=30 dm=4.163326653 gf=0.0416081993022
+PROF sec=G k=12 r=2 n=28 sqd=544 mis=137 dm=4.168980819 gf=0.00801532012513
+PROF sec=G k=12 r=3 n=134 sqd=2450 mis=632 dm=4.179672778 gf=0.000770500251184
+PROF sec=G k=12 r=4 n=453 sqd=6346 mis=1626 dm=4.178619933 gf=-0.000752115413982
+PROF sec=G k=12 r=5 n=377 sqd=2208 mis=566 dm=4.179722841 gf=-0.00117964175838
+SAMPLE sec=G k=13 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01501502 sqdef=11636 meand=4.183768939 diam=6 pieces=1 lam2=1.55211836842 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=13 nC=1 ecc=5 greenit=31 mmean=4.183768939
+PROF sec=G k=13 r=0 n=1 sqd=24 mis=6 dm=4.126252505 gf=0.206761504608
+PROF sec=G k=13 r=1 n=6 sqd=116 mis=30 dm=4.167167669 gf=0.0402616714413
+PROF sec=G k=13 r=2 n=30 sqd=582 mis=150 dm=4.176920508 gf=0.00716190500821
+PROF sec=G k=13 r=3 n=144 sqd=2595 mis=668 dm=4.181766310 gf=0.000685665954118
+PROF sec=G k=13 r=4 n=470 sqd=6394 mis=1644 dm=4.183980727 gf=-0.000751752848876
+PROF sec=G k=13 r=5 n=348 sqd=1925 mis=499 dm=4.185353466 gf=-0.001174140063
+SAMPLE sec=G k=14 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02102102 sqdef=11600 meand=4.186609455 diam=6 pieces=1 lam2=1.55616303063 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=14 nC=1 ecc=5 greenit=31 mmean=4.186609455
+PROF sec=G k=14 r=0 n=1 sqd=24 mis=6 dm=4.146292585 gf=0.206980571876
+PROF sec=G k=14 r=1 n=6 sqd=120 mis=30 dm=4.164662659 gf=0.0404807387091
+PROF sec=G k=14 r=2 n=30 sqd=584 mis=149 dm=4.177555110 gf=0.00738097227596
+PROF sec=G k=14 r=3 n=137 sqd=2483 mis=643 dm=4.188193906 gf=0.000734706760694
+PROF sec=G k=14 r=4 n=464 sqd=6344 mis=1643 dm=4.188240706 gf=-0.000756802673099
+PROF sec=G k=14 r=5 n=361 sqd=2045 mis=526 dm=4.185140364 gf=-0.00116563035542
+SAMPLE sec=G k=15 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01801802 sqdef=11688 meand=4.180477070 diam=6 pieces=1 lam2=1.56834379242 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=15 nC=2 ecc=5 greenit=31 mmean=4.180477070
+PROF sec=G k=15 r=0 n=2 sqd=48 mis=12 dm=4.138276553 gf=0.102848194082
+PROF sec=G k=15 r=1 n=12 sqd=232 mis=60 dm=4.171593186 gf=0.019681694249
+PROF sec=G k=15 r=2 n=60 sqd=1135 mis=293 dm=4.181847027 gf=0.0032485944826
+PROF sec=G k=15 r=3 n=259 sqd=4401 mis=1124 dm=4.182384073 gf=-7.88849763311e-05
+PROF sec=G k=15 r=4 n=552 sqd=5616 mis=1441 dm=4.180006753 gf=-0.000877376516645
+PROF sec=G k=15 r=5 n=114 sqd=256 mis=67 dm=4.179376296 gf=-0.00115832756185
+SAMPLE sec=G k=16 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02002002 sqdef=11728 meand=4.181078874 diam=6 pieces=1 lam2=1.56948081845 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=16 nC=2 ecc=5 greenit=31 mmean=4.181078874
+PROF sec=G k=16 r=0 n=2 sqd=48 mis=12 dm=4.144789579 gf=0.103116677395
+PROF sec=G k=16 r=1 n=12 sqd=236 mis=60 dm=4.171509686 gf=0.0199501775616
+PROF sec=G k=16 r=2 n=58 sqd=1112 mis=284 dm=4.181984659 gf=0.00338414827103
+PROF sec=G k=16 r=3 n=256 sqd=4316 mis=1104 dm=4.180853895 gf=-4.19493967146e-05
+PROF sec=G k=16 r=4 n=553 sqd=5688 mis=1452 dm=4.180706802 gf=-0.00088810004852
+PROF sec=G k=16 r=5 n=118 sqd=328 mis=85 dm=4.184453653 gf=-0.00118692976998
+SAMPLE sec=G k=17 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02102102 sqdef=11676 meand=4.187746865 diam=6 pieces=1 lam2=1.53003379484 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=17 nC=999 ecc=6 greenit=-1 mmean=4.187746865
+PROF sec=G k=17 r=0 n=999 sqd=11676 mis=2997 dm=4.187746865 gf=-nan
+SAMPLE sec=G k=18 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02002002 sqdef=11704 meand=4.181514180 diam=6 pieces=1 lam2=1.5778230454 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=18 nC=1 ecc=5 greenit=31 mmean=4.181514180
+PROF sec=G k=18 r=0 n=1 sqd=24 mis=6 dm=4.147294589 gf=0.206863569189
+PROF sec=G k=18 r=1 n=6 sqd=116 mis=30 dm=4.167835671 gf=0.0403637360223
+PROF sec=G k=18 r=2 n=30 sqd=584 mis=150 dm=4.179392118 gf=0.00726396958918
+PROF sec=G k=18 r=3 n=138 sqd=2519 mis=648 dm=4.179496675 gf=0.000725742896002
+PROF sec=G k=18 r=4 n=461 sqd=6356 mis=1623 dm=4.181036694 gf=-0.000736035874541
+PROF sec=G k=18 r=5 n=363 sqd=2105 mis=540 dm=4.183383296 gf=-0.00117852632089
+SAMPLE sec=G k=19 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02302302 sqdef=11712 meand=4.181269446 diam=6 pieces=1 lam2=1.57983379823 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=19 nC=1 ecc=5 greenit=31 mmean=4.181269446
+PROF sec=G k=19 r=0 n=1 sqd=24 mis=6 dm=4.113226453 gf=0.206800680713
+PROF sec=G k=19 r=1 n=6 sqd=120 mis=30 dm=4.150300601 gf=0.0403008475463
+PROF sec=G k=19 r=2 n=30 sqd=584 mis=149 dm=4.175083500 gf=0.00720108111316
+PROF sec=G k=19 r=3 n=146 sqd=2685 mis=683 dm=4.179592061 gf=0.000654057384949
+PROF sec=G k=19 r=4 n=479 sqd=6398 mis=1641 dm=4.181431757 gf=-0.000755828300143
+PROF sec=G k=19 r=5 n=337 sqd=1901 mis=488 dm=4.183069403 gf=-0.00118127246831
+SAMPLE sec=G k=20 n=999 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02402402 sqdef=11600 meand=4.181690709 diam=6 pieces=1 lam2=1.53377247832 lamok=1 nmis=2997 nD=999 ncl=1 dspread=6
+CENTRE sec=G k=20 nC=2 ecc=5 greenit=31 mmean=4.181690709
+PROF sec=G k=20 r=0 n=2 sqd=48 mis=12 dm=4.122244489 gf=0.102819732414
+PROF sec=G k=20 r=1 n=12 sqd=236 mis=60 dm=4.158316633 gf=0.0196532325805
+PROF sec=G k=20 r=2 n=60 sqd=1146 mis=295 dm=4.174933200 gf=0.00322013281405
+PROF sec=G k=20 r=3 n=258 sqd=4335 mis=1120 dm=4.180589862 gf=-6.77349652073e-05
+PROF sec=G k=20 r=4 n=540 sqd=5456 mis=1409 dm=4.182876865 gf=-0.0008668704201
+PROF sec=G k=20 r=5 n=127 sqd=379 mis=101 dm=4.185220835 gf=-0.00117402028943
+STAGE sec=G stage=meas sweeps=2000 T=1 acc=0.99242326
+SPHERE sec=G r=0 S=1.000000
+SPHERE sec=G r=1 S=6.000000
+SPHERE sec=G r=2 S=29.573874
+SPHERE sec=G r=3 S=135.627227
+SPHERE sec=G r=4 S=440.951351
+SPHERE sec=G r=5 S=377.257057
+SPHERE sec=G r=6 S=8.590490
+CHECK sec=G ok=1
+EXCESS attempts=1 triples=4466 dE_chosen=0 dE_min=0 w_chosen=0.000223914
+STAGE sec=X stage=eq sweeps=2000 T=1 acc=0.99246354
+SAMPLE sec=X k=1 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01298701 sqdef=11672 meand=4.182419580 diam=6 pieces=1 lam2=1.5763549567 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=1 nC=1001 ecc=6 greenit=-1 mmean=4.182419580
+PROF sec=X k=1 r=0 n=1001 sqd=11672 mis=3003 dm=4.182419580 gf=-nan
+SAMPLE sec=X k=2 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02197802 sqdef=11692 meand=4.185176823 diam=6 pieces=1 lam2=1.53455637554 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=2 nC=1001 ecc=6 greenit=-1 mmean=4.185176823
+PROF sec=X k=2 r=0 n=1001 sqd=11692 mis=3003 dm=4.185176823 gf=-nan
+SAMPLE sec=X k=3 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02597403 sqdef=11648 meand=4.184425574 diam=6 pieces=1 lam2=1.56367075956 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=3 nC=1 ecc=5 greenit=31 mmean=4.184425574
+PROF sec=X k=3 r=0 n=1 sqd=24 mis=6 dm=4.116000000 gf=0.206788438779
+PROF sec=X k=3 r=1 n=6 sqd=120 mis=30 dm=4.145833333 gf=0.0402882722784
+PROF sec=X k=3 r=2 n=30 sqd=590 mis=149 dm=4.168666667 gf=0.00718803917822
+PROF sec=X k=3 r=3 n=145 sqd=2643 mis=680 dm=4.179144828 gf=0.000634126180009
+PROF sec=X k=3 r=4 n=480 sqd=6414 mis=1658 dm=4.184220833 gf=-0.000753085335159
+PROF sec=X k=3 r=5 n=339 sqd=1857 mis=480 dm=4.189253687 gf=-0.0011640902154
+SAMPLE sec=X k=4 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01698302 sqdef=11696 meand=4.180949051 diam=6 pieces=1 lam2=1.55973191072 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=4 nC=1 ecc=5 greenit=31 mmean=4.180949051
+PROF sec=X k=4 r=0 n=1 sqd=24 mis=6 dm=4.164000000 gf=0.210147951699
+PROF sec=X k=4 r=1 n=6 sqd=116 mis=29 dm=4.178500000 gf=0.0436477851987
+PROF sec=X k=4 r=2 n=28 sqd=547 mis=139 dm=4.184035714 gf=0.0077968366043
+PROF sec=X k=4 r=3 n=135 sqd=2504 mis=641 dm=4.180540741 gf=0.000743324366083
+PROF sec=X k=4 r=4 n=458 sqd=6285 mis=1618 dm=4.180237991 gf=-0.000752239842053
+PROF sec=X k=4 r=5 n=373 sqd=2220 mis=570 dm=4.181823056 gf=-0.00119616361816
+SAMPLE sec=X k=5 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02797203 sqdef=11688 meand=4.184365634 diam=6 pieces=1 lam2=1.55530230513 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=5 nC=1001 ecc=6 greenit=-1 mmean=4.184365634
+PROF sec=X k=5 r=0 n=1001 sqd=11688 mis=3003 dm=4.184365634 gf=-nan
+SAMPLE sec=X k=6 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01898102 sqdef=11684 meand=4.184241758 diam=6 pieces=1 lam2=1.5887394523 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=6 nC=1 ecc=5 greenit=31 mmean=4.184241758
+PROF sec=X k=6 r=0 n=1 sqd=24 mis=6 dm=4.131000000 gf=0.206731171262
+PROF sec=X k=6 r=1 n=6 sqd=116 mis=30 dm=4.160833333 gf=0.0402310047619
+PROF sec=X k=6 r=2 n=30 sqd=580 mis=150 dm=4.179033333 gf=0.00713077166169
+PROF sec=X k=6 r=3 n=145 sqd=2644 mis=678 dm=4.184055172 gf=0.00066295416456
+PROF sec=X k=6 r=4 n=465 sqd=6306 mis=1621 dm=4.183849462 gf=-0.000744740387165
+PROF sec=X k=6 r=5 n=354 sqd=2014 mis=518 dm=4.185822034 gf=-0.00116345882349
+SAMPLE sec=X k=7 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01798202 sqdef=11752 meand=4.182387612 diam=6 pieces=1 lam2=1.58726912512 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=7 nC=1 ecc=5 greenit=31 mmean=4.182387612
+PROF sec=X k=7 r=0 n=1 sqd=24 mis=6 dm=4.163000000 gf=0.207248563088
+PROF sec=X k=7 r=1 n=6 sqd=120 mis=30 dm=4.176666667 gf=0.0407483965879
+PROF sec=X k=7 r=2 n=30 sqd=582 mis=147 dm=4.174833333 gf=0.00764816348766
+PROF sec=X k=7 r=3 n=135 sqd=2431 mis=626 dm=4.180362963 gf=0.000790487647236
+PROF sec=X k=7 r=4 n=453 sqd=6316 mis=1616 dm=4.183167770 gf=-0.000751729009162
+PROF sec=X k=7 r=5 n=376 sqd=2279 mis=578 dm=4.182920213 gf=-0.00118980435764
+SAMPLE sec=X k=8 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01498501 sqdef=11696 meand=4.182375624 diam=6 pieces=1 lam2=1.55428888598 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=8 nC=1 ecc=5 greenit=31 mmean=4.182375624
+PROF sec=X k=8 r=0 n=1 sqd=24 mis=6 dm=4.136000000 gf=0.206780588443
+PROF sec=X k=8 r=1 n=6 sqd=120 mis=30 dm=4.170500000 gf=0.0402804219431
+PROF sec=X k=8 r=2 n=30 sqd=576 mis=150 dm=4.191866667 gf=0.00718018884288
+PROF sec=X k=8 r=3 n=142 sqd=2612 mis=671 dm=4.186197183 gf=0.000677396264736
+PROF sec=X k=8 r=4 n=466 sqd=6351 mis=1630 dm=4.181491416 gf=-0.000739563065319
+PROF sec=X k=8 r=5 n=356 sqd=2013 mis=516 dm=4.181539326 gf=-0.00116691760265
+SAMPLE sec=X k=9 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01798202 sqdef=11716 meand=4.183666334 diam=6 pieces=1 lam2=1.54542896327 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=9 nC=2 ecc=5 greenit=31 mmean=4.183666334
+PROF sec=X k=9 r=0 n=2 sqd=48 mis=12 dm=4.123500000 gf=0.102895516935
+PROF sec=X k=9 r=1 n=12 sqd=240 mis=60 dm=4.162583333 gf=0.0197286837679
+PROF sec=X k=9 r=2 n=60 sqd=1149 mis=293 dm=4.177800000 gf=0.00329511733431
+PROF sec=X k=9 r=3 n=255 sqd=4307 mis=1104 dm=4.184282353 gf=-5.92781166499e-05
+PROF sec=X k=9 r=4 n=543 sqd=5618 mis=1442 dm=4.183745856 gf=-0.00087522591144
+PROF sec=X k=9 r=5 n=129 sqd=354 mis=92 dm=4.187736434 gf=-0.00116185030608
+SAMPLE sec=X k=10 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02197802 sqdef=11652 meand=4.190207792 diam=6 pieces=1 lam2=1.52998064957 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=10 nC=2 ecc=5 greenit=32 mmean=4.190207792
+PROF sec=X k=10 r=0 n=2 sqd=48 mis=12 dm=4.149500000 gf=0.103063012716
+PROF sec=X k=10 r=1 n=12 sqd=240 mis=60 dm=4.166583333 gf=0.0198961795494
+PROF sec=X k=10 r=2 n=59 sqd=1118 mis=287 dm=4.178966102 gf=0.00340110706765
+PROF sec=X k=10 r=3 n=251 sqd=4205 mis=1082 dm=4.189039841 gf=-3.29639669214e-05
+PROF sec=X k=10 r=4 n=538 sqd=5641 mis=1457 dm=4.191081784 gf=-0.000877706294482
+PROF sec=X k=10 r=5 n=139 sqd=400 mis=105 dm=4.196330935 gf=-0.00118752197761
+SAMPLE sec=X k=11 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02297702 sqdef=11744 meand=4.179502498 diam=6 pieces=1 lam2=1.57220883401 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=11 nC=1 ecc=5 greenit=31 mmean=4.179502498
+PROF sec=X k=11 r=0 n=1 sqd=24 mis=6 dm=4.176000000 gf=0.207240400304
+PROF sec=X k=11 r=1 n=6 sqd=120 mis=30 dm=4.183833333 gf=0.040740233804
+PROF sec=X k=11 r=2 n=30 sqd=574 mis=147 dm=4.180566667 gf=0.00764000070381
+PROF sec=X k=11 r=3 n=136 sqd=2470 mis=631 dm=4.179977941 gf=0.00082267977782
+PROF sec=X k=11 r=4 n=438 sqd=6170 mis=1577 dm=4.179381279 gf=-0.000745065772746
+PROF sec=X k=11 r=5 n=390 sqd=2386 mis=612 dm=4.179333333 gf=-0.00119596786042
+SAMPLE sec=X k=12 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01498501 sqdef=11720 meand=4.182433566 diam=6 pieces=1 lam2=1.52224525271 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=12 nC=1 ecc=5 greenit=32 mmean=4.182433566
+PROF sec=X k=12 r=0 n=1 sqd=24 mis=6 dm=4.150000000 gf=0.206881368933
+PROF sec=X k=12 r=1 n=6 sqd=118 mis=30 dm=4.169833333 gf=0.0403812024325
+PROF sec=X k=12 r=2 n=30 sqd=590 mis=150 dm=4.173633333 gf=0.00728096933229
+PROF sec=X k=12 r=3 n=141 sqd=2561 mis=657 dm=4.178950355 gf=0.000752105312714
+PROF sec=X k=12 r=4 n=454 sqd=6243 mis=1602 dm=4.182425110 gf=-0.00074051164572
+PROF sec=X k=12 r=5 n=369 sqd=2184 mis=558 dm=4.184783198 gf=-0.001185507386
+SAMPLE sec=X k=13 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01698302 sqdef=11756 meand=4.179284715 diam=6 pieces=1 lam2=1.53773051149 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=13 nC=1 ecc=5 greenit=31 mmean=4.179284715
+PROF sec=X k=13 r=0 n=1 sqd=24 mis=6 dm=4.144000000 gf=0.206810993259
+PROF sec=X k=13 r=1 n=6 sqd=120 mis=30 dm=4.163333333 gf=0.040310826759
+PROF sec=X k=13 r=2 n=30 sqd=590 mis=150 dm=4.179133333 gf=0.00721059365879
+PROF sec=X k=13 r=3 n=140 sqd=2587 mis=659 dm=4.181771429 gf=0.000695990328799
+PROF sec=X k=13 r=4 n=462 sqd=6363 mis=1626 dm=4.178043290 gf=-0.000739499922392
+PROF sec=X k=13 r=5 n=362 sqd=2072 mis=532 dm=4.180281768 gf=-0.00116238520846
+SAMPLE sec=X k=14 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02297702 sqdef=11772 meand=4.182145854 diam=6 pieces=1 lam2=1.58575140946 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=14 nC=1001 ecc=6 greenit=-1 mmean=4.182145854
+PROF sec=X k=14 r=0 n=1001 sqd=11772 mis=3003 dm=4.182145854 gf=-nan
+SAMPLE sec=X k=15 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01398601 sqdef=11712 meand=4.184111888 diam=6 pieces=1 lam2=1.56929024541 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=15 nC=1 ecc=5 greenit=31 mmean=4.184111888
+PROF sec=X k=15 r=0 n=1 sqd=24 mis=6 dm=4.143000000 gf=0.20700604808
+PROF sec=X k=15 r=1 n=6 sqd=118 mis=30 dm=4.181000000 gf=0.0405058815803
+PROF sec=X k=15 r=2 n=30 sqd=582 mis=148 dm=4.183366667 gf=0.00740564848005
+PROF sec=X k=15 r=3 n=140 sqd=2560 mis=659 dm=4.183392857 gf=0.000701172468504
+PROF sec=X k=15 r=4 n=463 sqd=6313 mis=1620 dm=4.184069114 gf=-0.000746753888096
+PROF sec=X k=15 r=5 n=361 sqd=2115 mis=540 dm=4.184673130 gf=-0.00117625453564
+SAMPLE sec=X k=16 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02197802 sqdef=11764 meand=4.179118881 diam=6 pieces=1 lam2=1.58493630211 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=16 nC=1001 ecc=6 greenit=-1 mmean=4.179118881
+PROF sec=X k=16 r=0 n=1001 sqd=11764 mis=3003 dm=4.179118881 gf=-nan
+SAMPLE sec=X k=17 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01898102 sqdef=11672 meand=4.181198801 diam=6 pieces=1 lam2=1.58211499015 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=17 nC=1 ecc=5 greenit=31 mmean=4.181198801
+PROF sec=X k=17 r=0 n=1 sqd=24 mis=6 dm=4.112000000 gf=0.20674851924
+PROF sec=X k=17 r=1 n=6 sqd=120 mis=30 dm=4.140500000 gf=0.04024835274
+PROF sec=X k=17 r=2 n=30 sqd=588 mis=149 dm=4.169300000 gf=0.00714811963981
+PROF sec=X k=17 r=3 n=146 sqd=2702 mis=695 dm=4.180726027 gf=0.000602752591813
+PROF sec=X k=17 r=4 n=482 sqd=6349 mis=1636 dm=4.181929461 gf=-0.000742381846193
+PROF sec=X k=17 r=5 n=336 sqd=1889 mis=487 dm=4.182351190 gf=-0.00116921444469
+SAMPLE sec=X k=18 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01798202 sqdef=11660 meand=4.185122877 diam=6 pieces=1 lam2=1.54451872765 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=18 nC=1001 ecc=6 greenit=-1 mmean=4.185122877
+PROF sec=X k=18 r=0 n=1001 sqd=11660 mis=3003 dm=4.185122877 gf=-nan
+SAMPLE sec=X k=19 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02297702 sqdef=11744 meand=4.181708292 diam=6 pieces=1 lam2=1.58488103299 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=19 nC=1 ecc=5 greenit=31 mmean=4.181708292
+PROF sec=X k=19 r=0 n=1 sqd=22 mis=6 dm=4.171000000 gf=0.207532822883
+PROF sec=X k=19 r=1 n=6 sqd=118 mis=30 dm=4.170666667 gf=0.0410326563824
+PROF sec=X k=19 r=2 n=29 sqd=558 mis=143 dm=4.178931034 gf=0.00768018296918
+PROF sec=X k=19 r=3 n=137 sqd=2511 mis=644 dm=4.183058394 gf=0.000769792558612
+PROF sec=X k=19 r=4 n=444 sqd=6195 mis=1584 dm=4.183184685 gf=-0.000732270348997
+PROF sec=X k=19 r=5 n=384 sqd=2340 mis=596 dm=4.179929688 gf=-0.00118955107515
+SAMPLE sec=X k=20 n=1001 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01998002 sqdef=11632 meand=4.186927073 diam=6 pieces=1 lam2=1.56061723999 lamok=1 nmis=3003 nD=1001 ncl=1 dspread=6
+CENTRE sec=X k=20 nC=1001 ecc=6 greenit=-1 mmean=4.186927073
+PROF sec=X k=20 r=0 n=1001 sqd=11632 mis=3003 dm=4.186927073 gf=-nan
+STAGE sec=X stage=meas sweeps=2000 T=1 acc=0.99250766
+SPHERE sec=X r=0 S=1.000000
+SPHERE sec=X r=1 S=6.000000
+SPHERE sec=X r=2 S=29.576024
+SPHERE sec=X r=3 S=135.668931
+SPHERE sec=X r=4 S=441.478621
+SPHERE sec=X r=5 S=378.643357
+SPHERE sec=X r=6 S=8.633067
+CHECK sec=X ok=1
+STAGE sec=A stage=melt sweeps=2000 T=inf:1 acc=0.99257183
+SAMPLE sec=A0 k=0 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01500000 sqdef=11716 meand=4.184332332 diam=6 pieces=1 lam2=1.51775621817 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+STAGE sec=A stage=anneal sweeps=300 T=64 acc=0.99245667
+STAGE sec=A stage=anneal sweeps=300 T=32 acc=0.99251111
+STAGE sec=A stage=anneal sweeps=300 T=16 acc=0.99247556
+STAGE sec=A stage=anneal sweeps=300 T=8 acc=0.99245333
+STAGE sec=A stage=anneal sweeps=300 T=4 acc=0.99259889
+STAGE sec=A stage=anneal sweeps=300 T=2 acc=0.99227333
+STAGE sec=A stage=anneal sweeps=300 T=1 acc=0.99258
+SAMPLE sec=A k=1 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02100000 sqdef=11684 meand=4.184124124 diam=6 pieces=1 lam2=1.52519654873 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=2 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.03100000 sqdef=11720 meand=4.185913914 diam=6 pieces=1 lam2=1.54090882855 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=3 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.03600000 sqdef=11676 meand=4.184564565 diam=6 pieces=1 lam2=1.56835282191 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=4 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02400000 sqdef=11668 meand=4.184458458 diam=6 pieces=1 lam2=1.56964437124 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=5 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02300000 sqdef=11708 meand=4.181433433 diam=6 pieces=1 lam2=1.57687567939 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=6 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01600000 sqdef=11692 meand=4.183767768 diam=6 pieces=1 lam2=1.53114497832 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=7 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02300000 sqdef=11696 meand=4.185987988 diam=6 pieces=1 lam2=1.53201741784 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=8 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01900000 sqdef=11664 meand=4.184362362 diam=6 pieces=1 lam2=1.55191873187 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=9 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.01600000 sqdef=11704 meand=4.179867868 diam=6 pieces=1 lam2=1.5896758326 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=10 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02100000 sqdef=11720 meand=4.176674675 diam=6 pieces=1 lam2=1.57916976872 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=11 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02000000 sqdef=11712 meand=4.179025025 diam=6 pieces=1 lam2=1.56153225603 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=12 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02300000 sqdef=11720 meand=4.183547548 diam=6 pieces=1 lam2=1.56332150106 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=13 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02200000 sqdef=11680 meand=4.186074074 diam=6 pieces=1 lam2=1.56370920277 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=14 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02200000 sqdef=11596 meand=4.190236236 diam=6 pieces=1 lam2=1.51971328246 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=15 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02900000 sqdef=11732 meand=4.185035035 diam=6 pieces=1 lam2=1.50026689103 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=16 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.03500000 sqdef=11668 meand=4.185813814 diam=6 pieces=1 lam2=1.54127440309 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=17 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02600000 sqdef=11656 meand=4.184278278 diam=6 pieces=1 lam2=1.56894839983 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=18 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02600000 sqdef=11664 meand=4.181987988 diam=6 pieces=1 lam2=1.59996204894 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=19 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02100000 sqdef=11668 meand=4.181107107 diam=6 pieces=1 lam2=1.58396961677 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+SAMPLE sec=A k=20 n=1000 E=0.000000 psiT=0.00000000 psiO=0.00000000 tri=0.02100000 sqdef=11740 meand=4.183219219 diam=6 pieces=1 lam2=1.57042008013 lamok=1 nmis=3000 nD=1000 ncl=1 dspread=6
+STAGE sec=A stage=meas sweeps=2000 T=1 acc=0.99253367
+SPHERE sec=A r=0 S=1.000000
+SPHERE sec=A r=1 S=6.000000
+SPHERE sec=A r=2 S=29.547500
+SPHERE sec=A r=3 S=135.502700
+SPHERE sec=A r=4 S=440.660700
+SPHERE sec=A r=5 S=378.590100
+SPHERE sec=A r=6 S=8.699000
+CHECK sec=A ok=1
+DONE

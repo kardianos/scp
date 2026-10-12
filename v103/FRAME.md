@@ -93,9 +93,12 @@ See `README.md` for the status table and the step DECIDE files.
     Spin, exchange, sharpness, binding and 1/r need three dimensions.
 - **The user's reading:** two things are going on. One is a signed
   charge. The other is an unsigned gap–gap interaction through 1/r².
-- **Now: g1, the 3-D geometry gate, `gate/g1/`. REGISTERED, NOT RUN.**
-  The user said "Do not yet run". Read `gate/g1/STATUS.md` for the run
-  state, and do not start it without the user's go.
+- **g1, the 3-D geometry gate (`gate/g1/`), is decided (ending G).**
   - The medium is bare quanta and contacts only.
-  - A gap is a missing quantum that the medium closes over, read from
-    the medium's own shape.
+  - It holds three dimensions only as a frozen crystal, under flat
+    squares or an octahedral link.
+  - A missing quantum, closed over by the medium, is a readable
+    defect.
+  - Gap and excess both make less where.
+  - Next steps (not registered): c3, a2 and g2; see
+    `gate/g1/DECIDE.md` "Then".

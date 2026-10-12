@@ -472,8 +472,8 @@ func main() {
 				P[k] = pr
 				f12, f16 := footprint(runs[k][12], "G", 12), footprint(runs[k][16], "G", 16)
 				switch {
-				case f12 == nil || f16 == nil:
-					cls[k] = "—"
+				case f12 == nil || f16 == nil || !pr:
+					cls[k] = "—" // no readable gap: no footprint class
 				case f12.rdef <= 3 && f16.rdef <= 3 && f16.rdef <= f12.rdef+1:
 					cls[k] = "contact"
 				default:
