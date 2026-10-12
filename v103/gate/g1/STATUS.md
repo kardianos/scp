@@ -3,7 +3,7 @@
 **Read `../../FRAME.md` first** (R14: something with gaps, not
 something in something). Then `PREREG.md`.
 
-## State: REGISTERED, NOT RUN (2026-10-11)
+## State: REGISTERED, NOT RUN (2026-10-11, commit ca18259)
 
 The user, 2026-10-11: "Set it up, register it, note the current status
 of the run so any additional agent will find the status, commit (no
