@@ -1,0 +1,34 @@
+# v103 c3 — post-hoc readings (not registered)
+
+## 1. Persistence in the window, scored sets: media with any contact changed (of all), and the largest change
+
+| set | G1 | X1 | G2 | X2 | GG | XX | GX |
+|---|---|---|---|---|---|---|---|
+| a | 1/12 (max 4) | 0/12 (max 0) | 1/60 (max 4) | 0/60 (max 0) | 20/60 (max 9) | 9/60 (max 12) | 15/60 (max 8) |
+| b | 0/12 (max 0) | 0/12 (max 0) | 0/60 (max 0) | 0/60 (max 0) | 13/60 (max 4) | 7/60 (max 8) | 10/60 (max 4) |
+| ab | 0/12 (max 0) | 10/12 (max 5) | 0/60 (max 0) | 56/60 (max 5) | 12/60 (max 4) | 43/60 (max 8) | 27/60 (max 7) |
+| ac | 0/12 (max 0) | 0/12 (max 0) | 0/60 (max 0) | 0/60 (max 0) | 21/60 (max 8) | 4/60 (max 10) | 6/60 (max 5) |
+| bc | 0/12 (max 0) | 0/12 (max 0) | 0/60 (max 0) | 0/60 (max 0) | 15/60 (max 4) | 4/60 (max 8) | 7/60 (max 3) |
+| abc | 0/12 (max 0) | 9/12 (max 4) | 0/60 (max 0) | 33/60 (max 4) | 14/60 (max 4) | 31/60 (max 9) | 24/60 (max 5) |
+
+Pairs by separation (all scored sets and sizes): media with any contact changed, of all
+
+| kind | R=1 | 2 | 3 | 4 | 6 | 8 |
+|---|---|---|---|---|---|---|
+| GG | 32/72 | 14/72 | 35/72 | 12/72 | 2/48 | 0/24 |
+| XX | 20/72 | 18/72 | 15/72 | 23/72 | 15/48 | 7/24 |
+| GX | 0/72 | 32/72 | 19/72 | 17/72 | 13/48 | 8/24 |
+
+## 2. The where-interaction relative to the singles: I/|S_1 + S_2| (means over scored sets and placements; unhealed pairs)
+
+| kind | L | R=1 | 2 | 3 | 4 | 6 | 8 |
+|---|---|---|---|---|---|---|---|
+| GG | 8 | 0.327 | 0.216 | 0.186 | 0.102 | — | — |
+| GG | 12 | 0.308 | 0.235 | 0.183 | 0.124 | 0.081 | — |
+| GG | 16 | 0.280 | 0.271 | 0.207 | 0.148 | 0.091 | 0.065 |
+| XX | 8 | 0.391 | 0.273 | 0.198 | 0.092 | — | — |
+| XX | 12 | 0.387 | 0.239 | 0.224 | 0.117 | 0.065 | — |
+| XX | 16 | 0.427 | 0.278 | 0.255 | 0.119 | 0.081 | 0.050 |
+| GX | 8 | — | 0.250 | 0.084 | 0.082 | — | — |
+| GX | 12 | — | 0.181 | 0.070 | 0.092 | 0.063 | — |
+| GX | 16 | — | 0.257 | 0.115 | 0.114 | 0.077 | 0.046 |

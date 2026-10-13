@@ -112,7 +112,7 @@ Later steps already named:
 
 Order: c1, then a1 and b1, which share one tool.
 
-## Status (2026-10-12)
+## Status (2026-10-13)
 
 | step | ending | one line | frame |
 |---|---|---|---|
@@ -121,12 +121,15 @@ Order: c1, then a1 and b1, which share one tool.
 | **c2** a sign, and something without one (16 sets, 1-D) | **U** by the bars, read as like-with-like | A flat level makes gaps cluster with gaps and excesses with excesses, while unlike pairs repel: surface tension at contact. Tweaked links with inertia give exact fracton/Mach structure (a lone gap is frozen, pairs only breathe), binding −4t, contact range. Nothing reaches beyond contact in 1-D | gap frame (cells never empty, distance in quanta) |
 | **g1** the 3-D geometry gate (8 sets; quanta and contacts only, no container) | **G** (a, ac, b, bc, ab, abc; crystal, contact) | A medium with no container holds 3-D only as a frozen crystal (flat squares or octahedral link; cheapest re-forming 72–216t at t), and free re-forming makes an expander. Nothing assembles from the melt. A missing quantum is a readable, frozen, compact defect. Both the gap and the excess make less where (the gap 2–3.4× the excess), and the gap's reach scales with the medium's size (post-hoc collapse on r/L) | gap frame (the places are the quanta) |
 | **a1** the void as a quantum particle (1-D rings; spin, exclusion, sharpness and binding are dimension-dependent, see its dimension note) | **P(2)** (registered P(3); the A6 bar defect is disclosed) | The void is a sharp wave in 6 of 8 sets. The antiparticle needs headroom. Spin ½ needs saturation, two planes and exchange (abc, whose voids pair by −7.3t). Headroom and saturation exclude each other. The breathing line is never below the continuum. Exclusion fails because a cell can empty; under R14 it would be structural | container, caveated |
-| **c3** two defects in the 3-D medium (8 sets × L = 8, 12, 16 × 4 placements; GG, XX, GX) | **registered 2026-10-12; T0 PASS; grid RUNNING** since 20:46:54 | The sign test as an interaction on g1's medium: E_int against separation, the shared less-where, "less space between" the two defects, and whether a gap and an excess heal the medium. State: `lane_c/c3/STATUS.md` | gap frame (the places are the quanta) |
+| **c3** two defects in the 3-D medium (8 sets × L = 8, 12, 16 × 4 placements; GG, XX, GX) | **U** (2026-10-13), all six holding sets | Unsigned at contact: GG and XX attract, GX annihilates (72/72; the flat medium and its where return exactly). The energy is exactly local (R_E 3–4, zero at R ≥ 6) with no sign by sublattice. Every pair makes less where, sub-additively, and the where-overlap reaches past the energy (post-hoc, about ½ per doubling of R) with nothing charging energy for it. `lane_c/c3/DECIDE.md` | gap frame (the places are the quanta) |
 
 **Next:**
-- **c3 is running** (T0 PASS; registered grid since 2026-10-12 20:46; `lane_c/c3/STATUS.md`).
-  It takes g1's "c3 (3-D)" and overtakes the older entry "c3: tweaked
-  links in 2-D"; mobility binding moves to g2 and a2.
+- **c3 is decided (ending U).** It took g1's "c3 (3-D)" and overtook
+  the older entry "c3: tweaked links in 2-D". Its "Then", not
+  registered: g2 (mobile defects, so the where-overlap can become a
+  force), a2 (the coherent gap), and the signed sector, which the bare
+  medium does not show (orientation or winding; R5 is the user's to
+  rule).
 - **g1 is decided (ending G).** Its "Then" also lists, not registered:
   - a2: coherent gap motion on the frozen crystal;
   - g2: the dislocation-mobile nematic (Kleinert–Zaanen).

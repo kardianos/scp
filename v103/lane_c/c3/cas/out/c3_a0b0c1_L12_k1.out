@@ -1,0 +1,240 @@
+RUN set=c L=12 N=1728 k=1 seed=24000044 T=1 msweeps=500 meas=400 every=100 qr=3
+MED set=c L=12 k=1 E=6.000000 nmis=5184 nD=1728 ncl=1 meand=4.512714727 diam=7 pieces=1 changed_vs_flat=5165 acc=0.98182755 ok=1
+SITE k=1 p1=1202
+MADE kind=G1 R=0 k=1 n=1727 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=G1 R=0 k=1 E=0.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.512348019 diam=7 pieces=1 dcc=-1
+SAMPLE kind=G1 R=0 k=1 s=1 E=2.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.514563530 diam=7 pieces=1
+SAMPLE kind=G1 R=0 k=1 s=2 E=2.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.513860364 diam=7 pieces=1
+SAMPLE kind=G1 R=0 k=1 s=3 E=12.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.516982342 diam=7 pieces=1
+SAMPLE kind=G1 R=0 k=1 s=4 E=4.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.510892035 diam=7 pieces=1
+WINDOW kind=G1 R=0 k=1 Ew=5.000000 meandw=4.514074568 acc=0.98280351 changed=5170 nmis_end=5181 ncl_end=1 secs=6.0
+CHECK kind=G1 R=0 k=1 ok=1
+MADE kind=X1 R=0 k=1 n=1729 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=X1 R=0 k=1 E=0.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.513334619 diam=7 pieces=1 dcc=-1
+SAMPLE kind=X1 R=0 k=1 s=1 E=6.000000 nmis=5187 nD=1729 ncl=1 dspread=6 meand=4.517080629 diam=6 pieces=1
+SAMPLE kind=X1 R=0 k=1 s=2 E=6.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.514979355 diam=7 pieces=1
+SAMPLE kind=X1 R=0 k=1 s=3 E=2.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.514093728 diam=7 pieces=1
+SAMPLE kind=X1 R=0 k=1 s=4 E=8.000000 nmis=5187 nD=1729 ncl=1 dspread=6 meand=4.516278008 diam=6 pieces=1
+WINDOW kind=X1 R=0 k=1 Ew=5.500000 meandw=4.515607930 acc=0.98279159 changed=5162 nmis_end=5187 ncl_end=1 secs=6.0
+CHECK kind=X1 R=0 k=1 ok=1
+SITE k=1 R=1 p2=277 shell=6
+MADE kind=G2 R=1 k=1 n=1727 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=G2 R=1 k=1 E=0.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.512372845 diam=7 pieces=1 dcc=-1
+SAMPLE kind=G2 R=1 k=1 s=1 E=4.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.512087016 diam=7 pieces=1
+SAMPLE kind=G2 R=1 k=1 s=2 E=6.000000 nmis=5181 nD=1727 ncl=1 dspread=6 meand=4.512988115 diam=6 pieces=1
+SAMPLE kind=G2 R=1 k=1 s=3 E=6.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.512963290 diam=7 pieces=1
+SAMPLE kind=G2 R=1 k=1 s=4 E=8.000000 nmis=5181 nD=1727 ncl=1 dspread=6 meand=4.514905720 diam=6 pieces=1
+WINDOW kind=G2 R=1 k=1 Ew=6.000000 meandw=4.513236035 acc=0.98291401 changed=5155 nmis_end=5181 ncl_end=1 secs=6.0
+CHECK kind=G2 R=1 k=1 ok=1
+MADE kind=X2 R=1 k=1 n=1729 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=X2 R=1 k=1 E=0.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.513331272 diam=7 pieces=1 dcc=-1
+SAMPLE kind=X2 R=1 k=1 s=1 E=8.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.512465057 diam=7 pieces=1
+SAMPLE kind=X2 R=1 k=1 s=2 E=12.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.514702220 diam=7 pieces=1
+SAMPLE kind=X2 R=1 k=1 s=3 E=2.000000 nmis=5187 nD=1729 ncl=1 dspread=6 meand=4.514011391 diam=6 pieces=1
+SAMPLE kind=X2 R=1 k=1 s=4 E=6.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.516488872 diam=7 pieces=1
+WINDOW kind=X2 R=1 k=1 Ew=7.000000 meandw=4.514416885 acc=0.98274677 changed=5168 nmis_end=5187 ncl_end=1 secs=5.9
+CHECK kind=X2 R=1 k=1 ok=1
+MADE kind=GG R=1 k=1 n=1726 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=GG R=1 k=1 E=0.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.511791358 diam=7 pieces=1 dcc=-1
+SAMPLE kind=GG R=1 k=1 s=1 E=4.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.511956606 diam=7 pieces=1
+SAMPLE kind=GG R=1 k=1 s=2 E=6.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.517685862 diam=7 pieces=1
+SAMPLE kind=GG R=1 k=1 s=3 E=0.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.514176701 diam=7 pieces=1
+SAMPLE kind=GG R=1 k=1 s=4 E=4.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.516250357 diam=7 pieces=1
+WINDOW kind=GG R=1 k=1 Ew=3.500000 meandw=4.515017381 acc=0.98277762 changed=5151 nmis_end=5178 ncl_end=1 secs=6.0
+CHECK kind=GG R=1 k=1 ok=1
+PAIR kind=GG R=1 k=1 p1=1202 p2=277 Eint_made=0 Eint_q=6 Eint_w=-1.500000 healed_q=0 healed_end=0 ncl_q=1 ncl_end=1 dcc=-1 S_P=-0.000962601 S_1=-0.000396326 S_2=-0.000378189 I=-0.000188087 rhoW=1.242845 B_0=3.872428 B_P=0.385185185 B_1=0.190123457 B_2=0.237037037 B_int=-0.041975309 npairs=1488675 nshell=1215
+MADE kind=XX R=1 k=1 n=1730 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=XX R=1 k=1 E=0.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.513967444 diam=7 pieces=1 dcc=-1
+SAMPLE kind=XX R=1 k=1 s=1 E=12.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.514037651 diam=7 pieces=1
+SAMPLE kind=XX R=1 k=1 s=2 E=2.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.518047453 diam=7 pieces=1
+SAMPLE kind=XX R=1 k=1 s=3 E=6.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.515745344 diam=7 pieces=1
+SAMPLE kind=XX R=1 k=1 s=4 E=4.000000 nmis=5190 nD=1730 ncl=1 dspread=6 meand=4.514370631 diam=6 pieces=1
+WINDOW kind=XX R=1 k=1 Ew=6.000000 meandw=4.515550270 acc=0.98297929 changed=5155 nmis_end=5190 ncl_end=1 secs=6.0
+CHECK kind=XX R=1 k=1 ok=1
+PAIR kind=XX R=1 k=1 p1=1202 p2=277 Eint_made=0 Eint_q=6 Eint_w=-0.500000 healed_q=0 healed_end=0 ncl_q=1 ncl_end=1 dcc=-1 S_P=0.001114516 S_1=0.000598474 S_2=0.000562284 I=-0.000046243 rhoW=0.960162 B_0=3.697126 B_P=-0.018422992 B_1=-0.015475313 B_2=0.008106116 B_int=-0.011053795 npairs=1492128 nshell=1357
+MADE kind=GX R=1 k=1 n=1728 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=GX R=1 k=1 E=0.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.512878252 diam=7 pieces=1 dcc=-1
+SAMPLE kind=GX R=1 k=1 s=1 E=8.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.515731894 diam=7 pieces=1
+SAMPLE kind=GX R=1 k=1 s=2 E=2.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.515475884 diam=7 pieces=1
+SAMPLE kind=GX R=1 k=1 s=3 E=4.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.512371593 diam=7 pieces=1
+SAMPLE kind=GX R=1 k=1 s=4 E=2.000000 nmis=5184 nD=1728 ncl=1 dspread=6 meand=4.511015811 diam=6 pieces=1
+WINDOW kind=GX R=1 k=1 Ew=4.000000 meandw=4.513648796 acc=0.98267699 changed=5164 nmis_end=5184 ncl_end=1 secs=6.0
+CHECK kind=GX R=1 k=1 ok=1
+PAIR kind=GX R=1 k=1 p1=1202 p2=277 Eint_made=0 Eint_q=6 Eint_w=-2.000000 healed_q=0 healed_end=0 ncl_q=1 ncl_end=1 dcc=-1 S_P=0.000093934 S_1=-0.000398550 S_2=0.000553542 I=-0.000061057 rhoW=0.606061 B_0=3.782101 B_P=0.227237354 B_1=0.221011673 B_2=0.006225681 B_int=0.000000000 npairs=1490401 nshell=1285
+SITE k=1 R=2 p2=715 shell=30
+MADE kind=G2 R=2 k=1 n=1727 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=G2 R=2 k=1 E=0.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.512448663 diam=7 pieces=1 dcc=-1
+SAMPLE kind=G2 R=2 k=1 s=1 E=14.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.515793401 diam=7 pieces=1
+SAMPLE kind=G2 R=2 k=1 s=2 E=4.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.514152902 diam=7 pieces=1
+SAMPLE kind=G2 R=2 k=1 s=3 E=6.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.510391499 diam=7 pieces=1
+SAMPLE kind=G2 R=2 k=1 s=4 E=2.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.515828961 diam=7 pieces=1
+WINDOW kind=G2 R=2 k=1 Ew=6.500000 meandw=4.514041691 acc=0.98268867 changed=5161 nmis_end=5181 ncl_end=1 secs=6.0
+CHECK kind=G2 R=2 k=1 ok=1
+MADE kind=X2 R=2 k=1 n=1729 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=X2 R=2 k=1 E=0.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.513405576 diam=7 pieces=1 dcc=-1
+SAMPLE kind=X2 R=2 k=1 s=1 E=14.000000 nmis=5187 nD=1729 ncl=1 dspread=6 meand=4.517925423 diam=6 pieces=1
+SAMPLE kind=X2 R=2 k=1 s=2 E=2.000000 nmis=5187 nD=1729 ncl=1 dspread=6 meand=4.515822141 diam=6 pieces=1
+SAMPLE kind=X2 R=2 k=1 s=3 E=0.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.514232295 diam=7 pieces=1
+SAMPLE kind=X2 R=2 k=1 s=4 E=4.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.514371532 diam=7 pieces=1
+WINDOW kind=X2 R=2 k=1 Ew=5.000000 meandw=4.515587848 acc=0.98277376 changed=5165 nmis_end=5187 ncl_end=1 secs=6.0
+CHECK kind=X2 R=2 k=1 ok=1
+MADE kind=GG R=2 k=1 n=1726 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=GG R=2 k=1 E=0.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.512051993 diam=7 pieces=1 dcc=-1
+SAMPLE kind=GG R=2 k=1 s=1 E=2.000000 nmis=5178 nD=1726 ncl=1 dspread=6 meand=4.511905554 diam=6 pieces=1
+SAMPLE kind=GG R=2 k=1 s=2 E=2.000000 nmis=5178 nD=1726 ncl=1 dspread=6 meand=4.513001830 diam=6 pieces=1
+SAMPLE kind=GG R=2 k=1 s=3 E=8.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.511573043 diam=7 pieces=1
+SAMPLE kind=GG R=2 k=1 s=4 E=6.000000 nmis=5178 nD=1726 ncl=1 dspread=6 meand=4.512704922 diam=6 pieces=1
+WINDOW kind=GG R=2 k=1 Ew=4.500000 meandw=4.512296337 acc=0.98285776 changed=5162 nmis_end=5178 ncl_end=1 secs=6.0
+CHECK kind=GG R=2 k=1 ok=1
+PAIR kind=GG R=2 k=1 p1=1202 p2=715 Eint_made=0 Eint_q=6 Eint_w=-1.000000 healed_q=0 healed_end=0 ncl_q=1 ncl_end=1 dcc=-1 S_P=-0.000697264 S_1=-0.000397669 S_2=-0.000275413 I=-0.000024183 rhoW=1.035928 B_0=4.259072 B_P=0.162869198 B_1=0.053164557 B_2=0.086075949 B_int=0.023628692 npairs=1488675 nshell=1185
+MADE kind=XX R=2 k=1 n=1730 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=XX R=2 k=1 E=0.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.513996864 diam=7 pieces=1 dcc=-1
+SAMPLE kind=XX R=2 k=1 s=1 E=2.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.513065456 diam=7 pieces=1
+SAMPLE kind=XX R=2 k=1 s=2 E=10.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.514447524 diam=7 pieces=1
+SAMPLE kind=XX R=2 k=1 s=3 E=8.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.513712026 diam=7 pieces=1
+SAMPLE kind=XX R=2 k=1 s=4 E=6.000000 nmis=5190 nD=1730 ncl=1 dspread=6 meand=4.516678089 diam=6 pieces=1
+WINDOW kind=XX R=2 k=1 Ew=6.500000 meandw=4.514475774 acc=0.98284682 changed=5178 nmis_end=5190 ncl_end=1 secs=6.0
+CHECK kind=XX R=2 k=1 ok=1
+PAIR kind=XX R=2 k=1 p1=1202 p2=715 Eint_made=0 Eint_q=6 Eint_w=2.000000 healed_q=0 healed_end=0 ncl_q=1 ncl_end=1 dcc=-1 S_P=0.001204320 S_1=0.000598474 S_2=0.000633324 I=-0.000027478 rhoW=0.977693 B_0=4.089057 B_P=0.033207547 B_1=0.018867925 B_2=0.015094340 B_int=-0.000754717 npairs=1492128 nshell=1325
+MADE kind=GX R=2 k=1 n=1728 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=GX R=2 k=1 E=0.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.513012288 diam=7 pieces=1 dcc=-1
+SAMPLE kind=GX R=2 k=1 s=1 E=6.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.515280861 diam=7 pieces=1
+SAMPLE kind=GX R=2 k=1 s=2 E=6.000000 nmis=5184 nD=1728 ncl=1 dspread=6 meand=4.514254809 diam=6 pieces=1
+SAMPLE kind=GX R=2 k=1 s=3 E=6.000000 nmis=5184 nD=1728 ncl=1 dspread=6 meand=4.514443131 diam=6 pieces=1
+SAMPLE kind=GX R=2 k=1 s=4 E=8.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.513940493 diam=7 pieces=1
+WINDOW kind=GX R=2 k=1 Ew=6.500000 meandw=4.514479823 acc=0.98278501 changed=5172 nmis_end=5184 ncl_end=1 secs=6.0
+CHECK kind=GX R=2 k=1 ok=1
+PAIR kind=GX R=2 k=1 p1=1202 p2=715 Eint_made=0 Eint_q=6 Eint_w=2.500000 healed_q=0 healed_end=0 ncl_q=1 ncl_end=1 dcc=-1 S_P=0.000207998 S_1=-0.000398550 S_2=0.000632045 I=-0.000025496 rhoW=0.890805 B_0=4.172249 B_P=0.083732057 B_1=0.065390750 B_2=0.014354067 B_int=0.003987241 npairs=1490401 nshell=1254
+SITE k=1 R=3 p2=114 shell=147
+MADE kind=G2 R=3 k=1 n=1727 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=G2 R=3 k=1 E=0.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.512070912 diam=7 pieces=1 dcc=-1
+SAMPLE kind=G2 R=3 k=1 s=1 E=10.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.513105533 diam=7 pieces=1
+SAMPLE kind=G2 R=3 k=1 s=2 E=6.000000 nmis=5181 nD=1727 ncl=1 dspread=6 meand=4.515999385 diam=6 pieces=1
+SAMPLE kind=G2 R=3 k=1 s=3 E=2.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.516069836 diam=7 pieces=1
+SAMPLE kind=G2 R=3 k=1 s=4 E=14.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.514476305 diam=7 pieces=1
+WINDOW kind=G2 R=3 k=1 Ew=8.000000 meandw=4.514912765 acc=0.9829087 changed=5156 nmis_end=5181 ncl_end=1 secs=5.9
+CHECK kind=G2 R=3 k=1 ok=1
+MADE kind=X2 R=3 k=1 n=1729 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=X2 R=3 k=1 E=0.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.513400221 diam=7 pieces=1 dcc=-1
+SAMPLE kind=X2 R=3 k=1 s=1 E=6.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.512466396 diam=7 pieces=1
+SAMPLE kind=X2 R=3 k=1 s=2 E=2.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.514026118 diam=7 pieces=1
+SAMPLE kind=X2 R=3 k=1 s=3 E=2.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.514040845 diam=7 pieces=1
+SAMPLE kind=X2 R=3 k=1 s=4 E=0.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.515282598 diam=7 pieces=1
+WINDOW kind=X2 R=3 k=1 Ew=2.500000 meandw=4.513953989 acc=0.98266917 changed=5169 nmis_end=5187 ncl_end=1 secs=5.9
+CHECK kind=X2 R=3 k=1 ok=1
+MADE kind=GG R=3 k=1 n=1726 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=GG R=3 k=1 E=0.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.511683208 diam=7 pieces=1 dcc=-1
+SAMPLE kind=GG R=3 k=1 s=1 E=2.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.512886292 diam=7 pieces=1
+SAMPLE kind=GG R=3 k=1 s=2 E=8.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.513179169 diam=7 pieces=1
+SAMPLE kind=GG R=3 k=1 s=3 E=10.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.511169328 diam=7 pieces=1
+SAMPLE kind=GG R=3 k=1 s=4 E=4.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.515446958 diam=7 pieces=1
+WINDOW kind=GG R=3 k=1 Ew=6.000000 meandw=4.513170437 acc=0.98286404 changed=5164 nmis_end=5178 ncl_end=1 secs=6.0
+CHECK kind=GG R=3 k=1 ok=1
+PAIR kind=GG R=3 k=1 p1=1202 p2=114 Eint_made=0 Eint_q=6 Eint_w=-1.000000 healed_q=0 healed_end=0 ncl_q=1 ncl_end=1 dcc=-1 S_P=-0.001014325 S_1=-0.000399013 S_2=-0.000593145 I=-0.000022167 rhoW=1.022343 B_0=4.286169 B_P=0.003179650 B_1=0.016693164 B_2=-0.018282989 B_int=0.004769475 npairs=1488675 nshell=1258
+MADE kind=XX R=3 k=1 n=1730 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=XX R=3 k=1 E=0.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.513988172 diam=7 pieces=1 dcc=-1
+SAMPLE kind=XX R=3 k=1 s=1 E=2.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.513534838 diam=7 pieces=1
+SAMPLE kind=XX R=3 k=1 s=2 E=4.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.513163745 diam=7 pieces=1
+SAMPLE kind=XX R=3 k=1 s=3 E=4.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.515308057 diam=7 pieces=1
+SAMPLE kind=XX R=3 k=1 s=4 E=2.000000 nmis=5190 nD=1730 ncl=1 dspread=6 meand=4.516093702 diam=6 pieces=1
+WINDOW kind=XX R=3 k=1 Ew=3.000000 meandw=4.514525086 acc=0.98280539 changed=5172 nmis_end=5190 ncl_end=1 secs=6.0
+CHECK kind=XX R=3 k=1 ok=1
+PAIR kind=XX R=3 k=1 p1=1202 p2=114 Eint_made=0 Eint_q=6 Eint_w=1.000000 healed_q=0 healed_end=0 ncl_q=1 ncl_end=1 dcc=-1 S_P=0.001192257 S_1=0.000598474 S_2=0.000624611 I=-0.000030828 rhoW=0.974795 B_0=4.275188 B_P=0.017293233 B_1=0.004511278 B_2=0.009774436 B_int=0.003007519 npairs=1492128 nshell=1330
+MADE kind=GX R=3 k=1 n=1728 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=GX R=3 k=1 E=0.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.513002906 diam=7 pieces=1 dcc=-1
+SAMPLE kind=GX R=3 k=1 s=1 E=8.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.513439196 diam=7 pieces=1
+SAMPLE kind=GX R=3 k=1 s=2 E=8.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.513850688 diam=7 pieces=1
+SAMPLE kind=GX R=3 k=1 s=3 E=8.000000 nmis=5184 nD=1728 ncl=1 dspread=6 meand=4.514826476 diam=6 pieces=1
+SAMPLE kind=GX R=3 k=1 s=4 E=14.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.512458046 diam=7 pieces=1
+WINDOW kind=GX R=3 k=1 Ew=9.500000 meandw=4.513643602 acc=0.98281009 changed=5171 nmis_end=5184 ncl_end=1 secs=6.0
+CHECK kind=GX R=3 k=1 ok=1
+PAIR kind=GX R=3 k=1 p1=1202 p2=114 Eint_made=0 Eint_q=6 Eint_w=8.000000 healed_q=0 healed_end=0 ncl_q=1 ncl_end=1 dcc=-1 S_P=0.000195249 S_1=-0.000398550 S_2=0.000625335 I=-0.000031535 rhoW=0.860947 B_0=4.280526 B_P=0.026275116 B_1=0.013910355 B_2=0.010046368 B_int=0.002318393 npairs=1490401 nshell=1294
+SITE k=1 R=4 p2=655 shell=581
+MADE kind=G2 R=4 k=1 n=1727 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=G2 R=4 k=1 E=0.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.512202421 diam=7 pieces=1 dcc=-1
+SAMPLE kind=G2 R=4 k=1 s=1 E=0.000000 nmis=5181 nD=1727 ncl=1 dspread=6 meand=4.512375528 diam=6 pieces=1
+SAMPLE kind=G2 R=4 k=1 s=2 E=4.000000 nmis=5181 nD=1727 ncl=1 dspread=6 meand=4.511696517 diam=6 pieces=1
+SAMPLE kind=G2 R=4 k=1 s=3 E=4.000000 nmis=5181 nD=1727 ncl=1 dspread=6 meand=4.511934037 diam=6 pieces=1
+SAMPLE kind=G2 R=4 k=1 s=4 E=6.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.515306283 diam=7 pieces=1
+WINDOW kind=G2 R=4 k=1 Ew=3.500000 meandw=4.512828091 acc=0.98272438 changed=5167 nmis_end=5181 ncl_end=1 secs=6.0
+CHECK kind=G2 R=4 k=1 ok=1
+MADE kind=X2 R=4 k=1 n=1729 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=X2 R=4 k=1 E=0.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.513493938 diam=7 pieces=1 dcc=-1
+SAMPLE kind=X2 R=4 k=1 s=1 E=2.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.516402518 diam=7 pieces=1
+SAMPLE kind=X2 R=4 k=1 s=2 E=4.000000 nmis=5187 nD=1729 ncl=1 dspread=6 meand=4.512924271 diam=6 pieces=1
+SAMPLE kind=X2 R=4 k=1 s=3 E=2.000000 nmis=5187 nD=1729 ncl=1 dspread=6 meand=4.516904574 diam=6 pieces=1
+SAMPLE kind=X2 R=4 k=1 s=4 E=4.000000 nmis=5187 nD=1729 ncl=1 dspread=6 meand=4.513213456 diam=6 pieces=1
+WINDOW kind=X2 R=4 k=1 Ew=3.000000 meandw=4.514861205 acc=0.98271496 changed=5162 nmis_end=5187 ncl_end=1 secs=6.0
+CHECK kind=X2 R=4 k=1 ok=1
+MADE kind=GG R=4 k=1 n=1726 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=GG R=4 k=1 E=0.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.511807480 diam=7 pieces=1 dcc=-1
+SAMPLE kind=GG R=4 k=1 s=1 E=2.000000 nmis=5178 nD=1726 ncl=1 dspread=6 meand=4.513021983 diam=6 pieces=1
+SAMPLE kind=GG R=4 k=1 s=2 E=8.000000 nmis=5178 nD=1726 ncl=1 dspread=6 meand=4.511541471 diam=6 pieces=1
+SAMPLE kind=GG R=4 k=1 s=3 E=2.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.513164391 diam=7 pieces=1
+SAMPLE kind=GG R=4 k=1 s=4 E=2.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.510802559 diam=7 pieces=1
+WINDOW kind=GG R=4 k=1 Ew=3.500000 meandw=4.512132601 acc=0.98280803 changed=5159 nmis_end=5178 ncl_end=1 secs=6.0
+CHECK kind=GG R=4 k=1 ok=1
+PAIR kind=GG R=4 k=1 p1=1202 p2=655 Eint_made=0 Eint_q=6 Eint_w=1.000000 healed_q=0 healed_end=0 ncl_q=1 ncl_end=1 dcc=-1 S_P=-0.000902816 S_1=-0.000398341 S_2=-0.000476262 I=-0.000028213 rhoW=1.032258 B_0=4.577442 B_P=-0.010325655 B_1=-0.002382844 B_2=-0.007942812 B_int=0.000000000 npairs=1488675 nshell=1259
+MADE kind=XX R=4 k=1 n=1730 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=XX R=4 k=1 E=0.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.514085124 diam=7 pieces=1 dcc=-1
+SAMPLE kind=XX R=4 k=1 s=1 E=10.000000 nmis=5190 nD=1730 ncl=1 dspread=6 meand=4.512430253 diam=6 pieces=1
+SAMPLE kind=XX R=4 k=1 s=2 E=8.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.513248662 diam=7 pieces=1
+SAMPLE kind=XX R=4 k=1 s=3 E=8.000000 nmis=5190 nD=1730 ncl=1 dspread=6 meand=4.513823019 diam=6 pieces=1
+SAMPLE kind=XX R=4 k=1 s=4 E=4.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.516680095 diam=7 pieces=1
+WINDOW kind=XX R=4 k=1 Ew=7.500000 meandw=4.514045507 acc=0.98266522 changed=5169 nmis_end=5190 ncl_end=1 secs=6.0
+CHECK kind=XX R=4 k=1 ok=1
+PAIR kind=XX R=4 k=1 p1=1202 p2=655 Eint_made=0 Eint_q=6 Eint_w=5.000000 healed_q=0 healed_end=0 ncl_q=1 ncl_end=1 dcc=-1 S_P=0.001290774 S_1=0.000598474 S_2=0.000720448 I=-0.000028148 rhoW=0.978659 B_0=4.574756 B_P=0.016528926 B_1=0.004507889 B_2=0.013523666 B_int=-0.001502630 npairs=1492128 nshell=1331
+MADE kind=GX R=4 k=1 n=1728 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=GX R=4 k=1 E=0.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.513096732 diam=7 pieces=1 dcc=-1
+SAMPLE kind=GX R=4 k=1 s=1 E=2.000000 nmis=5184 nD=1728 ncl=1 dspread=6 meand=4.509989089 diam=6 pieces=1
+SAMPLE kind=GX R=4 k=1 s=2 E=6.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.512754268 diam=7 pieces=1
+SAMPLE kind=GX R=4 k=1 s=3 E=4.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.512671165 diam=7 pieces=1
+SAMPLE kind=GX R=4 k=1 s=4 E=4.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.516598442 diam=7 pieces=1
+WINDOW kind=GX R=4 k=1 Ew=4.000000 meandw=4.513003241 acc=0.98281877 changed=5168 nmis_end=5184 ncl_end=1 secs=6.0
+CHECK kind=GX R=4 k=1 ok=1
+PAIR kind=GX R=4 k=1 p1=1202 p2=655 Eint_made=0 Eint_q=6 Eint_w=2.000000 healed_q=0 healed_end=0 ncl_q=1 ncl_end=1 dcc=-1 S_P=0.000292539 S_1=-0.000398550 S_2=0.000720611 I=-0.000029522 rhoW=0.908333 B_0=4.576062 B_P=0.010038610 B_1=-0.003088803 B_2=0.013127413 B_int=0.000000000 npairs=1490401 nshell=1295
+SITE k=1 R=6 p2=931 shell=100
+MADE kind=G2 R=6 k=1 n=1727 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=G2 R=6 k=1 E=0.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.512494288 diam=7 pieces=1 dcc=-1
+SAMPLE kind=G2 R=6 k=1 s=1 E=4.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.513786558 diam=7 pieces=1
+SAMPLE kind=G2 R=6 k=1 s=2 E=8.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.511028240 diam=7 pieces=1
+SAMPLE kind=G2 R=6 k=1 s=3 E=8.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.514427996 diam=7 pieces=1
+SAMPLE kind=G2 R=6 k=1 s=4 E=6.000000 nmis=5181 nD=1727 ncl=1 dspread=7 meand=4.513546354 diam=7 pieces=1
+WINDOW kind=G2 R=6 k=1 Ew=6.500000 meandw=4.513197287 acc=0.98271617 changed=5164 nmis_end=5181 ncl_end=1 secs=6.0
+CHECK kind=G2 R=6 k=1 ok=1
+MADE kind=X2 R=6 k=1 n=1729 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=X2 R=6 k=1 E=0.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.513327255 diam=7 pieces=1 dcc=-1
+SAMPLE kind=X2 R=6 k=1 s=1 E=4.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.513605060 diam=7 pieces=1
+SAMPLE kind=X2 R=6 k=1 s=2 E=8.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.513534772 diam=7 pieces=1
+SAMPLE kind=X2 R=6 k=1 s=3 E=4.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.512728804 diam=7 pieces=1
+SAMPLE kind=X2 R=6 k=1 s=4 E=2.000000 nmis=5187 nD=1729 ncl=1 dspread=7 meand=4.513071541 diam=7 pieces=1
+WINDOW kind=X2 R=6 k=1 Ew=4.500000 meandw=4.513235044 acc=0.98280509 changed=5169 nmis_end=5187 ncl_end=1 secs=6.0
+CHECK kind=X2 R=6 k=1 ok=1
+MADE kind=GG R=6 k=1 n=1726 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=GG R=6 k=1 E=0.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.512100358 diam=7 pieces=1 dcc=-1
+SAMPLE kind=GG R=6 k=1 s=1 E=4.000000 nmis=5178 nD=1726 ncl=1 dspread=6 meand=4.514489731 diam=6 pieces=1
+SAMPLE kind=GG R=6 k=1 s=2 E=2.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.513495558 diam=7 pieces=1
+SAMPLE kind=GG R=6 k=1 s=3 E=4.000000 nmis=5178 nD=1726 ncl=1 dspread=6 meand=4.512435555 diam=6 pieces=1
+SAMPLE kind=GG R=6 k=1 s=4 E=12.000000 nmis=5178 nD=1726 ncl=1 dspread=7 meand=4.514496448 diam=7 pieces=1
+WINDOW kind=GG R=6 k=1 Ew=5.500000 meandw=4.513729323 acc=0.98286742 changed=5167 nmis_end=5178 ncl_end=1 secs=6.0
+CHECK kind=GG R=6 k=1 ok=1
+PAIR kind=GG R=6 k=1 p1=1202 p2=931 Eint_made=0 Eint_q=6 Eint_w=0.000000 healed_q=0 healed_end=0 ncl_q=1 ncl_end=1 dcc=-1 S_P=-0.000659647 S_1=-0.000399013 S_2=-0.000233093 I=-0.000027541 rhoW=1.043571 B_0=4.559414 B_P=-0.016975309 B_1=-0.008487654 B_2=-0.008487654 B_int=0.000000000 npairs=1488675 nshell=1296
+MADE kind=XX R=6 k=1 n=1730 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=XX R=6 k=1 E=0.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.513921308 diam=7 pieces=1 dcc=-1
+SAMPLE kind=XX R=6 k=1 s=1 E=8.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.517468415 diam=7 pieces=1
+SAMPLE kind=XX R=6 k=1 s=2 E=2.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.515917852 diam=7 pieces=1
+SAMPLE kind=XX R=6 k=1 s=3 E=12.000000 nmis=5190 nD=1730 ncl=1 dspread=7 meand=4.517841514 diam=7 pieces=1
+SAMPLE kind=XX R=6 k=1 s=4 E=8.000000 nmis=5190 nD=1730 ncl=1 dspread=6 meand=4.516135826 diam=6 pieces=1
+WINDOW kind=XX R=6 k=1 Ew=7.500000 meandw=4.516840902 acc=0.98290318 changed=5166 nmis_end=5190 ncl_end=1 secs=6.0
+CHECK kind=XX R=6 k=1 ok=1
+PAIR kind=XX R=6 k=1 p1=1202 p2=931 Eint_made=0 Eint_q=6 Eint_w=3.500000 healed_q=0 healed_end=0 ncl_q=1 ncl_end=1 dcc=-1 S_P=0.001138642 S_1=0.000598474 S_2=0.000564965 I=-0.000024797 rhoW=0.978687 B_0=4.571950 B_P=0.022644266 B_1=0.013148283 B_2=0.008765522 B_int=0.000730460 npairs=1492128 nshell=1369
+MADE kind=GX R=6 k=1 n=1728 E_made=0 E_after=6 quench_steps=3 dE_quench=-6
+QUENCH kind=GX R=6 k=1 E=0.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.512932537 diam=7 pieces=1 dcc=-1
+SAMPLE kind=GX R=6 k=1 s=1 E=6.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.515747979 diam=7 pieces=1
+SAMPLE kind=GX R=6 k=1 s=2 E=2.000000 nmis=5184 nD=1728 ncl=1 dspread=6 meand=4.514066488 diam=6 pieces=1
+SAMPLE kind=GX R=6 k=1 s=3 E=12.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.516176896 diam=7 pieces=1
+SAMPLE kind=GX R=6 k=1 s=4 E=10.000000 nmis=5184 nD=1728 ncl=1 dspread=7 meand=4.513652984 diam=7 pieces=1
+WINDOW kind=GX R=6 k=1 Ew=7.500000 meandw=4.514911087 acc=0.98271557 changed=5169 nmis_end=5184 ncl_end=1 secs=6.0
+CHECK kind=GX R=6 k=1 ok=1
+PAIR kind=GX R=6 k=1 p1=1202 p2=931 Eint_made=0 Eint_q=6 Eint_w=4.000000 healed_q=0 healed_end=0 ncl_q=1 ncl_end=1 dcc=-1 S_P=0.000138889 S_1=-0.000398550 S_2=0.000565620 I=-0.000028180 rhoW=0.831325 B_0=4.564565 B_P=0.000750751 B_1=-0.008258258 B_2=0.009009009 B_int=0.000000000 npairs=1490401 nshell=1332
+DONE

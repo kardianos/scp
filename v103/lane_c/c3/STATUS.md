@@ -3,13 +3,22 @@
 **Read `../../FRAME.md` first** (R14: something with gaps, not
 something in something). Then `PREREG.md`.
 
-## State: T0 PASS, REGISTERED GRID RUNNING (started 2026-10-12 20:46:54)
+## State: DECIDED — ending U (2026-10-13). See `DECIDE.md`. Nothing of c3 is running
 
-**Grid processes (kill only by exact PID):** driver `run_c3.sh` PID
-2075024, `xargs -P 12` PID 2075031. The c3pair children change as
-processes finish; list them with `ps -o pid,etime,cmd -C c3pair`.
-Progress is in `cas/out/run.log`, one line per finished process. The
-grid is finished when `cas/out/run.done` exists.
+The registered grid ran 2026-10-12 20:46:54 to 2026-10-13 00:13:12
+(3 h 26 min): 96/96 processes DONE, no FAIL, empty .err files, all 2552
+CHECK lines passed. The driver (PID 2075024) and xargs (PID 2075031)
+have exited.
+
+**Ending U in all six scored sets** (a, b, ab, ac, bc, abc):
+- GG and XX attract at contact;
+- GX annihilates at contact (72/72, at the making; the flat medium and
+  its where return exactly);
+- the energy is exactly local (R_E 3–4; zero at R ≥ 6);
+- every pair makes less where, sub-additively, with an overlap that
+  reaches past the energy (post-hoc: about ½ per doubling of R).
+
+Grid history:
 
 - **21:18: lowered to nice 10** (renice by exact PID: the driver,
   xargs and the 12 running c3pair; later children inherit it). At
@@ -21,7 +30,8 @@ grid is finished when `cas/out/run.done` exists.
   sweep at L = 16 with b). A window takes 140–160 CPU s. With the
   load, a heavy L = 16 process finished about 7 of its 32 media in
   30 min, so expect about 2–2.5 h each and a longer grid than
-  registered (perhaps 7–9 h). A slower grid changes no result.
+  registered (perhaps 7–9 h). A slower grid changes no result. In the
+  event it took 3 h 26 min: the L = 12 and 8 processes are far cheaper.
 - **tab.go, 21:25:** a tested-on-partial-output fix. §5's "at R = 8"
   column said "contact" when the R = 8 readings were still missing;
   it now says "(missing)". This changes no bar, and the whole-grid
@@ -38,14 +48,15 @@ test yet." Then, the same day: "Go."
 |---|---|
 | `PREREG.md` | written and committed. Registered; do not change it once any gate or run has executed, except by a dated amendment in §8 |
 | `cas/c3pair.c` (C) | compiled 20:44 with `-Wall -Wextra`: no warnings, no change needed |
-| `cas/tab.go` (Go) | `go vet` clean, no change needed. Not yet executed |
+| `cas/tab.go` (Go) | `go vet` clean; one presentation fix during the grid (below); output `cas/out/tab.out` |
+| `cas/posthoc.go` (Go) | post-hoc readings (persistence breakdown, relative where-interaction against R); output `cas/out/posthoc.out` |
 | `cas/run_t0.sh` | ran 20:44–20:46 (2.5 min) |
-| `cas/run_c3.sh` | **running**, started 20:46:54 |
+| `cas/run_c3.sh` | ran 2026-10-12 20:46:54 to 2026-10-13 00:13:12 |
 | T0 gates (PREREG §6) | **PASS** (`cas/out/t0.out`), every gate in every set, no tool change. Highlights: T0.3 restricted = full quench in 70/70 cases; T0.4 pairs at R = 16 are exactly their singles in all 8 sets × GG/XX/GX; T0.5 healing gives back the flat ⟨d⟩ exactly with no distance changed |
-| registered grid (96 processes: 8 sets × L = 8, 12, 16 × 4 placements) | **running** since 20:46:54, 12 at a time, heaviest first |
-| `DECIDE.md` | not written |
+| registered grid (96 processes: 8 sets × L = 8, 12, 16 × 4 placements) | **done**, 96/96 |
+| `DECIDE.md` | **written 2026-10-13: ending U** |
 
-## Steps (the user said go 2026-10-12; steps 1 and 2 done, step 3 running)
+## Steps (the user said go 2026-10-12; all done 2026-10-13)
 
 1. **Compile first, without running anything else.**
    - `gcc -O3 -march=native -Wall -Wextra -o c3pair c3pair.c -lm` in
