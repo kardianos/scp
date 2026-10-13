@@ -235,15 +235,19 @@ func letter(c map[string]string) string {
 	return "M"
 }
 
-// the largest R with |median E_int| >= 2t for any kind; and whether every kind is below 2t at R = 8 (L = 16 only)
-func reach(s string, L int) (int, bool) {
-	RE, far := 0, true
+// the largest R with |median E_int| >= 2t for any kind; whether every kind is below 2t at R = 8 (L = 16 only);
+// and how many kinds have a reading at R = 8
+func reach(s string, L int) (int, bool, int) {
+	RE, far, n8 := 0, true, 0
 	for _, kind := range kinds {
 		for _, R := range Rs {
 			if 2*R > L {
 				continue
 			}
 			m := median(collect(s, L, kind, R, "Eint_w"))
+			if R == 8 && !math.IsNaN(m) {
+				n8++
+			}
 			if !math.IsNaN(m) && math.Abs(m) >= 2 {
 				if R > RE {
 					RE = R
@@ -254,7 +258,7 @@ func reach(s string, L int) (int, bool) {
 			}
 		}
 	}
-	return RE, far
+	return RE, far, n8
 }
 
 func main() {
@@ -404,11 +408,13 @@ func main() {
 			}
 			cells = append(cells, fmt.Sprintf("%s \\| %s", a, b))
 		}
-		r12, _ := reach(s, 12)
-		r16, far := reach(s, 16)
+		r12, _, _ := reach(s, 12)
+		r16, far, n8 := reach(s, 16)
 		reachTxt := "contact (below 2t)"
 		if !far {
 			reachTxt = "extended"
+		} else if n8 < len(kinds) {
+			reachTxt = "(missing)"
 		}
 		lt := letter(c)
 		if scored[s] {

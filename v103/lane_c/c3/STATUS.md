@@ -11,6 +11,22 @@ processes finish; list them with `ps -o pid,etime,cmd -C c3pair`.
 Progress is in `cas/out/run.log`, one line per finished process. The
 grid is finished when `cas/out/run.done` exists.
 
+- **21:18: lowered to nice 10** (renice by exact PID: the driver,
+  xargs and the 12 running c3pair; later children inherit it). At
+  21:16 another workload of the user's started (zig, testkit, corpus,
+  acceptance processes), and the load reached 29 on 16 cores. The
+  results do not depend on timing: each process is single-threaded
+  and deterministic.
+- **Measured pace:** 500 medium sweeps took 3 min (about 0.36 s per
+  sweep at L = 16 with b). A window takes 140–160 CPU s. With the
+  load, a heavy L = 16 process finished about 7 of its 32 media in
+  30 min, so expect about 2–2.5 h each and a longer grid than
+  registered (perhaps 7–9 h). A slower grid changes no result.
+- **tab.go, 21:25:** a tested-on-partial-output fix. §5's "at R = 8"
+  column said "contact" when the R = 8 readings were still missing;
+  it now says "(missing)". This changes no bar, and the whole-grid
+  table is unaffected once every R = 8 reading exists.
+
 Registered at commit 6f9b110.
 
 The user, 2026-10-12: "Setup the next combintorial step, and commit (no
