@@ -3,30 +3,33 @@
 **Read `../../FRAME.md` first** (R14: something with gaps, not
 something in something). Then `PREREG.md`.
 
-## State: REGISTERED, NOT RUN, NOT COMPILED (2026-10-12)
+## State: T0 PASS, REGISTERED GRID RUNNING (started 2026-10-12 20:46:54)
+
+**Grid processes (kill only by exact PID):** driver `run_c3.sh` PID
+2075024, `xargs -P 12` PID 2075031. The c3pair children change as
+processes finish; list them with `ps -o pid,etime,cmd -C c3pair`.
+Progress is in `cas/out/run.log`, one line per finished process. The
+grid is finished when `cas/out/run.done` exists.
 
 Registered at commit 6f9b110.
 
 The user, 2026-10-12: "Setup the next combintorial step, and commit (no
 coauthor) and push, but do NOT run yet. I have another process running,
 so you can read and write, but do not run anything, not even a smoke
-test yet."
-
-**Nothing has been executed for c3:** no compile, no `go vet`, no gate,
-no shakedown, no registered run. Another process of the user's is
-using the machine. **Do not start anything until the user says go.**
+test yet." Then, the same day: "Go."
 
 | item | state |
 |---|---|
 | `PREREG.md` | written and committed. Registered; do not change it once any gate or run has executed, except by a dated amendment in §8 |
-| `cas/c3pair.c` (C) | written and read through. **Never compiled, never executed** |
-| `cas/tab.go` (Go) | written. **Never vetted, never executed** |
-| `cas/run_t0.sh`, `cas/run_c3.sh` | written. **Never executed** |
-| T0 gates (PREREG §6) | **not run** |
-| registered grid (96 processes: 8 sets × L = 8, 12, 16 × 4 placements) | **not run** |
+| `cas/c3pair.c` (C) | compiled 20:44 with `-Wall -Wextra`: no warnings, no change needed |
+| `cas/tab.go` (Go) | `go vet` clean, no change needed. Not yet executed |
+| `cas/run_t0.sh` | ran 20:44–20:46 (2.5 min) |
+| `cas/run_c3.sh` | **running**, started 20:46:54 |
+| T0 gates (PREREG §6) | **PASS** (`cas/out/t0.out`), every gate in every set, no tool change. Highlights: T0.3 restricted = full quench in 70/70 cases; T0.4 pairs at R = 16 are exactly their singles in all 8 sets × GG/XX/GX; T0.5 healing gives back the flat ⟨d⟩ exactly with no distance changed |
+| registered grid (96 processes: 8 sets × L = 8, 12, 16 × 4 placements) | **running** since 20:46:54, 12 at a time, heaviest first |
 | `DECIDE.md` | not written |
 
-## When the user says go
+## Steps (the user said go 2026-10-12; steps 1 and 2 done, step 3 running)
 
 1. **Compile first, without running anything else.**
    - `gcc -O3 -march=native -Wall -Wextra -o c3pair c3pair.c -lm` in

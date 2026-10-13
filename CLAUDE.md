@@ -24,14 +24,13 @@ v100–v102 are evidence below v103. `v102/README.md` holds the rulings
 R1–R13.
 
 **Run status (2026-10-12):**
-- **c3, two defects in the 3-D medium, is REGISTERED, NOT RUN, NOT
-  COMPILED** (user: "do NOT run yet ... not even a smoke test"). State
-  and go-steps are in `v103/lane_c/c3/STATUS.md`. Start nothing until
-  the user says go.
+- **c3, two defects in the 3-D medium: the user said go. T0 PASS; the
+  registered grid is RUNNING** (started 20:46:54, driver PID 2075024).
+  State, PIDs and the remaining steps are in `v103/lane_c/c3/STATUS.md`.
 - g1, the 3-D geometry gate, is **DECIDED: ending G** (`v103/gate/g1/DECIDE.md`;
   state in `v103/gate/g1/STATUS.md`).
 - c1, b1, c2 and a1 are decided. a1, b1 and c2 ran on 1-D rings.
-- Nothing of v103 is running.
+- The c3 grid is the only v103 process running.
 
 ---
 

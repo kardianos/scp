@@ -1,0 +1,52 @@
+T0.1 invariants (six distinct contacts, no self contact, adjacency consistent, one piece, identities distinct) violations=0 PASS
+T0.1 local dE = full dE: tested=30427 mismatches=0 PASS
+T0.2 set=none gap: valid=15 (expect 15) local!=full=0; excess: triples=3712 (expect 3712) local!=full=0; tables differ by entry order=0; same closure=1 PASS
+T0.2 set=c gap: valid=15 (expect 15) local!=full=0; excess: triples=3712 (expect 3712) local!=full=0; tables differ by entry order=0; same closure=1 PASS
+T0.2 set=b gap: valid=15 (expect 15) local!=full=0; excess: triples=3712 (expect 3712) local!=full=0; tables differ by entry order=0; same closure=1 PASS
+T0.2 set=bc gap: valid=15 (expect 15) local!=full=0; excess: triples=3712 (expect 3712) local!=full=0; tables differ by entry order=0; same closure=1 PASS
+T0.2 set=a gap: valid=15 (expect 15) local!=full=0; excess: triples=3712 (expect 3712) local!=full=0; tables differ by entry order=0; same closure=1 PASS
+T0.2 set=ac gap: valid=15 (expect 15) local!=full=0; excess: triples=3712 (expect 3712) local!=full=0; tables differ by entry order=0; same closure=1 PASS
+T0.2 set=ab gap: valid=15 (expect 15) local!=full=0; excess: triples=3712 (expect 3712) local!=full=0; tables differ by entry order=0; same closure=1 PASS
+T0.2 set=abc gap: valid=15 (expect 15) local!=full=0; excess: triples=3712 (expect 3712) local!=full=0; tables differ by entry order=0; same closure=1 PASS
+T0.3 restricted quench = full quench (L = 6, 8; 7 sets; gap, excess, GG R=1, XX R=1, GX R=2): cases=70 differ=0 not_minimum=0 PASS
+T0.4 set=none GG at R=16: made dE pair=0 singles=0+0; quenched E pair=0 singles=0+0 (2t units); contacts added 6=3+3 removed 12=6+6; decomposes=1 PASS
+T0.4 set=none XX at R=16: made dE pair=0 singles=0+0; quenched E pair=0 singles=0+0 (2t units); contacts added 12=6+6 removed 6=3+3; decomposes=1 PASS
+T0.4 set=none GX at R=16: made dE pair=0 singles=0+0; quenched E pair=0 singles=0+0 (2t units); contacts added 9=3+6 removed 9=6+3; decomposes=1 PASS
+T0.4 set=c GG at R=16: made dE pair=4 singles=0+4; quenched E pair=0 singles=0+0 (2t units); contacts added 8=3+5 removed 14=6+8; decomposes=1 PASS
+T0.4 set=c XX at R=16: made dE pair=2 singles=2+0; quenched E pair=0 singles=0+0 (2t units); contacts added 12=6+6 removed 6=3+3; decomposes=1 PASS
+T0.4 set=c GX at R=16: made dE pair=0 singles=0+0; quenched E pair=0 singles=0+0 (2t units); contacts added 9=3+6 removed 9=6+3; decomposes=1 PASS
+T0.4 set=b GG at R=16: made dE pair=576 singles=288+288; quenched E pair=228 singles=96+132 (2t units); contacts added 10=5+5 removed 16=8+8; decomposes=1 PASS
+T0.4 set=b XX at R=16: made dE pair=384 singles=192+192; quenched E pair=192 singles=96+96 (2t units); contacts added 12=6+6 removed 6=3+3; decomposes=1 PASS
+T0.4 set=b GX at R=16: made dE pair=480 singles=288+192; quenched E pair=192 singles=96+96 (2t units); contacts added 11=5+6 removed 11=8+3; decomposes=1 PASS
+T0.4 set=bc GG at R=16: made dE pair=576 singles=288+288; quenched E pair=288 singles=144+144 (2t units); contacts added 6=3+3 removed 12=6+6; decomposes=1 PASS
+T0.4 set=bc XX at R=16: made dE pair=396 singles=198+198; quenched E pair=198 singles=99+99 (2t units); contacts added 12=6+6 removed 6=3+3; decomposes=1 PASS
+T0.4 set=bc GX at R=16: made dE pair=486 singles=288+198; quenched E pair=243 singles=144+99 (2t units); contacts added 9=3+6 removed 9=6+3; decomposes=1 PASS
+T0.4 set=a GG at R=16: made dE pair=288 singles=144+144; quenched E pair=104 singles=60+44 (2t units); contacts added 11=6+5 removed 17=9+8; decomposes=1 PASS
+T0.4 set=a XX at R=16: made dE pair=152 singles=76+76; quenched E pair=76 singles=38+38 (2t units); contacts added 12=6+6 removed 6=3+3; decomposes=1 PASS
+T0.4 set=a GX at R=16: made dE pair=220 singles=144+76; quenched E pair=98 singles=60+38 (2t units); contacts added 12=6+6 removed 12=9+3; decomposes=1 PASS
+T0.4 set=ac GG at R=16: made dE pair=288 singles=144+144; quenched E pair=144 singles=72+72 (2t units); contacts added 6=3+3 removed 12=6+6; decomposes=1 PASS
+T0.4 set=ac XX at R=16: made dE pair=160 singles=80+80; quenched E pair=80 singles=40+40 (2t units); contacts added 12=6+6 removed 6=3+3; decomposes=1 PASS
+T0.4 set=ac GX at R=16: made dE pair=224 singles=144+80; quenched E pair=112 singles=72+40 (2t units); contacts added 9=3+6 removed 9=6+3; decomposes=1 PASS
+T0.4 set=ab GG at R=16: made dE pair=864 singles=432+432; quenched E pair=334 singles=194+140 (2t units); contacts added 10=5+5 removed 16=8+8; decomposes=1 PASS
+T0.4 set=ab XX at R=16: made dE pair=576 singles=288+288; quenched E pair=288 singles=144+144 (2t units); contacts added 12=6+6 removed 6=3+3; decomposes=1 PASS
+T0.4 set=ab GX at R=16: made dE pair=720 singles=432+288; quenched E pair=338 singles=194+144 (2t units); contacts added 11=5+6 removed 11=8+3; decomposes=1 PASS
+T0.4 set=abc GG at R=16: made dE pair=864 singles=432+432; quenched E pair=432 singles=216+216 (2t units); contacts added 6=3+3 removed 12=6+6; decomposes=1 PASS
+T0.4 set=abc XX at R=16: made dE pair=586 singles=292+294; quenched E pair=292 singles=146+146 (2t units); contacts added 12=6+6 removed 6=3+3; decomposes=1 PASS
+T0.4 set=abc GX at R=16: made dE pair=726 singles=432+294; quenched E pair=362 singles=216+146 (2t units); contacts added 9=3+6 removed 9=6+3; decomposes=1 PASS
+T0.5 set=none gap dE=0, then the excess on its closure: nmis=0 E=0 meand=6.011741683 (flat 6.011741683) distances changed=0 PASS
+T0.5 set=c gap dE=0, then the excess on its closure: nmis=0 E=0 meand=6.011741683 (flat 6.011741683) distances changed=0 PASS
+T0.5 set=b gap dE=288, then the excess on its closure: nmis=0 E=0 meand=6.011741683 (flat 6.011741683) distances changed=0 PASS
+T0.5 set=bc gap dE=288, then the excess on its closure: nmis=0 E=0 meand=6.011741683 (flat 6.011741683) distances changed=0 PASS
+T0.5 set=a gap dE=144, then the excess on its closure: nmis=0 E=0 meand=6.011741683 (flat 6.011741683) distances changed=0 PASS
+T0.5 set=ac gap dE=144, then the excess on its closure: nmis=0 E=0 meand=6.011741683 (flat 6.011741683) distances changed=0 PASS
+T0.5 set=ab gap dE=432, then the excess on its closure: nmis=0 E=0 meand=6.011741683 (flat 6.011741683) distances changed=0 PASS
+T0.5 set=abc gap dE=432, then the excess on its closure: nmis=0 E=0 meand=6.011741683 (flat 6.011741683) distances changed=0 PASS
+T0.6 set=none flat: nmis=0 meand=6.011741683 (exact 6.011741683) diam=12; one gap: matrix mean 5.959456659 = meand 5.959456659, clusters=1; two gaps at 12: clusters=2 centre distance=9 PASS
+T0.6 set=c flat: nmis=0 meand=6.011741683 (exact 6.011741683) diam=12; one gap: matrix mean 5.949165420 = meand 5.949165420, clusters=1; two gaps at 12: clusters=2 centre distance=8 PASS
+T0.6 set=b flat: nmis=0 meand=6.011741683 (exact 6.011741683) diam=12; one gap: matrix mean 5.959456659 = meand 5.959456659, clusters=1; two gaps at 12: clusters=2 centre distance=9 PASS
+T0.6 set=bc flat: nmis=0 meand=6.011741683 (exact 6.011741683) diam=12; one gap: matrix mean 5.949165420 = meand 5.949165420, clusters=1; two gaps at 12: clusters=2 centre distance=8 PASS
+T0.6 set=a flat: nmis=0 meand=6.011741683 (exact 6.011741683) diam=12; one gap: matrix mean 5.963969149 = meand 5.963969149, clusters=1; two gaps at 12: clusters=2 centre distance=9 PASS
+T0.6 set=ac flat: nmis=0 meand=6.011741683 (exact 6.011741683) diam=12; one gap: matrix mean 5.949165420 = meand 5.949165420, clusters=1; two gaps at 12: clusters=2 centre distance=8 PASS
+T0.6 set=ab flat: nmis=0 meand=6.011741683 (exact 6.011741683) diam=12; one gap: matrix mean 5.959456659 = meand 5.959456659, clusters=1; two gaps at 12: clusters=2 centre distance=8 PASS
+T0.6 set=abc flat: nmis=0 meand=6.011741683 (exact 6.011741683) diam=12; one gap: matrix mean 5.949165420 = meand 5.949165420, clusters=1; two gaps at 12: clusters=2 centre distance=8 PASS
+T0 PASS
